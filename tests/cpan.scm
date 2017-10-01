@@ -100,7 +100,7 @@
                    ('home-page "http://search.cpan.org/dist/Foo-Bar")
                    ('synopsis "Fizzle Fuzz")
                    ('description 'fill-in-yourself!)
-                   ('license (package-license perl)))
+                   ('license 'perl-license))
                  (string=? (bytevector->nix-base32-string
                             (call-with-input-string test-source port-sha256))
                            hash))

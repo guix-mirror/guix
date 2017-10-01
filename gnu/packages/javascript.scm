@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,7 @@
 (define-public font-mathjax
   (package
     (name "font-mathjax")
-    (version "2.7.1")
+    (version "2.7.2")
     (source
      (origin
        (method url-fetch)
@@ -42,7 +43,7 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0sbib5lk0jrvbq6s72ag6ss3wjlz5wnk07ddxij1kp96yg3c1d1b"))))
+         "1r72di4pg4i6pfhcskkxqmf1158m81ki6a7lbw6nz4zh7xw23hy4"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -59,7 +60,8 @@
            (mkdir-p install-directory)
            (zero? (system* "tar" "-C" install-directory "-xvf"
                            (assoc-ref %build-inputs "source")
-                           "MathJax-2.7.1/fonts" "--strip" "2"))))))
+                           ,(string-append "MathJax-" version "/fonts")
+                           "--strip" "2"))))))
     (native-inputs
      `(("gzip" ,gzip)
        ("tar" ,tar)))
@@ -91,7 +93,9 @@
          (setenv "LANG" "en_US.UTF-8")
          (let ((install-directory (string-append %output "/share/javascript/mathjax")))
            (system* "tar" "xvf" (assoc-ref %build-inputs "source")
-                    "MathJax-2.7.1/unpacked" "--strip" "2")
+                    ,(string-append "MathJax-" (package-version font-mathjax)
+                                    "/unpacked")
+                    "--strip" "2")
            (mkdir-p install-directory)
            (symlink (string-append (assoc-ref %build-inputs "font-mathjax")
                                    "/share/fonts/mathjax")

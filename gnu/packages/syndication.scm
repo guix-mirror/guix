@@ -1,4 +1,4 @@
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@
         (method url-fetch)
         (uri (string-append "https://newsbeuter.org/downloads/newsbeuter-"
                             version ".tar.gz"))
-        (patches (search-patches "newsbeuter-CVE-2017-12904.patch"))
+        (patches (search-patches "newsbeuter-CVE-2017-12904.patch"
+                                 "newsbeuter-CVE-2017-14500.patch"))
         (sha256
          (base32
           "1j1x0hgwxz11dckk81ncalgylj5y5fgw5bcmp9qb5hq9kc0vza3l"))))

@@ -13,13 +13,13 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,9 +76,11 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
@@ -92,7 +94,8 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages statistics))
+  #:use-module (gnu packages statistics)
+  #:use-module (gnu packages version-control))
 
 (define-public httpd
   (package
@@ -104,7 +107,8 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0fn1778mxhf78np2d8qlycg1c2ak18rxax41plahasca4clc3z3i"))))
+               "0fn1778mxhf78np2d8qlycg1c2ak18rxax41plahasca4clc3z3i"))
+             (patches (search-patches "httpd-CVE-2017-9798.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -157,10 +161,12 @@ and its related documentation.")
                (("/bin/sh") (which "sh")))
              #t))
          (replace 'configure
+           ;; The configure script is hand-written, not from GNU autotools.
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((flags
                     (list (string-append "--prefix=" (assoc-ref outputs "out"))
                           "--with-http_ssl_module"
+                          "--with-http_v2_module"
                           "--with-pcre-jit"
                           "--with-debug"
                           ;; Even when not cross-building, we pass the
@@ -185,6 +191,12 @@ and its related documentation.")
                (format #t "environment variable `CC' set to `gcc'~%")
                (format #t "configure flags: ~s~%" flags)
                (zero? (apply system* "./configure" flags)))))
+         (add-after 'install 'install-man-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (install-file "objs/nginx.8" (string-append man "/man8"))
+               #t)))
          (add-after 'install 'fix-root-dirs
            (lambda* (#:key outputs #:allow-other-keys)
              ;; 'make install' puts things in strange places, so we need to
@@ -1905,6 +1917,33 @@ string generation and manipulation, and processing and preparing HTTP
 headers.")
     (license l:perl-license)))
 
+(define-public perl-cgi-session
+  (package
+    (name "perl-cgi-session")
+    (version "4.48")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MA/MARKSTOS/CGI-Session-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1xsl2pz1jrh127pq0b01yffnj4mnp9nvkp88h5mndrscq9hn8xa6"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (inputs `(("perl-cgi" ,perl-cgi)))
+    (home-page
+     "http://search.cpan.org/dist/CGI-Session")
+    (synopsis
+     "Persistent session data in CGI applications")
+    (description
+     "@code{CGI::Session} provides modular session management system across
+HTTP requests.")
+    (license l:perl-license)))
+
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
@@ -2177,6 +2216,37 @@ composed of HTML::Element style components.")
 <form> ... </form> instance.")
     (license l:perl-license)))
 
+(define-public perl-html-scrubber
+  (package
+    (name "perl-html-scrubber")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/N/NI/NIGELM/HTML-Scrubber-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1m1f8gm2jry42zxja05dxp2ck7y66m7i8vc38nj6hccnwlby6cvi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-cpan-meta" ,perl-test-cpan-meta)
+       ("perl-test-eol" ,perl-test-eol)
+       ("perl-test-memory-cycle" ,perl-test-memory-cycle)
+       ("perl-test-notabs" ,perl-test-notabs)))
+    (inputs
+     `(("perl-html-parser" ,perl-html-parser)))
+    (home-page
+     "http://search.cpan.org/dist/HTML-Scrubber")
+    (synopsis
+     "Perl extension for scrubbing/sanitizing html")
+    (description
+     "@code{HTML::Scrubber} Perl extension for scrubbing/sanitizing HTML.")
+    (license l:perl-license)))
+
 (define-public perl-html-lint
   (package
     (name "perl-html-lint")
@@ -2226,7 +2296,7 @@ in tables within an HTML document, either as text or encoded element trees.")
 (define-public perl-html-tree
   (package
     (name "perl-html-tree")
-    (version "5.06")
+    (version "5.07")
     (source
      (origin
        (method url-fetch)
@@ -2234,7 +2304,7 @@ in tables within an HTML document, either as text or encoded element trees.")
                            "HTML-Tree-" version ".tar.gz"))
        (sha256
         (base32
-         "0vjk4xrybjqs511qrh9cymhpbg9m3jjqr52qr035k6nzrccyndlw"))))
+         "1gyvm4qlwm9y6hczkpnrdfl303ggbybr0nqxdjw09hii8yw4sdzh"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -3380,10 +3450,18 @@ web browsing, used for automating interaction with websites.")
                (base32
                 "1yxplx1q1qk2fvnzqrbk01lz26fy1lyhay51a3ky7q3jgh9p01rb"))))
     (build-system perl-build-system)
-    (arguments
-     `(#:tests? #f)) ; Tests require further modules to be packaged
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     `(("perl-class-errorhandler" ,perl-class-errorhandler)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-mail" ,perl-datetime-format-mail)
+       ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
+       ("perl-feed-find" ,perl-feed-find)
+       ("perl-module-install" ,perl-module-install)
+       ("perl-module-pluggable" ,perl-module-pluggable)
+       ("perl-uri-fetch" ,perl-uri-fetch)
+       ("perl-test-simple" ,perl-test-simple)
+       ("perl-xml-atom" ,perl-xml-atom)
+       ("perl-xml-rss" ,perl-xml-rss)))
     (inputs
      `(("perl-data-page" ,perl-data-page)
        ("perl-libwww" ,perl-libwww)
@@ -3500,13 +3578,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "0sqz3wssxa19g9mpmf9s4gx2a5rvzl8nrd11qkgpz5v3iqsc6ysr"))))
+                "0rxh89csqlpyf9wv5wlymya9kbddj79mlmxz2x0xmls12gbrxaaa"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
@@ -3994,6 +4072,74 @@ C.  It is developed as part of the NetSurf project.")
 parse both valid and invalid web content.  It is developed as part of the
 NetSurf project.")
     (license l:expat)))
+
+(define-public ikiwiki
+  (package
+    (name "ikiwiki")
+    (version "3.20170111")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://snapshot.debian.org/archive/debian/"
+                           "20170111T215449Z/pool/main/i/ikiwiki/ikiwiki_"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "00d7yzv426fvqbhvzyafddv7fa6b4j2647b0wi371wd5yjj9j3sz"))))
+    (build-system perl-build-system)
+    (arguments
+     `(;; Image tests fail
+       ;;
+       ;; Test Summary Report
+       ;; -------------------
+       ;; t/img.t                      (Wstat: 2304 Tests: 62 Failed: 9)
+       ;;   Failed tests:  21, 27-28, 30-35
+       ;;   Non-zero exit status: 9
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin/"))
+                    (path (getenv "PERL5LIB")))
+               (for-each (lambda (file)
+                           (wrap-program file
+                             `("PERL5LIB" ":" prefix (,path))))
+                         (find-files bin))
+               #t))))))
+    (native-inputs
+     `(("which" ,which)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-timedate" ,perl-timedate)
+       ("perl-xml-sax" ,perl-xml-sax)
+       ("perl-xml-simple" ,perl-xml-simple)
+       ("gettext" ,gettext-minimal)
+       ("subversion" ,subversion)
+       ("git" ,git)
+       ("bazaar" ,bazaar)
+       ("cvs" ,cvs)
+       ("mercurial" ,mercurial)))
+    (inputs
+     `(("python" ,python-wrapper)
+       ("perl-cgi-session" ,perl-cgi-session)
+       ("perl-cgi-simple" ,perl-cgi-simple)
+       ("perl-json" ,perl-json)
+       ("perl-image-magick" ,perl-image-magick)
+       ("perl-uri" ,perl-uri)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-uri" ,perl-uri)
+       ("perl-text-markdown-discount" ,perl-text-markdown-discount)
+       ("perl-html-scrubber" ,perl-html-scrubber)
+       ("perl-html-template" ,perl-html-template)
+       ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
+    (home-page "https://ikiwiki.info/")
+    (synopsis "Wiki compiler, capable of generating HTML")
+    (description
+     "Ikiwiki is a wiki compiler, capable of generating a static set of web
+pages, but also incorporating dynamic features like a web based editor and
+commenting.")
+    (license l:gpl2+)))
 
 (define-public libwapcaplet
   (package
@@ -5047,3 +5193,78 @@ websites lacking feeds.  Supported websites include Facebook, Twitter,
 Instagram and YouTube.")
     (license (list l:public-domain
                    l:expat)))) ;; vendor/simplehtmldom/simple_html_dom.php
+
+(define-public linkchecker
+  (package
+    (name "linkchecker")
+    (version "9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "LinkChecker" version))
+       (sha256
+        (base32
+         "0v8pavf0bx33xnz1kwflv0r7lxxwj7vg3syxhy2wzza0wh6sc2pf"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python2-requests" ,python2-requests)))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; Remove faulty python-requests version check. This has been fixed
+         ;; upstream, and can be removed in version 9.4.
+         (add-after 'unpack 'remove-python-requests-version
+           (lambda _
+             (substitute* "linkcheck/__init__.py"
+               (("requests.__version__ <= '2.2.0'") "False"))
+             #t)))))
+    (home-page "https://linkcheck.github.io/linkchecker")
+    (synopsis "Check websites for broken links")
+    (description "LinkChecker is a website validator.  It checks for broken
+links in websites.  It is recursive and multithreaded providing output in
+colored or normal text, HTML, SQL, CSV, XML or as a sitemap graph.  It
+supports checking HTTP/1.1, HTTPS, FTP, mailto, news, nntp, telnet and local
+file links.")
+    (license (list l:gpl2+
+                   l:bsd-2 ; linkcheck/better_exchook2.py
+                   l:bsd-3 ; linkcheck/colorama.py
+                   l:psfl  ; linkcheck/gzip2.py
+                   l:expat ; linkcheck/mem.py
+                   ;; FIXME: Unbundle dnspython and miniboa
+                   ;; This issue has been raised upstream
+                   ;; https://github.com/wummel/linkchecker/issues/729
+                   l:isc   ; third_party/dnspython
+                   l:asl2.0)))) ; third_party/miniboa
+
+(define-public cadaver
+  (package
+    (name "cadaver")
+    (version "0.23.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.webdav.org/cadaver/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jizq69ifrjbjvz5y79wh1ny94gsdby4gdxwjad4bfih6a5fck7x"))))
+    (build-system gnu-build-system)
+    ;; TODO: Unbundle libneon and make build succeed with new neon.
+    (arguments
+     `(#:configure-flags (list "--with-ssl=openssl")
+       #:tests? #f)) ;No tests included
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("expat" ,expat)
+       ("openssl" ,openssl)))
+    (home-page "http://www.webdav.org/cadaver")
+    (synopsis "Command-line WebDAV client")
+    (description
+     "Cadaver is a command-line WebDAV client for Unix. It supports
+file upload, download, on-screen display, namespace operations (move/copy),
+collection creation and deletion, and locking operations.")
+    (license l:gpl2)))

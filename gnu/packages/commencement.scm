@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,8 +113,7 @@
 
 (define file-boot0
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs (package
-                                   (inherit file)
+   (package-with-explicit-inputs (package/inherit file
                                    (name "file-boot0"))
                                  `(("make" ,gnu-make-boot0)
                                    ,@%bootstrap-inputs)
@@ -140,7 +140,7 @@
 
 (define binutils-boot0
   (package-with-bootstrap-guile
-   (package (inherit binutils)
+   (package/inherit binutils
      (name "binutils-cross-boot0")
      (arguments
       `(#:guile ,%bootstrap-guile
@@ -681,7 +681,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define binutils-final
   (package-with-bootstrap-guile
-   (package (inherit binutils)
+   (package/inherit binutils
      (arguments
       `(#:guile ,%bootstrap-guile
         #:implicit-inputs? #f

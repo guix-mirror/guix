@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,10 +42,13 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -480,3 +484,97 @@ use pass, the standard unix password manager, as the credential backend for
 your git repositories.  This is achieved by explicitly defining mappings
 between hosts and entries in the password store.")
     (license license:lgpl3+)))
+
+(define-public john-the-ripper-jumbo
+  (let ((official-version "1.8.0")
+        (jumbo-version "1"))
+    (package
+      (name "john-the-ripper-jumbo")
+      (version (string-append official-version "-" jumbo-version))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "http://www.openwall.com/john/j/john-"
+                             official-version "-jumbo-" jumbo-version ".tar.xz"))
+         (sha256
+          (base32
+           "08q92sfdvkz47rx6qjn7qv57cmlpy7i7rgddapq5384mb413vjds"))
+         (patches
+          (list (origin
+                  (method url-fetch)
+                  (uri (string-append "https://github.com/magnumripper/"
+                                      "JohnTheRipper/commit/"
+                                      "e2e868db3e153b3f959e119a51703d4afb99c624.patch"))
+                  (file-name "john-the-ripper-jumbo-gcc5-inline.patch")
+                  (sha256
+                   (base32
+                    "1shvcf1y2097115mxhzdkm64dr106a8zr6pqjqyh171q5ng5vfra")))
+                (origin
+                  (method url-fetch)
+                  (uri (string-append "https://github.com/magnumripper/"
+                                      "JohnTheRipper/commit/"
+                                      "480e95b0e449863be3e1a5b0bc634a67df28b618.patch"))
+                  (file-name "john-the-ripper-jumbo-non-x86.patch")
+                  (sha256
+                   (base32
+                    "1ffd9dvhk0sb6ss8dv5yalh01lz30i7rilqilf2xv68gax2hyjqx")))))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("gmp" ,gmp)
+         ("krb5" ,mit-krb5)
+         ("libpcap" ,libpcap)
+         ("nss" ,nss)
+         ("openssl" ,openssl)
+         ("zlib" ,zlib)))
+      (arguments
+       `(#:configure-flags
+         (list (string-append
+                "CFLAGS=-O2 -g "
+                "-DJOHN_SYSTEMWIDE=1 "
+                "-DJOHN_SYSTEMWIDE_EXEC='\"" %output "/libexec/john\"' "
+                "-DJOHN_SYSTEMWIDE_HOME='\"" %output "/share/john\"'")
+               ;; For now, do not test for instruction set in configure, and
+               ;; do not pass '-march=native' to gcc:
+               "--disable-native-tests"
+               "--disable-native-macro")
+         #:tests? #f ;tests try to create '.john' in the build user's $HOME
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'chdir-src
+             (lambda _ (chdir "src")))
+           (replace 'install
+             (lambda _
+               (let ((bindir (string-append %output "/bin"))
+                     (docdir (string-append %output "/share/doc/john"))
+                     (execdir (string-append %output "/libexec/john"))
+                     (homedir (string-append %output "/share/john"))
+                     (install-file-to (lambda (dir)
+                                        (lambda (f) (install-file f dir))))
+                     (symlink? (lambda (_ s) (eq? (stat:type s) 'symlink))))
+                 (with-directory-excursion "../run"
+                   (for-each (install-file-to execdir)
+                             (cons* "mailer" "benchmark-unify"
+                                    (find-files "." ".*\\.(py|rb|pl)")))
+                   (for-each (install-file-to homedir)
+                             (append (find-files "." "(stats|dictionary.*)")
+                                     (find-files "." "(.*\\.chr|.*\\.lst)")
+                                     (find-files "." ".*\\.conf")))
+                   (for-each (install-file-to bindir)
+                             '("tgtsnarf" "genmkvpwd" "mkvcalcproba"
+                               "raw2dyna" "luks2john" "vncpcap2john"
+                               "uaf2john" "calc_stat" "wpapcap2john"
+                               "cprepair" "relbench"  "SIPdump" "john"))
+                   (for-each (lambda (f) ;install symlinked aliases
+                               (symlink "john"
+                                        (string-append bindir "/" (basename f))))
+                             (find-files "." symlink?)))
+                 (copy-recursively "../doc" docdir)
+                 #t))))))
+      (home-page "http://www.openwall.com/john/")
+      (synopsis "Password cracker")
+      (description "John the Ripper is a fast password cracker.  Its primary
+purpose is to detect weak Unix passwords.  Besides several @code{crypt}
+password hash types most commonly found on various Unix systems, supported out
+of the box are Windows LM hashes, plus lots of other hashes and ciphers.  This
+is the community-enhanced, \"jumbo\" version of John the Ripper.")
+      (license license:gpl2+))))

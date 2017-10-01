@@ -1295,7 +1295,7 @@ and writing of @code{.ini}-style configuration files.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JR/JROCKWAY/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Context-Preserve-" version ".tar.gz"))
        (sha256
         (base32
@@ -1310,6 +1310,34 @@ and writing of @code{.ini}-style configuration files.")
 the context the subroutine would have seen if it were the last statement in
 the caller.")
     (license (package-license perl))))
+
+(define-public perl-convert-binhex
+  (package
+    (name "perl-convert-binhex")
+    (version "1.125")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/S/ST/STEPHEN/Convert-BinHex-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "15v3489k179cx0fz3lix79ssjid0nhhpf6c33swpxga6pss92dai"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-file-slurp" ,perl-file-slurp)
+       ("perl-test-most" ,perl-test-most)))
+    (home-page
+     "http://search.cpan.org/dist/Convert-BinHex")
+    (synopsis "Extract data from Macintosh BinHex files")
+    (description
+     "BinHex is a format for transporting files safely through electronic
+mail, as short-lined, 7-bit, semi-compressed data streams.  Ths module
+provides a means of converting those data streams back into into binary
+data.")
+    (license perl-license)))
 
 (define-public perl-cpan-meta-check
   (package
@@ -1587,6 +1615,49 @@ the case that a result set is returned that is larger than we want to display
 on one page.  This results in wanting to page through various pages of data.
 The maths behind this is unfortunately fiddly, hence this module.")
     (license (package-license perl))))
+
+(define-public perl-data-perl
+  (package
+    (name "perl-data-perl")
+    (version "0.002009")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MA/MATTP/Data-Perl-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "12vgqdjbfqf2qfg21x22wg88xnwxfbw2ki3qzcb3nb0chwjj4axn"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-output" ,perl-test-output)))
+    (inputs
+     `(("perl-class-method-modifiers"
+        ,perl-class-method-modifiers)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-role-tiny" ,perl-role-tiny)
+       ("perl-strictures" ,perl-strictures)))
+    (propagated-inputs
+     `(("perl-list-moreutils" ,perl-list-moreutils)))
+    (home-page
+     "http://search.cpan.org/dist/Data-Perl")
+    (synopsis "Base classes wrapping fundamental Perl data types")
+    (description
+     "@code{Data::Perl} is a container class for the following classes:
+@itemize
+@item @code{Data::Perl::Collection::Hash}
+@item @code{Data::Perl::Collection::Array}
+@item @code{Data::Perl::String}
+@item @code{Data::Perl::Number}
+@item @code{Data::Perl::Counter}
+@item @code{Data::Perl::Bool}
+@item @code{Data::Perl::Code}
+@end itemize")
+    (license perl-license)))
 
 (define-public perl-data-stag
   (package
@@ -2259,6 +2330,30 @@ particular command is available.")
 whether a compiler is available.  It can test for a C99 compiler, or
 you can tell it to compile a C source file with optional linker flags.")
   (license (package-license perl))))
+
+(define-public perl-devel-cycle
+  (package
+    (name "perl-devel-cycle")
+    (version "1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/L/LD/LDS/Devel-Cycle-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1hhb77kz3dys8yaik452j22cm3510zald2mpvfyv5clqv326aczx"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/Devel-Cycle")
+    (synopsis "Find memory cycles in objects")
+    (description
+     "@code{Devel::Cycle} This is a tool for finding circular references in
+objects and other types of references.  Because of Perl's reference-count
+based memory management, circular references will cause memory leaks.")
+    (license perl-license)))
 
 (define-public perl-devel-globaldestruction
   (package
@@ -3514,7 +3609,7 @@ that may contain multiple values per key, inspired by MultiDict of WebOb.")
 consume exports.  It is feature-compatible with Exporter, plus some much needed
 extras.  You can use this to import symbols from any exporter that follows
 Exporters specification.  The exporter modules themselves do not need to use or
-inherit from the Exporter module, they just need to set @EXPORT and/or other
+inherit from the Exporter module, they just need to set @@EXPORT and/or other
 variables.")
     (license (package-license perl))))
 
@@ -4134,6 +4229,51 @@ implementation of these functions only serves as a fallback in case the C
 portions of this module couldn't be compiled on this machine.")
     (license (package-license perl))))
 
+(define-public perl-mailtools
+  (package
+    (name "perl-mailtools")
+    (version "2.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MA/MARKOV/MailTools-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "06jykkv8mp484vzkmwd6dkicx029rl3ir5ljzrbap3paxw1dfzn1"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-timedate" ,perl-timedate)))
+    (home-page
+     "http://search.cpan.org/dist/MailTools")
+    (synopsis "Bundle of ancient email modules")
+    (description "MailTools contains the following modules:
+@table @asis
+@item Mail::Address
+Parse email address from a header line.
+@item Mail::Cap
+Interpret mailcap files: mappings of file-types to applications as used by
+many command-line email programs.
+@item Mail::Field
+Simplifies access to (some) email header fields.  Used by Mail::Header.
+@item Mail::Filter
+Process Mail::Internet messages.
+@item Mail::Header
+Collection of Mail::Field objects, representing the header of a Mail::Internet
+object.
+@item Mail::Internet
+Represents a single email message, with header and body.
+@item Mail::Mailer
+Send Mail::Internet emails via direct smtp or local MTA's.
+@item Mail::Send
+Build a Mail::Internet object, and then send it out using Mail::Mailer.
+@item Mail::Util
+\"Smart functions\" you should not depend on.
+@end table")
+    (license perl-license)))
+
 (define-public perl-memoize-expirelru
   (package
     (name "perl-memoize-expirelru")
@@ -4172,6 +4312,36 @@ the argument to the CACHESIZE parameter, will be cached.")
      "@code{MIME::Charset} provides information about character sets used for
 MIME messages on Internet.")
     (license (package-license perl))))
+
+(define-public perl-mime-tools
+  (package
+    (name "perl-mime-tools")
+    (version "5.509")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DS/DSKOLL/MIME-tools-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0wv9rzx5j1wjm01c3dg48qk9wlbm6iyf91j536idk09xj869ymv4"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)))
+    (inputs
+     `(("perl-convert-binhex" ,perl-convert-binhex)))
+    (propagated-inputs
+     `(("perl-mailtools" ,perl-mailtools)))
+    (home-page
+     "http://search.cpan.org/dist/MIME-tools")
+    (synopsis "Tools to manipulate MIME messages")
+    (description
+     "MIME-tools is a collection of Perl5 MIME:: modules for parsing,
+decoding, and generating single- or multipart (even nested multipart) MIME
+messages.")
+    (license perl-license)))
 
 (define-public perl-mime-types
   (package
@@ -5073,6 +5243,109 @@ all coercions and constraints are inherited.")
 constraint with coercion to load the class.")
     (license (package-license perl))))
 
+(define-public perl-moox
+  (package
+    (name "perl-moox")
+    (version "0.101")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/G/GE/GETTY/MooX-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1m9jvrqcidiabdih211byadwnnkygafq54r2ljnf1akqdrjimy9g"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-data-optlist" ,perl-data-optlist)
+       ("perl-import-into" ,perl-import-into)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moo" ,perl-moo)))
+    (home-page "http://search.cpan.org/dist/MooX")
+    (synopsis
+     "Using Moo and MooX:: packages the most lazy way")
+    (description "Contains the MooX and MooX::Role packages.")
+    (license perl-license)))
+
+(define-public perl-moox-handlesvia
+  (package
+    (name "perl-moox-handlesvia")
+    (version "0.001008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MA/MATTP/MooX-HandlesVia-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "137yrjn2jmw4cj0fjdajnkjgqr5arnpq72kbm6w66xskncinz55h"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-moox-types-mooselike"
+        ,perl-moox-types-mooselike)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (inputs
+     `(("perl-class-method-modifiers"
+        ,perl-class-method-modifiers)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moo" ,perl-moo)
+       ("perl-role-tiny" ,perl-role-tiny)))
+    (propagated-inputs
+     `(("perl-data-perl" ,perl-data-perl)))
+    (home-page
+     "http://search.cpan.org/dist/MooX-HandlesVia")
+    (synopsis "NativeTrait-like behavior for Moo")
+    (description
+     "@code{MooX::HandlesVia} is an extension of Moo's @code{handles}
+attribute functionality.  It provides a means of proxying functionality from
+an external class to the given atttribute.")
+    (license perl-license)))
+
+(define-public perl-moox-late
+  (package
+    (name "perl-moox-late")
+    (version "0.015")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/T/TO/TOBYINK/MooX-late-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1gzvd9zws3v09sh0xx6srmw4jwi22fnrya4zcsc8dykn62pjclqp"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (inputs
+     `(("perl-moo" ,perl-moo)
+       ("perl-moox" ,perl-moox)
+       ("perl-moox-handlesvia" ,perl-moox-handlesvia)))
+    (propagated-inputs
+     `(("perl-type-tiny" ,perl-type-tiny)))
+    (home-page
+     "http://search.cpan.org/dist/MooX-late")
+    (synopsis "Easily translate Moose code to Moo")
+    (description
+     "MooX::late does the following:
+@enumerate
+@item Supports isa => $stringytype
+@item Supports does => $rolename
+@item Supports lazy_build => 1
+@item Exports blessed and confess functions to your namespace.
+@item Handles certain attribute traits
+Currently Hash, Array and Code are supported.  This feature requires
+MooX::HandlesVia.
+@end enumerate")
+    (license perl-license)))
+
 (define-public perl-moox-types-mooselike
   (package
     (name "perl-moox-types-mooselike")
@@ -5251,6 +5524,38 @@ declared or imported symbols at the end of the current package's compile
 cycle.  Functions called in the package itself will still be bound by their
 name, but they won't show up as methods on your class or instances.")
     (license (package-license perl))))
+
+(define-public perl-net-idn-encode
+  (package
+    (name "perl-net-idn-encode")
+    (version "2.400")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/C/CF/CFAERBER/Net-IDN-Encode-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0a9knav5f9kjldrkxx1k47ivd3p23zkmi8aqgyhnxidhgasz1dlq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)))
+    (home-page
+     "http://search.cpan.org/dist/Net-IDN-Encode")
+    (synopsis
+     "Internationalizing Domain Names in Applications (IDNA)")
+    (description
+     "Internationalized Domain Names (IDNs) use characters drawn from a large
+repertoire (Unicode), but IDNA allows the non-ASCII characters to be
+represented using only the ASCII characters already allowed in so-called host
+names today (letter-digit-hyphen, /[A-Z0-9-]/i).
+
+Use this module if you just want to convert domain names (or email addresses),
+using whatever IDNA standard is the best choice at the moment.")
+    (license perl-license)))
 
 (define-public perl-net-statsd
   (package
@@ -6775,6 +7080,61 @@ namespace::autoclean or namespace::clean and are therefore available to be
 called as methods, which usually isn't want you want.")
     (license (package-license perl))))
 
+(define-public perl-test-cpan-meta
+  (package
+    (name "perl-test-cpan-meta")
+    (version "0.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/B/BA/BARBIE/Test-CPAN-Meta-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1dcdbbdwdyhpldkhjzc9rvzlmb5jbil6fwh2x07nsfdwysf4ynzm"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-cpan-meta-json" ,perl-test-cpan-meta-json)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page
+     "http://search.cpan.org/dist/Test-CPAN-Meta")
+    (synopsis "Validate your CPAN META.yml files")
+    (description
+     "This module was written to ensure that a META.yml file meets the
+specification.")
+    (license artistic2.0)))
+
+(define-public perl-test-cpan-meta-json
+  (package
+    (name "perl-test-cpan-meta-json")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/B/BA/BARBIE/Test-CPAN-Meta-JSON-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1jg9ka50ixwq083wd4k12rhdjq87w0ihb34gd8jjn7gvvyd51b37"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (inputs
+     `(("perl-json" ,perl-json)))
+    (home-page
+     "http://search.cpan.org/dist/Test-CPAN-Meta-JSON")
+    (synopsis "Validate your CPAN META.json files")
+    (description
+     "This module was written to ensure that a META.json file meets the
+specification.")
+    (license artistic2.0)))
+
 (define-public perl-test-deep
   (package
     (name "perl-test-deep")
@@ -6847,6 +7207,30 @@ simplifies maintaining test directories by tracking their status as they are
 modified or tested with this API, making it simple to test both individual
 files, as well as to verify that there are no missing or unknown files.")
     (license (package-license perl))))
+
+(define-public perl-test-eol
+  (package
+    (name "perl-test-eol")
+    (version "2.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/E/ET/ETHER/Test-EOL-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0l3bxpsw0x7j9nclizcp53mnf9wny25dmg2iglfhzgnk0xfpwzwf"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/Test-EOL")
+    (synopsis
+     "Check the correct line endings in your project")
+    (description
+     "@code{Test::EOL} lets you check for the presence of trailing whitespace
+and/or windows line endings in your perl code.")
+    (license perl-license)))
 
 (define-public perl-test-exception
   (package
@@ -7037,6 +7421,42 @@ file to find out which tests you want to run and the order in which you want to 
 It constructs the right value for the build system to do the right thing.")
     (license (package-license perl))))
 
+(define-public perl-test-memory-cycle
+  (package
+    (name "perl-test-memory-cycle")
+    (version "1.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/P/PE/PETDANCE/Test-Memory-Cycle-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "00ijmgx1r3cxrcs1qa9rb2s4gbm3nsawd90drda89kb4r7yxslwx"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-padwalker" ,perl-padwalker)))
+    (propagated-inputs
+     `(("perl-devel-cycle" ,perl-devel-cycle)))
+    (home-page
+     "http://search.cpan.org/dist/Test-Memory-Cycle")
+    (synopsis
+     "Verifies code hasn't left circular references")
+    (description
+     "@code{Test::Memory::Cycle} is built on top of @code{Devel::Cycle} to
+give you an easy way to check for these circular references.
+
+@example
+use Test::Memory::Cycle;
+
+my $object = new MyObject;
+# Do stuff with the object.
+memory_cycle_ok( $object );
+@end example")
+    (license artistic2.0)))
+
 (define-public perl-test-mockobject
   (package
     (name "perl-test-mockobject")
@@ -7141,6 +7561,30 @@ with an error rather than skip.
 
 If used in a subtest, the remainder of the subtest will be skipped.")
     (license (package-license perl))))
+
+(define-public perl-test-notabs
+  (package
+    (name "perl-test-notabs")
+    (version "2.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/E/ET/ETHER/Test-NoTabs-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "127kpl1va267qar2ia4c22xb96jby2jqnda3sj5pjgmxg8si26cg"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/Test-NoTabs")
+    (synopsis
+     "Check the presence of tabs in your project")
+    (description
+     "@code{Test::NoTabs} lets you check the presence of tabs in your perl
+code.")
+    (license perl-license)))
 
 (define-public perl-test-nowarnings
   (package
@@ -7731,6 +8175,32 @@ algorism to indicate multiplication by 1000.")
     (synopsis "Organize Data in Tables")
     (description "Text::Table renders plaintext tables.")
     (license x11)))
+
+(define-public perl-text-template
+  (package
+    (name "perl-text-template")
+    (version "1.47")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MS/MSCHOUT/Text-Template-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1z781cgz7wbn80lf3kqr2ad0pg6g1wlnim0822h8liw28k3l5msh"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/Text-Template")
+    (synopsis
+     "Expand template text with embedded Perl")
+    (description
+     "This is a library for generating letters, building HTML pages, or
+filling in templates generally.  A template is a piece of text that has little
+Perl programs embedded in it here and there.  When you fill in a template, you
+evaluate the little programs and replace them with their values.")
+    (license perl-license)))
 
 (define-public perl-text-unidecode
   (package
@@ -8365,6 +8835,30 @@ neither visible nor modifiable from Perl space).")
     (description "The YAML.pm module implements a YAML Loader and Dumper based
 on the YAML 1.0 specification.")
     (license (package-license perl))))
+
+(define-public perl-yaml-libyaml
+  (package
+    (name "perl-yaml-libyaml")
+    (version "0.65")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/T/TI/TINITA/YAML-LibYAML-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0izhvz8f29x1f50hhwfgm0iq1lz7apjjvg77lmky949jr07hnwfv"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/YAML-LibYAML")
+    (synopsis
+     "Perl YAML Serialization using XS and libyaml")
+    (description
+     "@code{YAML::XS} is a Perl XS binding to libyaml which offers Perl the
+best YAML support to date.")
+    (license perl-license)))
 
 (define-public perl-yaml-tiny
   (package

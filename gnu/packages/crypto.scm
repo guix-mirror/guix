@@ -58,25 +58,56 @@
 (define-public libsodium
   (package
     (name "libsodium")
-    (version "1.0.13")
+    (version "1.0.14")
     (source (origin
             (method url-fetch)
             (uri (list (string-append
-                        "http://download.libsodium.org/libsodium/"
+                        "https://download.libsodium.org/libsodium/"
                         "releases/libsodium-" version ".tar.gz")
                        (string-append
                         "https://download.libsodium.org/libsodium/"
                         "releases/old/libsodium-" version ".tar.gz")))
             (sha256
              (base32
-              "1z93wfg4k5svg8yck6cgdr6ysj91kbpn03nyzwxanncy3b5sq4ww"))))
+              "1rvylybhxyn6ap3hrcingsl737zrqg12l7r91ns93j7xjz889z1w"))))
     (build-system gnu-build-system)
     (synopsis "Portable NaCl-based crypto library")
     (description
      "Sodium is a new easy-to-use high-speed software library for network
 communication, encryption, decryption, signatures, etc.")
     (license license:isc)
-    (home-page "http://libsodium.org")))
+    (home-page "https://libsodium.org")))
+
+(define-public libmd
+  (package
+    (name "libmd")
+    (version "0.0.0")
+    (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://archive.hadrons.org/software/libmd/libmd-"
+                  version
+                  ".tar.xz"))
+            (sha256
+             (base32
+              "121s73pgbqsnmy6xblbrkj9y44c5zzzpf2hcmh6zvcvg4dk26gzx"))))
+    (build-system gnu-build-system)
+    (synopsis "Message Digest functions from BSD systems")
+    (description
+     "The currently provided message digest algorithms are:
+@itemize
+@item MD2
+@item MD4
+@item MD5
+@item RIPEMD-160
+@item SHA-1
+@item SHA-2 (SHA-256, SHA-384 and SHA-512)
+@end itemize")
+    (license (list license:bsd-3
+                   license:bsd-2
+                   license:isc
+                   license:public-domain))
+    (home-page "https://www.hadrons.org/software/libmd/")))
 
 (define-public signify
   (package
@@ -161,7 +192,7 @@ OpenBSD tool of the same name.")
     (arguments
      `(#:configure-flags '("--disable-tools" "--disable-python")
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'autoconf
+                  (add-after 'unpack 'autoconf
                     (lambda _
                       (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "https://github.com/savoirfairelinux/opendht/")

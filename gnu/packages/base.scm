@@ -392,6 +392,7 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 
 (define-public binutils
   (package
+   (replacement binutils/fixed)
    (name "binutils")
    (version "2.28")
    (source (origin
@@ -432,6 +433,19 @@ the strings in a binary file, and utilities for working with archives.  The
 included.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/binutils/")))
+
+(define binutils/fixed
+  (package
+    (inherit binutils)
+    ;; 2.28.1 is two characters longer than 2.28, so grafting fails due to
+    ;; mismatched lengths of filenames, so we have to force  it to the same length.
+    (version "2281")
+    (source
+      (origin (inherit (package-source binutils))
+              (uri "mirror://gnu/binutils/binutils-2.28.1.tar.bz2")
+              (sha256
+               (base32
+                "1sj234nd05cdgga1r36zalvvdkvpfbr12g5mir2n8i1dwsdrj939"))))))
 
 (define* (make-ld-wrapper name #:key
                           (target (const #f))

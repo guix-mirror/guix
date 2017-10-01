@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +49,9 @@
             pam-services->directory
             unix-pam-service
             base-pam-services
+
+            session-environment-service
+            session-environment-service-type
 
             pam-root-service-type
             pam-root-service))
@@ -275,6 +278,48 @@ authenticate to run COMMAND."
           (map rootok-pam-service
                '("useradd" "userdel" "usermod"
                  "groupadd" "groupdel" "groupmod"))))
+
+
+;;;
+;;; System-wide environment variables.
+;;;
+
+(define (environment-variables->environment-file vars)
+  "Return a file for pam_env(8) that contains environment variables VARS."
+  (apply mixed-text-file "environment"
+         (append-map (match-lambda
+                       ((key . value)
+                        (list key "=" value "\n")))
+                     vars)))
+
+(define session-environment-service-type
+  (service-type
+   (name 'session-environment)
+   (extensions
+    (list (service-extension
+           etc-service-type
+           (lambda (vars)
+             (list `("environment"
+                     ,(environment-variables->environment-file vars)))))))
+   (compose concatenate)
+   (extend append)
+   (description
+    "Populate @file{/etc/environment}, which is honored by @code{pam_env},
+with the specified environment variables.  The value of this service is a list
+of name/value pairs for environments variables, such as:
+
+@example
+'((\"TZ\" . \"Canada/Pacific\"))
+@end example\n")))
+
+(define (session-environment-service vars)
+  "Return a service that builds the @file{/etc/environment}, which can be read
+by PAM-aware applications to set environment variables for sessions.
+
+VARS should be an association list in which both the keys and the values are
+strings or string-valued gexps."
+  (service session-environment-service-type vars))
+
 
 
 ;;;

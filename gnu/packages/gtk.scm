@@ -11,7 +11,7 @@
 ;;; Coypright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2017 Roel Janssen <roel@gnu.org>
@@ -379,7 +379,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "3.24.2")
+   (version "3.24.4")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -387,7 +387,7 @@ printing and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "17xqrnh2v9gba57ij2m9kngxwh19fzsqkx1rfasnv4zaqvqqhv69"))))
+               "14x738xrz9q8qz13xd7dys748ryxyq2srbqyaa9r7n47h2av2zr0"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -427,6 +427,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
+   (replacement gdk-pixbuf-2.36.10)
    (version "2.36.6")
    (source (origin
             (method url-fetch)
@@ -483,6 +484,7 @@ in the GNOME project.")
 (define-public gdk-pixbuf+svg
   (package (inherit gdk-pixbuf)
     (name "gdk-pixbuf+svg")
+    (replacement gdk-pixbuf+svg-2.36.10)
     (inputs
      `(("librsvg" ,librsvg)
        ,@(package-inputs gdk-pixbuf)))
@@ -505,6 +507,26 @@ in the GNOME project.")
                                        "--update-cache" ,@loaders)))))))))
     (synopsis
      "GNOME image loading and manipulation library, with SVG support")))
+
+;; Graft replacement packages to fix these vulnerabilities.
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-2862
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-2870
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-6311
+(define-public gdk-pixbuf-2.36.10
+  (package (inherit gdk-pixbuf)
+           (version "2.36.A")
+           (source (origin
+                     (method url-fetch)
+                     (uri (string-append "mirror://gnome/sources/gdk-pixbuf/2.36/"
+                                         "gdk-pixbuf-2.36.10.tar.xz"))
+                     (sha256
+                      (base32
+                       "1klsjkdbashd8yb8xjsc9ff3bz32n2id5s79nrrmqiw9df4zmxpq"))))))
+
+(define-public gdk-pixbuf+svg-2.36.10
+  (package (inherit gdk-pixbuf+svg)
+           (version "2.36.A")
+           (source (origin (inherit (package-source gdk-pixbuf-2.36.10))))))
 
 (define-public at-spi2-core
   (package
@@ -838,7 +860,7 @@ exceptions, macros, and a dynamic programming environment.")
       (build-system gnu-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
-                    (add-before 'configure 'bootstrap
+                    (add-after 'unpack 'bootstrap
                       (lambda _
                         (zero? (system* "autoreconf" "-vfi")))))))
       (native-inputs `(("pkg-config" ,pkg-config)

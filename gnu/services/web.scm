@@ -99,6 +99,8 @@
                        (default '()))
   (index               nginx-server-configuration-index
                        (default (list "index.html")))
+  (try-files           nginx-server-configuration-try-files
+                       (default '()))
   (ssl-certificate     nginx-server-configuration-ssl-certificate
                        (default "/etc/nginx/cert.pem"))
   (ssl-certificate-key nginx-server-configuration-ssl-certificate-key
@@ -179,6 +181,7 @@ of index files."
          (nginx-server-configuration-ssl-certificate-key server))
         (root (nginx-server-configuration-root server))
         (index (nginx-server-configuration-index server))
+        (try-files (nginx-server-configuration-try-files server))
         (server-tokens? (nginx-server-configuration-server-tokens? server))
         (locations (nginx-server-configuration-locations server)))
     (define-syntax-parameter <> (syntax-rules ()))
@@ -207,6 +210,9 @@ of index files."
      (and/l ssl-certificate-key "      ssl_certificate_key " <> ";\n")
      "      root " root ";\n"
      "      index " (config-index-strings index) ";\n"
+     (if (not (nil? try-files))
+         (and/l (config-index-strings try-files) "      try_files " <> ";\n")
+         "")
      "      server_tokens " (if server-tokens? "on" "off") ";\n"
      "\n"
      (map emit-nginx-location-config locations)
@@ -262,7 +268,7 @@ of index files."
 (define nginx-activation
   (match-lambda
     (($ <nginx-configuration> nginx log-directory run-directory server-blocks
-                              upstream-blocks config-file)
+                              upstream-blocks file)
      #~(begin
          (use-modules (guix build utils))
 
@@ -281,7 +287,7 @@ of index files."
          (mkdir-p (string-append #$run-directory "/logs"))
          ;; Check configuration file syntax.
          (system* (string-append #$nginx "/sbin/nginx")
-                  "-c" #$(or config-file
+                  "-c" #$(or file
                              (default-nginx-config nginx log-directory
                                run-directory server-blocks upstream-blocks))
                   "-t")))))
@@ -289,14 +295,14 @@ of index files."
 (define nginx-shepherd-service
   (match-lambda
     (($ <nginx-configuration> nginx log-directory run-directory server-blocks
-                              upstream-blocks config-file)
+                              upstream-blocks file)
      (let* ((nginx-binary (file-append nginx "/sbin/nginx"))
             (nginx-action
              (lambda args
                #~(lambda _
                    (zero?
                     (system* #$nginx-binary "-c"
-                             #$(or config-file
+                             #$(or file
                                    (default-nginx-config nginx log-directory
                                      run-directory server-blocks upstream-blocks))
                              #$@args))))))

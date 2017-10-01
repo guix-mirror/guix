@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,7 +86,8 @@ view to show two terminals at once.")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (install-file "dtach" (string-append out "/bin"))))))
+               (install-file "dtach" (string-append out "/bin"))
+               (install-file "dtach.1" (string-append out "/share/man/man1"))))))
        ;; No check target.
        #:tests? #f))
     (home-page "http://dtach.sourceforge.net/")

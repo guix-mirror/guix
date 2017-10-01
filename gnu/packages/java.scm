@@ -685,7 +685,7 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                "--disable-gjdoc")
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'bootstrap
+           (add-after 'unpack 'bootstrap
              (lambda _
                (zero? (system* "autoreconf" "-vif"))))
            (add-after 'unpack 'remove-unsupported-annotations
@@ -1628,6 +1628,10 @@ IcedTea build harness.")
                    (copy-recursively "openjdk.build/docs" doc)
                    (copy-recursively "openjdk.build/images/j2re-image" jre)
                    (copy-recursively "openjdk.build/images/j2sdk-image" jdk)
+                   ;; Install the nss.cfg file to JRE to enable SSL/TLS
+                   ;; support via NSS.
+                   (copy-file (string-append jdk "/jre/lib/security/nss.cfg")
+                              (string-append jre "/lib/security/nss.cfg"))
                    #t)))))))
       (native-inputs
        `(("jdk" ,icedtea-7 "jdk")
@@ -4171,12 +4175,26 @@ more efficient storage-wise than an uncompressed bitmap (as implemented in the
                   #t))))
     (build-system ant-build-system)
     (arguments
-     ;; FIXME: org.slf4j.NoBindingTest fails with the ominous "This code
-     ;; should have never made it into slf4j-api.jar".
-     `(#:tests? #f
-       #:jar-name "slf4j-api.jar"
+     `(#:jar-name "slf4j-api.jar"
        #:source-dir "slf4j-api/src/main"
-       #:test-dir "slf4j-api/src/test"))
+       #:test-dir "slf4j-api/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'regenerate-jar
+           (lambda _
+             ;; pom.xml ignores these files in the jar creation process. If we don't,
+             ;; we get the error "This code should have never made it into slf4j-api.jar"
+             (delete-file-recursively "build/classes/org/slf4j/impl")
+             (zero? (system* "jar" "-cf" "build/jar/slf4j-api.jar" "-C"
+                             "build/classes" "."))))
+         (add-before 'check 'dont-test-abstract-classes
+           (lambda _
+             ;; abstract classes are not meant to be run with junit
+             (substitute* "build.xml"
+               (("<include name=\"\\*\\*/\\*Test.java\" />")
+                (string-append "<include name=\"**/*Test.java\" />"
+                               "<exclude name=\"**/MultithreadedInitializationTest"
+                               ".java\" />"))))))))
     (inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))

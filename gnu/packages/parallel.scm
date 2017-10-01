@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -45,7 +45,7 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20170822")
+    (version "20170922")
     (source
      (origin
       (method url-fetch)
@@ -53,7 +53,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0j4i0dfbk1i37mcdl7l5ynsldp8biqnbm32sm0cl26by0nivyjc9"))))
+        "0r8mdnmimdf4n6q5k0l8zdql83ka5plrb5qm3rcgkcfwmnk0p0k1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -136,9 +136,8 @@ and they are executed on lists of files, hosts, users or other items.")
             (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))
       #:phases
       (modify-phases %standard-phases
-       (add-before
-        'configure 'autogen
-        (lambda _ (zero? (system* "autoconf"))))))) ; configure.ac was patched
+        (add-after 'unpack 'autogen
+          (lambda _ (zero? (system* "autoconf"))))))) ; configure.ac was patched
    (home-page "http://slurm.schedmd.com/")
    (synopsis "Workload manager for cluster computing")
    (description

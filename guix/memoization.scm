@@ -76,10 +76,11 @@ the result is returned via (apply values results)."
 exactly one value."
     ((_ cached () body ...)
      ;; The zero-argument case is equivalent to a promise.
-     (let ((result #f) (cached? #f))
+     (let ((result #f) (cached? #f)
+           (compute (lambda () body ...)))
        (lambda ()
          (unless cached?
-           (set! result (begin body ...))
+           (set! result (compute))
            (set! cached? #t))
          result)))
 

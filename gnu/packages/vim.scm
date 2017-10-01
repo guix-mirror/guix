@@ -60,7 +60,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.0.0808")
+    (version "8.0.1130")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/vim/vim/archive/v"
@@ -68,7 +68,7 @@
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0qrn9fhq5wdrrf2qhpygwfm5rynl32l406xhbr7lg69r9wl8cjjn"))))
+               "0zqyk7086crc6q5fil38szppx9sgd14fs3wb9h4ak13jg6s2ir90"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -101,6 +101,27 @@ that many consider it an entire IDE.  It's not just for programmers, though.
 Vim is perfect for all kinds of text editing, from composing email to editing
 configuration files.")
     (license license:vim)))
+
+(define-public xxd
+  (package (inherit vim)
+    (name "xxd")
+    (arguments
+     `(#:make-flags '("CC=gcc")
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "src/xxd")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (install-file "xxd" bin)
+               #t))))))
+    (synopsis "Hexdump utility from vim")
+    (description "This package provides the Hexdump utility xxd that comes
+with the editor vim.")))
 
 (define-public vim-full
   (package

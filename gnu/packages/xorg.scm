@@ -13,6 +13,7 @@
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,10 +40,12 @@
   #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -54,6 +57,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libbsd)
+  #:use-module (gnu packages libedit)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
@@ -62,6 +66,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
@@ -2418,7 +2423,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.25.1")
+    (version "0.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2426,7 +2431,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1q67hjd67ni1nq7kgxdrrdgkyhzaqvvn2vlnsiiq9w4y3icpv7s8"))))
+                "0yrqs88b7yn9nljwlxzn76jfmvf0sh939kzij5b2jvr2qa7mbjmb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2646,7 +2651,7 @@ as USB mice.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "7.9.0")
+    (version "7.10.0")
     (source
       (origin
         (method url-fetch)
@@ -2656,7 +2661,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0xcq0lncb5p4sas5866qpkjyp1v8ksalw7m1gmqb3brhccp8gb9w"))))
+            "0yafix56vkqglw243cwb94nv91vbjv12sqh29x1bap0hwd1dclgf"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xxf86driproto" ,xf86driproto)
@@ -2885,8 +2890,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "2100efa105e8c9615eda867d39471d78e500b1bb")
-        (revision "7"))
+  (let ((commit "c89905754b929f0421db7ea6d60b8942ccdbd8af")
+        (revision "8"))
     (package
       (name "xf86-video-intel")
       (version (string-append "2.99.917-" revision "-"
@@ -2900,7 +2905,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "15fg844msmixsvlxcd5wm2awmns652sxcxj2wmp6819lr32lc4ir"))
+           "1xiyxhlq88vvgjavhxdkk933b5q7vm4jn6db144a6sqzifwaj672"))
          (file-name (string-append name "-" version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
@@ -5073,8 +5078,21 @@ over Xlib, including:
          (base32
           "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7"))
         (patches
-         (search-patches "xorg-server-CVE-2017-10971.patch"
-                         "xorg-server-CVE-2017-10972.patch"))))
+         (cons
+          ;; See:
+          ;;   https://lists.fedoraproject.org/archives/list/devel@lists.
+          ;;      fedoraproject.org/message/JU655YB7AM4OOEQ4MOMCRHJTYJ76VFOK/
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "http://pkgs.fedoraproject.org/cgit/rpms/xorg-x11-server.git"
+                  "/plain/06_use-intel-only-on-pre-gen4.diff"))
+            (sha256
+             (base32
+              "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
+            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))
+          (search-patches "xorg-server-CVE-2017-10971.patch"
+                          "xorg-server-CVE-2017-10972.patch")))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
@@ -5881,7 +5899,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
@@ -5889,7 +5907,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0fgdddhafxnpjlw5nhfyfyimxp43hdn4yhp1vbsjrz3ypfsfhxq7"))))
+         "0a5ffs6gm7j7vzqdbhfmjn9z8qxm9m9as7a1vjmjx63yxv9jqihn"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg", ffmpeg)
               ("flac", flac)
@@ -5970,3 +5988,96 @@ disconnect from these programs and reconnect from the same or another machine,
 without losing any state.  It can also be used to forward full desktops from
 X11 servers, Windows, or macOS.")
     (license license:gpl2+)))
+
+(define-public uim
+  (package
+    (name "uim")
+    (version "1.8.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/uim/uim/releases/download/uim-"
+                           version "/uim-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0pr3rfqpxha8p6cxzdjsxbbmmr76riklzw36f68phd1zqw1sh7kv"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("anthy" ,anthy)
+       ("libedit" ,libedit)
+       ("libxft" ,libxft)
+       ("m17n-lib" ,m17n-lib)))
+    (native-inputs
+     `(("emacs" ,emacs-minimal)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:configure-flags
+       (list "--with-anthy-utf8"
+             (string-append "--with-lispdir=" %output
+                            "/share/emacs/site-lisp/guix.d")
+             ;; Set proper runpath
+             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Set path of uim-el-agent and uim-el-helper-agent executables
+         (add-after 'configure 'configure-uim-el
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "emacs/uim-var.el"
+               (("\"(uim-el-agent|uim-el-helper-agent)\"" _ executable)
+                (string-append "\"" (assoc-ref outputs "out")
+                               "/bin/" executable "\"")))
+             #t))
+         ;; Generate emacs autoloads for uim.el
+         (add-after 'install 'make-autoloads
+           (lambda* (#:key outputs #:allow-other-keys)
+             (emacs-generate-autoloads
+              ,name (string-append (assoc-ref outputs "out")
+                                   "/share/emacs/site-lisp"))
+             #t)))))
+    (home-page "https://github.com/uim/uim")
+    (synopsis "Multilingual input method framework")
+    (description "Uim is a multilingual input method library and environment.
+It provides a simple, easily extensible and high code-quality input method
+development platform, and useful input method environment for users of desktop
+and embedded platforms.")
+    (license (list license:lgpl2.1+ ; scm/py.scm, pixmaps/*.{svg,png} (see pixmaps/README)
+                   license:gpl2+ ; scm/pinyin-big5.scm
+                   license:gpl3+ ; scm/elatin-rules.cm
+                   license:public-domain ; scm/input-parse.scm, scm/match.scm
+                   ;; gtk2/toolbar/eggtrayicon.{ch},
+                   ;; qt3/chardict/kseparator.{cpp,h},
+                   ;; qt3/pref/kseparator.{cpp,h}
+                   license:lgpl2.0+
+                   ;; pixmaps/*.{svg,png} (see pixmaps/README),
+                   ;; all other files
+                   license:bsd-3))))
+
+(define-public uim-gtk
+  (package
+    (inherit uim)
+    (name "uim-gtk")
+    (inputs
+     `(("gtk" ,gtk+)
+       ("gtk" ,gtk+-2)
+       ,@(package-inputs uim)))
+    (synopsis "Multilingual input method framework (GTK+ support)")))
+
+(define-public uim-qt
+  (package
+    (inherit uim)
+    (name "uim-qt")
+    (inputs
+     `(("qt" ,qt-4)
+       ,@(package-inputs uim)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments uim)
+       ((#:configure-flags configure-flags)
+        (append configure-flags (list "--with-qt4-immodule"
+                                      "--with-qt4")))))
+    (synopsis "Multilingual input method framework (Qt support)")))

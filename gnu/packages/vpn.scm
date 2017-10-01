@@ -153,7 +153,7 @@ and probably others.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.4.3")
+    (version "2.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -161,14 +161,15 @@ and probably others.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1yrnvvnap2ghqas10l8jfg3njx57b8swh3n9wyp556qqgz4mzq8m"))))
+                "102an395nv8l7qfx3syydzhmd9xfbycd6gvwy0h2kjz8w67ipkcn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))
     (native-inputs
      `(("iproute2" ,iproute)))
     (inputs
-     `(("lzo" ,lzo)
+     `(("lz4" ,lz4)
+       ("lzo" ,lzo)
        ("openssl" ,openssl)
        ("linux-pam" ,linux-pam)))
     (home-page "https://openvpn.net/")

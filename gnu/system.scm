@@ -54,6 +54,7 @@
   #:use-module (gnu system locale)
   #:use-module (gnu system pam)
   #:use-module (gnu system linux-initrd)
+  #:use-module (gnu system uuid)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
   #:use-module (ice-9 match)
@@ -128,7 +129,14 @@
 (define (bootable-kernel-arguments kernel-arguments system.drv root-device)
   "Prepend extra arguments to KERNEL-ARGUMENTS that allow SYSTEM.DRV to be
 booted from ROOT-DEVICE"
-  (cons* (string-append "--root=" root-device)
+  (cons* (string-append "--root="
+                        (if (uuid? root-device)
+
+                            ;; Note: Always use the DCE format because that's
+                            ;; what (gnu build linux-boot) expects for the
+                            ;; '--root' kernel command-line option.
+                            (uuid->string (uuid-bytevector root-device) 'dce)
+                            root-device))
          #~(string-append "--system=" #$system.drv)
          #~(string-append "--load=" #$system.drv "/boot")
          kernel-arguments))
@@ -226,6 +234,20 @@ directly by the user."
 (define (read-boot-parameters port)
   "Read boot parameters from PORT and return the corresponding
 <boot-parameters> object or #f if the format is unrecognized."
+  (define device-sexp->device
+    (match-lambda
+      (('uuid (? symbol? type) (? bytevector? bv))
+       (bytevector->uuid bv type))
+      ((? bytevector? bv)                         ;old format
+       (bytevector->uuid bv 'dce))
+      ((? string? device)
+       device)))
+
+  (define (ensure-not-/dev device)
+    (if (and (string? device) (string-prefix? "/" device))
+        #f
+        device))
+
   (match (read port)
     (('boot-parameters ('version 0)
                        ('label label) ('root-device root)
@@ -233,7 +255,7 @@ directly by the user."
                        rest ...)
      (boot-parameters
       (label label)
-      (root-device root)
+      (root-device (device-sexp->device root))
 
       (bootloader-name
        (match (assq 'bootloader-name rest)
@@ -260,15 +282,16 @@ directly by the user."
           file)))
 
       (store-device
-       (match (assq 'store rest)
-         (('store ('device device) _ ...)
-          device)
-         (_                                       ;the old format
-          ;; Root might be a device path like "/dev/sda1", which is not a
-          ;; suitable GRUB device identifier.
-          (if (string-prefix? "/" root)
-              #f
-              root))))
+       ;; Linux device names like "/dev/sda1" are not suitable GRUB device
+       ;; identifiers, so we just filter them out.
+       (ensure-not-/dev
+        (match (assq 'store rest)
+          (('store ('device #f) _ ...)
+           root-device)
+          (('store ('device device) _ ...)
+           (device-sexp->device device))
+          (_                                      ;the old format
+           root-device))))
 
       (store-mount-point
        (match (assq 'store rest)
@@ -289,16 +312,12 @@ The object has its kernel-arguments extended in order to make it bootable."
   (let* ((file (string-append system "/parameters"))
          (params (call-with-input-file file read-boot-parameters))
          (root (boot-parameters-root-device params))
-         (root-device (if (bytevector? root)
-                          (uuid->string root)
-                          root))
          (kernel-arguments (boot-parameters-kernel-arguments params)))
     (if params
       (boot-parameters
         (inherit params)
         (kernel-arguments (bootable-kernel-arguments kernel-arguments
-                                                     system
-                                                     root-device)))
+                                                     system root)))
       #f)))
 
 (define (boot-parameters->menu-entry conf)
@@ -597,6 +616,10 @@ fi
 # See <http://bugs.gnu.org/22650>.
 umask 022
 
+# Allow Hunspell-based applications (IceCat, LibreOffice, etc.) to
+# find dictionaries.
+export DICPATH=\"$HOME/.guix-profile/share/hunspell:/run/current-system/profile/share/hunspell\"
+
 # Allow GStreamer-based applications to find plugins.
 export GST_PLUGIN_PATH=\"$HOME/.guix-profile/lib/gstreamer-1.0\"
 
@@ -629,6 +652,11 @@ fi\n")))
        ("bashrc" ,#~#$bashrc)
        ("hosts" ,#~#$(or (operating-system-hosts-file os)
                          (default-/etc/hosts (operating-system-host-name os))))
+       ;; Write the operating-system-host-name to /etc/hostname to prevent
+       ;; NetworkManager from changing the system's hostname when connecting
+       ;; to certain networks.  Some discussion at
+       ;; https://lists.gnu.org/archive/html/help-guix/2017-09/msg00037.html
+       ("hostname" ,(plain-file "hostname" (operating-system-host-name os)))
        ("localtime" ,(file-append tzdata "/share/zoneinfo/"
                                   (operating-system-timezone os)))
        ("sudoers" ,(operating-system-sudoers-file os))))))
@@ -875,9 +903,7 @@ listed in OS.  The C library expects to find it under
   (mlet* %store-monad
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
-       (root-device -> (if (eq? 'uuid (file-system-title root-fs))
-                           (uuid->string (file-system-device root-fs))
-                           (file-system-device root-fs)))
+       (root-device -> (file-system-device root-fs))
        (params (operating-system-boot-parameters os system root-device))
        (entry -> (boot-parameters->menu-entry params))
        (bootloader-conf -> (operating-system-bootloader os)))
@@ -889,8 +915,7 @@ listed in OS.  The C library expects to find it under
   "Given FS, a <file-system> object, return a value suitable for use as the
 device in a <menu-entry>."
   (case (file-system-title fs)
-    ((uuid) (file-system-device fs))
-    ((label) (file-system-device fs))
+    ((uuid label device) (file-system-device fs))
     (else #f)))
 
 (define (operating-system-boot-parameters os system.drv root-device)
@@ -917,6 +942,14 @@ kernel arguments for that derivation to <boot-parameters>."
              (store-device (fs->boot-device store))
              (store-mount-point (file-system-mount-point store))))))
 
+(define (device->sexp device)
+  "Serialize DEVICE as an sexp (really, as an object with a read syntax.)"
+  (match device
+    ((? uuid? uuid)
+     `(uuid ,(uuid-type uuid) ,(uuid-bytevector uuid)))
+    (_
+     device)))
+
 (define* (operating-system-boot-parameters-file os #:optional (system.drv #f))
    "Return a file that describes the boot parameters of OS.  The primary use of
 this file is the reconstruction of GRUB menu entries for old configurations.
@@ -934,15 +967,28 @@ being stored into the \"parameters\" file)."
                  #~(boot-parameters
                     (version 0)
                     (label #$(boot-parameters-label params))
-                    (root-device #$(boot-parameters-root-device params))
+                    (root-device
+                     #$(device->sexp
+                        (boot-parameters-root-device params)))
                     (kernel #$(boot-parameters-kernel params))
                     (kernel-arguments
                      #$(boot-parameters-kernel-arguments params))
                     (initrd #$(boot-parameters-initrd params))
                     (bootloader-name #$(boot-parameters-bootloader-name params))
                     (store
-                     (device #$(boot-parameters-store-device params))
+                     (device
+                      #$(device->sexp (boot-parameters-store-device params)))
                      (mount-point #$(boot-parameters-store-mount-point params))))
                  #:set-load-path? #f)))
+
+(define-gexp-compiler (operating-system-compiler (os <operating-system>)
+                                                 system target)
+  ((store-lift
+    (lambda (store)
+      ;; XXX: This is not super elegant but we can't pass SYSTEM and TARGET to
+      ;; 'operating-system-derivation'.
+      (run-with-store store (operating-system-derivation os)
+                      #:system system
+                      #:target target)))))
 
 ;;; system.scm ends here

@@ -50,7 +50,7 @@
   (let* ((gnu-mirrors
           '(;; This one redirects to a (supposedly) nearby and (supposedly)
             ;; up-to-date mirror.
-            "http://ftpmirror.gnu.org/"
+            "https://ftpmirror.gnu.org/gnu/"
 
             "ftp://ftp.cs.tu-berlin.de/pub/gnu/"
             "ftp://ftp.funet.fi/pub/mirrors/ftp.gnu.org/gnu/"

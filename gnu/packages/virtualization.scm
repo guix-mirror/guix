@@ -72,26 +72,16 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.9.0")
+    (version "2.10.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
+             (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
-             (patches (search-patches "qemu-CVE-2017-7493.patch"
-                                      "qemu-CVE-2017-8112.patch"
-                                      "qemu-CVE-2017-8309.patch"
-                                      "qemu-CVE-2017-8379.patch"
-                                      "qemu-CVE-2017-8380.patch"
-                                      "qemu-CVE-2017-9524.patch"
-                                      "qemu-CVE-2017-10664.patch"
-                                      "qemu-CVE-2017-10806.patch"
-                                      "qemu-CVE-2017-10911.patch"
-                                      "qemu-CVE-2017-11334.patch"
-                                      "qemu-CVE-2017-11434.patch"
-                                      "qemu-CVE-2017-12809.patch"))
+             (patches (search-patches "qemu-CVE-2017-13711.patch"
+                                      "qemu-CVE-2017-14167.patch"))
              (sha256
               (base32
-               "08mhfs0ndbkyqgw7fjaa9vjxf4dinrly656f6hjzvmaz7hzc677h"))))
+               "0dgk7zcni41nf1jp84y0m6dk2nb4frnh571m8hkiv0m4hz4imn2m"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -323,14 +313,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "3.6.0")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0gcyql5dp6j370kvik9hjhxirrg89m7l1q52yq0g75h7jpv9fb1s"))))
+                "1fk75cdzg59y9hnfdpdwv83fsc1yffy3lac4ch19zygfkqhcnysf"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -377,7 +367,6 @@ manage system or application containers.")
        ("gnutls" ,gnutls)
        ("dbus" ,dbus)
        ("qemu" ,qemu)
-       ("polkit" ,polkit)
        ("libpcap" ,libpcap)
        ("libnl" ,libnl)
        ("libuuid" ,util-linux)
@@ -385,8 +374,6 @@ manage system or application containers.")
        ("curl" ,curl)
        ("openssl" ,openssl)
        ("cyrus-sasl" ,cyrus-sasl)
-       ("perl" ,perl)
-       ("python" ,python-2)
        ("libyajl" ,libyajl)
        ("audit" ,audit)
        ("dmidecode" ,dmidecode)
@@ -395,7 +382,11 @@ manage system or application containers.")
        ("iproute" ,iproute)
        ("iptables" ,iptables)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("xsltproc" ,libxslt)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("polkit" ,polkit)
+       ("python" ,python-2)))
     (home-page "https://libvirt.org")
     (synopsis "Simple API for virtualization")
     (description "Libvirt is a C toolkit to interact with the virtualization
@@ -438,7 +429,7 @@ to integrate other virtualization mechanisms if needed.")
        ("intltool" ,intltool)
        ("glib" ,glib "bin")
        ("vala" ,vala)))
-    (home-page "http://libvirt.org")
+    (home-page "https://libvirt.org")
     (synopsis "GLib wrapper around libvirt")
     (description "libvirt-glib wraps the libvirt library to provide a
 high-level object-oriented API better suited for glib-based applications, via
@@ -455,13 +446,13 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "3.4.0")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libvirt-python" version))
               (sha256
                (base32
-                "04dma3979171p9yf0cg7m03shk038hc9vyfm9lb8z60qyn0pg9xg"))))
+                "0vy0ai8z88yhzqfk1n08z1gda5flrqxcw9lg1012b3zg125qljhy"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -481,7 +472,7 @@ three libraries:
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-nose" ,python-nose)))
-    (home-page "http://libvirt.org")
+    (home-page "https://libvirt.org")
     (synopsis "Python bindings to libvirt")
     (description "This package provides Python bindings to the libvirt
 virtualization library.")
@@ -493,7 +484,7 @@ virtualization library.")
 (define-public virt-manager
   (package
     (name "virt-manager")
-    (version "1.4.2")
+    (version "1.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://virt-manager.org/download/sources"
@@ -501,7 +492,7 @@ virtualization library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0x6mnqw8bng3r69pvmnq9q6yyhicxg22yz62b6dzbb4z16xl1r23"))))
+                "093azs8p4p7y4nf5j25xpsvdxww7gky1g0hs8mkcvmpxl2wjd0jj"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2

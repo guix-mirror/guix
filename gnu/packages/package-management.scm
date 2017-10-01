@@ -79,8 +79,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.13.0")
-        (commit "228a3982df157847554abc9d0831d687264d8ebd")
-        (revision 5))
+        (commit "a9468b422b6df2349a3f4d1451c9302c3d77011b")
+        (revision 6))
     (package
       (name "guix")
 
@@ -96,7 +96,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1gnc1w9kby7db9jih4xwrhrv0j57zy09lmr85gbmcqna6bx3wypw"))
+                  "0bv323yp657x0a2aa2z5pp5541hjqmn908kh9jqlbdw5gpx9vg3d"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -293,10 +293,11 @@ generated file."
      #t)))
 
 (define-public current-guix
-  (let ((select? (delay (or (git-predicate
-                             (string-append (current-source-directory)
-                                            "/../.."))
-                            source-file?))))
+  (let* ((repository-root (canonicalize-path
+                           (string-append (current-source-directory)
+                                          "/../..")))
+         (select? (delay (or (git-predicate repository-root)
+                             source-file?))))
     (lambda ()
       "Return a package representing Guix built from the current source tree.
 This works by adding the current source tree to the store (after filtering it
@@ -304,7 +305,7 @@ out) and returning a package that uses that as its 'source'."
       (package
         (inherit guix)
         (version (string-append (package-version guix) "+"))
-        (source (local-file "../.." "guix-current"
+        (source (local-file repository-root "guix-current"
                             #:recursive? #t
                             #:select? (force select?)))))))
 
@@ -518,7 +519,7 @@ transactions from C or Python.")
               ("python-libarchive-c" ,python-libarchive-c)
               ("python-tlsh" ,python-tlsh)
               ("colordiff" ,colordiff)
-              ("xxd" ,vim)
+              ("xxd" ,xxd)
 
               ;; Below are modules used for tests.
               ("python-pytest" ,python-pytest)

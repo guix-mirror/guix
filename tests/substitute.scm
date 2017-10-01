@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +28,9 @@
   #:use-module (guix base32)
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module ((guix ui) #:select (guix-warning-port))
-  #:use-module ((guix build utils) #:select (delete-file-recursively))
+  #:use-module ((guix build utils)
+                #:select (mkdir-p delete-file-recursively))
+  #:use-module (guix tests http)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (web uri)
@@ -112,6 +114,15 @@ version identifier.."
 
 
 
+(define %main-substitute-directory
+  ;; The place where 'call-with-narinfo' stores its data by default.
+  (uri-path (string->uri (getenv "GUIX_BINARY_SUBSTITUTE_URL"))))
+
+(define %alternate-substitute-directory
+  ;; Another place.
+  (string-append (dirname %main-substitute-directory)
+                 "/substituter-alt-data"))
+
 (define %narinfo
   ;; Skeleton of the narinfo used below.
   (string-append "StorePath: " (%store-prefix)
@@ -125,14 +136,14 @@ References: bar baz
 Deriver: " (%store-prefix) "/foo.drv
 System: mips64el-linux\n"))
 
-(define (call-with-narinfo narinfo thunk)
-  "Call THUNK in a context where $GUIX_BINARY_SUBSTITUTE_URL is populated with
+(define* (call-with-narinfo narinfo thunk
+                            #:optional
+                            (narinfo-directory %main-substitute-directory))
+  "Call THUNK in a context where the directory at URL is populated with
 a file for NARINFO."
-  (let ((narinfo-directory (and=> (string->uri (getenv
-                                                "GUIX_BINARY_SUBSTITUTE_URL"))
-                                  uri-path))
-        (cache-directory   (string-append (getenv "XDG_CACHE_HOME")
-                                          "/guix/substitute/")))
+  (mkdir-p narinfo-directory)
+  (let ((cache-directory (string-append (getenv "XDG_CACHE_HOME")
+                                        "/guix/substitute/")))
     (dynamic-wind
       (lambda ()
         (when (file-exists? cache-directory)
@@ -161,14 +172,17 @@ a file for NARINFO."
               #f))
       thunk
       (lambda ()
-        (delete-file-recursively cache-directory)))))
+        (when (file-exists? cache-directory)
+          (delete-file-recursively cache-directory))))))
 
 (define-syntax-rule (with-narinfo narinfo body ...)
   (call-with-narinfo narinfo (lambda () body ...)))
 
+(define-syntax-rule (with-narinfo* narinfo directory body ...)
+  (call-with-narinfo narinfo (lambda () body ...) directory))
+
 ;; Transmit these options to 'guix substitute'.
-(set! (@@ (guix scripts substitute) %cache-urls)
-  (list (getenv "GUIX_BINARY_SUBSTITUTE_URL")))
+(substitute-urls (list (getenv "GUIX_BINARY_SUBSTITUTE_URL")))
 
 (test-equal "query narinfo without signature"
   ""                                              ; not substitutable
@@ -228,7 +242,7 @@ a file for NARINFO."
              (guix-substitute "--query"))))))))
 
 (test-quit "substitute, no signature"
-    "lacks a signature"
+    "no valid substitute"
   (with-narinfo %narinfo
     (guix-substitute "--substitute"
                      (string-append (%store-prefix)
@@ -236,7 +250,7 @@ a file for NARINFO."
                      "foo")))
 
 (test-quit "substitute, invalid hash"
-    "hash"
+    "no valid substitute"
   ;; The hash in the signature differs from the hash of %NARINFO.
   (with-narinfo (string-append %narinfo "Signature: "
                                (signature-field "different body")
@@ -247,7 +261,7 @@ a file for NARINFO."
                      "foo")))
 
 (test-quit "substitute, unauthorized key"
-    "unauthorized"
+    "no valid substitute"
   (with-narinfo (string-append %narinfo "Signature: "
                                (signature-field
                                 %narinfo
@@ -273,9 +287,158 @@ a file for NARINFO."
       (lambda ()
         (false-if-exception (delete-file "substitute-retrieved"))))))
 
+(test-equal "substitute, unauthorized narinfo comes first"
+  "Substitutable data."
+  (with-narinfo*
+      (string-append %narinfo "Signature: "
+                     (signature-field
+                      %narinfo
+                      #:public-key %wrong-public-key))
+      %alternate-substitute-directory
+
+    (with-narinfo* (string-append %narinfo "Signature: "
+                                  (signature-field %narinfo))
+        %main-substitute-directory
+
+      (dynamic-wind
+        (const #t)
+        (lambda ()
+          ;; Remove this file so that the substitute can only be retrieved
+          ;; from %ALTERNATE-SUBSTITUTE-DIRECTORY.
+          (delete-file (string-append %main-substitute-directory
+                                      "/example.nar"))
+
+          (parameterize ((substitute-urls
+                          (map (cut string-append "file://" <>)
+                               (list %alternate-substitute-directory
+                                     %main-substitute-directory))))
+            (guix-substitute "--substitute"
+                             (string-append (%store-prefix)
+                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                             "substitute-retrieved"))
+          (call-with-input-file "substitute-retrieved" get-string-all))
+        (lambda ()
+          (false-if-exception (delete-file "substitute-retrieved")))))))
+
+(test-equal "substitute, unsigned narinfo comes first"
+  "Substitutable data."
+  (with-narinfo* %narinfo                         ;not signed!
+      %alternate-substitute-directory
+
+    (with-narinfo* (string-append %narinfo "Signature: "
+                                  (signature-field %narinfo))
+        %main-substitute-directory
+
+      (dynamic-wind
+        (const #t)
+        (lambda ()
+          ;; Remove this file so that the substitute can only be retrieved
+          ;; from %ALTERNATE-SUBSTITUTE-DIRECTORY.
+          (delete-file (string-append %main-substitute-directory
+                                      "/example.nar"))
+
+          (parameterize ((substitute-urls
+                          (map (cut string-append "file://" <>)
+                               (list %alternate-substitute-directory
+                                     %main-substitute-directory))))
+            (guix-substitute "--substitute"
+                             (string-append (%store-prefix)
+                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                             "substitute-retrieved"))
+          (call-with-input-file "substitute-retrieved" get-string-all))
+        (lambda ()
+          (false-if-exception (delete-file "substitute-retrieved")))))))
+
+(test-equal "substitute, first narinfo is unsigned and has wrong hash"
+  "Substitutable data."
+  (with-narinfo* (regexp-substitute #f
+                                    (string-match "NarHash: [[:graph:]]+"
+                                                  %narinfo)
+                                    'pre
+                                    "NarHash: sha256:"
+                                    (bytevector->nix-base32-string
+                                     (make-bytevector 32))
+                                    'post)
+      %alternate-substitute-directory
+
+    (with-narinfo* (string-append %narinfo "Signature: "
+                                  (signature-field %narinfo))
+        %main-substitute-directory
+
+      (dynamic-wind
+        (const #t)
+        (lambda ()
+          ;; This time remove the file so that the substitute can only be
+          ;; retrieved from %MAIN-SUBSTITUTE-DIRECTORY.
+          (delete-file (string-append %alternate-substitute-directory
+                                      "/example.nar"))
+
+          (parameterize ((substitute-urls
+                          (map (cut string-append "file://" <>)
+                               (list %alternate-substitute-directory
+                                     %main-substitute-directory))))
+            (guix-substitute "--substitute"
+                             (string-append (%store-prefix)
+                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                             "substitute-retrieved"))
+          (call-with-input-file "substitute-retrieved" get-string-all))
+        (lambda ()
+          (false-if-exception (delete-file "substitute-retrieved")))))))
+
+(test-equal "substitute, first narinfo is unsigned and has wrong refs"
+  "Substitutable data."
+  (with-narinfo* (regexp-substitute #f
+                                    (string-match "References: ([^\n]+)\n"
+                                                  %narinfo)
+                                    'pre "References: " 1
+                                    " wrong set of references\n"
+                                    'post)
+      %alternate-substitute-directory
+
+    (with-narinfo* (string-append %narinfo "Signature: "
+                                  (signature-field %narinfo))
+        %main-substitute-directory
+
+      (dynamic-wind
+        (const #t)
+        (lambda ()
+          ;; This time remove the file so that the substitute can only be
+          ;; retrieved from %MAIN-SUBSTITUTE-DIRECTORY.
+          (delete-file (string-append %alternate-substitute-directory
+                                      "/example.nar"))
+
+          (parameterize ((substitute-urls
+                          (map (cut string-append "file://" <>)
+                               (list %alternate-substitute-directory
+                                     %main-substitute-directory))))
+            (guix-substitute "--substitute"
+                             (string-append (%store-prefix)
+                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                             "substitute-retrieved"))
+          (call-with-input-file "substitute-retrieved" get-string-all))
+        (lambda ()
+          (false-if-exception (delete-file "substitute-retrieved")))))))
+
+(test-quit "substitute, two invalid narinfos"
+    "no valid substitute"
+  (with-narinfo* %narinfo                         ;not signed
+      %alternate-substitute-directory
+
+    (with-narinfo* (string-append %narinfo "Signature: " ;unauthorized
+                                  (signature-field
+                                   %narinfo
+                                   #:public-key %wrong-public-key))
+        %main-substitute-directory
+
+      (guix-substitute "--substitute"
+                       (string-append (%store-prefix)
+                                      "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                       "substitute-retrieved"))))
+
 (test-end "substitute")
 
 ;;; Local Variables:
 ;;; eval: (put 'with-narinfo 'scheme-indent-function 1)
+;;; eval: (put 'with-narinfo* 'scheme-indent-function 2)
 ;;; eval: (put 'test-quit 'scheme-indent-function 2)
 ;;; End:

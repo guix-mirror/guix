@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -215,3 +215,7 @@ EOF
 # In both cases 'my-torrc' should be properly resolved.
 guix system build "$tmpdir/config.scm" -n
 (cd "$tmpdir"; guix system build "config.scm" -n)
+
+# Searching.
+guix system search tor | grep "^name: tor"
+guix system search anonym network | grep "^name: tor"

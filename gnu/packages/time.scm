@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,9 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
+  #:use-module (gnu packages python))
 
 (define-public time
   (package
@@ -55,3 +58,57 @@
 program uses.  The display output of the program can be customized or saved
 to a file.")
     (license gpl2+)))
+
+(define-public python-pytzdata
+  (package
+    (name "python-pytzdata")
+    (version "2017.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytzdata" version))
+       (sha256
+        (base32
+         "1c1az8spm2d3km6qhjy69y4dlj71p6984l48mizr83nh4f0ipld4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/sdispater/pytzdata")
+    (synopsis "Timezone database for Python")
+    (description
+     "This library provides a timezone database for Python.")
+    (license expat)))
+
+(define-public python2-tzdata
+  (package-with-python2 python-pytzdata))
+
+(define-public python-pendulum
+  (package
+    (name "python-pendulum")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pendulum" version))
+       (sha256
+        (base32
+         "1fj36yxi2f4lzchzd8ny1qjl67dbypnk0gn8qwad2w78579m8m8z"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-pytzdata" ,python-pytzdata)
+       ("python-tzlocal" ,python-tzlocal)))
+    (home-page "https://github.com/sdispater/pendulum")
+    (synopsis "Alternate API for Python datetimes")
+    (description "Pendulum is a drop-in replacement for the standard
+@{datetime} class, providing an alternative API.  As it inherits from the
+standard @code{datetime} all @code{datetime} instances can be replaced by
+Pendulum instances.")
+    (license expat)))
+
+(define-public python2-pendulum
+  (package-with-python2 python-pendulum))

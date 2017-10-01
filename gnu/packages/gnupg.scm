@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
@@ -32,7 +32,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages adns)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pth)
@@ -53,6 +56,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python))
 
 (define-public libgpg-error
@@ -81,6 +85,7 @@ Daemon and possibly more in the future.")
 
 (define-public libgcrypt
   (package
+    (replacement libgcrypt/fixed)
     (name "libgcrypt")
     (version "1.7.8")
     (source (origin
@@ -114,6 +119,18 @@ generation.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
+
+(define libgcrypt/fixed
+  (package
+    (inherit libgcrypt)
+    (version "1.8.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1cvqd9jk5qshbh48yh3ixw4zyr4n5k50r3475rrh20xfn7w7aa3s"))))))
 
 (define-public libassuan
   (package
@@ -203,14 +220,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.23")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0xqd5nm4j3w9lwk35vg57gl2i8bfkmx7d24i44gkbscm2lwpci59"))))
+                "1yv2pwf3vhv9dpbf51fnm0wy03va1cg5r7qaz7rg75cwbgb0rmrl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -232,7 +249,8 @@ compatible to GNU Pth.")
     `(#:configure-flags '(;; Otherwise, the test suite looks for the `gpg`
                           ;; executable in its installation directory in
                           ;; /gnu/store before it has been installed.
-                          "--enable-gnupg-builddir-envvar")
+                          "--enable-gnupg-builddir-envvar"
+                          "--enable-all-tests")
       #:phases
       (modify-phases %standard-phases
         (add-before 'configure 'patch-paths
@@ -249,26 +267,18 @@ compatible to GNU Pth.")
                (string-append (getcwd) "/tests/gpgscm/gpgscm")))
             #t))
         (add-before 'build 'patch-test-paths
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let* ((coreutils (assoc-ref inputs "coreutils"))
-                   (cat (string-append coreutils "/bin/cat"))
-                   (pwd (string-append coreutils "/bin/pwd"))
-                   (true (string-append coreutils "/bin/true"))
-                   (false (string-append coreutils "/bin/false")))
-              (substitute* '("tests/inittests"
-                             "tests/pkits/inittests"
-                             "tests/Makefile"
-                             "tests/pkits/common.sh"
-                             "tests/pkits/Makefile"
-                            )
-               (("/bin/pwd") pwd))
-              (substitute* "common/t-exectool.c"
-                (("/bin/cat") cat))
-              (substitute* "common/t-exectool.c"
-                (("/bin/true") true))
-              (substitute* "common/t-exectool.c"
-                (("/bin/false") false))
-              #t))))))
+          (lambda _
+            (substitute* '("tests/inittests"
+                           "tests/pkits/inittests"
+                           "tests/Makefile"
+                           "tests/pkits/common.sh"
+                           "tests/pkits/Makefile")
+             (("/bin/pwd") (which "pwd")))
+            (substitute* "common/t-exectool.c"
+              (("/bin/cat") (which "cat"))
+              (("/bin/true") (which "true"))
+              (("/bin/false") (which "false")))
+            #t)))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
@@ -529,6 +539,43 @@ and signature functionality from Python programs.")
 (define-public python2-gnupg
   (package-with-python2 python-gnupg))
 
+(define-public perl-gnupg-interface
+  (package
+    (name "perl-gnupg-interface")
+    (version "0.52")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AL/ALEXMV/GnuPG-Interface-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0dgx8yhdsmhkazcrz14n4flrk1afv7azgl003hl4arxvi1d9yyi4"))))
+    (build-system perl-build-system)
+    (arguments
+     '(;; Result: FAIL
+       ;; Failed 10/20 test programs. 21/52 subtests failed.
+       #:tests? #f))
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)
+       ("which" ,which)))
+    (inputs
+     `(("gnupg" ,gnupg)))
+    (propagated-inputs
+     `(("perl-moo" ,perl-moo)
+       ("perl-moox-late" ,perl-moox-late)
+       ("perl-moox-handlesvia" ,perl-moox-handlesvia)))
+    (home-page "http://search.cpan.org/~alexmv/GnuPG-Interface/")
+    (synopsis "Perl interface to GnuPG")
+    (description
+     "@code{GnuPG::Interface} and its associated modules are designed to
+provide an object-oriented method for interacting with GnuPG, being able to
+perform functions such as but not limited to encrypting, signing, decryption,
+verification, and key-listing parsing.")
+    (license license:perl-license)))
+
 (define-public pius
   (package
    (name "pius")
@@ -573,38 +620,48 @@ PGP keysigning parties.")
 (define-public signing-party
   (package
    (name "signing-party")
-   (version "1.1.4")
+   (version "2.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://debian/pool/main/s/signing-party/"
                                 "signing-party_" version ".orig.tar.gz"))
             (sha256 (base32
-                     "188gp0prbh8qs29lq3pbf0qibfd6jq4fk7i0pfrybl8aahvm84rx"))))
+                     "1n5bpcfpl9vg1xp6r1jhbyahrgdyxp05b5pria1rh4m0qnv8sifr"))))
    (build-system gnu-build-system)
-   (inputs `(("perl" ,perl)))
+   (native-inputs
+    `(("autoconf" ,(autoconf-wrapper))
+      ("automake" ,automake)))
+   (inputs `(("perl" ,perl)
+             ("perl-text-template" ,perl-text-template)
+             ("perl-mime-tools" ,perl-mime-tools)
+             ("perl-gnupg-interface" ,perl-gnupg-interface)
+             ("perl-net-idn-encode" ,perl-net-idn-encode)
+             ("libmd" ,libmd)))
    (arguments
     `(#:tests? #f
       #:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'remove-spurious-links
-          (lambda _ (delete-file "keyanalyze/pgpring/depcomp")))
+        (add-before 'configure 'change-directory
+          (lambda _
+            ;; The build system in the unpack phase changes to a less useful
+            ;; subdirectory, so move up one level
+            (chdir (dirname (getcwd)))))
         (replace 'configure
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (substitute* "keyanalyze/Makefile"
                 (("LDLIBS") (string-append "CC=" (which "gcc") "\nLDLIBS")))
               (substitute* "keyanalyze/Makefile"
-                (("./configure") (string-append "./configure --prefix=" out)))
-              (substitute* "keyanalyze/pgpring/configure"
-                (("/bin/sh") (which "sh")))
-              (substitute* "gpgwrap/Makefile"
+                (("\\./configure") (string-append "./configure --prefix=" out)))
+              (substitute* "gpgwrap/src/Makefile"
                 (("\\} clean")
                  (string-append "} clean\ninstall:\n\tinstall -D bin/gpgwrap "
                                 out "/bin/gpgwrap\n")))
               (substitute* '("gpgsigs/Makefile" "keyanalyze/Makefile"
                              "keylookup/Makefile" "sig2dot/Makefile"
                              "springgraph/Makefile")
-                           (("/usr") out)))))
+                (("/usr") out))
+              (setenv "CONFIG_SHELL" (which "sh")))))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys #:rest args)
             (let ((out (assoc-ref outputs "out"))
@@ -629,7 +686,13 @@ PGP keysigning parties.")
                 '("caff.1" "pgp-clean.1" "pgp-fixkey.1" "gpgdir.1"
                   "gpg-key2ps.1" "gpglist.1" "gpg-mailkeys.1"
                   "gpgparticipants.1" "gpgsigs.1" "gpgwrap.1"
-                  "process_keys.1" "pgpring.1" "keyanalyze.1"))))))))
+                  "process_keys.1" "pgpring.1" "keyanalyze.1")))))
+        (add-after 'install 'wrap-programs
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out")))
+              (wrap-program
+                  (string-append out "/bin/caff")
+                `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB"))))))))))
    (synopsis "Collection of scripts for simplifying gnupg key signing")
    (description
     "Signing-party is a collection for all kinds of PGP/GnuPG related things,
@@ -759,3 +822,31 @@ qualities.  To reconstruct a secret key, you re-enter those
 bytes (whether by hand, OCR, QR code, or the like) and paperkey can use
 them to transform your existing public key into a secret key.")
     (license license:gpl2+)))
+
+(define-public gpa
+  (package
+    (name "gpa")
+    (version "0.9.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/gpa/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "09xphbi2456qynwqq5n0yh0zdmdi2ggrj3wk4hsyh5lrzlvcrff3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gnupg" ,gnupg)
+       ("gpgme" ,gpgme)
+       ("libassuan" ,libassuan)
+       ("libgpg-error" ,libgpg-error)
+       ("gtk+-2" ,gtk+-2)))
+    (home-page "https://gnupg.org/software/gpa/")
+    (synopsis "Graphical user interface for GnuPG")
+    (description
+     "GPA, the GNU Privacy Assistant, is a graphical user interface for
+@uref{https://gnupg.org, GnuPG}.  It can be used to encrypt, decrypt, and sign
+files, to verify signatures, and to manage the private and public keys.")
+    (license license:gpl3+)))

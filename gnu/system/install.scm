@@ -31,6 +31,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bootloaders)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages disk)
@@ -214,6 +215,9 @@ You have been warned.  Thanks for being so brave.
                                                 (auto-login "root")
                                                 (login-pause? #t))))
 
+    (define bare-bones-os
+      (load "examples/bare-bones.tmpl"))
+
     (list (mingetty-service (mingetty-configuration
                              (tty "tty1")
                              (auto-login "root")))
@@ -283,7 +287,11 @@ You have been warned.  Thanks for being so brave.
           ;; connections to this system to work.
           (service special-files-service-type
                    `(("/bin/sh" ,(file-append (canonical-package bash)
-                                              "/bin/sh")))))))
+                                              "/bin/sh"))))
+
+          ;; Keep a reference to BARE-BONES-OS to make sure it can be
+          ;; installed without downloading/building anything.
+          (service gc-root-service-type (list bare-bones-os)))))
 
 (define %issue
   ;; Greeting.
@@ -337,9 +345,9 @@ Use Alt-F2 for documentation.
     (issue %issue)
     (services %installation-services)
 
-    ;; We don't need setuid programs so pass the empty list so we don't pull
-    ;; additional programs here.
-    (setuid-programs '())
+    ;; We don't need setuid programs, except for 'passwd', which can be handy
+    ;; if one is to allow remote SSH login to the machine being installed.
+    (setuid-programs (list (file-append shadow "/bin/passwd")))
 
     (pam-services
      ;; Explicitly allow for empty passwords.
@@ -352,6 +360,7 @@ Use Alt-F2 for documentation.
                      mdadm
                      dosfstools         ;mkfs.fat, for the UEFI boot partition
                      btrfs-progs
+                     openssh    ;we already have sshd, having ssh/scp can help
                      wireless-tools iw wpa-supplicant-minimal iproute
                      ;; XXX: We used to have GNU fdisk here, but as of version
                      ;; 2.0.0a, that pulls Guile 1.8, which takes unreasonable

@@ -19,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu build file-systems)
+  #:use-module (gnu system uuid)
   #:use-module (guix build utils)
   #:use-module (guix build bournish)
   #:use-module (guix build syscalls)
@@ -26,8 +27,6 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
-  #:use-module (ice-9 format)
-  #:use-module (ice-9 regex)
   #:use-module (system foreign)
   #:autoload   (system repl repl) (start-repl)
   #:use-module (srfi srfi-1)
@@ -40,15 +39,6 @@
             find-partition-by-uuid
             find-partition-by-luks-uuid
             canonicalize-device-spec
-
-            uuid->string
-            string->uuid
-            string->iso9660-uuid
-            string->ext2-uuid
-            string->ext3-uuid
-            string->ext4-uuid
-            string->btrfs-uuid
-            iso9660-uuid->string
 
             bind-mount
 
@@ -94,20 +84,6 @@ takes a bytevector and returns #t when it's a valid superblock."
                 (and (= len (bytevector-length block))
                      (and (magic? block)
                           block)))))))))
-
-(define (sub-bytevector bv start size)
-  "Return a copy of the SIZE bytes of BV starting from offset START."
-  (let ((result (make-bytevector size)))
-    (bytevector-copy! bv start result 0 size)
-    result))
-
-(define (latin1->string bv terminator)
-  "Return a string of BV, a latin1 bytevector, or #f.  TERMINATOR is a predicate
-that takes a number and returns #t when a termination character is found."
-    (let ((bytes (take-while (negate terminator) (bytevector->u8-list bv))))
-      (if (null? bytes)
-          #f
-          (list->string (map integer->char bytes)))))
 
 (define null-terminated-latin1->string
   (cut latin1->string <> zero?))
@@ -196,10 +172,6 @@ if DEVICE does not contain a btrfs file system."
 
 ;; <http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-107.pdf>.
 
-(define-syntax %fat32-endianness
-  ;; Endianness of fat file systems.
-  (identifier-syntax (endianness little)))
-
 (define (fat32-superblock? sblock)
   "Return #t when SBLOCK is a fat32 superblock."
   (bytevector=? (sub-bytevector sblock 82 8)
@@ -213,12 +185,6 @@ if DEVICE does not contain a btrfs file system."
 (define (fat32-superblock-uuid sblock)
   "Return the Volume ID of a fat superblock SBLOCK as a 4-byte bytevector."
   (sub-bytevector sblock 67 4))
-
-(define (fat32-uuid->string uuid)
-  "Convert fat32 UUID, a 4-byte bytevector, to its string representation."
-  (let ((high  (bytevector-uint-ref uuid 0 %fat32-endianness 2))
-        (low (bytevector-uint-ref uuid 2 %fat32-endianness 2)))
-    (format #f "~:@(~x-~x~)" low high)))
 
 (define (fat32-superblock-volume-name sblock)
   "Return the volume name of SBLOCK as a string of at most 11 characters, or
@@ -240,27 +206,6 @@ Trailing spaces are trimmed."
 ;;;
 
 ;; <http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-119.pdf>.
-
-(define %iso9660-uuid-rx
-  ;;                   Y                m                d                H                M                S                ss
-  (make-regexp "^([[:digit:]]{4})-([[:digit:]]{2})-([[:digit:]]{2})-([[:digit:]]{2})-([[:digit:]]{2})-([[:digit:]]{2})-([[:digit:]]{2})$"))
-
-(define (string->iso9660-uuid str)
-  "Parse STR as a ISO9660 UUID (which is really a timestamp - see /dev/disk/by-uuid).
-Return its contents as a 16-byte bytevector.  Return #f if STR is not a valid
-ISO9660 UUID representation."
-  (and=> (regexp-exec %iso9660-uuid-rx str)
-         (lambda (match)
-           (letrec-syntax ((match-numerals
-                            (syntax-rules ()
-                              ((_ index (name rest ...) body)
-                               (let ((name (match:substring match index)))
-                                 (match-numerals (+ 1 index) (rest ...) body)))
-                              ((_ index () body)
-                               body))))
-            (match-numerals 1 (year month day hour minute second hundredths)
-              (string->utf8 (string-append year month day
-                                           hour minute second hundredths)))))))
 
 (define (iso9660-superblock? sblock)
   "Return #t when SBLOCK is an iso9660 volume descriptor."
@@ -307,20 +252,6 @@ SBLOCK as a bytevector.  If that's not set, returns the creation time."
                    creation-time
                    modification-time)))
     (sub-bytevector time 0 16))) ; strips GMT offset.
-
-(define (iso9660-uuid->string uuid)
-  "Given an UUID bytevector, return its timestamp string."
-  (define (digits->string bytes)
-    (latin1->string bytes (lambda (c) #f)))
-  (let* ((year (sub-bytevector uuid 0 4))
-         (month (sub-bytevector uuid 4 2))
-         (day (sub-bytevector uuid 6 2))
-         (hour (sub-bytevector uuid 8 2))
-         (minute (sub-bytevector uuid 10 2))
-         (second (sub-bytevector uuid 12 2))
-         (hundredths (sub-bytevector uuid 14 2))
-         (parts (list year month day hour minute second hundredths)))
-    (string-append (string-join (map digits->string parts) "-"))))
 
 (define (iso9660-superblock-volume-name sblock)
   "Return the volume name of SBLOCK as a string.  The volume name is an ASCII
@@ -507,65 +438,6 @@ were found."
 
 (define find-partition-by-luks-uuid
   (find-partition luks-partition-uuid-predicate))
-
-
-;;;
-;;; UUIDs.
-;;;
-
-(define-syntax %network-byte-order
-  (identifier-syntax (endianness big)))
-
-(define (uuid->string uuid)
-  "Convert UUID, a 16-byte bytevector, to its string representation, something
-like \"6b700d61-5550-48a1-874c-a3d86998990e\"."
-  ;; See <https://tools.ietf.org/html/rfc4122>.
-  (let ((time-low  (bytevector-uint-ref uuid 0 %network-byte-order 4))
-        (time-mid  (bytevector-uint-ref uuid 4 %network-byte-order 2))
-        (time-hi   (bytevector-uint-ref uuid 6 %network-byte-order 2))
-        (clock-seq (bytevector-uint-ref uuid 8 %network-byte-order 2))
-        (node      (bytevector-uint-ref uuid 10 %network-byte-order 6)))
-    (format #f "~8,'0x-~4,'0x-~4,'0x-~4,'0x-~12,'0x"
-            time-low time-mid time-hi clock-seq node)))
-
-(define %uuid-rx
-  ;; The regexp of a UUID.
-  (make-regexp "^([[:xdigit:]]{8})-([[:xdigit:]]{4})-([[:xdigit:]]{4})-([[:xdigit:]]{4})-([[:xdigit:]]{12})$"))
-
-(define (string->uuid str)
-  "Parse STR as a DCE UUID (see <https://tools.ietf.org/html/rfc4122>) and
-return its contents as a 16-byte bytevector.  Return #f if STR is not a valid
-UUID representation."
-  (and=> (regexp-exec %uuid-rx str)
-         (lambda (match)
-           (letrec-syntax ((hex->number
-                            (syntax-rules ()
-                              ((_ index)
-                               (string->number (match:substring match index)
-                                               16))))
-                           (put!
-                            (syntax-rules ()
-                              ((_ bv index (number len) rest ...)
-                               (begin
-                                 (bytevector-uint-set! bv index number
-                                                       (endianness big) len)
-                                 (put! bv (+ index len) rest ...)))
-                              ((_ bv index)
-                               bv))))
-             (let ((time-low  (hex->number 1))
-                   (time-mid  (hex->number 2))
-                   (time-hi   (hex->number 3))
-                   (clock-seq (hex->number 4))
-                   (node      (hex->number 5))
-                   (uuid      (make-bytevector 16)))
-               (put! uuid 0
-                     (time-low 4) (time-mid 2) (time-hi 2)
-                     (clock-seq 2) (node 6)))))))
-
-(define string->ext2-uuid string->uuid)
-(define string->ext3-uuid string->uuid)
-(define string->ext4-uuid string->uuid)
-(define string->btrfs-uuid string->uuid)
 
 
 (define* (canonicalize-device-spec spec #:optional (title 'any))

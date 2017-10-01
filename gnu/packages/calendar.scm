@@ -1,8 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;;
@@ -55,9 +55,8 @@
     (arguments
      '(#:tests? #f ; test suite appears broken
        #:configure-flags
-       (list (string-append "-DCMAKE_INSTALL_RPATH="
-                            (assoc-ref %outputs "out") "/lib:"
-                            (assoc-ref %outputs "out") "/lib64"))
+       (list (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            (assoc-ref %outputs "out") "/lib"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths

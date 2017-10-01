@@ -72,7 +72,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "3.0.0")
+    (version "3.6.0")
     (source
       (origin
         (method url-fetch)
@@ -81,21 +81,19 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "1zhk7bvgr973dd18x4wp48kzai29qqqi5qcy72sxc4wcbk2sbnkw"))
+          "0vp2nds4b5xbchsh1rpc1q7093gd26dnw7mgbnax97dcchvlc4sc"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
         (snippet
           '(begin
             (delete-file-recursively "src/calibre/ebooks/markdown")
-            (delete-file-recursively "src/unrar")
             (delete-file "src/odf/thumbnail.py")
             (delete-file-recursively "resources/fonts/liberation")
             (substitute* (find-files "." "\\.py")
               (("calibre\\.ebooks\\.markdown") "markdown"))
             #t))
-        (patches (search-patches "calibre-drop-unrar.patch"
-                                 "calibre-use-packaged-feedparser.patch"
+        (patches (search-patches "calibre-use-packaged-feedparser.patch"
                                  "calibre-no-updates-dialog.patch"))))
     (build-system python-build-system)
     (native-inputs
@@ -129,6 +127,7 @@
        ("python2-dbus" ,python2-dbus)
        ("python2-dnspython" ,python2-dnspython)
        ("python2-feedparser" ,python2-feedparser)
+       ("python2-html5-parser" ,python2-html5-parser)
        ("python2-lxml" ,python2-lxml)
        ("python2-markdown" ,python2-markdown)
        ("python2-mechanize" ,python2-mechanize)
@@ -140,6 +139,9 @@
        ("python2-pyqt" ,python2-pyqt)
        ("python2-sip" ,python2-sip)
        ("python2-regex" ,python2-regex)
+       ;; python2-unrardll is needed for decompressing RAR files.
+       ;; A program called 'pdf2html' is needed for reading PDF books
+       ;; in the web interface.
        ("sqlite" ,sqlite)))
     (arguments
      `(#:python ,python-2

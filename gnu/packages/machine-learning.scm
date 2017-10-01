@@ -190,9 +190,9 @@ classification.")
                                  "@unittest.skip(\"Disabled by Guix\")\n"
                                  line)))
                #t))
-           (add-before 'configure 'autogen
+           (add-after 'disable-broken-tests 'autogen
              (lambda _
-               (zero? (system* "bash" "./autogen.sh")))))))
+               (zero? (system* "bash" "autogen.sh")))))))
       (inputs
        `(("python" ,python-2) ; only Python 2 is supported
          ("libxml2" ,libxml2)))
@@ -491,6 +491,8 @@ in terms of new algorithms.")
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (inputs
+     `(("armadillo" ,armadillo)))
     (home-page "http://cran.r-project.org/web/packages/AdaptiveSparsity")
     (synopsis "Adaptive sparsity models")
     (description
@@ -524,14 +526,14 @@ and a QP solver.")
 (define-public dlib
   (package
     (name "dlib")
-    (version "19.3")
+    (version "19.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://dlib.net/files/dlib-" version ".tar.bz2"))
               (sha256
                (base32
-                "0gfy83av717qymv53yv7ki6mgh6mdw4xcxxbjk8lrs72f8qvnrcw"))
+                "1mljz02kwkrbggyncxv5fpnyjdybw2qihaacb3js8yfkw12vwpc2"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -541,7 +543,11 @@ and a QP solver.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:phases
+     ;; Recent releases defaults to "lib64" on 64bit.
+     `(#:configure-flags (list (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-asserts
            (lambda _
@@ -576,7 +582,6 @@ and a QP solver.")
              ;; No test target, so we build and run the unit tests here.
              (let ((test-dir (string-append "../dlib-" ,version "/dlib/test")))
                (with-directory-excursion test-dir
-                 (setenv "CXXFLAGS" "-std=gnu++11")
                  (and (zero? (system* "make" "-j" (number->string (parallel-job-count))))
                       (zero? (system* "./dtest" "--runall")))))))
          (add-after 'install 'delete-static-library

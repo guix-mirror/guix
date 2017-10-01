@@ -22,37 +22,11 @@
   #:use-module (gnu system file-systems)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
-  #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match))
 
 ;; Test the (gnu system file-systems) module.
 
 (test-begin "file-systems")
-
-(test-equal "uuid->string"
-  "c5307e6b-d1ba-499d-89c5-cb0b143577c4"
-  (uuid->string
-   #vu8(197 48 126 107 209 186 73 157 137 197 203 11 20 53 119 196)))
-
-(test-equal "string->uuid"
-  '(16 "4dab5feb-d176-45de-b287-9b0a6e4c01cb")
-  (let ((uuid (string->uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")))
-    (list (bytevector-length uuid) (uuid->string uuid))))
-
-(test-assert "uuid"
-  (let ((str "4dab5feb-d176-45de-b287-9b0a6e4c01cb"))
-    (bytevector=? (uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")
-                  (string->uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb"))))
-
-(test-assert "uuid, syntax error"
-  (catch 'syntax-error
-    (lambda ()
-      (eval '(uuid "foobar") (current-module))
-      #f)
-    (lambda (key proc message location form . args)
-      (and (eq? proc 'uuid)
-           (string-contains message "invalid UUID")
-           (equal? form '(uuid "foobar"))))))
 
 (test-assert "file-system-needed-for-boot?"
   (let-syntax ((dummy-fs (syntax-rules ()

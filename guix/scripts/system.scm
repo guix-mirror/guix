@@ -41,6 +41,7 @@
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system linux-container)
+  #:use-module (gnu system uuid)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
@@ -71,7 +72,6 @@
 (define (read-operating-system file)
   "Read the operating-system declaration from FILE and return it."
   (load* file %user-module))
-
 
 
 ;;;
@@ -530,7 +530,10 @@ list of services."
       ;; TRANSLATORS: Please preserve the two-space indentation.
       (format #t (G_ "  label: ~a~%") label)
       (format #t (G_ "  bootloader: ~a~%") bootloader-name)
-      (format #t (G_ "  root device: ~a~%") root-device)
+      (format #t (G_ "  root device: ~a~%")
+              (if (uuid? root-device)
+                  (uuid->string root-device)
+                  root-device))
       (format #t (G_ "  kernel: ~a~%") kernel))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))
@@ -748,6 +751,8 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "The valid values for ACTION are:\n"))
   (newline)
   (display (G_ "\
+   search           search for existing service types\n"))
+  (display (G_ "\
    reconfigure      switch to a new operating system configuration\n"))
   (display (G_ "\
    roll-back        switch to the previous operating system configuration\n"))
@@ -864,7 +869,6 @@ Some ACTIONS support additional ARGS.\n"))
     (substitutes? . #t)
     (graft? . #t)
     (build-hook? . #t)
-    (max-silent-time . 3600)
     (verbosity . 0)
     (file-system-type . "ext4")
     (image-size . guess)
@@ -934,6 +938,12 @@ resulting from command-line parsing."
                              #:gc-root (assoc-ref opts 'gc-root)))))
         #:system system))))
 
+(define (resolve-subcommand name)
+  (let ((module (resolve-interface
+                 `(guix scripts system ,(string->symbol name))))
+        (proc (string->symbol (string-append "guix-system-" name))))
+    (module-ref module proc)))
+
 (define (process-command command args opts)
   "Process COMMAND, one of the 'guix system' sub-commands.  ARGS is its
 argument list and OPTS is the option alist."
@@ -946,6 +956,8 @@ argument list and OPTS is the option alist."
                       ((pattern) pattern)
                       (x (leave (G_ "wrong number of arguments~%"))))))
        (list-generations pattern)))
+    ((search)
+     (apply (resolve-subcommand "search") args))
     ;; The following commands need to use the store, but they do not need an
     ;; operating system configuration file.
     ((switch-generation)
@@ -975,7 +987,7 @@ argument list and OPTS is the option alist."
           (case action
             ((build container vm vm-image disk-image reconfigure init
               extension-graph shepherd-graph list-generations roll-back
-              switch-generation)
+              switch-generation search)
              (alist-cons 'action action result))
             (else (leave (G_ "~a: unknown action~%") action))))))
 

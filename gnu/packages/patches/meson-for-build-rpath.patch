@@ -1,0 +1,24 @@
+This patch removes a part of meson that clears the rpath upon installation.
+This will only be applied to a special version of meson, used for the
+meson-build-system.
+
+Patch by Peter Mikkelsen <petermikkelsen10@gmail.com>
+
+--- meson-0.42.0/mesonbuild/scripts/meson_install.py.orig	2017-09-09 01:49:39.147374148 +0200
++++ meson-0.42.0/mesonbuild/scripts/meson_install.py	2017-09-09 01:51:01.209134717 +0200
+@@ -345,15 +345,6 @@
+                     print("Symlink creation does not work on this platform. "
+                           "Skipping all symlinking.")
+                     printed_symlink_error = True
+-        if is_elf_platform() and os.path.isfile(outname):
+-            try:
+-                e = depfixer.Elf(outname, False)
+-                e.fix_rpath(install_rpath)
+-            except SystemExit as e:
+-                if isinstance(e.code, int) and e.code == 0:
+-                    pass
+-                else:
+-                    raise
+
+ def run(args):
+     global install_log_file

@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@libertad.pw>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -69,26 +69,33 @@
         (patches (search-patches "quassel-fix-tls-check.patch"))
         (sha256
          (base32
-          "0ka456fb8ha3w7g74xlzfg6w4azxjjxgrhl4aqpbwg3lnd6fbr4k"))))
+          "0ka456fb8ha3w7g74xlzfg6w4azxjjxgrhl4aqpbwg3lnd6fbr4k"))
+        (modules '((guix build utils)))
+        ;; We don't want to install the bundles scripts
+        (snippet
+         '(begin
+            (delete-file-recursively "data/scripts")
+            (substitute* "data/CMakeLists.txt"
+              (("NOT WIN32") "WIN32"))))))
     (build-system cmake-build-system)
     (arguments
       ;; The three binaries are not mutually exlusive, and are all built
       ;; by default.
-     `(#:configure-flags '(;;"-DWANT_QTCLIENT=OFF" ; 5.0 MiB
-                           ;;"-DWANT_CORE=OFF" ; 2.3 MiB
-                           ;;"-DWANT_MONO=OFF" ; 6.3 MiB
+     '(#:configure-flags '(;;"-DWANT_QTCLIENT=OFF" ; 5.2 MiB
+                           ;;"-DWANT_CORE=OFF" ; 2.4 MiB
+                           ;;"-DWANT_MONO=OFF" ; 6.4 MiB
                            "-DUSE_QT5=ON" ; default is qt4
-                           "-DWITH_KDE=OFF" ; no to integration
-                           "-DWITH_OXYGEN=ON" ; on=embed icons
+                           "-DWITH_KDE=OFF" ; no to kde integration ...
+                           "-DWITH_OXYGEN=ON" ; therefore we install bundled icons
                            "-DWITH_WEBKIT=OFF") ; qtwebkit isn't packaged
        #:tests? #f)) ; no test target
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs
+    (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("oxygen-icons" ,oxygen-icons)
-       ("qca" ,qca)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("qca" ,qca)
        ("qtbase", qtbase)
-       ("qttools" ,qttools)
        ("qtscript" ,qtscript)
        ("snorenotify" ,snorenotify)
        ("zlib" ,zlib)))
@@ -143,46 +150,32 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "1.9")
+    (version "1.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1zvxz98krq98y7jh3yrjbardg3yxp6y2031rvb7rp5ssk8lyp1fc"))
+                "1z92hprvgp128svfbr25x8j9kd114j9929bzbqasrcd92v31z6f2"))
               (patches (search-patches "weechat-python.patch"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("pkg-config" ,pkg-config)
-                     ("file" ,file)
-                     ("autogen" ,autogen)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)))
+    (build-system cmake-build-system)
+    (native-inputs `(("gettext" ,gettext-minimal)
+                     ("pkg-config" ,pkg-config)))
     (inputs `(("ncurses" ,ncurses)
-              ("diffutils" ,diffutils)
-              ("gettext" ,gettext-minimal)
-              ("libltdl" ,libltdl)
               ("libgcrypt" ,libgcrypt "out")
               ("zlib" ,zlib)
               ("aspell" ,aspell)
               ("curl" ,curl)
               ("gnutls" ,gnutls)
               ("guile" ,guile-2.0)
-              ("openssl" ,openssl)
-              ("cyrus-sasl" ,cyrus-sasl)
               ("lua" ,lua-5.1)
               ("python" ,python-2)
               ("perl" ,perl)
               ("tcl" ,tcl)))
     (arguments
-     `(#:configure-flags (list (string-append
-                                "--with-tclconfig="
-                                (assoc-ref %build-inputs "tcl") "/lib"))
+     `(#:tests? #f ; tests require cpputime
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'autogen
-                    (lambda _
-                      (zero? (system* "./autogen.sh"))))
                   (add-after 'install 'wrap
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out"))

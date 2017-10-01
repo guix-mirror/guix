@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,6 +21,8 @@
   #:use-module (guix tests)
   #:use-module (guix import utils)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix build-system)
   #:use-module (srfi srfi-64))
 
 (test-begin "import-utils")
@@ -37,5 +39,41 @@
 (test-equal "license->symbol"
   'license:lgpl2.0
   (license->symbol license:lgpl2.0))
+
+(test-assert "alist->package with simple source"
+  (let* ((meta '(("name" . "hello")
+                 ("version" . "2.10")
+                 ("source" . "mirror://gnu/hello/hello-2.10.tar.gz")
+                 ("build-system" . "gnu")
+                 ("home-page" . "https://gnu.org")
+                 ("synopsis" . "Say hi")
+                 ("description" . "This package says hi.")
+                 ("license" . "GPL-3.0+")))
+         (pkg (alist->package meta)))
+    (and (package? pkg)
+         (license:license? (package-license pkg))
+         (build-system? (package-build-system pkg))
+         (origin? (package-source pkg)))))
+
+(test-assert "alist->package with explicit source"
+  (let* ((meta '(("name" . "hello")
+                 ("version" . "2.10")
+                 ("source" . (("method" . "url-fetch")
+                              ("uri"    . "mirror://gnu/hello/hello-2.10.tar.gz")
+                              ("sha256" .
+                               (("base32" .
+                                 "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i")))))
+                 ("build-system" . "gnu")
+                 ("home-page" . "https://gnu.org")
+                 ("synopsis" . "Say hi")
+                 ("description" . "This package says hi.")
+                 ("license" . "GPL-3.0+")))
+         (pkg (alist->package meta)))
+    (and (package? pkg)
+         (license:license? (package-license pkg))
+         (build-system? (package-build-system pkg))
+         (origin? (package-source pkg))
+         (equal? (origin-sha256 (package-source pkg))
+                 (base32 "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i")))))
 
 (test-end "import-utils")

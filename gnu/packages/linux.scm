@@ -367,8 +367,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.12.9")
-(define %linux-libre-hash "1wpsqhaab91l1wdbsxq8pdwrdx3a603zr5zjxbzdsx99pr6iypra")
+(define %linux-libre-version "4.13.4")
+(define %linux-libre-hash "028dww9c6x22mvd0jd87bmibqiz5lrsyynrbzka18gh39sk0v8j7")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -377,22 +377,32 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.45"
-                    "0qdwn2m3iynbjyszkq4hlx891s1b83p9nr1v7vdb20fs4n2cbl9s"
+  (make-linux-libre "4.9.52"
+                    "0zl1z13r4gg6r2sbx8mrif2cnjkjlfrswiap7wzb22jyfnlyj5nb"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.84"
-                    "00lp3471mvwpq5062cynaakjn7bjpylmg1d1wwmhh6fdknd2h1kz"
+  (make-linux-libre "4.4.89"
+                    "1bw1cma8hxcj6wi8znc4nvw1p6dlc1lgciqak6n6ijn53xdd242h"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.43"
-                    "0ycqmvczj7lm7czilnwpyp14n2lzilyx7m43rsq1qdm2m5rp4q2w"
+  (make-linux-libre "4.1.44"
+                    "1h1v2n8fxnn98y0jz9pnr4xdmc0v4l5d3hfxa5n5r3xmjksf1xs3"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches
+                    (list %boot-logo-patch
+                          (origin
+                            (method url-fetch)
+                            (uri "\
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=4a01092a5fa819397484fe2b50e9518356858156")
+                            (file-name "linux-libre-4.4-CVE-2017-1000251.patch")
+                            (sha256
+                             (base32
+                              "0zmkw9zvzpwy2ihiyfrw6mrf8qzv77cm23lxadr20qvzqlc1xzb3"))))))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -683,17 +693,16 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.43.5")
+    (version "1.43.6")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "mirror://kernel.org/linux/kernel/people/tytso/"
                    name "/v" version "/"
                    name "-" version ".tar.xz"))
-             (patches (search-patches "e2fsprogs-32bit-quota-warnings.patch"))
              (sha256
               (base32
-               "05ssjpmy0fpv2ik6ibm1f47wr6794nf0q50r581vygrqvsd3s7r6"))))
+               "00ilv65dzcgiap435j89xk86shf7rrav3wsik7cahy789qijdcn9"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -861,14 +870,14 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.18")
+    (version "4.19")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/strace/strace/" version
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "026agy9nq238nx3ynhmi8h3vx96yra4xacfsm2ybs9k23ry8ibc9"))))
+               "10bjh2mrkvx41fk60b2iqv5b5k4r7a3qdsx04iyg904jqb3fp4vw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1132,7 +1141,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.12.0")
+    (version "4.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1140,7 +1149,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0zdxdsxyaazl85xhwskvsmpyzwf5qp21cvjsi1lw3xnrc914q2if"))))
+                "0l2w84cwr54gaw3cbxijf614l76hx8mgcz57v81rwl68z3nq3yww"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -1173,23 +1182,14 @@ that the Ethernet protocol is much simpler than the IP protocol.")
     (synopsis
      "Utilities for controlling TCP/IP networking and traffic in Linux")
     (description
-     "Iproute2 is a collection of utilities for controlling TCP/IP
-networking and traffic with the Linux kernel.
+     "Iproute2 is a collection of utilities for controlling TCP/IP networking
+and traffic with the Linux kernel.  The most important of these are
+@command{ip}, which configures IPv4 and IPv6, and @command{tc} for traffic
+control.
 
 Most network configuration manuals still refer to ifconfig and route as the
 primary network configuration tools, but ifconfig is known to behave
-inadequately in modern network environments.  They should be deprecated, but
-most distros still include them.  Most network configuration systems make use
-of ifconfig and thus provide a limited feature set.  The /etc/net project aims
-to support most modern network technologies, as it doesn't use ifconfig and
-allows a system administrator to make use of all iproute2 features, including
-traffic control.
-
-iproute2 is usually shipped in a package called iproute or iproute2 and
-consists of several tools, of which the most important are @command{ip} and
-@command{tc}.  @command{ip} controls IPv4 and IPv6 configuration and
-@command{tc} stands for traffic control.  Both tools print detailed usage
-messages and are accompanied by a set of manpages.")
+inadequately in modern network environments, and both should be deprecated.")
     (license license:gpl2+)))
 
 ;; There are two packages for net-tools. The first, net-tools, is more recent
@@ -1212,14 +1212,14 @@ messages and are accompanied by a set of manpages.")
       (name "net-tools")
       (version (string-append "1.60-" revision "." (string-take commit 7)))
       (source (origin
-               (method git-fetch)
-               (uri (git-reference
-                      (url "https://git.code.sf.net/p/net-tools/code")
-                      (commit commit)))
-               (file-name (string-append name "-" version "-checkout"))
+               (method url-fetch)
+               (uri (string-append "https://sourceforge.net/code-snapshots/git/"
+                                   "n/ne/net-tools/code.git/net-tools-code-"
+                                   commit ".zip"))
+               (file-name (string-append name "-" version ".zip"))
                (sha256
                 (base32
-                 "189mdjfbd7j7j0jysy34nqn5byy9g5f6ylip1sikk7kz08vjml4s"))))
+                 "0hz9fda9d78spp774b6rr5xaxav7cm4h0qcpxf70rvdbrf6qx7vy"))))
       (home-page "http://net-tools.sourceforge.net/")
       (build-system gnu-build-system)
       (arguments
@@ -1266,7 +1266,8 @@ messages and are accompanied by a set of manpages.")
                               (string-append "BASEDIR=" out)
                               (string-append "INSTALLNLSDIR=" out "/share/locale")
                               (string-append "mandir=/share/man")))))
-      (native-inputs `(("gettext" ,gettext-minimal)))
+      (native-inputs `(("gettext" ,gettext-minimal)
+                       ("unzip" ,unzip)))
       (synopsis "Tools for controlling the network subsystem in Linux")
       (description
        "This package includes the important tools for controlling the network
@@ -1354,6 +1355,15 @@ configuration (iptunnel, ipmaddr).")
                             (string-append "BASEDIR=" out)
                             (string-append "INSTALLNLSDIR=" out "/share/locale")
                             (string-append "mandir=/share/man")))))
+
+    ;; We added unzip to the net-tools package's native-inputs when
+    ;; switching its source from a Git checkout to a zip archive.  We
+    ;; need to specify the native-inputs here to keep unzip out of the
+    ;; build of net-tools-for-tests, so that we don't have to rebuild
+    ;; many packages on the master branch.  We can make
+    ;; net-tools-for-tests inherit directly from net-tools in the next
+    ;; core-updates cycle.
+    (native-inputs `(("gettext" ,gettext-minimal)))
 
     ;; Use the big Debian patch set (the thing does not even compile out of
     ;; the box.)
@@ -1555,16 +1565,16 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
 (define-public powertop
   (package
     (name "powertop")
-    (version "2.8")
+    (version "2.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://01.org/sites/default/files/downloads/powertop/powertop-"
+             "https://01.org/sites/default/files/downloads/powertop/powertop-v"
              version ".tar.gz"))
        (sha256
         (base32
-         "0nlwazxbnn0k6q5f5b09wdhw0f194lpzkp3l7vxansqhfczmcyx8"))))
+         "0l4jjlf05li2mc6g8nrss3h435wjhmnqd8m7v3kha3x0x7cbfzxa"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2087,14 +2097,14 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.02.171")
+    (version "2.02.174")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
                                   version ".tgz"))
               (sha256
                (base32
-                "0r4r9fsvpj9hjmf0zz7h4prz12r6y16jhjhsvk1sbfpsl88sf5dq"))
+                "12qa2yfxnbjdx7kgxqqaglni50b46l5cp1rwjb24mccc830cwvpv"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2357,11 +2367,16 @@ country-specific regulations for the wireless spectrum.")
                      ("flex" ,flex)
                      ("bison" ,bison)
                      ("which" ,which)))
+    (outputs '("lib"              ;avoid perl in closure
+               "out"))
     (arguments
      `(#:tests? #f  ; no 'check' target
        #:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "ETCDIR=" %output "/etc")
-                          (string-append "MANDIR=" %output "/share/man"))
+                          (string-append "ETCDIR=" (assoc-ref %outputs "lib") "/etc")
+                          (string-append "INCLUDEDIR="
+                                         (assoc-ref %outputs "lib") "/include")
+                          (string-append "MANDIR=" %output "/share/man")
+                          (string-append "LIBDIR=" (assoc-ref %outputs "lib") "/lib"))
        #:phases
        (alist-delete
         'configure
@@ -2451,7 +2466,7 @@ SMBus access.")
                (base32
                 "1siplsfgvcxamyqf44h71jx6jdfmvhfm7mh0y1q8ps4zs6pj2zwh"))))
     (build-system gnu-build-system)
-    (inputs `(("lm-sensors" ,lm-sensors)
+    (inputs `(("lm-sensors" ,lm-sensors "lib")
               ("gtk" ,gtk+-2)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
@@ -3012,6 +3027,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
   (package
     (name "bluez")
     (version "5.45")
+    (replacement bluez/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3073,6 +3089,20 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 is flexible, efficient and uses a modular implementation.")
     (license license:gpl2+)))
 
+(define bluez/fixed
+  (package
+    (inherit bluez)
+    (version "5.45")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/bluetooth/bluez-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "1sb4aflgyrl7apricjipa8wx95qm69yja0lmn2f19g560c3v1b2c"))
+              (patches (search-patches "bluez-CVE-2017-1000250.patch"))))))
+
 (define-public fuse-exfat
   (package
     (name "fuse-exfat")
@@ -3112,10 +3142,12 @@ write access to exFAT devices.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'bootstrap
+                  (add-after 'unpack 'bootstrap
                     (lambda _
                       ;; The tarball was not generated with 'make dist' so we
                       ;; need to bootstrap things ourselves.
+                      (substitute* "autogen.sh"
+                        (("/bin/sh") (which "sh")))
                       (and (zero? (system* "./autogen.sh"))
                            (begin
                              (patch-makefile-SHELL "Makefile.include.in")
@@ -3143,7 +3175,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.12")
+    (version "4.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3151,7 +3183,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1kif8xw2dbyc70ygkp0wyq4x96p1mkwdv4430f99qllx9b410xwi"))))
+                "1clavvrlkswgicqsm2yfsxqw04lsn8dra0db84jqm6j2apz80kz0"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -3159,6 +3191,12 @@ and copy/paste text in the console and in xterm.")
      '(#:phases (modify-phases %standard-phases
                  (add-after 'build 'build-static
                    (lambda _ (zero? (system* "make" "static"))))
+                 (add-after 'install 'install-bash-completion
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (install-file "btrfs-completion"
+                                   (string-append (assoc-ref outputs "out")
+                                                  "/etc/bash_completion.d"))
+                     #t))
                  (add-after 'install 'install-static
                    (let ((staticbin (string-append (assoc-ref %outputs "static")
                                                   "/bin")))
@@ -3173,8 +3211,9 @@ and copy/paste text in the console and in xterm.")
               ("libblkid:static" ,util-linux "static")
               ("libuuid" ,util-linux)
               ("libuuid:static" ,util-linux "static")
+              ("lzo" ,lzo)
               ("zlib" ,zlib)
-              ("lzo" ,lzo)))
+              ("zstd" ,zstd)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("asciidoc" ,asciidoc)
                      ("xmlto" ,xmlto)
@@ -3182,6 +3221,7 @@ and copy/paste text in the console and in xterm.")
                      ("libxml2" ,libxml2)
                      ("docbook-xsl" ,docbook-xsl)
                      ;; For tests.
+                     ("acl" ,acl)
                      ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")

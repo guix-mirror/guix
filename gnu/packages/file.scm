@@ -50,4 +50,3 @@ extensions to tell you the type of a file, but looks at the actual contents
 of the file.")
    (license bsd-2)
    (home-page "https://www.darwinsys.com/file/")))
-

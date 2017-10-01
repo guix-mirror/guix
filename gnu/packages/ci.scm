@@ -187,8 +187,8 @@ their dependencies.")
       (license l:gpl3+))))
 
 (define-public cuirass
-  (let ((commit "6f85bc04f31ae5853ceaa0bb3e1dedfe8412a189")
-        (revision "7"))
+  (let ((commit "9cfea9fe2e3ca6a3d1b832a6ec217426ec973c93")
+        (revision "10"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -200,7 +200,7 @@ their dependencies.")
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "1dglsa23z21m1s70420ar73qmg39fvdvwlz9xjz6lfp5s9mgzx15"))))
+                  "177klidmsw12kjk9dzawc0bqcwqlplgx45m87qpgjfx3cnk28i2b"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -216,7 +216,12 @@ their dependencies.")
                (substitute* "Makefile.am"
                  (("tests/repo.scm \\\\") "\\"))
                #t))
-           (add-before 'configure 'bootstrap
+           (add-after 'disable-repo-tests 'patch-/bin/sh
+             (lambda _
+               (substitute* "build-aux/git-version-gen"
+                 (("#!/bin/sh") (string-append "#!" (which "sh"))))
+               #t))
+           (add-after 'patch-/bin/sh 'bootstrap
              (lambda _ (zero? (system* "sh" "bootstrap"))))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -263,6 +268,17 @@ their dependencies.")
          ("automake" ,automake)
          ("pkg-config" ,pkg-config)
          ("texinfo" ,texinfo)))
+      (native-search-paths
+       ;; For HTTPS access, Cuirass itself honors these variables, with the
+       ;; same semantics as Git and OpenSSL (respectively).
+       (list (search-path-specification
+              (variable "GIT_SSL_CAINFO")
+              (file-type 'regular)
+              (separator #f)                      ;single entry
+              (files '("etc/ssl/certs/ca-certificates.crt")))
+             (search-path-specification
+              (variable "SSL_CERT_DIR")
+              (files '("etc/ssl/certs")))))
       (synopsis "Continuous integration system")
       (description
        "Cuirass is a continuous integration tool using GNU Guix.  It is

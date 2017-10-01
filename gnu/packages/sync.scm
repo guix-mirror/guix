@@ -35,14 +35,14 @@
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.3.1")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.owncloud.com/desktop/stable/"
                            "owncloudclient-" version ".tar.xz"))
        (sha256
-        (base32 "051rky4rpm73flxxkhfdxqq23ncnk4ixhscbg74w82sa4d93f54k"))
+        (base32 "1r5ddln1wc9iyjizgqb104i0r6qhzsmm2wdnxfaif119cv0vphda"))
        (modules '((guix build utils)))
        (snippet
         '(begin

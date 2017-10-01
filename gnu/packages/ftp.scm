@@ -46,7 +46,7 @@
 (define-public lftp
   (package
     (name "lftp")
-    (version "4.7.8")
+    (version "4.8.2")
     (source (origin
               (method url-fetch)
               ;; See https://lftp.tech/get.html for mirrors.
@@ -58,7 +58,7 @@
                                         "ftp/lftp/lftp-" version ".tar.xz")))
               (sha256
                (base32
-                "19ijsmbb5589vg5ga355ys3075z6s2x2h0bdbga343hfqmnid2pi"))))
+                "176d90amkm1klwjpfpzdsvmjnyri8f74bv4fpip8app0fs25p1sw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -159,7 +159,7 @@ FTP browser, as well as non-interactive commands such as 'ncftpput' and
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
+         (add-after 'unpack 'bootstrap
            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "http://weex.sourceforge.net/")
     (synopsis "Non-interactive client for FTP synchronization")
@@ -173,7 +173,7 @@ as required.")
 (define-public libfilezilla
   (package
     (name "libfilezilla")
-    (version "0.10.1")
+    (version "0.11.0")
     (source
      (origin
        (method url-fetch)
@@ -181,7 +181,7 @@ as required.")
                            name "/" name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "1yi9db0hpxh3giyjhkbz7ajmf95qw27xdvh3xvw208zri5k575x0"))))
+         "1l4yhw269dyarqb2spqhycxzzyfn8pj4qh9vfycdw1c93hj6fx6c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)

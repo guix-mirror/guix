@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,18 +35,23 @@
 (define-public lirc
   (package
     (name "lirc")
-    (version "0.9.4")
+    (version "0.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lirc/LIRC/" version
                                   "/lirc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1l2xzhnm4hrla51ik09hcafki0y8wnww7svfm7j63zbl2rssc66x"))
+                "1whlyifvvc7w04ahq07nnk1h18wc8j7c6wnvlb6mszravxh3qxcb"))
               (patches (search-patches "lirc-localstatedir.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--localstatedir=/var")
+     '(#:configure-flags
+       '("--localstatedir=/var"
+         ;; "configure" script fails to enable "devinput" driver as it
+         ;; checks for "/dev/input" directory (which is not available),
+         ;; so enable it explicitly.
+         "--enable-devinput")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-kernel-sniffing

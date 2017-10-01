@@ -1,9 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,11 +30,16 @@
  #:use-module (guix build-system python)
  #:use-module (gnu packages base)
  #:use-module (gnu packages boost)
+ #:use-module (gnu packages check)
  #:use-module (gnu packages databases)
+ #:use-module (gnu packages documentation)
+ #:use-module (gnu packages dns)
  #:use-module (gnu packages emacs)
+ #:use-module (gnu packages graphviz)
  #:use-module (gnu packages groff)
  #:use-module (gnu packages libedit)
  #:use-module (gnu packages libevent)
+ #:use-module (gnu packages libunwind)
  #:use-module (gnu packages linux)
  #:use-module (gnu packages multiprecision)
  #:use-module (gnu packages pkg-config)
@@ -44,12 +50,14 @@
  #:use-module (gnu packages textutils)
  #:use-module (gnu packages tls)
  #:use-module (gnu packages upnp)
+ #:use-module (gnu packages web)
+ #:use-module (gnu packages xml)
  #:use-module (gnu packages gnuzilla))
 
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.14.2")
+    (version "0.15.0.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -57,12 +65,13 @@
                              version "/bitcoin-" version ".tar.gz"))
              (sha256
               (base32
-               "1jp8vdc25gs46gj1d9mraqa1xnampffpa7mdy0fw80xca77fbi0s"))))
+               "16si3skhm6jhw1pkniv2b9y1kkdhjmhj392palphir0qc1srwzmm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python) ; for the tests
-       ("util-linux" ,util-linux))) ; provides the hexdump command for tests
+       ("util-linux" ,util-linux)   ; provides the hexdump command for tests
+       ("qttools" ,qttools)))
     (inputs
      `(("bdb" ,bdb-5.3) ; with 6.2.23, there is an error: ambiguous overload
        ("boost" ,boost)
@@ -70,8 +79,7 @@
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
        ("protobuf" ,protobuf)
-       ;; TODO Build with the modular Qt.
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
         (list
@@ -79,7 +87,16 @@
           "--with-incompatible-bdb"
           ;; Boost is not found unless specified manually.
           (string-append "--with-boost="
-                         (assoc-ref %build-inputs "boost")))
+                         (assoc-ref %build-inputs "boost"))
+          ;; XXX: The configure script looks up Qt paths by
+          ;; `pkg-config --variable=host_bins Qt5Core`, which fails to pick
+          ;; up executables residing in 'qttools', so we specify them here.
+          (string-append "ac_cv_path_LRELEASE="
+                         (assoc-ref %build-inputs "qttools")
+                         "/bin/lrelease")
+          (string-append "ac_cv_path_LUPDATE="
+                         (assoc-ref %build-inputs "qttools")
+                         "/bin/lupdate"))
        #:phases
         (modify-phases %standard-phases
           (add-before 'check 'set-home
@@ -246,7 +263,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "2.7.12")
+    (version "2.9.3")
     (source
      (origin
        (method url-fetch)
@@ -255,7 +272,7 @@ do so.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0vxdfl208if7mdsnva1jg37bnay2dsz3ww157aqwcv1j6512fi1n"))
+         "0d0fzb653g7b8ka3x90nl21md4g3n1fv11czdxpdq3s9yr6js6f2"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -264,7 +281,8 @@ do so.")
            #t))))
     (build-system python-build-system)
     (inputs
-     `(("python-slowaes" ,python2-slowaes)
+     `(("python-pyaes" ,python2-pyaes)
+       ("python-pysocks" ,python2-pysocks)
        ("python-sip" ,python2-sip)
        ("python-pyqt" ,python2-pyqt-4)
        ("python-ecdsa" ,python2-ecdsa)
@@ -291,3 +309,181 @@ protocol.  It supports Simple Payment Verification (SPV) and deterministic key
 generation from a seed.  Your secret keys are encrypted and are never sent to
 other machines/servers.  Electrum does not download the Bitcoin blockchain.")
     (license license:expat)))
+
+(define-public monero
+  ;; This package bundles easylogging++ and lmdb.
+  ;; The bundled easylogging++ is modified, and the changes will not be upstreamed.
+  ;; The devs deem the lmdb driver too critical a consenus component, to use
+  ;; the system's dynamically linked library.
+  (package
+    (name "monero")
+    (version "0.11.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/monero-project/monero/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled dependencies.
+           (for-each
+            delete-file-recursively
+            '("external/miniupnpc" "external/rapidjson"
+              "external/unbound"))
+           #t))
+       (sha256
+        (base32
+         "083w40a553c0r3i18020jcrv5s0b64vx3d8xrn9nwkb2237ighlk"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("googletest" ,googletest)
+       ("graphviz" ,graphviz)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bind" ,isc-bind)
+       ("boost" ,boost)
+       ("expat" ,expat)
+       ("libunwind" ,libunwind)
+       ("lmdb" ,lmdb)
+       ("miniupnpc" ,miniupnpc)
+       ("openssl" ,openssl)
+       ("rapidjson" ,rapidjson)
+       ("unbound" ,unbound)))
+    (arguments
+     `(#:out-of-source? #t
+       #:configure-flags '("-DBUILD_TESTS=ON"
+                           ,@(if (string=? "aarch64-linux" (%current-system))
+                                 '("-DARCH=armv8-a")
+                                 '())
+                           "-DBUILD_GUI_DEPS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         ;; tests/core_tests need a valid HOME
+         (add-before 'configure 'set-home
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t))
+         (add-after 'set-home 'fix-wallet-path-for-unit-tests
+           (lambda _
+             (substitute* "tests/unit_tests/serialization.cpp"
+               (("\\.\\./\\.\\./\\.\\./\\.\\./") "../../"))
+             #t))
+         (add-after 'fix-wallet-path-for-unit-tests 'change-log-path
+           (lambda _
+             (substitute* "contrib/epee/src/mlog.cpp"
+               (("epee::string_tools::get_current_module_folder\\(\\)")
+                "\".bitmonero\""))
+             (substitute* "contrib/epee/src/mlog.cpp"
+               (("return \\(") "return ((std::string(getenv(\"HOME\"))) / "))
+             #t))
+         (replace 'check
+           (lambda _
+             (zero?
+              (system* "make" "ARGS=-E 'unit_tests|libwallet_api_tests'"
+                       "test"))))
+         ;; The excluded unit tests need network access
+         (add-after 'check 'unit-tests
+           (lambda _
+             (let ((excluded-unit-tests
+                    (string-join
+                     '("AddressFromURL.Success"
+                       "AddressFromURL.Failure"
+                       "DNSResolver.IPv4Success"
+                       "DNSResolver.DNSSECSuccess"
+                       "DNSResolver.DNSSECFailure"
+                       "DNSResolver.GetTXTRecord")
+                     ":")))
+               (zero?
+                (system* "tests/unit_tests/unit_tests"
+                         (string-append "--gtest_filter=-"
+                                        excluded-unit-tests))))))
+         (add-after 'install 'install-blockchain-import-export
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "bin/monero-blockchain-import" bin)
+               (install-file "bin/monero-blockchain-export" bin)))))))
+    (home-page "https://getmonero.org/")
+    (synopsis "Command-line interface to the Monero currency")
+    (description
+     "Monero is a secure, private, untraceable currency.  This package provides the
+Monero command line client and daemon.")
+    (license license:bsd-3)))
+
+(define-public monero-core
+  (package
+    (name "monero-core")
+    (version "0.11.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/monero-project/monero-core/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hnrkgwb1sva67pcjym2gvb4zifp2s849dfbnjzbxk3yczpcyqzg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("libunwind" ,libunwind)
+       ("openssl" ,openssl)
+       ("qt" ,qt)
+       ("unbound" ,unbound)))
+    (propagated-inputs
+     `(("monero" ,monero)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (add-before 'build 'fix-makefile-vars
+           (lambda _
+             (substitute* "src/zxcvbn-c/makefile"
+               (("\\?=") "="))
+             #t))
+         (add-after 'fix-makefile-vars 'fix-library-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "monero-wallet-gui.pro"
+               (("-L/usr/local/lib") "")
+               (("-L/usr/local/opt/openssl/lib")
+                (string-append "-L"
+                               (assoc-ref inputs "openssl")
+                               "/lib"))
+               (("-L/usr/local/opt/boost/lib")
+                (string-append "-L"
+                               (assoc-ref inputs "boost")
+                               "/lib")))
+             #t))
+         (add-after 'fix-library-paths 'fix-monerod-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/daemon/DaemonManager.cpp"
+               (("QApplication::applicationDirPath\\(\\) \\+ \"/monerod")
+                (string-append "\""(assoc-ref inputs "monero")
+                               "/bin/monerod")))
+             #t))
+         (replace 'build
+           (lambda _
+             (zero? (system* "./build.sh"))))
+         (add-after 'build 'fix-install-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "build/Makefile"
+               (("/opt/monero-wallet-gui")
+                (assoc-ref outputs "out")))
+             #t))
+         (add-before 'install 'change-dir
+           (lambda _
+             (chdir "build"))))))
+    (home-page "https://getmonero.org/")
+    (synopsis "Graphical user interface for the Monero currency")
+    (description
+     "Monero is a secure, private, untraceable currency.  This package provides the
+Monero GUI client.")
+    (license license:bsd-3)))

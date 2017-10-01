@@ -37,6 +37,7 @@
   #:use-module (guix utils)
   #:export (%test-installed-os
             %test-installed-extlinux-os
+            %test-iso-image-installer
             %test-separate-store-os
             %test-separate-home-os
             %test-raid-root-os
@@ -126,7 +127,11 @@
   "Return a variant of OS where ROOTS are registered as GC roots."
   (operating-system
     (inherit os)
-    (services (cons (service gc-root-service-type roots)
+
+    ;; We use this procedure for the installation OS, which already defines GC
+    ;; roots.  Add ROOTS to those.
+    (services (cons (simple-service 'extra-root
+                                    gc-root-service-type roots)
                     (operating-system-user-services os)))))
 
 
@@ -196,6 +201,7 @@ reboot\n")
                              (kernel-arguments '("console=ttyS0")))
                            #:imported-modules '((gnu services herd)
                                                 (guix combinators))))
+                      (installation-disk-image-file-system-type "ext4")
                       (target-size (* 1200 MiB)))
   "Run SCRIPT (a shell script following the GuixSD installation procedure) in
 OS to install TARGET-OS.  Return a VM image of TARGET-SIZE bytes containing
@@ -213,7 +219,9 @@ packages defined in installation-os."
                        (image  (system-disk-image
                                 (operating-system-with-gc-roots
                                  os (list target))
-                                #:disk-image-size (* 1500 MiB))))
+                                #:disk-image-size (* 1500 MiB)
+                                #:file-system-type
+                                installation-disk-image-file-system-type)))
     (define install
       (with-imported-modules '((guix build utils)
                                (gnu build marionette))
@@ -229,16 +237,25 @@ packages defined in installation-os."
 
             (define marionette
               (make-marionette
-               (cons (which #$(qemu-command system))
-                     (cons* "-no-reboot" "-m" "800"
-                            "-drive"
-                            (string-append "file=" #$image
-                                           ",if=virtio,readonly")
-                            "-drive"
-                            (string-append "file=" #$output ",if=virtio")
-                            (if (file-exists? "/dev/kvm")
-                                '("-enable-kvm")
-                                '())))))
+               `(,(which #$(qemu-command system))
+                 "-no-reboot"
+                 "-m" "800"
+                 #$@(cond
+                     ((string=? "ext4" installation-disk-image-file-system-type)
+                      #~("-drive"
+                         ,(string-append "file=" #$image
+                                         ",if=virtio,readonly")))
+                     ((string=? "iso9660" installation-disk-image-file-system-type)
+                      #~("-cdrom" #$image))
+                     (else
+                      (error
+                       "unsupported installation-disk-image-file-system-type:"
+                       installation-disk-image-file-system-type)))
+                 "-drive"
+                 ,(string-append "file=" #$output ",if=virtio")
+                 ,@(if (file-exists? "/dev/kvm")
+                       '("-enable-kvm")
+                       '()))))
 
             (pk 'uname (marionette-eval '(uname) marionette))
 
@@ -311,6 +328,81 @@ per %test-installed-os, this test is expensive in terms of CPU and storage.")
                          (command (qemu-command/writable-image image)))
       (run-basic-test %minimal-extlinux-os command
                       "installed-extlinux-os")))))
+
+
+;;;
+;;; Installation through an ISO image.
+;;;
+
+(define-os-with-source (%minimal-os-on-vda %minimal-os-on-vda-source)
+  ;; The OS we want to install.
+  (use-modules (gnu) (gnu tests) (srfi srfi-1))
+
+  (operating-system
+    (host-name "liberigilo")
+    (timezone "Europe/Paris")
+    (locale "en_US.UTF-8")
+
+    (bootloader (grub-configuration (target "/dev/vda")))
+    (kernel-arguments '("console=ttyS0"))
+    (file-systems (cons (file-system
+                          (device "my-root")
+                          (title 'label)
+                          (mount-point "/")
+                          (type "ext4"))
+                        %base-file-systems))
+    (users (cons (user-account
+                  (name "alice")
+                  (comment "Bob's sister")
+                  (group "users")
+                  (supplementary-groups '("wheel" "audio" "video"))
+                  (home-directory "/home/alice"))
+                 %base-user-accounts))
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define %simple-installation-script-for-/dev/vda
+  ;; Shell script of a simple installation.
+  "\
+. /etc/profile
+set -e -x
+guix --version
+
+export GUIX_BUILD_OPTIONS=--no-grafts
+guix build isc-dhcp
+parted --script /dev/vda mklabel gpt \\
+  mkpart primary ext2 1M 3M \\
+  mkpart primary ext2 3M 1G \\
+  set 1 boot on \\
+  set 1 bios_grub on
+mkfs.ext4 -L my-root /dev/vda2
+mount /dev/vda2 /mnt
+df -h /mnt
+herd start cow-store /mnt
+mkdir /mnt/etc
+cp /etc/target-config.scm /mnt/etc/config.scm
+guix system init /mnt/etc/config.scm /mnt --no-substitutes
+sync
+reboot\n")
+
+(define %test-iso-image-installer
+  (system-test
+   (name "iso-image-installer")
+   (description
+    "")
+   (value
+    (mlet* %store-monad ((image   (run-install
+                                   %minimal-os-on-vda
+                                   %minimal-os-on-vda-source
+                                   #:script
+                                   %simple-installation-script-for-/dev/vda
+                                   #:installation-disk-image-file-system-type
+                                   "iso9660"))
+                         (command (qemu-command/writable-image image)))
+      (run-basic-test %minimal-os-on-vda command name)))))
 
 
 ;;;

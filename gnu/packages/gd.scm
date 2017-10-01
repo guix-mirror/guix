@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,12 +38,11 @@
 (define-public gd
   (package
     (name "gd")
-
+    (replacement gd-2.2.5)
     ;; Note: With libgd.org now pointing to github.com, genuine old
     ;; tarballs are no longer available.  Notably, versions 2.0.x are
     ;; missing.
     (version "2.2.4")
-
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -92,6 +92,22 @@ most common applications of GD involve website development.")
     (license (non-copyleft "file://COPYING"
                            "See COPYING file in the distribution."))
     (properties '((cpe-name . "libgd")))))
+
+;; For CVE-2017-6362 and CVE-2017-7890.
+(define-public gd-2.2.5
+  (package
+    (inherit gd)
+    (version "2.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/libgd/libgd/releases/download/gd-"
+                    version "/libgd-" version ".tar.xz"))
+              (patches (search-patches "gd-fix-tests-on-i686.patch"
+                                       "gd-freetype-test-failure.patch"))
+              (sha256
+               (base32
+                "0lfy5f241sbv8s3splm2zqiaxv7lxrcshh875xryryk7yk5jqc4c"))))))
 
 (define-public perl-gd
   (package

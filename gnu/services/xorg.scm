@@ -135,6 +135,7 @@ Section \"Files\"
   ModulePath \"" xf86-input-mouse "/lib/xorg/modules/input\"
   ModulePath \"" xf86-input-synaptics "/lib/xorg/modules/input\"
   ModulePath \"" xorg-server "/lib/xorg/modules\"
+  ModulePath \"" xorg-server "/lib/xorg/modules/drivers\"
   ModulePath \"" xorg-server "/lib/xorg/modules/extensions\"
   ModulePath \"" xorg-server "/lib/xorg/modules/multimedia\"
 EndSection

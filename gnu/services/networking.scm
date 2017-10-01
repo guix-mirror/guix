@@ -25,6 +25,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services dbus)
+  #:use-module (gnu services base)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu packages admin)
@@ -253,7 +254,12 @@ fe80::1%lo0 apps.facebook.com\n")
                   (service-extension etc-service-type
                                      static-networking-etc-files)))
                 (compose concatenate)
-                (extend append)))
+                (extend append)
+                (description
+                 "Turn up the specified network interfaces upon startup,
+with the given IP address, gateway, netmask, and so on.  The value for
+services of this type is a list of @code{static-networking} objects, one per
+network interface.")))
 
 (define* (static-networking-service interface ip
                                     #:key
@@ -422,7 +428,11 @@ restrict -6 ::1\n"))
                        (service-extension account-service-type
                                           (const %ntp-accounts))
                        (service-extension activation-service-type
-                                          ntp-service-activation)))))
+                                          ntp-service-activation)))
+                (description
+                 "Run the @command{ntpd}, the Network Time Protocol (NTP)
+daemon of the @uref{http://www.ntp.org, Network Time Foundation}.  The daemon
+will keep the system clock synchronized with that of the given servers.")))
 
 (define* (ntp-service #:key (ntp ntp)
                       (servers %ntp-servers)
@@ -520,7 +530,11 @@ make an initial adjustment of more than 1,000 seconds."
              (inetd-configuration
               (inherit config)
               (entries (append (inetd-configuration-entries config)
-                               entries)))))))
+                               entries)))))
+   (description
+    "Start @command{inetd}, the @dfn{Internet superserver}.  It is responsible
+for listening on Internet sockets and spawning the corresponding services on
+demand.")))
 
 
 ;;;
@@ -671,7 +685,10 @@ HiddenServicePort ~a ~a~%"
                            (hidden-services
                             (append (tor-configuration-hidden-services config)
                                     services)))))
-                (default-value (tor-configuration))))
+                (default-value (tor-configuration))
+                (description
+                 "Run the @uref{https://torproject.org, Tor} anonymous
+networking daemon.")))
 
 (define* (tor-service #:optional
                       (config-file (plain-file "empty" ""))
@@ -691,7 +708,9 @@ and lines for hidden services added via @code{tor-hidden-service}.  Run
   ;; A type that extends Tor with hidden services.
   (service-type (name 'tor-hidden-service)
                 (extensions
-                 (list (service-extension tor-service-type list)))))
+                 (list (service-extension tor-service-type list)))
+                (description
+                 "Define a new Tor @dfn{hidden service}.")))
 
 (define (tor-hidden-service name mapping)
   "Define a new Tor @dfn{hidden service} called @var{name} and implementing
@@ -798,7 +817,10 @@ project's documentation} for more information."
                                           (const %bitlbee-accounts))
                        (service-extension activation-service-type
                                           (const %bitlbee-activation))))
-                (default-value (bitlbee-configuration))))
+                (default-value (bitlbee-configuration))
+                (description
+                 "Run @url{http://bitlbee.org,BitlBee}, a daemon that acts as
+a gateway between IRC and chat networks.")))
 
 (define* (bitlbee-service #:key (bitlbee bitlbee)
                           (interface "127.0.0.1") (port 6667)
@@ -862,7 +884,10 @@ configuration file."
                                           (const %wicd-activation))
 
                        ;; Add Wicd to the global profile.
-                       (service-extension profile-service-type list)))))
+                       (service-extension profile-service-type list)))
+                (description
+                 "Run @url{https://launchpad.net/wicd,Wicd}, a network
+management daemon that aims to simplify wired and wireless networking.")))
 
 (define* (wicd-service #:key (wicd wicd))
   "Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a network
@@ -885,7 +910,9 @@ and @command{wicd-curses} user interfaces."
   (network-manager network-manager-configuration-network-manager
                    (default network-manager))
   (dns network-manager-configuration-dns
-       (default "default")))
+       (default "default"))
+  (vpn-plugins network-manager-vpn-plugins        ;list of <package>
+               (default '())))
 
 (define %network-manager-activation
   ;; Activation gexp for NetworkManager.
@@ -893,25 +920,38 @@ and @command{wicd-curses} user interfaces."
       (use-modules (guix build utils))
       (mkdir-p "/etc/NetworkManager/system-connections")))
 
+(define (vpn-plugin-directory plugins)
+  "Return a directory containing PLUGINS, the NM VPN plugins."
+  (directory-union "network-manager-vpn-plugins" plugins))
+
+(define network-manager-environment
+  (match-lambda
+    (($ <network-manager-configuration> network-manager dns vpn-plugins)
+     ;; Define this variable in the global environment such that
+     ;; "nmcli connection import type openvpn file foo.ovpn" works.
+     `(("NM_VPN_PLUGIN_DIR"
+        . ,(file-append (vpn-plugin-directory vpn-plugins)
+                        "/lib/NetworkManager/VPN"))))))
+
 (define network-manager-shepherd-service
   (match-lambda
-    (($ <network-manager-configuration> network-manager dns)
-     (let
-         ((conf (plain-file "NetworkManager.conf"
-                            (string-append "
-[main]
-dns=" dns "
-"))))
-     (list (shepherd-service
-            (documentation "Run the NetworkManager.")
-            (provision '(networking))
-            (requirement '(user-processes dbus-system wpa-supplicant loopback))
-            (start #~(make-forkexec-constructor
-                      (list (string-append #$network-manager
-                                           "/sbin/NetworkManager")
-                            (string-append "--config=" #$conf)
-                            "--no-daemon")))
-            (stop #~(make-kill-destructor))))))))
+    (($ <network-manager-configuration> network-manager dns vpn-plugins)
+     (let ((conf (plain-file "NetworkManager.conf"
+                             (string-append "[main]\ndns=" dns "\n")))
+           (vpn  (vpn-plugin-directory vpn-plugins)))
+       (list (shepherd-service
+              (documentation "Run the NetworkManager.")
+              (provision '(networking))
+              (requirement '(user-processes dbus-system wpa-supplicant loopback))
+              (start #~(make-forkexec-constructor
+                        (list (string-append #$network-manager
+                                             "/sbin/NetworkManager")
+                              (string-append "--config=" #$conf)
+                              "--no-daemon")
+                        #:environment-variables
+                        (list (string-append "NM_VPN_PLUGIN_DIR=" #$vpn
+                                             "/lib/NetworkManager/VPN"))))
+              (stop #~(make-kill-destructor))))))))
 
 (define network-manager-service-type
   (let
@@ -929,9 +969,15 @@ dns=" dns "
             (service-extension polkit-service-type config->package)
             (service-extension activation-service-type
                                (const %network-manager-activation))
+            (service-extension session-environment-service-type
+                               network-manager-environment)
             ;; Add network-manager to the system profile.
             (service-extension profile-service-type config->package)))
-     (default-value (network-manager-configuration)))))
+     (default-value (network-manager-configuration))
+     (description
+      "Run @uref{https://wiki.gnome.org/Projects/NetworkManager,
+NetworkManager}, a network management daemon that aims to simplify wired and
+wireless networking."))))
 
 
 ;;;
@@ -985,7 +1031,10 @@ dns=" dns "
                                             connman-activation)
                          ;; Add connman to the system profile.
                          (service-extension profile-service-type
-                                            connman-package))))))
+                                            connman-package)))
+                  (description
+                   "Run @url{https://01.org/connman,Connman},
+a network connection manager."))))
 
 
 ;;;
@@ -1071,6 +1120,10 @@ dns=" dns "
           (service-extension profile-service-type
                              (compose list openvswitch-configuration-package))
           (service-extension shepherd-root-service-type
-                             openvswitch-shepherd-service)))))
+                             openvswitch-shepherd-service)))
+   (description
+    "Run @uref{http://www.openvswitch.org, Open vSwitch}, a multilayer virtual
+switch designed to enable massive network automation through programmatic
+extension.")))
 
 ;;; networking.scm ends here

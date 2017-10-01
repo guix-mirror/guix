@@ -11,7 +11,7 @@
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -579,7 +579,7 @@ categories.")
      `(#:tests? #f ; FIXME maketest.sh does not work.
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autoreconf
+         (add-after 'unpack 'autoreconf
            (lambda _
              (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs

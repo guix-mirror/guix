@@ -157,7 +157,7 @@ C++.")
        (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
     (native-inputs
      `(("unzip" ,unzip)
-       ("vim" ,vim))) ; for xxd
+       ("xxd" ,xxd)))
     (home-page "http://microscheme.org/")
     (synopsis "Scheme subset for Atmel microcontrollers")
     (description

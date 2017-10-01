@@ -29,6 +29,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
@@ -1207,6 +1208,31 @@ which are used in DBus communication.")
     (description "Solid is a device integration framework.  It provides a way of
 querying and interacting with hardware independently of the underlying operating
 system.")
+    (license license:lgpl2.1+)))
+
+(define-public prison
+  (package
+    (name "prison")
+    (version "5.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32 "00wj4yyfhhcq9b54civ5hy1grz70mmi676x50y12crcbbgkxm1lx"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("libdmtx", libdmtx)
+       ("qrencode" ,qrencode)
+       ("qtbase" ,qtbase))) ;; TODO: rethink: nix propagates this
+    (home-page "https://api.kde.org/frameworks/prison/html/index.html")
+    (synopsis "Barcode generation abstraction layer")
+    (description "Prison is a Qt-based barcode abstraction layer/library and
+provides uniform access to generation of barcodes with data.")
     (license license:lgpl2.1+)))
 
 (define-public sonnet

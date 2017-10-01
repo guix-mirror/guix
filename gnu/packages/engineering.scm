@@ -61,6 +61,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -485,16 +486,16 @@ ready for production.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autoconf
-          (lambda _
-            ;; Build rules contain references to Russian translation, but the
-            ;; needed files are missing; see
-            ;; http://sourceforge.net/p/gerbv/bugs/174/
-            (delete-file "po/LINGUAS")
-            (substitute* "man/Makefile.am"
-              (("PO_FILES= gerbv.ru.1.in.po") "")
-              (("man_MANS = gerbv.1 gerbv.ru.1") "man_MANS = gerbv.1"))
-            (zero? (system* "autoreconf" "-vfi")))))))
+         (add-after 'unpack 'autoconf
+           (lambda _
+             ;; Build rules contain references to Russian translation, but the
+             ;; needed files are missing; see
+             ;; http://sourceforge.net/p/gerbv/bugs/174/
+             (delete-file "po/LINGUAS")
+             (substitute* "man/Makefile.am"
+               (("PO_FILES= gerbv.ru.1.in.po") "")
+               (("man_MANS = gerbv.1 gerbv.ru.1") "man_MANS = gerbv.1"))
+             (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -1128,3 +1129,52 @@ hexadecimal editor able to open disk files, but later support for analyzing
 binaries, disassembling code, debugging programs, attaching to remote gdb
 servers, ...")
     (license license:lgpl3)))
+
+(define-public asco
+  (package
+    (name "asco")
+    (version "0.4.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/asco/asco/" version "/ASCO-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "119rbc2dc8xzwxvykgji0v0nrzvymjmlizr1bc2mihspj686kxsl"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                                ; no tests
+       #:make-flags '("all" "asco-mpi")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((coreutils (assoc-ref inputs "coreutils-minimal")))
+               (substitute* '("errfunc.c" "asco.c")
+                 (("cp ")
+                  (string-append coreutils "/bin/cp "))
+                 (("nice")
+                  (string-append coreutils "/bin/nice")))
+               (substitute* "Makefile"
+                 (("<FULL_PATH_TO_MPICH>/bin/mpicc") (which "mpicc")))
+               #t)))
+         (replace 'install                        ; no install target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each (lambda (file)
+                         (install-file file (string-append
+                                             (assoc-ref outputs "out")
+                                             "/bin")))
+                       '("asco" "asco-mpi" "asco-test"
+                         "tools/alter/alter" "tools/log/log"))
+             #t)))))
+    (native-inputs
+     `(("mpi" ,openmpi)))
+    (inputs
+     `(("coreutils-minimal" ,coreutils-minimal)))
+    (home-page "http://asco.sourceforge.net/")
+    (synopsis "SPICE circuit optimizer")
+    (description
+     "ASCO brings circuit optimization capabilities to existing SPICE simulators using a
+high-performance parallel differential evolution (DE) optimization algorithm.")
+    (license license:gpl2+)))

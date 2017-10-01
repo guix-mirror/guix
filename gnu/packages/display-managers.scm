@@ -132,23 +132,24 @@ Qt-style API for Wayland clients.")
 (define-public sddm
   (package
     (name "sddm")
-    (version "0.14.0")
+    (version "0.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/sddm/sddm"
                     "/releases/download/v" version "/"
-                    "sddm-" version ".tar.xz"))
+                    "sddm-" version ".tar.gz"))
               (sha256
                (base32
-                "0y3pn8g2qj7q20zkmbasrfsj925lfzizk63sfrvzf84bc5c84d3y"))))
+                "0x1igkjm3k8q26xbmg0qah1fc2pn2sfc675w0xg42x7ncrdiw8d4"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
-     `(("glib" ,glib)
+     `(("elogind" ,elogind)
+       ("glib" ,glib)
        ("libxcb" ,libxcb)
        ("libxkbcommon" ,libxkbcommon)
        ("linux-pam" ,linux-pam)
@@ -163,6 +164,8 @@ Qt-style API for Wayland clients.")
         ;; Option added by enable wayland greeters PR
         "-DENABLE_WAYLAND=ON"
         "-DENABLE_PAM=ON"
+        ;; Both flags are required for elogind support.
+        "-DNO_SYSTEMD=ON" "-DUSE_ELOGIND=ON"
         "-DCONFIG_FILE=/etc/sddm.conf"
         ;; Set path to /etc/login.defs
         ;; Alternatively use -DUID_MIN and -DUID_MAX
@@ -180,6 +183,11 @@ Qt-style API for Wayland clients.")
                            (guix build qt-utils))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'embed-loginctl-reference
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("/usr/bin/loginctl") (which "loginctl")))
+             #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))

@@ -7,6 +7,7 @@
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017 Leo Famulari <leo@famulari.name>
 # Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+# Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -79,6 +80,7 @@ MODULES =					\
   guix/build-system/dub.scm			\
   guix/build-system/emacs.scm			\
   guix/build-system/font.scm			\
+  guix/build-system/meson.scm			\
   guix/build-system/minify.scm			\
   guix/build-system/asdf.scm			\
   guix/build-system/glib-or-gtk.scm		\
@@ -106,6 +108,7 @@ MODULES =					\
   guix/build/cmake-build-system.scm		\
   guix/build/dub-build-system.scm		\
   guix/build/emacs-build-system.scm		\
+  guix/build/meson-build-system.scm		\
   guix/build/minify-build-system.scm		\
   guix/build/font-build-system.scm		\
   guix/build/asdf-build-system.scm		\
@@ -141,6 +144,7 @@ MODULES =					\
   guix/build/make-bootstrap.scm			\
   guix/search-paths.scm				\
   guix/packages.scm				\
+  guix/import/print.scm				\
   guix/import/utils.scm				\
   guix/import/gnu.scm				\
   guix/import/snix.scm				\
@@ -164,12 +168,14 @@ MODULES =					\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
   guix/scripts/system.scm			\
+  guix/scripts/system/search.scm		\
   guix/scripts/lint.scm				\
   guix/scripts/challenge.scm			\
   guix/scripts/import/cran.scm			\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
   guix/scripts/import/hackage.scm		\
+  guix/scripts/import/json.scm  		\
   guix/scripts/import/elpa.scm  		\
   guix/scripts/import/texlive.scm  		\
   guix/scripts/environment.scm			\
@@ -191,6 +197,7 @@ MODULES +=					\
   guix/import/crate.scm				\
   guix/import/gem.scm				\
   guix/import/github.scm   			\
+  guix/import/gnome.scm				\
   guix/import/json.scm				\
   guix/import/pypi.scm				\
   guix/import/stackage.scm			\
@@ -223,8 +230,8 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/4.12-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.12-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/4.13-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.13-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.9-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.9-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.4-i686.conf	\
@@ -271,6 +278,7 @@ SCM_TESTS =					\
   tests/hash.scm				\
   tests/pk-crypto.scm				\
   tests/pki.scm					\
+  tests/print.scm				\
   tests/sets.scm				\
   tests/modules.scm				\
   tests/gnu-maintenance.scm			\
@@ -312,6 +320,7 @@ SCM_TESTS =					\
   tests/workers.scm				\
   tests/zlib.scm				\
   tests/file-systems.scm			\
+  tests/uuid.scm				\
   tests/system.scm				\
   tests/services.scm				\
   tests/scripts-build.scm			\
@@ -700,6 +709,15 @@ hydra-jobs.scm: $(GOBJECTS)
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env "$(GUILE)"		\
 	  "$(top_srcdir)/build-aux/hydra/evaluate.scm"			\
 	  "$(top_srcdir)/build-aux/hydra/gnu-system.scm" > "$@.tmp"
+	$(AM_V_at)mv "$@.tmp" "$@"
+
+# Compute the Cuirass jobs and write them in the target file.
+cuirass-jobs.scm: $(GOBJECTS)
+	$(AM_V_at)$(MKDIR_P) "`dirname "$@"`"
+	$(AM_V_GEN)$(top_builddir)/pre-inst-env "$(GUILE)"		\
+	  "$(top_srcdir)/build-aux/hydra/evaluate.scm"			\
+	  "$(top_srcdir)/build-aux/cuirass/gnu-system.scm" 		\
+	  cuirass > "$@.tmp"
 	$(AM_V_at)mv "$@.tmp" "$@"
 
 .PHONY: gen-ChangeLog gen-AUTHORS gen-tarball-version

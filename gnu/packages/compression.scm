@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -114,7 +114,7 @@ in compression.")
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "contrib/minizip") #t))
-         (add-before 'configure 'autoreconf
+         (add-after 'enter-source 'autoreconf
            (lambda _
              (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs
@@ -767,6 +767,28 @@ the LZ4 frame format.")
 (define-public python2-lz4
   (package-with-python2 python-lz4))
 
+(define-public python-lzstring
+  (package
+    (name "python-lzstring")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lzstring" version))
+       (sha256
+        (base32
+         "1d3ck454y41mii0gcjabpmp2skb7n0f9zk232gycqdv8z2jxakfm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-future" ,python-future)))
+    (home-page "https://github.com/gkovacs/lz-string-python")
+    (synopsis "String compression")
+    (description "Lz-string is a string compressor library for Python.")
+    (license license:expat)))
+
+(define-public python2-lzstring
+  (package-with-python2 python-lzstring))
+
 (define-public squashfs-tools
   (package
     (name "squashfs-tools")
@@ -963,7 +985,7 @@ respectively, based on the reference implementation from Google.")
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-build-directory
            (lambda _ (chdir "xdelta3")))
-         (add-before 'configure 'autoconf
+         (add-after 'enter-build-directory 'autoconf
            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "http://xdelta.com")
     (synopsis "Delta encoder for binary files")
@@ -1529,22 +1551,24 @@ manipulate, read, and write Zip archive files.")
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://nih.at/libzip/libzip-" version ".tar.gz"))
-              (patches (search-patches "libzip-CVE-2017-12858.patch"))
+                    "https://nih.at/libzip/libzip-" version ".tar.xz"))
               (sha256
                (base32
-                "17vxj2ffsxwh8lkc6801ppmwj15jp8q58rin76znxfbx88789ybc"))))
+                "0wykw0q9dwdzx0gssi2dpgckx9ggr2spzc1amjnff6wi6kz6x4xa"))))
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'patch-perl
+         (add-after 'build 'remove-failing-tests
+           ;; These tests are known to fail on 32-bit architectures.
+           ;; see thread: https://nih.at/listarchive/libzip-discuss/msg00713.html
            (lambda _
-             (substitute* "regress/runtest.in"
-               (("/usr/bin/env perl") (which "perl"))))))))
+             (substitute* "regress/Makefile"
+               (("encryption-nonrandom") "#encryption-nonrandom"))
+             #t)))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs

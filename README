@@ -1,42 +1,42 @@
 -*- mode: org -*-
 
-[[http://www.gnu.org/software/guix/][GNU Guix]] (IPA: /ɡiːks/) is a purely functional package manager, and
-associated free software distribution, for the [[http://www.gnu.org/gnu/gnu.html][GNU system]].  In addition
+[[https://www.gnu.org/software/guix/][GNU Guix]] (IPA: /ɡiːks/) is a purely functional package manager, and
+associated free software distribution, for the [[https://www.gnu.org/gnu/gnu.html][GNU system]].  In addition
 to standard package management features, Guix supports transactional
 upgrades and roll-backs, unprivileged package management, per-user
 profiles, and garbage collection.
 
-It provides [[http://www.gnu.org/software/guile/][Guile]] Scheme APIs, including a high-level embedded
+It provides [[https://www.gnu.org/software/guile/][Guile]] Scheme APIs, including a high-level embedded
 domain-specific languages (EDSLs) to describe how packages are to be
 built and composed.
 
 A user-land free software distribution for GNU/Linux comes as part of
 Guix.
 
-Guix is based on the [[http://nixos.org/nix/][Nix]] package manager.
+Guix is based on the [[https://nixos.org/nix/][Nix]] package manager.
 
 
 * Requirements
 
 GNU Guix currently depends on the following packages:
 
-  - [[http://gnu.org/software/guile/][GNU Guile 2.2.x or 2.0.x]], version 2.0.9 or later
-  - [[http://gnupg.org/][GNU libgcrypt]]
-  - [[http://www.gnu.org/software/make/][GNU Make]]
-  - optionally [[http://savannah.nongnu.org/projects/guile-json/][Guile-JSON]], for the 'guix import pypi' command
-  - optionally [[http://www.gnutls.org][GnuTLS]] compiled with guile support enabled, for HTTPS support
+  - [[https://gnu.org/software/guile/][GNU Guile 2.2.x or 2.0.x]], version 2.0.9 or later
+  - [[https://gnupg.org/][GNU libgcrypt]]
+  - [[https://www.gnu.org/software/make/][GNU Make]]
+  - optionally [[https://savannah.nongnu.org/projects/guile-json/][Guile-JSON]], for the 'guix import pypi' command
+  - optionally [[https://www.gnutls.org][GnuTLS]] compiled with guile support enabled, for HTTPS support
     in the 'guix download' command.  Note that 'guix import pypi' requires
     this functionality.
 
 Unless `--disable-daemon' was passed, the following packages are needed:
 
-  - [[http://sqlite.org/][SQLite 3]]
+  - [[https://sqlite.org/][SQLite 3]]
   - [[http://www.bzip.org][libbz2]]
-  - [[http://gcc.gnu.org][GCC's g++]]
+  - [[https://gcc.gnu.org][GCC's g++]]
 
 When `--disable-daemon' was passed, you instead need the following:
 
-  - [[http://nixos.org/nix/][Nix]]
+  - [[https://nixos.org/nix/][Nix]]
 
 * Installation
 
@@ -44,7 +44,7 @@ See the manual for the installation instructions, either by running
 
   info -f doc/guix.info "Installation"
 
-or by checking the [[http://www.gnu.org/software/guix/manual/guix.html#Installation][web copy of the manual]].
+or by checking the [[https://www.gnu.org/software/guix/manual/guix.html#Installation][web copy of the manual]].
 
 For information on installation from a Git checkout, please see the section
 "Building from Git" in the manual.
@@ -109,7 +109,7 @@ Join #guix on irc.freenode.net.
 
 * Guix & Nix
 
-GNU Guix is based on [[http://nixos.org/nix/][the Nix package manager]].  It implements the same
+GNU Guix is based on [[https://nixos.org/nix/][the Nix package manager]].  It implements the same
 package deployment paradigm, and in fact it reuses some of its code.
 Yet, different engineering decisions were made for Guix, as described
 below.
@@ -132,7 +132,7 @@ the store.  Guix produces such derivations, which are then interpreted
 by the daemon to perform the build.  Thus, Guix derivations can use
 derivations produced by Nix (and vice versa).
 
-With Nix and the [[http://nixos.org/nixpkgs][Nixpkgs]] distribution, package composition happens at
+With Nix and the [[https://nixos.org/nixpkgs][Nixpkgs]] distribution, package composition happens at
 the Nix language level, but builders are usually written in Bash.
 Conversely, Guix encourages the use of Scheme for both package
 composition and builders.  Likewise, the core functionality of Nix is
@@ -141,13 +141,13 @@ but exposes all the API as Scheme.
 
 * Related software
 
-  - [[http://nixos.org][Nix, Nixpkgs, and NixOS]], functional package manager and associated
+  - [[https://nixos.org][Nix, Nixpkgs, and NixOS]], functional package manager and associated
     software distribution, are the inspiration of Guix
-  - [[http://www.gnu.org/software/stow/][GNU Stow]] builds around the idea of one directory per prefix, and a
+  - [[https://www.gnu.org/software/stow/][GNU Stow]] builds around the idea of one directory per prefix, and a
     symlink tree to create user environments
-  - [[http://www.pvv.ntnu.no/~arnej/store/storedoc_6.html][STORE]] shares the same idea
+  - [[https://www.pvv.ntnu.no/~arnej/store/storedoc_6.html][STORE]] shares the same idea
   - [[https://live.gnome.org/OSTree/][GNOME's OSTree]] allows bootable system images to be built from a
     specified set of packages
-  - The [[http://www.gnu.org/s/gsrc/][GNU Source Release Collection]] (GSRC) is a user-land software
+  - The [[https://www.gnu.org/s/gsrc/][GNU Source Release Collection]] (GSRC) is a user-land software
     distribution; unlike Guix, it relies on core tools available on the
     host system

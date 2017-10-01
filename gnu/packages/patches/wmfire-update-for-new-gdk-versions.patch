@@ -1,4 +1,4 @@
-This patch comes from Debian and was modified by Kei Kebreau <kei@openmailbox.org>.
+This patch comes from Debian and was modified by Kei Kebreau <kkebreau@posteo.net>.
 Link: https://anonscm.debian.org/cgit/pkg-wmaker/wmfire.git/plain/debian/patches/gdk_updates.patch?h=debian/1.2.4-2&id=a272234fc5eecdbfc469adb12133196bc62f3059
 
 Description: Update for newer versions of GDK.

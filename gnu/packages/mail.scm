@@ -265,7 +265,7 @@ operating systems.")
   (package
     (inherit mutt)
     (name "neomutt")
-    (version "20170714")
+    (version "20170912")
     (source
      (origin
        (method url-fetch)
@@ -273,7 +273,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "10x3sxai773n0gfqpi904ci1qvngymcbc2didswrm92wz4h8km20"))))
+         "0mv60kii933hq52mhwrcz29diaajbs5ryqibgsvdvfyvx27i43cz"))))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
@@ -667,14 +667,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.25")
+    (version "0.25.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02z6d87ip1hkipz8d7w0sfklg8dd5fd5vlgp768640ixg0gqvlk5"))))
+                "0c98hzwc60nb6kd15y0fl2ji3yfmr9k6v8ps0h3ihr3vkgn0kgxl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.
@@ -727,45 +727,51 @@ ing, and tagging large collections of email messages.")
     (license gpl3+)))
 
 (define-public notmuch-addrlookup-c
-  (package
-    (name "notmuch-addrlookup-c")
-    (version "7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/aperezdc/" name "/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0rslg2ifgyhl6asv3yr1f62m9xjfcinv7i6qb07h2k217jqlmrri"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX="
-                                         (assoc-ref %outputs "out")))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  ;; Remove vim code completion config, it's not needed to
-                  ;; build (or be patched).
-                  (add-before 'patch-source-shebangs 'delete-ycm-file
-                              (lambda _ (delete-file ".ycm_extra_conf.py")))
-                  (replace 'install
-                           (lambda* (#:key outputs #:allow-other-keys)
-                             (let ((bin (string-append
-                                         (assoc-ref outputs "out") "/bin")))
-                               (install-file "notmuch-addrlookup" bin)))))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("glib" ,glib)
-       ("notmuch" ,notmuch)))
-    (home-page "https://github.com/aperezdc/notmuch-addrlookup-c")
-    (synopsis "Address lookup tool for Notmuch")
-    (description "This is an address lookup tool using a Notmuch database,
+  ;; This commit includes a compatibility fix for notmuch-0.25, and is not
+  ;; currently part of any release.  Please update this package when
+  ;; notmuch-addrlookup-c-9 is released.
+  (let ((commit "88f156d04990a71c6ad6fc2757b537b44e3c4d00")
+        (revision "1"))          ;Guix package revision
+    (package
+      (name "notmuch-addrlookup-c")
+      (version (string-append "8-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/aperezdc/notmuch-addrlookup-c.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0v0wzs7qzy4n1hbql8s10qrwgalcxdzbxf8pj6cii1pv2jwmkxbm"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f ; no tests
+         #:make-flags (list "CC=gcc"
+                            (string-append "PREFIX="
+                                           (assoc-ref %outputs "out")))
+         #:phases (modify-phases %standard-phases
+                    (delete 'configure)
+                    ;; Remove vim code completion config, it's not needed to
+                    ;; build (or be patched).
+                    (add-before 'patch-source-shebangs 'delete-ycm-file
+                                (lambda _ (delete-file ".ycm_extra_conf.py")))
+                    (replace 'install
+                             (lambda* (#:key outputs #:allow-other-keys)
+                               (let ((bin (string-append
+                                           (assoc-ref outputs "out") "/bin")))
+                                 (install-file "notmuch-addrlookup" bin)))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("glib" ,glib)
+         ("notmuch" ,notmuch)))
+      (home-page "https://github.com/aperezdc/notmuch-addrlookup-c")
+      (synopsis "Address lookup tool for Notmuch")
+      (description "This is an address lookup tool using a Notmuch database,
 useful for email address completion.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public python-notmuch
   (package
@@ -896,7 +902,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.15.0")
+    (version "3.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -904,7 +910,7 @@ compresses it.")
                     ".tar.xz"))
               (sha256
                (base32
-                "0bnwd3l04y6j1nw3h861rdy6k6lyjzsi51j04d33vbpq8c6jskaf"))))
+                "0hlm2jipyr4z6izlrpvabpz4ivh49i13avnm848kr1nv68pkq2cd"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -1169,9 +1175,9 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
                                               "/lib/dovecot"))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autogen
+         (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "./autogen.sh")))))))
+             (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://0xacab.org/riseuplabs/trees")
     (synopsis "NaCL-based Dovecot email storage encryption plugin")
     (description
@@ -1225,9 +1231,9 @@ using lidsodium sealed boxes.
                                                 "/lib/dovecot"))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'autogen
+           (add-after 'unpack 'autogen
              (lambda _
-               (zero? (system* "./autogen.sh")))))))
+               (zero? (system* "sh" "autogen.sh")))))))
       (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
       (synopsis "Libsodium password hashing schemes plugin for Dovecot")
       (description

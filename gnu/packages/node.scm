@@ -40,16 +40,14 @@
 (define-public node
   (package
     (name "node")
-    (version "8.1.2")
+    (version "8.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "0l92gar1pivzaiwffiiiz2f2m5k39sl5fphlfnvy0ml9hrjb65yp"))
-              ;; https://github.com/nodejs/node/pull/9077
-              (patches (search-patches "node-9077.patch"))))
+                "1vrpc4lspm33hmb8c2q4w1fzg3iaip2gx4wpr4nyy417hbx1a6k4"))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO: Purge the bundled copies from the source.
@@ -78,10 +76,9 @@
                (("'/usr/bin/env'")
                 (string-append "'" (which "env") "'")))
 
-             ;; Having the build fail because of linter errors is insane!
+             ;; Linting is no longer supported in the release tarball
              (substitute* '("Makefile")
-               (("	\\$\\(MAKE\\) jslint") "")
-               (("	\\$\\(MAKE\\) cpplint\n") ""))
+               (("	\\$\\(MAKE\\) lint") ""))
 
              ;; FIXME: This test seems to depends on files that are not
              ;; available in the bundled v8. See
@@ -95,6 +92,7 @@
                          "test/parallel/test-util-inspect.js"
                          "test/parallel/test-v8-serdes.js"
                          "test/parallel/test-dgram-membership.js"
+                         "test/parallel/test-dns-resolveany.js"
                          "test/parallel/test-cluster-master-error.js"
                          "test/parallel/test-cluster-master-kill.js"
                          "test/parallel/test-npm-install.js"

@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -37,6 +37,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
@@ -228,6 +229,17 @@ required structures.")
     (name "guile2.0-gnutls")
     (inputs `(("guile" ,guile-2.0)
               ,@(alist-delete "guile" (package-inputs gnutls))))))
+
+(define-public gnutls/dane
+  ;; GnuTLS with build libgnutls-dane, implementing DNS-based
+  ;; Authentication of Named Entities.  This is required for GNS functionality
+  ;; by GNUnet and gnURL.  This is done in an extra package definition
+  ;; to have the choice between GnuTLS with Dane and without Dane.
+  (package
+    (inherit gnutls)
+    (name "gnutls-dane")
+    (inputs `(("unbound" ,unbound)
+              ,@(package-inputs gnutls)))))
 
 (define-public openssl
   (package
@@ -486,13 +498,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.17.0")
+    (version "0.18.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
-      (sha256
-       (base32
-        "0vmnv7qhdhl9qhq03v6zrcj1lsmpmpjb94s0xsc7piwqxfmf9jrw"))))
+              (sha256
+               (base32
+                "1xiy8m7501g5l9kpdmyvyz72nfnl72l19qkrf76fyvby7adzm3ki"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -529,9 +541,6 @@ netcat implementation that supports TLS.")
     (description "ACME protocol implementation in Python")
     (license license:asl2.0)))
 
-(define-public python2-acme
-  (package-with-python2 python-acme))
-
 (define-public certbot
   (package
     (name "certbot")
@@ -543,7 +552,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "173619jkq4bg88f6i837z3pcjkrfabrvv8vrpyx18k9i7xnb5xa3"))))
+                "16lw4n7kwnkvh9sz2f97c7ad1wwp33mg5fc332lpy5n17zpfc8h1"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -763,7 +772,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.5.1")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -773,7 +782,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "1yc1rj0izjihj9hbzvskpa4gjzqf4dm2i84nmmm2s9j1i66fp6jm"))))
+         "11wnj34rfqxjggmdgf042i49lr6civgbqwv2p7p8bn6k2919vg4r"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)))

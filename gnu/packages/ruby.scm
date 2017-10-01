@@ -49,7 +49,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (replacement ruby-2.4.1)
+    (replacement ruby-2.4.2)
     (version "2.4.0")
     (source
      (origin
@@ -103,11 +103,11 @@ a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
 
-(define-public ruby-2.4.1
+(define-public ruby-2.4.2
   (package
     (inherit ruby)
     (name "ruby")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
@@ -116,7 +116,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0m763zf2v0jhrha3cx21g4dif6vc9gm714invs8h3sg35ncskj2g"))
+         "0dgp4ypk3smrsbh2c249n5pl6nqhpd2igq9484dbsh81sf08k2kl"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -126,7 +126,7 @@ a focus on simplicity and productivity.")
 (define-public ruby-2.3
   (package
     (inherit ruby)
-    (version "2.3.4")
+    (version "2.3.5")
     (source
      (origin
        (method url-fetch)
@@ -135,7 +135,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "132p5kc1sx97svbx04g40pz5pr7p8f6jlmnq5r2prlcz5q1xj71l"))
+         "1npzcnq5kh0f9y88w5gj4v6ln8csr91361k3r43dmhlhn6mpsfkx"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -144,7 +144,7 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.2
   (package (inherit ruby)
-    (version "2.2.7")
+    (version "2.2.8")
     (source
      (origin
        (method url-fetch)
@@ -153,7 +153,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0lyb7gnbbhs3a3v9grsjgbaixm20wxz6x3h0czyrxnj3cpp8lk13"))))))
+         "1c31slidv2bdnnir3qfmdjs193b5s2ycb9pnf1lc55kk0cazrsip"))))))
 
 (define-public ruby-2.1
   (package (inherit ruby)
@@ -215,6 +215,32 @@ a focus on simplicity and productivity.")
                           "process.c")
              (("/bin/sh") (which "sh"))))
          %standard-phases)))))
+
+(define-public ruby-highline
+  (package
+    (name "ruby-highline")
+    (version "1.7.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "highline" version))
+       (sha256
+        (base32
+         "1nf5lgdn6ni2lpfdn4gk3gi47fmnca2bdirabbjbz1fk9w4p8lkr"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ;; TODO: NameError: uninitialized constant SPEC
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-code-statistics" ,ruby-code-statistics)))
+    (synopsis
+     "HighLine helps you build command-line interfaces")
+    (description
+     "HighLine provides a high-level IO library that provides validation,
+type conversion, and more for command-line interfaces.  HighLine also includes
+a menu system for providing multiple options to the user.")
+    (home-page "https://github.com/JEG2/highline")
+    (license (list license:gpl2 license:ruby))))
 
 (define-public ruby-hoe
   (package
@@ -660,6 +686,34 @@ complexity.")
     (home-page "https://github.com/ThoughtWorksStudios/saikuro_treemap")
     (license license:expat)))
 
+(define-public ruby-options
+  (package
+    (name "ruby-options")
+    (version "2.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "options" version))
+       (sha256
+        (base32
+         "1s650nwnabx66w584m1cyw82icyym6hv5kzfsbp38cinkr5klh9j"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f ;; TODO: NameError: uninitialized constant Config
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-LIB
+           (lambda _
+             ;; This is used in the Rakefile, and setting it avoids an issue
+             ;; with running the tests.
+             (setenv "LIB" "options"))))))
+    (synopsis "Ruby library to parse options from *args cleanly")
+    (description
+     "The @code{options} library helps with parsing keyword options in Ruby
+functions.")
+    (home-page "https://github.com/ahoward/options")
+    (license license:ruby)))
+
 (define-public ruby-orderedhash
   (package
     (name "ruby-orderedhash")
@@ -946,6 +1000,41 @@ standard output stream.")
 Ruby Gems.")
     (home-page "https://github.com/postmodern/rubygems-tasks")
     (license license:expat)))
+
+(define-public ruby-rubyzip
+  (package
+  (name "ruby-rubyzip")
+  (version "1.2.1")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (rubygems-uri "rubyzip" version))
+      (sha256
+        (base32
+          "06js4gznzgh8ac2ldvmjcmg9v1vg9llm357yckkpylaj6z456zqz"))))
+  (build-system ruby-build-system)
+  (arguments
+   '(#:phases
+     (modify-phases %standard-phases
+       (add-before 'check 'patch-tests
+         (lambda* (#:key inputs #:allow-other-keys)
+           (substitute* "test/gentestfiles.rb"
+             (("/usr/bin/zip")
+              (string-append
+               (assoc-ref inputs "zip") "/bin/zip")))
+           (substitute* "test/input_stream_test.rb"
+             (("/usr/bin/env ruby") (which "ruby")))
+           #t)))))
+  (native-inputs
+   `(("bundler" ,bundler)
+     ("ruby-simplecov" ,ruby-simplecov)
+     ("zip" ,zip)
+     ("unzip" ,unzip)))
+  (synopsis "Ruby module is for reading and writing zip files")
+  (description
+    "The rubyzip module provides ways to read from and create zip files.")
+  (home-page "http://github.com/rubyzip/rubyzip")
+  (license license:bsd-2)))
 
 (define-public ruby-ffi
   (package
@@ -1865,6 +1954,28 @@ net/http library.")
     (home-page "https://github.com/nicksieger/multipart-post")
     (license license:expat)))
 
+(define-public ruby-multi-json
+  (package
+    (name "ruby-multi-json")
+    (version "1.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "multi_json" version))
+       (sha256
+        (base32
+         "1raim9ddjh672m32psaa9niw67ywzjbxbdb8iijx3wv9k5b0pk2x"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ;; No testsuite included in the gem.
+    (synopsis "Common interface to multiple JSON libraries for Ruby")
+    (description
+     "This package provides a common interface to multiple JSON libraries,
+including Oj, Yajl, the JSON gem (with C-extensions), the pure-Ruby JSON gem,
+NSJSONSerialization, gson.rb, JrJackson, and OkJson.")
+    (home-page "http://github.com/intridea/multi_json")
+    (license license:expat)))
+
 (define-public ruby-arel
   (package
     (name "ruby-arel")
@@ -2018,14 +2129,14 @@ extract comments.")
 (define-public ruby-coderay
   (package
     (name "ruby-coderay")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "coderay" version))
        (sha256
         (base32
-         "1x6z923iwr1hi04k6kz5a6llrixflz8h5sskl9mhaaxy9jx2x93r"))))
+         "15vav4bhcc2x3jmi3izb11l4d9f3xv8hp2fszb7iqmpsccv1pz4y"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; missing test files
@@ -2034,6 +2145,37 @@ extract comments.")
 for select languages.")
     (home-page "http://coderay.rubychan.de")
     (license license:expat)))
+
+(define-public ruby-progress_bar
+  (package
+    (name "ruby-progress_bar")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "progress_bar" version))
+       (sha256
+        (base32
+         "1qc40mr6p1z9a3vlpnsg1zfgk1qswviql2a31y63wpv3vr6b5f48"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"))
+    (propagated-inputs
+     `(("ruby-highline" ,ruby-highline)
+       ("ruby-options" ,ruby-options)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-timecop" ,ruby-timecop)))
+    (synopsis
+     "Ruby library for displaying progress bars")
+    (description
+     "ProgressBar is a simple library for displaying progress bars.  The
+maximum value is configurable, and additional information can be displayed
+like the percentage completion, estimated time remaining, elapsed time and
+rate.")
+    (home-page "https://github.com/paul/progress_bar")
+    (license license:wtfpl2)))
 
 (define-public ruby-pry
   (package
@@ -2565,14 +2707,14 @@ you about the changes.")
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
-    (version "5.1.3")
+    (version "5.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activesupport" version))
        (sha256
         (base32
-         "16r18n6b1nlky0xx2lw8c1f15gr2vm34xz5g4byjcxf88m1s07xh"))))
+         "0sgf4rsfr7jcaqsx0wwzx4l4k9xsjlwv0mzl08pxiyp1qzyx8scr"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -3579,6 +3721,57 @@ It has built-in support for the legacy @code{cookies.txt} and
     (home-page "https://github.com/sparklemotion/http-cookie")
     (license license:expat)))
 
+(define-public ruby-httpclient
+  (package
+    (name "ruby-httpclient")
+    (version "2.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "httpclient" version))
+       (sha256
+        (base32
+         "19mxmvghp7ki3klsxwrlwr431li7hm1lczhhj8z4qihl2acy8l99"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; TODO: Some tests currently fail
+       ;; ------
+       ;; 211 tests, 729 assertions, 13 failures, 4 errors, 0 pendings,
+       ;; 2 omissions, 0 notifications
+       ;; 91.866% passed
+       ;; ------
+       ;; 6.49 tests/s, 22.41 assertions/s
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (zero?
+                  (system* "ruby"
+                           "-Ilib"
+                           "test/runner.rb"))
+                 #t)))
+         (add-after 'install 'wrap-bin-httpclient
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/httpclient")
+               `("GEM_HOME" ":" prefix (,(getenv "GEM_HOME"))))
+             #t)))))
+    (native-inputs
+     `(("ruby-rack" ,ruby-rack)))
+    (synopsis
+     "Make HTTP requests with support for HTTPS, Cookies, authentication and more")
+    (description
+     "The @code{httpclient} ruby library provides functionality related to
+HTTP.  Compared to the @code{net/http} library, @{httpclient} also provides
+Cookie, multithreading and authentication (digest, NTLM) support.
+
+Also provided is a @command{httpclient} command, which can perform HTTP
+requests either using arguments or with an interactive prompt.")
+    (home-page "https://github.com/nahi/httpclient")
+    (license license:ruby)))
+
 (define-public ruby-ansi
   (package
     (name "ruby-ansi")
@@ -4274,4 +4467,25 @@ Mail has been designed with a very simple object oriented system that
 really opens up the email messages you are parsing, if you know what you
 are doing, you can fiddle with every last bit of your email directly.")
     (home-page "https://github.com/mikel/mail")
+    (license license:expat)))
+
+(define-public ruby-code-statistics
+  (package
+    (name "ruby-code-statistics")
+    (version "0.2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "code_statistics" version))
+       (sha256
+        (base32
+         "07rdpsbwbmh4vp8nxyh308cj7am2pbrfhv9v5xr2d5gq8hnnsm93"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; Not all test code is included in gem.
+    (synopsis "Port of the rails 'rake stats' method")
+    (description
+     "This gem is a port of the rails 'rake stats' method so it can be made
+more robust and work for non rails projects.")
+    (home-page "http://github.com/danmayer/code_statistics")
     (license license:expat)))

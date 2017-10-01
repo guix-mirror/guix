@@ -3589,6 +3589,26 @@ technical illustrations.  Its output is scalable PostScript or SVG, rather
 than the bitmaps Metafont creates.")
     (license license:lppl)))
 
+(define-public texlive-latex-acmart
+  (package
+    (name "texlive-latex-acmart")
+    (version "1.45")
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "acmart"))
+              (sha256
+               (base32
+                "10zs8ga88ksypv1v4p6mynmfa7749q2hgxlr4shnwfjd9wrb421q"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/acmart"))
+    (home-page "http://www.ctan.org/pkg/acmart")
+    (synopsis "Class for typesetting publications of ACM")
+    (description
+     "This package provides a class for typesetting publications of the
+Association for Computing Machinery (ACM).")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-varwidth
   (package
     (name "texlive-latex-varwidth")

@@ -64,7 +64,7 @@ in FITS files.")
 (define-public wcslib
   (package
     (name "wcslib")
-    (version "5.16")
+    (version "5.17")
     (source
      (origin
        (method url-fetch)
@@ -72,7 +72,7 @@ in FITS files.")
              "ftp://ftp.atnf.csiro.au/pub/software/wcslib/" name "-" version
              ".tar.bz2"))
        (sha256
-        (base32 "1vwrzkznpig2q40m11j12hsfqvsjz8z44l66pz5fkh6fy461w0zd"))))
+        (base32 "0v23x1fw01arhmqdrzfd9n593mjglhzfyx4793v065z0dg4bb72w"))))
     (inputs
      `(("cfitsio" ,cfitsio)))
     (build-system gnu-build-system)
@@ -83,7 +83,7 @@ in FITS files.")
                       (substitute* "makedefs.in"
                         (("/bin/sh") "sh"))
                       #t)))))
-    (home-page "http://www.atnf.csiro.au/people/mcalabre/WCS")
+    (home-page "https://www.atnf.csiro.au/people/mcalabre/WCS")
     (synopsis "Library which implements the FITS WCS standard")
     (description "The FITS \"World Coordinate System\" (WCS) standard defines
 keywords and usage that provide for the description of astronomical coordinate
@@ -93,7 +93,7 @@ systems in a FITS image header.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.3")
+    (version "0.4")
     (source
      (origin
        (method url-fetch)
@@ -101,7 +101,7 @@ systems in a FITS image header.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "109xjwbs36gbkx5sd5yzf6ailfcldc5d28vl1n19z0ylfzww4nwa"))))
+         "1n30zz4kg89ic5h30b7nrxp0bk0ls2m3xnfi81mja56bxxwpihrs"))))
     (inputs
      `(("cfitsio" ,cfitsio)
        ("gsl" ,gsl)

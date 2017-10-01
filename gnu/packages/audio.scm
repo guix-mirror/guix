@@ -328,7 +328,7 @@ engineers, musicians, soundtrack editors and composers.")
        #:phases
        (modify-phases %standard-phases
          ;; FFmpeg is only detected if autoreconf runs.
-         (add-before 'configure 'autoreconf
+         (add-after 'unpack 'autoreconf
            (lambda _
              (zero? (system* "autoreconf" "-vfi")))))
        ;; The test suite is not "well exercised" according to the developers,
@@ -568,23 +568,17 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.05")
+    (version "6.09.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/csound/csound6/Csound"
-                    version "/Csound" version ".tar.gz"))
+                    "https://github.com/csound/csound/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0a1sni6lr7qpwywpggbkp0ia3h9bwwgf9i87gsag8ra2h30v82hd"))
-              (patches (search-patches "csound-header-ordering.patch"))))
+                "0f67vyy3r29hn26qkkcwnizrnzzy8p7gmg3say5q3wjhxns3b5yl"))))
     (build-system cmake-build-system)
-    (arguments
-     ;; Work around this error on x86_64 with libc 2.22+:
-     ;;    libmvec.so.1: error adding symbols: DSO missing from command line
-     (if (string-prefix? "x86_64" (or (%current-target-system) (%current-system)))
-         '(#:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-lmvec"))
-         '()))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("boost" ,boost)
@@ -1084,7 +1078,7 @@ PS, and DAB+.")
     (native-inputs
      `(("llvm" ,llvm-with-rtti)
        ("which" ,which)
-       ("xxd" ,vim)
+       ("xxd" ,xxd)
        ("ctags" ,emacs-minimal)  ; for ctags
        ("pkg-config" ,pkg-config)))
     (inputs
@@ -1136,7 +1130,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.35.5")
+    (version "0.35.6")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1144,7 +1138,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "00pfb6qa3jfa6qaql7isnb8srfdfmk362ygslh7y0qkm36qasmh4"))))
+               "0ffvfnvhj6vz73zsrpi88hs69ys4zskm847zf825dl2r39n9nn41"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -1979,8 +1973,8 @@ tempo and pitch of an audio recording independently of one another.")
     (arguments
      `(#:tests? #f ;no "check" target
        #:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'autoconf
+                  (add-after
+                   'unpack 'autoconf
                    (lambda _ (zero? (system* "autoreconf" "-vfi"))))
                   (add-before
                    'build 'fix-makefile
@@ -2906,3 +2900,29 @@ code, used in @code{libtoxcore}.")
 06.10 RPE-LTP lossy speech compression algorithm.")
     (home-page "http://quut.com/gsm/")
     (license (license:non-copyleft "file://COPYRIGHT"))))
+
+(define-public python-pyalsaaudio
+  (package
+    (name "python-pyalsaaudio")
+    (version "0.8.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyalsaaudio" version))
+              (sha256
+               (base32
+                "1180ypn9596rq4b7y7dyv627j1q0fqilmkkrckclnzsdakdgis44"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                   ; tests require access to ALSA devices.
+    (inputs
+     `(("alsa-lib" ,alsa-lib)))
+    (home-page "http://larsimmisch.github.io/pyalsaaudio/")
+    (synopsis "ALSA wrappers for Python")
+    (description
+     "This package contains wrappers for accessing the ALSA API from Python.
+It is currently fairly complete for PCM devices, and has some support for
+mixers.")
+    (license license:psfl)))
+
+(define-public python2-pyalsaaudio
+  (package-with-python2 python-pyalsaaudio))

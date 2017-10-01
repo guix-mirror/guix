@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
-;;; Copyright © 2016, 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -522,7 +522,7 @@ watch your CPU playing while enjoying a cup of tea!")
 (define-public retux
   (package
     (name "retux")
-    (version "1.3.4")
+    (version "1.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/retux/"
@@ -530,7 +530,7 @@ watch your CPU playing while enjoying a cup of tea!")
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1wgvh3q96kfgymb2jpd58xsms9hmckhhc4fq7v2k61gh2l11cvdj"))))
+                "1pcrh3z16fl412r3k7xccrgika19ahb1xh90jihgl8yy7zza2i6p"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -2427,17 +2427,19 @@ and a game metadata scraper.")
          ;; The build process fails if the configure script is passed the
          ;; option "--enable-fast-install".
          (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs (configure-flags '())
+                     #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (lzo (assoc-ref inputs "lzo")))
                (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         ;; Provide the "lzo" path.
-                         (string-append "--with-liblzo2="
-                                        lzo "/lib/liblzo2.a")
-                         ;; Put the binary in 'bin' instead of 'games'.
-                         "--binary-dir=bin"))))))))
+                (apply system* "./configure"
+                       (string-append "--prefix=" out)
+                       ;; Provide the "lzo" path.
+                       (string-append "--with-liblzo2="
+                                      lzo "/lib/liblzo2.a")
+                       ;; Put the binary in 'bin' instead of 'games'.
+                       "--binary-dir=bin"
+                       configure-flags))))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("allegro" ,allegro-4)
@@ -2464,10 +2466,6 @@ engine.  When you start it you will be prompted to download a graphics set.")
     ;; different terms.
     (license (list license:bsd-3 license:gpl2 license:lgpl2.1+ license:zlib))))
 
-;; TODO Add 'openttd-opengfx' and 'openttd-openmsx' packages and make
-;; 'openttd' a wrapper around them.  The engine is playable by itself,
-;; but it asks a user to download graphics if it's not found.
-
 (define openttd-opengfx
   (package
     (name "openttd-opengfx")
@@ -2485,7 +2483,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
      '(#:make-flags (list "CC=gcc"
                           (string-append "INSTALL_DIR="
                                          (assoc-ref %outputs "out")
-                                         "/share/openttd/baseset"))
+                                         "/share/games/openttd/baseset/opengfx"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -2503,7 +2501,8 @@ engine.  When you start it you will be prompted to download a graphics set.")
        ;; different software versions than upstream does, some of the md5sums
        ;; are different. However, the package is still reproducible, it's safe
        ;; to disable this test.
-       #:tests? #f))
+       #:tests? #f
+       #:parallel-build? #f))
     (native-inputs `(("dos2unix" ,dos2unix)
                      ("gimp" ,gimp)
                      ("grfcodec" ,grfcodec)
@@ -2525,27 +2524,108 @@ OpenGFX provides you with...
 @end enumerate")
     (license license:gpl2)))
 
+(define openttd-opensfx
+  (package
+    (name "openttd-opensfx")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://binaries.openttd.org/extra/opensfx/"
+             version "/opensfx-" version "-source.tar.gz"))
+       (sha256
+        (base32
+         "03jxgp02ks31hmsdh4xh0xcpkb70ds8jakc9pfc1y9vdrdavh4p5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("catcodec" ,catcodec)
+       ("python" ,python2-minimal)))
+    (arguments
+     `(#:make-flags
+       (list (string-append "INSTALL_DIR=" %output
+                            "/share/games/openttd/baseset/opensfx"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             ;; Remove the time dependency of the installed tarball by setting
+             ;; the modification times if its members to 0.
+             (substitute* "scripts/Makefile.def"
+               (("-cf") " --mtime=@0 -cf"))
+             #t))
+         (delete 'configure))))
+    (home-page "http://dev.openttdcoop.org/projects/opensfx")
+    (synopsis "Base sounds for OpenTTD")
+    (description "OpenSFX is a set of free base sounds for OpenTTD which make
+it possible to play OpenTTD without requiring the proprietary sound files from
+the original Transport Tycoon Deluxe.")
+    (license license:cc-sampling-plus-1.0)))
+
+(define openttd-openmsx
+  (package
+    (name "openttd-openmsx")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://binaries.openttd.org/extra/openmsx/"
+             version "/openmsx-" version "-source.tar.gz"))
+       (sha256
+        (base32
+         "0nskq97a6fsv1v6d62zf3yb8whzhqnlh3lap3va3nzvj7csjgf7c"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python" ,python2-minimal)))
+    (arguments
+     `(#:make-flags
+       (list (string-append "INSTALL_DIR=" %output
+                            "/share/games/openttd/baseset"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'install 'post-install
+           ;; Rename openmsx-version to openmsx
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((install-directory (string-append (assoc-ref outputs "out")
+                                                     "/share/games/openttd/baseset")))
+               (rename-file (string-append install-directory "/openmsx-" ,version)
+                            (string-append install-directory "/openmsx"))
+               #t))))))
+    (home-page "http://dev.openttdcoop.org/projects/openmsx")
+    (synopsis "Music set for OpenTTD")
+    (description "OpenMSX is a music set for OpenTTD which makes it possible
+to play OpenTTD without requiring the proprietary music from the original
+Transport Tycoon Deluxe.")
+    (license license:gpl2)))
+
 (define-public openttd
   (package
     (inherit openttd-engine)
     (name "openttd")
     (arguments
-     (substitute-keyword-arguments (package-arguments openttd-engine)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'install-data
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let*
-                   ((opengfx (assoc-ref inputs "opengfx"))
-                    (out (assoc-ref outputs "out"))
-                    (gfx-dir
-                     (string-append out
-                                    "/share/games/openttd/baseset/opengfx")))
-                 (mkdir-p gfx-dir)
-                 (copy-recursively opengfx gfx-dir))
-               #t))))))
+     `(#:configure-flags
+       (list (string-append "--with-midi=" (assoc-ref %build-inputs "timidity++")
+                            "/bin/timidity"))
+       ,@(substitute-keyword-arguments (package-arguments openttd-engine)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-after 'install 'install-data
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (for-each
+                    (lambda (input)
+                      (copy-recursively (assoc-ref inputs input)
+                                        (assoc-ref outputs "out")))
+                    (list "opengfx" "openmsx" "opensfx"))
+                   #t)))))))
+    (inputs
+     `(("timidity++" ,timidity++)
+       ,@(package-inputs openttd-engine)))
     (native-inputs
      `(("opengfx" ,openttd-opengfx)
+       ("openmsx" ,openttd-openmsx)
+       ("opensfx" ,openttd-opensfx)
        ,@(package-native-inputs openttd-engine)))))
 
 (define-public pinball
@@ -3632,7 +3712,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.0e")
+    (version "10.0g")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3643,7 +3723,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "1p6fam73khhys54098qsgmp52d0rnqc3k5hknjig0znvfb2kwi38"))))
+                "0f68pcnsgl406dhm91ckn3f364bar9m9i5njp9vrmvhvv9p2icy0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3718,7 +3798,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "1z9w3nd57ybnf4w7ckhhp5vfws2hwd8x26fx6h496f6160fgcj6m"))))
+             "0bnp077qvlmxjlz1jjd6kpghlv9flxc19ac1xq3m3wyq1w9p3pab"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)

@@ -27,7 +27,7 @@ Copyright @copyright{} 2016 Chris Marusich@*
 Copyright @copyright{} 2016, 2017 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016 ng0@*
-Copyright @copyright{} 2016 Jan Nieuwenhuizen@*
+Copyright @copyright{} 2016, 2017 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017 Clément Lassieur@*
@@ -38,7 +38,9 @@ Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017 Marius Bakke@*
-Copyright @copyright{} 2017 Hartmut Goebel
+Copyright @copyright{} 2017 Hartmut Goebel@*
+Copyright @copyright{} 2017 Maxim Cournoyer@*
+Copyright @copyright{} 2017 Tobias Geerinckx-Rice
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -2141,6 +2143,8 @@ your system has unpatched security vulnerabilities.
 @cindex security
 @cindex digital signatures
 @cindex substitutes, authorization thereof
+@cindex access control list (ACL), for substitutes
+@cindex ACL (access control list), for substitutes
 To allow Guix to download substitutes from @code{hydra.gnu.org} or a
 mirror thereof, you
 must add its public key to the access control list (ACL) of archive
@@ -2189,9 +2193,29 @@ The following files would be downloaded:
 This indicates that substitutes from @code{hydra.gnu.org} are usable and
 will be downloaded, when possible, for future builds.
 
-Guix ignores substitutes that are not signed, or that are not signed by
-one of the keys listed in the ACL.  It also detects and raises an error
-when attempting to use a substitute that has been tampered with.
+Guix detects and raises an error when attempting to use a substitute
+that has been tampered with.  Likewise, it ignores substitutes that are
+not signed, or that are not signed by one of the keys listed in the ACL.
+
+There is one exception though: if an unauthorized server provides
+substitutes that are @emph{bit-for-bit identical} to those provided by
+an authorized server, then the unauthorized server becomes eligible for
+downloads.  For example, assume we have chosen two substitute servers
+with this option:
+
+@example
+--substitute-urls="https://a.example.org https://b.example.org"
+@end example
+
+@noindent
+@cindex reproducible builds
+If the ACL contains only the key for @code{b.example.org}, and if
+@code{a.example.org} happens to serve the @emph{exact same} substitutes,
+then Guix will download substitutes from @code{a.example.org} because it
+comes first in the list and can be considered a mirror of
+@code{b.example.org}.  In practice, independent build machines usually
+produce the same binaries, thanks to bit-reproducible builds (see
+below).
 
 @vindex http_proxy
 Substitutes are downloaded over HTTP or HTTPS.
@@ -3785,6 +3809,61 @@ implements an installation procedure for font packages where upstream
 provides pre-compiled TrueType, OpenType, etc. font files that merely
 need to be copied into place.  It copies font files to standard
 locations in the output directory.
+@end defvr
+
+@defvr {Scheme Variable} meson-build-system
+This variable is exported by @code{(guix build-system meson)}.  It
+implements the build procedure for packages that use
+@url{http://mesonbuild.com, Meson} as their build system.
+
+It adds both Meson and @uref{https://ninja-build.org/, Ninja} to the set
+of inputs, and they can be changed with the parameters @code{#:meson}
+and @code{#:ninja} if needed.  The default Meson is
+@code{meson-for-build}, which is special because it doesn't clear the
+@code{RUNPATH} of binaries and libraries when they are installed.
+
+This build system is an extension of @var{gnu-build-system}, but with the
+following phases changed to some specific for Meson:
+
+@table @code
+
+@item configure
+The phase runs @code{meson} with the flags specified in
+@code{#:configure-flags}.  The flag @code{--build-type} is always set to
+@code{plain} unless something else is specified in @code{#:build-type}.
+
+@item build
+The phase runs @code{ninja} to build the package in parallel by default, but
+this can be changed with @code{#:parallel-build?}.
+
+@item check
+The phase runs @code{ninja} with the target specified in @code{#:test-target},
+which is @code{"test"} by default.
+
+@item install
+The phase runs @code{ninja install} and can not be changed.
+@end table
+
+Apart from that, the build system also adds the following phases:
+
+@table @code
+
+@item fix-runpath
+This phase tries to locate the local directories in the package being build,
+which has libraries that some of the binaries need.  If any are found, they will
+be added to the programs @code{RUNPATH}.  It is needed because
+@code{meson-for-build} keeps the @code{RUNPATH} of binaries and libraries from
+when they are build, but often that is not the @code{RUNPATH} we want.
+Therefor it is also shrinked to the minimum needed by the program.
+
+@item glib-or-gtk-wrap
+This phase is the phase provided by @code{glib-or-gtk-build-system}, and it
+is not enabled by default.  It can be enabled with @code{#:glib-or-gtk?}.
+
+@item glib-or-gtk-compile-schemas
+This phase is the phase provided by @code{glib-or-gtk-build-system}, and it
+is not enabled by default.  It can be enabled with @code{#:glib-or-gtk?}.
+@end table
 @end defvr
 
 Lastly, for packages that do not need anything as sophisticated, a
@@ -5820,6 +5899,56 @@ CTAN while fetching the sources from the directory
 guix import texlive --archive=generic ifxetex
 @end example
 
+@item json
+@cindex JSON, import
+Import package metadata from a local JSON file@footnote{This
+functionality requires Guile-JSON to be installed.
+@xref{Requirements}.}.  Consider the following example package
+definition in JSON format:
+
+@example
+@{
+  "name": "hello",
+  "version": "2.10",
+  "source": "mirror://gnu/hello/hello-2.10.tar.gz",
+  "build-system": "gnu",
+  "home-page": "https://www.gnu.org/software/hello/",
+  "synopsis": "Hello, GNU world: An example GNU package",
+  "description": "GNU Hello prints a greeting.",
+  "license": "GPL-3.0+",
+  "native-inputs": ["gcc@@6"]
+@}
+@end example
+
+The field names are the same as for the @code{<package>} record
+(@xref{Defining Packages}).  References to other packages are provided
+as JSON lists of quoted package specification strings such as
+@code{guile} or @code{guile@@2.0}.
+
+The importer also supports a more explicit source definition using the
+common fields for @code{<origin>} records:
+
+@example
+@{
+  @dots{}
+  "source": @{
+    "method": "url-fetch",
+    "uri": "mirror://gnu/hello/hello-2.10.tar.gz",
+    "sha256": @{
+      "base32": "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i"
+    @}
+  @}
+  @dots{}
+@}
+@end example
+
+The command below reads metadata from the JSON file @code{hello.json}
+and outputs a package expression:
+
+@example
+guix import json hello.json
+@end example
+
 @item nix
 Import metadata from a local copy of the source of the
 @uref{http://nixos.org/nixpkgs/, Nixpkgs distribution}@footnote{This
@@ -6381,10 +6510,10 @@ Use substitute information from @var{urls}.
 Sort lines according to @var{key}, one of the following options:
 
 @table @code
-@item closure
-the total size of the item's closure (the default);
 @item self
-the size of each item.
+the size of each item (the default);
+@item closure
+the total size of the item's closure.
 @end table
 
 @item --map-file=@var{file}
@@ -7851,7 +7980,12 @@ Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
 GuixSD only supports ext4 and btrfs file systems.  In particular, code
 that reads partition UUIDs and labels only works for these file system
-types.}.
+types.}.  For the ESP, if you have one and assuming it is
+@file{/dev/sda2}, run:
+
+@example
+mkfs.fat -F32 /dev/sda2
+@end example
 
 Preferably, assign partitions a label so that you can easily and
 reliably refer to them in @code{file-system} declarations (@pxref{File
@@ -8162,8 +8296,9 @@ environment variable---in addition to the per-user profiles
 provides all the tools one would expect for basic user and administrator
 tasks---including the GNU Core Utilities, the GNU Networking Utilities,
 the GNU Zile lightweight text editor, @command{find}, @command{grep},
-etc.  The example above adds tcpdump to those, taken from the @code{(gnu
-packages admin)} module (@pxref{Package Modules}).  The
+etc.  The example above adds GNU@tie{}Screen and OpenSSH to those,
+taken from the @code{(gnu packages screen)} and @code{(gnu packages ssh)}
+modules (@pxref{Package Modules}).  The
 @code{(list package output)} syntax can be used to add a specific output
 of a package:
 
@@ -9879,7 +10014,7 @@ with the default settings, for commonly encountered log files.
 
 (operating-system
   ;; @dots{}
-  (services (cons* (mcron-service)
+  (services (cons* (service mcron-service-type)
                    (service rottlog-service-type)
                    %base-services)))
 @end lisp
@@ -10010,6 +10145,9 @@ This is the service type for the
 @uref{https://wiki.gnome.org/Projects/NetworkManager, NetworkManager}
 service. The value for this service type is a
 @code{network-manager-configuration} record.
+
+This service is part of @code{%desktop-services} (@pxref{Desktop
+Services}).
 @end defvr
 
 @deftp {Data Type} network-manager-configuration
@@ -10036,6 +10174,11 @@ then update @code{resolv.conf} to point to the local nameserver.
 @item none
 NetworkManager will not modify @code{resolv.conf}.
 @end table
+
+@item @code{vpn-plugins} (default: @code{'()})
+This is the list of available plugins for virtual private networks
+(VPNs).  An example of this is the @code{network-manager-openvpn}
+package, which allows NetworkManager to manage VPNs @i{via} OpenVPN.
 
 @end table
 @end deftp
@@ -10241,6 +10384,75 @@ come from any networking interface.
 In addition, @var{extra-settings} specifies a string to append to the
 configuration file.
 @end deffn
+
+The @code{(gnu services rsync)} module provides the following services:
+
+You might want an rsync daemon if you have files that you want available
+so anyone (or just yourself) can download existing files or upload new
+files.
+
+@deffn {Scheme Variable} rsync-service-type
+This is the type for the @uref{https://rsync.samba.org, rsync} rsync daemon,
+@command{rsync-configuration} record as in this example:
+
+@example
+(service rsync-service-type)
+@end example
+
+See below for details about @code{rsync-configuration}.
+@end deffn
+
+@deftp {Data Type} rsync-configuration
+Data type representing the configuration for @code{rsync-service}.
+
+@table @asis
+@item @code{package} (default: @var{rsync})
+@code{rsync} package to use.
+
+@item @code{port-number} (default: @code{873})
+TCP port on which @command{rsync} listens for incoming connections.  If port
+is less than @code{1024} @command{rsync} needs to be started as the
+@code{root} user and group.
+
+@item @code{pid-file} (default: @code{"/var/run/rsyncd/rsyncd.pid"})
+Name of the file where @command{rsync} writes its PID.
+
+@item @code{lock-file} (default: @code{"/var/run/rsyncd/rsyncd.lock"})
+Name of the file where @command{rsync} writes its lock file.
+
+@item @code{log-file} (default: @code{"/var/log/rsyncd.log"})
+Name of the file where @command{rsync} writes its log file.
+
+@item @code{use-chroot?} (default: @var{#t})
+Whether to use chroot for @command{rsync} shared directory.
+
+@item @code{share-path} (default: @file{/srv/rsync})
+Location of the @command{rsync} shared directory.
+
+@item @code{share-comment} (default: @code{"Rsync share"})
+Comment of the @command{rsync} shared directory.
+
+@item @code{read-only?} (default: @var{#f})
+Read-write permissions to shared directory.
+
+@item @code{timeout} (default: @code{300})
+I/O timeout in seconds.
+
+@item @code{user} (default: @var{"root"})
+Owner of the @code{rsync} process.
+
+@item @code{group} (default: @var{"root"})
+Group of the @code{rsync} process.
+
+@item @code{uid} (default: @var{"rsyncd"})
+User name or user ID that file transfers to and from that module should take
+place as when the daemon was run as @code{root}.
+
+@item @code{gid} (default: @var{"rsyncd"})
+Group name or group ID that will be used when accessing the module.
+
+@end table
+@end deftp
 
 Furthermore, @code{(gnu services ssh)} provides the following services.
 @cindex SSH
@@ -11573,7 +11785,7 @@ adds or adjusts services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
 @code{slim-service}}), screen lockers, a network management tool
-(@pxref{Networking Services, @code{wicd-service}}), energy and color
+(@pxref{Networking Services, @code{network-manager-service-type}}), energy and color
 management services, the @code{elogind} login and seat manager, the
 Polkit privilege service, the GeoClue location service, the
 AccountsService daemon that allows authorized users change system
@@ -11654,7 +11866,7 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
 
 @deffn {Scheme Procedure} elogind-service [#:config @var{config}]
 Return a service that runs the @code{elogind} login and
-seat management daemon.  @uref{https://github.com/andywingo/elogind,
+seat management daemon.  @uref{https://github.com/elogind/elogind,
 Elogind} exposes a D-Bus interface that can be used to know which users
 are logged in, know what kind of sessions they have open, suspend the
 system, inhibit system suspend, reboot the system, and other tasks.
@@ -11815,9 +12027,13 @@ location databases.  See
 web site} for more information.
 @end deffn
 
-@deffn {Scheme Procedure} bluetooth-service [#:bluez @var{bluez}]
-Return a service that runs the @command{bluetoothd} daemon, which manages
-all the Bluetooth devices and provides a number of D-Bus interfaces.
+@deffn {Scheme Procedure} bluetooth-service [#:bluez @var{bluez}] @
+       [@w{#:auto-enable? #f}]
+Return a service that runs the @command{bluetoothd} daemon, which
+manages all the Bluetooth devices and provides a number of D-Bus
+interfaces.  When AUTO-ENABLE? is true, the bluetooth controller is
+powered automatically at boot, which can be useful when using a
+bluetooth keyboard or mouse.
 
 Users need to be in the @code{lp} group to access the D-Bus service.
 @end deffn
@@ -14028,7 +14244,7 @@ A simple example configuration is given below.
 @example
 (service nginx-service-type
          (nginx-configuration
-           (server-list
+           (server-blocks
              (list (nginx-server-configuration
                      (server-name '("www.example.com"))
                      (root "/srv/http/www.example.com")
@@ -14047,7 +14263,8 @@ blocks, as in this example:
                         (https-port #f)
                         (ssl-certificate #f)
                         (ssl-certificate-key #f)
-                        (root "/srv/http/extra-website"))))
+                        (root "/srv/http/extra-website")
+                        (try-files (list "$uri" "$uri/index.html")))))
 @end example
 @end deffn
 
@@ -14076,7 +14293,7 @@ The directory to which NGinx will write log files.
 The directory in which NGinx will create a pid file, and write temporary
 files.
 
-@item @code{server-list} (default: @code{'()})
+@item @code{server-blocks} (default: @code{'()})
 A list of @dfn{server blocks} to create in the generated configuration
 file, the elements should be of type
 @code{<nginx-server-configuration>}.
@@ -14087,7 +14304,7 @@ HTTPS.
 @example
 (service nginx-service-type
          (nginx-configuration
-           (server-list
+           (server-blocks
              (list (nginx-server-configuration
                      (server-name '("www.example.com"))
                      (root "/srv/http/www.example.com")
@@ -14096,12 +14313,12 @@ HTTPS.
                      (ssl-certificate-key #f))))))
 @end example
 
-@item @code{upstream-list} (default: @code{'()})
+@item @code{upstream-blocks} (default: @code{'()})
 A list of @dfn{upstream blocks} to create in the generated configuration
 file, the elements should be of type
 @code{<nginx-upstream-configuration>}.
 
-Configuring upstreams through the @code{upstream-list} can be useful
+Configuring upstreams through the @code{upstream-blocks} can be useful
 when combined with @code{locations} in the
 @code{<nginx-server-configuration>} records.  The following example
 creates a server configuration with one location configuration, that
@@ -14112,7 +14329,7 @@ requests with two servers.
 (service
   nginx-service-type
   (nginx-configuration
-    (server-list
+    (server-blocks
       (list (nginx-server-configuration
               (server-name '("www.example.com"))
               (root "/srv/http/www.example.com")
@@ -14124,20 +14341,19 @@ requests with two servers.
                   (nginx-location-configuration
                   (uri "/path1")
                   (body '("proxy_pass http://server-proxy;"))))))))
-    (upstream-list
+    (upstream-blocks
       (list (nginx-upstream-configuration
               (name "server-proxy")
               (servers (list "server1.example.com"
                              "server2.example.com")))))))
 @end example
 
-@item @code{config-file} (default: @code{#f})
-If the @var{config-file} is provided, this will be used, rather than
+@item @code{file} (default: @code{#f})
+If a configuration @var{file} is provided, this will be used, rather than
 generating a configuration file from the provided @code{log-directory},
-@code{run-directory}, @code{server-list} and @code{upstream-list}.  For
-proper operation, these arguments should match what is in
-@var{config-file} to ensure that the directories are created when the
-service is activated.
+@code{run-directory}, @code{server-blocks} and @code{upstream-blocks}.  For
+proper operation, these arguments should match what is in @var{file} to ensure
+that the directories are created when the service is activated.
 
 This can be useful if you have an existing configuration file, or it's
 not possible to do what is required through the other parts of the
@@ -14178,6 +14394,10 @@ server block.
 @item @code{index} (default: @code{(list "index.html")})
 Index files to look for when clients ask for a directory.  If it cannot be found,
 Nginx will send the list of files in the directory.
+
+@item @code{try-files} (default: @code{'()})
+A list of files whose existence is checked in the specified order.
+@code{nginx} will use the first file it finds to process the request.
 
 @item @code{ssl-certificate} (default: @code{"/etc/nginx/cert.pem"})
 Where to find the certificate for secure connections.  Set it to @code{#f} if
@@ -15202,20 +15422,13 @@ packages, as prescribed in the @file{gnu-system.scm} example spec:
 (let ((spec #~((#:name . "guix")
                (#:url . "git://git.savannah.gnu.org/guix.git")
                (#:load-path . ".")
-
-               ;; Here we must provide an absolute file name.
-               ;; We take jobs from one of the examples provided
-               ;; by Cuirass.
-               (#:file . #$(file-append
-                            cuirass
-                            "/tests/gnu-system.scm"))
-
-               (#:proc . hydra-jobs)
+               (#:file . "build-aux/cuirass/gnu-system.scm")
+               (#:proc . cuirass-jobs)
                (#:arguments (subset . "hello"))
                (#:branch . "master"))))
   (service cuirass-service-type
            (cuirass-configuration
-            (specifications #~(list #$spec)))))
+            (specifications #~(list '#$spec)))))
 @end example
 
 While information related to build jobs is located directly in the
@@ -15246,8 +15459,12 @@ Cuirass jobs.
 Location of sqlite database which contains the build results and previously
 added specifications.
 
-@item @code{port} (default: @code{8080})
+@item @code{port} (default: @code{8081})
 Port number used by the HTTP server.
+
+@item --listen=@var{host}
+Listen on the network interface for @var{host}.  The default is to
+accept connections from localhost.
 
 @item @code{specifications} (default: @code{#~'()})
 A gexp (@pxref{G-Expressions}) that evaluates to a list of specifications,
@@ -15843,9 +16060,6 @@ The directory to scan for music files.
 
 @item @code{playlist-dir} (default: @code{"~/.mpd/playlists"})
 The directory to store playlists.
-
-@item @code{pid-file} (default: @code{"/var/run/mpd.pid"})
-The file mpd wil store its PID.  This must be an absolute path.
 
 @item @code{port} (default: @code{"6600"})
 The port to run mpd on.
@@ -17363,6 +17577,42 @@ operating system is instantiated.  Currently the following values are
 supported:
 
 @table @code
+@item search
+Display available service type definitions that match the given regular
+expressions, sorted by relevance:
+
+@example
+$ guix system search console font
+name: console-fonts
+location: gnu/services/base.scm:729:2
+extends: shepherd-root
+description: Install the given fonts on the specified ttys (fonts are
++ per virtual console on GNU/Linux).  The value of this service is a list
++ of tty/font pairs like:
++ 
++      '(("tty1" . "LatGrkCyr-8x16"))
+relevance: 20
+
+name: mingetty
+location: gnu/services/base.scm:1048:2
+extends: shepherd-root
+description: Provide console login using the `mingetty' program.
+relevance: 2
+
+name: login
+location: gnu/services/base.scm:775:2
+extends: pam
+description: Provide a console log-in service as specified by its
++ configuration value, a `login-configuration' object.
+relevance: 2
+
+@dots{}
+@end example
+
+As for @command{guix package --search}, the result is written in
+@code{recutils} format, which makes it easy to filter the output
+(@pxref{Top, GNU recutils databases,, recutils, GNU recutils manual}).
+
 @item reconfigure
 Build the operating system described in @var{file}, activate it, and
 switch to it@footnote{This action (and the related actions
@@ -17992,6 +18242,12 @@ Udev extensions are composed into a list of rules, but the udev service
 value is itself a @code{<udev-configuration>} record.  So here, we
 extend that record by appending the list of rules it contains to the
 list of contributed rules.
+
+@item description
+This is a string giving an overview of the service type.  The string can
+contain Texinfo markup (@pxref{Overview,,, texinfo, GNU Texinfo}).  The
+@command{guix system search} command searches these strings and displays
+them (@pxref{Invoking guix system}).
 @end table
 
 There can be only one instance of an extensible service type such as

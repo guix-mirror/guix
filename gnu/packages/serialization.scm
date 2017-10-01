@@ -127,7 +127,7 @@ such as compact binary encodings, XML, or JSON.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autoconf
+         (add-after 'unpack 'autoconf
            (lambda _
              (system* "autoreconf" "-vfi"))))))
     (home-page "http://www.msgpack.org")
@@ -263,7 +263,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public jsoncpp
   (package
     (name "jsoncpp")
-    (version "1.8.0")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -272,7 +272,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1g35ci93s03wph4kabi46iz42wgyfbn2763cklf15h7hrdi29ssx"))))
+                "1vwf0yrv5540ygfnxikirbs63awsdzn7dabkia3g0bnz43p5l7w1"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/open-source-parsers/jsoncpp")
     (arguments
@@ -359,14 +359,14 @@ However, “Memory efficiency” and “Speed” have not been primary goals.")
 (define-public python-ruamel.yaml
   (package
     (name "python-ruamel.yaml")
-    (version "0.15.19")
+    (version "0.15.33")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ruamel.yaml" version))
        (sha256
         (base32
-         "0qx779avw8d1vsjqyi7z21h1g5ykp8paqavgj0lzbp8h7bw9vpgv"))))
+         "1s4b0zwn9pkk4xxjhx77giyfddc738drd6vgraw6n2syvj03s31d"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))

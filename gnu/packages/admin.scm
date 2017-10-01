@@ -661,14 +661,14 @@ network statistics collection, security monitoring, network debugging, etc.")
 (define-public tcpdump
   (package
     (name "tcpdump")
-    (version "4.9.1")
+    (version "4.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1wyqbg7bkmgqyslf1ns0xx9fcqi66hvcfm9nf77rl15jvvs8qi7r"))))
+                "0ygy0layzqaj838r5xd613iraz09wlfgpyh7pc6cwclql8v3b2vr"))))
     (build-system gnu-build-system)
     (inputs `(("libpcap" ,libpcap)
               ("openssl" ,openssl)))
@@ -818,7 +818,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.20p2")
+    (version "1.8.21p2")
     (source (origin
               (method url-fetch)
               (uri
@@ -828,7 +828,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1na5likm1srnd1g5sjx7b0543sczw0yppacyqsazfdg9b48awhmx"))
+                "0s33szq6q59v5s377l4v6ybsdy7pfq6sz7y364j4x09ssdn79ibl"))
               (modules '((guix build utils)))
               (snippet
                '(delete-file-recursively "lib/zlib"))))
@@ -871,7 +871,8 @@ system administrator.")
                 "$(TMPDIR)/dummy")
                (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
                 ;; Don't try to create /var/db/sudo.
-                "$(TMPDIR)/dummy")))))
+                "$(TMPDIR)/dummy"))
+             #t)))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.

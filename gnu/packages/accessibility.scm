@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages xml)
@@ -29,7 +32,8 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages libusb))
 
 (define-public florence
   (package
@@ -76,3 +80,42 @@ available to help to click.")
     ;; The documentation is under FDL1.2, but we do not install the
     ;; documentation.
     (license license:gpl2+)))
+
+(define-public footswitch
+  (let ((commit "7cb0a9333a150c27c7e4746ee827765d244e567a"))
+    (package
+      (name "footswitch")
+      (version (git-version "0.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/rgerganov/footswitch")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "0mg1vr4a9vls5y435w7wdnr1vb5059gy60lvrdfjgzhd2wwf47iw"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("hidapi" ,hidapi)))
+      (arguments
+       `(#:tests? #f ; no tests
+         #:make-flags (list "CC=gcc")
+         #:phases (modify-phases %standard-phases
+                    (delete 'configure)
+                    ;; Install target in the Makefile does not work for Guix
+                    (replace 'install
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (let ((bin (string-append (assoc-ref outputs "out")
+                                                  "/bin")))
+                          (mkdir-p bin)
+                          (install-file "footswitch" bin)
+                          #t))))))
+      (home-page "https://github.com/rgerganov/footswitch")
+      (synopsis "Command line utility for PCsensor foot switch")
+      (description
+       "Command line utility for programming foot switches sold by PCsensor.
+It works for both single pedal devices and three pedal devices.  All supported
+devices have vendorId:productId = 0c45:7403 or 0c45:7404.")
+    (license license:expat))))

@@ -34,6 +34,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pkg-config)
@@ -42,7 +43,8 @@
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xml))
 
 (define-public cifs-utils
   (package
@@ -71,7 +73,7 @@
      `(#:phases
        (modify-phases %standard-phases
          ;; The 6.7 tarball is missing ‘install.sh’. Create it.
-         (add-before 'configure 'autoreconf
+         (add-after 'unpack 'autoreconf
            (lambda _
              (zero? (system* "autoreconf" "-i"))))
          (add-before 'configure 'set-root-sbin
@@ -149,18 +151,29 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.6.7")
+    (version "4.6.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "1ynxndfk45zkkylz3jsrx42a7kmm42jddk5bdhihyf88vs9l7wly"))))
+               "0pap686cl0j5c9v1v09krpqdk416x3851fbcap5ysp1zajrfw7aq"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'locate-docbook-stylesheets
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; XXX for some reason XML_CATALOG_FILES is not respected.
+             (substitute* '("buildtools/wafsamba/samba_conftests.py"
+                            "buildtools/wafsamba/wafsamba.py"
+                            "docs-xml/xslt/man.xsl")
+               (("http://docbook.sourceforge.net/release/xsl/current/")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl) "/")))
+             #t))
          (replace 'configure
            ;; samba uses a custom configuration script that runs waf.
            (lambda* (#:key outputs #:allow-other-keys)
@@ -203,7 +216,9 @@ anywhere.")
        ("tevent" ,tevent)
        ("tdb" ,tdb)))
     (native-inputs
-     `(("perl" ,perl)
+     `(("docbook-xsl" ,docbook-xsl)    ;for generating manpages
+       ("xsltproc" ,libxslt)           ;ditto
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2))) ; incompatible with Python 3
     (home-page "https://www.samba.org/")

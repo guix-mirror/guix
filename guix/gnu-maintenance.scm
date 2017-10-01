@@ -26,6 +26,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (rnrs io ports)
   #:use-module (system foreign)
   #:use-module (guix http-client)
   #:use-module (guix ftp-client)
@@ -34,6 +35,7 @@
   #:use-module (guix records)
   #:use-module (guix upstream)
   #:use-module (guix packages)
+  #:use-module (guix zlib)
   #:export (gnu-package-name
             gnu-package-mundane-name
             gnu-package-copyright-holder
@@ -58,7 +60,7 @@
             gnu-package-name->name+version
 
             %gnu-updater
-            %gnome-updater
+            %gnu-ftp-updater
             %kde-updater
             %xorg-updater
             %kernel.org-updater))
@@ -433,6 +435,70 @@ hosted on ftp.gnu.org, or not under that name (this is the case for
                                         #:server server
                                         #:directory directory))))
 
+(define %gnu-file-list-uri
+  ;; URI of the file list for ftp.gnu.org.
+  (string->uri "https://ftp.gnu.org/find.txt.gz"))
+
+(define ftp.gnu.org-files
+  (mlambda ()
+    "Return the list of files available at ftp.gnu.org."
+
+    ;; XXX: Memoize the whole procedure to work around the fact that
+    ;; 'http-fetch/cached' caches the gzipped version.
+
+    (define (trim-leading-components str)
+      ;; Trim the leading ".", if any, in "./gnu/foo".
+      (string-trim str (char-set #\.)))
+
+    (define (string->lines str)
+      (string-tokenize str (char-set-complement (char-set #\newline))))
+
+    ;; Since https://ftp.gnu.org honors 'If-Modified-Since', the hard-coded
+    ;; TTL can be relatively short.
+    (let ((port (http-fetch/cached %gnu-file-list-uri #:ttl (* 15 60))))
+      (map trim-leading-components
+           (call-with-gzip-input-port port
+             (compose string->lines get-string-all))))))
+
+(define (latest-gnu-release package)
+  "Return the latest release of PACKAGE, a GNU package available via
+ftp.gnu.org.
+
+This method does not rely on FTP access at all; instead, it browses the file
+list available from %GNU-FILE-LIST-URI over HTTP(S)."
+  (let-values (((server directory)
+                (ftp-server/directory package))
+               ((name)
+                (package-upstream-name package)))
+    (let* ((files    (ftp.gnu.org-files))
+           (relevant (filter (lambda (file)
+                               (and (string-prefix? "/gnu" file)
+                                    (string-contains file directory)
+                                    (release-file? name (basename file))))
+                             files)))
+      (match (sort relevant (lambda (file1 file2)
+                              (version>? (sans-extension (basename file1))
+                                         (sans-extension (basename file2)))))
+        ((and tarballs (reference _ ...))
+         (let* ((version  (tarball->version reference))
+                (tarballs (filter (lambda (file)
+                                    (string=? (sans-extension
+                                               (basename file))
+                                              (sans-extension
+                                               (basename reference))))
+                                  tarballs)))
+           (upstream-source
+            (package name)
+            (version version)
+            (urls (map (lambda (file)
+                         (string-append "mirror://gnu/"
+                                        (string-drop file
+                                                     (string-length "/gnu/"))))
+                       tarballs))
+            (signature-urls (map (cut string-append <> ".sig") urls)))))
+        (()
+         #f)))))
+
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
   ;; "TeXmacs-X.Y-src", the `-src' suffix is allowed.
@@ -445,6 +511,9 @@ hosted on ftp.gnu.org, or not under that name (this is the case for
         (values name+version #f)
         (values (match:substring match 1) (match:substring match 2)))))
 
+(define gnome-package?
+  (url-prefix-predicate "mirror://gnome/"))
+
 (define (pure-gnu-package? package)
   "Return true if PACKAGE is a non-Emacs and non-GNOME GNU package.  This
 excludes AucTeX, for instance, whose releases are now uploaded to
@@ -455,69 +524,8 @@ releases are on gnu.org."
        (not (gnome-package? package))
        (gnu-package? package)))
 
-(define (url-prefix-predicate prefix)
-  "Return a predicate that returns true when passed a package where one of its
-source URLs starts with PREFIX."
-  (lambda (package)
-    (define matching-uri?
-      (match-lambda
-        ((? string? uri)
-         (string-prefix? prefix uri))
-        (_
-         #f)))
-
-    (match (package-source package)
-      ((? origin? origin)
-       (match (origin-uri origin)
-         ((? matching-uri?) #t)
-         (_                 #f)))
-      (_ #f))))
-
 (define gnu-hosted?
   (url-prefix-predicate "mirror://gnu/"))
-
-(define gnome-package?
-  (url-prefix-predicate "mirror://gnome/"))
-
-(define (latest-gnome-release package)
-  "Return the latest release of PACKAGE, the name of a GNOME package."
-  (define %not-dot
-    (char-set-complement (char-set #\.)))
-
-  (define (even-minor-version? version)
-    (match (string-tokenize version %not-dot)
-      (((= string->number major) (= string->number minor) . rest)
-       (and minor (even? minor)))
-      (_
-       #t)))                                      ;cross fingers
-
-  (define (even-numbered? file)
-    ;; Return true if FILE somehow denotes an even-numbered file name.  The
-    ;; trick here is that we want this to match both directories such as
-    ;; "3.18.6" and actual file names such as "gtk+-3.18.6.tar.bz2".
-    (let-values (((name version) (package-name->name+version file)))
-      (even-minor-version? (or version name))))
-
-  (define upstream-name
-    ;; Some packages like "NetworkManager" have camel-case names.
-    (package-upstream-name package))
-
-  (false-if-ftp-error
-   (latest-ftp-release upstream-name
-                       #:server "ftp.gnome.org"
-                       #:directory (string-append "/pub/gnome/sources/"
-                                                  upstream-name)
-
-
-                       ;; <https://www.gnome.org/gnome-3/source/> explains
-                       ;; that odd minor version numbers represent development
-                       ;; releases, which we are usually not interested in.
-                       #:keep-file? even-numbered?
-
-                       ;; ftp.gnome.org provides no signatures, only
-                       ;; checksums.
-                       #:file->signature (const #f))))
-
 
 (define (latest-kde-release package)
   "Return the latest release of PACKAGE, the name of an KDE.org package."
@@ -557,18 +565,23 @@ source URLs starts with PREFIX."
                                          ".sign"))))))
 
 (define %gnu-updater
+  ;; This is for everything at ftp.gnu.org.
   (upstream-updater
    (name 'gnu)
    (description "Updater for GNU packages")
-   (pred pure-gnu-package?)
-   (latest latest-release*)))
+   (pred gnu-hosted?)
+   (latest latest-gnu-release)))
 
-(define %gnome-updater
+(define %gnu-ftp-updater
+  ;; This is for GNU packages taken from alternate locations, such as
+  ;; alpha.gnu.org, ftp.gnupg.org, etc.  It is obsolescent.
   (upstream-updater
-   (name 'gnome)
-   (description "Updater for GNOME packages")
-   (pred gnome-package?)
-   (latest latest-gnome-release)))
+   (name 'gnu-ftp)
+   (description "Updater for GNU packages only available via FTP")
+   (pred (lambda (package)
+           (and (not (gnu-hosted? package))
+                (pure-gnu-package? package))))
+   (latest latest-release*)))
 
 (define %kde-updater
   (upstream-updater

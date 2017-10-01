@@ -1,0 +1,243 @@
+# This patch removes all need for the ThirdParty files of OpenFOAM.
+
+# Derived from EasyBuild patch by Ward Poelmans <wpoely86@gmail.com>.
+# Modified for GNU Guix by Paul Garlick <pgarlick@tourbillion-technology.com>.
+
+diff -ur OpenFOAM-4.x-version-4.1.org/applications/utilities/mesh/manipulation/setSet/Allwmake OpenFOAM-4.x-version-4.1/applications/utilities/mesh/manipulation/setSet/Allwmake
+--- OpenFOAM-4.x-version-4.1.org/applications/utilities/mesh/manipulation/setSet/Allwmake
++++ OpenFOAM-4.x-version-4.1/applications/utilities/mesh/manipulation/setSet/Allwmake
+@@ -9,7 +9,7 @@
+ #
+ # use readline if available
+ #
+-if [ -f /usr/include/readline/readline.h ]
++if true
+ then
+     echo "Found <readline/readline.h>  --  enabling readline support."
+     export COMP_FLAGS="-DHAS_READLINE"
+diff -ur OpenFOAM-4.x-version-4.1.org/etc/bashrc OpenFOAM-4.x-version-4.1/etc/bashrc
+--- OpenFOAM-4.x-version-4.1.org/etc/bashrc
++++ OpenFOAM-4.x-version-4.1/etc/bashrc
+@@ -43,8 +43,10 @@
+ # Please set to the appropriate path if the default is not correct.
+ #
+ [ $BASH_SOURCE ] && \
+-export FOAM_INST_DIR=$(cd ${BASH_SOURCE%/*/*/*} && pwd -P) || \
++export FOAM_INST_DIR=$(cd $(dirname $BASH_SOURCE)/../.. && pwd -P) || \
+ export FOAM_INST_DIR=$HOME/$WM_PROJECT
++# For GNU Guix: set initially for build then re-set at runtime
++#
+ # export FOAM_INST_DIR=~$WM_PROJECT
+ # export FOAM_INST_DIR=/opt/$WM_PROJECT
+ # export FOAM_INST_DIR=/usr/local/$WM_PROJECT
+diff -ur OpenFOAM-4.x-version-4.1.org/etc/config.sh/CGAL OpenFOAM-4.x-version-4.1/etc/config.sh/CGAL
+--- OpenFOAM-4.x-version-4.1.org/etc/config.sh/CGAL
++++ OpenFOAM-4.x-version-4.1/etc/config.sh/CGAL
+@@ -36,37 +36,7 @@
+ #
+ #------------------------------------------------------------------------------
+
+-boost_version=boost-system
+-cgal_version=cgal-system
+-#cgal_version=CGAL-4.8
+-
+-if [ -z "$SOURCE_CGAL_VERSIONS_ONLY" ]
+-then
+-
+-    common_path=$WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER
+-
+-    export BOOST_ARCH_PATH=$common_path/$boost_version
+-    export CGAL_ARCH_PATH=$common_path/$cgal_version
+-
+-    if [ "$FOAM_VERBOSE" -a "$PS1" ]
+-    then
+-        echo "Using CGAL and boost" 1>&2
+-        echo "    $cgal_version at $CGAL_ARCH_PATH" 1>&2
+-        echo "    $boost_version at $BOOST_ARCH_PATH" 1>&2
+-    fi
+-
+-    if [ -d "$CGAL_ARCH_PATH" -a "$cgal_version" != "cgal-system" ]
+-    then
+-        _foamAddLib $CGAL_ARCH_PATH/lib
+-    fi
+-
+-    if [ -d "$BOOST_ARCH_PATH" -a "$boost_version" != "boost-system" ]
+-    then
+-        _foamAddLib $BOOST_ARCH_PATH/lib
+-    fi
+-
+-    unset boost_version cgal_version common_path
+-
+-fi
++export CGAL_ARCH_PATH=$CGAL_ROOT
++export BOOST_ARCH_PATH=$BOOST_ROOT
+
+ #------------------------------------------------------------------------------
+diff -ur OpenFOAM-4.x-version-4.1.org/etc/config.sh/gperftools OpenFOAM-4.x-version-4.1/etc/config.sh/gperftools
+--- OpenFOAM-4.x-version-4.1.org/etc/config.sh/gperftools
++++ OpenFOAM-4.x-version-4.1/etc/config.sh/gperftools
+@@ -29,13 +29,5 @@
+ #
+ #------------------------------------------------------------------------------
+
+-version=svn
+-gperftools_install=$WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER
+-
+-GPERFTOOLS_VERSION=gperftools-$version
+-GPERFTOOLS_ARCH_PATH=$gperftools_install/$GPERFTOOLS_VERSION
+-
+-export PATH=$GPERFTOOLS_ARCH_PATH/bin:$PATH
+-export LD_LIBRARY_PATH=$GPERFTOOLS_ARCH_PATH/lib:$LD_LIBRARY_PATH
+
+ #------------------------------------------------------------------------------
+diff -ur OpenFOAM-4.x-version-4.1.org/etc/config.sh/metis OpenFOAM-4.x-version-4.1/etc/config.sh/metis
+--- OpenFOAM-4.x-version-4.1.org/etc/config.sh/metis
++++ OpenFOAM-4.x-version-4.1/etc/config.sh/metis
+@@ -34,7 +34,7 @@
+ #
+ #------------------------------------------------------------------------------
+
+-export METIS_VERSION=metis-5.1.0
+-export METIS_ARCH_PATH=$WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER$WM_PRECISION_OPTION$WM_LABEL_OPTION/$METIS_VERSION
++export METIS_VERSION=metis-$METISVERSION
++export METIS_ARCH_PATH=$METIS_ROOT
+
+ #------------------------------------------------------------------------------
+diff -ur OpenFOAM-4.x-version-4.1.org/etc/config.sh/scotch OpenFOAM-4.x-version-4.1/etc/config.sh/scotch
+--- OpenFOAM-4.x-version-4.1.org/etc/config.sh/scotch
++++ OpenFOAM-4.x-version-4.1/etc/config.sh/scotch
+@@ -37,7 +37,7 @@
+ #
+ #------------------------------------------------------------------------------
+
+-export SCOTCH_VERSION=scotch_6.0.3
+-export SCOTCH_ARCH_PATH=$WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER$WM_PRECISION_OPTION$WM_LABEL_OPTION/$SCOTCH_VERSION
++export SCOTCH_VERSION=scotch_$SCOTCHVERSION
++export SCOTCH_ARCH_PATH=$SCOTCH_ROOT
+
+ #------------------------------------------------------------------------------
+diff -ur OpenFOAM-4.x-version-4.1.org/etc/config.sh/settings OpenFOAM-4.x-version-4.1/etc/config.sh/settings
+--- OpenFOAM-4.x-version-4.1.org/etc/config.sh/settings
++++ OpenFOAM-4.x-version-4.1/etc/config.sh/settings
+@@ -279,6 +279,9 @@
+     ;;
+ system)
+     # Use system compiler
++    # Use system GMP and MPFR packages
++    export GMP_ARCH_PATH=$GMP_ROOT
++    export MPFR_ARCH_PATH=$MPFR_ROOT
+     ;;
+ *)
+     echo "Warn: WM_COMPILER_TYPE='$WM_COMPILER_TYPE' is unsupported" 1>&2
+diff -ur OpenFOAM-4.x-version-4.1.org/src/parallel/decompose/ptscotchDecomp/Make/options OpenFOAM-4.x-version-4.1/src/parallel/decompose/ptscotchDecomp/Make/options
+--- OpenFOAM-4.x-version-4.1.org/src/parallel/decompose/ptscotchDecomp/Make/options
++++ OpenFOAM-4.x-version-4.1/src/parallel/decompose/ptscotchDecomp/Make/options
+@@ -5,8 +5,7 @@
+     $(PFLAGS) $(PINC) \
+     -I$(SCOTCH_ROOT)/include \
+     -I$(SCOTCH_ARCH_PATH)/include/$(FOAM_MPI) \
+-    -I/usr/include/scotch \
+     -I../decompositionMethods/lnInclude
+
+ LIB_LIBS = \
+-    -L$(SCOTCH_ROOT)/lib -L$(FOAM_EXT_LIBBIN)/$(FOAM_MPI) -lptscotch -lptscotcherrexit -lscotch ${LINK_FLAGS} -lrt
++    -L$(SCOTCH_ROOT)/lib -L$(MPI_ARCH_PATH)/lib -lptscotch -lptscotcherrexit -lscotch ${LINK_FLAGS} -lrt
+diff -ur OpenFOAM-4.x-version-4.1.org/src/parallel/decompose/scotchDecomp/Make/options OpenFOAM-4.x-version-4.1/src/parallel/decompose/scotchDecomp/Make/options
+--- OpenFOAM-4.x-version-4.1.org/src/parallel/decompose/scotchDecomp/Make/options
++++ OpenFOAM-4.x-version-4.1/src/parallel/decompose/scotchDecomp/Make/options
+@@ -9,8 +9,7 @@
+     $(PFLAGS) $(PINC) \
+     -I$(SCOTCH_ROOT)/include \
+     -I$(SCOTCH_ARCH_PATH)/include \
+-    -I/usr/include/scotch \
+     -I../decompositionMethods/lnInclude
+
+ LIB_LIBS = \
+-    -L$(SCOTCH_ROOT)/lib -L$(FOAM_EXT_LIBBIN) -lscotch -lscotcherrexit -lrt
++    -L$(SCOTCH_ROOT)/lib -lscotch -lscotcherrexit -lrt
+diff -ur OpenFOAM-4.x-version-4.1.org/wmake/makefiles/general OpenFOAM-4.x-version-4.1/wmake/makefiles/general
+--- OpenFOAM-4.x-version-4.1.org/wmake/makefiles/general
++++ OpenFOAM-4.x-version-4.1/wmake/makefiles/general
+@@ -33,7 +33,6 @@
+ # The Makefile uses a POSIX shell
+ #------------------------------------------------------------------------------
+ 
+-SHELL           = /bin/sh
+ 
+ 
+ #------------------------------------------------------------------------------
+diff -ur OpenFOAM-4.x-version-4.1.org/wmake/wmake OpenFOAM-4.x-version-4.1/wmake/wmake
+--- OpenFOAM-4.x-version-4.1.org/wmake/wmake
++++ OpenFOAM-4.x-version-4.1/wmake/wmake
+@@ -163,7 +163,7 @@
+ then
+     if [ "$WM_NCOMPPROCS" -gt 1 -a ! "$MAKEFLAGS" ]
+     then
+-        lockDir=$HOME/.$WM_PROJECT/.wmake
++        lockDir=$(cd $(dirname $BASH_SOURCE)/../.. && pwd -P)/.$WM_PROJECT/.wmake
+ 
+         if [ -d $lockDir ]
+         then
+diff -ur OpenFOAM-4.x-version-4.1.org/wmake/wmakeScheduler OpenFOAM-4.x-version-4.1/wmake/wmakeScheduler
+--- OpenFOAM-4.x-version-4.1.org/wmake/wmakeScheduler
++++ OpenFOAM-4.x-version-4.1/wmake/wmakeScheduler
+@@ -53,7 +53,7 @@
+ # csh sets HOST, bash sets HOSTNAME
+ : ${HOST:=$HOSTNAME}
+ 
+-lockDir=$HOME/.$WM_PROJECT/.wmake
++lockDir=$(cd $(dirname $BASH_SOURCE)/../.. && pwd -P)/.$WM_PROJECT/.wmake
+ 
+ # Fallback - 1 core on current host
+ : ${WM_HOSTS:=$HOST:1}
+diff -ur OpenFOAM-4.x-version-4.1.org/wmake/wmakeSchedulerUptime OpenFOAM-4.x-version-4.1/wmake/wmakeSchedulerUptime
+--- OpenFOAM-4.x-version-4.1.org/wmake/wmakeSchedulerUptime
++++ OpenFOAM-4.x-version-4.1/wmake/wmakeSchedulerUptime
+@@ -53,7 +53,7 @@
+ # csh sets HOST, bash sets HOSTNAME
+ : ${HOST:=$HOSTNAME}
+ 
+-lockDir=$HOME/.$WM_PROJECT/.wmake
++lockDir=$(cd $(dirname $BASH_SOURCE)/../.. && pwd -P)/.$WM_PROJECT/.wmake
+ # Fallback - 1 core on current host
+ : ${WM_HOSTS:=$HOST:1}
+ 
+diff -ur OpenFOAM-4.x-version-4.1.org/src/parallel/decompose/metisDecomp/metisDecomp.C OpenFOAM-4.x-version-4.1/src/parallel/decompose/metisDecomp/metisDecomp.C
+--- OpenFOAM-4.x-version-4.1.org/src/parallel/decompose/metisDecomp/metisDecomp.C
++++ OpenFOAM-4.x-version-4.1/src/parallel/decompose/metisDecomp/metisDecomp.C
+@@ -67,7 +67,7 @@
+ 
+     // Processor weights initialised with no size, only used if specified in
+     // a file
+-    Field<scalar> processorWeights;
++    Field<floatScalar> processorWeights;
+ 
+     // Cell weights (so on the vertices of the dual)
+     List<label> cellWeights;
+diff -ur OpenFOAM-4.x-version-4.1.org/wmake/rules/General/CGAL OpenFOAM-4.x-version-4.1/wmake/rules/General/CGAL
+--- OpenFOAM-4.x-version-4.1.org/wmake/rules/General/CGAL
++++ OpenFOAM-4.x-version-4.1/wmake/rules/General/CGAL
+@@ -6,9 +6,10 @@
+     -I/usr/include
+ 
+ CGAL_LIBS = \
+-    -L$(MPFR_ARCH_PATH)/lib$(WM_COMPILER_LIB_ARCH) \
+-    -L$(GMP_ARCH_PATH)/lib$(WM_COMPILER_LIB_ARCH) \
++    -L$(MPFR_ARCH_PATH)/lib \
++    -L$(GMP_ARCH_PATH)/lib \
+     -L$(BOOST_ARCH_PATH)/lib \
+     -L$(CGAL_ARCH_PATH)/lib \
+     -lCGAL \
++    -lgmp \
+     -lmpfr
+diff -ur OpenFOAM-4.x-version-4.1.org/wmake/rules/linux64Gcc/c++ OpenFOAM-4.x-version-4.1/wmake/rules/linux64Gcc/c++
+--- OpenFOAM-4.x-version-4.1.org/wmake/rules/linux64Gcc/c++
++++ OpenFOAM-4.x-version-4.1/wmake/rules/linux64Gcc/c++
+@@ -20,5 +20,5 @@
+
+ LINK_LIBS   = $(c++DBUG)
+
+-LINKLIBSO   = $(CC) $(c++FLAGS) -shared -Xlinker --add-needed -Xlinker --no-as-needed
+-LINKEXE     = $(CC) $(c++FLAGS) -Xlinker --add-needed -Xlinker --no-as-needed
++LINKLIBSO   = $(CC) $(c++FLAGS) $(LDFLAGS) -shared -Xlinker --add-needed -Xlinker --no-as-needed
++LINKEXE     = $(CC) $(c++FLAGS) $(LDFLAGS) -Xlinker --add-needed -Xlinker --no-as-needed

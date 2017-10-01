@@ -36,6 +36,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
@@ -55,6 +56,45 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (ice-9 regex))
+
+(define-public cl-yale-haskell
+  (let ((commit "85f94c72a16c5f70301dd8db04cde9de2d7dd270")
+        (revision "1"))
+    (package
+      (name "cl-yale-haskell")
+      (version (string-append "2.0.5-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://git.elephly.net/software/yale-haskell.git")
+                      (commit commit)))
+                (file-name (string-append "yale-haskell-" commit "-checkout"))
+                (sha256
+                 (base32
+                  "0bal3m6ryrjamz5p93bhs9rp5msk8k7lpcqr44wd7xs9b9k8w74g"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; no tests
+         ;; Stripping binaries leads to a broken executable lisp system image.
+         #:strip-binaries? #f
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda _
+               (setenv "PRELUDE" "./progs/prelude")
+               (setenv "HASKELL_LIBRARY" "./progs/lib")
+               (setenv "PRELUDEBIN" "./progs/prelude/clisp")
+               (setenv "HASKELLPROG" "./bin/clisp-haskell")
+               #t)))))
+      (inputs
+       `(("clisp" ,clisp)))
+      (home-page "http://git.elephly.net/software/yale-haskell.git")
+      (synopsis "Port of the Yale Haskell system to CLISP")
+      (description "This package provides the Yale Haskell system running on
+top of CLISP.")
+      (license license:bsd-4))))
 
 (define ghc-bootstrap-x86_64-7.8.4
   (origin

@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2017 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -190,7 +190,7 @@ interfaces (GUIs) in the Tcl language.")
 (define-public perl-tk
   (package
     (name "perl-tk")
-    (version "804.033")
+    (version "804.034")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -198,7 +198,7 @@ interfaces (GUIs) in the Tcl language.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1bc8bacsf95598yimrxijymb3advrgan73pqxj75qmd20ydnwxc4"))))
+               "1qiz55dmw7hm1wgpjdzf2jffwcj0hisr3kf80qi8lli3qx2b39py"))))
     (build-system perl-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libx11" ,libx11)
@@ -247,6 +247,51 @@ interfaces (GUIs) in the Tcl language.")
 utility functions and modules all written in high-level Tcl.")
     (license (package-license tcl))))
 
+(define-public tklib
+  (package
+    (name "tklib")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://core.tcl.tk/tklib/tarball/tklib-"
+                                  version ".tar.gz?uuid=tklib-0-6"))
+              (sha256
+               (base32
+                "03y0bzgwbh7nnyqkh8n00bbkq2fyblq39s3bdb6mawna0bbn0wwg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("tcl" ,tcl)))
+    (propagated-inputs
+     `(("tcllib" ,tcllib)
+       ("tk" ,tk))) ; for "wish"
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TCLLIBPATH")
+            (separator " ")
+            (files (list (string-append "lib/tklib" version))))))
+    (home-page "https://www.tcl.tk/software/tklib/")
+    (synopsis "Tk utility modules for Tcl")
+    (description "Tklib is a collection of common utility functions and
+modules for Tk, all written in high-level Tcl.  Examples of provided widgets:
+@enumerate
+@item @code{chatwidget}
+@item @code{datefield}
+@item @code{tooltip}
+@item @code{cursor}
+@item @code{ipentry}
+@item @code{tablelist}
+@item @code{history}
+@item @code{tkpiechart}
+@item @code{ico}
+@item @code{crosshair}
+@item @code{ntext}
+@item @code{plotchart}
+@item @code{ctext}
+@item @code{autosscroll}
+@item @code{canvas}
+@end enumerate")
+    (license (package-license tcl))))
+
 (define-public tclxml
   (package
     (name "tclxml")
@@ -262,9 +307,10 @@ utility functions and modules all written in high-level Tcl.")
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)
-       ("tcllib" ,tcllib)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)))
+    (propagated-inputs
+     `(("tcllib" ,tcllib))) ; uri
     (native-search-paths
      (list (search-path-specification
             (variable "TCLLIBPATH")

@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -514,6 +515,32 @@ fonts.")
     ;; exceptions.
     (license license:gpl3)))
 
+(define-public font-rachana
+  (package
+    (name "font-rachana")
+    (version "7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://gitlab.com/smc/rachana/repository/archive.tar.gz?ref=Version"
+             version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jc091gshna6p1dd6lf507jxkgk6rsja835fc9dm71mcplq53bm1"))))
+    (build-system font-build-system)
+    (home-page "https://smc.org.in")
+    (synopsis "Malayalam font")
+    (description
+     "Rachana is a Malayalam font designed by Hussain K H.  The project was
+part of Rachana Aksharavedi for the original script of Malayalam in computing.
+Rachana has about 1,200+ glyphs for Malayalam and contains glyphs required for
+printing old Malayalam books without compromising the writing style.")
+    ;; This font is licensed under SIL 1.1 or GPLv3+ with font embedding
+    ;; exceptions.
+    (license (list license:silofl1.1 license:gpl3+))))
+
 (define-public font-tex-gyre
   (package
     (name "font-tex-gyre")
@@ -560,7 +587,7 @@ languages, plus Greek and Cyrillic.")
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "10.0.05")
+    (version "10.0.06")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -568,7 +595,7 @@ languages, plus Greek and Cyrillic.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "07sajc32l2knnz6gmd81zxjhcxq8xr6r2kf42wig56vj05s3d1cb"))))
+                "0z8lglzwbkmya0gmhxd9m1x3nsd7flfsbsh0qy34dzqqdwjpyy2p"))))
     (build-system gnu-build-system)
     (outputs '("out" ; TrueType version
                "pcf" ; PCF (bitmap) version

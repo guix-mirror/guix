@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2017 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,15 +32,16 @@
 (define-public dunst
   (package
     (name "dunst")
-    (version "1.1.0")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://knopwob.org/public/dunst-release/dunst-"
-                    version ".tar.bz2"))
+                    "https://github.com/dunst-project/dunst/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0w3hilzwanwsp4q6dxbdj6l0mvpg4fq02wf8isll8kmbx9kz2ay7"))))
+                "1bf5fmmj79wlwi8wzir3rd8czyrxfx16w8q7c957123yz1g5ph53"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -55,15 +56,15 @@
     (inputs
      `(("dbus" ,dbus)
        ("glib" ,glib)
+       ("gtk" ,gtk+-2)
        ("cairo" ,cairo)
        ("pango" ,pango)
        ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxft" ,libxft)
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)
        ("libxdg-basedir" ,libxdg-basedir)))
-    (home-page "http://knopwob.org/dunst")
+    (home-page "https://dunst-project.org/")
     (synopsis "Customizable and lightweight notification daemon")
     (description
      "Dunst is a highly configurable and minimalistic notification daemon.

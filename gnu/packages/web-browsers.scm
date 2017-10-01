@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -185,7 +185,7 @@ access.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "0.10.1")
+    (version "0.11.0")
     (source
      (origin
        (method url-fetch)
@@ -194,7 +194,7 @@ access.")
                            "qutebrowser-" version ".tar.gz"))
        (sha256
         (base32
-         "05qryn56w2pbqhir4pl99idx7apx2xqw9f8wmbrhj59b1xgr3x2p"))))
+         "13ihx66jm1dd6vx8px7pm0kbzf2sf9x43hhivc1rp17kahnxxdyv"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))

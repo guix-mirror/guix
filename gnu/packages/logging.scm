@@ -75,7 +75,7 @@ staying as close to their API as is reasonable.")
        ("libtool" ,libtool)))
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'add-automake-files
+                  (add-after 'unpack 'add-automake-files
                     (lambda _
                       ;; The 'test-driver' file is a dangling symlink to
                       ;; /usr/share/automake; replace it.  We can't just run
