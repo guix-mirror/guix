@@ -5026,3 +5026,30 @@ and service platform for the Java programming language.  This package contains
 an interface and utilitary classes for promises.  A Promise represents a future
 value.  It handles the interactions for asynchronous processing.")
     (license license:asl2.0)))
+
+(define-public java-osgi-service-metatype-annotations
+  (package
+    (name "java-osgi-service-metatype-annotations")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.metatype.annotations/"
+                                  version "/org.osgi.service.metatype.annotations-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "12rwm3349wk80vm88rcdgs4435m4jxkpkj5mrx326skkz2c6hyw6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-metatype-annotations.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Support annotations for metatype")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the support annotations for metatype.")
+    (license license:asl2.0)))
