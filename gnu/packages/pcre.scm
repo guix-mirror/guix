@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,8 +34,7 @@
 (define-public pcre
   (package
    (name "pcre")
-   (version "8.40")
-   (replacement pcre-8.41)
+   (version "8.41")
    (source (origin
             (method url-fetch)
             (uri (list
@@ -43,10 +43,9 @@
                                  "pcre-" version ".tar.bz2")
                   (string-append "mirror://sourceforge/pcre/pcre/"
                                  version "/pcre-" version ".tar.bz2")))
-            (patches (search-patches "pcre-CVE-2017-7186.patch"))
             (sha256
              (base32
-              "1x7lpjn7jhk0n3sdvggxrlrhab8kkfjwl7qix0ypw9nlx8lpmqh0"))))
+              "0c5m469p5pd7jip621ipq6hbgh7128lzh7xndllfgh77ban7wb76"))))
    (build-system gnu-build-system)
    (outputs '("out"           ;library & headers
               "bin"           ;depends on Readline (adds 20MiB to the closure)
@@ -72,21 +71,6 @@ own native API, as well as a set of wrapper functions that correspond to the
 POSIX regular expression API.")
    (license license:bsd-3)
    (home-page "http://www.pcre.org/")))
-
-(define pcre-8.41
-  (package
-    (inherit pcre)
-    (version "8.41")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "mirror://sourceforge/pcre/pcre/"
-                                        version "/pcre-" version ".tar.bz2")
-                         (string-append "ftp://ftp.csx.cam.ac.uk"
-                                        "/pub/software/programming/pcre/"
-                                        "pcre-" version ".tar.bz2")))
-              (sha256
-               (base32
-                "0c5m469p5pd7jip621ipq6hbgh7128lzh7xndllfgh77ban7wb76"))))))
 
 (define-public pcre2
   (package
