@@ -4997,3 +4997,32 @@ the names for the attributes and directives for a service namespace.")
 and service platform for the Java programming language.  This package contains
 an interface for a function that accepts a single argument and produces a result.")
     (license license:asl2.0)))
+
+(define-public java-osgi-util-promise
+  (package
+    (name "java-osgi-util-promise")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.util.promise/"
+                                  version "/org.osgi.util.promise-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0y34dwiflg1c4ahvkswpf9z02xph2sr9fm04ia5493x3lshpw22c"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-util-promise.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("function" ,java-osgi-util-function)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Promise of a value")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+an interface and utilitary classes for promises.  A Promise represents a future
+value.  It handles the interactions for asynchronous processing.")
+    (license license:asl2.0)))
