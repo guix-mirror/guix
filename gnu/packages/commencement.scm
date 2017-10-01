@@ -140,7 +140,7 @@
 
 (define binutils-boot0
   (package-with-bootstrap-guile
-   (package/inherit binutils
+   (package (inherit binutils)
      (name "binutils-cross-boot0")
      (arguments
       `(#:guile ,%bootstrap-guile
@@ -681,7 +681,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define binutils-final
   (package-with-bootstrap-guile
-   (package/inherit binutils
+   (package (inherit binutils)
      (arguments
       `(#:guile ,%bootstrap-guile
         #:implicit-inputs? #f
