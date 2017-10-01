@@ -4771,3 +4771,34 @@ for use with DataNucleus JPA since the JCP haven't provided an official JPA API
 jar.  See @url{http://java.net/projects/jpa-spec/downloads} for the specification
 used to generate this API.")
     (license (list license:edl1.0 license:epl1.0))))
+
+(define-public java-osgi-cmpn
+  (package
+    (name "java-osgi-cmpn")
+    (version "6.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/"
+                                  "org/osgi/osgi.cmpn/" version "/osgi.cmpn-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1lmb6xyrmkqdhv1kayf0514rlwq6ypvs4m44ibrck3snp8241wys"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-cmpn.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("core" ,java-osgi-core)
+       ("java-datanucleus-javax-persistence" ,java-datanucleus-javax-persistence)
+       ("microemulator" ,java-microemulator-cldc)
+       ("servlet" ,java-classpathx-servletapi)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Compendium specification module of OSGi framework")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the compendium specification module, providing interfaces and classes for use
+in compiling bundles.")
+    (license license:asl2.0)))
