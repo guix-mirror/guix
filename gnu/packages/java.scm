@@ -4716,3 +4716,32 @@ complex transformations and code analysis tools.")
              #t)))))
     (native-inputs
      `(("java-junit" ,java-junit)))))
+
+(define-public java-microemulator-cldc
+  (package
+    (name "java-microemulator-cldc")
+    (version "2.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/barteo/microemu/archive/"
+                                  "microemulator_"
+                                  (string-map (lambda (c) (if (char=? c #\.) #\_ c))
+                                              version)
+                                  ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1x1apmz38gkppxnwnygwmi12j54v4p258v8ddzn6dldkk7vak1ll"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "microemulator-cldc.jar"
+       #:source-dir "microemu-cldc/src/main/java"
+       #:tests? #f)); Requires even older software
+    (home-page "https://github.com/barteo/microemu")
+    (synopsis "J2ME CLDC emulator")
+    (description "Microemulator is a Java 2 Micro Edition (J2ME) CLDC/MIDP
+Emulator.  It allows to demonstrate MIDlet based applications in web browser
+applet and can be run as a standalone java application.")
+    (license (list license:asl2.0
+                   ;; or altenatively:
+                   license:lgpl2.1+))))
