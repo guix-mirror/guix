@@ -4829,3 +4829,32 @@ in compiling bundles.")
 and service platform for the Java programming language.  This package contains
 the support annotations for osgi-service-component.")
     (license license:asl2.0)))
+
+(define-public java-osgi-dto
+  (package
+    (name "java-osgi-dto")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.dto/" version "/org.osgi.dto-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0f4bqjzadn0hwk6sd3h5gvbyfp3yci1s6r0v770cc15p0pg627yr"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-dto.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Data Transfer Objects")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the Data Transfer Objects.  It is easily serializable having only public fields
+of primitive types and their wrapper classes, Strings, and DTOs.  List, Set,
+Map and array aggregates may also be used.  The aggregates must only hold
+objects of the listed types or aggregates.")
+    (license license:asl2.0)))
