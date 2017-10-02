@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
@@ -258,4 +259,34 @@ easily control the volume of all clients, sinks, etc.")
     (description "Ponymix is a PulseAudio mixer and volume controller with a
 command-line interface.  In addition, it is possible to use named sources and
 sinks.")
+    (license l:expat)))
+
+(define-public pulsemixer
+  (package
+    (name "pulsemixer")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/GeorgeFilipkin/"
+                                  "pulsemixer/archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "03c94313fhxd5sbkl2ajzb2gmmm4hpv7m5rkbxmahwg9s8ih824r"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((pulse (assoc-ref inputs "pulseaudio")))
+               (substitute* "pulsemixer"
+                 (("libpulse.so.0")
+                  (string-append pulse "/lib/libpulse.so.0")))
+               #t))))))
+    (inputs
+     `(("pulseaudio" ,pulseaudio)))
+    (home-page "https://github.com/GeorgeFilipkin/pulsemixer/")
+    (synopsis "Command-line and curses mixer for PulseAudio")
+    (description "Pulsemixer is a PulseAudio mixer with command-line and
+curses-style interfaces.")
     (license l:expat)))
