@@ -25,13 +25,18 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)      ;for "which"
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages fabric-management)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages qt))
 
 ;; Fixme: Separate out lib and fix resulting cycle errors; separate libpfm
 ;; output(?); build libmsr and add that component.
@@ -192,4 +197,136 @@ efficient event trace data format plus support library.")
     (description "OPARI2 is a source-to-source instrumentation tool for OpenMP
 and hybrid codes.  It surrounds OpenMP directives and runtime library calls
 with calls to the POMP2 measurement interface.")
+    (license license:bsd-3)))
+
+(define-public cube
+  (package
+    (name "cube")
+    (version "4.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://apps.fz-juelich.de/scalasca/releases/cube/4.3/dist/cube-"
+             version ".tar.gz"))
+       (sha256 (base32 "04irflia4rfw02093w9nx7rr98r640y4q8hisjywvd4b7r3nzhhx"))
+       (patches (search-patches "cube-nocheck.patch"))))
+    (inputs `(("dbus" ,dbus)
+              ("zlib" ,zlib)))
+    (native-inputs `(("perl" ,perl)
+                     ("qtbase" ,qtbase)           ; native because of qmake
+                     ("which" ,which)))
+
+    ;; FIXME: The doc is 14MB, but adding a doc output results in a cycle.
+    (outputs '("out"                              ;"doc"
+               "lib"))
+
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       `("--enable-shared" "--disable-static" "--disable-silent-rules"
+         ,(string-append "LDFLAGS=-L" (assoc-ref %outputs "lib") "/lib"))
+       #:parallel-tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'rpath
+           ;; Account for moving GUI stuff
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((wl (string-append "-Wl,-rpath=" (assoc-ref outputs "out")
+                                      "/lib")))
+               (substitute* "build-backend/Makefile"
+                 (("^cube_LDFLAGS =") (string-append "cube_LDFLAGS = " wl))
+                 (("^libheatmap_plugin_la_LDFLAGS =")
+                  (string-append "libheatmap_plugin_la_LDFLAGS = " wl))
+                 (("^libbarplot_plugin_la_LDFLAGS =")
+                  (string-append "libbarplot_plugin_la_LDFLAGS = " wl)))
+               #t)))
+         (add-before 'install 'includes-cube
+           ;; It tries to install here before include exists.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((inc (string-append (assoc-ref outputs "lib") "/include")))
+               (mkdir-p (string-append inc "/cube"))
+               (mkdir-p (string-append inc "/cubew"))
+               #t)))
+         (add-after 'install 'licence
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((doc (string-append (assoc-ref outputs "lib")
+                                       "/share/doc/cube")))
+               (install-file "COPYING" doc)
+               #t)))
+         ;; XXX: Commented due to cycle (see comment above.)
+         ;; (add-after 'install 'doc
+         ;;   (lambda _
+         ;;     (let ((share (string-append (assoc-ref %outputs "doc")
+         ;;                                 "/share")))
+         ;;       (mkdir-p share)
+         ;;       (rename-file (string-append %output "/share/doc")
+         ;;                    (string-append share "/doc")))))
+         (add-after 'install 'gui-stuff
+           ;; Get the Qt horror dependencies out of the lib closure
+           (lambda _
+             (let ((outlib (string-append (assoc-ref %outputs "out") "/lib"))
+                   (lib (string-append (assoc-ref %outputs "lib") "/lib")))
+               (mkdir-p outlib)
+               (rename-file (string-append lib "/cube-plugins")
+                            (string-append outlib "/cube-plugins"))
+               (for-each (lambda (file)
+                           (rename-file
+                            file (string-append outlib "/" (basename file))))
+                         (append (find-files lib "libgraphwidgetcommon-plugin\\..*")
+                                 (find-files lib "libcube4gui\\.so.*")))
+               #t)))
+         (add-after 'install 'move-include
+           ;; Most of the headers end up under %output for some reason,
+           ;; despite --includedir in configure.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((outinc (string-append (assoc-ref outputs "out")
+                                          "/include"))
+                   (libinc (string-append (assoc-ref outputs "lib")
+                                          "/include")))
+               (for-each (lambda (file)
+                           (let ((from (string-append outinc "/" file)))
+                             (copy-recursively from libinc)
+                             (delete-file-recursively from)))
+                         '("cube" "cubew"))
+               #t)))
+
+         ;; XXX: This doesn't work because cube-config, which is needed for
+         ;; building stuff, sources cube-config-frontend.  We don't want that
+         ;; in the lib output because it pulls in >1GB via QT.
+         ;;
+         ;; (add-after 'install 'cube-config
+         ;;   (lambda _
+         ;;     (let* ((lib (assoc-ref %outputs "lib"))
+         ;;            (libbin (string-append lib "/bin")))
+         ;;       (mkdir-p libbin)
+         ;;       (system (string-append "mv " (assoc-ref %outputs "out")
+         ;;                              "/bin/cube-config* " libbin))
+         ;;       (substitute* (list (string-append libbin "/cube-config"))
+         ;;         (("^prefix=.*") (string-append "prefix=" lib))
+         ;;         (("^exec_prefix=\"\\$\\{prefix\\}\"")
+         ;;          (string-append "exec_prefix=" lib))))))
+         (add-after 'install 'cube-config
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((lib (assoc-ref outputs "lib"))
+                    (libbin (string-append lib "/bin")))
+               (mkdir-p libbin)
+               (install-file (string-append %output "/bin/cube-config") libbin)
+               (install-file (string-append %output "/bin/cube-config-backend")
+                             libbin)
+               (substitute* (list (string-append libbin "/cube-config"))
+                 (("^source .*frontend.*$") "")
+                 (((assoc-ref outputs "out")) lib))
+               #t))))))
+    (home-page "http://www.scalasca.org/software/cube-4.x/download.html")
+    (synopsis "Performance report explorer for parallel programs")
+    (description
+     "CUBE (CUBE Uniform Behavioral Encoding) is a tool to display a variety
+of performance metrics for parallel programs including MPI and OpenMP
+applications.  CUBE allows interactive exploration of a multidimensional
+performance space in a scalable fashion.  Scalability is achieved in two ways:
+hierarchical decomposition of individual dimensions and aggregation across
+different dimensions.  All performance metrics are uniformly accommodated in
+the same display and thus provide the ability to easily compare the effects of
+different kinds of performance behavior.")
     (license license:bsd-3)))
