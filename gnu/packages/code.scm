@@ -58,7 +58,11 @@
 
     ;; Needed to have cflow-mode.el installed.
     (native-inputs `(("emacs" ,emacs-minimal)))
-
+    (arguments
+     '(#:configure-flags (list (string-append "CPPFLAGS="
+                                              "-D" "CFLOW_PREPROC=\\\""
+                                              (assoc-ref %build-inputs "gcc")
+                                              "/bin/cpp\\\""))))
     (home-page "https://www.gnu.org/software/cflow/")
     (synopsis "Create a graph of control flow within a program")
     (description
