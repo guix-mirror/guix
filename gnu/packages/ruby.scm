@@ -2107,17 +2107,19 @@ both CSS3 selector and XPath 1.0 support.")
 (define-public ruby-method-source
   (package
     (name "ruby-method-source")
-    (version "0.8.2")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "method_source" version))
        (sha256
         (base32
-         "1g5i4w0dmlhzd18dijlqw5gk27bv6dj2kziqzrzb7mpgxgsd1sf2"))))
+         "0xqj21j3vfq4ldia6i2akhn2qd84m0iqcnsl49kfpq3xk6x0dzgn"))))
     (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"))
     (native-inputs
-     `(("ruby-bacon" ,ruby-bacon)
+     `(("ruby-rspec" ,ruby-rspec)
        ("git" ,git)))
     (synopsis "Retrieve the source code for Ruby methods")
     (description "Method_source retrieves the source code for Ruby methods.
