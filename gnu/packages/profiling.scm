@@ -26,6 +26,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)      ;for "which"
   #:use-module (gnu packages fabric-management)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
@@ -158,4 +159,37 @@ performance measurement opportunites across the hardware and software stack.")
     (synopsis "Open Trace Format 2 library")
     (description "The Open Trace Format 2 (OTF2) is a scalable, memory
 efficient event trace data format plus support library.")
+    (license license:bsd-3)))
+
+(define-public opari2
+  (package
+    (name "opari2")
+    (version "2.0.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (let* ((parts (string-split version #\.) )
+                  (major (car parts))
+                  (minor (cadr parts)))
+             (string-append "http://www.vi-hps.org/upload/packages/opari2/opari2-"
+                            version ".tar.gz")))
+      (sha256 (base32 "1ph8l5c646bm9l5vcn8rrbjvkyi7y8yvn2ny95r6kmlzs766g3q8"))))
+    (build-system gnu-build-system)
+    (inputs `(("gfortran" ,gfortran)))
+    (native-inputs `(("gawk" ,gawk)     ;for tests
+                     ("which" ,which)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'licence
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((doc (string-append (assoc-ref outputs "out")
+                                       "/share/doc/opari2")))
+               (install-file "COPYING" doc)
+               #t))))))
+    (home-page "http://www.vi-hps.org/projects/score-p")
+    (synopsis "OpenMP runtime performance measurement instrumenter")
+    (description "OPARI2 is a source-to-source instrumentation tool for OpenMP
+and hybrid codes.  It surrounds OpenMP directives and runtime library calls
+with calls to the POMP2 measurement interface.")
     (license license:bsd-3)))
