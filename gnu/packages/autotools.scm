@@ -6,6 +6,7 @@
 ;;; Copyright © 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 ng0 <ng0@libertad.pw>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -194,7 +195,7 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
 (define-public autoconf-archive
   (package
     (name "autoconf-archive")
-    (version "2017.03.21")
+    (version "2017.09.28")
     (source
      (origin
       (method url-fetch)
@@ -202,7 +203,7 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                           version ".tar.xz"))
       (sha256
        (base32
-        "0rfpapadka2023qhy8294ca5awxpb8d4904js6kv7piby5ax8siq"))))
+        "00gsh9hkrgg291my98plkrwlcpxkfrpq64pglf18kciqbf2bb7sw"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/autoconf-archive/")
     (synopsis "Collection of freely reusable Autoconf macros")
