@@ -389,11 +389,10 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-asan-powerpc-missing-include.patch"
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
-                                       "gcc-5-source-date-epoch-2.patch"))))))
-    ;; TODO: gcc-5 doesn't need cloog.
-    ;;(inputs
-    ;; `(("isl" ,isl)
-    ;;   ,@(package-inputs gcc-4.7)))))
+                                       "gcc-5-source-date-epoch-2.patch"))))
+    (inputs
+     `(("isl" ,isl)
+       ,@(package-inputs gcc-4.7)))))
 
 (define-public gcc-6
   (package
