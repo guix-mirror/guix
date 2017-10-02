@@ -2182,21 +2182,20 @@ rate.")
 (define-public ruby-pry
   (package
     (name "ruby-pry")
-    (version "0.10.4")
+    (version "0.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pry" version))
        (sha256
         (base32
-         "05xbzyin63aj2prrv8fbq2d5df2mid93m81hz5bvf2v4hnzs42ar"))))
+         "0ci461a55sn50rlrmcl97ycf79681glp443a2gzp23rnm7y70fkj"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
     (propagated-inputs
      `(("ruby-coderay" ,ruby-coderay)
-       ("ruby-method-source" ,ruby-method-source)
-       ("ruby-slop" ,ruby-slop-3)))
+       ("ruby-method-source" ,ruby-method-source)))
     (synopsis "Ruby REPL")
     (description "Pry is an IRB alternative and runtime developer console for
 Ruby.  It features syntax highlighting, a plugin architecture, runtime
