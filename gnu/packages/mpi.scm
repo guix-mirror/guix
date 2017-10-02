@@ -131,6 +131,7 @@ bind processes, and much more.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)))
+    (outputs '("out" "debug"))
     (arguments
      `(#:configure-flags `("--enable-mpi-ext=affinity" ;cr doesn't work
                            "--enable-memchecker"
