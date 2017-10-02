@@ -29,7 +29,8 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages ncurses))
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages python))
 
 ;; Fixme: Separate out lib and fix resulting cycle errors; separate libpfm
 ;; output(?); build libmsr and add that component.
@@ -124,3 +125,37 @@ performance measurement opportunites across the hardware and software stack.")
                    ;; "BSD-like": src/libpfm-3.y/*, src/libpfm4/*
                    ;; lgpl2.1+: src/perfctr-2.*/*
                    ))))
+
+;; NB. there's a potential name clash with libotf.
+(define-public otf2
+  (package
+    (name "otf2")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.vi-hps.org/upload/packages/otf2/otf2-"
+                           version ".tar.gz"))
+       (sha256 (base32 "1lyaqhdfaqm1kd23yk71g71vkscw83s7m57j017y768h8sh8xlwa"))))
+    (native-inputs `(("python" ,python)))
+    (outputs '("doc"                              ; 18MB
+               "lib"
+               "out"))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-shared" "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'licence
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each (lambda (output)
+                         (let ((doc (string-append (assoc-ref outputs output)
+                                                   "/share/doc/otf2")))
+                           (install-file "COPYING" doc)))
+                       '("lib" "doc"))
+             #t)))))
+    (home-page "http://www.vi-hps.org/projects/score-p/")
+    (synopsis "Open Trace Format 2 library")
+    (description "The Open Trace Format 2 (OTF2) is a scalable, memory
+efficient event trace data format plus support library.")
+    (license license:bsd-3)))
