@@ -90,6 +90,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages less)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages texinfo))
 
 (define-public libotr
@@ -801,14 +802,14 @@ instant messenger with audio and video chat capabilities.")
 (define-public qtox
   (package
     (name "qtox")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/qTox/qTox/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1m1ca1ybgj4yfm6a61yyj21f5jpip8dsbliwkfypswhmv5y52f5y"))
+                "0ycgvcfn8hchc775dcn1wpdqff8chvzz1svx9g99wa5vcns9pflg"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -830,6 +831,8 @@ instant messenger with audio and video chat capabilities.")
        ("libvpx" ,libvpx)
        ("libxscrnsaver" ,libxscrnsaver)
        ("libx11" ,libx11)
+       ("libexif" ,libexif)
+       ("sqlite" ,sqlite)
        ("openal" ,openal)
        ("qrencode" ,qrencode)
        ("qtbase" ,qtbase)
