@@ -450,8 +450,7 @@ the following:
      \"/dev/sda1\";
   • 'label', in which case SPEC is known to designate a partition label--e.g.,
      \"my-root-part\";
-  • 'uuid', in which case SPEC must be a UUID (a 16-byte bytevector)
-     designating a partition;
+  • 'uuid', in which case SPEC must be a UUID designating a partition;
   • 'any', in which case SPEC can be anything.
 "
   (define max-trials
@@ -497,9 +496,11 @@ the following:
      (resolve find-partition-by-label spec identity))
     ((uuid)
      (resolve find-partition-by-uuid
-              (if (string? spec)
-                  (string->uuid spec)
-                  spec)
+              (cond ((string? spec)
+                     (string->uuid spec))
+                    ((uuid? spec)
+                     (uuid-bytevector spec))
+                    (else spec))
               uuid->string))
     (else
      (error "unknown device title" title))))
