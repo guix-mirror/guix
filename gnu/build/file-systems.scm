@@ -20,9 +20,11 @@
 
 (define-module (gnu build file-systems)
   #:use-module (gnu system uuid)
+  #:use-module (gnu system file-systems)
   #:use-module (guix build utils)
   #:use-module (guix build bournish)
-  #:use-module (guix build syscalls)
+  #:use-module ((guix build syscalls)
+                #:hide (file-system-type))
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
@@ -552,11 +554,8 @@ corresponds to the symbols listed in FLAGS."
       (()
        0))))
 
-(define* (mount-file-system spec #:key (root "/root"))
-  "Mount the file system described by SPEC under ROOT.  SPEC must have the
-form:
-
-  (DEVICE TITLE MOUNT-POINT TYPE (FLAGS ...) OPTIONS CHECK?)
+(define* (mount-file-system fs #:key (root "/root"))
+  "Mount the file system described by FS, a <file-system> object, under ROOT.
 
 DEVICE, MOUNT-POINT, and TYPE must be strings; OPTIONS can be a string or #f;
 FLAGS must be a list of symbols.  CHECK? is a Boolean indicating whether to
@@ -582,34 +581,36 @@ run a file system check."
                             (if options
                                 (string-append "," options)
                                 "")))))
-  (match spec
-    ((source title mount-point type (flags ...) options check?)
-     (let ((source      (canonicalize-device-spec source title))
-           (mount-point (string-append root "/" mount-point))
-           (flags       (mount-flags->bit-mask flags)))
-       (when check?
-         (check-file-system source type))
+  (let ((type        (file-system-type fs))
+        (options     (file-system-options fs))
+        (source      (canonicalize-device-spec (file-system-device fs)
+                                               (file-system-title fs)))
+        (mount-point (string-append root "/"
+                                    (file-system-mount-point fs)))
+        (flags       (mount-flags->bit-mask (file-system-flags fs))))
+    (when (file-system-check? fs)
+      (check-file-system source type))
 
-       ;; Create the mount point.  Most of the time this is a directory, but
-       ;; in the case of a bind mount, a regular file or socket may be needed.
-       (if (and (= MS_BIND (logand flags MS_BIND))
-                (not (file-is-directory? source)))
-           (unless (file-exists? mount-point)
-             (mkdir-p (dirname mount-point))
-             (call-with-output-file mount-point (const #t)))
-           (mkdir-p mount-point))
+    ;; Create the mount point.  Most of the time this is a directory, but
+    ;; in the case of a bind mount, a regular file or socket may be needed.
+    (if (and (= MS_BIND (logand flags MS_BIND))
+             (not (file-is-directory? source)))
+        (unless (file-exists? mount-point)
+          (mkdir-p (dirname mount-point))
+          (call-with-output-file mount-point (const #t)))
+        (mkdir-p mount-point))
 
-       (cond
-        ((string-prefix? "nfs" type)
-         (mount-nfs source mount-point type flags options))
-        (else
-         (mount source mount-point type flags options)))
+    (cond
+     ((string-prefix? "nfs" type)
+      (mount-nfs source mount-point type flags options))
+     (else
+      (mount source mount-point type flags options)))
 
-       ;; For read-only bind mounts, an extra remount is needed, as per
-       ;; <http://lwn.net/Articles/281157/>, which still applies to Linux 4.0.
-       (when (and (= MS_BIND (logand flags MS_BIND))
-                  (= MS_RDONLY (logand flags MS_RDONLY)))
-         (let ((flags (logior MS_BIND MS_REMOUNT MS_RDONLY)))
-           (mount source mount-point type flags #f)))))))
+    ;; For read-only bind mounts, an extra remount is needed, as per
+    ;; <http://lwn.net/Articles/281157/>, which still applies to Linux 4.0.
+    (when (and (= MS_BIND (logand flags MS_BIND))
+               (= MS_RDONLY (logand flags MS_RDONLY)))
+      (let ((flags (logior MS_BIND MS_REMOUNT MS_RDONLY)))
+        (mount source mount-point type flags #f)))))
 
 ;;; file-systems.scm ends here
