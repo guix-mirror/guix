@@ -62,7 +62,7 @@
      `(("zlib" ,zlib)
        ("openssl" ,openssl)
        ("libevent" ,libevent)
-       ("libseccomp", libseccomp)))
+       ("libseccomp" ,libseccomp)))
     (home-page "https://www.torproject.org/")
     (synopsis "Anonymous network router to improve privacy on the Internet")
     (description
