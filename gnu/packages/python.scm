@@ -11494,8 +11494,21 @@ to occurrences in strings and comments.")
         (base32
          "0i283z1pivmir61z8kbiycigc94l61v33ygzkhczf1ifq7cppyds"))))
     (build-system python-build-system)
+    (inputs
+     `(("file" ,file)))
     (arguments
-     '(#:tests? #f)) ; TODO: Requires many libraries not in Guix.
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; 'file' is used for detection of configuration file encoding
+         ;; let's make link the dependency to particular input
+         (add-before 'build 'patch-file-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((file-path (assoc-ref inputs "file")))
+               (substitute* "py3status/parse_config.py"
+                 (("check_output\\(\\['file'")
+                  (string-append "check_output(['" file-path "/bin/file'")))
+               #t))))
+       #:tests? #f)) ; TODO: Requires many libraries not in Guix.
     (home-page "https://github.com/ultrabug/py3status")
     (synopsis "Extensible i3status wrapper written in Python")
     (description "py3status is an i3status wrapper which extends i3status
