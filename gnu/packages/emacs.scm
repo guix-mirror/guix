@@ -4973,7 +4973,7 @@ containing words from the rime project.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
-       ("emacs-exwm" ,emacs-pyim-basedict)
+       ("emacs-pyim-basedict" ,emacs-pyim-basedict)
        ("emacs-popup" ,emacs-popup)
        ("emacs-pos-tip" ,emacs-pos-tip)))
     (home-page "https://github.com/tumashu/pyim")
