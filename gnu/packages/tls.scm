@@ -113,7 +113,7 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.8")
+    (version "0.23.9")
     (source
      (origin
       (method url-fetch)
@@ -121,7 +121,7 @@ in intelligent transportation networks.")
                           "download/" version "/p11-kit-" version ".tar.gz"))
       (sha256
        (base32
-        "0gqk1d09yyin75lvlywpbf3kxlnrcwbq8ridgapvqqjbzvjk98ab"))))
+        "0qyvnkb5hfi94wv3bn67y20hcbbvynvjwxpk7k9sh1si6ff69hg1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
