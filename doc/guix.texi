@@ -19147,6 +19147,18 @@ Translation Project} so that as many users as possible can read them in
 their native language.  User interfaces search them and display them in
 the language specified by the current locale.
 
+To allow @command{xgettext} to extract them as translatable strings,
+synopses and descriptions @emph{must be literal strings}.  This means
+that you cannot use @code{string-append} or @code{format} to construct
+these strings:
+
+@lisp
+(package
+  ;; @dots{}
+  (synopsis "This is translatable")
+  (description (string-append "This is " "*not*" " translatable.")))
+@end lisp
+
 Translation is a lot of work so, as a packager, please pay even more
 attention to your synopses and descriptions as every change may entail
 additional work for translators.  In order to help them, it is possible
