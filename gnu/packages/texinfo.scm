@@ -31,19 +31,17 @@
   #:use-module (gnu packages ncurses))
 
 (define-public texinfo
-  ;; TODO: Merge with 'texinfo-latest' on the next core-updates.
   (package
     (name "texinfo")
-    (version "6.4")
+    (version "6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ficyfpknfrsm3xn3svd38fja3s7s1ml5wn6yyd0ycf6hwfydqka"))))
+                "0qjzvbvnv9003xdrcpi3jp7y68j4hq2ciw9frh2hghh698zlnxvp"))))
     (build-system gnu-build-system)
-    (native-inputs `(("procps" ,procps)))  ;one of the tests needs pgrep
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)))
 
@@ -63,19 +61,6 @@ package includes both the tools necessary to produce Info documents from
 their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
-
-(define-public texinfo-latest
-  ;; TODO: Turn this into 'texinfo' on the next core-updates cycle.
-  (package (inherit texinfo)
-    (version "6.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/texinfo/texinfo-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0qjzvbvnv9003xdrcpi3jp7y68j4hq2ciw9frh2hghh698zlnxvp"))))
-    (native-inputs '())))
 
 (define-public texinfo-5
   (package (inherit texinfo)
