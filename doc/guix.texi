@@ -17000,6 +17000,71 @@ Extra options will be passed to @code{git daemon}, please run
 @end table
 @end deftp
 
+@subsubheading Cgit Service
+
+@cindex Cgit service
+@cindex Git, web interface
+@uref{https://git.zx2c4.com/cgit/, Cgit} is a web frontend for Git
+repositories written in C.
+
+The following example will configure the service with default values.
+By default, Cgit can be accessed on port 80 (@code{http://localhost:80}).
+
+@example
+(service nginx-service-type)
+(service fcgiwrap-service-type)
+(service cgit-service-type)
+@end example
+
+@deftp {Data Type} cgit-configuration
+Data type representing the configuration of Cgit.
+This type has the following parameters:
+
+@table @asis
+@item @code{config-file} (default: @code{(cgit-configuration-file)})
+The configuration file to use for Cgit.  This can be set to a
+@dfn{cgit-configuration-file} record value, or any gexp
+(@pxref{G-Expressions}).
+
+For example, to instead use a local file, the @code{local-file} function
+can be used:
+
+@example
+(service cgit-service-type
+         (cgit-configuration
+           (config-file (local-file "./my-cgitrc.conf"))))
+@end example
+
+@item @code{package} (default: @code{cgit})
+The Cgit package to use.
+
+@end table
+@end deftp
+
+@deftp {Data Type} cgit-configuration-file
+Data type representing the configuration options for Cgit.
+This type has the following parameters:
+
+@table @asis
+@item @code{css} (default: @code{"/share/cgit/cgit.css"})
+URL which specifies the css document to include in all Cgit pages.
+
+@item @code{logo} (default: @code{"/share/cgit/cgit.png"})
+URL which specifies the source of an image which will be used as a logo
+on all Cgit pages.
+
+@item @code{virtual-root} (default: @code{"/"})
+URL which, if specified, will be used as root for all Cgit links.
+
+@item @code{repository-directory} (default: @code{"/srv/git"})
+Name of the directory to scan for repositories.
+
+@item @code{robots} (default: @code{(list "noindex" "nofollow")})
+Text used as content for the ``robots'' meta-tag.
+
+@end table
+@end deftp
+
 @node Setuid Programs
 @subsection Setuid Programs
 

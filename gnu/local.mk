@@ -501,6 +501,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/networking.scm			\
   %D%/tests/rsync.scm				\
   %D%/tests/ssh.scm				\
+  %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\
   %D%/tests/web.scm
 
