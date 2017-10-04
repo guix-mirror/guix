@@ -5684,3 +5684,60 @@ the system under test at the same time.")
 Jackson Data Processor, used on value and handler types.  The only annotations
 not included are ones that require dependency to the Databind package.")
     (license license:asl2.0)))
+
+(define-public java-fasterxml-jackson-core
+  (package
+    (name "java-fasterxml-jackson-core")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-core/archive/"
+                                  "jackson-core-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sdfp74zvlh4xr5h5bj87yjlp6kny3i8ai9m0q3xs7f8hvmxpx09"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-core.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:test-exclude
+       (list
+         ;; Expected failure.  pom.xml excludes these
+         "**/failing/**"
+         ;; Base classes that have no constructor for junit
+         "**/BaseTest.java"
+         "**/ConcurrencyReadTest.java"
+         "**/ManualCharAccessTest.java"
+         "**/ManualCharAccessTest.java"
+         "**/TrailingCommasTest.java"
+         "**/AsyncMissingValuesInObjectTest.java"
+         "**/AsyncMissingValuesInArrayTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out "src/main/java/com/fasterxml/jackson/core/json/PackageVersion.java")
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.core.json")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.core")
+                 (("@projectartifactid@") "jackson-core")))))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources"
+                               "build/classes")))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "src/test/resources"
+                               "build/test-classes"))))))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://github.com/FasterXML/jackson-core")
+    (synopsis "")
+    (description "")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
