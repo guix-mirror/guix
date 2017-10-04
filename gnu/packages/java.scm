@@ -5741,3 +5741,46 @@ not included are ones that require dependency to the Databind package.")
     (synopsis "")
     (description "")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-fasterxml-jackson-databind
+  (package
+    (name "java-fasterxml-jackson-databind")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-databind/archive/"
+                                  "jackson-databind-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02xrbj6g7pzybq8q33xmpf7cxfapk6z6lgxvig7d38fijz400lji"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-databind.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f; requires javax.measures for which I can't find a free implementation
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out "src/main/java/com/fasterxml/jackson/databind/cfg/PackageVersion.java")
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.databind.cfg")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.databind")
+                 (("@projectartifactid@") "jackson-databind")))))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes"))))))
+    (inputs
+     `(("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)))
+    (home-page "https://github.com/FasterXML/jackson-databind")
+    (synopsis "Data-binding functionality and tree-model for the Jackson Data Processor")
+    (description "This package contains the general-purpose data-binding
+functionality and tree-model for Jackson Data Processor.  It builds on core
+streaming parser/generator package, and uses Jackson Annotations for
+configuration.")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
