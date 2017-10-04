@@ -5350,3 +5350,16 @@ the packageadmin service.")
     (description "OPS4J stands for Open Participation Software for Java.  This
 package contains utilities and extensions related to @code{java.lang}.")
     (license license:asl2.0)))
+
+(define-public java-ops4j-base-monitors
+  (package
+    (inherit java-ops4j-base-lang)
+    (name "java-ops4j-base-monitors")
+    (arguments
+     `(#:jar-name "java-ops4j-base-monitors.jar"
+       #:source-dir "ops4j-base-monitors/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("lang" ,java-ops4j-base-lang)))
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities and extensions related to monitoring.")))
