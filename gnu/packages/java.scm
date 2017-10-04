@@ -5854,3 +5854,51 @@ configuration.")
     (synopsis "YAML processor")
     (description "SnakeYAML is a YAML processor for the Java Virtual Machine.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-fasterxml-jackson-dataformat-yaml
+  (package
+    (name "java-fasterxml-jackson-dataformat-yaml")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-dataformats-text/archive/"
+                                  "jackson-dataformats-text-" version ".tar.gz"))
+              (sha256
+               (base32
+                "140fwcafv05zbh2ppa6z533dzmfcvzbdxf0dbpbyzqvd84v2vhl2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-dataformat-yaml.jar"
+       #:source-dir "yaml/src/main/java"
+       #:test-dir "yaml/src/test"
+       #:test-exclude (list "**/failing/**.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out "yaml/src/main/java/com/fasterxml/jackson/dataformat/yaml/PackageVersion.java")
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.dataformat.yaml")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.dataformat.yaml")
+                 (("@projectartifactid@") "jackson-dataformat-yaml"))))))))
+    (inputs
+     `(("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
+       ("java-fasterxml-jackson-databind" ,java-fasterxml-jackson-databind)
+       ("java-snakeyaml" ,java-snakeyaml)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)
+       ("java-ops4j-pax-exam-core-spi" ,java-ops4j-pax-exam-core-spi)
+       ("java-ops4j-pax-exam-core-junit" ,java-ops4j-pax-exam-core-junit)
+       ("java-ops4j-pax-exam" ,java-ops4j-pax-exam-core)))
+    (home-page "https://github.com/FasterXML/jackson-dataformats-text")
+    (synopsis "Yaml backend for Jackson")
+    (description "Dataformat backends are used to support format alternatives
+to JSON, supported by default.  This is done by sub-classing Jackson core
+abstractions.")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
