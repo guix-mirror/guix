@@ -5363,3 +5363,22 @@ package contains utilities and extensions related to @code{java.lang}.")
      `(("lang" ,java-ops4j-base-lang)))
     (description "OPS4J stands for Open Participation Software for Java.  This
 package contains utilities and extensions related to monitoring.")))
+
+(define-public java-ops4j-base-io
+  (package
+    (inherit java-ops4j-base-lang)
+    (name "java-ops4j-base-io")
+    (arguments
+     `(#:jar-name "java-ops4j-base-io.jar"
+       #:source-dir "ops4j-base-io/src/main/java"
+       #:test-dir "ops4j-base-io/src/test"
+       #:test-exclude
+       (list "**/ListerTest.java")))
+    (inputs
+     `(("lang" ,java-ops4j-base-monitors)
+       ("lang" ,java-ops4j-base-lang)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities and extensions related to handling streams and files.")))
