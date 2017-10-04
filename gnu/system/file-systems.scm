@@ -38,6 +38,7 @@
             file-system-check?
             file-system-create-mount-point?
             file-system-dependencies
+            file-system-location
 
             file-system-type-predicate
 
@@ -101,7 +102,10 @@
   (create-mount-point? file-system-create-mount-point? ; Boolean
                        (default #f))
   (dependencies     file-system-dependencies      ; list of <file-system>
-                    (default '())))               ; or <mapped-device>
+                    (default '()))                ; or <mapped-device>
+  (location         file-system-location
+                    (default (current-source-location))
+                    (innate)))
 
 ;; Note: This module is used both on the build side and on the host side.
 ;; Arrange not to pull (guix store) and (guix config) because the latter
