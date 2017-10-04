@@ -5643,3 +5643,18 @@ the system under test at the same time.")
        ("cglib" ,java-cglib)
        ("objenesis" ,java-objenesis)
        ("asm" ,java-asm)))))
+
+(define-public java-ops4j-pax-exam-core-junit
+  (package
+    (inherit java-ops4j-pax-exam-core)
+    (name "java-ops4j-pax-exam-core-junit")
+    (arguments
+     `(#:jar-name "ops4j-pax-exam-core-junit.jar"
+       #:source-dir "drivers/pax-exam-junit4/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("junit" ,java-junit)
+       ("slf4j" ,java-slf4j-api)
+       ("core" ,java-ops4j-pax-exam-core)
+       ("spi" ,java-ops4j-pax-exam-core-spi)))
+    (native-inputs '())))
