@@ -1244,15 +1244,17 @@ hashing schemes plugin for @code{Dovecot}.")
 (define-public isync
   (package
     (name "isync")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/isync/isync/"
                            version "/isync-" version ".tar.gz"))
        (sha256 (base32
-                "1bij6nm06ghkg98n2pdyacam2fyg5y8f7ajw0d5653m0r4ldw5p7"))))
+                "173wd7x8y5sp94slzwlnb7zhgs32r57zl9xspl2rf4g3fqwmhpwd"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
     (inputs
      `(("bdb" ,bdb)
        ("openssl" ,openssl)))
