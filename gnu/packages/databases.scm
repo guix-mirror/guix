@@ -1741,4 +1741,6 @@ implementation for Python.")
     (description "Virtuoso is a scalable cross-platform server that combines
 relational, graph, and document data management with web application server
 and web services platform functionality.")
+    ;; configure: error: ... can only be build on 64bit platforms
+    (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))
     (license license:gpl2)))
