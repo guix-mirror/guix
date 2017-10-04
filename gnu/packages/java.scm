@@ -5429,3 +5429,18 @@ different sources.")))
     (description "OPS4J stands for Open Participation Software for Java.  This
 package contains utilities for storing and retrieving data from an
 @code{InputStream}.")))
+
+(define-public java-ops4j-base-spi
+  (package
+    (inherit java-ops4j-base-lang)
+    (name "java-ops4j-base-spi")
+    (arguments
+     `(#:jar-name "java-ops4j-base-spi.jar"
+       #:source-dir "ops4j-base-spi/src/main/java"
+       #:test-dir "ops4j-base-spi/src/test"))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities for obtaining services via the Java SE 6
+@code{ServiceLoader}.")))
