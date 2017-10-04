@@ -5067,7 +5067,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.19.3")
+    (version "1.19.4")
     (source
       (origin
         (method url-fetch)
@@ -5076,9 +5076,9 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7"))
+          "1a690fzv5l5ks45g9zhlzdskdq8q73mcbpb9a3wz3shxm778lxda"))
         (patches
-         (cons
+         (list
           ;; See:
           ;;   https://lists.fedoraproject.org/archives/list/devel@lists.
           ;;      fedoraproject.org/message/JU655YB7AM4OOEQ4MOMCRHJTYJ76VFOK/
@@ -5090,9 +5090,7 @@ over Xlib, including:
             (sha256
              (base32
               "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
-            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))
-          (search-patches "xorg-server-CVE-2017-10971.patch"
-                          "xorg-server-CVE-2017-10972.patch")))))
+            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
