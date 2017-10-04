@@ -406,10 +406,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "1m0lr7938lw5d773dkvwld90hjlcq2282517d1gwvrfzmwgg42w5"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))))
-    (inputs
-     `(("isl" ,isl)
-       ,@(package-inputs gcc-4.7)))))
+                                       "gcc-5.0-libvtv-runpath.patch"))))))
 
 (define-public gcc-7
   (package
