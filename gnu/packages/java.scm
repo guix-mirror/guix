@@ -5413,3 +5413,19 @@ mime types.")))
     (description "OPS4J stands for Open Participation Software for Java.  This
 package contains utilities and extensions related to resolving properties from
 different sources.")))
+
+(define-public java-ops4j-base-store
+  (package
+    (inherit java-ops4j-base-lang)
+    (name "java-ops4j-base-store")
+    (arguments
+     `(#:jar-name "java-ops4j-base-store.jar"
+       #:source-dir "ops4j-base-store/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("lang" ,java-ops4j-base-lang)
+       ("slf4j" ,java-slf4j-api)
+       ("io" ,java-ops4j-base-io)))
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities for storing and retrieving data from an
+@code{InputStream}.")))
