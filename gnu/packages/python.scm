@@ -132,7 +132,7 @@
 (define-public python-2.7
   (package
     (name "python")
-    (version "2.7.13")
+    (version "2.7.14")
     (source
      (origin
       (method url-fetch)
@@ -140,12 +140,12 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "0cgpk3zk0fgpji59pb4zy9nzljr70qzgv1vpz5hq5xw2d2c47m9m"))
+        "0rka541ys16jwzcnnvjp2v12m4cwgd2jp6wj4kj511p715pb5zvi"))
       (patches (search-patches "python-2.7-search-paths.patch"
                                "python-2-deterministic-build-info.patch"
                                "python-2.7-site-prefixes.patch"
                                "python-2.7-source-date-epoch.patch"
-                               "python-2.7-getentropy-on-old-kernels.patch"))
+                               "python-2.7-adjust-tests.patch"))
       (modules '((guix build utils)))
       ;; suboptimal to delete failing tests here, but if we delete them in the
       ;; arguments then we need to make sure to strip out that phase when it
