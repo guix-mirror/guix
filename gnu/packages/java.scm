@@ -5468,3 +5468,17 @@ package contains utilities for obtaining services via the Java SE 6
 headers based on analyzing the class code, it verifies the project settings,
 it manages project dependencies, gives diffs jars, and much more.")
     (license license:asl2.0)))
+
+(define-public java-aqute-libg
+  (package
+    (inherit java-aqute-bnd-annotation)
+    (name "java-aqute-libg")
+    (arguments
+     `(#:jar-name "java-aqute-libg.jar"
+       #:source-dir "aQute.libg/src"
+       #:tests? #f)); FIXME: tests are in "aQute.libg/test", not in a java directory
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("osgi-annot" ,java-osgi-annotation)
+       ("java-osgi-cmpn" ,java-osgi-cmpn)
+       ("osgi" ,java-osgi-core)))))
