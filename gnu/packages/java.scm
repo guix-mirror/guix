@@ -5315,3 +5315,38 @@ utility classes for the configuration of services.")
 and service platform for the Java programming language.  This package contains
 the packageadmin service.")
     (license license:asl2.0)))
+
+(define-public java-ops4j-base-lang
+  (package
+    (name "java-ops4j-base-lang")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ops4j/org.ops4j.base/"
+                                  "archive/base-" version ".tar.gz"))
+              (sha256
+               (base32
+                "18hl3lpchgpv8yh5rlk39l2gif5dlfgb8gxjmncf39pr2dprkniw"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-ops4j-base-lang.jar"
+       #:source-dir "ops4j-base-lang/src/main/java"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'add-test-file
+           (lambda _
+             ;; That file is required by a test in ops4j-pax-exam-core-spi
+             (mkdir-p "build/classes/META-INF/maven/org.ops4j.base/ops4j-base-lang")
+             (with-output-to-file "build/classes/META-INF/maven/org.ops4j.base/ops4j-base-lang/pom.properties"
+               (lambda _
+                 (display
+                   (string-append
+                     "version=" ,version "\n"
+                     "groupId=org.ops4j.base"
+                     "artifactId=ops4j-base-lang\n")))))))))
+    (home-page "https://ops4j1.jira.com/wiki/spaces/base/overview")
+    (synopsis "Utility classes and extensions to be used in OPS4J projects")
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities and extensions related to @code{java.lang}.")
+    (license license:asl2.0)))
