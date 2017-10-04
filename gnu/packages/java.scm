@@ -5444,3 +5444,27 @@ package contains utilities for storing and retrieving data from an
     (description "OPS4J stands for Open Participation Software for Java.  This
 package contains utilities for obtaining services via the Java SE 6
 @code{ServiceLoader}.")))
+
+(define-public java-aqute-bnd-annotation
+  (package
+    (name "java-aqute-bnd-annotation")
+    (version "3.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/bndtools/bnd/archive/"
+                                  version ".REL.tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09vgb6axikbz66zi9falijbnzh1qnp9ysfns123dmzdb01cbza9q"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-aqute-bnd-annotation.jar"
+       #:source-dir "biz.aQute.bnd.annotation/src"
+       #:tests? #f)); empty test dir
+    (home-page "http://bnd.bndtools.org/")
+    (synopsis "Tools for OSGi")
+    (description "Bnd is a swiss army knife for OSGi, it creates manifest
+headers based on analyzing the class code, it verifies the project settings,
+it manages project dependencies, gives diffs jars, and much more.")
+    (license license:asl2.0)))
