@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -294,3 +295,26 @@ generation.")
 C++ but is used in C and C++ projects and frequently used in embedded systems
 but it works for any C/C++ project.")
     (license bsd-3)))
+
+(define-public python-parameterized
+  (package
+    (name "python-parameterized")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "parameterized" version))
+       (sha256
+        (base32
+         "1qj1939shm48d9ql6fm1nrdy4p7sdyj8clz1szh5swwpf1qqxxfa"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; there are no tests
+    (home-page "https://github.com/wolever/parameterized")
+    (synopsis "Parameterized testing with any Python test framework")
+    (description
+     "Parameterized is a Python library that aims to fix parameterized testing
+for every Python test framework.  It supports nose, py.test, and unittest.")
+    (license bsd-2)))
+
+(define-public python2-parameterized
+  (package-with-python2 python-parameterized))
