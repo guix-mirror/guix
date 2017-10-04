@@ -5963,3 +5963,60 @@ interface and high-performance Typed Access API.")
     (synopsis "Stax XML API implementation")
     (description "Woodstox is a stax XML API implementation.")
     (license license:asl2.0)))
+
+(define-public java-fasterxml-jackson-dataformat-xml
+  (package
+    (name "java-fasterxml-jackson-dataformat-xml")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-dataformat-xml/archive/"
+                                  "jackson-dataformat-xml-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0x3m9n4kwclcyvxhxjx654qpjza4crphml1q2392qpnbfydx6lnh"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-dataformat-xml.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list "**/failing/**")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out "src/main/java/com/fasterxml/jackson/dataformat/xml/PackageVersion.java")
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (newline)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.dataformat.xml")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.dataformat.xml")
+                 (("@projectartifactid@") "jackson-dataformat-xml")))))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes"))))))
+    (inputs
+     `(("jackson-annotations" ,java-fasterxml-jackson-annotations)
+       ("jackson-core" ,java-fasterxml-jackson-core)
+       ("jackson-modules-base-jaxb" ,java-fasterxml-jackson-modules-base-jaxb)
+       ("jackson-databind" ,java-fasterxml-jackson-databind)
+       ("stax2-api" ,java-stax2-api)
+       ("woodstox" ,java-woodstox-core)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://github.com/FasterXML/jackson-dataformat-xml")
+    (synopsis "Read and write XML")
+    (description "This package contains Jackson extension component for reading
+and writing XML encoded data.
+
+Further, the goal is to emulate how JAXB data-binding works with \"Code-first\"
+approach (that is, no support is added for \"Schema-first\" approach).  Support
+for JAXB annotations is provided by JAXB annotation module; this module
+provides low-level abstractions (@code{JsonParser}, @code{JsonGenerator},
+@code{JsonFactory}) as well as small number of higher level overrides needed to
+make data-binding work.")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
