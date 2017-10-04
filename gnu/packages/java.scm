@@ -5587,3 +5587,59 @@ to create those artifacts.")
 the user take control of the OSGi framework, the test framework (e.g. JUnit) and
 the system under test at the same time.")
     (license license:asl2.0)))
+
+(define-public java-ops4j-pax-exam-core-spi
+  (package
+    (inherit java-ops4j-pax-exam-core)
+    (name "java-ops4j-pax-exam-core-spi")
+    (arguments
+     `(#:jar-name "java-ops4j-pax-exam-spi.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list
+         ;; Abstract base class, not a test
+         "**/BaseStagedReactorTest.java"
+         ;; Depends on org.mortbay.jetty.testwars:test-war-dump
+         "**/WarBuilderTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             ;; Tests assume we are in this directory
+             (chdir "core/pax-exam-spi")))
+         (add-before 'check 'fix-tests
+           (lambda _
+             ;; One test checks that this file is present.
+             (mkdir-p "build/classes/META-INF/maven/org.ops4j.pax.exam/pax-exam-spi")
+             (with-output-to-file
+               "build/classes/META-INF/maven/org.ops4j.pax.exam/pax-exam-spi/pom.properties"
+               (lambda _
+                 (display
+                   (string-append "artifactId = pax-exam-spi\n"
+                                  "version = " ,(package-version java-ops4j-pax-exam-core-spi)))))
+             ;; Maven puts compilation results in the target directory, while we
+             ;; put them in the build directory.
+             (substitute* '("src/test/java/org/ops4j/pax/exam/spi/war/WarBuilderTest.java"
+                            "src/test/java/org/ops4j/pax/exam/spi/war/WarTestProbeBuilderTest.java"
+                            "src/test/java/org/ops4j/pax/exam/spi/war/ZipBuilderTest.java")
+               (("target") "build"))
+             ;; One test is expected to fail, but it doesn't throw the expected exception
+             (substitute* "src/test/java/org/ops4j/pax/exam/spi/reactors/BaseStagedReactorTest.java"
+               (("AssertionError") "IllegalArgumentException")))))))
+    (inputs
+     `(("java-ops4j-pax-exam-core" ,java-ops4j-pax-exam-core)
+       ("lang" ,java-ops4j-base-lang)
+       ("monitors" ,java-ops4j-base-monitors)
+       ("store" ,java-ops4j-base-store)
+       ("io" ,java-ops4j-base-io)
+       ("spi" ,java-ops4j-base-spi)
+       ("osgi" ,java-osgi-core)
+       ("slf4j" ,java-slf4j-api)
+       ("tinybundles" ,java-ops4j-pax-tinybundles)))
+    (native-inputs
+     `(("mockito" ,java-mockito-1)
+       ("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)
+       ("cglib" ,java-cglib)
+       ("objenesis" ,java-objenesis)
+       ("asm" ,java-asm)))))
