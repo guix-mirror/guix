@@ -5658,3 +5658,29 @@ the system under test at the same time.")
        ("core" ,java-ops4j-pax-exam-core)
        ("spi" ,java-ops4j-pax-exam-core-spi)))
     (native-inputs '())))
+
+(define-public java-fasterxml-jackson-annotations
+  (package
+    (name "java-fasterxml-jackson-annotations")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-annotations/archive/"
+                                  "jackson-annotations-" version ".tar.gz"))
+              (sha256
+               (base32
+                "005ksgqx2ds3zdmlvbcmmz82y28b1mx0i9bpvprim1jaddbba0bd"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-annotations.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"))
+    (native-inputs
+     `(("junit" ,java-junit)))
+    (home-page "https://github.com/FasterXML/jackson-annotations")
+    (synopsis "General purpose annotations for the Jackson Data Processor")
+    (description "This package contains general purpose annotations for the
+Jackson Data Processor, used on value and handler types.  The only annotations
+not included are ones that require dependency to the Databind package.")
+    (license license:asl2.0)))
