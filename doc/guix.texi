@@ -2532,8 +2532,10 @@ Produce verbose output, writing build logs to the standard error output.
 @item --url=@var{url}
 Download Guix from the Git repository at @var{url}.
 
+@vindex GUIX_PULL_URL
 By default, the source is taken from its canonical Git repository at
-@code{gnu.org}, for the stable branch of Guix.
+@code{gnu.org}, for the stable branch of Guix.  To use a different source,
+set the @code{GUIX_PULL_URL} environment variable.
 
 @item --commit=@var{commit}
 Deploy @var{commit}, a valid Git commit ID represented as a hexadecimal
