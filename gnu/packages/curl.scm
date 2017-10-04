@@ -42,7 +42,7 @@
 (define-public curl
   (package
    (name "curl")
-   (replacement curl-7.55.0)
+   (replacement curl-7.56.0)
    (version "7.54.1")
    (source (origin
             (method url-fetch)
@@ -123,28 +123,15 @@ tunneling, and so on.")
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
 
-(define-public curl-7.55.0
+(define-public curl-7.56.0
   (package
     (inherit curl)
-    (version "7.55.0")
+    (version "7.56.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://curl.haxx.se/download/curl-"
                             version ".tar.xz"))
-        (patches (search-patches "curl-bounds-check.patch"))
         (sha256
          (base32
-          "1785vxi0jamiv9d1wr1l45g0fm9ircxdfyfzf7ld8zv0z0i8bmfd"))))
-    (arguments
-     `(,@(substitute-keyword-arguments (package-arguments curl)
-           ((#:phases phases)
-            `(modify-phases ,phases
-               (add-before 'install 'fix-Makefile
-                 ;; Fix a regression in 7.55.0 where docs are not installed.
-                 ;; https://github.com/curl/curl/commit/a7bbbb7c368c6096802007f61f19a02e9d75285b
-                 (lambda _
-                   (substitute* "Makefile"
-                     (("install-data-hook:\n")
-                      "install-data-hook:\n\tcd docs/libcurl && $(MAKE) install\n"))
-                   #t)))))))))
+          "0wni3zkw7jyrwgwkqnrkf2x2b7c78wsp7p4z6a246hz9l367nhrj"))))))
