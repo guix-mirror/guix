@@ -8406,12 +8406,17 @@ management, power management, and more, would look like this:
 @include os-config-desktop.texi
 @end lisp
 
+@cindex UEFI
 A graphical UEFI system with a choice of lightweight window managers
 instead of full-blown desktop environments would look like this:
 
 @lisp
 @include os-config-lightweight-desktop.texi
 @end lisp
+
+This example refers to the @file{/boot/efi} partition by its UUID,
+@code{1234-ABCD}.  Replace this UUID with the right UUID on your system,
+as returned by the @command{blkid} command.
 
 @xref{Desktop Services}, for the exact list of services provided by
 @var{%desktop-services}.  @xref{X.509 Certificates}, for background

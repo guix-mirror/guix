@@ -17,16 +17,16 @@
                 (bootloader grub-efi-bootloader)
                 (target "/boot/efi")))
 
-  ;; Assume the target root file system is labelled "my-root".
+  ;; Assume the target root file system is labelled "my-root",
+  ;; and the EFI System Partition has UUID 1234-ABCD.
   (file-systems (cons* (file-system
                          (device "my-root")
                          (title 'label)
                          (mount-point "/")
                          (type "ext4"))
                        (file-system
-                         ;; Specify partition here since FAT
-                         ;; labels are currently unsupported.
-                         (device "/dev/sda1")
+                         (device (uuid "1234-ABCD" 'fat))
+                         (title 'uuid)
                          (mount-point "/boot/efi")
                          (type "vfat"))
                        %base-file-systems))
