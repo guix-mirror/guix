@@ -5784,3 +5784,50 @@ functionality and tree-model for Jackson Data Processor.  It builds on core
 streaming parser/generator package, and uses Jackson Annotations for
 configuration.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-fasterxml-jackson-modules-base-jaxb
+  (package
+    (name "java-fasterxml-jackson-modules-base-jaxb")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-modules-base/archive/"
+                                  "jackson-modules-base-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0bj2pzvycnj3ysbcfa6xl38dmvnp01mnjfcb9jyhv503fch2iv44"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-modules-base-jaxb.jar"
+       #:source-dir "jaxb/src/main/java"
+       #:test-dir "jaxb/src/test"
+       #:test-exclude
+       ;; Base class for tests
+       (list "**/BaseJaxbTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out (string-append "jaxb/src/main/java/com/fasterxml/"
+                                        "jackson/module/jaxb/PackageVersion.java"))
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.module.jaxb")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.module.jaxb")
+                 (("@projectartifactid@") "jackson-module-jaxb")))))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "jaxb/src/main/resources" "build/classes"))))))
+    (inputs
+     `(("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
+       ("java-fasterxml-jackson-databind" ,java-fasterxml-jackson-databind)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/FasterXML/jackson-modules-base")
+    (synopsis "Jaxb annotations jackson module")
+    (description "This package is the jaxb annotations module for jackson.")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
