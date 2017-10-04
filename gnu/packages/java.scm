@@ -5505,3 +5505,52 @@ it manages project dependencies, gives diffs jars, and much more.")
        ("java-osgi-namespace-service" ,java-osgi-namespace-service)
        ("promise" ,java-osgi-util-promise)
        ("osgi" ,java-osgi-core)))))
+
+(define-public java-ops4j-pax-tinybundles
+  (package
+    (name "java-ops4j-pax-tinybundles")
+    (version "2.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ops4j/org.ops4j.pax.tinybundles/"
+                                  "archive/tinybundles-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0y0gq3pvv0iir2b885lmlwnvr724vv7vklzhhr4fs27d7mdkj871"))))
+    (arguments
+     `(#:jar-name "java-ops4j-pax-tinybundles.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       ;; Abstract base classes for other tests
+       (list "**/BndTest.java" "**/CoreTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-version
+           (lambda _
+             ;; This test has a reference to an old version of bndlib we are not
+             ;; packaging.  It uses the version referenced in pom.xml.  We replace
+             ;; it with our own version.
+             (substitute* "src/test/java/org/ops4j/pax/tinybundles/bnd/BndTest.java"
+               (("2.4.0.201411031534") "3.4.0")))))))
+    (inputs
+     `(("lang" ,java-ops4j-base-lang)
+       ("io" ,java-ops4j-base-io)
+       ("store" ,java-ops4j-base-store)
+       ("slf4j" ,java-slf4j-api)
+       ("libg" ,java-aqute-libg)
+       ("bndlib" ,java-aqute-bndlib)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)
+       ("log4j" ,java-log4j-api)
+       ("bndannotation" ,java-aqute-bnd-annotation)
+       ("framework" ,java-osgi-framework)))
+    (build-system ant-build-system)
+    (home-page "https://ops4j1.jira.com/wiki/spaces/ops4j/pages/12060312/Tinybundles")
+    (synopsis "Java APIs to create OSGi related artifacts")
+    (description "Tinybundles is all about creating OSGi related artifacts like
+Bundles, Fragments and Deployment Packages with Java Api.  It is very convinient
+to create such artifacts on-the-fly inside Tests (like in Pax Exam).  On the
+other hand, this library can be a foundation of real end user tools that need
+to create those artifacts.")
+    (license license:asl2.0)))
