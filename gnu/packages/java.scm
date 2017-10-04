@@ -5554,3 +5554,36 @@ to create such artifacts on-the-fly inside Tests (like in Pax Exam).  On the
 other hand, this library can be a foundation of real end user tools that need
 to create those artifacts.")
     (license license:asl2.0)))
+
+(define-public java-ops4j-pax-exam-core
+  (package
+    (name "java-ops4j-pax-exam-core")
+    (version "4.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ops4j/org.ops4j.pax.exam2/"
+                                  "archive/exam-reactor-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08mzw8nkah3rj3vznlplnawspxhp61zgvb44ifqa1rni1cvbms2g"))))
+    (arguments
+     `(#:jar-name "java-ops4j-pax-exam-core.jar"
+       #:source-dir "core/pax-exam/src/main/java"
+       #:test-dir "core/pax-exam/src/test"))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("lang" ,java-ops4j-base-lang)
+       ("io" ,java-ops4j-base-io)
+       ("util-property" ,java-ops4j-base-util-property)
+       ("util-store" ,java-ops4j-base-store)
+       ("java-osgi-core" ,java-osgi-core)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (build-system ant-build-system)
+    (home-page "https://ops4j1.jira.com/wiki/spaces/PAXEXAM4/overview")
+    (synopsis "In-Container Testing for OSGi, Java EE and CDI")
+    (description "Pax Exam creates OSGi bundles for testing purposes.  It lets
+the user take control of the OSGi framework, the test framework (e.g. JUnit) and
+the system under test at the same time.")
+    (license license:asl2.0)))
