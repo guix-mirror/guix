@@ -4982,6 +4982,33 @@ containing words from the rime project.")
 and cangjie.")
     (license license:gpl2+)))
 
+(define-public emacs-mustache
+  (package
+    (name "emacs-mustache")
+    (version "0.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Wilfred/mustache.el/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0k9lcgil7kykkv1ylrgwy1g13ldjjmgi2cwmysgyb2vlj3jbwpdj"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-ht" ,emacs-ht)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/Wilfred/mustache.el")
+    (synopsis "Mustache templating library for Emacs")
+    (description "Mustache templating library for Emacs, mustache is
+a simple web template system, which is described as a logic-less system
+because it lacks any explicit control flow statements, both looping and
+conditional evaluation can be achieved using section tags processing lists
+and lambdas.")
+    (license license:gpl3+)))
+
 (define-public emacs-xelb
   (package
     (name "emacs-xelb")
