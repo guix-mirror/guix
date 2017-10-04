@@ -3717,22 +3717,21 @@ between language specification and implementation aspects.")
 (define-public python-numpy
   (package
     (name "python-numpy")
-    (version "1.12.0")
+    (version "1.13.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://github.com/numpy/numpy/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "numpy" version ".zip"))
        (sha256
         (base32
-         "025d4j4aakcp8w5i5diqh812cbbjgac7jszx1j56ivrbi1i8vv7d"))))
+         "1fsgkhh1vdkhmlz8vmdgxnj9n9yaanckxxzz9s0b4p08fqvjic69"))))
     (build-system python-build-system)
     (inputs
      `(("openblas" ,openblas)
        ("lapack" ,lapack)))
     (native-inputs
-     `(("python-cython" ,python-cython)
+     `(("unzip" ,unzip)
+       ("python-cython" ,python-cython)
        ("python-nose" ,python-nose)
        ("gfortran" ,gfortran)))
     (arguments
@@ -3758,6 +3757,11 @@ include_dirs = ~a/include
                       (assoc-ref inputs "openblas")
                       (assoc-ref inputs "lapack")
                       (assoc-ref inputs "lapack"))))
+          ;; Make /gnu/store/...-bash-.../bin/sh the default shell, instead of
+          ;; /bin/sh.
+          (substitute* "numpy/distutils/exec_command.py"
+            (("(os.environ.get\\('SHELL', ')(/bin/sh'\\))" match match-start match-end)
+            (string-append match-start (assoc-ref inputs "bash") match-end)))
           ;; Use "gcc" executable, not "cc".
           (substitute* "numpy/distutils/system_info.py"
             (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
@@ -4135,14 +4139,14 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python-numexpr
   (package
     (name "python-numexpr")
-    (version "2.6.1")
+    (version "2.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "numexpr" version))
        (sha256
         (base32
-         "01lsja72m32z0i5p8rwxbfyzk4mplh72k2a140nwh8vv4wpyfbnv"))))
+         "1kpnbb5d5n927113zccfibn16z7gidjipyac6kbbhzs0lnizkgph"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))          ; no tests included
     (propagated-inputs
@@ -4902,17 +4906,17 @@ SQLAlchemy Database Toolkit for Python.")
 (define-public python-autopep8
   (package
   (name "python-autopep8")
-  (version "1.2.4")
+  (version "1.3.2")
   (source
    (origin
      (method url-fetch)
      (uri (pypi-uri "autopep8" version))
      (sha256
       (base32
-       "18parm383lfn42a00wklv3qf20p4v277f1x3cn58x019dqk1xqrq"))))
+       "1p9pa1ffg4iy96l918808jggg9a69iaka5awmj8xid36yc5mk0ky"))))
   (build-system python-build-system)
   (propagated-inputs
-    `(("python-pep8" ,python-pep8)))
+    `(("python-pycodestyle" ,python-pycodestyle)))
   (home-page "https://github.com/hhatto/autopep8")
   (synopsis "Format Python code according to the PEP 8 style guide")
   (description
@@ -5780,13 +5784,13 @@ tools for mocking system commands and recording calls to those.")
 (define-public python-ipython
   (package
     (name "python-ipython")
-    (version "5.2.2")
+    (version "5.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipython" version ".tar.gz"))
        (sha256
-        (base32 "1qhjwa9cyz1np7rhv3p4ip13lkgbqsad62l24xkwiq1ic2gwiqbf"))))
+        (base32 "079wyjir4a9qx6kvx096b1asm63djbidk65z3ykcbnlngmg62pmz"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
@@ -9238,16 +9242,13 @@ for atomic file system operations.")
 (define-public python-requests-toolbelt
   (package
     (name "python-requests-toolbelt")
-    (version "0.6.2")
+    (version "0.8.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                    "https://pypi.python.org/packages/"
-                    "e1/a4/a94c037bc72ad70441aff1403d3243510d2542ddca7759faaeffeb11aefe/"
-                    "requests-toolbelt-" version ".tar.gz"))
+             (uri (pypi-uri "requests-toolbelt" version))
              (sha256
               (base32
-               "15q9nrgp85nqlr4kdz1zvj8z2npafi2sr12y7fqgxbkq28j1aci6"))))
+               "1dc7l42i4080r8i4m9fj51jx367lqkai170vrv7wd93gdj9k39gn"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-betamax" ,python-betamax)
@@ -9260,6 +9261,9 @@ for atomic file system operations.")
 with python-requests.")
     (home-page "https://github.com/sigmavirus24/requests-toolbelt")
     (license license:asl2.0)))
+
+(define-public python2-requests-toolbelt
+  (package-with-python2 python-requests-toolbelt))
 
 (define-public python-click-threading
   (package
@@ -9835,10 +9839,11 @@ concurrent.futures package from Python 3.2")
        ("python-mock" ,python-mock)
        ("python-tornado" ,python-tornado)))
     (propagated-inputs
-     `(;; extra packages for https security
+     `(;; These 5 inputs are used to build urrlib3[secure]
        ("python-certifi" ,python-certifi)
-       ("python-ndg-httpsclient" ,python-ndg-httpsclient)
-       ("python-pyasn1" ,python-pyasn1)
+       ("python-cryptography" ,python-cryptography) ;
+       ("python-idna" ,python-idna)
+       ("python-ipaddress" ,python-ipaddress)
        ("python-pyopenssl" ,python-pyopenssl)))
     (home-page "https://urllib3.readthedocs.org/")
     (synopsis "HTTP library with thread-safe connection pooling")
@@ -9921,14 +9926,14 @@ Pytest but stripped of Pytest specific details.")
 (define-public python-tox
   (package
    (name "python-tox")
-   (version "2.8.0")
+   (version "2.8.1")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "tox" version))
      (sha256
       (base32
-       "00lrql2cfzhb712v70inac6mrgdv8s8fmvz7qpggkk623hkm2pgc"))))
+       "1drp6mwm8wdypjym15ia8lwjxbhcksb9vzxg4ay5dh4ji57by2ny"))))
    (build-system python-build-system)
    (arguments
     ;; FIXME: Tests require pytest-timeout, which itself requires
@@ -10015,14 +10020,14 @@ interface to the Amazon Web Services (AWS) API.")
 (define-public awscli
   (package
    (name "awscli")
-   (version "1.11.151")
+   (version "1.11.164")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri name version))
      (sha256
       (base32
-       "0h6rirbfy0f9cxm7ikll0kr720dircfmxf2vslmhn4n325831wsp"))))
+       "05r8cw7i7ff6barpmyxxk3i52gzb1xyxwj8isynmiyqlmk3c9r8w"))))
    (build-system python-build-system)
    (propagated-inputs
     `(("python-colorama" ,python-colorama)
@@ -16297,3 +16302,140 @@ Templates.")
 
 (define-public python2-uritemplate
   (package-with-python2 python-uritemplate))
+
+(define-public python-pydiff
+  (package
+    (name "python-pydiff")
+    (version "0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pydiff" version))
+        (sha256
+          (base32
+            "1als83h9w0gab24ipyna6khm390qmpnpkc5jksmdbs2xc8hp2z44"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/myint/pydiff")
+    (synopsis "Library to diff two Python files at the bytecode level")
+    (description
+      "@code{pydiff} makes it easy to look for actual code changes while
+ignoring formatting changes.")
+    (license license:expat)))
+
+(define-public python2-pydiff
+  (package-with-python2 python-pydiff))
+
+(define-public python-nose-timer
+  (package
+    (name "python-nose-timer")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "nose-timer" version))
+        (patches
+         (search-patches
+          ;; This patch will not be needed in the next version.
+          ;; It is taken from the master branch.
+          "python-nose-timer-drop-ordereddict.patch"))
+        (sha256
+          (base32
+            "1s32ymsnby8lz2qk55ifj9zi50dqcg6swnj5cz2rmwxg2jsslsxp"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-nose" ,python-nose)
+       ("python-termcolor" ,python-termcolor)))
+    (home-page "https://github.com/mahmoudimus/nose-timer")
+    (synopsis "Timer plugin for nosetests")
+    (description "Shows how much time was needed to run individual tests.")
+    (license license:expat)))
+
+(define-public python2-nose-timer
+  (package-with-python2 python-nose-timer))
+
+(define-public python-tqdm
+  (package
+    (name "python-tqdm")
+    (version "4.15.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "tqdm" version))
+         (sha256
+           (base32
+             "0lwrmby8qz23gvqwkpivfrv4q8nfh90cz9ml6slwvwmcxxsdrhbf"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-nose" ,python-nose)
+       ("python-nose-timer" ,python-nose-timer)
+       ("python-coverage" ,python-coverage)
+       ("python-virtualenv" ,python-virtualenv)))
+    (home-page "https://github.com/tqdm/tqdm")
+    (synopsis "Fast, extensible progress meter")
+    (description
+      "Make loops show a progress bar on the console by just wrapping any
+iterable with @code{|tqdm(iterable)|}.  Offers many options to define
+design and layout.")
+    (license (list license:mpl2.0 license:expat))))
+
+(define-public python2-tqdm
+  (package-with-python2 python-tqdm))
+
+(define-public python-pkginfo
+  (package
+    (name "python-pkginfo")
+    (version "1.4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pkginfo" version))
+        (sha256
+          (base32
+            "17pqjfpq3c6xzdmk8pski6jcjgjv78q00zjf2bgzb668pzm6l6mv"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The tests are broken upstream.
+     '(#:tests? #f))
+    (home-page
+      "https://code.launchpad.net/~tseaver/pkginfo/trunk")
+    (synopsis
+      "Query metadatdata from sdists, bdists, and installed packages")
+    (description
+      "API to query the distutils metadata written in @file{PKG-INFO} inside a
+source distriubtion (an sdist) or a binary distribution (e.g., created by
+running bdist_egg).  It can also query the EGG-INFO directory of an installed
+distribution, and the *.egg-info stored in a \"development checkout\" (e.g,
+created by running @code{python setup.py develop}).")
+    (license license:expat)))
+
+(define-public python2-pkginfo
+  (package-with-python2 python-pkginfo))
+
+(define-public python-twine
+  (package
+    (name "python-twine")
+    (version "1.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "twine" version))
+        (sha256
+          (base32
+            "1ay1b6kdq6k4bfbjsvf6ymj41wrgpvinhxndb09355pwhxwmp96a"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-tqdm" ,python-tqdm)
+       ("python-pkginfo", python-pkginfo)
+       ("python-requests" ,python-requests)
+       ("python-requests-toolbelt" ,python-requests-toolbelt)))
+    (home-page "https://github.com/pypa/twine")
+    (synopsis "Collection of utilities for interacting with PyPI")
+    (description
+      "@code{twine} currently supports registering projects and uploading
+distributions.  It authenticates the user over HTTPS, allows them to pre-sign
+their files and supports any packaging format (including wheels).")
+    (license license:asl2.0)))
+
+(define-public python2-twine
+  (package-with-python2 python-twine))

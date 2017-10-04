@@ -187,8 +187,8 @@ their dependencies.")
       (license l:gpl3+))))
 
 (define-public cuirass
-  (let ((commit "2a4d493e28100b8eca7d23300dd872c9f99e1f16")
-        (revision "9"))
+  (let ((commit "9cfea9fe2e3ca6a3d1b832a6ec217426ec973c93")
+        (revision "10"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -200,7 +200,7 @@ their dependencies.")
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "0hi7x25ya8wydrfj9jd9zb351mw8pgxxxwgxxdn5kds7qvhxr26v"))))
+                  "177klidmsw12kjk9dzawc0bqcwqlplgx45m87qpgjfx3cnk28i2b"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -268,6 +268,17 @@ their dependencies.")
          ("automake" ,automake)
          ("pkg-config" ,pkg-config)
          ("texinfo" ,texinfo)))
+      (native-search-paths
+       ;; For HTTPS access, Cuirass itself honors these variables, with the
+       ;; same semantics as Git and OpenSSL (respectively).
+       (list (search-path-specification
+              (variable "GIT_SSL_CAINFO")
+              (file-type 'regular)
+              (separator #f)                      ;single entry
+              (files '("etc/ssl/certs/ca-certificates.crt")))
+             (search-path-specification
+              (variable "SSL_CERT_DIR")
+              (files '("etc/ssl/certs")))))
       (synopsis "Continuous integration system")
       (description
        "Cuirass is a continuous integration tool using GNU Guix.  It is

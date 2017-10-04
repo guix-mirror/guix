@@ -92,13 +92,13 @@ error stream.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.12")
+    (version "0.12.13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "1byyqvlgb2p46p1gv243k73rk69fa8pa4l5m5asmckag2pkb2glz"))))
+        (base32 "1bm84yc48475plgsnnbvzi6nzkixpnfw8ry86ax63f9g524asw55"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
@@ -964,14 +964,14 @@ contexts.")
 (define-public r-lava
   (package
     (name "r-lava")
-    (version "1.5")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lava" version))
        (sha256
         (base32
-         "0x6s7x111x87a4rh5nbk7vw6j4iq40i1c21w0j795h28rgyc7zc2"))))
+         "1vcm04h9i39gmf2prl5d4j4il4gs6skzr6y2fvl1vn4hklna87f4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-numderiv" ,r-numderiv)
@@ -1078,21 +1078,24 @@ calendar objects.")
 (define-public r-ddalpha
   (package
     (name "r-ddalpha")
-    (version "1.2.1")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ddalpha" version))
        (sha256
         (base32
-         "0nsd515x6bap1qpfyx141hyldmpmyasnhv0f8s9dj6zcklp89af4"))))
+         "0pczw9543y7f92m7gyk7rxcjn8vsjaldc5vl0r56ywip9i374zbh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-class" ,r-class)
        ("r-mass" ,r-mass)
        ("r-rcpp" ,r-rcpp)
-       ("r-robustbase" ,r-robustbase)))
+       ("r-robustbase" ,r-robustbase)
+       ("r-sfsmisc" ,r-sfsmisc)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
     (home-page "http://cran.r-project.org/web/packages/ddalpha")
     (synopsis "Depth-Based classification and calculation of data depth")
     (description

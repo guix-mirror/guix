@@ -308,9 +308,10 @@ modules for Tk, all written in high-level Tcl.  Examples of provided widgets:
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)
-       ("tcllib" ,tcllib)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)))
+    (propagated-inputs
+     `(("tcllib" ,tcllib))) ; uri
     (native-search-paths
      (list (search-path-specification
             (variable "TCLLIBPATH")

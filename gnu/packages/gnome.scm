@@ -2050,7 +2050,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.48.3.a")
+    (version "0.50.0.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
@@ -2065,7 +2065,7 @@ editors, IDEs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1wdkf090zclqy11hxdjgy8f6fgzajl0xzzirajikhbaiill7f8zh"))))
+                "0h5ifg6xpix074k445bmnd39mc75llrfkrsr9vw98dxa4rffxrgf"))))
     (arguments
       `(#:configure-flags '("CXXFLAGS=-Wformat=0")
         #:phases (modify-phases %standard-phases
@@ -6062,7 +6062,7 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
 (define-public gnome-calendar
   (package
     (name "gnome-calendar")
-    (version "3.24.3")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6070,22 +6070,78 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1v7k1wcl5yg9bd4l0rz0z03h32d35zgfp4qzz21widjcyis41jry"))))
-    (build-system glib-or-gtk-build-system)
+                "0p4xg9sfhcyy2lj9sdg8pk6dmggbi80f038dycr24v0ccy3nk6f2"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       ;; gnome-calendar has to be installed before the tests can be run
+       ;; https://bugzilla.gnome.org/show_bug.cgi?id=788224
+       #:tests? #f))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
+       ("glib-bin" ,glib "bin")         ; For glib-compile-schemas
+       ("gtk+-bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("bdb" ,bdb)
-       ("desktop-file-utils" ,desktop-file-utils)
-       ("evolution-data-server" ,evolution-data-server)
+     `(("evolution-data-server" ,evolution-data-server)
        ("gnome-online-accounts" ,gnome-online-accounts)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (home-page "https://wiki.gnome.org/Apps/Calendar")
     (synopsis "GNOME's calendar application")
     (description
      "GNOME Calendar is a simple calendar application designed to fit the GNOME
-desktop.  It supports multiple calendars, monthly view and yearly view.")
+desktop.  It supports multiple calendars, month, week and year view.")
+    (license license:gpl3+)))
+
+(define-public gnome-todo
+  (package
+    (name "gnome-todo")
+    (version "3.26.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "13if2lg4r65v3z7h5y57qv4iqz9ihjaml8bzvvihha7dffyr1lz4"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                      'install 'wrap-gnome-todo
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out               (assoc-ref outputs "out"))
+                            (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                            (python-path       (getenv "PYTHONPATH")))
+                        (wrap-program (string-append out "/bin/gnome-todo")
+                          ;; XXX: gi plugins are broken.
+                          ;; See https://bugzilla.gnome.org/show_bug.cgi?id=787212
+                          ;; For plugins.
+                          `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                          `("PYTHONPATH" ":" prefix (,python-path))))
+                      #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("glib:bin" ,glib "bin")         ; For glib-compile-resources
+       ("gtk+-bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("rest" ,rest)                   ; For Todoist plugin
+       ("json-glib" ,json-glib)         ; For Todoist plugin
+       ("libical" ,libical)
+       ("libpeas" ,libpeas)
+       ("python-pygobject" ,python-pygobject)
+       ("evolution-data-server" ,evolution-data-server)
+       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+    (home-page "https://wiki.gnome.org/Apps/Todo")
+    (synopsis "GNOME's ToDo Application")
+    (description
+     "GNOME To Do is a simplistic personal task manager designed to perfectly
+fit the GNOME desktop.")
     (license license:gpl3+)))
 
 (define-public gnome-dictionary

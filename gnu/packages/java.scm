@@ -4716,3 +4716,567 @@ complex transformations and code analysis tools.")
              #t)))))
     (native-inputs
      `(("java-junit" ,java-junit)))))
+
+(define-public java-microemulator-cldc
+  (package
+    (name "java-microemulator-cldc")
+    (version "2.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/barteo/microemu/archive/"
+                                  "microemulator_"
+                                  (string-map (lambda (c) (if (char=? c #\.) #\_ c))
+                                              version)
+                                  ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1x1apmz38gkppxnwnygwmi12j54v4p258v8ddzn6dldkk7vak1ll"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "microemulator-cldc.jar"
+       #:source-dir "microemu-cldc/src/main/java"
+       #:tests? #f)); Requires even older software
+    (home-page "https://github.com/barteo/microemu")
+    (synopsis "J2ME CLDC emulator")
+    (description "Microemulator is a Java 2 Micro Edition (J2ME) CLDC/MIDP
+Emulator.  It allows to demonstrate MIDlet based applications in web browser
+applet and can be run as a standalone java application.")
+    (license (list license:asl2.0
+                   ;; or altenatively:
+                   license:lgpl2.1+))))
+
+(define-public java-datanucleus-javax-persistence
+  (package
+    (name "java-datanucleus-javax-persistence")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/datanucleus/"
+                                  "javax.persistence/archive/javax.persistence-"
+                                  version "-release.tar.gz"))
+              (sha256
+               (base32
+                "11jx0fjwgc2hhbqqgdd6m1pf2fplf9vslppygax0y1z5csnqjhpx"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-datanucleus-javax-persistence.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main/java"
+       #:tests? #f)); no tests
+    (home-page "https://github.com/datanucleus/javax.persistence")
+    (synopsis "JPA API")
+    (description "This package contains a clean definition of JPA API intended
+for use with DataNucleus JPA since the JCP haven't provided an official JPA API
+jar.  See @url{http://java.net/projects/jpa-spec/downloads} for the specification
+used to generate this API.")
+    (license (list license:edl1.0 license:epl1.0))))
+
+(define-public java-osgi-cmpn
+  (package
+    (name "java-osgi-cmpn")
+    (version "6.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/"
+                                  "org/osgi/osgi.cmpn/" version "/osgi.cmpn-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1lmb6xyrmkqdhv1kayf0514rlwq6ypvs4m44ibrck3snp8241wys"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-cmpn.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("core" ,java-osgi-core)
+       ("java-datanucleus-javax-persistence" ,java-datanucleus-javax-persistence)
+       ("microemulator" ,java-microemulator-cldc)
+       ("servlet" ,java-classpathx-servletapi)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Compendium specification module of OSGi framework")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the compendium specification module, providing interfaces and classes for use
+in compiling bundles.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-component-annotations
+  (package
+    (name "java-osgi-service-component-annotations")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.component.annotations/"
+                                  version "/org.osgi.service.component.annotations-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "15rq9cmp4fpn74q44m4j35qsqmjf5lx3hcrk6pzvbhc08igic2f0"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-component-annotations.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Support annotations for osgi-service-component")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the support annotations for osgi-service-component.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-dto
+  (package
+    (name "java-osgi-dto")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.dto/" version "/org.osgi.dto-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0f4bqjzadn0hwk6sd3h5gvbyfp3yci1s6r0v770cc15p0pg627yr"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-dto.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Data Transfer Objects")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the Data Transfer Objects.  It is easily serializable having only public fields
+of primitive types and their wrapper classes, Strings, and DTOs.  List, Set,
+Map and array aggregates may also be used.  The aggregates must only hold
+objects of the listed types or aggregates.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-resource
+  (package
+    (name "java-osgi-resource")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.resource/"
+                                  version "/org.osgi.resource-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0hi0fsc5v99q22bd7lrkvpz1y0ds4w9arjldpwsrcpqvz2js7q2d"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-resource.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("dto" ,java-osgi-dto)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Resource")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the definition of common types in osgi packages.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-namespace-contract
+  (package
+    (name "java-osgi-namespace-contract")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.namespace.contract/"
+                                  version "/org.osgi.namespace.contract-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1iz4f2i0fvqrlq90ki9nfzcfpvy2av434ri25bglywqssx8mmp36"))))
+    (build-system ant-build-system)
+    (inputs
+     `(("resource" ,java-osgi-resource)
+       ("annotation" ,java-osgi-annotation)))
+    (arguments
+     `(#:jar-name "osgi-namespace-contract.jar"
+       #:tests? #f)); no tests
+    (home-page "http://www.osgi.org")
+    (synopsis "Contract Capability and Requirement Namespace")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the names for the attributes and directives for a namespace with contracts.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-namespace-extender
+  (package
+    (name "java-osgi-namespace-extender")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.namespace.extender/"
+                                  version "/org.osgi.namespace.extender-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0jgqiak2i05qv6j3gd33xlaifzzc0ylxxk376v2x0apfg3vvixmz"))))
+    (build-system ant-build-system)
+    (inputs
+     `(("resource" ,java-osgi-resource)
+       ("annotation" ,java-osgi-annotation)))
+    (arguments
+     `(#:jar-name "osgi-namespace-extendent.jar"
+       #:tests? #f)); no tests
+    (home-page "http://www.osgi.org")
+    (synopsis "Extender Capability and Requirement Namespace")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the names for the attributes and directives for an extender namespace.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-namespace-service
+  (package
+    (name "java-osgi-namespace-service")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.namespace.service/"
+                                  version "/org.osgi.namespace.service-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0qmw8n2449nkmm56d1znz9zhazb6ya3vsimd5bf5jg23zzhgl8c8"))))
+    (build-system ant-build-system)
+    (inputs
+     `(("resource" ,java-osgi-resource)
+       ("annotation" ,java-osgi-annotation)))
+    (arguments
+     `(#:jar-name "osgi-namespace-service.jar"
+       #:tests? #f)); no tests
+    (home-page "http://www.osgi.org")
+    (synopsis "Service Capability and Requirement Namespace")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the names for the attributes and directives for a service namespace.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-util-function
+  (package
+    (name "java-osgi-util-function")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.util.function/"
+                                  version "/org.osgi.util.function-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "04l7j3hwmmj28w23m7paca0afzncs42j2mdr3liqq8kvp548sc6x"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-util-function.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Util Function")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+an interface for a function that accepts a single argument and produces a result.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-util-promise
+  (package
+    (name "java-osgi-util-promise")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.util.promise/"
+                                  version "/org.osgi.util.promise-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0y34dwiflg1c4ahvkswpf9z02xph2sr9fm04ia5493x3lshpw22c"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-util-promise.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("function" ,java-osgi-util-function)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Promise of a value")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+an interface and utilitary classes for promises.  A Promise represents a future
+value.  It handles the interactions for asynchronous processing.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-metatype-annotations
+  (package
+    (name "java-osgi-service-metatype-annotations")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.metatype.annotations/"
+                                  version "/org.osgi.service.metatype.annotations-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "12rwm3349wk80vm88rcdgs4435m4jxkpkj5mrx326skkz2c6hyw6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-metatype-annotations.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Support annotations for metatype")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the support annotations for metatype.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-repository
+  (package
+    (name "java-osgi-service-repository")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.repository/"
+                                  version "/org.osgi.service.repository-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1k41mhg7b58pd8nsghr2qwcjrxdnf1p9spsw9v11k4257g6rl06n"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-repository.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("promise" ,java-osgi-util-promise)
+       ("resource" ,java-osgi-resource)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI service repository")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+a repository service that contains resources.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-framework
+  (package
+    (name "java-osgi-framework")
+    (version "1.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.framework/" version "/org.osgi.framework-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1lwp2zfad3rybcc6q9bwz8xsgkc92ypzy5p6x54387f1qj65m73s"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-framework.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("resource" ,java-osgi-resource)
+       ("dto" ,java-osgi-dto)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGi framework")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-log
+  (package
+    (name "java-osgi-service-log")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.log/"
+                                  version "/org.osgi.service.log-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1029j30dzcwializzca0j3fkhwwz08kmmsha5agw1iccscimj6r0"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-log.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-osgi-framework" ,java-osgi-framework)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Provides methods for bundles to write messages to the log")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the log service.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-jdbc
+  (package
+    (name "java-osgi-service-jdbc")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.jdbc/"
+                                  version "/org.osgi.service.jdbc-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "11iln5v7bk469cgb9ddkrz9sa95b3733gqgaqw9xf5g6wq652yjz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-jdbc.jar"
+       #:tests? #f)); no tests
+    (home-page "http://www.osgi.org")
+    (synopsis "Factory for JDBC connection factories")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+a factory for JDBC connection factories.  There are 3 preferred connection
+factories for getting JDBC connections:
+
+@itemize
+@item @code{javax.sql.DataSource};
+@item @code{javax.sql.ConnectionPoolDataSource};
+@item @code{javax.sql.XADataSource}.
+@end itemize")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-resolver
+  (package
+    (name "java-osgi-service-resolver")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.resolver/"
+                                  version "/org.osgi.service.resolver-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1dzqn1ryfi2rq4zwsgp44bmj2wlfydjg1qbxw2b0z4xdjjy55vxd"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-resolver.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("resource" ,java-osgi-resource)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Resolver service")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+a resolver service that resolves the specified resources in the context supplied
+by the caller.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-util-tracker
+  (package
+    (name "java-osgi-util-tracker")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.util.tracker/"
+                                  version "/org.osgi.util.tracker-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0c4fh9vxwzsx59r8dygda0gq2gx3z5vfhc3jsphlqwf5w0h403lz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-util-tracker.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("framework" ,java-osgi-framework)
+       ("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Bundle tracking")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+bundle tracking utility classes.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-cm
+  (package
+    (name "java-osgi-service-cm")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.cm/"
+                                  version "/org.osgi.service.cm-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1z8kap48y3xi0ggj8v6czglfnpnd94mmismgi2wbqhj1nl5fzbp6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-cm.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("framework" ,java-osgi-framework)
+       ("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Configuration Management")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+utility classes for the configuration of services.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-packageadmin
+  (package
+    (name "java-osgi-service-packageadmin")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.packageadmin/"
+                                  version "/org.osgi.service.packageadmin-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "041mpxzi7g36wmcily6y4ccn3jx15akpdy8gmhyb7m98x7qfvn52"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-packageadmin.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("framework" ,java-osgi-framework)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Package Administration")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the packageadmin service.")
+    (license license:asl2.0)))

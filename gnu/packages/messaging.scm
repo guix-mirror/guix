@@ -5,13 +5,13 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 <ng0@infotropique.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +90,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages less)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages texinfo))
 
 (define-public libotr
@@ -532,6 +533,60 @@ transformation; audio and video conferences; file transfer; TLS, GPG and
 end-to-end encryption support; XML console.")
     (license license:gpl3)))
 
+(define-public dino
+  ;; The only release tarball is for version 0.0, but it is very old and fails
+  ;; to build.
+  (let ((commit "54a25fd926070a977138cec94908c55806e22f4a")
+        (revision "1"))
+    (package
+      (name "dino")
+      (version (string-append "0.0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dino/dino.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1m100wzr5xqaj3r4vprxj0961833wqk0p7z94nmjsf2f0s67v5r3"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f ; there are no tests
+         #:parallel-build? #f ; not supported
+         #:configure-flags
+         ;; FIXME: we disable the omemo plugin because it needs
+         ;; libsignal-protocol, for which we don't have a package yet.
+         '("-DDISABLED_PLUGINS=omemo")
+         #:modules ((guix build cmake-build-system)
+                    ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                    (guix build utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build cmake-build-system)
+                             (guix build glib-or-gtk-build-system))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'glib-or-gtk-wrap
+             (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+      (inputs
+       `(("libgee" ,libgee)
+         ("libsoup" ,libsoup)
+         ("sqlite" ,sqlite)
+         ("gpgme" ,gpgme)
+         ("gtk+" ,gtk+)
+         ("glib-networking" ,glib-networking)
+         ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("glib" ,glib "bin")
+         ("vala" ,vala)
+         ("gettext" ,gettext-minimal)))
+      (home-page "https://dino.im")
+      (synopsis "Graphical Jabber (XMPP) client")
+      (description "Dino is a Jabber (XMPP) client which aims to fit well into
+a graphical desktop environment like GNOME.")
+      (license license:gpl3+))))
+
 (define-public prosody
   (package
     (name "prosody")
@@ -746,14 +801,14 @@ instant messenger with audio and video chat capabilities.")
 (define-public qtox
   (package
     (name "qtox")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/qTox/qTox/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1m1ca1ybgj4yfm6a61yyj21f5jpip8dsbliwkfypswhmv5y52f5y"))
+                "0ycgvcfn8hchc775dcn1wpdqff8chvzz1svx9g99wa5vcns9pflg"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -775,6 +830,8 @@ instant messenger with audio and video chat capabilities.")
        ("libvpx" ,libvpx)
        ("libxscrnsaver" ,libxscrnsaver)
        ("libx11" ,libx11)
+       ("libexif" ,libexif)
+       ("sqlite" ,sqlite)
        ("openal" ,openal)
        ("qrencode" ,qrencode)
        ("qtbase" ,qtbase)
@@ -793,7 +850,7 @@ connect with friends and family without anyone else listening in.")
 (define-public pybitmessage
   (package
     (name "pybitmessage")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
@@ -802,39 +859,28 @@ connect with friends and family without anyone else listening in.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ffj7raxpp277kphj98190fxrwfx16vmbspk7k3azg3bh5f5idnf"))))
-    (inputs
-     `(("python" ,python-2)
-       ("python:tk" ,python-2 "tk")
-       ("openssl" ,openssl)
-       ("sqlite" ,sqlite)
-       ("qt" ,qt-4)
+         "1in2mhaxkp2sx8pgvifq9dk1z8b2x3imf1anr0z926vwxwjrf85w"))))
+    (propagated-inputs
+     ;; TODO:
+     ;; Package "pyopencl", required in addition to numpy for OpenCL support.
+     ;; Package "gst123", required in addition to alsa-utils and
+     ;; mpg123 for sound support.
+     `(("python2-msgpack" ,python2-msgpack)
+       ("python2-pythondialog" ,python2-pythondialog)
        ("python2-pyqt-4" ,python2-pyqt-4)
        ("python2-sip" ,python2-sip)
        ("python2-pysqlite" ,python2-pysqlite)
        ("python2-pyopenssl" ,python2-pyopenssl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (build-system gnu-build-system)
+     `(("openssl" ,openssl)))
+    (build-system python-build-system)
     (arguments
-     `(#:imported-modules ((guix build python-build-system)
-                           ,@%gnu-build-system-modules)
-       #:make-flags (list (string-append "PREFIX="
-                                         (assoc-ref %outputs "out")))
-       #:tests? #f ; no test target
+     `(#:modules ((guix build python-build-system)
+                  (guix build utils))
+       #:tests? #f ;no test target
+       #:python ,python-2
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'fix-makefile
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Makefile"
-               (("mkdir -p \\$\\{DESTDIR\\}/usr") "")
-               (("/usr/local") "")
-               (("/usr") "")
-               (("#!/bin/sh") (string-append "#!" (which "sh")))
-               (("python2") (which "python"))
-               (("/opt/openssl-compat-bitcoin/lib/")
-                (string-append (assoc-ref inputs "openssl") "/lib/")))
-             #t))
          (add-after 'unpack 'fix-unmatched-python-shebangs
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/bitmessagemain.py"
@@ -868,18 +914,24 @@ connect with friends and family without anyone else listening in.")
                 (string-append (assoc-ref inputs "openssl")
                                "/lib/libssl.so")))
              #t))
-         ;; XXX: Make does not build and install bitmsghash, do it
-         ;; and place it in /lib.
-         (add-before 'build 'build-and-install-bitmsghash
-           (lambda* (#:key outputs #:allow-other-keys)
-             (chdir "src/bitmsghash")
-             (system* "make")
-             (chdir "../..")
-             (install-file "src/bitmsghash/bitmsghash.so"
-                           (string-append (assoc-ref outputs "out") "/lib"))
+         (add-after 'unpack 'noninteractive-build
+           ;; This applies upstream commit 4c597d3f7cf9f83a763472aa165a1a4292019f20
+           (lambda _
+             (substitute* "setup.py"
+               (("except NameError")
+                "except EOFError, NameError"))
              #t))
-         (add-after 'install 'wrap
-           (@@ (guix build python-build-system) wrap)))))
+         ;; XXX: python setup.py does not build and install bitmsghash,
+         ;; without it PyBitmessage tries to compile it at first run
+         ;; in the store, which due to obvious reasons fails. Do it
+         ;; and place it in /lib.
+         (add-after 'unpack 'build-and-install-bitmsghash
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "src/bitmsghash"
+               (system* "make")
+               (install-file "bitmsghash.so"
+                             (string-append (assoc-ref outputs "out") "/lib")))
+             #t)))))
     (license license:expat)
     (description
      "Distributed and trustless peer-to-peer communications protocol

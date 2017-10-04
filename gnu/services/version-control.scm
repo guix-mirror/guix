@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,18 +22,40 @@
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services web)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages admin)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:use-module (guix store)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (git-daemon-service
             git-daemon-service-type
             git-daemon-configuration
-            git-daemon-configuration?))
+            git-daemon-configuration?
+
+            <cgit-configuration-file>
+            cgit-configuration-file
+            cgit-configuration-file?
+            cgit-configuration-file-css
+            cgit-configuration-file-logo
+            cgit-configuration-file-robots
+            cgit-configuration-file-virtual-root
+            cgit-configuration-file-repository-directory
+
+            <cgit-configuration>
+            cgit-configuration
+            cgit-configuration?
+            cgit-configuration-config-file
+            cgit-configuration-package
+
+            %cgit-configuration-nginx
+            cgit-configuration-nginx-config
+
+            cgit-service-type))
 
 ;;; Commentary:
 ;;;
@@ -139,3 +162,97 @@ The optional @var{config} argument should be a
 @code{<git-daemon-configuration>} object, by default it allows read-only
 access to exported repositories under @file{/srv/git}."
   (service git-daemon-service-type config))
+
+
+;;;
+;;; Cgit
+;;;
+
+(define-record-type* <cgit-configuration-file>
+  cgit-configuration-file
+  make-cgit-configuration-file
+  cgit-configuration-file?
+  (css                  cgit-configuration-file-css                  ; string
+                        (default "/share/cgit/cgit.css"))
+  (logo                 cgit-configuration-file-logo                 ; string
+                        (default "/share/cgit/cgit.png"))
+  (robots               cgit-configuration-file-robots               ; list
+                        (default '("noindex" "nofollow")))
+  (virtual-root         cgit-configuration-file-virtual-root         ; string
+                        (default "/"))
+  (repository-directory cgit-configuration-file-repository-directory ; string
+                        (default "/srv/git")))
+
+(define (cgit-configuration-robots-string robots)
+  (string-join robots ", "))
+
+(define-gexp-compiler (cgit-configuration-file-compiler
+                       (file <cgit-configuration-file>) system target)
+  (match file
+    (($ <cgit-configuration-file> css logo
+                                  robots virtual-root repository-directory)
+     (apply text-file* "cgitrc"
+            (letrec-syntax ((option (syntax-rules ()
+                                      ((_ key value)
+                                       (if value
+                                           `(,key "=" ,value "\n")
+                                           '()))))
+                            (key/value (syntax-rules ()
+                                         ((_ (key value) rest ...)
+                                          (append (option key value)
+                                                  (key/value rest ...)))
+                                         ((_)
+                                          '()))))
+              (key/value ("css" css)
+                         ("logo" logo)
+                         ("robots" (cgit-configuration-robots-string robots))
+                         ("virtual-root" virtual-root)
+                         ("scan-path" repository-directory)))))))
+
+(define %cgit-configuration-nginx
+  (list
+   (nginx-server-configuration
+    (root cgit)
+    (locations
+     (list
+      (nginx-location-configuration
+       (uri "@cgit")
+       (body '("fastcgi_param SCRIPT_FILENAME $document_root/lib/cgit/cgit.cgi;"
+               "fastcgi_param PATH_INFO $uri;"
+               "fastcgi_param QUERY_STRING $args;"
+               "fastcgi_param HTTP_HOST $server_name;"
+               "fastcgi_pass 127.0.0.1:9000;")))))
+    (try-files (list "$uri" "@cgit"))
+    (https-port #f)
+    (ssl-certificate #f)
+    (ssl-certificate-key #f))))
+
+(define-record-type* <cgit-configuration>
+  cgit-configuration make-cgit-configuration
+  cgit-configuration?
+  (config-file cgit-configuration-config-file
+               (default (cgit-configuration-file)))
+  (package cgit-configuration-package
+           (default cgit))
+  (nginx cgit-configuration-nginx
+         (default %cgit-configuration-nginx)))
+
+(define (cgit-activation config)
+  ;; Cgit compiled with default configuration path
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/cache/cgit")
+      (copy-file #$(cgit-configuration-config-file config) "/etc/cgitrc")))
+
+(define (cgit-configuration-nginx-config config)
+  (cgit-configuration-nginx config))
+
+(define cgit-service-type
+  (service-type
+   (name 'cgit)
+   (extensions
+    (list (service-extension activation-service-type
+                             cgit-activation)
+          (service-extension nginx-service-type
+                             cgit-configuration-nginx-config)))
+   (default-value (cgit-configuration))))

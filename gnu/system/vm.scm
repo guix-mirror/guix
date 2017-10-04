@@ -304,9 +304,12 @@ the image."
                                #:register-closures? #$register-closures?
                                #:system-directory #$os-drv))
                   (root-size  #$(if (eq? 'guess disk-image-size)
-                                    #~(estimated-partition-size
-                                       (map (cut string-append "/xchg/" <>)
-                                            graphs))
+                                    #~(max
+                                       ;; Minimum 20 MiB root size
+                                       (* 20 (expt 2 20))
+                                       (estimated-partition-size
+                                        (map (cut string-append "/xchg/" <>)
+                                             graphs)))
                                     (- disk-image-size
                                        (* 50 (expt 2 20)))))
                   (partitions (list (partition
@@ -706,6 +709,8 @@ it is mostly useful when FULL-BOOT?  is true."
                     (default #f))
   (memory-size      virtual-machine-memory-size   ;integer (MiB)
                     (default 256))
+  (disk-image-size  virtual-machine-disk-image-size   ;integer (bytes)
+                    (default 'guess))
   (port-forwardings virtual-machine-port-forwardings ;list of integer pairs
                     (default '())))
 
@@ -734,12 +739,15 @@ FORWARDINGS is a list of host-port/guest-port pairs."
                                                 system target)
   ;; XXX: SYSTEM and TARGET are ignored.
   (match vm
-    (($ <virtual-machine> os qemu graphic? memory-size ())
+    (($ <virtual-machine> os qemu graphic? memory-size disk-image-size ())
      (system-qemu-image/shared-store-script os
                                             #:qemu qemu
                                             #:graphic? graphic?
-                                            #:memory-size memory-size))
-    (($ <virtual-machine> os qemu graphic? memory-size forwardings)
+                                            #:memory-size memory-size
+                                            #:disk-image-size
+                                            disk-image-size))
+    (($ <virtual-machine> os qemu graphic? memory-size disk-image-size
+                          forwardings)
      (let ((options
             `("-net" ,(string-append
                        "user,"
@@ -748,6 +756,8 @@ FORWARDINGS is a list of host-port/guest-port pairs."
                                               #:qemu qemu
                                               #:graphic? graphic?
                                               #:memory-size memory-size
+                                              #:disk-image-size
+                                              disk-image-size
                                               #:options options)))))
 
 ;;; vm.scm ends here

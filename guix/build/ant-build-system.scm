@@ -36,7 +36,9 @@
 ;; Code:
 
 (define* (default-build.xml jar-name prefix #:optional
-                            (source-dir ".") (test-dir "./test"))
+                            (source-dir ".") (test-dir "./test") (main-class #f)
+                            (test-include '("**/*Test.java"))
+                            (test-exclude '("**/Abstract*Test.java")))
   "Create a simple build.xml with standard targets for Ant."
   (call-with-output-file "build.xml"
     (lambda (port)
@@ -44,6 +46,10 @@
        `(project (@ (basedir "."))
                  (property (@ (name "classes.dir")
                               (value "${basedir}/build/classes")))
+                 (property (@ (name "manifest.dir")
+                              (value "${basedir}/build/manifest")))
+                 (property (@ (name "manifest.file")
+                              (value "${manifest.dir}/MANIFEST.MF")))
                  (property (@ (name "jar.dir")
                               (value "${basedir}/build/jar")))
                  (property (@ (name "dist.dir")
@@ -59,6 +65,17 @@
                  (property (@ (environment "env")))
                  (path (@ (id "classpath"))
                        (pathelement (@ (location "${env.CLASSPATH}"))))
+
+                 (target (@ (name "manifest"))
+                         (mkdir (@ (dir "${manifest.dir}")))
+                         (echo (@ (file "${manifest.file}")
+                                  (message ,(string-append
+                                              (if main-class
+                                                (string-append
+                                                  "Main-Class: " main-class
+                                                  "${line.separator}")
+                                                "")
+                                              "")))))
 
                  (target (@ (name "compile"))
                          (mkdir (@ (dir "${classes.dir}")))
@@ -94,13 +111,19 @@
                                 (batchtest (@ (fork "yes")
                                               (todir "${test.home}/test-reports"))
                                            (fileset (@ (dir "${test.home}/java"))
-                                                    (include (@ (name "**/*Test.java" )))))))
+                                                    ,@(map (lambda (file)
+                                                            `(include (@ (name ,file))))
+                                                       test-include)
+                                                    ,@(map (lambda (file)
+                                                            `(exclude (@ (name ,file))))
+                                                       test-exclude)))))
 
                  (target (@ (name "jar")
-                            (depends "compile"))
+                            (depends "compile, manifest"))
                          (mkdir (@ (dir "${jar.dir}")))
                          (exec (@ (executable "jar"))
-                               (arg (@ (line ,(string-append "-cf ${jar.dir}/" jar-name
+                               (arg (@ (line ,(string-append "-cmf ${manifest.file} "
+                                                             "${jar.dir}/" jar-name
                                                              " -C ${classes.dir} ."))))))
 
                  (target (@ (name "install"))
@@ -133,12 +156,15 @@ to the default GNU unpack strategy."
 
 (define* (configure #:key inputs outputs (jar-name #f)
                     (source-dir "src")
-                    (test-dir "src/test") #:allow-other-keys)
+                    (test-dir "src/test")
+                    (main-class #f)
+                    (test-include '("**/*Test.java"))
+                    (test-exclude '("**/Abstract*.java")) #:allow-other-keys)
   (when jar-name
     (default-build.xml jar-name
                        (string-append (assoc-ref outputs "out")
                                       "/share/java")
-                       source-dir test-dir))
+                       source-dir test-dir main-class test-include test-exclude))
   (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
   (setenv "CLASSPATH" (generate-classpath inputs)))
 

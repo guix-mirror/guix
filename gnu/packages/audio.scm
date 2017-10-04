@@ -36,6 +36,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
@@ -79,6 +80,8 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
   #:use-module (srfi srfi-1))
 
 (define-public alsa-modular-synth
@@ -1125,7 +1128,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.35.5")
+    (version "0.35.6")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1133,7 +1136,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "00pfb6qa3jfa6qaql7isnb8srfdfmk362ygslh7y0qkm36qasmh4"))))
+               "0ffvfnvhj6vz73zsrpi88hs69ys4zskm847zf825dl2r39n9nn41"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -2913,3 +2916,62 @@ mixers.")
 
 (define-public python2-pyalsaaudio
   (package-with-python2 python-pyalsaaudio))
+
+(define-public snd
+  (package
+    (name "snd")
+    (version "17.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
+                                  "snd-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vm0dy5qlycqkima7y5ajzvazyjybifa803fabjcpncjz08c26vp"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:out-of-source? #f              ; for the 'install-doc' phase
+       #:configure-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (docdir (string-append out "/share/doc/snd")))
+         (list "--with-alsa" "--with-jack" "--with-gmp"
+               (string-append "--with-doc-dir=" docdir)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (docdir (string-append out "/share/doc/snd")))
+               (mkdir-p docdir)
+               (for-each
+                (lambda (f)
+                  (install-file f docdir))
+                (find-files "." "\\.html$|COPYING"))
+               (copy-recursively "pix" (string-append docdir "/pix"))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftw" ,fftw)
+       ("flac" ,flac)
+       ("gmp" ,gmp)
+       ("gsl" ,gsl)
+       ("gtk+" ,gtk+)
+       ("jack" ,jack-1)
+       ("libsamplerate" ,libsamplerate)
+       ("mpc" ,mpc)
+       ("mpfr" ,mpfr)
+       ("mpg123" ,mpg123)
+       ("speex" ,speex)
+       ("timidity++" ,timidity++)
+       ("vorbis-tools" ,vorbis-tools)
+       ("wavpack" ,wavpack)))
+    (synopsis "Sound editor")
+    (home-page "https://ccrma.stanford.edu/software/snd/")
+    (description
+     "Snd is a sound editor modelled loosely after Emacs.  It can be
+customized and extended using either the s7 Scheme implementation (included in
+the Snd sources), Ruby, or Forth.")
+    (license (license:non-copyleft "file://COPYING"))))

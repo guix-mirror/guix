@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -68,6 +68,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
@@ -77,6 +78,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system ruby)
   #:use-module (guix build-system cmake)
   #:use-module (guix utils)
   #:use-module (srfi srfi-26)
@@ -253,6 +255,45 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                          ;; of db_cxx.h into C++ files works; it leads to
                          ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
                          "--enable-cxx"))))))))))
+
+(define-public es-dump-restore
+  (package
+    (name "es-dump-restore")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "es_dump_restore" version))
+       (sha256
+        (base32
+         "020yk7f1hw48clmf5501z3xv9shsdchyymcv0y2cci2c1xvr1mim"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f ;; No testsuite.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-bin-es_dump_restore
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/es_dump_restore")
+               `("GEM_PATH" ":" prefix (,(string-append
+                                          (getenv "GEM_PATH")
+                                          ":"
+                                          (getenv "GEM_HOME")))))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-httpclient" ,ruby-httpclient)
+       ("ruby-multi-json" ,ruby-multi-json)
+       ("ruby-progress_bar" ,ruby-progress_bar)
+       ("ruby-rubyzip" ,ruby-rubyzip)
+       ("ruby-thor" ,ruby-thor)))
+    (synopsis "Utility for dumping and restoring ElasticSearch indexes")
+    (description
+     "This package provides a utility for dumping the contents of an
+ElasticSearch index to a compressed file and restoring the dumpfile back to an
+ElasticSearch server")
+    (home-page "https://github.com/patientslikeme/es_dump_restore")
+    (license license:expat)))
 
 (define-public leveldb
   (package
@@ -1674,3 +1715,30 @@ implementation for Python.")
 
 (define-public python2-orator
   (package-with-python2 (strip-python2-variant python-orator)))
+
+(define-public virtuoso-ose
+  (package
+    (name "virtuoso-ose")
+    (version "7.2.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/openlink/virtuoso-opensource/releases/"
+             "download/v" version "/virtuoso-opensource-" version ".tar.gz"))
+       (sha256
+        (base32 "12dqam1gc1v93l0bj0vlpvjqppki6y1hqrlznywxnw0rrz9pb002"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require a network connection.
+    (inputs
+     `(("openssl" ,openssl)
+       ("net-tools" ,net-tools)))
+    (home-page "http://vos.openlinksw.com/owiki/wiki/VOS/")
+    (synopsis "Multi-model database system")
+    (description "Virtuoso is a scalable cross-platform server that combines
+relational, graph, and document data management with web application server
+and web services platform functionality.")
+    ;; configure: error: ... can only be build on 64bit platforms
+    (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))
+    (license license:gpl2)))

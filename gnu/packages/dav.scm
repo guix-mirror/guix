@@ -55,13 +55,13 @@ clients.")
 (define-public vdirsyncer
   (package
     (name "vdirsyncer")
-    (version "0.16.2")
+    (version "0.16.3")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri name version))
              (sha256
               (base32
-               "19xqzxcgmpm2z56l2d4a1n4sqmhrnzfwx3d9avfzgldwyhlrz0da"))))
+               "0dpwbfi97ksijqng191659m8k0v215y8ld95w8gb126m4m96qpzw"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases
@@ -89,6 +89,7 @@ clients.")
        ("python-pytest" ,python-pytest)
        ("python-pytest-localserver" ,python-pytest-localserver)
        ("python-pytest-subtesthack" ,python-pytest-subtesthack)
+       ("python-urllib3" ,python-urllib3)
        ("python-wsgi-intercept" ,python-wsgi-intercept)
        ("radicale" ,radicale)))
     (propagated-inputs

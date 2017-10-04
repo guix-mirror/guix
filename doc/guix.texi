@@ -3479,6 +3479,14 @@ build file @file{build.xml} with tasks to build the specified jar
 archive.  In this case the parameter @code{#:source-dir} can be used to
 specify the source sub-directory, defaulting to ``src''.
 
+The @code{#:main-class} parameter can be used with the minimal ant 
+buildfile to specify the main class of the resulting jar.  This makes the 
+jar file executable.  The @code{#:test-include} parameter can be used to 
+specify the list of junit tests to run. It defaults to
+@code{(list "**/*Test.java")}.  The @code{#:test-exclude} can be used to
+disable some tests. It defaults to @code{(list "**/Abstract*.java")},
+because abstract classes cannot be run as tests.
+
 The parameter @code{#:build-target} can be used to specify the Ant task
 that should be run during the @code{build} phase.  By default the
 ``jar'' task will be run.
@@ -5897,6 +5905,56 @@ CTAN while fetching the sources from the directory
 
 @example
 guix import texlive --archive=generic ifxetex
+@end example
+
+@item json
+@cindex JSON, import
+Import package metadata from a local JSON file@footnote{This
+functionality requires Guile-JSON to be installed.
+@xref{Requirements}.}.  Consider the following example package
+definition in JSON format:
+
+@example
+@{
+  "name": "hello",
+  "version": "2.10",
+  "source": "mirror://gnu/hello/hello-2.10.tar.gz",
+  "build-system": "gnu",
+  "home-page": "https://www.gnu.org/software/hello/",
+  "synopsis": "Hello, GNU world: An example GNU package",
+  "description": "GNU Hello prints a greeting.",
+  "license": "GPL-3.0+",
+  "native-inputs": ["gcc@@6"]
+@}
+@end example
+
+The field names are the same as for the @code{<package>} record
+(@xref{Defining Packages}).  References to other packages are provided
+as JSON lists of quoted package specification strings such as
+@code{guile} or @code{guile@@2.0}.
+
+The importer also supports a more explicit source definition using the
+common fields for @code{<origin>} records:
+
+@example
+@{
+  @dots{}
+  "source": @{
+    "method": "url-fetch",
+    "uri": "mirror://gnu/hello/hello-2.10.tar.gz",
+    "sha256": @{
+      "base32": "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i"
+    @}
+  @}
+  @dots{}
+@}
+@end example
+
+The command below reads metadata from the JSON file @code{hello.json}
+and outputs a package expression:
+
+@example
+guix import json hello.json
 @end example
 
 @item nix
@@ -9964,7 +10022,7 @@ with the default settings, for commonly encountered log files.
 
 (operating-system
   ;; @dots{}
-  (services (cons* (mcron-service)
+  (services (cons* (service mcron-service-type)
                    (service rottlog-service-type)
                    %base-services)))
 @end lisp
@@ -14213,7 +14271,8 @@ blocks, as in this example:
                         (https-port #f)
                         (ssl-certificate #f)
                         (ssl-certificate-key #f)
-                        (root "/srv/http/extra-website"))))
+                        (root "/srv/http/extra-website")
+                        (try-files (list "$uri" "$uri/index.html")))))
 @end example
 @end deffn
 
@@ -14343,6 +14402,10 @@ server block.
 @item @code{index} (default: @code{(list "index.html")})
 Index files to look for when clients ask for a directory.  If it cannot be found,
 Nginx will send the list of files in the directory.
+
+@item @code{try-files} (default: @code{'()})
+A list of files whose existence is checked in the specified order.
+@code{nginx} will use the first file it finds to process the request.
 
 @item @code{ssl-certificate} (default: @code{"/etc/nginx/cert.pem"})
 Where to find the certificate for secure connections.  Set it to @code{#f} if
@@ -15367,15 +15430,8 @@ packages, as prescribed in the @file{gnu-system.scm} example spec:
 (let ((spec #~((#:name . "guix")
                (#:url . "git://git.savannah.gnu.org/guix.git")
                (#:load-path . ".")
-
-               ;; Here we must provide an absolute file name.
-               ;; We take jobs from one of the examples provided
-               ;; by Cuirass.
-               (#:file . #$(file-append
-                            cuirass
-                            "/tests/gnu-system.scm"))
-
-               (#:proc . hydra-jobs)
+               (#:file . "build-aux/cuirass/gnu-system.scm")
+               (#:proc . cuirass-jobs)
                (#:arguments (subset . "hello"))
                (#:branch . "master"))))
   (service cuirass-service-type
@@ -16948,6 +17004,71 @@ If not empty, only allow access to this list of directories.
 @item @code{extra-options} (default: @var{'()})
 Extra options will be passed to @code{git daemon}, please run
 @command{man git-daemon} for more information.
+
+@end table
+@end deftp
+
+@subsubheading Cgit Service
+
+@cindex Cgit service
+@cindex Git, web interface
+@uref{https://git.zx2c4.com/cgit/, Cgit} is a web frontend for Git
+repositories written in C.
+
+The following example will configure the service with default values.
+By default, Cgit can be accessed on port 80 (@code{http://localhost:80}).
+
+@example
+(service nginx-service-type)
+(service fcgiwrap-service-type)
+(service cgit-service-type)
+@end example
+
+@deftp {Data Type} cgit-configuration
+Data type representing the configuration of Cgit.
+This type has the following parameters:
+
+@table @asis
+@item @code{config-file} (default: @code{(cgit-configuration-file)})
+The configuration file to use for Cgit.  This can be set to a
+@dfn{cgit-configuration-file} record value, or any gexp
+(@pxref{G-Expressions}).
+
+For example, to instead use a local file, the @code{local-file} function
+can be used:
+
+@example
+(service cgit-service-type
+         (cgit-configuration
+           (config-file (local-file "./my-cgitrc.conf"))))
+@end example
+
+@item @code{package} (default: @code{cgit})
+The Cgit package to use.
+
+@end table
+@end deftp
+
+@deftp {Data Type} cgit-configuration-file
+Data type representing the configuration options for Cgit.
+This type has the following parameters:
+
+@table @asis
+@item @code{css} (default: @code{"/share/cgit/cgit.css"})
+URL which specifies the css document to include in all Cgit pages.
+
+@item @code{logo} (default: @code{"/share/cgit/cgit.png"})
+URL which specifies the source of an image which will be used as a logo
+on all Cgit pages.
+
+@item @code{virtual-root} (default: @code{"/"})
+URL which, if specified, will be used as root for all Cgit links.
+
+@item @code{repository-directory} (default: @code{"/srv/git"})
+Name of the directory to scan for repositories.
+
+@item @code{robots} (default: @code{(list "noindex" "nofollow")})
+Text used as content for the ``robots'' meta-tag.
 
 @end table
 @end deftp
@@ -19098,6 +19219,18 @@ Synopses and descriptions are translated by volunteers
 Translation Project} so that as many users as possible can read them in
 their native language.  User interfaces search them and display them in
 the language specified by the current locale.
+
+To allow @command{xgettext} to extract them as translatable strings,
+synopses and descriptions @emph{must be literal strings}.  This means
+that you cannot use @code{string-append} or @code{format} to construct
+these strings:
+
+@lisp
+(package
+  ;; @dots{}
+  (synopsis "This is translatable")
+  (description (string-append "This is " "*not*" " translatable.")))
+@end lisp
 
 Translation is a lot of work so, as a packager, please pay even more
 attention to your synopses and descriptions as every change may entail

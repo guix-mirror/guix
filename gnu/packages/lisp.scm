@@ -33,6 +33,7 @@
   #:use-module (gnu packages m4)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system asdf)
@@ -42,6 +43,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libffcall)
@@ -228,21 +230,31 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
 (define-public clisp
   (package
     (name "clisp")
-    (version "2.49")
+    (version "2.49-60")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "mirror://gnu/clisp/release/" version
-                           "/clisp-" version ".tar.gz"))
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "http://hg.code.sf.net/p/clisp/clisp")
+             (changeset "clisp_2_49_60-2017-06-25")))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "0rp82nqp5362isl9i34rwgg04cidz7izljd9d85pqcw1qr964bxx"))))
+        (base32 "0qjv3z274rbdmb941hy03hl63f4z7bmci234f8dyz4skgfr82d3i"))
+       (patches (search-patches "clisp-remove-failing-test.patch"))))
     (build-system gnu-build-system)
     (inputs `(("libffcall" ,libffcall)
-              ("readline" ,readline-6.2)
+              ("ncurses" ,ncurses)
+              ("readline" ,readline)
               ("libsigsegv" ,libsigsegv)))
     (arguments
      '(;; XXX The custom configure script does not cope well when passed
        ;; --build=<triplet>.
+       #:configure-flags '("CFLAGS=-falign-functions=4"
+                           "--enable-portability"
+                           "--with-dynamic-ffi"
+                           "--with-dynamic-modules"
+                           "--with-module=bindings/glibc"
+                           "--with-module=rawsock")
        #:build #f
        #:phases
        (modify-phases %standard-phases
@@ -262,11 +274,9 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
            (lambda _
              (substitute* "src/constobj.d"
                (("__DATE__ __TIME__") "\"1\""))
-             #t))
-         (add-before 'build 'chdir-to-source
-           (lambda _
-             ;; We are supposed to call make under the src sub-directory.
-             (chdir "src")
+             (substitute* "src/genclisph.d"
+               (("__DATE__") "\"1\"")
+               (("__TIME__") "\"1\""))
              #t)))
        ;; Makefiles seem to have race conditions.
        #:parallel-build? #f))

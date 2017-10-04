@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -61,6 +61,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -1127,3 +1128,154 @@ hexadecimal editor able to open disk files, but later support for analyzing
 binaries, disassembling code, debugging programs, attaching to remote gdb
 servers, ...")
     (license license:lgpl3)))
+
+(define-public asco
+  (package
+    (name "asco")
+    (version "0.4.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/asco/asco/" version "/ASCO-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "119rbc2dc8xzwxvykgji0v0nrzvymjmlizr1bc2mihspj686kxsl"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                                ; no tests
+       #:make-flags '("all" "asco-mpi")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((coreutils (assoc-ref inputs "coreutils-minimal")))
+               (substitute* '("errfunc.c" "asco.c")
+                 (("cp ")
+                  (string-append coreutils "/bin/cp "))
+                 (("nice")
+                  (string-append coreutils "/bin/nice")))
+               (substitute* "Makefile"
+                 (("<FULL_PATH_TO_MPICH>/bin/mpicc") (which "mpicc")))
+               #t)))
+         (replace 'install                        ; no install target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each (lambda (file)
+                         (install-file file (string-append
+                                             (assoc-ref outputs "out")
+                                             "/bin")))
+                       '("asco" "asco-mpi" "asco-test"
+                         "tools/alter/alter" "tools/log/log"))
+             #t)))))
+    (native-inputs
+     `(("mpi" ,openmpi)))
+    (inputs
+     `(("coreutils-minimal" ,coreutils-minimal)))
+    (home-page "http://asco.sourceforge.net/")
+    (synopsis "SPICE circuit optimizer")
+    (description
+     "ASCO brings circuit optimization capabilities to existing SPICE simulators using a
+high-performance parallel differential evolution (DE) optimization algorithm.")
+    (license license:gpl2+)))
+
+(define-public libngspice
+  ;; Note: The ngspice's build system does not allow us to build both the
+  ;; library and the executables in one go.  Thus, we have two packages.
+  ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=27344#236>.
+  (package
+    (name "libngspice")
+    (version "26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
+                                  version "/ngspice-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02019ndcl057nq9z41nxycqba7wxlb081ibvfj9jv010nz431qji"))
+              (modules '((guix build utils)))
+              ;; We remove the non-free cider and build without it.
+              (snippet
+               '(begin
+                  (delete-file-recursively "src/ciderlib")
+                  (delete-file "src/ciderinit")
+                  (substitute* "configure"
+                    (("src/ciderlib/Makefile") "")
+                    (("src/ciderlib/input/Makefile") "")
+                    (("src/ciderlib/support/Makefile") "")
+                    (("src/ciderlib/oned/Makefile") "")
+                    (("src/ciderlib/twod/Makefile") ""))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; No tests for libngspice exist.
+       ;; The transient tests for ngspice fail.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-timestamps
+           (lambda _
+             (substitute* "configure"
+               (("`date`") "Do 1. Jan 00:00:00 UTC 1970"))
+             #t))
+         (add-after 'unpack 'delete-program-manuals
+           (lambda _
+             (substitute* "man/man1/Makefile.in"
+               (("^man_MANS = ngspice\\.1 ngnutmeg\\.1 ngsconvert\\.1 ngmultidec\\.1")
+                "man_MANS = "))
+             #t))
+         (add-after 'install 'delete-script-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively
+              (string-append (assoc-ref outputs "out")
+                             "/share/ngspice/scripts")))))
+       #:configure-flags
+       (list "--enable-openmp"
+             "--enable-xspice"
+             "--with-ngshared"
+             "--with-readline=yes")))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("libxaw" ,libxaw)
+       ("mpi" ,openmpi)
+       ("readline" ,readline)))
+    (home-page "http://ngspice.sourceforge.net/")
+    (synopsis "Mixed-level/mixed-signal circuit simulator")
+    (description
+     "Ngspice is a mixed-level/mixed-signal circuit simulator.  It includes
+@code{Spice3f5}, a circuit simulator, and @code{Xspice}, an extension that
+provides code modeling support and simulation of digital components through
+an embedded event driven algorithm.")
+    (license (list license:lgpl2.0+ ; code in frontend/numparam
+                   (license:non-copyleft "file:///COPYING") ; spice3 bsd-style
+                   license:public-domain)))) ; xspice
+
+(define-public ngspice
+  ;; The ngspice executables (see libngpsice above.)
+  (package (inherit libngspice)
+    (name "ngspice")
+    (arguments
+     (substitute-keyword-arguments (package-arguments libngspice)
+       ((#:configure-flags flags)
+        `(delete "--with-ngshared" ,flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'delete-include-files
+             (lambda _
+               (substitute* "src/Makefile.in"
+                 (("^SUBDIRS = misc maths frontend spicelib include/ngspice")
+                  "SUBDIRS = misc maths frontend spicelib"))
+               #t))
+           (add-after 'install 'delete-cmpp-dlmain
+             (lambda* (#:key outputs #:allow-other-keys)
+               (for-each (lambda (file)
+                           (delete-file
+                            (string-append (assoc-ref outputs "out")
+                                           file)))
+                         '("/bin/cmpp" "/share/ngspice/dlmain.c"))
+               #t))
+           (delete 'delete-program-manuals)
+           (delete 'delete-script-files)))))
+    (inputs
+     `(("libngspice" ,libngspice)
+       ("readline" ,readline)))))

@@ -1278,10 +1278,32 @@ Maps directly inside Emacs.")
 single buffer.")
     (license license:gpl3+)))
 
+(define-public emacs-tablist
+  (package
+    (name "emacs-tablist")
+    (version "0.70")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/politza/tablist/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "177d6s7ym1mwz1nhnl09r14z3n093g9a2szm97xsaig0c204xz9c"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/politza/tablist")
+    (synopsis "Extension for @code{tabulated-list-mode}")
+    (description "Tablist is the Emacs package that provides several
+additional features to @code{tabulated-list-mode}: it adds marks,
+filters, new key bindings and faces.  It can be enabled by
+@code{tablist-mode} or @code{tablist-minor-mode} commands.")
+    (license license:gpl3+)))
+
 (define-public emacs-pdf-tools
   (package
     (name "emacs-pdf-tools")
-    (version "0.70")
+    (version "0.80")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1290,7 +1312,7 @@ single buffer.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1m0api6wiawswyk46bdsyk6r5rg3b86a4paar6nassm6x6c6vr77"))))
+                "06imydn3a92vr57azpn1zhqc14kxyyslmyi9ldsyphan9b724gb6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -1339,6 +1361,7 @@ single buffer.")
               ("glib" ,glib)
               ("libpng" ,libpng)
               ("zlib" ,zlib)))
+    (propagated-inputs `(("tablist" ,emacs-tablist)))
     (synopsis "Emacs support library for PDF files")
     (description
      "PDF Tools is, among other things, a replacement of DocView for PDF
@@ -2100,6 +2123,29 @@ read from small to large monitors by using colors, a prefix feature, and smart
 truncation.")
     (license license:gpl2+)))
 
+(define-public emacs-sr-speedbar
+  (package
+    (name "emacs-sr-speedbar")
+    (version "20140914.2339")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/emacsorphanage/sr-speedbar/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15xwwc6kgvmk4wdhx1j8w6m6ivxvc94028ppgdpa2m51a8c9vjm9"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/SrSpeedbar")
+    (synopsis "Same frame Emacs @code{speedbar}")
+    (description
+     "This Emacs package allows you to show @code{M-x speedbar} in the
+same frame (in an extra window).  You can customize the initial width of
+the speedbar window.")
+    (license license:gpl3+)))
+
 (define-public emacs-shell-switcher
   (package
     (name "emacs-shell-switcher")
@@ -2417,7 +2463,7 @@ in @code{html-mode}.")
 (define-public emacs-slime
   (package
     (name "emacs-slime")
-    (version "2.19")
+    (version "2.20")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
@@ -2427,7 +2473,7 @@ in @code{html-mode}.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1jhaq5cn89k45nzyl0jd12gmjxnh1bq9jlfwrxba342agxsscb0p"))))
+         "086lq5y4pvj9wihy0si02xxvyzpzz8mcg3hz1cvy9zxlyjwzr1gk"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))
@@ -2524,6 +2570,27 @@ without modifier keys.  It's similar to Vim's separation of commands and
 insertion mode.  When enabled all keys are implicitly prefixed with
 @samp{C-} (among other helpful shortcuts).")
       (license license:gpl3+))))
+
+(define-public emacs-jinja2-mode
+  (package
+    (name "emacs-jinja2-mode")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/paradoxxxzero/jinja2-mode/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cgxjab1kla2zc2fj7bzib6i7snp08zshandmp9kqcm85l262xpn"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/paradoxxxzero/jinja2-mode")
+    (synopsis "Major mode for jinja2")
+    (description
+     "Emacs major mode for jinja2 with: syntax highlighting,
+sgml/html integration, and indentation (working with sgml).")
+    (license license:gpl3+)))
 
 (define-public emacs-rfcview
   (package
@@ -3488,7 +3555,7 @@ names, e.g. #0000ff is displayed in white with a blue background.")
 (define-public emacs-visual-fill-column
   (package
     (name "emacs-visual-fill-column")
-    (version "1.7")
+    (version "1.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://codeload.github.com/joostkremers/"
@@ -3496,7 +3563,7 @@ names, e.g. #0000ff is displayed in white with a blue background.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12vn7kdq2mpz9hgibbn1vhpf23lcm7c26k3fkz8nidhygwl5x5lq"))))
+                "13jnviakp607zcms7f8ams56mr8wffnq1pghlc6fvqs39663pgwh"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joostkremers/visual-fill-column")
     (synopsis "Fill-column for visual-line-mode")
@@ -3508,6 +3575,31 @@ wrapping lines at the window edge, which is the standard behaviour of
 @code{fill-column} is too large for the window, the text is wrapped at the
 window edge.")
     (license license:gpl3+)))
+
+(define-public emacs-writeroom
+  (package
+    (name "emacs-writeroom")
+    (version "3.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/joostkremers/writeroom-mode/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0yqgp5h3kvvpgva4azakb2wnjl7gsyh45glf75crspv3xyq57f2r"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-visual-fill-column" ,emacs-visual-fill-column)))
+    (home-page "https://github.com/joostkremers/writeroom-mode")
+    (synopsis "Distraction-free writing for Emacs")
+    (description
+     "This package defines a minor mode for distraction-free writing.  Some of
+the default effects include entering fullscreen, deleting other windows of the
+current frame, disabling the mode line, and adding margins to the buffer that
+restrict the text width to 80 characters.")
+    (license license:bsd-3)))
 
 (define-public emacs-ido-completing-read+
   (package
@@ -3940,7 +4032,7 @@ Flx has support for ido (interactively do things) through flx-ido.")
 (define-public emacs-cyberpunk-theme
   (package
     (name "emacs-cyberpunk-theme")
-    (version "1.18")
+    (version "1.19")
     (source
      (origin
        (method url-fetch)
@@ -3948,7 +4040,7 @@ Flx has support for ido (interactively do things) through flx-ido.")
                            "archive/" version ".tar.gz"))
        (sha256
         (base32
-         "0pxzbw0qjxgkhhs3gn3k9qy41kl1a4pfzbw83dk24l4b3nxd24wg"))
+         "05l5fxw1mn5py6mfhxrzyqjq0d8m5m1akfi46vrgh13r414jffvv"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/n3mo/cyberpunk-theme.el")
@@ -4800,6 +4892,97 @@ commands are also offered as part of the AUCTeX package, but it is not
 the same - CDLaTeX focuses on speediness for inserting LaTeX
 constructs.")
     (license license:gpl3+)))
+
+(define-public emacs-cnfonts
+  (package
+    (name "emacs-cnfonts")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tumashu/cnfonts/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1l6cgcvc6md1zq97ccczankpyi0k4vjx6apflny6kjq3p33lyhf4"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tumashu/cnfonts")
+    (synopsis "Emacs Chinese fonts setup tool")
+    (description "cnfonts is a Chinese fonts setup tool, allowing for easy
+configuration of Chinese fonts.")
+    (license license:gpl2+)))
+
+(define-public emacs-pos-tip
+  (package
+    (name "emacs-pos-tip")
+    (version "0.4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/pitkali/pos-tip/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12jqfy26vjk7lq0aa8yn8zqj8c85fkvx7y9prj0pcn4wqiz2ad2r"))))
+    (build-system emacs-build-system)
+    ;; The following functions and variables needed by emacs-pos-tip are
+    ;; not included in emacs-minimal:
+    ;; x-display-pixel-width, x-display-pixel-height, x-show-tip
+    (arguments `(#:emacs ,emacs))
+    (home-page "https://github.com/pitkali/pos-tip")
+    (synopsis "Show tooltip at point")
+    (description "The standard library tooltip.el provides a function for
+displaying a tooltip at the mouse position.  However, locating a tooltip at an
+arbitrary buffer position in a window is not easy.  Pos-tip provides such a
+function to be used by other frontend programs.")
+    (license license:gpl2+)))
+
+(define-public emacs-pyim-basedict
+  (package
+    (name "emacs-pyim-basedict")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tumashu/pyim-basedict/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nfgxviavkgrpyfsw60xsws4fk51fcmgl8fp6zf4ibqjjbp53n3n"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tumashu/pyim-basedict")
+    (synopsis "Input method dictionary of pyim")
+    (description "Pyim-basedict is the default pinyin input method dictionary,
+containing words from the rime project.")
+    (license license:gpl2+)))
+
+(define-public emacs-pyim
+  (package
+    (name "emacs-pyim")
+    (version "1.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tumashu/pyim/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hfg8q9hcjifvnlghw2g94dfxfirms2psq2ghqb28fhkf0lks13r"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-async" ,emacs-async)
+       ("emacs-pyim-basedict" ,emacs-pyim-basedict)
+       ("emacs-popup" ,emacs-popup)
+       ("emacs-pos-tip" ,emacs-pos-tip)))
+    (home-page "https://github.com/tumashu/pyim")
+    (synopsis "Chinese input method")
+    (description "Chinese input method which supports quanpin, shuangpin, wubi
+and cangjie.")
+    (license license:gpl2+)))
 
 (define-public emacs-xelb
   (package

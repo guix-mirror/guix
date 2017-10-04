@@ -41,12 +41,14 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
@@ -3196,6 +3198,355 @@ writing to these structures, and they are accessed via the Bigarray module.")
     (synopsis "Minimal library providing hexadecimal converters")
     (description "Hex is a minimal library providing hexadecimal converters.")
     (license license:isc)))
+
+(define-public ocaml-ezjsonm
+  (package
+    (name "ocaml-ezjsonm")
+    (version "0.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/ezjsonm/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1kag0z2xlk4rw73a240dmkxh9rj6psxxcxkm7d7z0rrj6hzjajgq"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("alcotest" ,ocaml-alcotest)))
+    (propagated-inputs
+     `(("hex" ,ocaml-hex)
+       ("jsonm" ,ocaml-jsonm)
+       ("lwt" ,ocaml-lwt)
+       ("sexplib" ,ocaml-sexplib)))
+    (arguments
+     `(#:configure-flags (list "--enable-lwt")))
+    (home-page "https://github.com/mirage/ezjsonm/")
+    (synopsis "Read and write JSON data")
+    (description "Ezjsonm provides more convenient (but far less flexible) input
+and output functions that go to and from [string] values than jsonm.  This avoids
+the need to write signal code, which is useful for quick scripts that manipulate
+JSON.")
+    (license license:isc)))
+
+(define-public ocaml-uri
+  (package
+    (name "ocaml-uri")
+    (version "1.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mirage/ocaml-uri/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "02bzrag79prx261rxf9mlak749pwf4flpfl8p012x1xznv9m0clc"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (native-inputs
+     `(("ounit" ,ocaml-ounit)))
+    (propagated-inputs
+     `(("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+       ("re" ,ocaml-re)
+       ("ppx-deriving" ,ocaml-ppx-deriving)
+       ("sexplib" ,ocaml-sexplib)
+       ("stringext" ,ocaml-stringext)))
+    (home-page "https://github.com/mirage/ocaml-uri")
+    (synopsis "RFC3986 URI/URL parsing library")
+    (description "OCaml-uri is a library for parsing URI/URL in the RFC3986 format.")
+    (license license:isc)))
+
+(define-public ocaml-easy-format
+  (package
+    (name "ocaml-easy-format")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mjambon/easy-format/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zcz682y9figa84k7lgdjcab5qbzk3yy14ygfqp2dhhrvjygm252"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/mjambon/easy-format")
+    (synopsis "Interface to the Format module")
+    (description "Easy-format is a high-level and functional interface to the
+Format module of the OCaml standard library.")
+    (license license:bsd-3)))
+
+(define-public optcomp
+  (package
+    (name "optcomp")
+    (version "1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/diml/optcomp/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0hhhb2gisah1h22zlg5iszbgqxdd7x85cwd57bd4mfkx9l7dh8jh"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:use-make? #t
+       #:make-flags
+       (list (string-append "BUILDFLAGS=\"-cflags -I,"
+                            (assoc-ref %build-inputs "camlp4")
+                            "/lib/ocaml/site-lib/camlp4/Camlp4Parsers\""))))
+    (native-inputs `(("camlp4" ,camlp4)))
+    (propagated-inputs `(("camlp4" ,camlp4)))
+    (home-page "https://github.com/diml/optcomp")
+    (synopsis "Optional compilation for OCaml")
+    (description "Optcomp provides an optional compilation facility with
+cpp-like directives.")
+    (license license:bsd-3)))
+
+(define-public ocaml-piqilib
+  (package
+    (name "ocaml-piqilib")
+    (version "0.6.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alavrik/piqi/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1whqr2bb3gds2zmrzqnv8vqka9928w4lx6mi6g244kmbwb2h8d8l"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-ocamlpath
+           (lambda _
+             (substitute* '("Makefile" "make/Makefile.ocaml")
+               (("OCAMLPATH := ") "OCAMLPATH := $(OCAMLPATH):"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "make/OCamlMakefile"
+                 (("/bin/sh") (which "bash")))
+               (zero? (system* "./configure" "--prefix" out "--ocaml-libdir"
+                               (string-append out "/lib/ocaml/site-lib"))))))
+       (add-after 'build 'build-ocaml
+         (lambda* (#:key outputs #:allow-other-keys)
+           (zero? (system* "make" "ocaml")))) 
+       (add-after 'install 'install-ocaml
+         (lambda* (#:key outputs #:allow-other-keys)
+           (zero? (system* "make" "ocaml-install"))))
+       (add-after 'install-ocaml 'link-stubs
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((out (assoc-ref outputs "out"))
+                  (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
+                  (lib (string-append out "/lib/ocaml/site-lib/piqilib")))
+             (mkdir-p stubs)
+             (symlink (string-append lib "/dllpiqilib_stubs.so")
+                      (string-append stubs "/dllpiqilib_stubs.so"))
+             #t))))))
+    (native-inputs
+     `(("which" ,which)
+       ("camlp4" ,camlp4)))
+    (propagated-inputs
+     `(("xmlm" ,ocaml-xmlm)
+       ("ulex" ,ocaml-ulex)
+       ("optcomp" ,optcomp)
+       ("easy-format" ,ocaml-easy-format)
+       ("base64" ,ocaml-base64)))
+    (home-page "http://piqi.org")
+    (synopsis "Data serialization and conversion library")
+    (description "Piqilib is the common library used by the piqi command-line
+tool and piqi-ocaml.")
+    (license license:asl2.0)))
+
+(define-public ocaml-uuidm
+  (package
+    (name "ocaml-uuidm")
+    (version "0.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://erratique.ch/software/uuidm/"
+                                  "releases/uuidm-" version ".tbz"))
+              (sha256
+               (base32
+                "0hz4fdx0x16k0pw9995vkz5d1hmzz6b16wck9li399rcbfnv5jlc"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:build-flags
+       (list "build" "--tests" "true" "--with-cmdliner" "true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("opam" ,opam)))
+    (propagated-inputs
+     `(("cmdliner" ,ocaml-cmdliner)
+       ("topkg" ,ocaml-topkg)))
+    (home-page "http://erratique.ch/software/uuidm")
+    (synopsis "Universally unique identifiers for OCaml")
+    (description "Uuidm is an OCaml module implementing 128 bits universally
+unique identifiers (UUIDs) version 3, 5 (named based with MD5, SHA-1 hashing)
+and 4 (random based) according to RFC 4122.")
+    (license license:isc)))
+
+(define-public ocaml-graph
+  (package
+    (name "ocaml-graph")
+    (version "1.8.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ocamlgraph.lri.fr/download/"
+                                  "ocamlgraph-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1845r537swjil2fcj7lgbibc2zybfwqqasrd2s7bncajs83cl1nz"))
+              (patches (search-patches "ocaml-graph-honor-source-date-epoch.patch"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:install-target "install-findlib"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-shell
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CONFIG_SHELL" (string-append (assoc-ref inputs "bash")
+                                                   "/bin/sh")))))))
+    (inputs `(("lablgtk" ,lablgtk)))
+    (home-page "http://ocamlgraph.lri.fr/")
+    (synopsis "Graph library for OCaml")
+    (description "OCamlgraph is a generic graph library for OCaml.")
+    (license license:lgpl2.1)))
+
+(define-public ocaml-piqi
+  (package
+    (name "ocaml-piqi")
+    (version "0.7.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alavrik/piqi-ocaml/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ngz6y8i98i5v2ma8nk6mc83pdsmf2z0ks7m3xi6clfg3zqbddrv"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+             (string-append "SHELL=" (assoc-ref %build-inputs "bash")
+                            "/bin/sh"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("which" ,which)
+       ("protobuf" ,protobuf))) ; for tests
+    (propagated-inputs
+     `(("piqilib" ,ocaml-piqilib)))
+    (home-page "https://github.com/alavrik/piqi-ocaml")
+    (synopsis "Protocol serialization system for OCaml")
+    (description "Piqi is a multi-format data serialization system for OCaml.
+It provides a uniform interface for serializing OCaml data structures to JSON,
+XML and Protocol Buffers formats.")
+    (license license:asl2.0)))
+
+(define-public bap
+  (package
+    (name "bap")
+    (version "1.1.0")
+    (home-page "https://github.com/BinaryAnalysisPlatform/bap")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ms95m4j1qrmy7zqmsn2izh7gq68lnmssl7chyhk977kd3sxj66m"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+   (build-system ocaml-build-system)
+   (native-inputs
+    `(("oasis" ,ocaml-oasis)
+      ("clang" ,clang)
+      ("ounit" ,ocaml-ounit)))
+   (propagated-inputs
+    `(("core-kernel" ,ocaml-core-kernel)
+      ("ppx-driver" ,ocaml-ppx-driver)
+      ("uri" ,ocaml-uri)
+      ("llvm" ,llvm)
+      ("gmp" ,gmp)
+      ("clang-runtime" ,clang-runtime)
+      ("fileutils" ,ocaml-fileutils)
+      ("cmdliner" ,ocaml-cmdliner)
+      ("zarith" ,ocaml-zarith)
+      ("uuidm" ,ocaml-uuidm)
+      ("camlzip" ,camlzip)
+      ("frontc" ,ocaml-frontc)
+      ("ezjsonm" ,ocaml-ezjsonm)
+      ("ocurl" ,ocaml-ocurl)
+      ("piqi" ,ocaml-piqi)
+      ("ocamlgraph" ,ocaml-graph)
+      ("bitstring" ,ocaml-bitstring)
+      ("ppx-jane" ,ocaml-ppx-jane)
+      ("re" ,ocaml-re)))
+   (inputs `(("llvm" ,llvm)))
+   (arguments
+    `(#:use-make? #t
+      #:phases
+      (modify-phases %standard-phases
+        (replace 'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (zero? (system* "./configure" "--prefix"
+                            (assoc-ref outputs "out")
+                            "--libdir"
+                            (string-append
+                              (assoc-ref outputs "out")
+                              "/lib/ocaml/site-lib")
+                            "--with-llvm-version=3.8"
+                            "--with-llvm-config=llvm-config"
+                            "--enable-everything"))))
+        (add-after 'install 'link-stubs
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
+                   (lib (string-append out "/lib/ocaml/site-lib/bap-plugin-llvm")))
+              (mkdir-p stubs)
+              (symlink (string-append lib "/dllllvm_plugin_stubs.so")
+                       (string-append stubs "/dllllvm_plugin_stubs.so"))))))))
+   (synopsis "Binary Analysis Platform")
+   (description "Binary Analysis Platform is a framework for writing program
+analysis tools, that target binary files.  The framework consists of a plethora
+of libraries, plugins, and frontends.  The libraries provide code reusability,
+the plugins facilitate extensibility, and the frontends serve as entry points.")
+   (license license:expat)))
+
+(define-public ocaml-camomile
+  (package
+    (name "ocaml-camomile")
+    (version "0.8.5")
+    (home-page "https://github.com/yoriyuki/Camomile")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/releases/download/rel-" version
+                                  "/camomile-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "003ikpvpaliy5hblhckfmln34zqz0mk3y2m1fqvbjngh3h2np045"))))
+    (build-system ocaml-build-system)
+    (native-inputs `(("camlp4" ,camlp4)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-bin/sh
+           (lambda _
+             (setenv "CONFIG_SHELL" (which "bash")))))))
+    (synopsis "Comprehensive Unicode library")
+    (description "Camomile is a Unicode library for OCaml.  Camomile provides
+Unicode character type, UTF-8, UTF-16, UTF-32 strings, conversion to/from about
+200 encodings, collation and locale-sensitive case mappings, and more.  The
+library is currently designed for Unicode Standard 3.2.")
+    ;; with an exception for linked libraries to use a different license
+    (license license:lgpl2.0+)))
 
 (define-public coq-flocq
   (package
