@@ -5925,3 +5925,41 @@ abstractions.")
 significant new functionalities, such as full-featured bi-direction validation
 interface and high-performance Typed Access API.")
     (license license:bsd-2)))
+
+(define-public java-woodstox-core
+  (package
+    (name "java-woodstox-core")
+    (version "5.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/woodstox/archive/"
+                                  "woodstox-core-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1i7pdgb8jbw6gdy5kmm0l6rz109n2ns92pqalpyp24vb8vlvdfd4"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "woodstox.jar"
+       #:test-exclude
+       (list "**/Base*.java" "failing/**")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-msv-dep
+           (lambda _
+             ;; we don't need osgi, and it depends on msv
+             (delete-file-recursively "src/main/java/com/ctc/wstx/osgi")
+             ;; msv's latest release is from 2011 and we don't need it
+             (delete-file-recursively "src/main/java/com/ctc/wstx/msv")
+             (delete-file-recursively "src/test/java/wstxtest/osgi")
+             (delete-file-recursively "src/test/java/wstxtest/msv")))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes"))))))
+    (inputs
+     `(("stax2" ,java-stax2-api)))
+    (native-inputs
+     `(("junit" ,java-junit)))
+    (home-page "https://github.com/FasterXML/woodstox")
+    (synopsis "Stax XML API implementation")
+    (description "Woodstox is a stax XML API implementation.")
+    (license license:asl2.0)))
