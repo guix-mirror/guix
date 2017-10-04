@@ -194,13 +194,40 @@ if DEVICE does not contain a btrfs file system."
 Trailing spaces are trimmed."
   (string-trim-right (latin1->string (sub-bytevector sblock 71 11) (lambda (c) #f)) #\space))
 
-(define (check-fat32-file-system device)
+(define (check-fat-file-system device)
   "Return the health of a fat file system on DEVICE."
   (match (status:exit-val
           (system* "fsck.vfat" "-v" "-a" device))
     (0 'pass)
     (1 'errors-corrected)
     (_ 'fatal-error)))
+
+
+;;;
+;;; FAT16 file systems.
+;;;
+
+(define (fat16-superblock? sblock)
+  "Return #t when SBLOCK is a fat16 boot record."
+  (bytevector=? (sub-bytevector sblock 54 8)
+                (string->utf8 "FAT16   ")))
+
+(define (read-fat16-superblock device)
+  "Return the raw contents of DEVICE's fat16 superblock as a bytevector, or
+#f if DEVICE does not contain a fat16 file system."
+  (read-superblock device 0 62 fat16-superblock?))
+
+(define (fat16-superblock-uuid sblock)
+  "Return the Volume ID of a fat superblock SBLOCK as a 4-byte bytevector."
+  (sub-bytevector sblock 39 4))
+
+(define (fat16-superblock-volume-name sblock)
+  "Return the volume name of SBLOCK as a string of at most 11 characters, or
+#f if SBLOCK has no volume name.  The volume name is a latin1 string.
+Trailing spaces are trimmed."
+  (string-trim-right (latin1->string (sub-bytevector sblock 43 11)
+                                     (lambda (c) #f))
+                     #\space))
 
 
 ;;;
@@ -386,7 +413,9 @@ partition field reader that returned a value."
         (partition-field-reader read-btrfs-superblock
                                 btrfs-superblock-volume-name)
         (partition-field-reader read-fat32-superblock
-                                fat32-superblock-volume-name)))
+                                fat32-superblock-volume-name)
+        (partition-field-reader read-fat16-superblock
+                                fat16-superblock-volume-name)))
 
 (define %partition-uuid-readers
   (list (partition-field-reader read-iso9660-superblock
@@ -396,7 +425,9 @@ partition field reader that returned a value."
         (partition-field-reader read-btrfs-superblock
                                 btrfs-superblock-uuid)
         (partition-field-reader read-fat32-superblock
-                                fat32-superblock-uuid)))
+                                fat32-superblock-uuid)
+        (partition-field-reader read-fat16-superblock
+                                fat16-superblock-uuid)))
 
 (define read-partition-label
   (cut read-partition-field <> %partition-label-readers))
@@ -511,7 +542,7 @@ the following:
     (cond
      ((string-prefix? "ext" type) check-ext2-file-system)
      ((string-prefix? "btrfs" type) check-btrfs-file-system)
-     ((string-suffix? "fat" type) check-fat32-file-system)
+     ((string-suffix? "fat" type) check-fat-file-system)
      (else #f)))
 
   (if check-procedure
