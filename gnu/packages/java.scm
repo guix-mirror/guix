@@ -5902,3 +5902,26 @@ configuration.")
 to JSON, supported by default.  This is done by sub-classing Jackson core
 abstractions.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-stax2-api
+  (package
+    (name "java-stax2-api")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/stax2-api/archive/"
+                                  "stax2-api-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1amc1si0l0hyyw2sawmnzy4hkna3z6fp195y4nm5m9wb9ld5awkq"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-stax2-api.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f)); no tests
+    (home-page "https://github.com/FasterXML/stax2-api")
+    (synopsis "Stax2 API")
+    (description "Stax2 API is an extension to basic Stax 1.0 API that adds
+significant new functionalities, such as full-featured bi-direction validation
+interface and high-performance Typed Access API.")
+    (license license:bsd-2)))
