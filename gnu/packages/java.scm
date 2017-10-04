@@ -5482,3 +5482,26 @@ it manages project dependencies, gives diffs jars, and much more.")
        ("osgi-annot" ,java-osgi-annotation)
        ("java-osgi-cmpn" ,java-osgi-cmpn)
        ("osgi" ,java-osgi-core)))))
+
+(define-public java-aqute-bndlib
+  (package
+    (inherit java-aqute-bnd-annotation)
+    (name "java-aqute-bndlib")
+    (arguments
+     `(#:jar-name "java-bndlib.jar"
+       #:source-dir "biz.aQute.bndlib/src"
+       #:tests? #f)); no tests
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("osgi-annot" ,java-osgi-annotation)
+       ("java-aqute-libg" ,java-aqute-libg)
+       ("java-aqute-bnd-annotation" ,java-aqute-bnd-annotation)
+       ("java-osgi-service-component-annotations" ,java-osgi-service-component-annotations)
+       ("java-osgi-service-repository" ,java-osgi-service-repository)
+       ("java-osgi-service-log" ,java-osgi-service-log)
+       ("java-osgi-service-metatype-annotations" ,java-osgi-service-metatype-annotations)
+       ("java-osgi-namespace-contract" ,java-osgi-namespace-contract)
+       ("java-osgi-namespace-extender" ,java-osgi-namespace-extender)
+       ("java-osgi-namespace-service" ,java-osgi-namespace-service)
+       ("promise" ,java-osgi-util-promise)
+       ("osgi" ,java-osgi-core)))))
