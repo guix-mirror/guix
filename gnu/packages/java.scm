@@ -5398,3 +5398,18 @@ package contains utilities and extensions related to handling streams and files.
     (description "OPS4J stands for Open Participation Software for Java.  This
 package contains utilities and extensions related to environment, i18n and
 mime types.")))
+
+(define-public java-ops4j-base-util-property
+  (package
+    (inherit java-ops4j-base-lang)
+    (name "java-ops4j-base-util-property")
+    (arguments
+     `(#:jar-name "java-ops4j-base-util-property.jar"
+       #:source-dir "ops4j-base-util-property/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("lang" ,java-ops4j-base-lang)
+       ("util" ,java-ops4j-base-util)))
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities and extensions related to resolving properties from
+different sources.")))
