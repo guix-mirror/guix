@@ -5831,3 +5831,26 @@ configuration.")
     (synopsis "Jaxb annotations jackson module")
     (description "This package is the jaxb annotations module for jackson.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-snakeyaml
+  (package
+    (name "java-snakeyaml")
+    (version "1.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bitbucket.org/asomov/snakeyaml/get/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0rf5ha6w0waz50jz2479jsrbgmd0dnx0gs337m126j5z7zlmg7mg"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-snakeyaml.jar"
+       #:source-dir "src/main/java"
+       ;; Tests require velocity, a cyclic dependency, and
+       ;; java-spring-framework-context which is not packaged.
+       #:tests? #f))
+    (home-page "https://bitbucket.org/asomov/snakeyaml")
+    (synopsis "YAML processor")
+    (description "SnakeYAML is a YAML processor for the Java Virtual Machine.")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
