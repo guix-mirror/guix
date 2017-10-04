@@ -4982,6 +4982,26 @@ containing words from the rime project.")
 and cangjie.")
     (license license:gpl2+)))
 
+(define-public emacs-el2org
+  (package
+    (name "emacs-el2org")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tumashu/el2org/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gd3km1swwvg2w0kdi7370f54wgrflxn63gjgssfjc1iyc9sbqwq"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tumashu/el2org")
+    (synopsis "Convert Emacs-lisp file to org file")
+    (description "El2org is a simple tool, which can convert Emacs-lisp file
+to org file, you can use this tool to write orgify commentary.")
+    (license license:gpl2+)))
+
 (define-public emacs-mustache
   (package
     (name "emacs-mustache")
