@@ -2172,7 +2172,7 @@ and RDP protocols.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.26.0")
+    (version "0.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2181,7 +2181,7 @@ and RDP protocols.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1jaqsr1r0grpd25rbsc2v3vb0sc51lia9w31wlqswgqsncp2k0w6"))))
+                "0da587hpiqy8h3pswn1102h4b905x8k6mk3ajpi7kf4kzkvv30ym"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk+" ,gtk+)
