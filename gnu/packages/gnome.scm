@@ -2053,7 +2053,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.50.0.a")
+    (version "0.50.1.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
@@ -2068,7 +2068,7 @@ editors, IDEs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0h5ifg6xpix074k445bmnd39mc75llrfkrsr9vw98dxa4rffxrgf"))))
+                "1r70jysdrc7r1vyn3mikpc8hh7rm4lpr0psakj8yssy11p451pja"))))
     (arguments
       `(#:configure-flags '("CXXFLAGS=-Wformat=0")
         #:phases (modify-phases %standard-phases
