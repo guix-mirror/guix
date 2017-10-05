@@ -167,7 +167,7 @@ APNG patch provides APNG support to libpng.")
 (define-public libpng-1.2
   (package
     (inherit libpng)
-    (version "1.2.57")
+    (version "1.2.59")
     (source
      (origin
        (method url-fetch)
@@ -180,7 +180,8 @@ APNG patch provides APNG support to libpng.")
                    "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
-        (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
+        (base32
+         "1izw9ybm27llk8531w6h4jp4rk2rxy2s9vil16nwik5dp0amyqxl"))))))
 
 (define-public r-png
   (package
