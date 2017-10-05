@@ -3717,6 +3717,8 @@ producing implementations of dynamic languages, emphasizing a clean separation
 between language specification and implementation aspects.")
     (license license:expat)))
 
+;; NOTE: when upgrading numpy please make sure that python-pandas and
+;; python-scipy still build, as these three packages are often used together.
 (define-public python-numpy
   (package
     (name "python-numpy")
@@ -3792,6 +3794,26 @@ capabilities.")
 
 (define-public python2-numpy
   (package-with-python2 python-numpy))
+
+(define-public python-numpy-next
+  (package (inherit python-numpy)
+    (name "python-numpy-next")
+    (version "1.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "numpy" version ".zip"))
+       (sha256
+        (base32
+         "1fsgkhh1vdkhmlz8vmdgxnj9n9yaanckxxzz9s0b4p08fqvjic69"))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("gfortran" ,gfortran)))))
+
+(define-public python2-numpy-next
+  (package-with-python2 python-numpy-next))
 
 (define-public python-munch
   (package
