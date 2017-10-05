@@ -5029,6 +5029,32 @@ conditional evaluation can be achieved using section tags processing lists
 and lambdas.")
     (license license:gpl3+)))
 
+(define-public emacs-org2web
+  (package
+    (name "emacs-org2web")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tumashu/org2web/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1c0ixcphlhp4c4qdiwq40bc3yp1gp1llp8pxrk4s7ny9n68s52zp"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-el2org" ,emacs-el2org)
+       ("emacs-ht" ,emacs-ht)
+       ("emacs-mustache" ,emacs-mustache)
+       ("emacs-simple-httpd" ,emacs-simple-httpd)))
+    (home-page "https://github.com/tumashu/org2web")
+    (synopsis "Static site generator based on org-mode ")
+    (description "Org2web is a static site generator based on org-mode,
+which code derived from Kelvin H's org-page.")
+    (license license:gpl2+)))
+
 (define-public emacs-xelb
   (package
     (name "emacs-xelb")
