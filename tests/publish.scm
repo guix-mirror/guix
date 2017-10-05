@@ -340,7 +340,7 @@ FileSize: ~a~%"
         200                                       ;nar/gzip/…
         #t                                        ;Content-Length
         #t                                        ;FileSize
-        200)                                      ;nar/…
+        404)                                      ;nar/…
   (call-with-temporary-directory
    (lambda (cache)
      (let ((thread (with-separate-output-ports
@@ -393,7 +393,7 @@ FileSize: ~a~%"
 (let ((item (add-text-to-store %store "fake-compressed-thing.tar.gz"
                                (random-text))))
   (test-equal "with cache, uncompressed"
-    (list #f
+    (list #t
           `(("StorePath" . ,item)
             ("URL" . ,(string-append "nar/" (basename item)))
             ("Compression" . "none"))
