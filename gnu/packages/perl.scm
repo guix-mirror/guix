@@ -52,14 +52,14 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
-    (version "5.26.0")
+    (version "5.26.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0zxn9hd7mqgq06ikyi6k70ngbvjf01z1paw0jd25byyl0rlwdrzb"))
+               "1p81wwvr5jb81m41d07kfywk5gvbk0axdrnvhc2aghcdbr4alqz7"))
              (patches (search-patches
                        "perl-file-path-CVE-2017-6512.patch"
                        "perl-no-sys-dirs.patch"
