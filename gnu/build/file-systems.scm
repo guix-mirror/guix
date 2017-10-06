@@ -415,12 +415,12 @@ was READ is = to the given value."
   (partition-predicate read-partition-label string=?))
 
 (define partition-uuid-predicate
-  (partition-predicate read-partition-uuid bytevector=?))
+  (partition-predicate read-partition-uuid uuid=?))
 
 (define luks-partition-uuid-predicate
   (partition-predicate
    (partition-field-reader read-luks-header luks-header-uuid)
-   bytevector=?))
+   uuid=?))
 
 (define (find-partition predicate)
   "Return the first partition found that matches PREDICATE, or #f if none

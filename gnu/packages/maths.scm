@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1127,7 +1128,7 @@ can solve two kinds of problems:
     (license license:bsd-3)))
 
 ;; For a fully featured Octave, users  are strongly recommended also to install
-;; the following packages: texinfo, less, ghostscript, gnuplot.
+;; the following packages: less, ghostscript, gnuplot.
 (define-public octave
   (package
     (name "octave")
@@ -1159,6 +1160,7 @@ can solve two kinds of problems:
        ("glu" ,glu)
        ("zlib" ,zlib)
        ("curl" ,curl)
+       ("texinfo" ,texinfo)
        ("graphicsmagick" ,graphicsmagick)))
     (native-inputs
      `(("lzip" ,lzip)
@@ -1173,14 +1175,23 @@ can solve two kinds of problems:
        ;; will still run without them, albeit without the features they
        ;; provide.
        ("less" ,less)
-       ("texinfo" ,texinfo)
        ("ghostscript" ,ghostscript)
        ("gnuplot" ,gnuplot)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-shell="
                             (assoc-ref %build-inputs "bash")
-                            "/bin/sh"))))
+                            "/bin/sh"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'configure-makeinfo
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "libinterp/corefcn/help.cc"
+               (("Vmakeinfo_program = \"makeinfo\"")
+                (string-append "Vmakeinfo_program = \""
+                               (assoc-ref inputs "texinfo")
+                               "/bin/makeinfo\"")))
+             #t)))))
     (home-page "https://www.gnu.org/software/octave/")
     (synopsis "High-level language for numerical computation")
     (description "GNU Octave is a high-level interpreted language that is

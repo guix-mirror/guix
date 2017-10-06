@@ -37,6 +37,8 @@
   #:use-module (guix scripts graph)
   #:use-module (guix build utils)
   #:use-module (gnu build install)
+  #:autoload   (gnu build file-systems)
+                 (find-partition-by-label find-partition-by-uuid)
   #:use-module (gnu system)
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
@@ -404,6 +406,7 @@ NUMBERS, which is a list of generation numbers."
   "Roll back the system profile to its previous generation.  STORE is an open
 connection to the store."
   (switch-to-system-generation store "-1"))
+
 
 ;;;
 ;;; Switch generations.
@@ -556,6 +559,61 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
 
 
 ;;;
+;;; File system declaration checks.
+;;;
+
+(define (check-file-system-availability file-systems)
+  "Check whether the UUIDs or partition labels that FILE-SYSTEMS refer to, if
+any, are available.  Raise an error if they're not."
+  (define relevant
+    (filter (lambda (fs)
+              (and (file-system-mount? fs)
+                   (not (string=? "tmpfs" (file-system-type fs)))
+                   (not (memq 'bind-mount (file-system-flags fs)))))
+            file-systems))
+
+  (define labeled
+    (filter (lambda (fs)
+              (eq? (file-system-title fs) 'label))
+            relevant))
+
+  (define uuid
+    (filter (lambda (fs)
+              (eq? (file-system-title fs) 'uuid))
+            relevant))
+
+  (define fail? #f)
+
+  (define (file-system-location* fs)
+    (location->string
+     (source-properties->location
+      (file-system-location fs))))
+
+  (let-syntax ((error (syntax-rules ()
+                        ((_ args ...)
+                         (begin
+                           (set! fail? #t)
+                           (format (current-error-port)
+                                   args ...))))))
+    (for-each (lambda (fs)
+                (unless (find-partition-by-label (file-system-device fs))
+                  (error (G_ "~a: error: file system with label '~a' not found~%")
+                         (file-system-location* fs)
+                         (file-system-device fs))))
+              labeled)
+    (for-each (lambda (fs)
+                (unless (find-partition-by-uuid (file-system-device fs))
+                  (error (G_ "~a: error: file system with UUID '~a' not found~%")
+                         (file-system-location* fs)
+                         (uuid->string (file-system-device fs)))))
+              uuid)
+
+    (when fail?
+      ;; Better be safe than sorry.
+      (exit 1))))
+
+
+;;;
 ;;; Action.
 ;;;
 
@@ -636,6 +694,13 @@ output when building a system derivation, such as a disk image."
 
   (when (eq? action 'reconfigure)
     (maybe-suggest-running-guix-pull))
+
+  ;; Check whether the declared file systems exist.  This is better than
+  ;; instantiating a broken configuration.  Assume that we can only check if
+  ;; running as root.
+  (when (and (memq action '(init reconfigure))
+             (zero? (getuid)))
+    (check-file-system-availability (operating-system-file-systems os)))
 
   (mlet* %store-monad
       ((sys       (system-derivation-for-action os action

@@ -484,9 +484,11 @@ requested using POOL."
          #:buffer-size (* 128 1024))
        (rename-file (string-append nar ".tmp") nar))
       ('none
-       ;; When compression is disabled, we retrieve files directly from the
-       ;; store; no need to cache them.
-       #t))
+       ;; Cache nars even when compression is disabled so that we can
+       ;; guarantee the TTL (see <https://bugs.gnu.org/28664>.)
+       (with-atomic-file-output nar
+         (lambda (port)
+           (write-file item port)))))
 
     (mkdir-p (dirname narinfo))
     (with-atomic-file-output narinfo
@@ -788,8 +790,11 @@ blocking."
           ;; /nar/<store-item>
           ((components ... store-item)
            (if (nar-path? components)
-               (render-nar store request store-item
-                           #:compression %no-compression)
+               (if cache
+                   (render-nar/cached store cache request store-item
+                                      #:compression %no-compression)
+                   (render-nar store request store-item
+                               #:compression %no-compression))
                (not-found request)))
 
           (x (not-found request)))

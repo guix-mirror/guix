@@ -3714,24 +3714,27 @@ producing implementations of dynamic languages, emphasizing a clean separation
 between language specification and implementation aspects.")
     (license license:expat)))
 
+;; NOTE: when upgrading numpy please make sure that python-pandas and
+;; python-scipy still build, as these three packages are often used together.
 (define-public python-numpy
   (package
     (name "python-numpy")
-    (version "1.13.1")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "numpy" version ".zip"))
+       (uri (string-append
+             "https://github.com/numpy/numpy/archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fsgkhh1vdkhmlz8vmdgxnj9n9yaanckxxzz9s0b4p08fqvjic69"))))
+         "025d4j4aakcp8w5i5diqh812cbbjgac7jszx1j56ivrbi1i8vv7d"))))
     (build-system python-build-system)
     (inputs
      `(("openblas" ,openblas)
        ("lapack" ,lapack)))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python-cython" ,python-cython)
+     `(("python-cython" ,python-cython)
        ("python-nose" ,python-nose)
        ("gfortran" ,gfortran)))
     (arguments
@@ -3788,6 +3791,26 @@ capabilities.")
 
 (define-public python2-numpy
   (package-with-python2 python-numpy))
+
+(define-public python-numpy-next
+  (package (inherit python-numpy)
+    (name "python-numpy-next")
+    (version "1.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "numpy" version ".zip"))
+       (sha256
+        (base32
+         "1fsgkhh1vdkhmlz8vmdgxnj9n9yaanckxxzz9s0b4p08fqvjic69"))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("gfortran" ,gfortran)))))
+
+(define-public python2-numpy-next
+  (package-with-python2 python-numpy-next))
 
 (define-public python-munch
   (package

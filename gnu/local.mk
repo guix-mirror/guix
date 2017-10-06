@@ -900,12 +900,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openscenegraph-ffmpeg3.patch             \
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
-  %D%/packages/patches/openjpeg-CVE-2017-12982.patch		\
-  %D%/packages/patches/openjpeg-CVE-2017-14040.patch		\
-  %D%/packages/patches/openjpeg-CVE-2017-14041.patch		\
-  %D%/packages/patches/openjpeg-CVE-2017-14151.patch		\
-  %D%/packages/patches/openjpeg-CVE-2017-14152.patch		\
-  %D%/packages/patches/openjpeg-CVE-2017-14164.patch		\
   %D%/packages/patches/openldap-CVE-2017-9287.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssl-runpath.patch			\

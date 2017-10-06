@@ -35,6 +35,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages autotools)
@@ -57,12 +58,15 @@
      `(#:configure-flags (list "--enable-gcc-hardening"
                                "--enable-linker-hardening")))
     (native-inputs
-     `(("python" ,python-2)))  ; for tests
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-2)))  ; for tests
     (inputs
      `(("zlib" ,zlib)
        ("openssl" ,openssl)
        ("libevent" ,libevent)
-       ("libseccomp", libseccomp)))
+       ("libseccomp" ,libseccomp)
+       ("xz" ,xz)
+       ("zstd" ,zstd)))
     (home-page "https://www.torproject.org/")
     (synopsis "Anonymous network router to improve privacy on the Internet")
     (description

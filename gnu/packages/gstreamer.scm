@@ -280,10 +280,10 @@ developers consider to have good quality code and correct functionality.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-openjpeg-reference
            (lambda _
-             ;; Remove hard-coded openjpeg-2.1 path. 2.2 is API- and
+             ;; Remove hard-coded openjpeg-2.2 path. 2.3 is API- and
              ;; ABI-compatible.
              (substitute* "ext/openjpeg/gstopenjpeg.h"
-               (("<openjpeg-2\\.1/") "<openjpeg-2.2/"))
+               (("<openjpeg-2\\.2/") "<openjpeg-2.3/"))
              #t)))))
     (propagated-inputs
      `(("gst-plugins-base" ,gst-plugins-base)))

@@ -1055,7 +1055,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
 (define-public glade3
   (package
     (name "glade")
-    (version "3.20.0")
+    (version "3.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1063,7 +1063,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zhqvhagy0m85p54jfiayfl0v9af7g0lj7glw8sfwh7cbp56vnc2"))))
+                "1pxikhzdzd092d4x3nacf5gfzi3mvhywrhcfqc07xakbsinnfr40"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f ; needs X, GL, and software rendering
@@ -2050,7 +2050,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.50.0.a")
+    (version "0.50.1.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
@@ -2065,7 +2065,7 @@ editors, IDEs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0h5ifg6xpix074k445bmnd39mc75llrfkrsr9vw98dxa4rffxrgf"))))
+                "1r70jysdrc7r1vyn3mikpc8hh7rm4lpr0psakj8yssy11p451pja"))))
     (arguments
       `(#:configure-flags '("CXXFLAGS=-Wformat=0")
         #:phases (modify-phases %standard-phases
@@ -2169,7 +2169,7 @@ and RDP protocols.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.26.0")
+    (version "0.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2178,7 +2178,7 @@ and RDP protocols.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1jaqsr1r0grpd25rbsc2v3vb0sc51lia9w31wlqswgqsncp2k0w6"))))
+                "0da587hpiqy8h3pswn1102h4b905x8k6mk3ajpi7kf4kzkvv30ym"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk+" ,gtk+)
