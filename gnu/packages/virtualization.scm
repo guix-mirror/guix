@@ -111,6 +111,7 @@
                          "--disable-debug-info" ; save build space
                          "--enable-virtfs"      ; just to be sure
                          ,(string-append "--prefix=" out)
+                         ,(string-append "--sysconfdir=/etc")
                          ,@configure-flags))))))
          (add-after 'install 'install-info
            (lambda* (#:key inputs outputs #:allow-other-keys)
