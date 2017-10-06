@@ -149,23 +149,22 @@
         #:modules ((guix build gnu-build-system)
                    (guix build utils)
                    (ice-9 ftw))                    ; for 'scandir'
-        #:phases (alist-cons-after
-                  'install 'add-symlinks
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; The cross-gcc invokes 'as', 'ld', etc, without the
-                    ;; triplet prefix, so add symlinks.
-                    (let ((out (assoc-ref outputs "out"))
-                          (triplet-prefix (string-append ,(boot-triplet) "-")))
-                      (define (has-triplet-prefix? name)
-                        (string-prefix? triplet-prefix name))
-                      (define (remove-triplet-prefix name)
-                        (substring name (string-length triplet-prefix)))
-                      (with-directory-excursion (string-append out "/bin")
-                        (for-each (lambda (name)
-                                    (symlink name (remove-triplet-prefix name)))
-                                  (scandir "." has-triplet-prefix?)))
-                      #t))
-                  %standard-phases)
+        #:phases (modify-phases %standard-phases
+                   (add-after 'install 'add-symlinks
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       ;; The cross-gcc invokes 'as', 'ld', etc, without the
+                       ;; triplet prefix, so add symlinks.
+                       (let ((out (assoc-ref outputs "out"))
+                             (triplet-prefix (string-append ,(boot-triplet) "-")))
+                         (define (has-triplet-prefix? name)
+                           (string-prefix? triplet-prefix name))
+                         (define (remove-triplet-prefix name)
+                           (substring name (string-length triplet-prefix)))
+                         (with-directory-excursion (string-append out "/bin")
+                           (for-each (lambda (name)
+                                       (symlink name (remove-triplet-prefix name)))
+                                     (scandir "." has-triplet-prefix?)))
+                         #t))))
 
         ,@(substitute-keyword-arguments (package-arguments binutils)
             ((#:configure-flags cf)
