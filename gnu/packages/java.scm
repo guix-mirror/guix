@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4205,6 +4206,40 @@ simple facade or abstraction for various logging
 frameworks (e.g. @code{java.util.logging}, @code{logback}, @code{log4j})
 allowing the end user to plug in the desired logging framework at deployment
 time.")
+    (license license:expat)))
+
+(define-public java-slf4j-simple
+  (package
+    (name "java-slf4j-simple")
+    (version "1.7.25")
+    (source (package-source java-slf4j-api))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "slf4j-simple.jar"
+       #:source-dir "slf4j-simple/src/main"
+       #:test-dir "slf4j-simple/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         ;; The tests need some test classes from slf4j-api
+         (add-before 'check 'build-slf4j-api-test-helpers
+           (lambda _
+             ;; Add current dir to CLASSPATH ...
+             (setenv "CLASSPATH"
+                     (string-append (getcwd) ":" (getenv "CLASSPATH")))
+             ;; ... and build test helper classes here:
+             (zero?
+              (apply system*
+                     `("javac" "-d" "."
+                       ,@(find-files "slf4j-api/src/test" ".*\\.java")))))))))
+    (inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-slf4j-api" ,java-slf4j-api)))
+    (home-page "https://www.slf4j.org/")
+    (synopsis "Simple implementation of simple logging facade for Java")
+    (description "SLF4J binding for the Simple implementation, which outputs
+all events to System.err.  Only messages of level INFO and higher are
+printed.")
     (license license:expat)))
 
 (define-public antlr2
