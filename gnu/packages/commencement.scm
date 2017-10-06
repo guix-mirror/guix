@@ -690,34 +690,29 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define libstdc++
   ;; Intermediate libstdc++ that will allow us to build the final GCC
   ;; (remember that GCC-BOOT0 cannot build libstdc++.)
-  ;; TODO: Write in terms of 'make-libstdc++'.
-  (package-with-bootstrap-guile
-   (package (inherit gcc)
-     (name "libstdc++")
-     (arguments
-      `(#:guile ,%bootstrap-guile
-        #:implicit-inputs? #f
-        #:allowed-references ("out")
-        #:out-of-source? #t
-        #:phases (alist-cons-before
-                  'configure 'chdir
-                  (lambda _
-                    (chdir "libstdc++-v3"))
-                  %standard-phases)
-        #:configure-flags `("--disable-shared"
-                            "--disable-libstdcxx-threads"
-                            "--disable-libstdcxx-pch"
-                            ,(string-append "--with-gxx-include-dir="
-                                            (assoc-ref %outputs "out")
-                                            "/include"
-                                            ;; "/include/c++/"
-                                            ;; ,(package-version gcc)
-                                            ))))
-     (outputs '("out"))
-     (inputs %boot2-inputs)
-     (native-inputs '())
-     (propagated-inputs '())
-     (synopsis "GNU C++ standard library (intermediate)"))))
+  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc))))
+    (package
+      (inherit lib)
+      (arguments
+       `(#:guile ,%bootstrap-guile
+         #:implicit-inputs? #f
+         #:allowed-references ("out")
+
+         ;; XXX: libstdc++.so NEEDs ld.so for some reason.
+         #:validate-runpath? #f
+
+         ;; All of the package arguments from 'make-libstdc++
+         ;; except for the configure-flags.
+         ,@(package-arguments lib)
+         #:configure-flags `("--disable-shared"
+                             "--disable-libstdcxx-threads"
+                             "--disable-libstdcxx-pch"
+                             ,(string-append "--with-gxx-include-dir="
+                                             (assoc-ref %outputs "out")
+                                             "/include"))))
+      (outputs '("out"))
+      (inputs %boot2-inputs)
+      (synopsis "GNU C++ standard library (intermediate)"))))
 
 (define zlib-final
   ;; Zlib used by GCC-FINAL.
