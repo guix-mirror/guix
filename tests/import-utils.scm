@@ -43,7 +43,10 @@
 (test-assert "alist->package with simple source"
   (let* ((meta '(("name" . "hello")
                  ("version" . "2.10")
-                 ("source" . "mirror://gnu/hello/hello-2.10.tar.gz")
+                 ("source" .
+                  ;; Use a 'file://' URI so that we don't cause a download.
+                  ,(string-append "file://"
+                                  (search-path %load-path "guix.scm")))
                  ("build-system" . "gnu")
                  ("home-page" . "https://gnu.org")
                  ("synopsis" . "Say hi")
