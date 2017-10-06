@@ -1535,7 +1535,7 @@ displays a table of current bandwidth usage by pairs of hosts.")
 (define-public munge
   (package
     (name "munge")
-    (version "0.5.12")
+    (version "0.5.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/dun/munge/releases/"
@@ -1543,7 +1543,7 @@ displays a table of current bandwidth usage by pairs of hosts.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1s0vlwgm3hcx75vcmjf2y3icy5nv8y07bx93w2cmm6a7x71y6wp9"))))
+                "1nj486bbg1adfg298zck96vgx57kchcypc1zdz1n7w540vyksxcr"))))
     (inputs
      `(("openssl" ,openssl)
        ("libgcrypt" ,libgcrypt)))
