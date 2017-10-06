@@ -160,7 +160,7 @@
 (define (module-list? val)
   (string-list? val))
 (define (serialize-module-list field-name val)
-  (serialize-string-list field-name (cons "posix" val)))
+  (serialize-string-list field-name val))
 (define-maybe module-list)
 
 (define (file-name? val)
@@ -203,12 +203,12 @@ just joined the room."))
    "This determines what handshake to use.")
 
   (key
-   (file-name "/etc/prosody/certs/key.pem")
-   "Path to your private key file, relative to @code{/etc/prosody}.")
+   (maybe-file-name 'disabled)
+   "Path to your private key file.")
 
   (certificate
-   (file-name "/etc/prosody/certs/cert.pem")
-   "Path to your certificate file, relative to @code{/etc/prosody}.")
+   (maybe-file-name 'disabled)
+   "Path to your certificate file.")
 
   (capath
    (file-name "/etc/ssl/certs")
@@ -271,7 +271,9 @@ can create such a file with:
     "tls"
     "dialback"
     "disco"
+    "carbons"
     "private"
+    "blocklist"
     "vcard"
     "version"
     "uptime"
@@ -319,6 +321,13 @@ can create such a file with:
      (file-name-list '())
      "Additional plugin directories.  They are searched in all the specified
 paths in order.  See @url{http://prosody.im/doc/plugins_directory}."
+     global)
+
+    (certificates
+     (file-name "/etc/prosody/certs")
+     "Every virtual host and component needs a certificate so that clients and
+servers can securely verify its identity.  Prosody will automatically load
+certificates/keys from the directory specified here."
      global)
 
     (admins

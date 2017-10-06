@@ -13899,7 +13899,7 @@ record as in this example:
 @example
 (service prosody-service-type
          (prosody-configuration
-          (modules-enabled (cons "groups" %default-modules-enabled))
+          (modules-enabled (cons "groups" "mam" %default-modules-enabled))
           (int-components
            (list
             (int-component-configuration
@@ -13920,10 +13920,15 @@ By default, Prosody does not need much configuration.  Only one
 @code{virtualhosts} field is needed: it specifies the domain you wish
 Prosody to serve.
 
-Prosodyctl will help you generate X.509 certificates and keys:
+You can perform various sanity checks on the generated configuration
+with the @code{prosodyctl check} command.
+
+Prosodyctl will also help you to import certificates from the
+@code{letsencrypt} directory so that the @code{prosody} user can access
+them.  See @url{https://prosody.im/doc/letsencrypt}.
 
 @example
-prosodyctl cert request example.net
+prosodyctl --root cert import /etc/letsencrypt/live
 @end example
 
 The available configuration parameters follow.  Each parameter
@@ -13960,6 +13965,13 @@ Defaults to @samp{"/var/lib/prosody"}.
 Additional plugin directories.  They are searched in all the specified
 paths in order.  See @url{http://prosody.im/doc/plugins_directory}.
 Defaults to @samp{()}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} file-name certificates
+Every virtual host and component needs a certificate so that clients and
+servers can securely verify its identity.  Prosody will automatically load
+certificates/keys from the directory specified here.
+Defaults to @samp{"/etc/prosody/certs"}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} string-list admins
@@ -14014,14 +14026,12 @@ Available @code{ssl-configuration} fields are:
 This determines what handshake to use.
 @end deftypevr
 
-@deftypevr {@code{ssl-configuration} parameter} file-name key
-Path to your private key file, relative to @code{/etc/prosody}.
-Defaults to @samp{"/etc/prosody/certs/key.pem"}.
+@deftypevr {@code{ssl-configuration} parameter} maybe-file-name key
+Path to your private key file.
 @end deftypevr
 
-@deftypevr {@code{ssl-configuration} parameter} file-name certificate
-Path to your certificate file, relative to @code{/etc/prosody}.
-Defaults to @samp{"/etc/prosody/certs/cert.pem"}.
+@deftypevr {@code{ssl-configuration} parameter} maybe-file-name certificate
+Path to your certificate file.
 @end deftypevr
 
 @deftypevr {@code{ssl-configuration} parameter} file-name capath
