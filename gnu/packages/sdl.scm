@@ -83,6 +83,7 @@
               ("glu" ,glu)
               ("alsa-lib" ,alsa-lib)
               ("pulseaudio" ,pulseaudio)))
+    (outputs '("out" "debug"))
     (synopsis "Cross platform game development library")
     (description "Simple DirectMedia Layer is a cross-platform development
 library designed to provide low level access to audio, keyboard, mouse,
@@ -157,6 +158,7 @@ system, such as sound redirection over the network.")
                (base32
                 "0ijljhs0v99dj6y27hc10z6qchyp8gdp4199y6jzngy6dzxlzsvw"))))
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (arguments
      `(,@(if (any (cute string-prefix? <> (or (%current-system)
                                               (%current-target-system)))
@@ -184,6 +186,7 @@ other supporting functions for SDL.")
               (base32
                "16an9slbb8ci7d89wakkmyfvp7c0cval8xw4hkg0842nhhlp540b"))))
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (arguments
      ;; Explicitly link against shared libraries instead of dlopening them.
      '(#:configure-flags '("--disable-jpg-shared"
@@ -220,6 +223,7 @@ WEBP, XCF, XPM, and XV.")
                (base32
                 "0alrhqgm40p4c92s26mimg9cm1y7rzr6m0p49687jxd9g6130i0n"))))
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     ;; no check target
     ;; use libmad instead of smpeg
     ;; explicitly link against shared libraries instead of dlopening them
@@ -260,6 +264,7 @@ MIDI, Ogg Vorbis, and MP3.")
     (build-system gnu-build-system)
     (propagated-inputs `(("sdl" ,sdl)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (outputs '("out" "debug"))
     (synopsis "SDL networking library")
     (description "SDL_net is a small, cross-platform networking library for
 SDL.")
@@ -283,6 +288,7 @@ SDL.")
     (inputs `(("freetype" ,freetype)
               ("mesa" ,mesa)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (outputs '("out" "debug"))
     (synopsis "SDL TrueType font library")
     (description "SDL_ttf is a TrueType font rendering library for SDL.")
     (home-page "https://www.libsdl.org/projects/SDL_ttf/")
