@@ -57,7 +57,7 @@
   "1234-ABCD"
   (uuid->string (uuid "1234-abcd" 'fat32)))
 
-(test-equal "uuid=?"
+(test-assert "uuid=?"
   (and (uuid=? (uuid-bytevector (uuid "1234-abcd" 'fat32))
                (uuid "1234-abcd" 'fat32))
        (uuid=? (uuid "1234-abcd" 'fat32)
