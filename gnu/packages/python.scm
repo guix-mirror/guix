@@ -13483,6 +13483,9 @@ useful as a validator for JSON data.")
       "This package contains a library for parsing ISO 8601 datetime strings.")
     (license license:bsd-3)))
 
+(define-public python2-aniso8601
+  (package-with-python2 python-aniso8601))
+
 (define-public python-flask-restful
   (package
     (name "python-flask-restful")
