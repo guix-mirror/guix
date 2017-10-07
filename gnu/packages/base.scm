@@ -883,12 +883,12 @@ the 'share/locale' sub-directory of this package.")
                    ,@(package-arguments glibc))))
        (substitute-keyword-arguments args
          ((#:phases phases)
-          `(alist-replace
-            'build
-            (lambda* (#:key outputs #:allow-other-keys)
-              (zero? (system* "make" "localedata/install-locales"
-                              "-j" (number->string (parallel-job-count)))))
-            (alist-delete 'install ,phases)))
+          `(modify-phases ,phases
+             (replace 'build
+               (lambda _
+                 (zero? (system* "make" "localedata/install-locales"
+                                 "-j" (number->string (parallel-job-count))))))
+             (delete 'install)))
          ((#:configure-flags flags)
           `(append ,flags
                    ;; Use $(libdir)/locale/X.Y as is the case by default.

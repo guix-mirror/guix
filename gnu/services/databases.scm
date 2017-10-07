@@ -44,6 +44,14 @@
             memcached-configuration-udp-port
             memcached-configuration-additional-options
 
+            <mongodb-configuration>
+            mongodb-configuration
+            mongodb-configuration?
+            mongodb-configuration-mongodb
+            mongodb-configuration-config-file
+            mongodb-configuration-data-directory
+            mongodb-service-type
+
             mysql-service
             mysql-service-type
             mysql-configuration
@@ -261,6 +269,87 @@ and stores the database cluster in @var{data-directory}."
                        (service-extension account-service-type
                                           (const %memcached-accounts))))
                 (default-value (memcached-configuration))))
+
+
+;;;
+;;; MongoDB
+;;;
+
+(define %default-mongodb-configuration-file
+  (plain-file
+   "mongodb.yaml"
+   "# GNU Guix: MongoDB default configuration file
+processManagement:
+  pidFilePath: /var/run/mongodb/pid
+storage:
+  dbPath: /var/lib/mongodb
+"))
+
+
+(define-record-type* <mongodb-configuration>
+  mongodb-configuration make-mongodb-configuration
+  mongodb-configuration?
+  (mongodb             mongodb-configuration-mongodb
+                       (default mongodb))
+  (config-file         mongodb-configuration-config-file
+                       (default %default-mongodb-configuration-file))
+  (data-directory      mongodb-configuration-data-directory
+                       (default "/var/lib/mongodb")))
+
+(define %mongodb-accounts
+  (list (user-group (name "mongodb") (system? #t))
+        (user-account
+         (name "mongodb")
+         (group "mongodb")
+         (system? #t)
+         (comment "Mongodb server user")
+         (home-directory "/var/lib/mongodb")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define mongodb-activation
+  (match-lambda
+    (($ <mongodb-configuration> mongodb config-file data-directory)
+     #~(begin
+         (use-modules (guix build utils))
+         (let ((user (getpwnam "mongodb")))
+           (for-each
+            (lambda (directory)
+              (mkdir-p directory)
+              (chown directory
+                     (passwd:uid user) (passwd:gid user)))
+            '("/var/run/mongodb" #$data-directory)))))))
+
+(define mongodb-shepherd-service
+  (match-lambda
+    (($ <mongodb-configuration> mongodb config-file data-directory)
+     (shepherd-service
+      (provision '(mongodb))
+      (documentation "Run the Mongodb daemon.")
+      (requirement '(user-processes loopback))
+      (start #~(make-forkexec-constructor
+                `(,(string-append #$mongodb "/bin/mongod")
+                  "--config"
+                  ,#$config-file)
+                #:user "mongodb"
+                #:group "mongodb"
+                #:pid-file "/var/run/mongodb/pid"
+                #:log-file "/var/log/mongodb.log"))
+      (stop #~(make-kill-destructor))))))
+
+(define mongodb-service-type
+  (service-type
+   (name 'mongodb)
+   (description "Run the MongoDB document database server.")
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             (compose list
+                                      mongodb-shepherd-service))
+          (service-extension activation-service-type
+                             mongodb-activation)
+          (service-extension account-service-type
+                             (const %mongodb-accounts))))
+   (default-value
+     (mongodb-configuration))))
 
 
 ;;;

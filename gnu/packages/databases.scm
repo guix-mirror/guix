@@ -69,8 +69,10 @@
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -354,6 +356,98 @@ mapping from string keys to string values.")
 and generic API, and was originally intended for use with dynamic web
 applications.")
     (license license:bsd-3)))
+
+(define-public mongodb
+  (package
+    (name "mongodb")
+    (version "3.4.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mongodb/mongo/archive/r"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "0gidwyvh3bdwmk2pccgkqkaln4ysgn8iwa7ihjzllsq0rdg95045"))
+              (patches
+               (list
+                (search-patch "mongodb-support-unknown-linux-distributions.patch")))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("yaml-cpp" ,yaml-cpp)
+       ("zlib" ,zlib)
+       ("snappy" ,snappy)
+       ("boost" ,boost)))
+    (native-inputs
+     `(("scons" ,scons)
+       ("python" ,python-2)
+       ("valgrind" ,valgrind)
+       ("perl" ,perl)))
+    (arguments
+     `(#:phases
+       (let ((common-options
+              `(;; "--use-system-tcmalloc" TODO: Missing gperftools
+                "--use-system-pcre"
+                ;; TODO
+                ;; build/opt/mongo/db/fts/unicode/string.o failed: Error 1
+                ;; --use-system-boost
+                "--use-system-snappy"
+                "--use-system-zlib"
+                "--use-system-valgrind"
+                ;; "--use-system-stemmer" TODO: Missing relevant package
+                "--use-system-yaml"
+                "--disable-warnings-as-errors"
+                ,(format #f "--jobs=~a" (parallel-job-count))
+                "--ssl")))
+         (modify-phases %standard-phases
+           (delete 'configure) ; There is no configure phase
+           (add-after 'unpack 'scons-propagate-environment
+             (lambda _
+               ;; Modify the SConstruct file to arrange for
+               ;; environment variables to be propagated.
+               (substitute* "SConstruct"
+                 (("^env = Environment\\(")
+                  "env = Environment(ENV=os.environ, "))
+               #t))
+           (add-after 'unpack 'create-version-file
+             (lambda _
+               (call-with-output-file "version.json"
+                 (lambda (port)
+                   (display ,(simple-format #f "{
+    \"version\": \"~A\"
+}" version) port)))
+               #t))
+           (replace 'build
+             (lambda _
+               (zero? (apply system*
+                             `("scons"
+                               ,@common-options
+                               "mongod" "mongo" "mongos")))))
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (or (not tests?)
+                   (zero? (apply system*
+                                 `("scons"
+                                   ,@common-options
+                                   "dbtest" "unittests"))))))
+           (replace 'install
+             (lambda _
+               (let ((bin  (string-append (assoc-ref %outputs "out") "/bin")))
+                 (install-file "mongod" bin)
+                 (install-file "mongos" bin)
+                 (install-file "mongo" bin))
+               #t))))))
+    (home-page "https://www.mongodb.org/")
+    (synopsis "High performance and high availability document database")
+    (description
+     "Mongo is a high-performance, high availability, schema-free
+document-oriented database.  A key goal of MongoDB is to bridge the gap
+between key/value stores (which are fast and highly scalable) and traditional
+RDBMS systems (which are deep in functionality).")
+    (license (list license:agpl3
+                   ;; Some parts are licensed under the Apache License
+                   license:asl2.0))))
 
 (define-public mysql
   (package
