@@ -41,6 +41,7 @@
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 threads)
+  #:use-module (ice-9 format)
   #:use-module (web uri)
   #:export (%daemon-socket-uri
             %gc-roots-directory
