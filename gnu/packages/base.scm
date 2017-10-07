@@ -320,21 +320,18 @@ used to apply commands with arbitrarily long arguments.")
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
-      #:phases (alist-cons-before
-                'build 'patch-shell-references
-                (lambda* (#:key inputs #:allow-other-keys)
-                  (let ((bash (assoc-ref inputs "bash")))
-                    ;; 'split' uses either $SHELL or /bin/sh.  Set $SHELL so
-                    ;; that tests pass, since /bin/sh isn't in the chroot.
-                    (setenv "SHELL" (which "sh"))
+      #:phases (modify-phases %standard-phases
+                 (add-before 'build 'patch-shell-references
+                   (lambda _
+                     ;; 'split' uses either $SHELL or /bin/sh.  Set $SHELL so
+                     ;; that tests pass, since /bin/sh isn't in the chroot.
+                     (setenv "SHELL" (which "sh"))
 
-                    (substitute* (find-files "gnulib-tests" "\\.c$")
-                      (("/bin/sh")
-                       (format #f "~a/bin/sh" bash)))
-                    (substitute* (find-files "tests" "\\.sh$")
-                      (("#!/bin/sh")
-                       (format #f "#!~a/bin/sh" bash)))))
-                %standard-phases)))
+                     (substitute* (find-files "gnulib-tests" "\\.c$")
+                       (("/bin/sh") (which "sh")))
+                     (substitute* (find-files "tests" "\\.sh$")
+                       (("#!/bin/sh") (which "sh")))
+                     #t)))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils includes all of the basic command-line tools that are
