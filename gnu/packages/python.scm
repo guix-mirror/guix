@@ -11976,13 +11976,13 @@ objects, patterned after the Mocha library for Ruby.")
 (define-public python-arrow
   (package
     (name "python-arrow")
-    (version "0.8.0")
+    (version "0.10.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "arrow" version))
               (sha256
                (base32
-                "1bz7hkdgpqcjs866y58z8jywpy7al0f4rxdr00bh2l5qddyw245j"))))
+                "08n7q2l69hlainds1byd4lxhwrq7zsw7s640zkqc3bs5jkq0cnc0"))))
     (build-system python-build-system)
     (native-inputs
      `(;; For testing
