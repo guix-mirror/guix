@@ -15951,14 +15951,14 @@ complex datatypes to and from native Python datatypes.")
 (define-public python-apispec
   (package
     (name "python-apispec")
-    (version "0.22.0")
+    (version "0.25.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "apispec" version))
       (sha256
         (base32
-          "0y3jxmgp2d24am3hxl40f5rw9abb0r8037sagax3dv64h4n1azwq"))))
+          "0kxa8723zbisx10363yh4mmmn4higxrspymbjfz5zq8f644zagm9"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pyyaml" ,python-pyyaml)))
