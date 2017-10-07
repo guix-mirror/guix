@@ -4926,20 +4926,21 @@ You might also want to install the following optional dependencies:
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "0.8.10")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
         (base32
-         "06br9sfqypnjlal6fsbnky3zb0askwcn3diz8k3kwa0qcblm0fqf"))))
+         "01gx2syqbaxh4hr9pf7pxhlb6p36qaf99140dy19lsx1paxb9p4b"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest-cov" ,python-pytest-cov)))
     (propagated-inputs
-     `(("python-sqlalchemy" ,python-sqlalchemy)
+     `(("python-dateutil" ,python-dateutil)
+       ("python-sqlalchemy" ,python-sqlalchemy)
        ("python-mako" ,python-mako)
        ("python-editor" ,python-editor)))
     (home-page "http://bitbucket.org/zzzeek/alembic")
