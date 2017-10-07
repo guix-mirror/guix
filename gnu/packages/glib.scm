@@ -137,7 +137,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.52.3")
+   (version "2.54.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -145,8 +145,9 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0a71wkkhkvad84gm30w13micxxgqqw3sxhybj7nd9z60lwspdvi5"))
-            (patches (search-patches "glib-tests-timer.patch"))))
+              "18s7rw127wrvb107bkmxd1lmh62b2v19ww5rz7xi0krj34a1ph2h"))
+            (patches (search-patches "glib-respect-datadir.patch"
+                                     "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
               "bin"           ; glib-mkenums, gtester, etc.; depends on Python
@@ -247,12 +248,7 @@ shared NFS home directories.")
 
                      ("gio/tests/gdbus-unix-addresses.c"
                       (;; Requires /etc/machine-id.
-                       "/gdbus/x11-autolaunch"))
-
-                     ("glib/tests/gdatetime.c"
-                      (;; Assumes that the Brasilian time zone is named 'BRT',
-                       ;; which is no longer true as of tzdata-2017a.
-                       "/GDateTime/new_full")))))
+                       "/gdbus/x11-autolaunch")))))
               (and-map (lambda (x) (apply disable x)) failing-tests)))))
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
@@ -284,7 +280,7 @@ shared NFS home directories.")
 and interfaces for such runtime functionality as an event loop, threads,
 dynamic loading, and an object system.")
    (home-page "https://developer.gnome.org/glib/")
-   (license license:lgpl2.0+)))                        ; some files are under lgpl2.1+
+   (license license:lgpl2.1+)))
 
 (define gobject-introspection
   (package

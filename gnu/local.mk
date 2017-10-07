@@ -653,6 +653,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
   %D%/packages/patches/ghostscript-runpath.patch		\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
+  %D%/packages/patches/glib-respect-datadir.patch		\
   %D%/packages/patches/glib-tests-timer.patch			\
   %D%/packages/patches/glibc-CVE-2015-5180.patch		\
   %D%/packages/patches/glibc-CVE-2015-7547.patch		\
