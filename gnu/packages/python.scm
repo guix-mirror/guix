@@ -13464,14 +13464,14 @@ useful as a validator for JSON data.")
 (define-public python-aniso8601
   (package
     (name "python-aniso8601")
-    (version "1.1.0")
+    (version "1.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "aniso8601" version))
         (sha256
           (base32
-            "1k5mjg9iqbjfslb5prrsfz7dhlvi6s35p1jxq8dm87w1b7dn5i2g"))))
+            "1waj54iv3n3lw1fapbz8a93yjgrybgpc86wif5baxdh1arpj9df3"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)))
