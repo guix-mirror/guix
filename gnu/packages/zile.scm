@@ -40,14 +40,14 @@
 (define-public zile
   (package
     (name "zile")
-    (version "2.4.13")
+    (version "2.4.14")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/zile/zile-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "03mcg0bxkzprlsx8y6h22w924pzx4a9zr7zm3g11j8j3x9lz75f7"))))
+               "0x3byaddms8l3g7igx6njycqsq98wgapysdb5c7lhcnajlkp8y3s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
