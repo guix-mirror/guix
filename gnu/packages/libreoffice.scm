@@ -161,14 +161,14 @@ spreadsheets and presentations.")
 (define-public libwpd
   (package
     (name "libwpd")
-    (version "0.10.0")
+    (version "0.10.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/"
                           name "-" version "/" name "-" version ".tar.xz"))
       (sha256 (base32
-               "0b6krzr6kxzm89g6bapn805kdayq70hn16n5b5wfs2lwrf0ag2wx"))))
+               "0436gnidx45a9vx114hhh216jrh57mqb9zyssyjfadagmyz6hgrj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
