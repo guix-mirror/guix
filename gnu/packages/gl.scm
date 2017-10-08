@@ -271,7 +271,8 @@ also known as DXTn or DXTC) for Mesa.")
      `(#:configure-flags
        '(,@(match (%current-system)
              ("armhf-linux"
-              '("--with-gallium-drivers=etnaviv,freedreno,imx,nouveau,r300,r600,svga,swrast,vc4,virgl"))
+              ;; TODO: Add etnaviv when enabled in libdrm.
+              '("--with-gallium-drivers=freedreno,imx,nouveau,r300,r600,svga,swrast,vc4,virgl"))
              ("aarch64-linux"
               '("--with-gallium-drivers=freedreno,nouveau,r300,r600,svga,swrast,vc4,virgl"))
              (_
