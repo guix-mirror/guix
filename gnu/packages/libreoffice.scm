@@ -394,7 +394,7 @@ Apple Keynote documents.  It currently supports Keynote versions 2 to 5.")
 (define-public liblangtag
   (package
     (name "liblangtag")
-    (version "0.5.8")
+    (version "0.6.2")
     (source
       (origin
         (method url-fetch)
@@ -402,7 +402,7 @@ Apple Keynote documents.  It currently supports Keynote versions 2 to 5.")
                             name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1akf0d7yp29pv3j2pw2riii4n5kyjr9szc0y77khnx9zzr5zdqh8"))))
+          "0bnm4hllr8cfrybm8rw7b8n0nlhzhnv73bkg1bxk452g6a82f96n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("libtool" ,libtool)
