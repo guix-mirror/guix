@@ -323,17 +323,18 @@ AbiWord documents.")
 (define-public libcdr
   (package
     (name "libcdr")
-    (version "0.1.1")
+    (version "0.1.4")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "07yzb1yr5kzv0binzj5swz3zzay2gw3xb0fbkc2zwdssgrkf19nh"))))
+               "0vd6likgk51j46llybkx4wq3674xzrhp0k82220pkx9x1aqfi9z7"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
+     `(("cppunit" ,cppunit)
+       ("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
      `(("icu4c" ,icu4c)
