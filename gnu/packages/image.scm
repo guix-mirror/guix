@@ -738,15 +738,15 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
 (define-public vigra
   (package
    (name "vigra")
-   (version "1.11.0")
+   (version "1.11.1")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "https://github.com/ukoethe/vigra/releases/download/"
-                          "Version-1-11-0/vigra-"
-                          version "-src.tar.gz"))
+                          "Version-" (string-join (string-split version #\.) "-")
+                          "/vigra-" version "-src.tar.gz"))
       (sha256 (base32
-                "1jzm79kqiiilvys3b8mlzy9cvmiirrcwsrlg19qd9rza8zipsqb8"))))
+                "1bqs8vx5i1bzamvv563i24gx2xxdidqyxh9iaj46mbznhc84wmm5"))))
    (build-system cmake-build-system)
    (inputs
     `(("boost" ,boost)
@@ -792,7 +792,7 @@ processing and analysis library that puts its main emphasis on customizable
 algorithms and data structures.  It is particularly strong for
 multi-dimensional image processing.")
    (license license:expat)
-   (home-page "https://hci.iwr.uni-heidelberg.de/vigra")))
+   (home-page "https://ukoethe.github.io/vigra/")))
 
 (define-public libwebp
   (package
