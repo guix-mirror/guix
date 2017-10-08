@@ -453,20 +453,24 @@ library primarily intended for language guessing.")
 (define-public libfreehand
   (package
     (name "libfreehand")
-    (version "0.1.0")
+    (version "0.1.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "01j7mxi4lmf72w1mv2r098p8l0csdd94w2gq0ncp93djn34al6ai"))))
+               "1b1lvqh68rwij1yvmxy02hsmh7i74ma5767mk8mg5nx6chajshhf"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
+     `(("cppunit" ,cppunit)
+       ("doxygen" ,doxygen)
        ("gperf" ,gperf)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("icu4c" ,icu4c)
+       ("lcms" ,lcms)))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
      `(("librevenge" ,librevenge)
        ("zlib" ,zlib)))
