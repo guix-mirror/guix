@@ -3091,7 +3091,7 @@ playlists in a variety of formats.")
 (define-public aisleriot
   (package
     (name "aisleriot")
-    (version "3.22.2")
+    (version "3.22.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3099,7 +3099,7 @@ playlists in a variety of formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0a8cir7vgi67sncl0m7cypq11amardm7r68gr3q52a11l8ajycdx"))))
+                "12bqbyiqn2dwknz7ndgwgqqqz993s1ynh8qb82sshr7fy4zw8qph"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -3114,7 +3114,7 @@ playlists in a variety of formats.")
        ("xmllint" ,libxml2)))
     (inputs
      `(("gtk+" ,gtk+)
-       ("guile" ,guile-2.0)
+       ("guile" ,guile-2.2)
        ("libcanberra" ,libcanberra)
        ("librsvg" ,librsvg)))
     (home-page "https://wiki.gnome.org/Apps/Aisleriot")
