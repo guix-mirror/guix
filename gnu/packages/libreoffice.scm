@@ -223,14 +223,14 @@ ZVR (simple compressed text format).")
 (define-public libwpg
   (package
     (name "libwpg")
-    (version "0.3.0")
+    (version "0.3.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/"
                           name "-" version "/" name "-" version ".tar.xz"))
       (sha256 (base32
-               "097jx8a638fwwfrzf6v29r1yhc34rq9526py7wf0ck2z4fcr2w3g"))))
+               "0cwc5zkp210c661l0bvk6q21jg9ak5g8gmy578w5fgfnjymz3yjp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
