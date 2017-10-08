@@ -599,15 +599,14 @@ text documents, vector drawings, presentations and spreadsheets.")
 (define-public libmwaw
   (package
     (name "libmwaw")
-    (version "0.3.11")
+    (version "0.3.12")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/" name "-"
                           version "/" name "-" version ".tar.xz"))
-      (patches (search-patches "libmwaw-CVE-2017-9433.patch"))
       (sha256 (base32
-               "16i9s9p4sjpdpbm3gq6jkc9r3nyfy47ggkdlgh7vr0mydccklj2b"))))
+               "1ryi1v38lgy5kv84fzjqkawidrg30y4hlqrz1v262792wzkad4bn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -617,9 +616,6 @@ text documents, vector drawings, presentations and spreadsheets.")
     (inputs
      `(("boost" ,boost)
        ("zlib" ,zlib)))
-    (arguments
-     ;; avoid triggering configure errors by simple inclusion of boost headers
-     `(#:configure-flags '("--disable-werror")))
     (home-page "https://sourceforge.net/p/libmwaw/wiki/Home/")
     (synopsis "Import library for some old Macintosh text documents")
     (description "Libmwaw contains some import filters for old Macintosh
