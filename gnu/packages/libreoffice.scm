@@ -966,7 +966,7 @@ and to return information on pronunciations, meanings and synonyms.")
                    (list "sysui/CustomTarget_share.mk"
                          "solenv/gbuild/gbuild.mk"
                          "solenv/gbuild/platform/unxgcc.mk")
-                   (("/bin/sh") (which "bash")))
+                   (("/bin/sh") (which "sh")))
                  (mkdir "external/tarballs")
                  (symlink
                    xmlsec
