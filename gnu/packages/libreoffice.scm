@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -363,7 +364,19 @@ CorelDRAW documents of all versions.")
                           name "-" version ".tar.xz"))
       (sha256 (base32
                "0y60vi1plyq69fqbcjnc0v8mvcjqjsl1ry6rmb3bq3q7j8a2fm6z"))
-      (patches (search-patches "libetonyek-build-with-mdds-1.2.patch"))))
+      (patches
+       (cons
+        (origin
+          (method url-fetch)
+          ;; Drop incorrect test that fails with latest liblangtag.
+          (uri (string-append "https://cgit.freedesktop.org/libreoffice"
+                              "/libetonyek/patch/?id="
+                              "1a20d8ece2ea3e8aa1d319cd88e8a6aa637982f2"))
+          (file-name "libetonyek-build-with-liblangtag-0.6.patch")
+          (sha256
+           (base32
+            "0zdyykg3cmq226m54yjhg1fj5200c371h2qgjfna62dxa1jd6m97")))
+        (search-patches "libetonyek-build-with-mdds-1.2.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-mdds=1.2")
