@@ -49,9 +49,11 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -1054,7 +1056,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.3.1")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -1062,20 +1064,24 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "1s47biv6d68nblpz6d3aklsar1xxxcilzr4y77v3hz2w1wbz2b5m"))))
+                "0xnfzbwhxd2cd4lxkc24mbx3f4b1h3l1alcdbbsymi2b9fdwmywh"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)
        ("cairo" ,cairo)
        ("glib" ,glib)
        ("startup-notification" ,startup-notification)
+       ("librsvg" ,librsvg)
        ("libxkbcommon" ,libxkbcommon)
        ("libxcb" ,libxcb)
        ("xcb-util" ,xcb-util)
        ("xcb-util-xrm" ,xcb-util-xrm)
        ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("bison" ,bison)
+       ("check" ,check-0.11.0)
+       ("flex" ,flex)
+       ("pkg-config" ,pkg-config)))
     (arguments
      `(#:parallel-tests? #f ; May fail in some circumstances.
        #:phases
