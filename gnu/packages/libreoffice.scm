@@ -537,15 +537,15 @@ created by PageMaker version 6.x and 7.")
 (define-public libvisio
   (package
     (name "libvisio")
-    ;; FIXME: The newer version 0.1.1 fails its tests.
-    (version "0.1.0")
+    (version "0.1.5")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
+      (patches (search-patches "libvisio-fix-tests.patch"))
       (sha256 (base32
-               "0vvd2wyp4rw6s9xnj1dc9vgdpfvm45gnb5b9hhzif0fdnx4iskqf"))))
+               "132szijxm95ibzq5qqaylifbf6wa81g08jxggnwv22v60dwhc2j3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -559,10 +559,6 @@ created by PageMaker version 6.x and 7.")
        ("libxml2" ,libxml2)))
     (inputs
      `(("boost" ,boost)))
-    ;; FIXME: Not needed any more for newer version 0.1.1.
-    (arguments
-     ;; avoid triggering a build failure due to warnings
-     `(#:configure-flags '("--disable-werror")))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libvisio")
     (synopsis "Library for parsing the Microsoft Visio format")
     (description "Libvisio is a library that parses the file format of
