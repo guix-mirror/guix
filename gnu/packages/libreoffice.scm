@@ -129,14 +129,14 @@ CSV, CSS and XML.")
 (define-public librevenge
   (package
     (name "librevenge")
-    (version "0.0.2")
+    (version "0.0.4")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/libwpd/" name "/" name "-"
                           version "/" name "-" version ".tar.xz"))
       (sha256 (base32
-               "03ygxyb0vfjv8raif5q62sl33b54wkr5rzgadb8slijm6k281wpn"))))
+               "1cj76cz4mqcy2mgv9l5xlc95bypyk8zbq0ls9cswqrs2y0lhfgwk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
