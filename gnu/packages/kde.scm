@@ -102,17 +102,16 @@
                     (qtquickcontrols (assoc-ref inputs "qtquickcontrols"))
                     (qtbase (assoc-ref inputs "qtbase"))
                     (qtdeclarative (assoc-ref inputs "qtdeclarative"))
-                    (profile "$HOME/.guix-profile")
                     (qml "/qml"))
                (wrap-program (string-append out "/bin/kdevelop")
                  `("XDG_DATA_DIRS" ":" prefix
                    ,(map (lambda (s) (string-append s "/share"))
-                         (list profile out kdevplatform kcmutils)))
+                         (list out kdevplatform kcmutils)))
                  `("QT_QPA_PLATFORM_PLUGIN_PATH" ":" =
                    (,(string-append qtbase "/plugins/platforms")))
                  `("QT_PLUGIN_PATH" ":" prefix
                    ,(map (lambda (s) (string-append s "/lib/plugins"))
-                         (list profile out kdevplatform kio)))
+                         (list out kdevplatform kio)))
                  `("QML2_IMPORT_PATH" ":" prefix
                    (,(string-append qtquickcontrols qml)
                     ,(string-append qtdeclarative qml))))))))))
