@@ -434,14 +434,14 @@ standard 21.0.2.")
 (define-public libexttextcat
   (package
     (name "libexttextcat")
-    (version "3.4.4")
+    (version "3.4.5")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "14v2hkygnmf1zgahfm1fha47cr67iikrz2ymiqi28d2jydn0hk7j"))))
+               "1j6sjwkyhqvsgyw938bxxfwkzzi1mahk66g5342lv6j89jfvrz8k"))))
     (build-system gnu-build-system)
     (home-page "http://www.freedesktop.org/wiki/Software/libexttextcat/")
     (synopsis "Text Categorization library")
