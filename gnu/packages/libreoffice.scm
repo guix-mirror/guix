@@ -510,14 +510,14 @@ Microsoft Publisher documents of all versions.")
 (define-public libpagemaker
   (package
     (name "libpagemaker")
-    (version "0.0.2")
+    (version "0.0.3")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "05zgj5ngg9z4b7dnrfs59nm0macm99lzyxv4mg53jcvp0mkgigfd"))))
+               "1minj0q14d44qfas81a8lkpgj288h5xlkjp084sfx17xv9axr5nq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -527,9 +527,6 @@ Microsoft Publisher documents of all versions.")
     (inputs
      `(("boost" ,boost)
        ("zlib" ,zlib)))
-    (arguments
-     ;; avoid triggering a build failure due to warnings
-     `(#:configure-flags '("--disable-werror")))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libpagemaker")
     (synopsis "Library for parsing the PageMaker format")
     (description "Libpagemaker is a library that parses the file format of
