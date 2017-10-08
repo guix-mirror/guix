@@ -649,14 +649,14 @@ from the old StarOffice (.sdc, .sdw, ...).")
 (define-public libwps
   (package
     (name "libwps")
-    (version "0.4.0")
+    (version "0.4.7")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/"
                           name "-" version "/" name "-" version ".tar.xz"))
       (sha256 (base32
-               "0nlrdk7di015l0sk0ivjdqs86zdcvf73p9z9s9ry5glyhrknzxjk"))))
+               "05xjb35y5ha9grgjqs3viaglq7ydsry1hzdvkm7y5b6f1disnb1g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -666,9 +666,6 @@ from the old StarOffice (.sdc, .sdw, ...).")
     (inputs
      `(("boost" ,boost)
        ("zlib" ,zlib)))
-    (arguments
-     ;; avoid triggering configure errors by simple inclusion of boost headers
-     `(#:configure-flags '("--disable-werror")))
     (home-page "http://libwps.sourceforge.net/")
     (synopsis "Import library for Microsoft Works text documents")
     (description "Libwps is a library for importing files in the Microsoft
