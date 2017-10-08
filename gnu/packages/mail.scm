@@ -2108,9 +2108,9 @@ installation on systems where resources are limited.  Its features include:
 @end enumerate\n")
     (license license:expat)))
 
-(define-public python-django-mailman3
+(define-public python2-django-mailman3
   (package
-    (name "python-django-mailman3")
+    (name "python2-django-mailman3")
     (version "1.0.1")
     (source
      (origin
@@ -2120,31 +2120,34 @@ installation on systems where resources are limited.  Its features include:
         (base32
          "1adxyh8knw9knjlh73xq0jpn5adml0ck4alsv0swakm95wfyx46z"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero?
+              (system*
+               "django-admin"
+               "test"
+               "--settings=django_mailman3.tests.settings_test"
+               "django_mailman3")))))
+       #:python ,python-2))
     (inputs
-     `(("python-django" ,python-django)))
+     `(("python2-django" ,python2-django)))
     (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("python-requests-oauthlib" ,python-requests-oauthlib)
-       ("python-openid" ,python-openid)
-       ("python-mailmanclient" ,python-mailmanclient)
-       ("python-django-allauth" ,python-django-allauth)
-       ("python-django-gravatar2" ,python-django-gravatar2)
-       ("python-pytz" ,python-pytz)))
+     `(("python2-requests" ,python2-requests)
+       ("python2-requests-oauthlib" ,python2-requests-oauthlib)
+       ("python2-openid" ,python2-openid)
+       ("python2-mailmanclient" ,python2-mailmanclient)
+       ("python2-django-allauth" ,python2-django-allauth)
+       ("python2-django-gravatar2" ,python2-django-gravatar2)
+       ("python2-pytz" ,python2-pytz)))
     (home-page "https://gitlab.com/mailman/django-mailman3")
     (synopsis "Django library for Mailman UIs")
     (description
      "Libraries and templates for Django-based interfaces
 interacting with Mailman.")
     (license gpl3+)))
-
-(define-public python2-django-mailman3
-  (let ((base (package-with-python2
-               python-django-mailman3)))
-    (package
-      (inherit base)
-      (propagated-inputs
-       `(("python2-openid" ,python2-openid)
-         ,@(package-propagated-inputs base))))))
 
 (define-public postorius
   (package
