@@ -675,14 +675,14 @@ Works word processor file format.")
 (define-public libzmf
   (package
    (name "libzmf")
-   (version "0.0.1")
+   (version "0.0.2")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/libzmf/libzmf-"
                           version ".tar.xz"))
       (sha256 (base32
-               "0yp5l1b90xim506zmr3ljkn3qkvbc7qk3dnwq1snxdpr57m37xga"))))
+               "08mg5kmkjrmqrd8j5rkzw9vdqlvibhb1ynp6bmfxnzq5rcq1l197"))))
    (build-system gnu-build-system)
    (inputs
     `(("boost" ,boost)
