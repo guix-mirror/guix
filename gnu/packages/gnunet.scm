@@ -234,10 +234,6 @@ and support for SSL3 and TLS.")
               #t)))
         (replace 'check
           (lambda _
-            ;; It is unclear why test1026 fails, however the content of it
-            ;; suggests that it is not vital for gnurl.
-            (delete-file "tests/data/test1026")
-
             (substitute* "tests/runtests.pl"
               (("/bin/sh") (which "sh")))
 
