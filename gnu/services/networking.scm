@@ -25,7 +25,6 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services dbus)
-  #:use-module (gnu services base)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu packages admin)
