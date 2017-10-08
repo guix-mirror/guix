@@ -583,6 +583,9 @@ export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share
 export XDG_DATA_DIRS=$HOME/.guix-profile/share:/run/current-system/profile/share
 export XDG_CONFIG_DIRS=$HOME/.guix-profile/etc/xdg:/run/current-system/profile/etc/xdg
 
+# Make sure libXcursor finds cursors installed into user or system profiles.  See <http://bugs.gnu.org/24445>
+export XCURSOR_PATH=$HOME/.icons:$HOME/.guix-profile/share/icons:/run/current-system/profile/share/icons
+
 # Ignore the default value of 'PATH'.
 unset PATH
 

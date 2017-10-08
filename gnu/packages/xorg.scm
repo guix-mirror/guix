@@ -5300,6 +5300,15 @@ draggable titlebars and borders.")
         ("xproto" ,xproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
+;; TODO: add XCURSOR_PATH=.../share/icons to profile search paths, so
+;; libXcursor finds cursors installed into a profile.  If we solve bugs
+;; <http://bugs.gnu.org/20255> and <http://bugs.gnu.org/22138>, we can fix
+;; this with a search-path as follows:
+;;
+;;    (native-search-paths
+;;     (list (search-path-specification
+;;            (variable "XCURSOR_PATH")
+;;            (files '("share/icons")))))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Cursor management library")
     (description "Xorg Cursor management library.")
