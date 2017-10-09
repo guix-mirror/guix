@@ -1296,7 +1296,7 @@ various ways that may be running with too much privilege.")
                 "1g25r6sx85b5lay5n6sbnqv05qxzj6xsafsp93hnrg1h044bps49"))))
     (build-system gnu-build-system)
     (inputs `(("libcap-ng" ,libcap-ng)))
-    (home-page "http://www.smartmontools.org/")
+    (home-page "https://www.smartmontools.org/")
     (synopsis "S.M.A.R.T. harddisk control and monitoring tools")
     (description
      "The smartmontools package contains utility programs to control and
