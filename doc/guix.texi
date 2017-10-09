@@ -9790,8 +9790,32 @@ Return a service that runs the Guix build daemon according to
 @var{config}.
 @end deffn
 
-@deffn {Scheme Procedure} udev-service [#:udev udev]
+@cindex udev-service
+@cindex udev-rule
+@deffn {Scheme Procedure} udev-service [#:udev @var{udev}] [#:rules @var{'()}]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
+Additional udev rules can be provided as a list of files through the
+@var{rules} variable.  The procedure @var{udev-rule} simplifies the
+creation of these rule files.
+
+In the following example, a rule for a USB device is defined to be
+stored in the file @file{90-usb-thing.rules}, and the default
+@var{udev-service} is extended with it.  The rule runs a script upon
+detecting a USB device with a given product identifier.
+
+@example
+(define %example-udev-rule
+  (udev-rule "90-usb-thing.rules"
+             "ACTION==\"add\", SUBSYSTEM==\"usb\", ATTR@{product@}==\"Example\", RUN+=\"/path/to/script\""))
+
+(operating-system
+  ;; @dots{}
+  (services (modify-services %desktop-services
+              (udev-service-type config =>
+                (udev-configuration (inherit config)
+                  (rules (append (udev-configuration-rules config)
+                                 (list %example-udev-rule))))))))
+@end example
 @end deffn
 
 @deffn {Scheme Procedure} urandom-seed-service @var{#f}
