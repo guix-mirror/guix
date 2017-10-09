@@ -82,6 +82,7 @@
             version>=?
             version-prefix
             version-major+minor
+            version-major
             guile-version>?
             string-replace-substring
             arguments-from-environment-variable
@@ -496,6 +497,10 @@ For example, (version-prefix \"2.1.47.4.23\" 3) returns \"2.1.47\""
   "Return \"<major>.<minor>\", where major and minor are the major and
 minor version numbers from version-string."
   (version-prefix version-string 2))
+
+(define (version-major version-string)
+  "Return the major version number as string from the version-string."
+  (version-prefix version-string 1))
 
 (define (version>? a b)
   "Return #t when A denotes a version strictly newer than B."
