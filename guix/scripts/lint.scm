@@ -835,7 +835,7 @@ from ~s: ~a (~s)~%")
      (when (version>? (upstream-source-version source)
                       (package-version package))
        (emit-warning package
-                     (format #f (G_ "can be upgraded to ~a~%")
+                     (format #f (G_ "can be upgraded to ~a")
                              (upstream-source-version source)))))
     (#f #f))) ; cannot find newer upstream release
 
