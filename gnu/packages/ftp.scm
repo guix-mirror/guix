@@ -46,7 +46,7 @@
 (define-public lftp
   (package
     (name "lftp")
-    (version "4.8.2")
+    (version "4.8.3")
     (source (origin
               (method url-fetch)
               ;; See https://lftp.tech/get.html for mirrors.
@@ -58,7 +58,7 @@
                                         "ftp/lftp/lftp-" version ".tar.xz")))
               (sha256
                (base32
-                "176d90amkm1klwjpfpzdsvmjnyri8f74bv4fpip8app0fs25p1sw"))))
+                "12y77jlfs4x4zvcah92mw2h2sb4j0bvbaxkh3wwsm8gs392ywyny"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
