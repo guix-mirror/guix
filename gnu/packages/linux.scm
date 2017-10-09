@@ -1466,7 +1466,7 @@ transparently through a bridge.")
 (define-public libnl
   (package
     (name "libnl")
-    (version "3.3.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1475,7 +1475,7 @@ transparently through a bridge.")
                     "/libnl-" version ".tar.gz"))
               (sha256
                (base32
-                "1r3lw3hjvqxi5zqyq2w1qadm3gisd9nlf71dkl4yplacmssnhm3h"))))
+                "1gzm444rnsib64dddv0cwlpzy1q4bycjqhp1i5pxpikimqvpca5p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -1490,7 +1490,7 @@ transparently through a bridge.")
                  (string-join (string-split version #\.) "_")
                  "/libnl-doc-" version ".tar.gz"))
            (sha256
-            (base32 "0srab805yj8wb13l64qjyp3mdbqapxg5vk46v3zlhhzpmxqw8j7r"))))))
+            (base32 "1m5cnzviv31gjnz6fz5rgyl6ah4dbp2akm49j9973sgwl36gs8jx"))))))
     (inputs
      `(("python-2" ,python-2)
        ("python-3" ,python-3)))
