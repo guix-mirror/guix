@@ -3898,7 +3898,7 @@ to the Space Age.")
 (define-public no-more-secrets
   (package
     (name "no-more-secrets")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -3907,7 +3907,7 @@ to the Space Age.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "00mzdif859vm75n1igrffh8c07p1nr4rlm3yb7lrkwwxhrw8xzla"))))
+         "1kpx1rirc3i7fb4lymp0hx5rqr0s2ay4za261rw3bcy6d23l1kyg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
