@@ -132,16 +132,16 @@ Qt-style API for Wayland clients.")
 (define-public sddm
   (package
     (name "sddm")
-    (version "0.15.0")
+    (version "0.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/sddm/sddm"
                     "/releases/download/v" version "/"
-                    "sddm-" version ".tar.gz"))
+                    "sddm-" version ".tar.xz"))
               (sha256
                (base32
-                "0x1igkjm3k8q26xbmg0qah1fc2pn2sfc675w0xg42x7ncrdiw8d4"))))
+                "0fwf1wsdak5yglykfyq4wbx9g9gi079n8ncjrdynz17hwwiql4z9"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
