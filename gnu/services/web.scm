@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,8 +27,11 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages php)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:use-module ((guix utils) #:select (version-major))
+  #:use-module ((guix packages) #:select (package-version))
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (<nginx-configuration>
@@ -78,7 +82,49 @@
 
             fcgiwrap-configuration
             fcgiwrap-configuration?
-            fcgiwrap-service-type))
+            fcgiwrap-service-type
+
+            <php-fpm-configuration>
+            php-fpm-configuration
+            make-php-fpm-configuration
+            php-fpm-configuration?
+            php-fpm-configuration-php
+            php-fpm-configuration-socket
+            php-fpm-configuration-user
+            php-fpm-configuration-group
+            php-fpm-configuration-socket-user
+            php-fpm-configuration-socket-group
+            php-fpm-configuration-pid-file
+            php-fpm-configuration-log-file
+            php-fpm-configuration-process-manager
+            php-fpm-configuration-display-errors
+            php-fpm-configuration-workers-log-file
+            php-fpm-configuration-file
+
+            <php-fpm-dynamic-process-manager-configuration>
+            php-fpm-dynamic-process-manager-configuration
+            make-php-fpm-dynamic-process-manager-configuration
+            php-fpm-dynamic-process-manager-configuration?
+            php-fpm-dynamic-process-manager-configuration-max-children
+            php-fpm-dynamic-process-manager-configuration-start-servers
+            php-fpm-dynamic-process-manager-configuration-min-spare-servers
+            php-fpm-dynamic-process-manager-configuration-max-spare-servers
+
+            <php-fpm-static-process-manager-configuration>
+            php-fpm-static-process-manager-configuration
+            make-php-fpm-static-process-manager-configuration
+            php-fpm-static-process-manager-configuration?
+            php-fpm-static-process-manager-configuration-max-children
+
+            <php-fpm-on-demand-process-manager-configuration>
+            php-fpm-on-demand-process-manager-configuration
+            make-php-fpm-on-demand-process-manager-configuration
+            php-fpm-on-demand-process-manager-configuration?
+            php-fpm-on-demand-process-manager-configuration-max-children
+            php-fpm-on-demand-process-manager-configuration-process-idle-timeout
+
+            php-fpm-service-type
+            nginx-php-location))
 
 ;;; Commentary:
 ;;;
@@ -397,3 +443,202 @@ of index files."
 		       (service-extension account-service-type
                                           fcgiwrap-accounts)))
                 (default-value (fcgiwrap-configuration))))
+
+(define-record-type* <php-fpm-configuration> php-fpm-configuration
+  make-php-fpm-configuration
+  php-fpm-configuration?
+  (php              php-fpm-configuration-php ;<package>
+                    (default php))
+  (socket           php-fpm-configuration-socket
+                    (default (string-append "/var/run/php"
+                                            (version-major (package-version php))
+                                            "-fpm.sock")))
+  (user             php-fpm-configuration-user
+                    (default "php-fpm"))
+  (group            php-fpm-configuration-group
+                    (default "php-fpm"))
+  (socket-user      php-fpm-configuration-socket-user
+                    (default "php-fpm"))
+  (socket-group     php-fpm-configuration-socket-group
+                    (default "nginx"))
+  (pid-file         php-fpm-configuration-pid-file
+                    (default (string-append "/var/run/php"
+                                            (version-major (package-version php))
+                                            "-fpm.pid")))
+  (log-file         php-fpm-configuration-log-file
+                    (default (string-append "/var/log/php"
+                                            (version-major (package-version php))
+                                            "-fpm.log")))
+  (process-manager  php-fpm-configuration-process-manager
+                    (default (php-fpm-dynamic-process-manager-configuration)))
+  (display-errors   php-fpm-configuration-display-errors
+                    (default #f))
+  (workers-log-file php-fpm-configuration-workers-log-file
+                    (default (string-append "/var/log/php"
+                                            (version-major (package-version php))
+                                            "-fpm.www.log")))
+  (file             php-fpm-configuration-file ;#f | file-like
+                    (default #f)))
+
+(define-record-type* <php-fpm-dynamic-process-manager-configuration>
+  php-fpm-dynamic-process-manager-configuration
+  make-php-fpm-dynamic-process-manager-configuration
+  php-fpm-dynamic-process-manager-configuration?
+  (max-children         php-fpm-dynamic-process-manager-configuration-max-children
+                        (default 5))
+  (start-servers        php-fpm-dynamic-process-manager-configuration-start-servers
+                        (default 2))
+  (min-spare-servers    php-fpm-dynamic-process-manager-configuration-min-spare-servers
+                        (default 1))
+  (max-spare-servers    php-fpm-dynamic-process-manager-configuration-max-spare-servers
+                        (default 3)))
+
+(define-record-type* <php-fpm-static-process-manager-configuration>
+  php-fpm-static-process-manager-configuration
+  make-php-fpm-static-process-manager-configuration
+  php-fpm-static-process-manager-configuration?
+  (max-children         php-fpm-static-process-manager-configuration-max-children
+                        (default 5)))
+
+(define-record-type* <php-fpm-on-demand-process-manager-configuration>
+  php-fpm-on-demand-process-manager-configuration
+  make-php-fpm-on-demand-process-manager-configuration
+  php-fpm-on-demand-process-manager-configuration?
+  (max-children         php-fpm-on-demand-process-manager-configuration-max-children
+                        (default 5))
+  (process-idle-timeout php-fpm-on-demand-process-manager-configuration-process-idle-timeout
+                        (default 10)))
+
+(define php-fpm-accounts
+  (match-lambda
+    (($ <php-fpm-configuration> php socket user group socket-user socket-group _ _ _ _ _ _)
+     (list
+      (user-group (name "php-fpm") (system? #t))
+      (user-group
+       (name group)
+       (system? #t))
+      (user-account
+       (name user)
+       (group group)
+       (supplementary-groups '("php-fpm"))
+       (system? #t)
+       (comment "php-fpm daemon user")
+       (home-directory "/var/empty")
+       (shell (file-append shadow "/sbin/nologin")))))))
+
+(define (default-php-fpm-config socket user group socket-user socket-group
+          pid-file log-file pm display-errors workers-log-file)
+  (apply mixed-text-file "php-fpm.conf"
+         (flatten
+          "[global]\n"
+          "pid =" pid-file "\n"
+          "error_log =" log-file "\n"
+          "[www]\n"
+          "user =" user "\n"
+          "group =" group "\n"
+          "listen =" socket "\n"
+          "listen.owner =" socket-user "\n"
+          "listen.group =" socket-group "\n"
+
+          (match pm
+            (($ <php-fpm-dynamic-process-manager-configuration>
+                pm.max-children
+                pm.start-servers
+                pm.min-spare-servers
+                pm.max-spare-servers)
+             (list
+              "pm = dynamic\n"
+              "pm.max_children =" (number->string pm.max-children) "\n"
+              "pm.start_servers =" (number->string pm.start-servers) "\n"
+              "pm.min_spare_servers =" (number->string pm.min-spare-servers) "\n"
+              "pm.max_spare_servers =" (number->string pm.max-spare-servers) "\n"))
+
+            (($ <php-fpm-static-process-manager-configuration>
+                pm.max-children)
+             (list
+              "pm = static\n"
+              "pm.max_children =" (number->string pm.max-children) "\n"))
+
+            (($ <php-fpm-on-demand-process-manager-configuration>
+                pm.max-children
+                pm.process-idle-timeout)
+             (list
+              "pm = ondemand\n"
+              "pm.max_children =" (number->string pm.max-children) "\n"
+              "pm.process_idle_timeout =" (number->string pm.process-idle-timeout) "s\n")))
+
+
+          "php_flag[display_errors] = " (if display-errors "on" "off") "\n"
+
+          (if workers-log-file
+              (list "catch_workers_output = yes\n"
+                    "php_admin_value[error_log] =" workers-log-file "\n"
+                    "php_admin_flag[log_errors] = on\n")
+              (list "catch_workers_output = no\n")))))
+
+(define php-fpm-shepherd-service
+  (match-lambda
+    (($ <php-fpm-configuration> php socket user group socket-user socket-group
+                                pid-file log-file pm display-errors workers-log-file file)
+     (list (shepherd-service
+            (provision '(php-fpm))
+            (documentation "Run the php-fpm daemon.")
+            (requirement '(networking))
+            (start #~(make-forkexec-constructor
+                      '(#$(file-append php "/sbin/php-fpm")
+                        "--fpm-config"
+                        #$(or file
+                              (default-php-fpm-config socket user group
+                                socket-user socket-group pid-file log-file
+                                pm display-errors workers-log-file)))
+                      #:pid-file #$pid-file))
+            (stop #~(make-kill-destructor)))))))
+
+(define php-fpm-activation
+  (match-lambda
+    (($ <php-fpm-configuration> _ _ user _ _ _ _ log-file _ _ workers-log-file _)
+     #~(begin
+         (use-modules (guix build utils))
+         (let* ((user (getpwnam #$user))
+                (touch (lambda (file-name)
+                         (call-with-output-file file-name (const #t))))
+                (init-log-file
+                 (lambda (file-name)
+                   (when #$workers-log-file
+                     (when (not (file-exists? file-name))
+                       (touch file-name))
+                     (chown file-name (passwd:uid user) (passwd:gid user))
+                     (chmod file-name #o660)))))
+           (init-log-file #$log-file)
+           (init-log-file #$workers-log-file))))))
+
+
+(define php-fpm-service-type
+  (service-type
+   (name 'php-fpm)
+   (description
+    "Run @command{php-fpm} to provide a fastcgi socket for calling php through
+a webserver.")
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             php-fpm-shepherd-service)
+          (service-extension activation-service-type
+                             php-fpm-activation)
+          (service-extension account-service-type
+                             php-fpm-accounts)))
+   (default-value (php-fpm-configuration))))
+
+(define* (nginx-php-location
+          #:key
+          (nginx-package nginx)
+          (socket (string-append "/var/run/php"
+                                 (version-major (package-version php))
+                                 "-fpm.sock")))
+  "Return a nginx-location-configuration that makes nginx run .php files."
+  (nginx-location-configuration
+   (uri "~ \\.php$")
+   (body (list
+          "fastcgi_split_path_info ^(.+\\.php)(/.+)$;"
+          (string-append "fastcgi_pass unix:" socket ";")
+          "fastcgi_index index.php;"
+          (list "include " nginx-package "/share/nginx/conf/fastcgi.conf;")))))
