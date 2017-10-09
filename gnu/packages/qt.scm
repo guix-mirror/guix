@@ -574,7 +574,10 @@ developers using C++ or QML, a CSS & JavaScript like language.")
               (lambda _
                 ;; make Qt render "offscreen", required for tests
                 (setenv "QT_QPA_PLATFORM" "offscreen")
-                #t)))))))
+                #t)))))
+    (synopsis "Qt module for displaying SVGs")
+    (description "The QtSvg module provides classes for displaying the
+ contents of SVG files.")))
 
 (define-public qtimageformats
   (package (inherit qtsvg)
@@ -600,7 +603,10 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("libwebp" ,libwebp)
        ("mesa" ,mesa)
        ("qtbase" ,qtbase)
-       ("zlib" ,zlib)))))
+       ("zlib" ,zlib)))
+    (synopsis "Additional Image Format plugins for Qt")
+    (description "The QtImageFormats module contains plugins for adding
+support for MNG, TGA, TIFF and WBMP image formats.")))
 
 (define-public qtx11extras
   (package (inherit qtsvg)
@@ -621,7 +627,10 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)))))
+       ("qtbase" ,qtbase)))
+    (synopsis "Qt Extras for X11")
+    (description "The QtX11Extras module includes the library to access X11
+from within Qt 5.")))
 
 (define-public qtxmlpatterns
   (package (inherit qtsvg)
@@ -646,7 +655,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                          (("xmlpatterns ") "# xmlpatterns"))
                #t))))))
     (native-inputs `(("perl" ,perl)))
-    (inputs `(("qtbase" ,qtbase)))))
+    (inputs `(("qtbase" ,qtbase)))
+    (synopsis "Qt XML patterns module")
+    (description "The QtXmlPatterns module is a XQuery and XPath engine for
+XML and custom data models.  It contains programs such as xmlpatterns and
+xmlpatternsvalidator.")))
 
 (define-public qtdeclarative
   (package (inherit qtsvg)
@@ -672,7 +685,13 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)))))
+       ("qtbase" ,qtbase)))
+    (synopsis "Qt QML module (Quick 2)")
+    (description "The Qt QML module provides a framework for developing
+applications and libraries with the QML language.  It defines and implements the
+language and engine infrastructure, and provides an API to enable application
+developers to extend the QML language with custom types and integrate QML code
+with JavaScript and C++.")))
 
 (define-public qtconnectivity
   (package (inherit qtsvg)
@@ -704,7 +723,10 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("qtdeclarative" ,qtdeclarative)))
     (inputs
      `(("bluez" ,bluez)
-       ("qtbase" ,qtbase)))))
+       ("qtbase" ,qtbase)))
+    (synopsis "Qt Connectivity module")
+    (description "The Qt Connectivity modules provides modules for interacting
+with Bluetooth and NFC.")))
 
 (define-public qtwebsockets
   (package (inherit qtsvg)
@@ -725,7 +747,13 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
-    (inputs `(("qtbase" ,qtbase)))))
+    (inputs `(("qtbase" ,qtbase)))
+    (synopsis "Qt Web Sockets module")
+    (description "WebSocket is a web-based protocol designed to enable two-way
+communication between a client application and a remote host.  The Qt
+WebSockets module provides C++ and QML interfaces that enable Qt applications
+to act as a server that can process WebSocket requests, or a client that can
+consume data received from the server, or both.")))
 
 (define-public qtsensors
   (package (inherit qtsvg)
@@ -752,7 +780,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
-    (inputs `(("qtbase" ,qtbase)))))
+    (inputs `(("qtbase" ,qtbase)))
+    (synopsis "Qt Sensors module")
+    (description "The Qt Sensors API provides access to sensor hardware via QML
+and C++ interfaces.  The Qt Sensors API also provides a motion gesture
+recognition API for devices.")))
 
 (define-public qtmultimedia
   (package (inherit qtsvg)
@@ -798,7 +830,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("qtbase" ,qtbase)
        ;; Gstreamer is needed for the mediaplayer plugin
        ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)))))
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (synopsis "Qt Multimedia module")
+    (description "The Qt Multimedia module provides set of APIs to play and
+record media, and manage a collection of media content.  It also contains a
+set of plugins for interacting with pulseaudio and GStreamer.")))
 
 (define-public qtwayland
   (package (inherit qtsvg)
@@ -833,7 +869,10 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("mesa" ,mesa)
        ("mtdev" ,mtdev)
        ("qtbase" ,qtbase)
-       ("wayland" ,wayland)))))
+       ("wayland" ,wayland)))
+    (synopsis "Qt Wayland module")
+    (description "The Qt Wayland module provides the QtWayland client and
+compositor libraries.")))
 
 (define-public qtserialport
   (package (inherit qtsvg)
@@ -851,7 +890,10 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("qtbase" ,qtbase)
-       ("eudev" ,eudev)))))
+       ("eudev" ,eudev)))
+    (synopsis "Qt Serial Port module")
+    (description "The Qt Serial Port module provides the library for
+interacting with serial ports from within Qt.")))
 
 (define-public qtserialbus
   (package (inherit qtsvg)
@@ -868,7 +910,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                "1hzk377c3zl4dm5hxwvpxg2w096m160448y9df6v6l8xpzpzxafa"))))
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtserialport" ,qtserialport)))))
+       ("qtserialport" ,qtserialport)))
+    (synopsis "Qt Serial Bus module")
+    (description "The Qt Serial Bus API provides classes and functions to
+access the various industrial serial buses and protocols, such as CAN, ModBus,
+and others.")))
 
 (define-public qtwebchannel
   (package (inherit qtsvg)
@@ -887,7 +933,12 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)
        ("qtwebsockets" ,qtwebsockets)))
-    (inputs `(("qtbase" ,qtbase)))))
+    (inputs `(("qtbase" ,qtbase)))
+    (synopsis "Web communication library for Qt")
+    (description "The Qt WebChannel module enables peer-to-peer communication
+between the host (QML/C++ application) and the client (HTML/JavaScript
+application).  The transport mechanism is supported out of the box by the two
+popular web engines, Qt WebKit 2 and Qt WebEngine.")))
 
 (define-public qtlocation
   (package (inherit qtsvg)
@@ -914,7 +965,10 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("icu4c" ,icu4c)
        ("openssl" ,openssl)
        ("qtbase" ,qtbase)
-       ("zlib" ,zlib)))))
+       ("zlib" ,zlib)))
+    (synopsis "Qt Location and Positioning modules")
+    (description "The Qt Location module provides an interface for location,
+positioning and geolocation plugins.")))
 
 (define-public qttools
   (package (inherit qtsvg)
@@ -937,7 +991,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("qtdeclarative" ,qtdeclarative)))
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)))))
+       ("qtbase" ,qtbase)))
+    (synopsis "Qt Tools and Designer modules")
+    (description "The Qt Tools module provides a set of applications to browse
+the documentation, translate applications, generate help files and other stuff
+that helps in Qt development.")))
 
 (define-public qtscript
   (package (inherit qtsvg)
@@ -957,7 +1015,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("perl" ,perl)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))))
+     `(("qtbase" ,qtbase)))
+    (synopsis "Qt Script module")
+    (description "Qt provides support for application scripting with ECMAScript.
+The following guides and references cover aspects of programming with
+ECMAScript and Qt.")))
 
 (define-public qtquickcontrols
   (package (inherit qtsvg)
@@ -977,7 +1039,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Quick Controls and other Quick modules")
+    (description "The QtScript module provides classes for making Qt
+applications scriptable.  This module provides a set of extra components that
+can be used to build complete interfaces in Qt Quick.")))
 
 (define-public qtquickcontrols2
   (package (inherit qtsvg)
@@ -997,7 +1063,12 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Quick Controls 2 and other Quick 2 modules")
+    (description "The Qt Quick Controls 2 module contains the Qt Labs Platform
+module that provides platform integration: native dialogs, menus and menu bars,
+and tray icons.  It falls back to Qt Widgets when a native implementation is
+not available.")))
 
 (define-public qtgraphicaleffects
   (package (inherit qtsvg)
@@ -1017,7 +1088,14 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Graphical Effects module")
+    (description "The Qt Graphical Effects module provides a set of QML types
+for adding visually impressive and configurable effects to user interfaces.
+Effects are visual items that can be added to Qt Quick user interface as UI
+components.  The API consists of over 20 effects provided as separate QML
+types.  The effects cover functional areas such as blending, masking, blurring,
+coloring, and many more.")))
 
 (define-public qtdeclarative-render2d
   ;; As of Qt-5.8.0 this module has been merged into qtdeclarative
@@ -1040,6 +1118,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Declarative Render module")
+    (description "The Qt Declarative Render 2D module provides a Raster
+backend for QtQuick scene graph.")
     (properties `((superseded . ,qtdeclarative)))))
 
 (define-public qtgamepad
@@ -1064,7 +1145,13 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("libxrender" ,libxrender)
        ("sdl2" ,sdl2)
        ("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Gamepad module")
+    (description "The Qt Gamepad module is an add-on library that enables Qt
+applications to support the use of gamepad hardware and in some cases remote
+control equipment.  The module provides both QML and C++ interfaces.  The
+primary target audience are embedded devices with fullscreen user interfaces,
+and mobile applications targeting TV-like form factors.")))
 
 (define-public qtscxml
   (package (inherit qtsvg)
@@ -1088,7 +1175,13 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                    (("scion") "#"))))))
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt SCXML module")
+    (description "The Qt SCXML module provides functionality to create state
+machines from SCXML files.  This includes both dynamically creating state
+machines (loading the SCXML file and instantiating states and transitions) and
+generating a C++ file that has a class implementing the state machine.  It
+also contains functionality to support data models and executable content.")))
 
 (define-public qtpurchasing
   (package (inherit qtsvg)
@@ -1105,7 +1198,10 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                "0b1hlaq6rb7d6b6h8kqd26klcpzf9vcdjrv610kdj0drb00jg3ss"))))
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Purchasing module")
+    (description "The Qt Purchasing module provides and in-app API for
+purchasing goods and services.")))
 
 (define-public qtcanvas3d
   (package (inherit qtsvg)
@@ -1139,7 +1235,10 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-inputs `())
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Canvas 3D module")
+    (description "The Qt Canvas 3D module provides a way to make WebGL-like 3D
+drawing calls from Qt Quick JavaScript.")))
 
 (define-public qtcharts
   (package (inherit qtsvg)
@@ -1159,7 +1258,13 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Charts module")
+    (description "The Qt Charts module provides a set of easy to use chart
+components.  It uses the Qt Graphics View Framework, therefore charts can be
+easily integrated to modern user interfaces.  Qt Charts can be used as QWidgets,
+QGraphicsWidget, or QML types. Users can easily create impressive graphs by
+selecting one of the charts themes.")))
 
 (define-public qtdatavis3d
   (package (inherit qtsvg)
@@ -1179,7 +1284,13 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Data Visualization module")
+    (description "The Qt Data Visualization module provides a way to visualize
+data in 3D as bar, scatter, and surface graphs. It is especially useful for
+visualizing depth maps and large quantities of rapidly changing data, such as
+data received from multiple sensors. The look and feel of graphs can be
+customized by using themes or by adding custom items and labels to them.")))
 
 (define-public qtnetworkauth
   (package (inherit qtsvg)
@@ -1195,7 +1306,10 @@ developers using C++ or QML, a CSS & JavaScript like language.")
               (base32
                "1fgax3p7lqcz29z2n1qxnfpkj3wxq1x9bfx61q6nss1fs74pxzra"))))
     (inputs
-     `(("qtbase" ,qtbase)))))
+     `(("qtbase" ,qtbase)))
+    (synopsis "Qt Network Authorization module")
+    (description "The Qt Network Authorization module provides an
+implementation of OAuth and OAuth2 authenticathon methods for Qt.")))
 
 (define-public qtremoteobjects
   (package (inherit qtsvg)
@@ -1212,7 +1326,12 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                "10kwq0fgmi6zsqhb6s1nkcydpyl8d8flzdpgmyj50c4h2xhg2km0"))))
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Remote Objects module")
+    (description "The Qt Remote Objects module is an @dfn{inter-process
+communication} (IPC) module developed for Qt.  The idea is to extend existing
+Qt's functionalities to enable an easy exchange of information between
+processes or computers.")))
 
 (define-public qtspeech
   (package (inherit qtsvg)
@@ -1233,7 +1352,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)
        ("qtmultimedia" ,qtmultimedia)
-       ("qtxmlpatterns" ,qtxmlpatterns)))))
+       ("qtxmlpatterns" ,qtxmlpatterns)))
+    (synopsis "Qt Speech module")
+    (description "The Qt Speech module enables a Qt application to support
+accessibility features such as text-to-speech, which is useful for end-users
+who are visually challenged or cannot access the application for whatever
+reason.  The most common use case where text-to-speech comes in handy is when
+the end-user is driving and cannot attend the incoming messages on the phone.
+In such a scenario, the messaging application can read out the incoming
+message.")))
 
 (define-public python-sip
   (package
