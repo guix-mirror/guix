@@ -4933,7 +4933,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.8.2")
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4941,7 +4941,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "1x0vzxvrck0snga2n3pc7g74m20zz74cr4r8gfspl8sckv6yz9bi"))
+                "04lj081a5cdkhcnj1xs77chhy08d2h0648kmj1csxp46cfrjwpk2"))
               (snippet
               '(begin
                  (use-modules (guix build utils))
@@ -5111,7 +5111,7 @@ to virtual private networks (VPNs) via OpenVPN.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.8.2")
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5119,7 +5119,7 @@ to virtual private networks (VPNs) via OpenVPN.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09f9hjpn9nkhw57mk6pi7q1bq3lhf5hvmwas0fknscssak7yjmry"))))
+                "0ag3pvjp58ykrzsjfbdxi0j5xd2i796jk7nns67zy03xwg9i0l0h"))))
     (build-system glib-or-gtk-build-system)
     (arguments '(#:configure-flags '("--disable-migration")))
     (native-inputs
