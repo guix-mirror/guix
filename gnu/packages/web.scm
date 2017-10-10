@@ -5550,3 +5550,48 @@ Web Server.")
 container capable of serving static and dynamic content either from a standalone
 or embedded instantiation.  This package provides utility classes.")
     (license (list l:epl1.0 l:asl2.0))))
+
+;; This version is required by maven-wagon
+(define-public java-eclipse-jetty-util-9.2
+  (package
+    (inherit java-eclipse-jetty-util)
+    (version "9.2.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/eclipse/jetty.project/"
+                                  "archive/jetty-" version ".v20170606.tar.gz"))
+              (sha256
+               (base32
+                "1i51qlsd7h06d35kx5rqpzbfadbcszycx1iwr6vz7qc9gf9f29la"))))
+    (arguments
+     `(#:jar-name "eclipse-jetty-util.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-exclude
+       (list "**/Abstract*.java"
+             ;; requires network
+             "**/InetAddressSetTest.java"
+             ;; Assumes we are using maven
+             "**/TypeUtilTest.java"
+             ;; We don't have an implementation for slf4j
+             "**/LogTest.java"
+             ;; Error on the style of log
+             "**/StdErrLogTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-util")
+             #t))
+         (add-before 'build 'fix-test-sources
+           (lambda _
+             ;; We need to fix issues caused by changes in newer versions of
+             ;; jetty-test-helper
+             (let ((src "src/test/java/org/eclipse/jetty/util/resource"))
+               (substitute* (string-append src "/AbstractFSResourceTest.java")
+                 (("testdir.getDir\\(\\)") "testdir.getPath().toFile()")
+                 (("testdir.getFile\\(\"foo\"\\)")
+                  "testdir.getPathFile(\"foo\").toFile()")
+                 (("testdir.getFile\\(name\\)")
+                  "testdir.getPathFile(name).toFile()")))
+             #t)))))))
