@@ -21,6 +21,7 @@
 (define-module (guix build ruby-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
+  #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 regex)
@@ -276,6 +277,31 @@ extended with definitions for VARS."
         (chmod prog-tmp #o755)
         (rename-file prog-tmp prog))))
 
+(define* (wrap #:key inputs outputs #:allow-other-keys)
+  (define (list-of-files dir)
+    (map (cut string-append dir "/" <>)
+         (or (scandir dir (lambda (f)
+                            (let ((s (stat (string-append dir "/" f))))
+                              (eq? 'regular (stat:type s)))))
+             '())))
+
+  (define bindirs
+    (append-map (match-lambda
+                 ((_ . dir)
+                  (list (string-append dir "/bin")
+                        (string-append dir "/sbin"))))
+                outputs))
+
+  (let* ((out  (assoc-ref outputs "out"))
+         (var `("GEM_PATH" prefix
+                (,(string-append out "/lib/ruby/vendor_ruby")
+                 ,(getenv "GEM_PATH")))))
+    (for-each (lambda (dir)
+                (let ((files (list-of-files dir)))
+                  (for-each (cut wrap-ruby-program <> var)
+                            files)))
+              bindirs)))
+
 (define (log-file-deletion file)
   (display (string-append "deleting '" file "' for reproducibility\n")))
 
@@ -287,7 +313,8 @@ extended with definitions for VARS."
     (add-after 'extract-gemspec 'replace-git-ls-files replace-git-ls-files)
     (replace 'build build)
     (replace 'check check)
-    (replace 'install install)))
+    (replace 'install install)
+    (add-after 'install 'wrap wrap)))
 
 (define* (ruby-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)
