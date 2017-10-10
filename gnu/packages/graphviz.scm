@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +40,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages swig)
-  #:use-module ((guix licenses) #:select (lgpl2.0+ epl1.0 lgpl3+)))
+  #:use-module ((guix licenses) #:prefix license:))
 
 (define-public graphviz
   (package
@@ -106,7 +107,30 @@ way of representing structural information as diagrams of abstract graphs and
 networks.  It has important applications in networking, bioinformatics,
 software engineering, database and web design, machine learning, and in visual
 interfaces for other technical domains.")
-    (license epl1.0)))
+    (license license:epl1.0)))
+
+(define-public python-graphviz
+  (package
+    (name "python-graphviz")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "graphviz" version ".zip"))
+              (sha256
+               (base32
+                "0i738qb32w93hraxzjwkvnxmrfwcalhjd14fdbah9f2mk46p5748"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://github.com/xflr6/graphviz")
+    (synopsis "Simple Python interface for Graphviz")
+    (description
+     "This package provides a simple Python interface for the Graphviz graph
+visualization tool suite.")
+    (license license:expat)))
+
+(define-public python2-graphviz
+  (package-with-python2 python-graphviz))
 
 (define-public gts
   (package
@@ -142,7 +166,7 @@ interfaces for other technical domains.")
     (description
      "Library intended to provide a set of useful functions to deal with
 3D surfaces meshed with interconnected triangles.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public xdot
   (package
@@ -185,4 +209,4 @@ interfaces for other technical domains.")
 @code{graphviz}’s dot language.  Internally, it uses the xdot output format as
 an intermediate format,and @code{gtk} and @code{cairo} for rendering.  Xdot can
 be used either as a standalone application, or as a python library.")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
