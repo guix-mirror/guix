@@ -6020,3 +6020,42 @@ provides low-level abstractions (@code{JsonParser}, @code{JsonGenerator},
 @code{JsonFactory}) as well as small number of higher level overrides needed to
 make data-binding work.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-hdrhistogram
+  (package
+    (name "java-hdrhistogram")
+    (version "2.1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/HdrHistogram/HdrHistogram/"
+                                  "archive/HdrHistogram-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sicbmc3sr42nw93qbkb26q9rn33ag33k6k77phjc3j5h5gjffqv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-hdrhistogram.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-version
+           (lambda _
+             (let* ((version-java "src/main/java/org/HdrHistogram/Version.java")
+                    (template (string-append version-java ".template")))
+               (copy-file template version-java)
+               (substitute* version-java
+                 (("\\$VERSION\\$") ,version)
+                 (("\\$BUILD_TIME\\$") "0"))
+               #t))))))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://hdrhistogram.github.io/HdrHistogram")
+    (synopsis "High dynamic range histogram")
+    (description "Hdrhistogram allows to create histograms that support
+recording and analyzing sampled data value counts across a configurable integer
+value range with configurable value precision within the range.  Value precision
+is expressed as the number of significant digits in the value recording, and
+provides control over value quantization behavior across the value range and
+the subsequent value resolution at any given level.")
+    (license license:public-domain)))
