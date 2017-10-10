@@ -4862,6 +4862,8 @@ an X Window System display.")
                "mirror://xorg/individual/lib/libXfont-"
                version
                ".tar.bz2"))
+        (patches (search-patches "libxfont-CVE-2017-13720.patch"
+                                 "libxfont-CVE-2017-13722.patch"))
         (sha256
           (base32
             "0w8d07bkmjiarkx09579bl8zsq903mn8javc7qpi0ix4ink5x502"))))
@@ -4895,6 +4897,8 @@ new API's in libXft, or the legacy API's in libX11.")
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
                                   version ".tar.bz2"))
+              (patches (search-patches "libxfont-CVE-2017-13720.patch"
+                                       "libxfont-CVE-2017-13722.patch"))
               (sha256
                (base32
                 "0znvwk36nhmyqpmhbm9mzisgixp1mp5qkfald8x1n5yxbm3vpyz9"))))))
