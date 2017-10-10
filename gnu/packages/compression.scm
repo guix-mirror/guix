@@ -1623,7 +1623,7 @@ trade-off between compression ratio and speed, without affecting decompression
 speed.")
     (license (list license:bsd-3         ; the main top-level LICENSE file
                    license:bsd-2         ; many files explicitly state 2-Clause
-                   license:gpl2          ; the mail top-level COPYING file
+                   license:gpl2          ; the main top-level COPYING file
                    license:gpl3+         ; tests/gzip/*.sh
                    license:expat         ; lib/dictBuilder/divsufsort.[ch]
                    license:public-domain ; zlibWrapper/examples/fitblk*
