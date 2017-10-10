@@ -1361,6 +1361,34 @@ as a base class when writing classes that depend upon
     (home-page "https://github.com/masover/blankslate")
     (license license:expat)))
 
+(define-public ruby-bond
+  (package
+    (name "ruby-bond")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bond" version))
+       (sha256
+        (base32
+         "1r19ifc4skyl2gxnifrxa5jvbbay9fb2in79ppgv02b6n4bhsw90"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-bacon" ,ruby-bacon)
+       ("ruby-bacon-bits" ,ruby-bacon-bits)
+       ("ruby-mocha-on-bacon" ,ruby-mocha-on-bacon)))
+    (synopsis "Bond can provide custom autocompletion for arguments, methods
+and more")
+    (description
+     "Bond can autocomplete argument(s) to methods, uniquely completing per
+module, per method and per argument.  Bond provides a configuration system and
+a DSL for creating custom completions and completion rules.  Bond can also
+load completions that ship with gems.  Bond is able to offer more than irb's
+completion since it uses the full line of input when completing as opposed to
+irb's last-word approach.")
+    (home-page "http://tagaholic.me/bond/")
+    (license license:expat)))
+
 (define-public ruby-instantiator
   (package
     (name "ruby-instantiator")
