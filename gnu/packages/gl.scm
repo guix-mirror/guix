@@ -274,7 +274,8 @@ also known as DXTn or DXTC) for Mesa.")
               ;; TODO: Add etnaviv when enabled in libdrm.
               '("--with-gallium-drivers=freedreno,imx,nouveau,r300,r600,svga,swrast,vc4,virgl"))
              ("aarch64-linux"
-              '("--with-gallium-drivers=freedreno,nouveau,r300,r600,svga,swrast,vc4,virgl"))
+              ;; TODO: Fix svga driver for aarch64.
+              '("--with-gallium-drivers=freedreno,nouveau,r300,r600,swrast,vc4,virgl"))
              (_
               '("--with-gallium-drivers=i915,nouveau,r300,r600,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
