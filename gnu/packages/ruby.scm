@@ -1965,6 +1965,26 @@ run as a daemon and to be controlled by simple start/stop/restart commands.")
     (home-page "https://github.com/thuehlinger/daemons")
     (license license:expat)))
 
+(define-public ruby-data_uri
+  (package
+    (name "ruby-data_uri")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "data_uri" version))
+       (sha256
+        (base32
+         "0fzkxgdxrlbfl4537y3n9mjxbm28kir639gcw3x47ffchwsgdcky"))))
+    (build-system ruby-build-system)
+    (synopsis "URI class for parsing data URIs")
+    (description
+     "Data @acronym{URI, universal resource idenfitier}s allow resources to be
+embedded inside a URI.  The URI::Data class provides support for parsing these
+URIs using the normal URI.parse method.")
+    (home-page "https://github.com/dball/data_uri")
+    (license license:expat)))
+
 (define-public ruby-git
   (package
     (name "ruby-git")
