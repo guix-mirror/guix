@@ -1264,7 +1264,8 @@ drawing calls from Qt Quick JavaScript.")))
 components.  It uses the Qt Graphics View Framework, therefore charts can be
 easily integrated to modern user interfaces.  Qt Charts can be used as QWidgets,
 QGraphicsWidget, or QML types. Users can easily create impressive graphs by
-selecting one of the charts themes.")))
+selecting one of the charts themes.")
+    (license license:gpl3)))
 
 (define-public qtdatavis3d
   (package (inherit qtsvg)
@@ -1290,7 +1291,8 @@ selecting one of the charts themes.")))
 data in 3D as bar, scatter, and surface graphs. It is especially useful for
 visualizing depth maps and large quantities of rapidly changing data, such as
 data received from multiple sensors. The look and feel of graphs can be
-customized by using themes or by adding custom items and labels to them.")))
+customized by using themes or by adding custom items and labels to them.")
+    (license license:gpl3)))
 
 (define-public qtnetworkauth
   (package (inherit qtsvg)
