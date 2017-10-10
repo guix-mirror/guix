@@ -1094,6 +1094,30 @@ features.")
     (home-page "https://github.com/chneukirchen/bacon")
     (license license:expat)))
 
+(define-public ruby-bacon-bits
+  (package
+    (name "ruby-bacon-bits")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bacon-bits" version))
+       (sha256
+        (base32
+         "1ghpj8ja94lhi8rgi872hqk4fd2amz2k7g9znd64z5dj7v6l0dmx"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests
+     '(#:tests? #f))
+    (propagated-inputs `(("ruby-bacon" ,ruby-bacon)))
+    (synopsis "Extensions to Bacon, for disabling tests, before and after
+blocks and more")
+    (description
+     "This extends the bacon testing framework with useful extensions to
+disable tests, have before and after blocks that run once and more.")
+    (home-page "https://github.com/cldwalker/bacon-bits")
+    (license license:expat)))
+
 (define-public ruby-connection-pool
   (package
     (name "ruby-connection-pool")
