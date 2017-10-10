@@ -3503,6 +3503,33 @@ that TURN is no longer being maintained.")
     (home-page "http://rubygems.org/gems/turn")
     (license license:expat)))
 
+(define-public ruby-mimemagic
+  (package
+    (name "ruby-mimemagic")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mimemagic" version))
+       (sha256
+        (base32
+         "00ibc1mhvdfyfyl103xwb45621nwyqxf124cni5hyfhag0fn1c3q"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; This phase breaks the tests, as it patches some of the test data.
+         (delete 'patch-source-shebangs))))
+    (native-inputs
+     `(("ruby-bacon" ,ruby-bacon)))
+    (synopsis "Ruby library for MIME detection by extension or content")
+    (description
+     "@acronym{MIME, Multipurpose Internet Mail Extensions} detection by
+extension or content, using the freedesktop.org.xml shared-mime-info
+database.")
+    (home-page "https://github.com/minad/mimemagic")
+    (license license:expat)))
+
 (define-public ruby-mime-types-data
   (package
     (name "ruby-mime-types-data")
