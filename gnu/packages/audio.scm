@@ -189,7 +189,7 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "5.8")
+    (version "5.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -206,7 +206,7 @@ streams from live audio.")
 namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
               (sha256
                (base32
-                "1lcvslrcw6g4kp9w0h1jx46x6ilz4nzz0k2yrw4gd545k1rwx0c1"))
+                "0mla5lm51ryikc2rrk53max2m7a5ds6i1ai921l2h95wrha45nkr"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
