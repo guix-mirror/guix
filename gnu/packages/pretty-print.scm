@@ -205,22 +205,23 @@ to @code{IOStreams}.")
        (list (string-append "--with-boost="
                             (assoc-ref %build-inputs "boost")))
        #:parallel-tests? #f             ;There appear to be race conditions
-       #:phases (alist-cons-before
-                 'check 'patch-test-files
-                 (lambda _
-                   ;; Unpatch shebangs in test input so that source-highlight
-                   ;; is still able to infer input language
-                   (substitute* '("tests/test.sh"
-                                  "tests/test2.sh"
-                                  "tests/test.tcl")
-                     (((string-append "#! *" (which "sh"))) "#!/bin/sh"))
-                   ;; Initial patching unrecoverably removes whitespace, so
-                   ;; remove it also in the comparison output.
-                   (substitute* '("tests/test.sh.html"
-                                  "tests/test2.sh.html"
-                                  "tests/test.tcl.html")
-                     (("#! */bin/sh") "#!/bin/sh")))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-test-files
+           (lambda _
+             ;; Unpatch shebangs in test input so that source-highlight
+             ;; is still able to infer input language
+             (substitute* '("tests/test.sh"
+                            "tests/test2.sh"
+                            "tests/test.tcl")
+               (((string-append "#! *" (which "sh"))) "#!/bin/sh"))
+             ;; Initial patching unrecoverably removes whitespace, so
+             ;; remove it also in the comparison output.
+             (substitute* '("tests/test.sh.html"
+                            "tests/test2.sh.html"
+                            "tests/test.tcl.html")
+               (("#! */bin/sh") "#!/bin/sh"))
+             #t)))))
     (home-page "https://www.gnu.org/software/src-highlite/")
     (synopsis "Produce a document with syntax highlighting from a source file")
     (description
@@ -292,22 +293,22 @@ highlighting.  Language definitions and color themes are customizable.")
        #:make-flags (list (string-append "prefix=" %output)
                           "INSTALL=install"
                           "all")
-       #:phases (alist-replace
-                 'configure
-                 (lambda _ (chdir "build/gcc"))
-                 (alist-cons-after
-                  'install 'install-libs
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Libraries are not installed by default
-                    (let* ((output (assoc-ref outputs "out"))
-                           (libdir (string-append output "/lib")))
-                      (begin
-                        (mkdir-p libdir)
-                        (for-each (lambda (l)
-                                    (copy-file
-                                     l (string-append libdir "/" (basename l))))
-                                  (find-files "bin" "lib*")))))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _ (chdir "build/gcc") #t))
+         (add-after 'install 'install-libs
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Libraries are not installed by default
+             (let* ((output (assoc-ref outputs "out"))
+                    (libdir (string-append output "/lib")))
+               (begin
+                 (mkdir-p libdir)
+                 (for-each (lambda (l)
+                             (copy-file
+                              l (string-append libdir "/" (basename l))))
+                           (find-files "bin" "lib*"))))
+             #t)))))
     (home-page "http://astyle.sourceforge.net/")
     (synopsis "Source code indenter, formatter, and beautifier")
     (description

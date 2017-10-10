@@ -95,24 +95,24 @@
    (arguments '(#:configure-flags '("--disable-error-on-warning")
 
                 ;; Insert a phase before `configure' to patch things up.
-                #:phases (alist-cons-before
-                           'configure
-                           'patch-stuff
-                           (lambda* (#:key outputs #:allow-other-keys)
-                             ;; Add a call to `lt_dladdsearchdir' so that
-                             ;; `libguile-readline.so' & co. are in the
-                             ;; loader's search path.
-                             (substitute* "libguile/dynl.c"
-                               (("lt_dlinit.*$" match)
-                                (format #f
-                                        "  ~a~%  lt_dladdsearchdir(\"~a/lib\");~%"
-                                        match
-                                        (assoc-ref outputs "out"))))
+                #:phases
+                (modify-phases %standard-phases
+                  (add-before 'configure 'patch-stuff
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Add a call to `lt_dladdsearchdir' so that
+                      ;; `libguile-readline.so' & co. are in the
+                      ;; loader's search path.
+                      (substitute* "libguile/dynl.c"
+                        (("lt_dlinit.*$" match)
+                         (format #f
+                                 "  ~a~%  lt_dladdsearchdir(\"~a/lib\");~%"
+                                 match
+                                 (assoc-ref outputs "out"))))
 
-                             ;; The usual /bin/sh...
-                             (substitute* "ice-9/popen.scm"
-                               (("/bin/sh") (which "sh"))))
-                           %standard-phases)))
+                      ;; The usual /bin/sh...
+                      (substitute* "ice-9/popen.scm"
+                        (("/bin/sh") (which "sh")))
+                      #t)))))
    (inputs `(("gawk" ,gawk)
              ("readline" ,readline)))
 

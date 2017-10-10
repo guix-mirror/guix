@@ -42,22 +42,23 @@
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   ;; Fix dependency tests.
-                   (substitute* "pumpa.pro"
-                     (("/usr/include/tidy\\.h")
-                      (string-append (assoc-ref inputs "tidy")
-                                     "/include/tidy.h"))
-                     (("/usr/include/aspell.h")
-                      (string-append (assoc-ref inputs "aspell")
-                                     "/include/aspell.h")))
-                   ;; Run qmake with proper installation prefix.
-                   (let ((prefix (string-append "PREFIX="
-                                                (assoc-ref outputs "out"))))
-                     (zero? (system* "qmake" prefix))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Fix dependency tests.
+             (substitute* "pumpa.pro"
+               (("/usr/include/tidy\\.h")
+                (string-append (assoc-ref inputs "tidy")
+                               "/include/tidy.h"))
+               (("/usr/include/aspell.h")
+                (string-append (assoc-ref inputs "aspell")
+                               "/include/aspell.h")))
+             ;; Run qmake with proper installation prefix.
+             (let ((prefix (string-append "PREFIX="
+                                          (assoc-ref outputs "out"))))
+               (zero? (system* "qmake" prefix)))
+             #t)))))
     (inputs
      `(("aspell" ,aspell)
        ("qtbase" ,qtbase)

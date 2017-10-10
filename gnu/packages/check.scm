@@ -93,11 +93,10 @@ source code editors and IDEs.")
          "057j82da9vv4li4z5ri3227ybd18nzyq81f6gsvhifs5z0vr3cpm"))))
     (build-system gnu-build-system)
     (arguments '(#:phases
-                 (alist-cons-before
-                  'configure 'autoconf
-                  (lambda _
-                    (zero? (system* "autoreconf" "-vfi")))
-                  %standard-phases)))
+                 (modify-phases %standard-phases
+                   (add-before 'configure 'autoconf
+                     (lambda _
+                       (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)

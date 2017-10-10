@@ -83,50 +83,51 @@ dependencies.")
        #:configure-flags (list (string-append "--datadir="
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
-       #:phases (alist-cons-before
-                 'configure 'set-go-directory
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Install .go files to $out/share/guile/site/2.0.
-                   (let ((out (assoc-ref outputs "out")))
-                     (substitute* "module/Makefile.in"
-                       (("^wmdir = .*$")
-                        (string-append "wmdir = " out
-                                       "/share/guile/site/2.0\n")))))
-                 (alist-cons-after
-                  'install 'set-load-path
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    ;; Put Guile-XCB's and Guile-WM's modules in the
-                    ;; search path of PROG.
-                    (let* ((out  (assoc-ref outputs "out"))
-                           (prog (string-append out "/bin/guile-wm"))
-                           (mods (string-append
-                                  out "/share/guile/site/2.0"))
-                           (xcb  (string-append
-                                  (assoc-ref inputs "guile-xcb")
-                                  "/share/guile/site/2.0")))
-                      (wrap-program
-                          prog
-                        `("GUILE_LOAD_PATH" ":" prefix (,mods ,xcb))
-                        `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                          (,mods ,xcb)))))
-                  (alist-cons-after
-                   'install 'install-xsession
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     ;; add a .desktop file to xsessions
-                     (let ((xsessions (string-append
-                                       %output "/share/xsessions")))
-                       (mkdir-p xsessions)
-                       (call-with-output-file (string-append
-                                               xsessions "/guile-wm.desktop")
-                         (lambda (port)
-                           (format port
-                                   "[Desktop Entry]~@
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-go-directory
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Install .go files to $out/share/guile/site/2.0.
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* "module/Makefile.in"
+                (("^wmdir = .*$")
+                 (string-append "wmdir = " out
+                                "/share/guile/site/2.0\n"))))
+            #t))
+         (add-after 'install 'set-load-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Put Guile-XCB's and Guile-WM's modules in the
+             ;; search path of PROG.
+             (let* ((out  (assoc-ref outputs "out"))
+                    (prog (string-append out "/bin/guile-wm"))
+                    (mods (string-append
+                           out "/share/guile/site/2.0"))
+                    (xcb  (string-append
+                           (assoc-ref inputs "guile-xcb")
+                           "/share/guile/site/2.0")))
+               (wrap-program
+                   prog
+                 `("GUILE_LOAD_PATH" ":" prefix (,mods ,xcb))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                   (,mods ,xcb))))
+             #t))
+         (add-after 'install 'install-xsession
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; add a .desktop file to xsessions
+             (let ((xsessions (string-append
+                               %output "/share/xsessions")))
+               (mkdir-p xsessions)
+               (call-with-output-file (string-append
+                                       xsessions "/guile-wm.desktop")
+                 (lambda (port)
+                   (format port
+                          "[Desktop Entry]~@
                                     Name=~a~@
                                     Comment=~a~@
                                     Exec=~a/bin/guile-wm~@
                                     Type=Application~%"
-                            ,name ,synopsis %output)))))
-                   %standard-phases)))))
+                          ,name ,synopsis %output))))
+             #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.0)
               ("guile-xcb" ,guile-xcb)))

@@ -192,28 +192,27 @@ utilities.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-after
-        'unpack 'use-wish8.6
-        (lambda _
-          (substitute* "configure"
-            (("wish85") "wish8.6")))
-        (alist-cons-after
-         'install 'wrap
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           ;; FIXME: Mesa tries to dlopen libudev.so.0 and fails.  Pending a
-           ;; fix of the mesa package we wrap the pcb executable such that
-           ;; Mesa can find libudev.so.0 through LD_LIBRARY_PATH.
-           (let* ((out (assoc-ref outputs "out"))
-                  (path (string-append (assoc-ref inputs "udev") "/lib")))
-             (wrap-program (string-append out "/bin/pcb")
-               `("LD_LIBRARY_PATH" ":" prefix (,path)))))
-         (alist-cons-before
-          'check 'pre-check
-          (lambda _
-            (system "Xvfb :1 &")
-            (setenv "DISPLAY" ":1")
-            #t)
-          %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-wish8.6
+           (lambda _
+             (substitute* "configure"
+               (("wish85") "wish8.6"))
+             #t))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; FIXME: Mesa tries to dlopen libudev.so.0 and fails.  Pending a
+             ;; fix of the mesa package we wrap the pcb executable such that
+             ;; Mesa can find libudev.so.0 through LD_LIBRARY_PATH.
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (string-append (assoc-ref inputs "udev") "/lib")))
+               (wrap-program (string-append out "/bin/pcb")
+                 `("LD_LIBRARY_PATH" ":" prefix (,path))))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             #t)))))
     (inputs
      `(("dbus" ,dbus)
        ("mesa" ,mesa)

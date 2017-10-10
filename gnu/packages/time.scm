@@ -41,16 +41,16 @@
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       (alist-replace 'configure
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        ;; This old `configure' script doesn't support
-                        ;; variables passed as arguments.
-                        (let ((out (assoc-ref outputs "out")))
-                          (setenv "CONFIG_SHELL" (which "bash"))
-                          (zero?
-                           (system* "./configure"
-                                    (string-append "--prefix=" out)))))
-                      %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This old `configure' script doesn't support
+             ;; variables passed as arguments.
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)))))))))
     (home-page "https://www.gnu.org/software/time/")
     (synopsis "Run a command, then display its resource usage")
     (description

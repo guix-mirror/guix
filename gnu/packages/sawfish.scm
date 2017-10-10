@@ -138,31 +138,31 @@ backend of Sawfish.")
     (arguments
      '(#:tests? #f ; no tests
        #:phases
-       (alist-cons-before
-        'configure 'patch-exec-rep
-        (lambda _
-          (substitute* '("lisp/sawfish/cfg/main.jl.in"
-                         "scripts/sawfish-about.jl.in"
-                         "scripts/sawfish-client.jl"
-                         "scripts/sawfish-menu.jl")
-            (("exec rep") (string-append "exec " (which "rep")))))
-        (alist-cons-after
-         'install 'wrap-scripts
-         ;; Wrap scripts with REP_DL_LOAD_PATH for finding rep-gtk
-         ;; and sawfish.client.
-         (lambda* (#:key outputs #:allow-other-keys)
-           (define (wrap-script script)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out script)
-                             `("REP_DL_LOAD_PATH" =
-                               ,(list (getenv "REP_DL_LOAD_PATH")
-                                      (string-append out "/lib/rep"))))))
-           (for-each wrap-script
-                     (list "/bin/sawfish-about"
-                           "/bin/sawfish-client"
-                           "/bin/sawfish-config"
-                           "/lib/sawfish/sawfish-menu")))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-exec-rep
+           (lambda _
+             (substitute* '("lisp/sawfish/cfg/main.jl.in"
+                            "scripts/sawfish-about.jl.in"
+                            "scripts/sawfish-client.jl"
+                            "scripts/sawfish-menu.jl")
+               (("exec rep") (string-append "exec " (which "rep"))))
+             #t))
+         (add-after 'install 'wrap-scripts
+           ;; Wrap scripts with REP_DL_LOAD_PATH for finding rep-gtk
+           ;; and sawfish.client.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define (wrap-script script)
+               (let ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out script)
+                   `("REP_DL_LOAD_PATH" =
+                     ,(list (getenv "REP_DL_LOAD_PATH")
+                            (string-append out "/lib/rep"))))))
+             (for-each wrap-script
+                       (list "/bin/sawfish-about"
+                             "/bin/sawfish-client"
+                             "/bin/sawfish-config"
+                             "/lib/sawfish/sawfish-menu"))
+             #t)))))
     (native-inputs
      `(("gettext"     ,gettext-minimal)
        ("makeinfo"    ,texinfo)

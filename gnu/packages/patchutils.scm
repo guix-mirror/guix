@@ -53,30 +53,31 @@
     (inputs `(("perl" ,perl)))
     (arguments
      '(#:parallel-tests? #f
-       #:phases (alist-cons-before
-                 'check 'patch-test-scripts
-                 (lambda _
-                   (let ((echo (which "echo")))
-                     (substitute*
-                         (find-files "tests" "^run-test$")
-                       (("/bin/echo") echo))))
-                 (alist-cons-after
-                  'install 'wrap-program
-                  ;; Point installed scripts to the utilities they need.
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let* ((out       (assoc-ref outputs "out"))
-                           (diffutils (assoc-ref inputs "diffutils"))
-                           (sed       (assoc-ref inputs "sed"))
-                           (gawk      (assoc-ref inputs "gawk")))
-                      (for-each
-                       (lambda (prog)
-                         (wrap-program (string-append out "/bin/" prog)
-                                       `("PATH" ":" prefix
-                                         ,(map (lambda (dir)
-                                                 (string-append dir "/bin"))
-                                               (list diffutils sed gawk)))))
-                       '("dehtmldiff" "editdiff" "espdiff"))))
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-test-scripts
+           (lambda _
+             (let ((echo (which "echo")))
+               (substitute*
+                   (find-files "tests" "^run-test$")
+                 (("/bin/echo") echo)))
+             #t))
+         (add-after 'install 'wrap-program
+           ;; Point installed scripts to the utilities they need.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out       (assoc-ref outputs "out"))
+                    (diffutils (assoc-ref inputs "diffutils"))
+                    (sed       (assoc-ref inputs "sed"))
+                    (gawk      (assoc-ref inputs "gawk")))
+               (for-each
+                (lambda (prog)
+                  (wrap-program (string-append out "/bin/" prog)
+                    `("PATH" ":" prefix
+                      ,(map (lambda (dir)
+                              (string-append dir "/bin"))
+                            (list diffutils sed gawk)))))
+                '("dehtmldiff" "editdiff" "espdiff")))
+             #t)))))
     (home-page "http://cyberelk.net/tim/software/patchutils")
     (synopsis "Collection of tools for manipulating patch files")
     (description
@@ -105,39 +106,39 @@ listing the files modified by a patch.")
               ("ed" ,ed)))
     (arguments
      '(#:parallel-tests? #f
-       #:phases 
-       (alist-cons-before
-        'check 'patch-tests
-        (lambda _
-          (substitute*
-              '("test/run"
-                "test/edit.test") 
-            (("/bin/sh") (which "sh")))
-          ;; TODO: Run the mail tests once the mail feature can be supported.
-          (delete-file "test/mail.test"))
-        (alist-cons-after
-         'install 'wrap-program
-         ;; quilt's configure checks for the absolute path to the utilities it
-         ;; needs, but uses only the name when invoking them, so we need to
-         ;; make sure the quilt script can find those utilities when run.
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let* ((out       (assoc-ref outputs "out"))
-                  (coreutils (assoc-ref inputs "coreutils"))
-                  (diffutils (assoc-ref inputs "diffutils"))
-                  (findutils (assoc-ref inputs "findutils"))
-                  (less      (assoc-ref inputs "less"))
-                  (file      (assoc-ref inputs "file"))
-                  (ed        (assoc-ref inputs "ed"))
-                  (sed       (assoc-ref inputs "sed"))
-                  (bash      (assoc-ref inputs "bash"))
-                  (grep      (assoc-ref inputs "grep")))
-             (wrap-program (string-append out "/bin/quilt")
-                           `("PATH" ":" prefix
-                             ,(map (lambda (dir)
-                                     (string-append dir "/bin"))
-                                   (list coreutils diffutils findutils
-                                         less file ed sed bash grep))))))
-         %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-tests
+           (lambda _
+             (substitute*
+                 '("test/run"
+                   "test/edit.test") 
+               (("/bin/sh") (which "sh")))
+             ;; TODO: Run the mail tests once the mail feature can be supported.
+             (delete-file "test/mail.test")
+             #t))
+         (add-after 'install 'wrap-program
+           ;; quilt's configure checks for the absolute path to the utilities it
+           ;; needs, but uses only the name when invoking them, so we need to
+           ;; make sure the quilt script can find those utilities when run.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out       (assoc-ref outputs "out"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (diffutils (assoc-ref inputs "diffutils"))
+                    (findutils (assoc-ref inputs "findutils"))
+                    (less      (assoc-ref inputs "less"))
+                    (file      (assoc-ref inputs "file"))
+                    (ed        (assoc-ref inputs "ed"))
+                    (sed       (assoc-ref inputs "sed"))
+                    (bash      (assoc-ref inputs "bash"))
+                    (grep      (assoc-ref inputs "grep")))
+               (wrap-program (string-append out "/bin/quilt")
+                 `("PATH" ":" prefix
+                   ,(map (lambda (dir)
+                           (string-append dir "/bin"))
+                         (list coreutils diffutils findutils
+                               less file ed sed bash grep)))))
+             #t)))))
     (home-page "https://savannah.nongnu.org/projects/quilt/")
     (synopsis "Script for managing patches to software")
     (description
@@ -164,8 +165,9 @@ refreshed, and more.")
        #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
                           "INSTALL_DIR=/bin" "MAN_DIR=/share/man/man1")
        #:phases
-       (alist-delete 'configure
-                     (alist-delete 'build %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build))))
     (inputs
      `(("perl" ,perl)
        ("xmlto" ,xmlto)))

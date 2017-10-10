@@ -293,20 +293,20 @@ random access nor for in-place modification.")
        ("nettle" ,nettle)))
     (arguments
      `(#:parallel-build? #f             ;race conditions
-       #:phases (alist-cons-before
-                 'build 'remove-Werror
-                 ;; rdup uses a deprecated function from libarchive
-                 (lambda _
-                   (substitute* "GNUmakefile"
-                     (("^(CFLAGS=.*)-Werror" _ front) front)))
-                 (alist-cons-before
-                  'check 'pre-check
-                  (lambda _
-                    (setenv "HOME" (getcwd))
-                    (substitute* "testsuite/rdup/rdup.rdup-up-t-with-file.exp"
-                      (("/bin/cat") (which "cat"))))
-
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-Werror
+           ;; rdup uses a deprecated function from libarchive
+           (lambda _
+             (substitute* "GNUmakefile"
+               (("^(CFLAGS=.*)-Werror" _ front) front))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (substitute* "testsuite/rdup/rdup.rdup-up-t-with-file.exp"
+               (("/bin/cat") (which "cat")))
+             #t)))))
     (home-page "http://archive.miek.nl/projects/rdup/index.html")
     (synopsis "Provide a list of files to backup")
     (description
@@ -336,9 +336,9 @@ list and implement the backup strategy.")
                       "CC=gcc")
        #:tests? #f                      ;test input not distributed
        #:phases
-       (alist-delete
-        'configure                      ;no configure phase
-        %standard-phases)))
+       ;; no configure phase
+       (modify-phases %standard-phases
+         (delete 'configure))))
     (home-page "http://viric.name/cgi-bin/btar/doc/trunk/doc/home.wiki")
     (synopsis "Tar-compatible archiver")
     (description

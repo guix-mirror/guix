@@ -325,33 +325,24 @@ X11-system or any other graphical user interface.")
 (define-public teckit
   (package
    (name "teckit")
-   (version "2.5.4")
+   (version "2.5.7")
    (source (origin
-            ;; Downloaded tarballs vary with each download, so we use an
-            ;; svn snapshot. The 2.5.4 release seems to be made in r128,
-            ;; but r132 updates additional files to contain the correct
-            ;; version number (r129 to r131 do not concern TRUNK).
-            (method svn-fetch)
-            (uri (svn-reference
-                   (url "https://scripts.sil.org/svn-public/teckit/TRUNK")
-                   (revision 132)))
-            (file-name (string-append name "-" version))
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/silnrsi/teckit/releases/download/v"
+                  version "/teckit-" version ".tar.gz"))
             (sha256
               (base32
-                "1xqkqgw30pb24snh46srmjs2j4zhz2dfi5pf7znia0k34mrpwivz"))))
+                "1pbp97vcpj6x4yixx6ww0vsi1rrr99fksxdjafs6gdargzd24cj4"))))
    (build-system gnu-build-system)
-   (inputs `(("zlib" ,zlib)))
+   (inputs
+    `(("zlib" ,zlib)
+      ("expat" ,expat)))
    (native-inputs
     `(("autoconf" ,autoconf)
       ("automake" ,automake)
       ("libtool" ,libtool)
       ("perl" ,perl))) ; for the tests
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'autogen
-          (lambda _
-            (zero? (system* "sh" "autogen.sh")))))))
    (synopsis "Toolkit for encoding conversions")
    (description
     "TECkit is a low-level toolkit intended to be used by other applications

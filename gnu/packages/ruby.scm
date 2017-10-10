@@ -49,8 +49,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (replacement ruby-2.4.2)
-    (version "2.4.0")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
@@ -59,7 +58,7 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "141nnsdk2q83c23p5kl404id8gy1ap261gin48rbjj5sbksgx1rs"))
+         "0dgp4ypk3smrsbh2c249n5pl6nqhpd2igq9484dbsh81sf08k2kl"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -102,26 +101,6 @@
 a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
-
-(define-public ruby-2.4.2
-  (package
-    (inherit ruby)
-    (name "ruby")
-    (version "2.4.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
-                           (version-major+minor version)
-                           "/ruby-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0dgp4ypk3smrsbh2c249n5pl6nqhpd2igq9484dbsh81sf08k2kl"))
-       (modules '((guix build utils)))
-       (snippet `(begin
-                   ;; Remove bundled libffi
-                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
-                   #t))))))
 
 (define-public ruby-2.3
   (package
@@ -171,16 +150,16 @@ a focus on simplicity and productivity.")
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
-        (alist-cons-before
-         'configure 'replace-bin-sh
-         (lambda _
-           (substitute* '("Makefile.in"
-                          "ext/pty/pty.c"
-                          "io.c"
-                          "lib/mkmf.rb"
-                          "process.c")
-             (("/bin/sh") (which "sh"))))
-         %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'replace-bin-sh
+           (lambda _
+             (substitute* '("Makefile.in"
+                            "ext/pty/pty.c"
+                            "io.c"
+                            "lib/mkmf.rb"
+                            "process.c")
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (native-search-paths
      (list (search-path-specification
             (variable "GEM_PATH")
@@ -205,16 +184,21 @@ a focus on simplicity and productivity.")
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
-        (alist-cons-before
-         'configure 'replace-bin-sh
-         (lambda _
-           (substitute* '("Makefile.in"
-                          "ext/pty/pty.c"
-                          "io.c"
-                          "lib/mkmf.rb"
-                          "process.c")
-             (("/bin/sh") (which "sh"))))
-         %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-before 'configure 'replace-bin-sh
+           (lambda _
+             (substitute* '("Makefile.in"
+                            "ext/pty/pty.c"
+                            "io.c"
+                            "lib/mkmf.rb"
+                            "process.c")
+               (("/bin/sh") (which "sh")))
+             #t)))))))
+
+(define (gem-directory ruby-version)
+  "Return the relative gem install directory for RUBY-VERSION."
+  (string-append "/lib/ruby/gems/" (version-major+minor ruby-version)
+                 ".0/gems"))
 
 (define-public ruby-highline
   (package
@@ -3800,10 +3784,9 @@ requests either using arguments or with an interactive prompt.")
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (file (string-append out "/lib/ruby/gems/"
-                                         ,(package-version ruby)
-                                         "/gems/ansi-" ,version
-                                         "/lib/ansi.yml")))
+                    (file (string-append out
+                                         ,(gem-directory (package-version ruby))
+                                         "/ansi-" ,version "/lib/ansi.yml")))
                ;; XXX: This symlink is broken since ruby 2.4.
                ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
                (delete-file file)
@@ -4001,10 +3984,9 @@ requirement specifications systems like Cucumber.")
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (file (string-append out "/lib/ruby/gems/"
-                                         ,(package-version ruby)
-                                         "/gems/ae-" ,version
-                                         "/lib/ae.yml")))
+                    (file (string-append out
+                                         ,(gem-directory (package-version ruby))
+                                         "/ae-" ,version "/lib/ae.yml")))
                ;; XXX: This symlink is broken since ruby 2.4.
                ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
                (delete-file file)

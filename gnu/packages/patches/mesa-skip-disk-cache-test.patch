@@ -8,12 +8,12 @@ for now.
 @@ -170,11 +170,6 @@
     unsetenv("MESA_GLSL_CACHE_DIR");
     unsetenv("XDG_CACHE_HOME");
-
--   cache = disk_cache_create("test", "make_check");
+ 
+-   cache = disk_cache_create("test", "make_check", 0);
 -   expect_non_null(cache, "disk_cache_create with no environment variables");
 -
 -   disk_cache_destroy(cache);
 -
     /* Test with XDG_CACHE_HOME set */
     setenv("XDG_CACHE_HOME", CACHE_TEST_TMP "/xdg-cache-home", 1);
-    cache = disk_cache_create("test", "make_check");
+    cache = disk_cache_create("test", "make_check", 0);

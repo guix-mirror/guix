@@ -65,10 +65,10 @@
                 "0azgpr4al2pi4858z4xh4lfz84cvzxw3n426fn7rz6cdj34q212j"))))
     (build-system gnu-build-system)
     (arguments
-      '(#:phases (alist-delete 'configure %standard-phases)
-        #:tests? #f ;FIXME: Requires 'perl-test-command'.
-        #:make-flags
-          (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+     '(#:phases (modify-phases %standard-phases (delete 'configure))
+       #:tests? #f ;FIXME: Requires 'perl-test-command'.
+       #:make-flags
+       (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))))
     (inputs `(("imlib2" ,imlib2)
               ("curl" ,curl)
               ("libpng" ,libpng)
@@ -178,9 +178,8 @@ It is the default image viewer on LXDE desktop environment.")
      '(#:tests? #f                      ; no check target
        #:make-flags (list (string-append "PREFIX=" %output)
                           "CC=gcc")
-       #:phases (alist-delete
-                 'configure             ; no configure phase
-                 %standard-phases)))
+       ;; no configure phase
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("libx11" ,libx11)
        ("imlib2" ,imlib2)

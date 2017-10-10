@@ -138,13 +138,13 @@ rejects UDP traffic from the application you're using.")
        #:configure-flags (list (string-append "--sysconfdir="
                                               (assoc-ref %outputs "out")
                                               "/etc/privoxy"))
-       #:phases (alist-cons-after
-                 'unpack 'autoconf
-                 (lambda _
-                   ;; Unfortunately, this is not a tarball produced by
-                   ;; "make dist".
-                   (zero? (system* "autoreconf" "-vfi")))
-                 %standard-phases)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _
+             ;; Unfortunately, this is not a tarball produced by
+             ;; "make dist".
+             (zero? (system* "autoreconf" "-vfi")))))
        #:tests? #f))
     (inputs
      `(("w3m" ,w3m)

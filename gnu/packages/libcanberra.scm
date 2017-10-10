@@ -79,15 +79,15 @@
      `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:phases
-       (alist-cons-before
-        'build 'patch-default-sounds-directory
-        (lambda* (#:key inputs #:allow-other-keys)
-          (substitute* "src/sound-theme-spec.c"
-            (("@SOUND_THEME_DIRECTORY@")
-             (string-append
-              (assoc-ref inputs "sound-theme-freedesktop")
-              "/share"))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-default-sounds-directory
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/sound-theme-spec.c"
+               (("@SOUND_THEME_DIRECTORY@")
+                (string-append
+                 (assoc-ref inputs "sound-theme-freedesktop")
+                 "/share")))
+             #t)))))
     (home-page "http://0pointer.de/lennart/projects/libcanberra/")
     (synopsis
      "Implementation of the XDG Sound Theme and Name Specifications")

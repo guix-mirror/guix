@@ -530,15 +530,19 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libva
   (package
     (name "libva")
-    (version "1.8.2")
+    (version "1.8.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://www.freedesktop.org/software/vaapi/releases/libva/libva-"
-             version".tar.bz2"))
+       (uri (list
+             ;; Newer releases are only available on GitHub.
+             (string-append "https://github.com/01org/libva/releases/download/"
+                            version "/libva-" version ".tar.bz2")
+             ;; Keep the old URL around for compatibility.
+             (string-append "https://www.freedesktop.org/software/vaapi/releases/"
+                            "libva/libva-" version "/libva-" version ".tar.bz2")))
        (sha256
-        (base32 "1pnfl3q7dzxs26l3jk9xi97gr0qwnaz6dhvf9ifp2yplr3fy7lwy"))))
+        (base32 "16xbk0awl7wp0vy0nyjvxk11spbw25mp8kwd9bmhd6x9xffi5vjn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1395,11 +1399,10 @@ encapsulated.")
        ("libtool" ,libtool)))
     (arguments
      '(#:phases
-       (alist-cons-after
-        'unpack 'autoreconf
-        (lambda _
-          (zero? (system* "autoreconf" "-vif")))
-        %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))))
 
 (define-public libdvdcss
   (package

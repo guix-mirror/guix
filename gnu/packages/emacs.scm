@@ -304,14 +304,15 @@ editor (without an X toolkit)" )
                "0phz9d8wjk4p13vqannv0003fwh8qqrp0gfzcs2hgq1mrmv1srss"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (symlink "geiser-install.el"
-                            (string-append (assoc-ref outputs "out")
-                                           "/share/emacs/site-lisp/"
-                                           "geiser-autoloads.el")))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (symlink "geiser-install.el"
+                      (string-append (assoc-ref outputs "out")
+                                     "/share/emacs/site-lisp/"
+                                     "geiser-autoloads.el"))
+             #t)))))
     (inputs `(("guile" ,guile-2.0)))
     (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "http://nongnu.org/geiser/")
@@ -770,25 +771,25 @@ provides an optional IDE-like error list.")
                            (guix build emacs-utils))
        #:tests? #f  ; no check target
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (substitute* "Makefile"
-            (("/usr/local") (assoc-ref outputs "out"))
-            (("/site-lisp/emacs-wget") "/site-lisp")))
-        (alist-cons-before
-         'build 'patch-exec-paths
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let ((wget (assoc-ref inputs "wget")))
-             (emacs-substitute-variables "wget.el"
-               ("wget-command" (string-append wget "/bin/wget")))))
-         (alist-cons-after
-          'install 'post-install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (emacs-generate-autoloads
-             "wget" (string-append (assoc-ref outputs "out")
-                                   "/share/emacs/site-lisp/")))
-          %standard-phases)))))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr/local") (assoc-ref outputs "out"))
+               (("/site-lisp/emacs-wget") "/site-lisp"))
+             #t))
+         (add-before 'build 'patch-exec-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((wget (assoc-ref inputs "wget")))
+               (emacs-substitute-variables "wget.el"
+                 ("wget-command" (string-append wget "/bin/wget"))))
+             #t))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (emacs-generate-autoloads
+              "wget" (string-append (assoc-ref outputs "out")
+                                    "/share/emacs/site-lisp/"))
+             #t)))))
     (home-page "http://www.emacswiki.org/emacs/EmacsWget")
     (synopsis "Simple file downloader for Emacs based on wget")
     (description
@@ -992,15 +993,16 @@ within a specified width.  It is useful for displaying long track titles.")
                    "doc_DATA =\n")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Add an autoloads file with the right name for guix.el.
-                   (let* ((out  (assoc-ref outputs "out"))
-                          (site (string-append out "/share/emacs/site-lisp")))
-                     (with-directory-excursion site
-                       (symlink "bbdb-loaddefs.el" "bbdb-autoloads.el"))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Add an autoloads file with the right name for guix.el.
+             (let* ((out  (assoc-ref outputs "out"))
+                    (site (string-append out "/share/emacs/site-lisp")))
+               (with-directory-excursion site
+                 (symlink "bbdb-loaddefs.el" "bbdb-autoloads.el")))
+             #t)))))
     (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "http://savannah.nongnu.org/projects/bbdb/")
     (synopsis "Contact management utility for Emacs")

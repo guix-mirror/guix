@@ -102,15 +102,16 @@ manipulate maps.")
                   "006a6l8p38a4h7y2959sqrmjjn29d8pd50zj9nypcp5ph18nybjb"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:phases (alist-replace
-                   'configure
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                     ;; This is a rudimentary build system.
-                     (substitute* "Makefile"
-                       (("prefix[[:blank:]]*=.*$")
-                        (string-append "prefix = " (assoc-ref outputs "out")
-                                       "\n"))))
-                   %standard-phases)
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; This is a rudimentary build system.
+               (substitute* "Makefile"
+                 (("prefix[[:blank:]]*=.*$")
+                  (string-append "prefix = " (assoc-ref outputs "out")
+                                 "\n")))
+               #t)))
          #:tests? #f))
       (inputs
        `(("gtk+" ,gtk+-2)

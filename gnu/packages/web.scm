@@ -775,14 +775,13 @@ used to validate and fix HTML data.")
         ;; For the log file, etc.
         "--localstatedir=/var")
        #:phases
-       (alist-cons-before
-        'build 'pre-build
-        (lambda* (#:key inputs #:allow-other-keys #:rest args)
-          ;; Uncommenting the next two lines may assist in debugging
-          ;; (substitute* "docs/man5/Makefile" (("a2x") "a2x -v"))
-          ;; (setenv "XML_DEBUG_CATALOG" "1")
-          #t)
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda* (#:key inputs #:allow-other-keys #:rest args)
+             ;; Uncommenting the next two lines may assist in debugging
+             ;; (substitute* "docs/man5/Makefile" (("a2x") "a2x -v"))
+             ;; (setenv "XML_DEBUG_CATALOG" "1")
+             #t)))))
     ;; All of the below are used to generate the documentation
     ;; (Should they be propagated inputs of asciidoc ??)
     (native-inputs `(("asciidoc" ,asciidoc)))

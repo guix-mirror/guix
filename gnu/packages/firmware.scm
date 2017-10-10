@@ -52,31 +52,31 @@
               (patches (search-patches "ath9k-htc-firmware-objcopy.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (chdir "target_firmware")
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (chdir "target_firmware")
 
-                   ;; 'configure' is a simple script that runs 'cmake' with
-                   ;; the right flags.
-                   (substitute* "configure"
-                     (("^TOOLCHAIN=.*$")
-                      (string-append "TOOLCHAIN="
-                                     (assoc-ref inputs "cross-gcc")
-                                     "\n"))))
-                 (alist-replace
-                  'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out    (assoc-ref outputs "out"))
-                           (fw-dir (string-append out "/lib/firmware")))
-                      (mkdir-p fw-dir)
-                      (for-each (lambda (file)
-                                  (copy-file file
-                                             (string-append fw-dir "/"
-                                                            (basename file))))
-                                (find-files "." "\\.fw$"))
-                      #t))
-                  %standard-phases))
+             ;; 'configure' is a simple script that runs 'cmake' with
+             ;; the right flags.
+             (substitute* "configure"
+               (("^TOOLCHAIN=.*$")
+                (string-append "TOOLCHAIN="
+                               (assoc-ref inputs "cross-gcc")
+                               "\n")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (fw-dir (string-append out "/lib/firmware")))
+               (mkdir-p fw-dir)
+               (for-each (lambda (file)
+                           (copy-file file
+                                      (string-append fw-dir "/"
+                                                     (basename file))))
+                         (find-files "." "\\.fw$"))
+              #t))))
        #:tests? #f))
 
     ;; The firmware is cross-compiled using a "bare bones" compiler (no libc.)

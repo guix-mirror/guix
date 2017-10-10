@@ -105,14 +105,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.14.8")
+   (version "1.14.10")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "082ypjlh03ss5616amgjp9ap3xwwccyh2knyyrj1a4d4x65dkwni"))
+              "02banr0wxckq62nbhc3mqidfdh2q956i2r7w2hd9bjgjb238g1vy"))
             (patches (search-patches "cairo-CVE-2016-9082.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
@@ -171,7 +171,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.4.6")
+   (version "1.5.1")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -179,7 +179,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "14yj514yfy373np3gxk930a443j1zgnwg6mm0kdzzjr0rn0qp9r1"))))
+               "0lbwzif7ndvx1iqzp7wxv6j3ilal6di2vj33cy3bha97mpyqv0sn"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -209,7 +209,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.40.6")
+   (version "1.40.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -217,7 +217,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0wz5b5knpw4gfvz3ny8l6h2ca3bpqqyh55mffkyzgsd1hdrjn5fa"))))
+              "1z0w2vrx3qh3aryfkbfijkcxxr3yjbxc2l4b0yy8rcp2wjlakwbm"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("cairo" ,cairo)
@@ -279,16 +279,17 @@ functions which were removed.")
                 "0g7s5mp14qgbfjdql0k1s8464r21g47ssn5dws6jazsnw6njhl0l"))))
     (build-system waf-build-system)
     (arguments
-     `(#:phases (alist-cons-before
-                 'configure 'set-flags
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Compile with C++11, required by gtkmm.
-                   (setenv "CXXFLAGS" "-std=c++11")
-                   ;; Allow 'bin/ganv_bench' to find libganv-1.so.
-                   (setenv "LDFLAGS"
-                           (string-append "-Wl,-rpath="
-                                          (assoc-ref outputs "out") "/lib")))
-                 %standard-phases)
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-flags
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Compile with C++11, required by gtkmm.
+             (setenv "CXXFLAGS" "-std=c++11")
+             ;; Allow 'bin/ganv_bench' to find libganv-1.so.
+             (setenv "LDFLAGS"
+                     (string-append "-Wl,-rpath="
+                                    (assoc-ref outputs "out") "/lib"))
+             #t)))
        #:tests? #f)) ; no check target
     (inputs
      `(("gtk" ,gtk+-2)
@@ -349,24 +350,24 @@ diagrams.")
      `(#:phases
        ;; Unfortunately, some of the tests in "make check" are highly dependent
        ;; on the environment therefore, some black magic is required.
-       (alist-cons-before
-        'check 'start-xserver
-        (lambda* (#:key inputs #:allow-other-keys)
-          (let ((xorg-server (assoc-ref inputs "xorg-server"))
-                (mime (assoc-ref inputs "shared-mime-info")))
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                   (mime (assoc-ref inputs "shared-mime-info")))
 
-            ;; There must be a running X server and make check doesn't start one.
-            ;; Therefore we must do it.
-            (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
-            (setenv "DISPLAY" ":1")
+               ;; There must be a running X server and make check doesn't start one.
+               ;; Therefore we must do it.
+               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+               (setenv "DISPLAY" ":1")
 
-            ;; The .lang files must be found in $XDG_DATA_HOME/gtksourceview-2.0
-            (system "ln -s gtksourceview gtksourceview-2.0")
-            (setenv "XDG_DATA_HOME" (getcwd))
+               ;; The .lang files must be found in $XDG_DATA_HOME/gtksourceview-2.0
+               (system "ln -s gtksourceview gtksourceview-2.0")
+               (setenv "XDG_DATA_HOME" (getcwd))
 
-            ;; Finally, the mimetypes must be available.
-            (setenv "XDG_DATA_DIRS" (string-append mime "/share/")) ))
-        %standard-phases)))
+               ;; Finally, the mimetypes must be available.
+               (setenv "XDG_DATA_DIRS" (string-append mime "/share/")))
+             #t)))))
     (synopsis "Widget that extends the standard GTK+ 2.x 'GtkTextView' widget")
     (description
      "GtkSourceView is a portable C library that extends the standard GTK+
@@ -427,8 +428,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (replacement gdk-pixbuf-2.36.10)
-   (version "2.36.6")
+   (version "2.36.10")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -436,8 +436,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "034279k49ydawnagqd7b1rz741n20k4y3grybzwp26zd146bjpj5"))
-            (patches (search-patches "gdk-pixbuf-list-dir.patch"))))
+              "1klsjkdbashd8yb8xjsc9ff3bz32n2id5s79nrrmqiw9df4zmxpq"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--with-x11")
@@ -484,7 +483,6 @@ in the GNOME project.")
 (define-public gdk-pixbuf+svg
   (package (inherit gdk-pixbuf)
     (name "gdk-pixbuf+svg")
-    (replacement gdk-pixbuf+svg-2.36.10)
     (inputs
      `(("librsvg" ,librsvg)
        ,@(package-inputs gdk-pixbuf)))
@@ -507,26 +505,6 @@ in the GNOME project.")
                                        "--update-cache" ,@loaders)))))))))
     (synopsis
      "GNOME image loading and manipulation library, with SVG support")))
-
-;; Graft replacement packages to fix these vulnerabilities.
-;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-2862
-;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-2870
-;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-6311
-(define-public gdk-pixbuf-2.36.10
-  (package (inherit gdk-pixbuf)
-           (version "2.36.A")
-           (source (origin
-                     (method url-fetch)
-                     (uri (string-append "mirror://gnome/sources/gdk-pixbuf/2.36/"
-                                         "gdk-pixbuf-2.36.10.tar.xz"))
-                     (sha256
-                      (base32
-                       "1klsjkdbashd8yb8xjsc9ff3bz32n2id5s79nrrmqiw9df4zmxpq"))))))
-
-(define-public gdk-pixbuf+svg-2.36.10
-  (package (inherit gdk-pixbuf+svg)
-           (version "2.36.A")
-           (source (origin (inherit (package-source gdk-pixbuf-2.36.10))))))
 
 (define-public at-spi2-core
   (package
@@ -676,7 +654,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.22.15")
+   (version "3.22.21")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -684,7 +662,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1nqgb71vx222g9fd2p017948hqybnyi69xs3n2d64clim7115868"))
+              "11vb1shgr4rlayfk0b858gz986jsn2mpjlxvr89b2kgvbjlc3lqv"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
@@ -898,18 +876,19 @@ images onto Cairo surfaces.")
                    "godir = $(moddir)\n")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let* ((out   (assoc-ref outputs "out"))
-                          (bin   (string-append out "/bin"))
-                          (guile (assoc-ref inputs "guile")))
-                     (substitute* (find-files bin ".*")
-                       (("guile")
-                        (string-append guile "/bin/guile -L "
-                                       out "/share/guile/site/2.0 -C "
-                                       out "/share/guile/site/2.0 ")))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (guile (assoc-ref inputs "guile")))
+               (substitute* (find-files bin ".*")
+                 (("guile")
+                  (string-append guile "/bin/guile -L "
+                                 out "/share/guile/site/2.0 -C "
+                                 out "/share/guile/site/2.0 "))))
+             #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
@@ -1183,7 +1162,7 @@ extensive documentation, including API reference and a tutorial.")
      `(#:python ,python-2
        ,@(substitute-keyword-arguments (package-arguments python-pycairo)
            ((#:phases phases)
-            `(alist-delete 'patch-waf ,phases))
+            `(modify-phases ,phases (delete 'patch-waf)))
            ((#:native-inputs native-inputs)
             `(alist-delete "python-waf" ,native-inputs)))))
     ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
@@ -1277,7 +1256,7 @@ write GNOME applications.")
        #:test-target "test"
        #:tests? #f ; Tests fail with "Gtk cannot open display:"
        #:phases
-       (alist-delete 'configure %standard-phases)))
+       (modify-phases %standard-phases (delete 'configure))))
     (build-system gnu-build-system)
     (home-page "https://pwmt.org/projects/girara/")
     (synopsis "Library for minimalistic gtk+3 user interfaces")

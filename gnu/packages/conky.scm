@@ -50,22 +50,21 @@
          ;; TODO: add 'ncurses.pc' to the ncurses package.
          "-DBUILD_NCURSES=false")
        #:phases
-       (alist-cons-after
-        'unpack 'add-freetype-to-search-path
-        (lambda* (#:key inputs #:allow-other-keys)
-          (substitute* "cmake/ConkyPlatformChecks.cmake"
-            (("set\\(INCLUDE_SEARCH_PATH")
-             (string-append
-              "set(INCLUDE_SEARCH_PATH "
-              (assoc-ref inputs "freetype") "/include/freetype2 ")))
-          #t)
-        (alist-replace
-         'install
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-             (mkdir-p bin)
-             (install-file "src/conky" bin)))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-freetype-to-search-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "cmake/ConkyPlatformChecks.cmake"
+               (("set\\(INCLUDE_SEARCH_PATH")
+                (string-append
+                 "set(INCLUDE_SEARCH_PATH "
+                 (assoc-ref inputs "freetype") "/include/freetype2 ")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (install-file "src/conky" bin))
+             #t)))))
     (inputs
      `(("freetype" ,freetype)
        ("ncurses" ,ncurses)

@@ -120,7 +120,7 @@ rates.")
 (define-public pulseaudio
   (package
     (name "pulseaudio")
-    (version "10.0")
+    (version "11.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -128,7 +128,7 @@ rates.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0mrg8qvpwm4ifarzphl3749p7p050kdx1l6mvsaj03czvqj6h653"))
+               "0sf92knqkvqmfhrbz4vlsagzqlps72wycpmln5dygicg07a0a8q7"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated

@@ -119,26 +119,25 @@
         ("xproto" ,xproto)))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'install 'install-data
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((cf-files (assoc-ref inputs "xorg-cf-files"))
-                (out (assoc-ref outputs "out"))
-                (unpack (assoc-ref %standard-phases 'unpack))
-                (patch-source-shebangs
-                 (assoc-ref %standard-phases 'patch-source-shebangs)))
-            (mkdir "xorg-cf-files")
-            (with-directory-excursion "xorg-cf-files"
-              (apply unpack (list #:source cf-files))
-              (apply patch-source-shebangs (list #:source cf-files))
-              (substitute* '("mingw.cf" "Imake.tmpl" "nto.cf" "os2.cf"
-                             "linux.cf" "Amoeba.cf" "cygwin.cf")
-                (("/bin/sh") (which "bash")))
-              (and (zero? (system* "./configure"
-                                   (string-append "SHELL=" (which "bash"))
-                                   (string-append "--prefix=" out)))
-                   (zero? (system* "make" "install"))))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((cf-files (assoc-ref inputs "xorg-cf-files"))
+                   (out (assoc-ref outputs "out"))
+                   (unpack (assoc-ref %standard-phases 'unpack))
+                   (patch-source-shebangs
+                    (assoc-ref %standard-phases 'patch-source-shebangs)))
+               (mkdir "xorg-cf-files")
+               (with-directory-excursion "xorg-cf-files"
+                 (apply unpack (list #:source cf-files))
+                 (apply patch-source-shebangs (list #:source cf-files))
+                 (substitute* '("mingw.cf" "Imake.tmpl" "nto.cf" "os2.cf"
+                                "linux.cf" "Amoeba.cf" "cygwin.cf")
+                   (("/bin/sh") (which "bash")))
+                 (and (zero? (system* "./configure"
+                                      (string-append "SHELL=" (which "bash"))
+                                      (string-append "--prefix=" out)))
+                      (zero? (system* "make" "install"))))))))))
     (home-page "http://www.x.org")
     (synopsis "Source code configuration and build system")
     (description

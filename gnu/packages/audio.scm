@@ -620,23 +620,21 @@ language and software synthesizer.")
      `(#:tests? #f ; no "check" target
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
-       (alist-cons-after
-        'unpack 'patch-makefile-and-enter-directory
-        (lambda _
-          (substitute* "libs/Makefile"
-            (("/sbin/ldconfig") "true")
-            (("^LIBDIR =.*") "LIBDIR = lib\n"))
-          (chdir "libs")
-          #t)
-        (alist-cons-after
-         'install
-         'install-symlink
-         (lambda _
-           (symlink "libclalsadrv.so"
-                    (string-append (assoc-ref %outputs "out")
-                                   "/lib/libclalsadrv.so.2")))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefile-and-enter-directory
+           (lambda _
+             (substitute* "libs/Makefile"
+               (("/sbin/ldconfig") "true")
+               (("^LIBDIR =.*") "LIBDIR = lib\n"))
+             (chdir "libs")
+             #t))
+         (add-after 'install 'install-symlink
+           (lambda _
+             (symlink "libclalsadrv.so"
+                      (string-append (assoc-ref %outputs "out")
+                                     "/lib/libclalsadrv.so.2"))))
          ;; no configure script
-         (alist-delete 'configure %standard-phases)))))
+         (delete 'configure))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("fftw" ,fftw)))
@@ -975,11 +973,9 @@ follower.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-after
-        'unpack
-        'remove-broken-symlinks
-        (lambda _ (delete-file-recursively "m4") #t)
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-broken-symlinks
+           (lambda _ (delete-file-recursively "m4") #t)))))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("alsa-lib" ,alsa-lib)
@@ -1018,12 +1014,11 @@ also play midifiles using a Soundfont.")
        ("unzip" ,unzip)))
     (arguments
      '(#:phases
-       (alist-cons-after
-        'unpack 'bootstrap
-        (lambda _
-          (substitute* "bootstrap" (("\r\n") "\n"))
-          (zero? (system* "sh" "bootstrap")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (substitute* "bootstrap" (("\r\n") "\n"))
+             (zero? (system* "sh" "bootstrap")))))))
     (home-page "http://www.audiocoding.com/faad2.html")
     (synopsis "MPEG-4 and MPEG-2 AAC decoder")
     (description
@@ -1677,7 +1672,7 @@ software.")
                      "TYPE=mdaPiano"
                      (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:tests? #f ; no check target
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("lv2" ,lv2)
        ("lvtk" ,lvtk)))
@@ -1700,7 +1695,7 @@ software.")
                      "TYPE=mdaEPiano"
                      (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:tests? #f ; no check target
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (home-page "http://elephly.net/lv2/mdaepiano.html")
     (synopsis "LV2 port of the mda EPiano plugin")
     (description "An LV2 port of the mda EPiano VSTi.")))
@@ -2093,19 +2088,19 @@ Suil currently supports every combination of Gtk 2, Qt 4, and X11.")
              (string-append "--with-default-path="
                             (assoc-ref %outputs "out") "/etc/timidity"))
        #:phases
-       (alist-cons-after
-        'install 'install-config
-        (lambda _
-          (let ((out (string-append (assoc-ref %outputs "out")
-                                    "/etc/timidity")))
-            (mkdir-p out)
-            (call-with-output-file
-                (string-append out "/timidity.cfg")
-              (lambda (port)
-                (format port (string-append "source "
-                                            (assoc-ref %build-inputs "freepats")
-                                            "/share/freepats/freepats.cfg"))))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'install-config
+           (lambda _
+             (let ((out (string-append (assoc-ref %outputs "out")
+                                       "/etc/timidity")))
+               (mkdir-p out)
+               (call-with-output-file
+                   (string-append out "/timidity.cfg")
+                 (lambda (port)
+                   (format port (string-append "source "
+                                               (assoc-ref %build-inputs "freepats")
+                                               "/share/freepats/freepats.cfg")))))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ao" ,ao)
@@ -2144,16 +2139,15 @@ disks as various audio file formats.")
     (arguments
      `(#:tests? #f                      ; no check target
        #:phases
-       (alist-cons-after
-        'install 'remove-libvamp-hostsdk.la
-        (lambda* (#:key outputs #:allow-other-keys)
-          ;; https://bugs.launchpad.net/ubuntu/+source/vamp-plugin-sdk/+bug/1253656
-          (for-each delete-file
-                    (let ((out (assoc-ref outputs "out")))
-                      (list (string-append out "/lib/libvamp-sdk.la")
-                            (string-append out "/lib/libvamp-hostsdk.la"))))
-          #t)
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-libvamp-hostsdk.la
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; https://bugs.launchpad.net/ubuntu/+source/vamp-plugin-sdk/+bug/1253656
+             (for-each delete-file
+                       (let ((out (assoc-ref outputs "out")))
+                         (list (string-append out "/lib/libvamp-sdk.la")
+                               (string-append out "/lib/libvamp-hostsdk.la"))))
+             #t)))))
     (inputs
      `(("libsndfile" ,libsndfile)))
     (native-inputs
@@ -2315,11 +2309,10 @@ Tracker 3 S3M and Impulse Tracker IT files.")
        ("file" ,file)))
     (arguments
      '(#:phases
-       (alist-cons-after
-        'unpack 'bootstrap
-        (lambda _
-          (zero? (system* "sh" "bootstrap")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "sh" "bootstrap")))))))
     (home-page "http://www.surina.net/soundtouch/")
     (synopsis
      "Audio processing library for changing tempo, pitch and playback rate")
@@ -2453,11 +2446,10 @@ portions of LAME.")
      '(#:phases
        ;; Autoreconf is necessary because the audacity-compat patch modifies
        ;; .in files.
-       (alist-cons-after
-        'unpack 'autoreconf
-        (lambda _
-          (zero? (system* "autoreconf" "-vif")))
-        %standard-phases)
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))
        #:tests? #f))                    ;no 'check' target
     (home-page "http://www.portaudio.com/")
     (synopsis "Audio I/O library")
@@ -2521,14 +2513,13 @@ synthesizer written in C++.")
        ("pulseaudio" ,pulseaudio)))
     (arguments
      '(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (setenv "CC" "gcc")
-          (zero?
-           (system* "./configure"
-                    (string-append "--prefix=" (assoc-ref outputs "out")))))
-        %standard-phases)
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "CC" "gcc")
+             (zero?
+              (system* "./configure"
+                       (string-append "--prefix=" (assoc-ref outputs "out")))))))
        ;; No 'check' target.
        #:tests? #f))
     (home-page "http://themaister.net/rsound.html")
@@ -2595,22 +2586,20 @@ result.")
      `(#:tests? #f ; no "check" target
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
-       (alist-cons-after
-        'unpack 'patch-makefile-and-enter-directory
-        (lambda _
-          (substitute* "libs/Makefile"
-            (("ldconfig") "true")
-            (("^LIBDIR =.*") "LIBDIR = lib\n"))
-          (chdir "libs") #t)
-        (alist-cons-after
-         'install
-         'install-symlink
-         (lambda _
-           (symlink "libzita-convolver.so"
-                    (string-append (assoc-ref %outputs "out")
-                                   "/lib/libzita-convolver.so.3")))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefile-and-enter-directory
+           (lambda _
+             (substitute* "libs/Makefile"
+               (("ldconfig") "true")
+               (("^LIBDIR =.*") "LIBDIR = lib\n"))
+             (chdir "libs") #t))
+         (add-after 'install 'install-symlink
+           (lambda _
+             (symlink "libzita-convolver.so"
+                      (string-append (assoc-ref %outputs "out")
+                                     "/lib/libzita-convolver.so.3"))))
          ;; no configure script
-         (alist-delete 'configure %standard-phases)))))
+         (delete 'configure))))
     (inputs `(("fftwf" ,fftwf)))
     (home-page "http://kokkinizita.linuxaudio.org")
     (synopsis "Fast, partitioned convolution engine library")
@@ -2685,23 +2674,21 @@ provide high-quality sample rate conversion.")
      `(#:tests? #f ; no "check" target
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
-       (alist-cons-after
-        'unpack 'patch-makefile-and-enter-directory
-        (lambda _
-          (substitute* "libs/Makefile"
-            (("ldconfig") "true")
-            (("^LIBDIR =.*") "LIBDIR = lib\n"))
-          (chdir "libs")
-          #t)
-        (alist-cons-after
-         'install
-         'install-symlink
-         (lambda _
-           (symlink "libzita-alsa-pcmi.so"
-                    (string-append (assoc-ref %outputs "out")
-                                   "/lib/libzita-alsa-pcmi.so.0")))
-         ;; no configure script
-         (alist-delete 'configure %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefile-and-enter-directory
+           (lambda _
+             (substitute* "libs/Makefile"
+               (("ldconfig") "true")
+               (("^LIBDIR =.*") "LIBDIR = lib\n"))
+             (chdir "libs")
+             #t))
+         (add-after 'install 'install-symlink
+           (lambda _
+             (symlink "libzita-alsa-pcmi.so"
+                      (string-append (assoc-ref %outputs "out")
+                                     "/lib/libzita-alsa-pcmi.so.0"))))
+          ;; no configure script
+          (delete 'configure))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("fftw" ,fftw)))

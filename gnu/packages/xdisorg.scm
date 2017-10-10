@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
@@ -70,7 +70,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages bison))
+  #:use-module (gnu packages bison)
+  #:use-module (ice-9 match))
 
 ;; packages outside the x.org system proper
 
@@ -289,7 +290,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.81")
+    (version "2.4.83")
     (source
       (origin
         (method url-fetch)
@@ -299,15 +300,30 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "1bhimr6za2ddisrvrv1qqd7c2a59s7jc954sjycq2w68b8cmrh4c"))
+          "1minzvsyz5hgm6ixpj8ysa6jsv7vm8qc8nx390jxdsk0v9ljd983"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       '(,@(match (%current-system)
+             ("armhf-linux"
+              '("--enable-exynos-experimental-api"
+                "--enable-omap-experimental-api"
+                ;; XXX: This fails a symbol check on a build machine:
+                ;; <https://hydra.gnu.org/build/2270314/nixlog/4/raw>
+                ;; TODO: Update the list of symbols.
+                ;;"--enable-etnaviv-experimental-api"
+                "--enable-tegra-experimental-api"
+                "--enable-freedreno-kgsl"))
+             ("aarch64-linux"
+              '("--enable-tegra-experimental-api"
+                "--enable-freedreno-kgsl"))
+             (_ '())))))
     (inputs
-      `(("libpciaccess" ,libpciaccess)
-        ("libpthread-stubs" ,libpthread-stubs)))
+     `(("libpciaccess" ,libpciaccess)))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
-    (home-page "http://dri.freedesktop.org/wiki/")
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://dri.freedesktop.org/wiki/")
     (synopsis "Direct rendering userspace library")
     (description "The Direct Rendering Infrastructure, also known as the DRI,
 is a framework for allowing direct access to graphics hardware under the
@@ -713,7 +729,7 @@ Guile will work for XBindKeys.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-wm" ,xcb-util-wm)))
     (arguments
-     '(#:phases (alist-delete 'configure %standard-phases)
+     '(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f  ; no check target
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))))
@@ -820,7 +836,8 @@ within a single process.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
-       #:phases (alist-delete 'configure %standard-phases) ; no configure script
+       ;; no configure script
+       #:phases (modify-phases %standard-phases (delete 'configure))
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "MANDIR=/share/man/man1"
                           "CC=gcc")))

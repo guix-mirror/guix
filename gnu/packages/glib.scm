@@ -67,7 +67,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.10.18")
+    (version "1.10.22")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -75,7 +75,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "0jjirhw6xwz2ffmbg5kr79108l8i1bdaw7szc67n3qpkygaxsjb0"))
+                "15vv9gz5i4f5l7h0d045qz5iyvl89hjk2k83lb4vbizd7qg41cg2"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -137,7 +137,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.52.2")
+   (version "2.52.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -145,7 +145,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1l65kab6jr9zlllgbjcbvrbgah3sdd577fpw4pdb2j195ag5s3ph"))
+              "0a71wkkhkvad84gm30w13micxxgqqw3sxhybj7nd9z60lwspdvi5"))
             (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
@@ -504,22 +504,23 @@ has an ease of use unmatched by other C++ callback libraries.")
                "1926b3adx903hzvdp8glblsgjyadzqnwgkj8hg605d4wv98m1n0z"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-cons-before
-                 'build 'pre-build
-                 (lambda _
-                   ;; This test uses /etc/fstab as an example file to read
-                   ;; from; choose a better example.
-                   (substitute* "tests/giomm_simple/main.cc"
-                     (("/etc/fstab")
-                      (string-append (getcwd)
-                                     "/tests/giomm_simple/main.cc")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; This test uses /etc/fstab as an example file to read
+             ;; from; choose a better example.
+             (substitute* "tests/giomm_simple/main.cc"
+               (("/etc/fstab")
+                (string-append (getcwd)
+                               "/tests/giomm_simple/main.cc")))
 
-                   ;; This test does a DNS lookup, and then expects to be able
-                   ;; to open a TLS session; just skip it.
-                   (substitute* "tests/giomm_tls_client/main.cc"
-                     (("Gio::init.*$")
-                      "return 77;\n")))
-                 %standard-phases)))
+             ;; This test does a DNS lookup, and then expects to be able
+             ;; to open a TLS session; just skip it.
+             (substitute* "tests/giomm_tls_client/main.cc"
+               (("Gio::init.*$")
+                "return 77;\n"))
+             #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")))
     (propagated-inputs

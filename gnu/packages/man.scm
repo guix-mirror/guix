@@ -154,7 +154,7 @@ the traditional flat-text whatis databases.")
                 "1gri0rm9i3a6w5dvsmwawhwzywl5x80dwq05d2v8l92knv2hbh6m"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-delete 'configure %standard-phases)
+     '(#:phases (modify-phases %standard-phases (delete 'configure))
 
        ;; The 'all' target depends on three targets that directly populate
        ;; $(MANDIR) based on its current contents.  Doing that in parallel
@@ -220,7 +220,7 @@ automatically.")
     (arguments
      `(#:tests? #f ; no "check" target
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("gawk" ,gawk)))
     (home-page "https://github.com/mvertes/txt2man")

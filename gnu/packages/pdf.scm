@@ -76,14 +76,14 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.56.0")
+   (version "0.59.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0wviayidfv2ix2ql0d4nl9r1ia6qi5kc1nybd9vjx27dk7gvm7c6"))))
+              "0hcnghliyr8pr887qza18qfgaclw5jr889g1cjcglkni9jr2dmm3"))))
    (build-system gnu-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
@@ -300,19 +300,19 @@ reading and editing of existing PDF files.")
                              (assoc-ref %build-inputs "freetype")
                              "/include/freetype2"))
       #:phases
-       (alist-replace
-        'install
-        (lambda* (#:key outputs inputs #:allow-other-keys #:rest args)
-         (let* ((install (assoc-ref %standard-phases 'install))
-                (out (assoc-ref outputs "out"))
-                (xpdfrc (string-append out "/etc/xpdfrc"))
-                (gs-fonts (assoc-ref inputs "gs-fonts")))
-               (apply install args)
-               (substitute* xpdfrc
+      (modify-phases %standard-phases
+        (replace 'install
+          (lambda* (#:key outputs inputs #:allow-other-keys #:rest args)
+            (let* ((install (assoc-ref %standard-phases 'install))
+                   (out (assoc-ref outputs "out"))
+                   (xpdfrc (string-append out "/etc/xpdfrc"))
+                   (gs-fonts (assoc-ref inputs "gs-fonts")))
+              (apply install args)
+              (substitute* xpdfrc
                 (("/usr/local/share/ghostscript/fonts")
                  (string-append gs-fonts "/share/fonts/type1/ghostscript"))
-                (("#fontFile") "fontFile"))))
-        %standard-phases)))
+                (("#fontFile") "fontFile")))
+            #t)))))
    (synopsis "Viewer for PDF files based on the Motif toolkit")
    (description
     "Xpdf is a viewer for Portable Document Format (PDF) files.")
@@ -343,7 +343,7 @@ reading and editing of existing PDF files.")
                           "CC=gcc")
        #:tests? #f ; Package does not contain tests.
        #:phases
-       (alist-delete 'configure %standard-phases)))
+       (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://pwmt.org/projects/zathura-cb/")
     (synopsis "Comic book support for zathura (libarchive backend)")
     (description "The zathura-cb plugin adds comic book support to zathura
@@ -374,7 +374,7 @@ using libarchive.")
                           "CC=gcc")
        #:tests? #f ; Package does not contain tests.
        #:phases
-       (alist-delete 'configure %standard-phases)))
+       (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://pwmt.org/projects/zathura-ps/")
     (synopsis "PS support for zathura (libspectre backend)")
     (description "The zathura-ps plugin adds PS support to zathura
@@ -406,7 +406,7 @@ using libspectre.")
                           "CC=gcc")
        #:tests? #f ; Package does not contain tests.
        #:phases
-       (alist-delete 'configure %standard-phases)))
+       (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://pwmt.org/projects/zathura-djvu/")
     (synopsis "DjVu support for zathura (DjVuLibre backend)")
     (description "The zathura-djvu plugin adds DjVu support to zathura
@@ -439,7 +439,7 @@ using the DjVuLibre library.")
                           "CC=gcc")
        #:tests? #f ; Package does not include tests.
        #:phases
-       (alist-delete 'configure %standard-phases)))
+       (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://pwmt.org/projects/zathura-pdf-poppler/")
     (synopsis "PDF support for zathura (poppler backend)")
     (description "The zathura-pdf-poppler plugin adds PDF support to zathura
@@ -477,7 +477,7 @@ by using the poppler rendering engine.")
        #:tests? #f ; Tests fail: "Gtk cannot open display".
        #:test-target "test"
        #:phases
-       (alist-delete 'configure %standard-phases)))
+       (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://pwmt.org/projects/zathura/")
     (synopsis "Lightweight keyboard-driven PDF viewer")
     (description "Zathura is a customizable document viewer.  It provides a
@@ -510,14 +510,14 @@ interaction.")
      `(#:configure-flags '("-DPODOFO_BUILD_SHARED=ON"
                            "-DPODOFO_BUILD_STATIC=ON")
        #:phases
-         (alist-cons-before
-         'configure 'patch
-         (lambda* (#:key inputs #:allow-other-keys)
-           (let ((freetype (assoc-ref inputs "freetype")))
-             ;; Look for freetype include files in the correct place.
-             (substitute* "cmake/modules/FindFREETYPE.cmake"
-               (("/usr/local") freetype))))
-         %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((freetype (assoc-ref inputs "freetype")))
+               ;; Look for freetype include files in the correct place.
+               (substitute* "cmake/modules/FindFREETYPE.cmake"
+                 (("/usr/local") freetype)))
+             #t)))))
     (home-page "http://podofo.sourceforge.net")
     (synopsis "Tools to work with the PDF file format")
     (description
@@ -763,12 +763,13 @@ the PDF pages.")
                 "0bw224vb7jh0lrqaf4jgxk48xglvxs674qcpj5y0axyfbh896cfk"))))
     (build-system gnu-build-system)
     (arguments
-      '(#:phases (alist-cons-after
-                  'unpack 'patch-ldconfig
-                  (lambda _
-                   (substitute* "mk/Autoconf.mk"
-                    (("/sbin/ldconfig -p") "echo lib")) #t)
-                  (alist-delete 'configure %standard-phases))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-ldconfig
+           (lambda _
+             (substitute* "mk/Autoconf.mk"
+               (("/sbin/ldconfig -p") "echo lib")) #t))
+         (delete 'configure))
         #:tests? #f
         #:make-flags (list "CC=gcc"
                            (string-append "prefix=" (assoc-ref %outputs "out")))))

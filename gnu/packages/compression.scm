@@ -470,7 +470,7 @@ some compression ratio).")
     (description
      "Lzip is a lossless data compressor with a user interface similar to the
 one of gzip or bzip2.  Lzip decompresses almost as fast as gzip and compresses
-more than bzip2, which makes it well suited for software distribution and data
+more than bzip2, which makes it well-suited for software distribution and data
 archiving.  Lzip is a clean implementation of the LZMA algorithm.")
     (license license:gpl3+)))
 
@@ -521,14 +521,14 @@ decompressors when faced with corrupted input.")
      `(("which" ,which)))
     (arguments
      `(#:phases
-        (alist-cons-after
-         'patch-source-shebangs 'unpatch-source-shebang
-         ;; revert the patch-shebang phase on a script which is
-         ;; in fact test data
-         (lambda _
-           (substitute* "tests/shar-1.ok"
-             (((which "sh")) "/bin/sh")))
-         %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'unpatch-source-shebang
+           ;; revert the patch-shebang phase on a script which is
+           ;; in fact test data
+           (lambda _
+             (substitute* "tests/shar-1.ok"
+               (((which "sh")) "/bin/sh"))
+             #t)))))
     (home-page "https://www.gnu.org/software/sharutils/")
     (synopsis "Archives in shell scripts, uuencode/uudecode")
     (description

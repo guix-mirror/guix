@@ -361,32 +361,31 @@ login, passwd, su, groupadd, and useradd.")
                "05yxrp44ky2kg6qknk1ih0kvwkgbn9fbz77r3vci7agslh5wjm8g"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-replace 'configure
-                               (lambda* (#:key inputs outputs
-                                         #:allow-other-keys)
-                                 (let* ((out    (assoc-ref outputs "out"))
-                                        (man8   (string-append
-                                                 out "/share/man/man8"))
-                                        (sbin   (string-append out "/sbin"))
-                                        (shadow (assoc-ref inputs "shadow"))
-                                        (login  (string-append shadow
-                                                               "/bin/login")))
-                                   (substitute* "Makefile"
-                                     (("^SBINDIR.*")
-                                      (string-append "SBINDIR = " out
-                                                     "/sbin\n"))
-                                     (("^MANDIR.*")
-                                      (string-append "MANDIR = " out
-                                                     "/share/man/man8\n")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (man8   (string-append out "/share/man/man8"))
+                    (sbin   (string-append out "/sbin"))
+                    (shadow (assoc-ref inputs "shadow"))
+                    (login  (string-append shadow "/bin/login")))
+               (substitute* "Makefile"
+                 (("^SBINDIR.*")
+                  (string-append "SBINDIR = " out
+                                 "/sbin\n"))
+                 (("^MANDIR.*")
+                  (string-append "MANDIR = " out
+                                 "/share/man/man8\n")))
 
-                                   ;; Pick the right 'login' by default.
-                                   (substitute* "mingetty.c"
-                                     (("\"/bin/login\"")
-                                      (string-append "\"" login "\"")))
+               ;; Pick the right 'login' by default.
+               (substitute* "mingetty.c"
+                 (("\"/bin/login\"")
+                  (string-append "\"" login "\"")))
 
-                                   (mkdir-p sbin)
-                                   (mkdir-p man8)))
-                               %standard-phases)
+               (mkdir-p sbin)
+               (mkdir-p man8))
+             #t)))
        #:tests? #f))                              ; no tests
     (inputs `(("shadow" ,shadow)))
 
@@ -725,25 +724,25 @@ by bandwidth they use.")
                          ("perl-x11-protocol" ,perl-x11-protocol)))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'install 'set-load-paths
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          ;; Put the perl-tk and perl-x11-protocol modules in the perl inc
-          ;; path for PROG
-          (let* ((out  (assoc-ref outputs "out"))
-                 (prog (string-append out "/bin/cssh"))
-                 (perl-ver ,(package-version perl))
-                 (x11-inc (string-append
-                           (assoc-ref inputs "perl-x11-protocol")
-                           "/lib/perl5/site_perl/" perl-ver))
-                 (tk-inc (string-append
-                          (assoc-ref inputs "perl-tk")
-                          "/lib/perl5/site_perl/" perl-ver
-                          "/x86_64-linux")))
-            (wrap-program
-             prog
-             `("PERL5LIB" ":" prefix (,x11-inc ,tk-inc)))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'set-load-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Put the perl-tk and perl-x11-protocol modules in the perl inc
+             ;; path for PROG
+             (let* ((out  (assoc-ref outputs "out"))
+                    (prog (string-append out "/bin/cssh"))
+                    (perl-ver ,(package-version perl))
+                    (x11-inc (string-append
+                              (assoc-ref inputs "perl-x11-protocol")
+                              "/lib/perl5/site_perl/" perl-ver))
+                    (tk-inc (string-append
+                             (assoc-ref inputs "perl-tk")
+                             "/lib/perl5/site_perl/" perl-ver
+                             "/x86_64-linux")))
+               (wrap-program
+                   prog
+                 `("PERL5LIB" ":" prefix (,x11-inc ,tk-inc))))
+             #t)))))
     ;; The clusterssh.sourceforge.net address requires login to view
     (home-page "https://sourceforge.net/projects/clusterssh/")
     (synopsis "Secure concurrent multi-server terminal control")
@@ -908,13 +907,14 @@ commands and their arguments.")
                 "0l0l5gz3d5j9bqjsbjlfcv4w4jwndllp9fmyai4x9kg6qhs6v4xl"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (chdir "wpa_supplicant")
-                   (copy-file "defconfig" ".config")
-                   (let ((port (open-file ".config" "al")))
-                     (display "
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (chdir "wpa_supplicant")
+             (copy-file "defconfig" ".config")
+             (let ((port (open-file ".config" "al")))
+               (display "
       CONFIG_DEBUG_SYSLOG=y
 
       # Choose GnuTLS (the default is OpenSSL.)
@@ -924,26 +924,23 @@ commands and their arguments.")
       CFLAGS += $(shell pkg-config libnl-3.0 --cflags)
       CONFIG_LIBNL32=y
       CONFIG_READLINE=y\n" port)
-                     (close-port port)))
+               (close-port port))))
+         (add-after 'install 'install-man-pages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (man  (string-append out "/share/man"))
+                    (man5 (string-append man "/man5"))
+                    (man8 (string-append man "/man8")))
+               (define (copy-man-page target)
+                 (lambda (file)
+                   (install-file file target)))
 
-                 (alist-cons-after
-                  'install 'install-man-pages
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out  (assoc-ref outputs "out"))
-                           (man  (string-append out "/share/man"))
-                           (man5 (string-append man "/man5"))
-                           (man8 (string-append man "/man8")))
-                      (define (copy-man-page target)
-                        (lambda (file)
-                          (install-file file target)))
-
-                      (mkdir-p man5) (mkdir man8)
-                      (for-each (copy-man-page man5)
-                                (find-files "doc/docbook" "\\.5"))
-                      (for-each (copy-man-page man8)
-                                (find-files "doc/docbook" "\\.8"))
-                      #t))
-                  %standard-phases))
+               (mkdir-p man5) (mkdir man8)
+               (for-each (copy-man-page man5)
+                         (find-files "doc/docbook" "\\.5"))
+               (for-each (copy-man-page man8)
+                         (find-files "doc/docbook" "\\.8"))
+               #t))))
 
       #:make-flags (list "CC=gcc"
                          (string-append "BINDIR=" (assoc-ref %outputs "out")
@@ -980,25 +977,24 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
     (arguments
      (substitute-keyword-arguments (package-arguments wpa-supplicant-minimal)
        ((#:phases phases)
-        `(alist-cons-after
-          'configure 'configure-for-dbus
-          (lambda _
-            (let ((port (open-file ".config" "al")))
-              (display "
+        `(modify-phases ,phases
+           (add-after 'configure 'configure-for-dbus
+             (lambda _
+               (let ((port (open-file ".config" "al")))
+                 (display "
       CONFIG_CTRL_IFACE_DBUS=y
       CONFIG_CTRL_IFACE_DBUS_NEW=y
       CONFIG_CTRL_IFACE_DBUS_INTRO=y\n" port)
-              (close-port port))
-            #t)
-          (alist-cons-after
-           'install-man-pages 'install-dbus-conf
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (dir (string-append out "/etc/dbus-1/system.d")))
-               (mkdir-p dir)
-               (copy-file "dbus/dbus-wpa_supplicant.conf"
-                          (string-append dir "/wpa_supplicant.conf"))))
-           ,phases)))))))
+                 (close-port port))
+               #t))
+          (add-after 'install-man-pages 'install-dbus-conf
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (dir (string-append out "/etc/dbus-1/system.d")))
+                (mkdir-p dir)
+                (copy-file "dbus/dbus-wpa_supplicant.conf"
+                           (string-append dir "/wpa_supplicant.conf")))
+              #t))))))))
 
 (define-public wakelan
   (package
@@ -1014,22 +1010,22 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
                 "0vydqpf44146ir6k87gmqaq6xy66xhc1gkr3nsd7jj3nhy7ypx9x"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     (mkdir-p (string-append out "/bin"))
-                     (mkdir-p (string-append out "/share/man/man1"))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir-p (string-append out "/share/man/man1"))
 
-                     ;; It's an old configure script that doesn't understand
-                     ;; the extra options we pass.
-                     (setenv "CONFIG_SHELL" (which "bash"))
-                     (zero?
-                      (system* "./configure"
-                               (string-append "--prefix=" out)
-                               (string-append "--mandir=" out
-                                              "/share/man")))))
-                 %standard-phases)
+               ;; It's an old configure script that doesn't understand
+               ;; the extra options we pass.
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                         (string-append "--mandir=" out
+                                        "/share/man")))))))
        #:tests? #f))
     (home-page "http://kernel.org")               ; really, no home page
     (synopsis "Send a wake-on-LAN packet")
@@ -1088,7 +1084,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                           "HOST=_LINUX"
                           "OPT_CFLAGS=-Wall -fno-strict-aliasing")
        #:tests? #f  ; no 'check' target.
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (home-page "http://acpica.org/")
     (synopsis "Tools for the development and debug of ACPI tables")
     (description
@@ -1198,7 +1194,7 @@ recover lost partitions and/or make non-booting disks bootable again.")
                (base32 "04kviw799qxly08zb8n5mgxfd96gyis6x69q2qiw86jnh87c4mv9"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-delete 'configure %standard-phases)
+     '(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f                      ; no check target
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                                (list (string-append "prefix=" out)))))
@@ -1227,23 +1223,23 @@ environment variable is set and output is to tty.")
                            "#!$SHELL")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'build 'patch-/bin/sh
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; Use the right shell when executing the watcher and
-                   ;; user-provided shell commands.
-                   (let ((bash (assoc-ref inputs "bash")))
-                     (substitute* '("src/direvent.c" "src/progman.c")
-                       (("\"/bin/sh\"")
-                        (string-append "\"" bash "/bin/sh\"")))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-/bin/sh
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Use the right shell when executing the watcher and
+             ;; user-provided shell commands.
+             (let ((bash (assoc-ref inputs "bash")))
+               (substitute* '("src/direvent.c" "src/progman.c")
+                 (("\"/bin/sh\"")
+                  (string-append "\"" bash "/bin/sh\"")))
 
-                     ;; Adjust the 'shell.at' test accordingly.
-                     (substitute* "tests/testsuite"
-                       (("SHELL=/bin/sh")
-                        (string-append "SHELL=" bash "/bin/sh")))
+               ;; Adjust the 'shell.at' test accordingly.
+               (substitute* "tests/testsuite"
+                 (("SHELL=/bin/sh")
+                  (string-append "SHELL=" bash "/bin/sh")))
 
-                     #t))
-                 %standard-phases)))
+               #t))))))
     (home-page "https://www.gnu.org/software/direvent/")
     (synopsis "Daemon to monitor directories for events such as file removal")
     (description
@@ -1700,7 +1696,7 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
                       (list (string-append "DESTDIR=" out)
                             "prefix=/"))
        ;; no configure script
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs `(("python-2" ,python-2)))
     (synopsis "Versatile resource statistics tool")
     (description "Dstat is a versatile replacement for @command{vmstat},

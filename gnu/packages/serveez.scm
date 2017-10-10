@@ -40,13 +40,14 @@
     (inputs `(("guile" ,guile-2.0)))
     (arguments
      `(#:configure-flags '("--enable-libserveez-install")
-       #:phases (alist-cons-before
-                 'patch-source-shebangs 'patch-test-source
-                 (lambda _
-                   (substitute*
-                       (find-files "test" "^t[0-9]{3}$")
-                     (("/bin/sh") (which "sh"))))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'patch-source-shebangs 'patch-test-source
+           (lambda _
+             (substitute*
+                 (find-files "test" "^t[0-9]{3}$")
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (home-page "https://www.gnu.org/software/serveez/")
     (synopsis "Framework for implementing IP-based servers")
     (description
