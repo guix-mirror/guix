@@ -235,6 +235,7 @@
        "http://archive.debian.org/debian/")
       (kde
        "http://download.kde.org"
+       "http://download.kde.org/Attic" ; for when it gets archived.
        ;; Mirrors from http://files.kde.org/extra/mirrors.html
        ;; Europe
        "http://mirror.easyname.at/kde"
