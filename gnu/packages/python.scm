@@ -11745,13 +11745,13 @@ format.")
 (define-public python-twisted
   (package
     (name "python-twisted")
-    (version "16.2.0")
+    (version "17.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Twisted" version ".tar.bz2"))
               (sha256
                (base32
-                "0ydxrp9myw1mvsz3qfzx5579y5llmqa82pxvqchgp5syczffi450"))))
+                "1p245mg15hkxp7hy5cyq2fgvlgjkb4cg0gwkwd148nzy1bbi3wnv"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Some tests are failing.
@@ -11761,7 +11761,10 @@ format.")
        ;;     (lambda _
        ;;       (zero? (system* "./bin/trial" "twisted")))))
     (propagated-inputs
-     `(("python-zope-interface" ,python-zope-interface)))
+     `(("python-zope-interface" ,python-zope-interface)
+       ("python-incremental" ,python-incremental)
+       ("python-constantly" ,python-constantly)
+       ("python-automat" ,python-automat)))
     (home-page "https://twistedmatrix.com/")
     (synopsis "Asynchronous networking framework written in Python")
     (description
