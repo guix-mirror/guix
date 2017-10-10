@@ -5505,3 +5505,48 @@ Web Server.")
              #t)))))
     (inputs
      `(("hdrhistogram" ,java-hdrhistogram)))))
+
+(define-public java-eclipse-jetty-util
+  (package
+    (name "java-eclipse-jetty-util")
+    (version "9.4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/eclipse/jetty.project/"
+                                  "archive/jetty-" version ".v20170531.tar.gz"))
+              (sha256
+               (base32
+                "0x7kbdvkmgr6kbsmbwiiyv3bb0d6wk25frgvld9cf8540136z9p1"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "eclipse-jetty-util.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list "**/Abstract*.java"
+             ;; requires network
+             "**/InetAddressSetTest.java"
+             ;; Assumes we are using maven
+             "**/TypeUtilTest.java"
+             ;; Error on the style of log
+             "**/StdErrLogTest.java")
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-util")
+             #t)))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-all)
+       ("perf-helper" ,java-eclipse-jetty-perf-helper)
+       ("test-helper" ,java-eclipse-jetty-test-helper)))
+    (home-page "https://www.eclipse.org/jetty/")
+    (synopsis "Utility classes for Jetty")
+    (description "The Jetty Web Server provides an HTTP server and Servlet
+container capable of serving static and dynamic content either from a standalone
+or embedded instantiation.  This package provides utility classes.")
+    (license (list l:epl1.0 l:asl2.0))))
