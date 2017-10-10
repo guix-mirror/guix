@@ -44,7 +44,6 @@
   #:use-module (guix upstream)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
-  #:use-module (gnu packages python)
   #:export (guix-package->pypi-name
             pypi->guix-package
             %pypi-updater))
