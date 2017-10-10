@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2012, 2017 Ludovic Courtès <ludo@gnu.org>
@@ -46,6 +46,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
+    (replacement mit-krb5-1.15.2)
     (version "1.15.1")
     (source (origin
               (method url-fetch)
@@ -92,6 +93,19 @@ cryptography.")
                                    "See NOTICE in the distribution."))
     (home-page "http://web.mit.edu/kerberos/")
     (properties '((cpe-name . "kerberos")))))
+
+(define mit-krb5-1.15.2 ; CVE-2017-{11368,11462}
+  (package
+    (inherit mit-krb5)
+    (version "1.15.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://web.mit.edu/kerberos/dist/krb5/"
+                                  (version-major+minor version)
+                                  "/krb5-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0zn8s7anb10hw3nzwjz7vg10fgmmgvwnibn2zrn3nppjxn9f6f8n"))))))
 
 (define-public shishi
   (package

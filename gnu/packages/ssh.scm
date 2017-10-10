@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,14 +129,14 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "7.5p1")
+   (version "7.6p1")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1w7rb5gbrikxdkp8w7zxnci4549gk4bw1lml01s59w5rzb2y6ilq"))))
+               "08qpsb8mrzcx8wgvz9insiyvq7sbg26yj5nvl2m5n57yvppcl8x3"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)))
    (inputs `(("openssl" ,openssl)
@@ -603,3 +604,40 @@ monitor it, restarting it as necessary should it die or stop passing traffic.")
      ;; copy of this license in their headers, but there's no separate file
      ;; with that information.
      (license:non-copyleft "file://autossh.c"))))
+
+(define-public pdsh
+  (package
+    (name "pdsh")
+    (version "2.29")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://storage.googleapis.com/"
+                           "google-code-archive-downloads/v2/code.google.com/"
+                           "pdsh/pdsh-" version ".tar.bz2"))
+       (sha256
+        (base32 "1kvzz01fyaxfqmbh53f4ljfsgvxdykh5jyr6fh4f1bw2ywxr1w2p"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--with-ssh")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/sh
+           (lambda _
+             (substitute* '("tests/runtests.sh"
+                            "tests/test-lib.sh"
+                            "tests/test-modules/pcptest.c")
+               (("/bin/sh") (which "bash")))
+             #t)))))
+    (inputs
+     `(("openssh" ,openssh)
+       ("mit-krb5" ,mit-krb5)
+       ("perl" ,perl)))
+    (home-page "https://code.google.com/archive/p/pdsh")
+    (synopsis "Parallel distributed shell")
+    (description "Pdsh is a an efficient, multithreaded remote shell client
+which executes commands on multiple remote hosts in parallel.  Pdsh implements
+dynamically loadable modules for extended functionality such as new remote
+shell services and remote host selection.")
+    (license license:gpl2+)))

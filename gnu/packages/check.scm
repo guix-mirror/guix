@@ -9,6 +9,8 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +65,20 @@ faults or other signals.  The output from unit tests can be used within
 source code editors and IDEs.")
     (license lgpl2.1+)))
 
+;; XXX: Some packages require this newer version.  Incorporate this
+;; into the main 'check' package during the next rebuild cycle.
+(define-public check-0.11.0
+  (package
+    (inherit check)
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/libcheck/check/releases"
+                                  "/download/" version "/check-" version ".tar.gz"))
+              (sha256
+               (base32
+                "05jn1pgb7hqb937xky2147nnq3r4qy5wwr79rddpax3bms5a9xr4"))))))
+
 (define-public cunit
   (package
     (name "cunit")
@@ -77,11 +93,10 @@ source code editors and IDEs.")
          "057j82da9vv4li4z5ri3227ybd18nzyq81f6gsvhifs5z0vr3cpm"))))
     (build-system gnu-build-system)
     (arguments '(#:phases
-                 (alist-cons-before
-                  'configure 'autoconf
-                  (lambda _
-                    (zero? (system* "autoreconf" "-vfi")))
-                  %standard-phases)))
+                 (modify-phases %standard-phases
+                   (add-before 'configure 'autoconf
+                     (lambda _
+                       (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
@@ -294,3 +309,26 @@ generation.")
 C++ but is used in C and C++ projects and frequently used in embedded systems
 but it works for any C/C++ project.")
     (license bsd-3)))
+
+(define-public python-parameterized
+  (package
+    (name "python-parameterized")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "parameterized" version))
+       (sha256
+        (base32
+         "1qj1939shm48d9ql6fm1nrdy4p7sdyj8clz1szh5swwpf1qqxxfa"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; there are no tests
+    (home-page "https://github.com/wolever/parameterized")
+    (synopsis "Parameterized testing with any Python test framework")
+    (description
+     "Parameterized is a Python library that aims to fix parameterized testing
+for every Python test framework.  It supports nose, py.test, and unittest.")
+    (license bsd-2)))
+
+(define-public python2-parameterized
+  (package-with-python2 python-parameterized))

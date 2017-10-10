@@ -33,6 +33,7 @@
   #:use-module (gnu packages m4)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system asdf)
@@ -42,6 +43,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libffcall)
@@ -228,21 +230,31 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
 (define-public clisp
   (package
     (name "clisp")
-    (version "2.49")
+    (version "2.49-60")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "mirror://gnu/clisp/release/" version
-                           "/clisp-" version ".tar.gz"))
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "http://hg.code.sf.net/p/clisp/clisp")
+             (changeset "clisp_2_49_60-2017-06-25")))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "0rp82nqp5362isl9i34rwgg04cidz7izljd9d85pqcw1qr964bxx"))))
+        (base32 "0qjv3z274rbdmb941hy03hl63f4z7bmci234f8dyz4skgfr82d3i"))
+       (patches (search-patches "clisp-remove-failing-test.patch"))))
     (build-system gnu-build-system)
     (inputs `(("libffcall" ,libffcall)
-              ("readline" ,readline-6.2)
+              ("ncurses" ,ncurses)
+              ("readline" ,readline)
               ("libsigsegv" ,libsigsegv)))
     (arguments
      '(;; XXX The custom configure script does not cope well when passed
        ;; --build=<triplet>.
+       #:configure-flags '("CFLAGS=-falign-functions=4"
+                           "--enable-portability"
+                           "--with-dynamic-ffi"
+                           "--with-dynamic-modules"
+                           "--with-module=bindings/glibc"
+                           "--with-module=rawsock")
        #:build #f
        #:phases
        (modify-phases %standard-phases
@@ -262,11 +274,9 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
            (lambda _
              (substitute* "src/constobj.d"
                (("__DATE__ __TIME__") "\"1\""))
-             #t))
-         (add-before 'build 'chdir-to-source
-           (lambda _
-             ;; We are supposed to call make under the src sub-directory.
-             (chdir "src")
+             (substitute* "src/genclisph.d"
+               (("__DATE__") "\"1\"")
+               (("__TIME__") "\"1\""))
              #t)))
        ;; Makefiles seem to have race conditions.
        #:parallel-build? #f))
@@ -445,36 +455,33 @@ statistical profiler, a code coverage tool, and many other extensions.")
                   (guix build utils)
                   (guix build gnu-build-system))
        #:phases
-       (alist-replace
-        'unpack
-        (lambda* (#:key inputs #:allow-other-keys)
-          (and (zero? (system* "tar" "xzvf" (assoc-ref inputs "ccl")))
-               (begin (chdir "ccl") #t)))
-        (alist-delete
-         'configure
-         (alist-cons-before
-          'build 'pre-build
-          ;; Enter the source directory for the current platform's lisp
-          ;; kernel, and run 'make clean' to remove the precompiled one.
-          (lambda _
-            (chdir (string-append
-                    "lisp-kernel/"
-                    ,(match (or (%current-target-system) (%current-system))
-                       ("i686-linux"   "linuxx8632")
-                       ("x86_64-linux" "linuxx8664")
-                       ("armhf-linux"  "linuxarm")
-                       ;; Prevent errors when querying this package
-                       ;; on unsupported platforms, e.g. when running
-                       ;; "guix package --search="
-                       (_              "UNSUPPORTED"))))
-            (substitute* '("Makefile")
-              (("/bin/rm") "rm"))
-            (setenv "CC" "gcc")
-            (zero? (system* "make" "clean")))
-          ;; XXX Do we need to recompile the heap image as well for Guix?
-          ;; For now just use the one we already got in the tarball.
-          (alist-replace
-           'install
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key inputs #:allow-other-keys)
+             (and (zero? (system* "tar" "xzvf" (assoc-ref inputs "ccl")))
+                  (begin (chdir "ccl") #t))))
+         (delete 'configure)
+         (add-before 'build 'pre-build
+           ;; Enter the source directory for the current platform's lisp
+           ;; kernel, and run 'make clean' to remove the precompiled one.
+           (lambda _
+             (chdir (string-append
+                     "lisp-kernel/"
+                     ,(match (or (%current-target-system) (%current-system))
+                        ("i686-linux"   "linuxx8632")
+                        ("x86_64-linux" "linuxx8664")
+                        ("armhf-linux"  "linuxarm")
+                        ;; Prevent errors when querying this package
+                        ;; on unsupported platforms, e.g. when running
+                        ;; "guix package --search="
+                        (_              "UNSUPPORTED"))))
+             (substitute* '("Makefile")
+               (("/bin/rm") "rm"))
+             (setenv "CC" "gcc")
+             (zero? (system* "make" "clean"))))
+         ;; XXX Do we need to recompile the heap image as well for Guix?
+         ;; For now just use the one we already got in the tarball.
+         (replace 'install
            (lambda* (#:key outputs inputs #:allow-other-keys)
              ;; The lisp kernel built by running 'make' in lisp-kernel/$system
              ;; is put back into the original directory, so go back.  The heap
@@ -513,8 +520,8 @@ statistical profiler, a code coverage tool, and many other extensions.")
                      "CCL_DEFAULT_DIRECTORY=" libdir "\n"
                      "export CCL_DEFAULT_DIRECTORY\n"
                      "exec " libdir kernel "\n"))))
-               (chmod wrapper #o755)))
-           %standard-phases))))))
+               (chmod wrapper #o755))
+             #t)))))
     (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux"))
     (home-page "http://ccl.clozure.com/")
     (synopsis "Common Lisp implementation")

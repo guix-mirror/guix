@@ -1,0 +1,43 @@
+This test doesn't ever complete or timeout
+
+---
+ tests/socket.tst | 24 ------------------------
+ 1 file changed, 24 deletions(-)
+
+diff --git a/tests/socket.tst b/tests/socket.tst
+index 93c6310..1d976ff 100644
+--- a/tests/socket.tst
++++ b/tests/socket.tst
+@@ -551,30 +551,6 @@ T
+           interfaces))
+ ("0.0.0.0" "127.0.0.1" "0.0.0.0" "127.0.0.1")
+ 
+-(multiple-value-bind (run args) (cmd-args)
+-  (let ((se (socket:socket-server)))
+-    (ext:run-program run :arguments (append args (list "-q" "-q" "-x" (format nil "(close (socket:socket-connect ~D))" (socket:socket-server-port se))))
+-                     :wait nil :input nil :output nil)
+-    (unwind-protect
+-         (with-open-stream (so (socket:socket-accept se))
+-           (list
+-            (socket:socket-status so)
+-            (write-line "foo" so)
+-            (socket:socket-status so)
+-            #+macos (handler-case (read-char so)
+-                      (end-of-file (c)
+-                        (princ 'read-char) (princ-error c) t))
+-            #-macos (check-os-error (read-char so) (:ECONNRESET 104))
+-            (null (member (socket:socket-status so) '(:EOF :APPEND)))
+-            #+macos (string= (write-line "bar" so) "bar")
+-            #-macos (check-os-error (write-line "bar" so) (:EPIPE 32))
+-            (null (member (socket:socket-status so) '(:EOF :APPEND)))
+-            (handler-case (read-char so)
+-              (end-of-file (c)
+-                (princ 'read-char) (princ-error c) 'end-of-file))))
+-      (socket:socket-server-close se))))
+-(:OUTPUT "foo" :OUTPUT T NIL T NIL END-OF-FILE)
+-
+ ;; https://sourceforge.net/p/clisp/feature-requests/46/
+ (check-os-error (socket:socket-connect 0)
+   #-(or win32 macos) (:ECONNREFUSED 111)
+-- 
+

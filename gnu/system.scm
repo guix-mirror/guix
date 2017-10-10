@@ -231,6 +231,14 @@ directly by the user."
   (kernel-arguments boot-parameters-kernel-arguments)
   (initrd           boot-parameters-initrd))
 
+(define (ensure-not-/dev device)
+  "If DEVICE starts with a slash, return #f.  This is meant to filter out
+Linux device names such as /dev/sda, and to preserve GRUB device names and
+file system labels."
+  (if (and (string? device) (string-prefix? "/" device))
+      #f
+      device))
+
 (define (read-boot-parameters port)
   "Read boot parameters from PORT and return the corresponding
 <boot-parameters> object or #f if the format is unrecognized."
@@ -242,11 +250,6 @@ directly by the user."
        (bytevector->uuid bv 'dce))
       ((? string? device)
        device)))
-
-  (define (ensure-not-/dev device)
-    (if (and (string? device) (string-prefix? "/" device))
-        #f
-        device))
 
   (match (read port)
     (('boot-parameters ('version 0)
@@ -579,6 +582,9 @@ export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/m
 export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
 export XDG_DATA_DIRS=$HOME/.guix-profile/share:/run/current-system/profile/share
 export XDG_CONFIG_DIRS=$HOME/.guix-profile/etc/xdg:/run/current-system/profile/etc/xdg
+
+# Make sure libXcursor finds cursors installed into user or system profiles.  See <http://bugs.gnu.org/24445>
+export XCURSOR_PATH=$HOME/.icons:$HOME/.guix-profile/share/icons:/run/current-system/profile/share/icons
 
 # Ignore the default value of 'PATH'.
 unset PATH
@@ -939,7 +945,7 @@ kernel arguments for that derivation to <boot-parameters>."
                 (operating-system-user-kernel-arguments os)))
              (initrd initrd)
              (bootloader-name bootloader-name)
-             (store-device (fs->boot-device store))
+             (store-device (ensure-not-/dev (fs->boot-device store)))
              (store-mount-point (file-system-mount-point store))))))
 
 (define (device->sexp device)

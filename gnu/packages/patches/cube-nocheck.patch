@@ -1,0 +1,16 @@
+Unconditionally disable network check for new versions (from Fedora).
+
+diff -u /home/dlove/rpmbuild/BUILD/cube-4.3.4/src/GUI-qt/display/VersionCheckWidget.cpp\~ /home/dlove/rpmbuild/BUILD/cube-4.3.4/src/GUI-qt/display/VersionCheckWidget.cpp
+--- cube-4.3.4/src/GUI-qt/display/VersionCheckWidget.cpp~	2016-04-03 00:05:37.942066948 +0100
++++ cube-4.3.4/src/GUI-qt/display/VersionCheckWidget.cpp	2016-05-06 17:16:31.648143908 +0100
+@@ -52,7 +52,8 @@
+     url              = QUrl( UPDATE_CHECK_URL );
+     download         = NULL;
+     update_Available = false;
+-    bool no_http = env_str2bool( getenv( "CUBE_DISABLE_HTTP_DOCS" ) );
++    // bool no_http = env_str2bool( getenv( "CUBE_DISABLE_HTTP_DOCS" ) );
++    bool no_http = true;
+     if ( !no_http )
+     {
+         updateDescription =   tr( "Check for update is not performed yet." );
+

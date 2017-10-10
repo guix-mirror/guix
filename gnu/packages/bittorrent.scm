@@ -74,23 +74,24 @@
                "gui"))                    ; graphical user interface
     (arguments
      '(#:glib-or-gtk-wrap-excluded-outputs '("out")
-       #:phases (alist-cons-after
-                 'install 'move-gui
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Move the GUI to its own output, so that "out" doesn't
-                   ;; depend on GTK+.
-                   (let ((out (assoc-ref outputs "out"))
-                         (gui (assoc-ref outputs "gui")))
-                     (mkdir-p (string-append gui "/bin"))
-                     (rename-file (string-append out "/bin/transmission-gtk")
-                                  (string-append gui
-                                                 "/bin/transmission-gtk"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-gui
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move the GUI to its own output, so that "out" doesn't
+             ;; depend on GTK+.
+             (let ((out (assoc-ref outputs "out"))
+                   (gui (assoc-ref outputs "gui")))
+               (mkdir-p (string-append gui "/bin"))
+               (rename-file (string-append out "/bin/transmission-gtk")
+                            (string-append gui
+                                           "/bin/transmission-gtk"))
 
-                     ;; Move the '.desktop' file as well.
-                     (mkdir (string-append gui "/share"))
-                     (rename-file (string-append out "/share/applications")
-                                  (string-append gui "/share/applications"))))
-                 %standard-phases)))
+               ;; Move the '.desktop' file as well.
+               (mkdir (string-append gui "/share"))
+               (rename-file (string-append out "/share/applications")
+                            (string-append gui "/share/applications")))
+             #t)))))
     (inputs
      `(("inotify-tools" ,inotify-tools)
        ("libevent" ,libevent)

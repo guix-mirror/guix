@@ -13,7 +13,8 @@
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,24 +95,24 @@
    (arguments '(#:configure-flags '("--disable-error-on-warning")
 
                 ;; Insert a phase before `configure' to patch things up.
-                #:phases (alist-cons-before
-                           'configure
-                           'patch-stuff
-                           (lambda* (#:key outputs #:allow-other-keys)
-                             ;; Add a call to `lt_dladdsearchdir' so that
-                             ;; `libguile-readline.so' & co. are in the
-                             ;; loader's search path.
-                             (substitute* "libguile/dynl.c"
-                               (("lt_dlinit.*$" match)
-                                (format #f
-                                        "  ~a~%  lt_dladdsearchdir(\"~a/lib\");~%"
-                                        match
-                                        (assoc-ref outputs "out"))))
+                #:phases
+                (modify-phases %standard-phases
+                  (add-before 'configure 'patch-stuff
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Add a call to `lt_dladdsearchdir' so that
+                      ;; `libguile-readline.so' & co. are in the
+                      ;; loader's search path.
+                      (substitute* "libguile/dynl.c"
+                        (("lt_dlinit.*$" match)
+                         (format #f
+                                 "  ~a~%  lt_dladdsearchdir(\"~a/lib\");~%"
+                                 match
+                                 (assoc-ref outputs "out"))))
 
-                             ;; The usual /bin/sh...
-                             (substitute* "ice-9/popen.scm"
-                               (("/bin/sh") (which "sh"))))
-                           %standard-phases)))
+                      ;; The usual /bin/sh...
+                      (substitute* "ice-9/popen.scm"
+                        (("/bin/sh") (which "sh")))
+                      #t)))))
    (inputs `(("gawk" ,gawk)
              ("readline" ,readline)))
 
@@ -1965,5 +1966,50 @@ HTML (via SXML) or any other format for rendering.")
     (description "guile-sjson is a json reader/writer for Guile.
 It has a nice, simple s-expression based syntax.")
     (license license:lgpl3+)))
+
+(define-public guile-colorized
+  (package
+    (name "guile-colorized")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/NalaGinrut/guile-colorized/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16xhc3an6aglnca8xl3mvgi8hsqzqn68vsl5ga4bz8bvbap5fn4p"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((system base compile)
+                  ,@%gnu-build-system-modules)
+       #:tests? #f ;No tests included
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ;No configure script
+         (replace 'install
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (module-dir (string-append out "/share/guile/site/2.2"))
+                    (language-dir (string-append module-dir "/ice-9"))
+                    (guild (string-append (assoc-ref inputs "guile")
+                                          "/bin/guild")))
+               ;; The original 'make install' is too primitive.
+
+               ;; copy the source
+               (install-file "ice-9/colorized.scm" language-dir)
+
+               ;; compile to the destination
+               (compile-file "ice-9/colorized.scm"
+                             #:output-file (string-append
+                                            language-dir "/colorized.go"))
+               #t))))))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (home-page "https://github.com/NalaGinrut/guile-colorized")
+    (synopsis "Colorized REPL for Guile")
+    (description
+     "Guile-colorized provides you with a colorized REPL for GNU Guile.")
+    (license license:gpl3+)))
 
 ;;; guile.scm ends here

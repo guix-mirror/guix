@@ -41,14 +41,15 @@
      `(#:configure-flags
        (list (string-append
               "--with-install-dir=" %output "/share/gprolog"))
-       #:phases (alist-cons-before
-                 'configure 'change-dir-n-fix-shells
-                 (lambda _
-                   (chdir "src")
-                   (substitute* "configure"
-                     (("-/bin/sh")  (string-append "-"  (which "sh")))
-                     (("= /bin/sh") (string-append "= " (which "sh")))))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'change-dir-n-fix-shells
+           (lambda _
+             (chdir "src")
+             (substitute* "configure"
+               (("-/bin/sh")  (string-append "-"  (which "sh")))
+               (("= /bin/sh") (string-append "= " (which "sh"))))
+             #t)))))
     (home-page "https://www.gnu.org/software/gprolog/")
     (synopsis "Prolog compiler")
     (description

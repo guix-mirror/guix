@@ -8,7 +8,7 @@ AC_INIT([GNU Guix],
   [https://www.gnu.org/software/guix/])
 AC_CONFIG_AUX_DIR([build-aux])
 
-AM_INIT_AUTOMAKE([1.12 gnu silent-rules subdir-objects \
+AM_INIT_AUTOMAKE([1.14 gnu silent-rules subdir-objects \
  color-tests parallel-tests -Woverride -Wno-portability])
 
 # Enable silent rules by default.

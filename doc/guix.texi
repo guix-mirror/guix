@@ -2532,8 +2532,10 @@ Produce verbose output, writing build logs to the standard error output.
 @item --url=@var{url}
 Download Guix from the Git repository at @var{url}.
 
+@vindex GUIX_PULL_URL
 By default, the source is taken from its canonical Git repository at
-@code{gnu.org}, for the stable branch of Guix.
+@code{gnu.org}, for the stable branch of Guix.  To use a different source,
+set the @code{GUIX_PULL_URL} environment variable.
 
 @item --commit=@var{commit}
 Deploy @var{commit}, a valid Git commit ID represented as a hexadecimal
@@ -3478,6 +3480,14 @@ the parameter @code{#:jar-name} can be used to generate a minimal Ant
 build file @file{build.xml} with tasks to build the specified jar
 archive.  In this case the parameter @code{#:source-dir} can be used to
 specify the source sub-directory, defaulting to ``src''.
+
+The @code{#:main-class} parameter can be used with the minimal ant 
+buildfile to specify the main class of the resulting jar.  This makes the 
+jar file executable.  The @code{#:test-include} parameter can be used to 
+specify the list of junit tests to run. It defaults to
+@code{(list "**/*Test.java")}.  The @code{#:test-exclude} can be used to
+disable some tests. It defaults to @code{(list "**/Abstract*.java")},
+because abstract classes cannot be run as tests.
 
 The parameter @code{#:build-target} can be used to specify the Ant task
 that should be run during the @code{build} phase.  By default the
@@ -12112,6 +12122,32 @@ Additional command line options to pass to @code{memcached}.
 @end table
 @end deftp
 
+@defvr {Scheme Variable} mongodb-service-type
+This is the service type for @uref{https://www.mongodb.com/, MongoDB}.
+The value for the service type is a @code{mongodb-configuration} object.
+@end defvr
+
+@example
+(service mongodb-service-type)
+@end example
+
+@deftp {Data Type} mongodb-configuration
+Data type representing the configuration of mongodb.
+
+@table @asis
+@item @code{mongodb} (default: @code{mongodb})
+The MongoDB package to use.
+
+@item @code{config-file} (default: @code{%default-mongodb-configuration-file})
+The configuration file for MongoDB.
+
+@item @code{data-directory} (default: @code{"/var/lib/mongodb"})
+This value is used to create the directory, so that it exists and is
+owned by the mongodb user.  It should match the data-directory which
+MongoDB is configured to use through the configuration file.
+@end table
+@end deftp
+
 @defvr {Scheme Variable} redis-service-type
 This is the service type for the @uref{https://redis.io/, Redis}
 key/value store, whose value is a @code{redis-configuration} object.
@@ -17000,6 +17036,71 @@ Extra options will be passed to @code{git daemon}, please run
 @end table
 @end deftp
 
+@subsubheading Cgit Service
+
+@cindex Cgit service
+@cindex Git, web interface
+@uref{https://git.zx2c4.com/cgit/, Cgit} is a web frontend for Git
+repositories written in C.
+
+The following example will configure the service with default values.
+By default, Cgit can be accessed on port 80 (@code{http://localhost:80}).
+
+@example
+(service nginx-service-type)
+(service fcgiwrap-service-type)
+(service cgit-service-type)
+@end example
+
+@deftp {Data Type} cgit-configuration
+Data type representing the configuration of Cgit.
+This type has the following parameters:
+
+@table @asis
+@item @code{config-file} (default: @code{(cgit-configuration-file)})
+The configuration file to use for Cgit.  This can be set to a
+@dfn{cgit-configuration-file} record value, or any gexp
+(@pxref{G-Expressions}).
+
+For example, to instead use a local file, the @code{local-file} function
+can be used:
+
+@example
+(service cgit-service-type
+         (cgit-configuration
+           (config-file (local-file "./my-cgitrc.conf"))))
+@end example
+
+@item @code{package} (default: @code{cgit})
+The Cgit package to use.
+
+@end table
+@end deftp
+
+@deftp {Data Type} cgit-configuration-file
+Data type representing the configuration options for Cgit.
+This type has the following parameters:
+
+@table @asis
+@item @code{css} (default: @code{"/share/cgit/cgit.css"})
+URL which specifies the css document to include in all Cgit pages.
+
+@item @code{logo} (default: @code{"/share/cgit/cgit.png"})
+URL which specifies the source of an image which will be used as a logo
+on all Cgit pages.
+
+@item @code{virtual-root} (default: @code{"/"})
+URL which, if specified, will be used as root for all Cgit links.
+
+@item @code{repository-directory} (default: @code{"/srv/git"})
+Name of the directory to scan for repositories.
+
+@item @code{robots} (default: @code{(list "noindex" "nofollow")})
+Text used as content for the ``robots'' meta-tag.
+
+@end table
+@end deftp
+
 @node Setuid Programs
 @subsection Setuid Programs
 
@@ -19146,6 +19247,18 @@ Synopses and descriptions are translated by volunteers
 Translation Project} so that as many users as possible can read them in
 their native language.  User interfaces search them and display them in
 the language specified by the current locale.
+
+To allow @command{xgettext} to extract them as translatable strings,
+synopses and descriptions @emph{must be literal strings}.  This means
+that you cannot use @code{string-append} or @code{format} to construct
+these strings:
+
+@lisp
+(package
+  ;; @dots{}
+  (synopsis "This is translatable")
+  (description (string-append "This is " "*not*" " translatable.")))
+@end lisp
 
 Translation is a lot of work so, as a packager, please pay even more
 attention to your synopses and descriptions as every change may entail

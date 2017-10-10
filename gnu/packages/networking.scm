@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
@@ -56,6 +58,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libidn)
@@ -921,6 +924,38 @@ information by IP Address.")
   (description "IO::Socket::INET6 is an interface for AF_INET/AF_INET6 domain
 sockets in Perl.")
   (license license:perl-license)))
+
+(define-public libproxy
+  (package
+    (name "libproxy")
+    (version "0.4.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/libproxy/libproxy/"
+                                  "releases/download/" version "/libproxy-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0kvdrazlzwia876w988cmlypp253gwy6idlh8mjk958c29jb8kb5"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus" ,dbus)
+       ("zlib" ,zlib)
+       ("network-manager" ,network-manager)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+                  (lambda _
+                    (zero? (system* "ctest" "-E" "url-test")))))))
+    (synopsis "Library providing automatic proxy configuration management")
+    (description "Libproxy handles the details of HTTP/HTTPS proxy
+configuration for applications across all scenarios.  Applications using
+libproxy only have to specify which proxy to use.")
+    (home-page "https://libproxy.github.io/libproxy")
+    (license license:lgpl2.1+)))
 
 (define-public proxychains-ng
   (package

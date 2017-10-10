@@ -871,60 +871,60 @@ complete studio.")
      `(#:tests? #f ; xmllint attempts to download DTD
        #:test-target "test"
        #:phases
-       (alist-cons-after
-        'unpack 'fix-configuration
-        (lambda* (#:key inputs #:allow-other-keys)
-          (substitute* "default.config"
-            (("csound=csound")
-             (string-append "csound="
-                            (assoc-ref inputs "csound")
-                            "/bin/csound"))
-            (("/usr/bin/aplay")
-             (string-append (assoc-ref inputs "aplay")
-                            "/bin/aplay"))
-            (("/usr/bin/timidity")
-             (string-append (assoc-ref inputs "timidity")
-                            "/bin/timidity"))
-            (("/usr/bin/mpg123")
-             (string-append (assoc-ref inputs "mpg123")
-                            "/bin/mpg123"))
-            (("/usr/bin/ogg123")
-             (string-append (assoc-ref inputs "ogg123")
-                            "/bin/ogg123"))))
-        (alist-cons-before
-         'build 'patch-python-shebangs
-         (lambda _
-           ;; Two python scripts begin with a Unicode BOM, so patch-shebang
-           ;; has no effect.
-           (substitute* '("solfege/parsetree.py"
-                          "solfege/presetup.py")
-             (("#!/usr/bin/python") (string-append "#!" (which "python")))))
-         (alist-cons-before
-          'build 'add-sitedirs
-          ;; .pth files are not automatically interpreted unless the
-          ;; directories containing them are added as "sites".  The directories
-          ;; are then added to those in the PYTHONPATH.  This is required for
-          ;; the operation of pygtk and pygobject.
-          (lambda _
-            (substitute* "run-solfege.py"
-              (("import os")
-               "import os, site
-for path in [path for path in sys.path if 'site-packages' in path]: site.addsitedir(path)")))
-          (alist-cons-before
-           'build 'adjust-config-file-prefix
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-configuration
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "default.config"
+               (("csound=csound")
+                (string-append "csound="
+                               (assoc-ref inputs "csound")
+                               "/bin/csound"))
+               (("/usr/bin/aplay")
+                (string-append (assoc-ref inputs "aplay")
+                               "/bin/aplay"))
+               (("/usr/bin/timidity")
+                (string-append (assoc-ref inputs "timidity")
+                               "/bin/timidity"))
+               (("/usr/bin/mpg123")
+                (string-append (assoc-ref inputs "mpg123")
+                               "/bin/mpg123"))
+               (("/usr/bin/ogg123")
+                (string-append (assoc-ref inputs "ogg123")
+                               "/bin/ogg123")))
+             #t))
+         (add-before 'build 'patch-python-shebangs
+           (lambda _
+             ;; Two python scripts begin with a Unicode BOM, so patch-shebang
+             ;; has no effect.
+             (substitute* '("solfege/parsetree.py"
+                            "solfege/presetup.py")
+               (("#!/usr/bin/python") (string-append "#!" (which "python"))))
+             #t))
+         (add-before 'build 'add-sitedirs
+           ;; .pth files are not automatically interpreted unless the
+           ;; directories containing them are added as "sites".  The directories
+           ;; are then added to those in the PYTHONPATH.  This is required for
+           ;; the operation of pygtk and pygobject.
+           (lambda _
+             (substitute* "run-solfege.py"
+               (("import os")
+                "import os, site
+for path in [path for path in sys.path if 'site-packages' in path]: site.addsitedir(path)"))
+             #t))
+         (add-before 'build 'adjust-config-file-prefix
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "run-solfege.py"
                (("prefix = os.path.*$")
-                (string-append "prefix = " (assoc-ref outputs "out")))))
-           (alist-cons-after
-            'install 'wrap-program
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              ;; Make sure 'solfege' runs with the correct PYTHONPATH.
-              (let* ((out (assoc-ref outputs "out"))
-                     (path (getenv "PYTHONPATH")))
-                (wrap-program (string-append out "/bin/solfege")
-                  `("PYTHONPATH" ":" prefix (,path)))))
-            %standard-phases)))))))
+                (string-append "prefix = " (assoc-ref outputs "out"))))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure 'solfege' runs with the correct PYTHONPATH.
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/solfege")
+                 `("PYTHONPATH" ":" prefix (,path))))
+             #t)))))
     (inputs
      `(("python" ,python-2)
        ("pygtk" ,python2-pygtk)

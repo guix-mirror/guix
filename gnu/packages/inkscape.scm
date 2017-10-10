@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,16 @@
               (uri (string-append "https://media.inkscape.org/dl/"
                                   "resources/file/"
                                   "inkscape-" version ".tar.bz2"))
+              (patches
+               (list
+                ;; Fix compatibility with poppler >= 0.58.
+                (origin
+                  (method url-fetch)
+                  (uri (string-append "https://gitlab.com/inkscape/inkscape/commit/"
+                                      "9418824967eb4c53371ef8588243fed4cab496e0.patch"))
+                  (sha256
+                   (base32
+                    "0wwyhkqb1qyazz5f6wqrc223l6k8qnmadiw28q8gihlgvh38rvll")))))
               (sha256
                (base32
                 "01chr3vh728dkg7l7lilwgmh5nrp784khdhjgpqjbq9dh2zhax15"))))

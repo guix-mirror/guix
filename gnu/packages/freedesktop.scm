@@ -357,26 +357,25 @@ manager for the current system.")
     (build-system python-build-system)
     (arguments
      '(#:phases
-       (alist-replace
-        'check
-        (lambda* (#:key inputs #:allow-other-keys)
-          (setenv "XDG_DATA_DIRS"
-                  (string-append (assoc-ref inputs "shared-mime-info")
-                                 "/share/"))
-          (substitute* "test/test-icon.py"
-            (("/usr/share/icons/hicolor/index.theme")
-             (string-append (assoc-ref inputs "hicolor-icon-theme")
-                            "/share/icons/hicolor/index.theme"))
-            ;; FIXME: This test fails because the theme contains the unknown
-            ;; key "Scale".
-            (("theme.validate\\(\\)") "#"))
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "XDG_DATA_DIRS"
+                     (string-append (assoc-ref inputs "shared-mime-info")
+                                    "/share/"))
+             (substitute* "test/test-icon.py"
+               (("/usr/share/icons/hicolor/index.theme")
+                (string-append (assoc-ref inputs "hicolor-icon-theme")
+                               "/share/icons/hicolor/index.theme"))
+               ;; FIXME: This test fails because the theme contains the unknown
+               ;; key "Scale".
+               (("theme.validate\\(\\)") "#"))
 
-          ;; One test fails with:
-          ;; AssertionError: 'x-apple-ios-png' != 'png'
-          (substitute* "test/test-mime.py"
-            (("self.check_mimetype\\(imgpng, 'image', 'png'\\)") "#"))
-          (zero? (system* "nosetests" "-v")))
-        %standard-phases)))
+             ;; One test fails with:
+             ;; AssertionError: 'x-apple-ios-png' != 'png'
+             (substitute* "test/test-mime.py"
+               (("self.check_mimetype\\(imgpng, 'image', 'png'\\)") "#"))
+             (zero? (system* "nosetests" "-v")))))))
     (native-inputs
      `(("shared-mime-info" ,shared-mime-info) ;for tests
        ("hicolor-icon-theme" ,hicolor-icon-theme) ;for tests
@@ -403,7 +402,19 @@ Python.")
                (base32
                 "0lgywr1m0d79vr4s8aimj8a307nss29hhy68gjpqj7m667055c39"))))
     (build-system gnu-build-system)
-    (arguments `(#:parallel-tests? #f))
+    (arguments
+     `(#:parallel-tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; Remove record shapes to workaround graphviz 2.40.1 problems.
+         ;; http://www.graphviz.org/content/i-havent-been-able-render-these-files-graphviz-226
+         ;; This will likely be fixed upstream in the next release.
+         ;; https://lists.freedesktop.org/archives/wayland-devel/2017-June/034218.html
+         (add-before 'build 'fix-graphviz
+           (lambda _
+             (substitute* "doc/doxygen/dot/x-architecture.gv"
+               (("Mrecord") "none"))
+             #t)))))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("graphviz" ,graphviz)

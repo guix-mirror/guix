@@ -121,15 +121,14 @@ programs.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.12.0")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/libuv/libuv/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://dist.libuv.org/dist/v" version
+                                  "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "0l0jrb5q3i8br10c8skc6xdwlxkmlpn3n0kngaqd68fsi1593kj1"))))
+                "08kx4mzjsdv90n9pivqxqjxlxk5vaf9p33zzvx661dwfmp9468pk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after

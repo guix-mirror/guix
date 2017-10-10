@@ -353,7 +353,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtbase
   (package
     (name "qtbase")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -362,7 +362,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1ikm896jzyfyjv2qv8n3fd81sxb4y24zkygx36865ygzyvlj36mw"))
+               "16v0dny4rcyd5p8qsnsfg89w98k8kqk3rp9x3g3k7xjmi53bpqkz"))
              (modules '((guix build utils)))
              (snippet
                ;; corelib uses bundled harfbuzz, md4, md5, sha3
@@ -389,7 +389,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("glib" ,glib)
        ("harfbuzz" ,harfbuzz)
        ("icu4c" ,icu4c)
-       ("libinput" ,libinput)
+       ("libinput" ,libinput-minimal)
        ("libjpeg" ,libjpeg)
        ("libmng" ,libmng)
        ("libpng" ,libpng)
@@ -536,7 +536,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtsvg
   (package (inherit qtbase)
     (name "qtsvg")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -545,7 +545,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1rg2q4snh2g4n93zmk995swwkl0ab1jr9ka9xpj56ddifkw99wlr"))))
+               "020icrl9vi8jh8ygsssqrx2bl8bx28m15dwmf9a969qdnvxyp5ms"))))
     (propagated-inputs `())
     (native-inputs `(("perl" ,perl)))
     (inputs
@@ -574,12 +574,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
               (lambda _
                 ;; make Qt render "offscreen", required for tests
                 (setenv "QT_QPA_PLATFORM" "offscreen")
-                #t)))))))
+                #t)))))
+    (synopsis "Qt module for displaying SVGs")
+    (description "The QtSvg module provides classes for displaying the
+ contents of SVG files.")))
 
 (define-public qtimageformats
   (package (inherit qtsvg)
     (name "qtimageformats")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -588,7 +591,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0iwa3dys5rv706cpxwhmgircv783pmlyl1yrsc5i0rha643y7zkr"))
+               "1wwxxcl24mk1p4w6knyfai09axmwqsm6cgsbkjsmdz3zmjh6qqis"))
              (modules '((guix build utils)))
              (snippet
               '(delete-file-recursively "src/3rdparty"))))
@@ -600,12 +603,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("libwebp" ,libwebp)
        ("mesa" ,mesa)
        ("qtbase" ,qtbase)
-       ("zlib" ,zlib)))))
+       ("zlib" ,zlib)))
+    (synopsis "Additional Image Format plugins for Qt")
+    (description "The QtImageFormats module contains plugins for adding
+support for MNG, TGA, TIFF and WBMP image formats.")))
 
 (define-public qtx11extras
   (package (inherit qtsvg)
     (name "qtx11extras")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -614,19 +620,22 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "00fn3bps48gjyw0pdqvvl9scknxdpmacby6hvdrdccc3jll0wgd6"))))
+               "1ias745j5lfnrfkgyk0pr8n8zlkqs08gq7yyzaj1c645sh54b1fv"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)))))
+       ("qtbase" ,qtbase)))
+    (synopsis "Qt Extras for X11")
+    (description "The QtX11Extras module includes the library to access X11
+from within Qt 5.")))
 
 (define-public qtxmlpatterns
   (package (inherit qtsvg)
     (name "qtxmlpatterns")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -635,7 +644,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "094wwap2fsl23cys6rxh2ciw0gxbbiqbshnn4qs1n6xdjrj6i15m"))))
+               "0knk4bplqhvsxar1wv16bzfw57q0aja12gdaxz7m8mvx121sm9ha"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:phases phases)
@@ -646,12 +655,16 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                          (("xmlpatterns ") "# xmlpatterns"))
                #t))))))
     (native-inputs `(("perl" ,perl)))
-    (inputs `(("qtbase" ,qtbase)))))
+    (inputs `(("qtbase" ,qtbase)))
+    (synopsis "Qt XML patterns module")
+    (description "The QtXmlPatterns module is a XQuery and XPath engine for
+XML and custom data models.  It contains programs such as xmlpatterns and
+xmlpatternsvalidator.")))
 
 (define-public qtdeclarative
   (package (inherit qtsvg)
     (name "qtdeclarative")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -660,7 +673,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1zwlxrgraxhlsdkwsai3pjbz7f3a6rsnsg2mjrpay6cz3af6rznj"))))
+               "020bha6q8byxc8cj5zw7gms5rgsjg71hv31hv1rr2fy7x56zsh0d"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -672,12 +685,18 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)))))
+       ("qtbase" ,qtbase)))
+    (synopsis "Qt QML module (Quick 2)")
+    (description "The Qt QML module provides a framework for developing
+applications and libraries with the QML language.  It defines and implements the
+language and engine infrastructure, and provides an API to enable application
+developers to extend the QML language with custom types and integrate QML code
+with JavaScript and C++.")))
 
 (define-public qtconnectivity
   (package (inherit qtsvg)
     (name "qtconnectivity")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -686,7 +705,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1mbzmqix0388iq20a1ljd1pgdq259rm1xzp9kx8gigqpamqqnqs0"))))
+               "1k7kjmlny0ykm40qx796wbsg3310v6b8hqizkbr597cmxjbrax9c"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:phases phases)
@@ -704,12 +723,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("qtdeclarative" ,qtdeclarative)))
     (inputs
      `(("bluez" ,bluez)
-       ("qtbase" ,qtbase)))))
+       ("qtbase" ,qtbase)))
+    (synopsis "Qt Connectivity module")
+    (description "The Qt Connectivity modules provides modules for interacting
+with Bluetooth and NFC.")))
 
 (define-public qtwebsockets
   (package (inherit qtsvg)
     (name "qtwebsockets")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -718,19 +740,25 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0r1lya2jj3wfci82zfn0vk6vr8sk9k7xiphnkb0panhb8di769q1"))))
+               "0x0nx1ampqsgj9qlc3l32z3ham1a5vq7m2lnxk5pr92yj6yw3pdg"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
-    (inputs `(("qtbase" ,qtbase)))))
+    (inputs `(("qtbase" ,qtbase)))
+    (synopsis "Qt Web Sockets module")
+    (description "WebSocket is a web-based protocol designed to enable two-way
+communication between a client application and a remote host.  The Qt
+WebSockets module provides C++ and QML interfaces that enable Qt applications
+to act as a server that can process WebSocket requests, or a client that can
+consume data received from the server, or both.")))
 
 (define-public qtsensors
   (package (inherit qtsvg)
     (name "qtsensors")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -739,7 +767,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1772x7r6y9xv2sv0w2dfz2yhagsq5bpa9kdpzg0qikccmabr7was"))))
+               "1lxmhi19dbb8vjhpjph0l0ss6zh72hb4908lp4s1pgf8r641ai3r"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:phases phases)
@@ -752,12 +780,16 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
-    (inputs `(("qtbase" ,qtbase)))))
+    (inputs `(("qtbase" ,qtbase)))
+    (synopsis "Qt Sensors module")
+    (description "The Qt Sensors API provides access to sensor hardware via QML
+and C++ interfaces.  The Qt Sensors API also provides a motion gesture
+recognition API for devices.")))
 
 (define-public qtmultimedia
   (package (inherit qtsvg)
     (name "qtmultimedia")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -766,7 +798,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1r76zvbv6wwb7lgw9jwlx382iyw34i1amxaypb5bg3j1niqvx3z4"))
+               "0815hi3cxy5zy6yc5fkdpx2xd6rk7968j1ziwl2g4wa80802g9n9"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -798,12 +830,16 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("qtbase" ,qtbase)
        ;; Gstreamer is needed for the mediaplayer plugin
        ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)))))
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (synopsis "Qt Multimedia module")
+    (description "The Qt Multimedia module provides set of APIs to play and
+record media, and manage a collection of media content.  It also contains a
+set of plugins for interacting with pulseaudio and GStreamer.")))
 
 (define-public qtwayland
   (package (inherit qtsvg)
     (name "qtwayland")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -812,7 +848,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1yizvbmh26mx1ffq0qaci02g2wihy68ld0y7r3z8nx3v5acb236g"))
+               "1ipn4xh0dj1kjg5i4vfl4gpx3hg2377w5gls47xpv1ikz41lshzn"))
              (modules '((guix build utils)))
              (snippet
                ;; The examples try to build and cause the build to fail
@@ -833,12 +869,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("mesa" ,mesa)
        ("mtdev" ,mtdev)
        ("qtbase" ,qtbase)
-       ("wayland" ,wayland)))))
+       ("wayland" ,wayland)))
+    (synopsis "Qt Wayland module")
+    (description "The Qt Wayland module provides the QtWayland client and
+compositor libraries.")))
 
 (define-public qtserialport
   (package (inherit qtsvg)
     (name "qtserialport")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -847,16 +886,19 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0sbsc7n701kxl16r247a907zg2afmbx1xlml5jkc6a9956zqbzp1"))))
+               "0hndc9z7qzxazzjvc6k5yd58afw13444plk70b05nqdi5p19rvah"))))
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("qtbase" ,qtbase)
-       ("eudev" ,eudev)))))
+       ("eudev" ,eudev)))
+    (synopsis "Qt Serial Port module")
+    (description "The Qt Serial Port module provides the library for
+interacting with serial ports from within Qt.")))
 
 (define-public qtserialbus
   (package (inherit qtsvg)
     (name "qtserialbus")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -865,15 +907,19 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1hzk377c3zl4dm5hxwvpxg2w096m160448y9df6v6l8xpzpzxafa"))))
+               "025yv7zajz5scrmkjkmgkyvxpgkliqvrzc88is0gr481zpd4phmv"))))
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtserialport" ,qtserialport)))))
+       ("qtserialport" ,qtserialport)))
+    (synopsis "Qt Serial Bus module")
+    (description "The Qt Serial Bus API provides classes and functions to
+access the various industrial serial buses and protocols, such as CAN, ModBus,
+and others.")))
 
 (define-public qtwebchannel
   (package (inherit qtsvg)
     (name "qtwebchannel")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -882,17 +928,22 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "003h09mla82f2znb8jjigx13ivc68ikgv7w04594yy7qdmd5yhl0"))))
+               "09iss70c1iqgf8qpik35qlgrdw5y9935v0fm2ppgkmxdxkpls6ww"))))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)
        ("qtwebsockets" ,qtwebsockets)))
-    (inputs `(("qtbase" ,qtbase)))))
+    (inputs `(("qtbase" ,qtbase)))
+    (synopsis "Web communication library for Qt")
+    (description "The Qt WebChannel module enables peer-to-peer communication
+between the host (QML/C++ application) and the client (HTML/JavaScript
+application).  The transport mechanism is supported out of the box by the two
+popular web engines, Qt WebKit 2 and Qt WebEngine.")))
 
 (define-public qtlocation
   (package (inherit qtsvg)
     (name "qtlocation")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -901,7 +952,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "058mgvlaml9rkfhkpr1n3avhi12zlva131sqhbwj4lwwyqfkri2b"))))
+               "033b6l6jbvmc0k5qvbgh5vkzvfga7npqcphrywrrqkmx9vj446n8"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -914,12 +965,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("icu4c" ,icu4c)
        ("openssl" ,openssl)
        ("qtbase" ,qtbase)
-       ("zlib" ,zlib)))))
+       ("zlib" ,zlib)))
+    (synopsis "Qt Location and Positioning modules")
+    (description "The Qt Location module provides an interface for location,
+positioning and geolocation plugins.")))
 
 (define-public qttools
   (package (inherit qtsvg)
     (name "qttools")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -928,7 +982,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1s50kh3sg5wc5gqhwwznnibh7jcnfginnmkv66w62mm74k7mdsy4"))))
+               "06nqsa5mj0mc9w9xbm7mgdkb66x4wlvkhnas32f97sb8ic8rdf9b"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
@@ -937,12 +991,16 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("qtdeclarative" ,qtdeclarative)))
     (inputs
      `(("mesa" ,mesa)
-       ("qtbase" ,qtbase)))))
+       ("qtbase" ,qtbase)))
+    (synopsis "Qt Tools and Designer modules")
+    (description "The Qt Tools module provides a set of applications to browse
+the documentation, translate applications, generate help files and other stuff
+that helps in Qt development.")))
 
 (define-public qtscript
   (package (inherit qtsvg)
     (name "qtscript")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -951,18 +1009,22 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "13qq2mjfhqdcvkmzrgxg1gr5kww1ygbwb7r71xxl6rjzbn30hshp"))
+               "1wa0rnbphkhgydnwkf5bjwn0llskl6hgs0964nh0jik8qaspv027"))
              (patches (search-patches "qtscript-disable-tests.patch"))))
     (native-inputs
      `(("perl" ,perl)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))))
+     `(("qtbase" ,qtbase)))
+    (synopsis "Qt Script module")
+    (description "Qt provides support for application scripting with ECMAScript.
+The following guides and references cover aspects of programming with
+ECMAScript and Qt.")))
 
 (define-public qtquickcontrols
   (package (inherit qtsvg)
     (name "qtquickcontrols")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -971,18 +1033,22 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0bpc465q822phw3dcbddn70wj1fjlc2hxskkp1z9gl7r23hx03jj"))))
+               "07xxhkfsljwdwlp9jfp88pwkrig02y2pnwhdsaz8mkcackwfq2az"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Quick Controls and other Quick modules")
+    (description "The QtScript module provides classes for making Qt
+applications scriptable.  This module provides a set of extra components that
+can be used to build complete interfaces in Qt Quick.")))
 
 (define-public qtquickcontrols2
   (package (inherit qtsvg)
     (name "qtquickcontrols2")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -991,18 +1057,23 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1zq86kqz85wm3n84jcxkxw5x1mrhkqzldkigf8xm3l8j24rf0fr0"))))
+               "1ln83afxyp5dmvdnq6n7as82xrd5k3xvfx7b1jxnljivslyxsm9b"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Quick Controls 2 and other Quick 2 modules")
+    (description "The Qt Quick Controls 2 module contains the Qt Labs Platform
+module that provides platform integration: native dialogs, menus and menu bars,
+and tray icons.  It falls back to Qt Widgets when a native implementation is
+not available.")))
 
 (define-public qtgraphicaleffects
   (package (inherit qtsvg)
     (name "qtgraphicaleffects")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1011,13 +1082,20 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1zsr3a5dsmpvrb5h4m4h42wqmkvkks3d8mmyrx4k0mfr6s7c71jz"))))
+               "0xpvigfiqfqvf05ywj8x69y57rp8dwq2hs1kpxlxs15pniz4wn8l"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Graphical Effects module")
+    (description "The Qt Graphical Effects module provides a set of QML types
+for adding visually impressive and configurable effects to user interfaces.
+Effects are visual items that can be added to Qt Quick user interface as UI
+components.  The API consists of over 20 effects provided as separate QML
+types.  The effects cover functional areas such as blending, masking, blurring,
+coloring, and many more.")))
 
 (define-public qtdeclarative-render2d
   ;; As of Qt-5.8.0 this module has been merged into qtdeclarative
@@ -1040,12 +1118,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Declarative Render module")
+    (description "The Qt Declarative Render 2D module provides a Raster
+backend for QtQuick scene graph.")
     (properties `((superseded . ,qtdeclarative)))))
 
 (define-public qtgamepad
   (package (inherit qtsvg)
     (name "qtgamepad")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1054,7 +1135,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "055w4649zi93q1sl32ngqwgnl2vxw1idnm040s9gjgjb67gi81zi"))))
+               "0lm5v43psf7r8zc79dcjdmmdnz4jm30ylgkvsyv8k88mj06yklbn"))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
@@ -1064,12 +1145,18 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("libxrender" ,libxrender)
        ("sdl2" ,sdl2)
        ("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Gamepad module")
+    (description "The Qt Gamepad module is an add-on library that enables Qt
+applications to support the use of gamepad hardware and in some cases remote
+control equipment.  The module provides both QML and C++ interfaces.  The
+primary target audience are embedded devices with fullscreen user interfaces,
+and mobile applications targeting TV-like form factors.")))
 
 (define-public qtscxml
   (package (inherit qtsvg)
     (name "qtscxml")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1078,7 +1165,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1m3b6wg5hqasdfc5igpj9bq3czql5kkvvn3rx1ig508kdlh5i5s0"))
+               "0pdimqwdrj8hckm81lwy1z58ji4bdv0bzgv336m0a8v3pj914awx"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -1088,12 +1175,18 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                    (("scion") "#"))))))
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt SCXML module")
+    (description "The Qt SCXML module provides functionality to create state
+machines from SCXML files.  This includes both dynamically creating state
+machines (loading the SCXML file and instantiating states and transitions) and
+generating a C++ file that has a class implementing the state machine.  It
+also contains functionality to support data models and executable content.")))
 
 (define-public qtpurchasing
   (package (inherit qtsvg)
     (name "qtpurchasing")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1102,15 +1195,18 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0b1hlaq6rb7d6b6h8kqd26klcpzf9vcdjrv610kdj0drb00jg3ss"))))
+               "04f28y7qcr4kd0pw26mm515qj7haxr0i8lijn1q47wkikxyhawca"))))
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Purchasing module")
+    (description "The Qt Purchasing module provides and in-app API for
+purchasing goods and services.")))
 
 (define-public qtcanvas3d
   (package (inherit qtsvg)
     (name "qtcanvas3d")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1119,7 +1215,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "10fy8wqfw2yhha6lyky5g1a72137aj8pji7mk0wjnggh629z12sb"))
+               "1siyzgm1mjx90rwyzzq9vw2s2xzyf6n7q0vn8gw7mdim5indda44"))
              (modules '((guix build utils)))
              (snippet
               '(delete-file-recursively "examples/canvas3d/3rdparty"))))
@@ -1139,12 +1235,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-inputs `())
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Canvas 3D module")
+    (description "The Qt Canvas 3D module provides a way to make WebGL-like 3D
+drawing calls from Qt Quick JavaScript.")))
 
 (define-public qtcharts
   (package (inherit qtsvg)
     (name "qtcharts")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1153,18 +1252,25 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "180df5v7i1ki8hc3lgi6jcfdyz7f19pb73dvfkw402wa2gfcna3k"))))
+               "193a3imkgryw42s0gbwaj9gpqd673h3jrg86jvmy33l2fc5gfyjf"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Charts module")
+    (description "The Qt Charts module provides a set of easy to use chart
+components.  It uses the Qt Graphics View Framework, therefore charts can be
+easily integrated to modern user interfaces.  Qt Charts can be used as QWidgets,
+QGraphicsWidget, or QML types. Users can easily create impressive graphs by
+selecting one of the charts themes.")
+    (license license:gpl3)))
 
 (define-public qtdatavis3d
   (package (inherit qtsvg)
     (name "qtdatavis3d")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1173,13 +1279,100 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "14d1q07winh6n1bkc616dapwfnsfkcjyg5zngdqjdj9mza8ang13"))))
+               "1cmjjbbmdqdix1f8b7qyc2vwhj9pvchc8r4lp65qw11dhycmdbh6"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (inputs
      `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))))
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Data Visualization module")
+    (description "The Qt Data Visualization module provides a way to visualize
+data in 3D as bar, scatter, and surface graphs. It is especially useful for
+visualizing depth maps and large quantities of rapidly changing data, such as
+data received from multiple sensors. The look and feel of graphs can be
+customized by using themes or by adding custom items and labels to them.")
+    (license license:gpl3)))
+
+(define-public qtnetworkauth
+  (package (inherit qtsvg)
+    (name "qtnetworkauth")
+    (version "5.9.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "16i33m8x5yii22ciq97bpfmnw0lwhvgv84i2az30a1ikm9dg00x0"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'remove-failing-test
+             (lambda _
+               ;; These tests can't find their test data.
+               (substitute* "tests/auto/auto.pro"
+                 (("oauth1 ") "# oauth1 "))
+               #t))))))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (synopsis "Qt Network Authorization module")
+    (description "The Qt Network Authorization module provides an
+implementation of OAuth and OAuth2 authenticathon methods for Qt.")))
+
+(define-public qtremoteobjects
+  (package (inherit qtsvg)
+    (name "qtremoteobjects")
+    (version "5.9.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1ylphdwis34y4pm9xiwh2xqfd0hh2gp8kkawlps2q5mh2bm11376"))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Qt Remote Objects module")
+    (description "The Qt Remote Objects module is an @dfn{inter-process
+communication} (IPC) module developed for Qt.  The idea is to extend existing
+Qt's functionalities to enable an easy exchange of information between
+processes or computers.")))
+
+(define-public qtspeech
+  (package (inherit qtsvg)
+    (name "qtspeech")
+    (version "5.9.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0cq33dffi7q7dnvzhdivky5prakb8xnwap0b76fwgirhbbn88ypg"))))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtxmlpatterns" ,qtxmlpatterns)))
+    (synopsis "Qt Speech module")
+    (description "The Qt Speech module enables a Qt application to support
+accessibility features such as text-to-speech, which is useful for end-users
+who are visually challenged or cannot access the application for whatever
+reason.  The most common use case where text-to-speech comes in handy is when
+the end-user is driving and cannot attend the incoming messages on the phone.
+In such a scenario, the messaging application can read out the incoming
+message.")))
 
 (define-public python-sip
   (package

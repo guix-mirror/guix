@@ -11,7 +11,7 @@
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +90,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages less)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages texinfo))
 
 (define-public libotr
@@ -142,20 +143,19 @@ keys, no previous conversation is compromised.")
               ("python" ,python-2)
               ("perl" ,perl)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'install 'install-etc
-                 (lambda* (#:key (make-flags '()) #:allow-other-keys)
-                   (zero? (apply system* "make" "install-etc" make-flags)))
-                 (alist-replace
-                  'configure
-                  ;; bitlbee's configure script does not tolerate many of the
-                  ;; variable settings that Guix would pass to it.
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (zero? (system* "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out"))
-                                    "--otr=1")))
-                  %standard-phases))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-etc
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (zero? (apply system* "make" "install-etc" make-flags))))
+         (replace 'configure
+           ;; bitlbee's configure script does not tolerate many of the
+           ;; variable settings that Guix would pass to it.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "./configure"
+                             (string-append "--prefix="
+                                            (assoc-ref outputs "out"))
+                             "--otr=1")))))))
     (synopsis "IRC to instant messaging gateway")
     (description "BitlBee brings IM (instant messaging) to IRC clients, for
 people who have an IRC client running all the time and don't want to run an
@@ -801,14 +801,14 @@ instant messenger with audio and video chat capabilities.")
 (define-public qtox
   (package
     (name "qtox")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/qTox/qTox/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1m1ca1ybgj4yfm6a61yyj21f5jpip8dsbliwkfypswhmv5y52f5y"))
+                "0ycgvcfn8hchc775dcn1wpdqff8chvzz1svx9g99wa5vcns9pflg"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -830,6 +830,8 @@ instant messenger with audio and video chat capabilities.")
        ("libvpx" ,libvpx)
        ("libxscrnsaver" ,libxscrnsaver)
        ("libx11" ,libx11)
+       ("libexif" ,libexif)
+       ("sqlite" ,sqlite)
        ("openal" ,openal)
        ("qrencode" ,qrencode)
        ("qtbase" ,qtbase)

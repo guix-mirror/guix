@@ -35,18 +35,18 @@
                 "0b5nhl9vvif1w3wdipjsk8ckw49jj1w85xw1mmqi3zbcpazia306"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; The old 'configure' script doesn't support the arguments
-                   ;; that we pass by default.
-                   (setenv "CONFIG_SHELL" (which "sh"))
-                   (let ((out (assoc-ref outputs "out")))
-                     (zero? (system* "./configure"
-                                     (string-append "--prefix=" out)
-                                     (string-append "--infodir=" out
-                                                    "/share/info")))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The old 'configure' script doesn't support the arguments
+             ;; that we pass by default.
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)
+                               (string-append "--infodir=" out
+                                              "/share/info")))))))))
     (home-page "https://www.gnu.org/software/uucp/uucp.html")
     (synopsis "UUCP protocol implementation")
     (description

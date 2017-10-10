@@ -108,10 +108,12 @@
       #f))
 
 (define (serialize-tls-auth role location)
-  (serialize-field 'tls-auth
-                   (string-append location " " (match role
-                                                 ('server "0")
-                                                 ('client "1")))))
+  (if location
+      (serialize-field 'tls-auth
+                       (string-append location " " (match role
+                                                     ('server "0")
+                                                     ('client "1"))))
+      #f))
 (define (tls-auth? val)
   (or (eq? val #f)
       (string? val)))

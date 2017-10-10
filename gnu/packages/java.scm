@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4207,6 +4208,40 @@ allowing the end user to plug in the desired logging framework at deployment
 time.")
     (license license:expat)))
 
+(define-public java-slf4j-simple
+  (package
+    (name "java-slf4j-simple")
+    (version "1.7.25")
+    (source (package-source java-slf4j-api))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "slf4j-simple.jar"
+       #:source-dir "slf4j-simple/src/main"
+       #:test-dir "slf4j-simple/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         ;; The tests need some test classes from slf4j-api
+         (add-before 'check 'build-slf4j-api-test-helpers
+           (lambda _
+             ;; Add current dir to CLASSPATH ...
+             (setenv "CLASSPATH"
+                     (string-append (getcwd) ":" (getenv "CLASSPATH")))
+             ;; ... and build test helper classes here:
+             (zero?
+              (apply system*
+                     `("javac" "-d" "."
+                       ,@(find-files "slf4j-api/src/test" ".*\\.java")))))))))
+    (inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-slf4j-api" ,java-slf4j-api)))
+    (home-page "https://www.slf4j.org/")
+    (synopsis "Simple implementation of simple logging facade for Java")
+    (description "SLF4J binding for the Simple implementation, which outputs
+all events to System.err.  Only messages of level INFO and higher are
+printed.")
+    (license license:expat)))
+
 (define-public antlr2
   (package
     (name "antlr2")
@@ -4716,3 +4751,1272 @@ complex transformations and code analysis tools.")
              #t)))))
     (native-inputs
      `(("java-junit" ,java-junit)))))
+
+(define-public java-microemulator-cldc
+  (package
+    (name "java-microemulator-cldc")
+    (version "2.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/barteo/microemu/archive/"
+                                  "microemulator_"
+                                  (string-map (lambda (c) (if (char=? c #\.) #\_ c))
+                                              version)
+                                  ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1x1apmz38gkppxnwnygwmi12j54v4p258v8ddzn6dldkk7vak1ll"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "microemulator-cldc.jar"
+       #:source-dir "microemu-cldc/src/main/java"
+       #:tests? #f)); Requires even older software
+    (home-page "https://github.com/barteo/microemu")
+    (synopsis "J2ME CLDC emulator")
+    (description "Microemulator is a Java 2 Micro Edition (J2ME) CLDC/MIDP
+Emulator.  It allows to demonstrate MIDlet based applications in web browser
+applet and can be run as a standalone java application.")
+    (license (list license:asl2.0
+                   ;; or altenatively:
+                   license:lgpl2.1+))))
+
+(define-public java-datanucleus-javax-persistence
+  (package
+    (name "java-datanucleus-javax-persistence")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/datanucleus/"
+                                  "javax.persistence/archive/javax.persistence-"
+                                  version "-release.tar.gz"))
+              (sha256
+               (base32
+                "11jx0fjwgc2hhbqqgdd6m1pf2fplf9vslppygax0y1z5csnqjhpx"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-datanucleus-javax-persistence.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main/java"
+       #:tests? #f)); no tests
+    (home-page "https://github.com/datanucleus/javax.persistence")
+    (synopsis "JPA API")
+    (description "This package contains a clean definition of JPA API intended
+for use with DataNucleus JPA since the JCP haven't provided an official JPA API
+jar.  See @url{http://java.net/projects/jpa-spec/downloads} for the specification
+used to generate this API.")
+    (license (list license:edl1.0 license:epl1.0))))
+
+(define-public java-osgi-cmpn
+  (package
+    (name "java-osgi-cmpn")
+    (version "6.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/"
+                                  "org/osgi/osgi.cmpn/" version "/osgi.cmpn-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1lmb6xyrmkqdhv1kayf0514rlwq6ypvs4m44ibrck3snp8241wys"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-cmpn.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("core" ,java-osgi-core)
+       ("java-datanucleus-javax-persistence" ,java-datanucleus-javax-persistence)
+       ("microemulator" ,java-microemulator-cldc)
+       ("servlet" ,java-classpathx-servletapi)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Compendium specification module of OSGi framework")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the compendium specification module, providing interfaces and classes for use
+in compiling bundles.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-component-annotations
+  (package
+    (name "java-osgi-service-component-annotations")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.component.annotations/"
+                                  version "/org.osgi.service.component.annotations-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "15rq9cmp4fpn74q44m4j35qsqmjf5lx3hcrk6pzvbhc08igic2f0"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-component-annotations.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Support annotations for osgi-service-component")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the support annotations for osgi-service-component.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-dto
+  (package
+    (name "java-osgi-dto")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.dto/" version "/org.osgi.dto-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0f4bqjzadn0hwk6sd3h5gvbyfp3yci1s6r0v770cc15p0pg627yr"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-dto.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Data Transfer Objects")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the Data Transfer Objects.  It is easily serializable having only public fields
+of primitive types and their wrapper classes, Strings, and DTOs.  List, Set,
+Map and array aggregates may also be used.  The aggregates must only hold
+objects of the listed types or aggregates.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-resource
+  (package
+    (name "java-osgi-resource")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.resource/"
+                                  version "/org.osgi.resource-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0hi0fsc5v99q22bd7lrkvpz1y0ds4w9arjldpwsrcpqvz2js7q2d"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-resource.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("dto" ,java-osgi-dto)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Resource")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the definition of common types in osgi packages.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-namespace-contract
+  (package
+    (name "java-osgi-namespace-contract")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.namespace.contract/"
+                                  version "/org.osgi.namespace.contract-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1iz4f2i0fvqrlq90ki9nfzcfpvy2av434ri25bglywqssx8mmp36"))))
+    (build-system ant-build-system)
+    (inputs
+     `(("resource" ,java-osgi-resource)
+       ("annotation" ,java-osgi-annotation)))
+    (arguments
+     `(#:jar-name "osgi-namespace-contract.jar"
+       #:tests? #f)); no tests
+    (home-page "http://www.osgi.org")
+    (synopsis "Contract Capability and Requirement Namespace")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the names for the attributes and directives for a namespace with contracts.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-namespace-extender
+  (package
+    (name "java-osgi-namespace-extender")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.namespace.extender/"
+                                  version "/org.osgi.namespace.extender-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0jgqiak2i05qv6j3gd33xlaifzzc0ylxxk376v2x0apfg3vvixmz"))))
+    (build-system ant-build-system)
+    (inputs
+     `(("resource" ,java-osgi-resource)
+       ("annotation" ,java-osgi-annotation)))
+    (arguments
+     `(#:jar-name "osgi-namespace-extendent.jar"
+       #:tests? #f)); no tests
+    (home-page "http://www.osgi.org")
+    (synopsis "Extender Capability and Requirement Namespace")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the names for the attributes and directives for an extender namespace.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-namespace-service
+  (package
+    (name "java-osgi-namespace-service")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.namespace.service/"
+                                  version "/org.osgi.namespace.service-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0qmw8n2449nkmm56d1znz9zhazb6ya3vsimd5bf5jg23zzhgl8c8"))))
+    (build-system ant-build-system)
+    (inputs
+     `(("resource" ,java-osgi-resource)
+       ("annotation" ,java-osgi-annotation)))
+    (arguments
+     `(#:jar-name "osgi-namespace-service.jar"
+       #:tests? #f)); no tests
+    (home-page "http://www.osgi.org")
+    (synopsis "Service Capability and Requirement Namespace")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the names for the attributes and directives for a service namespace.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-util-function
+  (package
+    (name "java-osgi-util-function")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.util.function/"
+                                  version "/org.osgi.util.function-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "04l7j3hwmmj28w23m7paca0afzncs42j2mdr3liqq8kvp548sc6x"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-util-function.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Util Function")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+an interface for a function that accepts a single argument and produces a result.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-util-promise
+  (package
+    (name "java-osgi-util-promise")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.util.promise/"
+                                  version "/org.osgi.util.promise-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0y34dwiflg1c4ahvkswpf9z02xph2sr9fm04ia5493x3lshpw22c"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-util-promise.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("function" ,java-osgi-util-function)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Promise of a value")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+an interface and utilitary classes for promises.  A Promise represents a future
+value.  It handles the interactions for asynchronous processing.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-metatype-annotations
+  (package
+    (name "java-osgi-service-metatype-annotations")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.metatype.annotations/"
+                                  version "/org.osgi.service.metatype.annotations-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "12rwm3349wk80vm88rcdgs4435m4jxkpkj5mrx326skkz2c6hyw6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-metatype-annotations.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Support annotations for metatype")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the support annotations for metatype.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-repository
+  (package
+    (name "java-osgi-service-repository")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.repository/"
+                                  version "/org.osgi.service.repository-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1k41mhg7b58pd8nsghr2qwcjrxdnf1p9spsw9v11k4257g6rl06n"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-repository.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("promise" ,java-osgi-util-promise)
+       ("resource" ,java-osgi-resource)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI service repository")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+a repository service that contains resources.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-framework
+  (package
+    (name "java-osgi-framework")
+    (version "1.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.framework/" version "/org.osgi.framework-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1lwp2zfad3rybcc6q9bwz8xsgkc92ypzy5p6x54387f1qj65m73s"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-framework.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("resource" ,java-osgi-resource)
+       ("dto" ,java-osgi-dto)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGi framework")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-log
+  (package
+    (name "java-osgi-service-log")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.log/"
+                                  version "/org.osgi.service.log-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1029j30dzcwializzca0j3fkhwwz08kmmsha5agw1iccscimj6r0"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-log.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-osgi-framework" ,java-osgi-framework)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Provides methods for bundles to write messages to the log")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the log service.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-jdbc
+  (package
+    (name "java-osgi-service-jdbc")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.jdbc/"
+                                  version "/org.osgi.service.jdbc-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "11iln5v7bk469cgb9ddkrz9sa95b3733gqgaqw9xf5g6wq652yjz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-jdbc.jar"
+       #:tests? #f)); no tests
+    (home-page "http://www.osgi.org")
+    (synopsis "Factory for JDBC connection factories")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+a factory for JDBC connection factories.  There are 3 preferred connection
+factories for getting JDBC connections:
+
+@itemize
+@item @code{javax.sql.DataSource};
+@item @code{javax.sql.ConnectionPoolDataSource};
+@item @code{javax.sql.XADataSource}.
+@end itemize")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-resolver
+  (package
+    (name "java-osgi-service-resolver")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.resolver/"
+                                  version "/org.osgi.service.resolver-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1dzqn1ryfi2rq4zwsgp44bmj2wlfydjg1qbxw2b0z4xdjjy55vxd"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-resolver.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("annotation" ,java-osgi-annotation)
+       ("resource" ,java-osgi-resource)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Resolver service")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+a resolver service that resolves the specified resources in the context supplied
+by the caller.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-util-tracker
+  (package
+    (name "java-osgi-util-tracker")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.util.tracker/"
+                                  version "/org.osgi.util.tracker-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "0c4fh9vxwzsx59r8dygda0gq2gx3z5vfhc3jsphlqwf5w0h403lz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-util-tracker.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("framework" ,java-osgi-framework)
+       ("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "Bundle tracking")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+bundle tracking utility classes.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-cm
+  (package
+    (name "java-osgi-service-cm")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.cm/"
+                                  version "/org.osgi.service.cm-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1z8kap48y3xi0ggj8v6czglfnpnd94mmismgi2wbqhj1nl5fzbp6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-cm.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("framework" ,java-osgi-framework)
+       ("annotation" ,java-osgi-annotation)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Configuration Management")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+utility classes for the configuration of services.")
+    (license license:asl2.0)))
+
+(define-public java-osgi-service-packageadmin
+  (package
+    (name "java-osgi-service-packageadmin")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+                                  "org.osgi.service.packageadmin/"
+                                  version "/org.osgi.service.packageadmin-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "041mpxzi7g36wmcily6y4ccn3jx15akpdy8gmhyb7m98x7qfvn52"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "osgi-service-packageadmin.jar"
+       #:tests? #f)); no tests
+    (inputs
+     `(("framework" ,java-osgi-framework)))
+    (home-page "http://www.osgi.org")
+    (synopsis "OSGI Package Administration")
+    (description
+      "OSGi, for Open Services Gateway initiative framework, is a module system
+and service platform for the Java programming language.  This package contains
+the packageadmin service.")
+    (license license:asl2.0)))
+
+(define-public java-ops4j-base-lang
+  (package
+    (name "java-ops4j-base-lang")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ops4j/org.ops4j.base/"
+                                  "archive/base-" version ".tar.gz"))
+              (sha256
+               (base32
+                "18hl3lpchgpv8yh5rlk39l2gif5dlfgb8gxjmncf39pr2dprkniw"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-ops4j-base-lang.jar"
+       #:source-dir "ops4j-base-lang/src/main/java"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'add-test-file
+           (lambda _
+             ;; That file is required by a test in ops4j-pax-exam-core-spi
+             (mkdir-p "build/classes/META-INF/maven/org.ops4j.base/ops4j-base-lang")
+             (with-output-to-file "build/classes/META-INF/maven/org.ops4j.base/ops4j-base-lang/pom.properties"
+               (lambda _
+                 (display
+                   (string-append
+                     "version=" ,version "\n"
+                     "groupId=org.ops4j.base"
+                     "artifactId=ops4j-base-lang\n")))))))))
+    (home-page "https://ops4j1.jira.com/wiki/spaces/base/overview")
+    (synopsis "Utility classes and extensions to be used in OPS4J projects")
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities and extensions related to @code{java.lang}.")
+    (license license:asl2.0)))
+
+(define-public java-ops4j-base-monitors
+  (package
+    (inherit java-ops4j-base-lang)
+    (name "java-ops4j-base-monitors")
+    (arguments
+     `(#:jar-name "java-ops4j-base-monitors.jar"
+       #:source-dir "ops4j-base-monitors/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("lang" ,java-ops4j-base-lang)))
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities and extensions related to monitoring.")))
+
+(define-public java-ops4j-base-io
+  (package
+    (inherit java-ops4j-base-lang)
+    (name "java-ops4j-base-io")
+    (arguments
+     `(#:jar-name "java-ops4j-base-io.jar"
+       #:source-dir "ops4j-base-io/src/main/java"
+       #:test-dir "ops4j-base-io/src/test"
+       #:test-exclude
+       (list "**/ListerTest.java")))
+    (inputs
+     `(("lang" ,java-ops4j-base-monitors)
+       ("lang" ,java-ops4j-base-lang)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities and extensions related to handling streams and files.")))
+
+(define-public java-ops4j-base-util
+  (package
+    (inherit java-ops4j-base-lang)
+    (name "java-ops4j-base-util")
+    (arguments
+     `(#:jar-name "java-ops4j-base-util.jar"
+       #:source-dir "ops4j-base-util/src/main/java"
+       #:test-dir "ops4j-base-util/src/test"))
+    (inputs
+     `(("lang" ,java-ops4j-base-lang)))
+    (native-inputs
+     `(("junit" ,java-junit)))
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities and extensions related to environment, i18n and
+mime types.")))
+
+(define-public java-ops4j-base-util-property
+  (package
+    (inherit java-ops4j-base-lang)
+    (name "java-ops4j-base-util-property")
+    (arguments
+     `(#:jar-name "java-ops4j-base-util-property.jar"
+       #:source-dir "ops4j-base-util-property/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("lang" ,java-ops4j-base-lang)
+       ("util" ,java-ops4j-base-util)))
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities and extensions related to resolving properties from
+different sources.")))
+
+(define-public java-ops4j-base-store
+  (package
+    (inherit java-ops4j-base-lang)
+    (name "java-ops4j-base-store")
+    (arguments
+     `(#:jar-name "java-ops4j-base-store.jar"
+       #:source-dir "ops4j-base-store/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("lang" ,java-ops4j-base-lang)
+       ("slf4j" ,java-slf4j-api)
+       ("io" ,java-ops4j-base-io)))
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities for storing and retrieving data from an
+@code{InputStream}.")))
+
+(define-public java-ops4j-base-spi
+  (package
+    (inherit java-ops4j-base-lang)
+    (name "java-ops4j-base-spi")
+    (arguments
+     `(#:jar-name "java-ops4j-base-spi.jar"
+       #:source-dir "ops4j-base-spi/src/main/java"
+       #:test-dir "ops4j-base-spi/src/test"))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (description "OPS4J stands for Open Participation Software for Java.  This
+package contains utilities for obtaining services via the Java SE 6
+@code{ServiceLoader}.")))
+
+(define-public java-aqute-bnd-annotation
+  (package
+    (name "java-aqute-bnd-annotation")
+    (version "3.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/bndtools/bnd/archive/"
+                                  version ".REL.tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09vgb6axikbz66zi9falijbnzh1qnp9ysfns123dmzdb01cbza9q"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-aqute-bnd-annotation.jar"
+       #:source-dir "biz.aQute.bnd.annotation/src"
+       #:tests? #f)); empty test dir
+    (home-page "http://bnd.bndtools.org/")
+    (synopsis "Tools for OSGi")
+    (description "Bnd is a swiss army knife for OSGi, it creates manifest
+headers based on analyzing the class code, it verifies the project settings,
+it manages project dependencies, gives diffs jars, and much more.")
+    (license license:asl2.0)))
+
+(define-public java-aqute-libg
+  (package
+    (inherit java-aqute-bnd-annotation)
+    (name "java-aqute-libg")
+    (arguments
+     `(#:jar-name "java-aqute-libg.jar"
+       #:source-dir "aQute.libg/src"
+       #:tests? #f)); FIXME: tests are in "aQute.libg/test", not in a java directory
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("osgi-annot" ,java-osgi-annotation)
+       ("java-osgi-cmpn" ,java-osgi-cmpn)
+       ("osgi" ,java-osgi-core)))))
+
+(define-public java-aqute-bndlib
+  (package
+    (inherit java-aqute-bnd-annotation)
+    (name "java-aqute-bndlib")
+    (arguments
+     `(#:jar-name "java-bndlib.jar"
+       #:source-dir "biz.aQute.bndlib/src"
+       #:tests? #f)); no tests
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("osgi-annot" ,java-osgi-annotation)
+       ("java-aqute-libg" ,java-aqute-libg)
+       ("java-aqute-bnd-annotation" ,java-aqute-bnd-annotation)
+       ("java-osgi-service-component-annotations" ,java-osgi-service-component-annotations)
+       ("java-osgi-service-repository" ,java-osgi-service-repository)
+       ("java-osgi-service-log" ,java-osgi-service-log)
+       ("java-osgi-service-metatype-annotations" ,java-osgi-service-metatype-annotations)
+       ("java-osgi-namespace-contract" ,java-osgi-namespace-contract)
+       ("java-osgi-namespace-extender" ,java-osgi-namespace-extender)
+       ("java-osgi-namespace-service" ,java-osgi-namespace-service)
+       ("promise" ,java-osgi-util-promise)
+       ("osgi" ,java-osgi-core)))))
+
+(define-public java-ops4j-pax-tinybundles
+  (package
+    (name "java-ops4j-pax-tinybundles")
+    (version "2.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ops4j/org.ops4j.pax.tinybundles/"
+                                  "archive/tinybundles-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0y0gq3pvv0iir2b885lmlwnvr724vv7vklzhhr4fs27d7mdkj871"))))
+    (arguments
+     `(#:jar-name "java-ops4j-pax-tinybundles.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       ;; Abstract base classes for other tests
+       (list "**/BndTest.java" "**/CoreTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-version
+           (lambda _
+             ;; This test has a reference to an old version of bndlib we are not
+             ;; packaging.  It uses the version referenced in pom.xml.  We replace
+             ;; it with our own version.
+             (substitute* "src/test/java/org/ops4j/pax/tinybundles/bnd/BndTest.java"
+               (("2.4.0.201411031534") "3.4.0")))))))
+    (inputs
+     `(("lang" ,java-ops4j-base-lang)
+       ("io" ,java-ops4j-base-io)
+       ("store" ,java-ops4j-base-store)
+       ("slf4j" ,java-slf4j-api)
+       ("libg" ,java-aqute-libg)
+       ("bndlib" ,java-aqute-bndlib)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)
+       ("log4j" ,java-log4j-api)
+       ("bndannotation" ,java-aqute-bnd-annotation)
+       ("framework" ,java-osgi-framework)))
+    (build-system ant-build-system)
+    (home-page "https://ops4j1.jira.com/wiki/spaces/ops4j/pages/12060312/Tinybundles")
+    (synopsis "Java APIs to create OSGi related artifacts")
+    (description "Tinybundles is all about creating OSGi related artifacts like
+Bundles, Fragments and Deployment Packages with Java Api.  It is very convinient
+to create such artifacts on-the-fly inside Tests (like in Pax Exam).  On the
+other hand, this library can be a foundation of real end user tools that need
+to create those artifacts.")
+    (license license:asl2.0)))
+
+(define-public java-ops4j-pax-exam-core
+  (package
+    (name "java-ops4j-pax-exam-core")
+    (version "4.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ops4j/org.ops4j.pax.exam2/"
+                                  "archive/exam-reactor-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08mzw8nkah3rj3vznlplnawspxhp61zgvb44ifqa1rni1cvbms2g"))))
+    (arguments
+     `(#:jar-name "java-ops4j-pax-exam-core.jar"
+       #:source-dir "core/pax-exam/src/main/java"
+       #:test-dir "core/pax-exam/src/test"))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("lang" ,java-ops4j-base-lang)
+       ("io" ,java-ops4j-base-io)
+       ("util-property" ,java-ops4j-base-util-property)
+       ("util-store" ,java-ops4j-base-store)
+       ("java-osgi-core" ,java-osgi-core)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (build-system ant-build-system)
+    (home-page "https://ops4j1.jira.com/wiki/spaces/PAXEXAM4/overview")
+    (synopsis "In-Container Testing for OSGi, Java EE and CDI")
+    (description "Pax Exam creates OSGi bundles for testing purposes.  It lets
+the user take control of the OSGi framework, the test framework (e.g. JUnit) and
+the system under test at the same time.")
+    (license license:asl2.0)))
+
+(define-public java-ops4j-pax-exam-core-spi
+  (package
+    (inherit java-ops4j-pax-exam-core)
+    (name "java-ops4j-pax-exam-core-spi")
+    (arguments
+     `(#:jar-name "java-ops4j-pax-exam-spi.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list
+         ;; Abstract base class, not a test
+         "**/BaseStagedReactorTest.java"
+         ;; Depends on org.mortbay.jetty.testwars:test-war-dump
+         "**/WarBuilderTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             ;; Tests assume we are in this directory
+             (chdir "core/pax-exam-spi")))
+         (add-before 'check 'fix-tests
+           (lambda _
+             ;; One test checks that this file is present.
+             (mkdir-p "build/classes/META-INF/maven/org.ops4j.pax.exam/pax-exam-spi")
+             (with-output-to-file
+               "build/classes/META-INF/maven/org.ops4j.pax.exam/pax-exam-spi/pom.properties"
+               (lambda _
+                 (display
+                   (string-append "artifactId = pax-exam-spi\n"
+                                  "version = " ,(package-version java-ops4j-pax-exam-core-spi)))))
+             ;; Maven puts compilation results in the target directory, while we
+             ;; put them in the build directory.
+             (substitute* '("src/test/java/org/ops4j/pax/exam/spi/war/WarBuilderTest.java"
+                            "src/test/java/org/ops4j/pax/exam/spi/war/WarTestProbeBuilderTest.java"
+                            "src/test/java/org/ops4j/pax/exam/spi/war/ZipBuilderTest.java")
+               (("target") "build"))
+             ;; One test is expected to fail, but it doesn't throw the expected exception
+             (substitute* "src/test/java/org/ops4j/pax/exam/spi/reactors/BaseStagedReactorTest.java"
+               (("AssertionError") "IllegalArgumentException")))))))
+    (inputs
+     `(("java-ops4j-pax-exam-core" ,java-ops4j-pax-exam-core)
+       ("lang" ,java-ops4j-base-lang)
+       ("monitors" ,java-ops4j-base-monitors)
+       ("store" ,java-ops4j-base-store)
+       ("io" ,java-ops4j-base-io)
+       ("spi" ,java-ops4j-base-spi)
+       ("osgi" ,java-osgi-core)
+       ("slf4j" ,java-slf4j-api)
+       ("tinybundles" ,java-ops4j-pax-tinybundles)))
+    (native-inputs
+     `(("mockito" ,java-mockito-1)
+       ("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)
+       ("cglib" ,java-cglib)
+       ("objenesis" ,java-objenesis)
+       ("asm" ,java-asm)))))
+
+(define-public java-ops4j-pax-exam-core-junit
+  (package
+    (inherit java-ops4j-pax-exam-core)
+    (name "java-ops4j-pax-exam-core-junit")
+    (arguments
+     `(#:jar-name "ops4j-pax-exam-core-junit.jar"
+       #:source-dir "drivers/pax-exam-junit4/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("junit" ,java-junit)
+       ("slf4j" ,java-slf4j-api)
+       ("core" ,java-ops4j-pax-exam-core)
+       ("spi" ,java-ops4j-pax-exam-core-spi)))
+    (native-inputs '())))
+
+(define-public java-fasterxml-jackson-annotations
+  (package
+    (name "java-fasterxml-jackson-annotations")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-annotations/archive/"
+                                  "jackson-annotations-" version ".tar.gz"))
+              (sha256
+               (base32
+                "005ksgqx2ds3zdmlvbcmmz82y28b1mx0i9bpvprim1jaddbba0bd"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-annotations.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"))
+    (native-inputs
+     `(("junit" ,java-junit)))
+    (home-page "https://github.com/FasterXML/jackson-annotations")
+    (synopsis "General purpose annotations for the Jackson Data Processor")
+    (description "This package contains general purpose annotations for the
+Jackson Data Processor, used on value and handler types.  The only annotations
+not included are ones that require dependency to the Databind package.")
+    (license license:asl2.0)))
+
+(define-public java-fasterxml-jackson-core
+  (package
+    (name "java-fasterxml-jackson-core")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-core/archive/"
+                                  "jackson-core-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sdfp74zvlh4xr5h5bj87yjlp6kny3i8ai9m0q3xs7f8hvmxpx09"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-core.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:test-exclude
+       (list
+         ;; Expected failure.  pom.xml excludes these
+         "**/failing/**"
+         ;; Base classes that have no constructor for junit
+         "**/BaseTest.java"
+         "**/ConcurrencyReadTest.java"
+         "**/ManualCharAccessTest.java"
+         "**/ManualCharAccessTest.java"
+         "**/TrailingCommasTest.java"
+         "**/AsyncMissingValuesInObjectTest.java"
+         "**/AsyncMissingValuesInArrayTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out "src/main/java/com/fasterxml/jackson/core/json/PackageVersion.java")
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.core.json")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.core")
+                 (("@projectartifactid@") "jackson-core")))))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources"
+                               "build/classes")))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "src/test/resources"
+                               "build/test-classes"))))))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://github.com/FasterXML/jackson-core")
+    (synopsis "")
+    (description "")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-fasterxml-jackson-databind
+  (package
+    (name "java-fasterxml-jackson-databind")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-databind/archive/"
+                                  "jackson-databind-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02xrbj6g7pzybq8q33xmpf7cxfapk6z6lgxvig7d38fijz400lji"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-databind.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f; requires javax.measures for which I can't find a free implementation
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out "src/main/java/com/fasterxml/jackson/databind/cfg/PackageVersion.java")
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.databind.cfg")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.databind")
+                 (("@projectartifactid@") "jackson-databind")))))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes"))))))
+    (inputs
+     `(("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)))
+    (home-page "https://github.com/FasterXML/jackson-databind")
+    (synopsis "Data-binding functionality and tree-model for the Jackson Data Processor")
+    (description "This package contains the general-purpose data-binding
+functionality and tree-model for Jackson Data Processor.  It builds on core
+streaming parser/generator package, and uses Jackson Annotations for
+configuration.")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-fasterxml-jackson-modules-base-jaxb
+  (package
+    (name "java-fasterxml-jackson-modules-base-jaxb")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-modules-base/archive/"
+                                  "jackson-modules-base-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0bj2pzvycnj3ysbcfa6xl38dmvnp01mnjfcb9jyhv503fch2iv44"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-modules-base-jaxb.jar"
+       #:source-dir "jaxb/src/main/java"
+       #:test-dir "jaxb/src/test"
+       #:test-exclude
+       ;; Base class for tests
+       (list "**/BaseJaxbTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out (string-append "jaxb/src/main/java/com/fasterxml/"
+                                        "jackson/module/jaxb/PackageVersion.java"))
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.module.jaxb")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.module.jaxb")
+                 (("@projectartifactid@") "jackson-module-jaxb")))))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "jaxb/src/main/resources" "build/classes"))))))
+    (inputs
+     `(("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
+       ("java-fasterxml-jackson-databind" ,java-fasterxml-jackson-databind)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/FasterXML/jackson-modules-base")
+    (synopsis "Jaxb annotations jackson module")
+    (description "This package is the jaxb annotations module for jackson.")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-snakeyaml
+  (package
+    (name "java-snakeyaml")
+    (version "1.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bitbucket.org/asomov/snakeyaml/get/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0rf5ha6w0waz50jz2479jsrbgmd0dnx0gs337m126j5z7zlmg7mg"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-snakeyaml.jar"
+       #:source-dir "src/main/java"
+       ;; Tests require velocity, a cyclic dependency, and
+       ;; java-spring-framework-context which is not packaged.
+       #:tests? #f))
+    (home-page "https://bitbucket.org/asomov/snakeyaml")
+    (synopsis "YAML processor")
+    (description "SnakeYAML is a YAML processor for the Java Virtual Machine.")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-fasterxml-jackson-dataformat-yaml
+  (package
+    (name "java-fasterxml-jackson-dataformat-yaml")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-dataformats-text/archive/"
+                                  "jackson-dataformats-text-" version ".tar.gz"))
+              (sha256
+               (base32
+                "140fwcafv05zbh2ppa6z533dzmfcvzbdxf0dbpbyzqvd84v2vhl2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-dataformat-yaml.jar"
+       #:source-dir "yaml/src/main/java"
+       #:test-dir "yaml/src/test"
+       #:test-exclude (list "**/failing/**.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out "yaml/src/main/java/com/fasterxml/jackson/dataformat/yaml/PackageVersion.java")
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.dataformat.yaml")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.dataformat.yaml")
+                 (("@projectartifactid@") "jackson-dataformat-yaml"))))))))
+    (inputs
+     `(("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
+       ("java-fasterxml-jackson-databind" ,java-fasterxml-jackson-databind)
+       ("java-snakeyaml" ,java-snakeyaml)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)
+       ("java-ops4j-pax-exam-core-spi" ,java-ops4j-pax-exam-core-spi)
+       ("java-ops4j-pax-exam-core-junit" ,java-ops4j-pax-exam-core-junit)
+       ("java-ops4j-pax-exam" ,java-ops4j-pax-exam-core)))
+    (home-page "https://github.com/FasterXML/jackson-dataformats-text")
+    (synopsis "Yaml backend for Jackson")
+    (description "Dataformat backends are used to support format alternatives
+to JSON, supported by default.  This is done by sub-classing Jackson core
+abstractions.")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-stax2-api
+  (package
+    (name "java-stax2-api")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/stax2-api/archive/"
+                                  "stax2-api-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1amc1si0l0hyyw2sawmnzy4hkna3z6fp195y4nm5m9wb9ld5awkq"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-stax2-api.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f)); no tests
+    (home-page "https://github.com/FasterXML/stax2-api")
+    (synopsis "Stax2 API")
+    (description "Stax2 API is an extension to basic Stax 1.0 API that adds
+significant new functionalities, such as full-featured bi-direction validation
+interface and high-performance Typed Access API.")
+    (license license:bsd-2)))
+
+(define-public java-woodstox-core
+  (package
+    (name "java-woodstox-core")
+    (version "5.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/woodstox/archive/"
+                                  "woodstox-core-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1i7pdgb8jbw6gdy5kmm0l6rz109n2ns92pqalpyp24vb8vlvdfd4"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "woodstox.jar"
+       #:test-exclude
+       (list "**/Base*.java" "failing/**")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-msv-dep
+           (lambda _
+             ;; we don't need osgi, and it depends on msv
+             (delete-file-recursively "src/main/java/com/ctc/wstx/osgi")
+             ;; msv's latest release is from 2011 and we don't need it
+             (delete-file-recursively "src/main/java/com/ctc/wstx/msv")
+             (delete-file-recursively "src/test/java/wstxtest/osgi")
+             (delete-file-recursively "src/test/java/wstxtest/msv")))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes"))))))
+    (inputs
+     `(("stax2" ,java-stax2-api)))
+    (native-inputs
+     `(("junit" ,java-junit)))
+    (home-page "https://github.com/FasterXML/woodstox")
+    (synopsis "Stax XML API implementation")
+    (description "Woodstox is a stax XML API implementation.")
+    (license license:asl2.0)))
+
+(define-public java-fasterxml-jackson-dataformat-xml
+  (package
+    (name "java-fasterxml-jackson-dataformat-xml")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-dataformat-xml/archive/"
+                                  "jackson-dataformat-xml-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0x3m9n4kwclcyvxhxjx654qpjza4crphml1q2392qpnbfydx6lnh"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-dataformat-xml.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list "**/failing/**")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out "src/main/java/com/fasterxml/jackson/dataformat/xml/PackageVersion.java")
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (newline)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.dataformat.xml")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.dataformat.xml")
+                 (("@projectartifactid@") "jackson-dataformat-xml")))))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes"))))))
+    (inputs
+     `(("jackson-annotations" ,java-fasterxml-jackson-annotations)
+       ("jackson-core" ,java-fasterxml-jackson-core)
+       ("jackson-modules-base-jaxb" ,java-fasterxml-jackson-modules-base-jaxb)
+       ("jackson-databind" ,java-fasterxml-jackson-databind)
+       ("stax2-api" ,java-stax2-api)
+       ("woodstox" ,java-woodstox-core)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://github.com/FasterXML/jackson-dataformat-xml")
+    (synopsis "Read and write XML")
+    (description "This package contains Jackson extension component for reading
+and writing XML encoded data.
+
+Further, the goal is to emulate how JAXB data-binding works with \"Code-first\"
+approach (that is, no support is added for \"Schema-first\" approach).  Support
+for JAXB annotations is provided by JAXB annotation module; this module
+provides low-level abstractions (@code{JsonParser}, @code{JsonGenerator},
+@code{JsonFactory}) as well as small number of higher level overrides needed to
+make data-binding work.")
+    (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing

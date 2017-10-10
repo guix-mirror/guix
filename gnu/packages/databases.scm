@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,8 +70,10 @@
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -154,14 +157,14 @@ and provides interfaces to the traditional file format.")
 (define-public bdb
   (package
     (name "bdb")
-    (version "6.2.23")
+    (version "6.2.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.oracle.com/berkeley-db/db-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1isxx4jfmnh913jzhp8hhfngbk6dsg46f4kjpvvc56maj64jqqa7"))))
+                "1yx8wzhch5wwh016nh0kfxvknjkafv6ybkqh6nh7lxx50jqf5id9"))))
     (build-system gnu-build-system)
     (outputs '("out"                             ; programs, libraries, headers
                "doc"))                           ; 94 MiB of HTML docs
@@ -169,34 +172,33 @@ and provides interfaces to the traditional file format.")
      '(#:tests? #f                            ; no check target available
        #:disallowed-references ("doc")
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out"))
-                (doc (assoc-ref outputs "doc")))
-            ;; '--docdir' is not honored, so we need to patch.
-            (substitute* "dist/Makefile.in"
-              (("docdir[[:blank:]]*=.*")
-               (string-append "docdir = " doc "/share/doc/bdb")))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               ;; '--docdir' is not honored, so we need to patch.
+               (substitute* "dist/Makefile.in"
+                 (("docdir[[:blank:]]*=.*")
+                  (string-append "docdir = " doc "/share/doc/bdb")))
 
-            (zero?
-             (system* "./dist/configure"
-                      (string-append "--prefix=" out)
-                      (string-append "CONFIG_SHELL=" (which "bash"))
-                      (string-append "SHELL=" (which "bash"))
+               (zero?
+                (system* "./dist/configure"
+                         (string-append "--prefix=" out)
+                         (string-append "CONFIG_SHELL=" (which "bash"))
+                         (string-append "SHELL=" (which "bash"))
 
-                      ;; Remove 7 MiB of .a files.
-                      "--disable-static"
+                         ;; Remove 7 MiB of .a files.
+                         "--disable-static"
 
-                      ;; The compatibility mode is needed by some packages,
-                      ;; notably iproute2.
-                      "--enable-compat185"
+                         ;; The compatibility mode is needed by some packages,
+                         ;; notably iproute2.
+                         "--enable-compat185"
 
-                      ;; The following flag is needed so that the inclusion
-                      ;; of db_cxx.h into C++ files works; it leads to
-                      ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-                      "--enable-cxx"))))
-                 %standard-phases)))
+                         ;; The following flag is needed so that the inclusion
+                         ;; of db_cxx.h into C++ files works; it leads to
+                         ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+                         "--enable-cxx"))))))))
     (synopsis "Berkeley database")
     (description
      "Berkeley DB is an embeddable database allowing developers the choice of
@@ -224,39 +226,38 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
      `(#:tests? #f                            ; no check target available
        #:disallowed-references ("doc")
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out"))
-                (doc (assoc-ref outputs "doc")))
-            ;; '--docdir' is not honored, so we need to patch.
-            (substitute* "dist/Makefile.in"
-              (("docdir[[:blank:]]*=.*")
-               (string-append "docdir = " doc "/share/doc/bdb")))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               ;; '--docdir' is not honored, so we need to patch.
+               (substitute* "dist/Makefile.in"
+                 (("docdir[[:blank:]]*=.*")
+                  (string-append "docdir = " doc "/share/doc/bdb")))
 
-            (zero?
-             (system* "./dist/configure"
-                      (string-append "--prefix=" out)
-                      (string-append "CONFIG_SHELL=" (which "bash"))
-                      (string-append "SHELL=" (which "bash"))
+               (zero?
+                (system* "./dist/configure"
+                         (string-append "--prefix=" out)
+                         (string-append "CONFIG_SHELL=" (which "bash"))
+                         (string-append "SHELL=" (which "bash"))
 
-                      ;; Bdb doesn't recognize aarch64 as an architecture.
-                      ,@(if (string=? "aarch64-linux" (%current-system))
-                            '("--build=aarch64-unknown-linux-gnu")
-                            '())
+                         ;; Bdb doesn't recognize aarch64 as an architecture.
+                         ,@(if (string=? "aarch64-linux" (%current-system))
+                               '("--build=aarch64-unknown-linux-gnu")
+                               '())
 
-                      ;; Remove 7 MiB of .a files.
-                      "--disable-static"
+                         ;; Remove 7 MiB of .a files.
+                         "--disable-static"
 
-                      ;; The compatibility mode is needed by some packages,
-                      ;; notably iproute2.
-                      "--enable-compat185"
+                         ;; The compatibility mode is needed by some packages,
+                         ;; notably iproute2.
+                         "--enable-compat185"
 
-                      ;; The following flag is needed so that the inclusion
-                      ;; of db_cxx.h into C++ files works; it leads to
-                      ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-                      "--enable-cxx"))))
-                 %standard-phases)))))
+                         ;; The following flag is needed so that the inclusion
+                         ;; of db_cxx.h into C++ files works; it leads to
+                         ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+                         "--enable-cxx"))))))))))
 
 (define-public es-dump-restore
   (package
@@ -356,6 +357,98 @@ mapping from string keys to string values.")
 and generic API, and was originally intended for use with dynamic web
 applications.")
     (license license:bsd-3)))
+
+(define-public mongodb
+  (package
+    (name "mongodb")
+    (version "3.4.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mongodb/mongo/archive/r"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "0gidwyvh3bdwmk2pccgkqkaln4ysgn8iwa7ihjzllsq0rdg95045"))
+              (patches
+               (list
+                (search-patch "mongodb-support-unknown-linux-distributions.patch")))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("yaml-cpp" ,yaml-cpp)
+       ("zlib" ,zlib)
+       ("snappy" ,snappy)
+       ("boost" ,boost)))
+    (native-inputs
+     `(("scons" ,scons)
+       ("python" ,python-2)
+       ("valgrind" ,valgrind)
+       ("perl" ,perl)))
+    (arguments
+     `(#:phases
+       (let ((common-options
+              `(;; "--use-system-tcmalloc" TODO: Missing gperftools
+                "--use-system-pcre"
+                ;; TODO
+                ;; build/opt/mongo/db/fts/unicode/string.o failed: Error 1
+                ;; --use-system-boost
+                "--use-system-snappy"
+                "--use-system-zlib"
+                "--use-system-valgrind"
+                ;; "--use-system-stemmer" TODO: Missing relevant package
+                "--use-system-yaml"
+                "--disable-warnings-as-errors"
+                ,(format #f "--jobs=~a" (parallel-job-count))
+                "--ssl")))
+         (modify-phases %standard-phases
+           (delete 'configure) ; There is no configure phase
+           (add-after 'unpack 'scons-propagate-environment
+             (lambda _
+               ;; Modify the SConstruct file to arrange for
+               ;; environment variables to be propagated.
+               (substitute* "SConstruct"
+                 (("^env = Environment\\(")
+                  "env = Environment(ENV=os.environ, "))
+               #t))
+           (add-after 'unpack 'create-version-file
+             (lambda _
+               (call-with-output-file "version.json"
+                 (lambda (port)
+                   (display ,(simple-format #f "{
+    \"version\": \"~A\"
+}" version) port)))
+               #t))
+           (replace 'build
+             (lambda _
+               (zero? (apply system*
+                             `("scons"
+                               ,@common-options
+                               "mongod" "mongo" "mongos")))))
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (or (not tests?)
+                   (zero? (apply system*
+                                 `("scons"
+                                   ,@common-options
+                                   "dbtest" "unittests"))))))
+           (replace 'install
+             (lambda _
+               (let ((bin  (string-append (assoc-ref %outputs "out") "/bin")))
+                 (install-file "mongod" bin)
+                 (install-file "mongos" bin)
+                 (install-file "mongo" bin))
+               #t))))))
+    (home-page "https://www.mongodb.org/")
+    (synopsis "High performance and high availability document database")
+    (description
+     "Mongo is a high-performance, high availability, schema-free
+document-oriented database.  A key goal of MongoDB is to bridge the gap
+between key/value stores (which are fast and highly scalable) and traditional
+RDBMS systems (which are deep in functionality).")
+    (license (list license:agpl3
+                   ;; Some parts are licensed under the Apache License
+                   license:asl2.0))))
 
 (define-public mysql
   (package
@@ -512,14 +605,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "9.6.5")
+    (version "10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0k3ls2x182jz6djjiqj9kycddabdl2gk1y1ajq1vipnxwfki5nh6"))))
+                "1lbzwpmdxmk5bh0ix0rn72qbd52dq5cb55nzajscb0bvwa95abvi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-uuid=e2fs")
@@ -1717,3 +1810,30 @@ implementation for Python.")
 
 (define-public python2-orator
   (package-with-python2 (strip-python2-variant python-orator)))
+
+(define-public virtuoso-ose
+  (package
+    (name "virtuoso-ose")
+    (version "7.2.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/openlink/virtuoso-opensource/releases/"
+             "download/v" version "/virtuoso-opensource-" version ".tar.gz"))
+       (sha256
+        (base32 "12dqam1gc1v93l0bj0vlpvjqppki6y1hqrlznywxnw0rrz9pb002"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require a network connection.
+    (inputs
+     `(("openssl" ,openssl)
+       ("net-tools" ,net-tools)))
+    (home-page "http://vos.openlinksw.com/owiki/wiki/VOS/")
+    (synopsis "Multi-model database system")
+    (description "Virtuoso is a scalable cross-platform server that combines
+relational, graph, and document data management with web application server
+and web services platform functionality.")
+    ;; configure: error: ... can only be build on 64bit platforms
+    (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))
+    (license license:gpl2)))

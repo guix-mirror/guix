@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,19 +23,22 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages flashing-tools)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages pciutils)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages admin))
 
@@ -62,17 +66,16 @@
                           "CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no")
        #:tests? #f   ; no 'check' target
        #:phases
-       (alist-delete
-        'configure
-        (alist-cons-before
-         'build 'patch-exec-paths
-         (lambda* (#:key inputs #:allow-other-keys)
-           (substitute* "dmi.c"
-             (("\"dmidecode\"")
-              (format #f "~S"
-                      (string-append (assoc-ref inputs "dmidecode")
-                                     "/sbin/dmidecode")))))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'patch-exec-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "dmi.c"
+               (("\"dmidecode\"")
+                (format #f "~S"
+                        (string-append (assoc-ref inputs "dmidecode")
+                                       "/sbin/dmidecode"))))
+             #t)))))
     (home-page "http://flashrom.org/")
     (synopsis "Identify, read, write, erase, and verify ROM/flash chips")
     (description
@@ -81,7 +84,7 @@ verifying and erasing flash chips.  It is designed to flash
 BIOS/EFI/coreboot/firmware/optionROM images on mainboards,
 network/graphics/storage controller cards, and various other
 programmer devices.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public 0xffff
   (package
@@ -112,7 +115,7 @@ programmer devices.")
 for FIASCO images.  It supports generating, unpacking, editing and
 flashing of FIASCO images for Maemo devices.  Use it with care.  It can
 brick your device.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public avrdude
   (package
@@ -140,7 +143,7 @@ brick your device.")
      "AVRDUDE is a utility to download/upload/manipulate the ROM and
 EEPROM contents of AVR microcontrollers using the in-system programming
 technique (ISP).")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public dfu-programmer
   (package
@@ -166,7 +169,7 @@ technique (ISP).")
      "Dfu-programmer is a multi-platform command-line programmer for
 Atmel (8051, AVR, XMEGA & AVR32) chips with a USB bootloader supporting
 ISP.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public dfu-util
   (package
@@ -193,7 +196,7 @@ ranges from small devices like micro-controller boards up to mobile phones.
 With dfu-util you are able to download firmware to your device or upload
 firmware from it.")
     (home-page "http://dfu-util.sourceforge.net/")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public teensy-loader-cli
   ;; The repo does not tag versions nor does it use releases, but a commit
@@ -244,7 +247,7 @@ HalfKay bootloader is running, so you can upload new programs and run them.
 You need to add the udev rules to make the Teensy update available for
 non-root users.")
       (home-page "https://www.pjrc.com/teensy/loader_cli.html")
-      (license gpl3))))
+      (license license:gpl3))))
 
 (define-public rkflashtool
   (let ((commit "094bd6410cb016e487e2ccb1050c59eeac2e6dd1")
@@ -278,4 +281,51 @@ non-root users.")
       (description "Allows flashing of Rockchip based embedded linux devices.
 The list of currently supported devices is: RK2818, RK2918, RK2928, RK3026,
 RK3036, RK3066, RK312X, RK3168, RK3188, RK3288, RK3368.")
-      (license bsd-2))))
+      (license license:bsd-2))))
+
+(define-public heimdall
+  (package
+    (name "heimdall")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/Benjamin-Dobell/Heimdall"
+                                  "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y7gwg3lipyp2zcysm2vid1qg5nwin9bxbvgzs28lz2rya4fz6sq"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-invocations
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("heimdall-frontend/source/aboutform.cpp"
+                            "heimdall-frontend/source/mainwindow.cpp")
+               (("start[(]\"heimdall\"")
+                (string-append "start(\"" (assoc-ref outputs "out")
+                               "/bin/heimdall\"")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                   (lib (string-append (assoc-ref outputs "out") "/lib")))
+               (install-file "bin/heimdall" bin)
+               (install-file "bin/heimdall-frontend" bin)
+               (install-file "libpit/libpit.a" lib)
+               #t))))))
+    (inputs
+     `(("libusb" ,libusb)
+       ("qtbase" ,qtbase)
+       ("zlib" ,zlib)))
+    (home-page "http://glassechidna.com.au/heimdall/")
+    (synopsis "Flash firmware onto Samsung mobile devices")
+    (description "@command{heimdall} is a tool suite used to flash firmware (aka
+ROMs) onto Samsung mobile devices.  Heimdall connects to a mobile device over
+USB and interacts with low-level software running on the device, known as Loke.
+Loke and Heimdall communicate via the custom Samsung-developed protocol typically
+referred to as the \"Odin 3 protocol\".")
+    (license license:expat)))

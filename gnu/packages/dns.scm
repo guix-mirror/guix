@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -59,7 +59,7 @@
 (define-public dnsmasq
   (package
     (name "dnsmasq")
-    (version "2.76")
+    (version "2.78")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -67,7 +67,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "15lzih6671gh9knzpl8mxchiml7z5lfqzr7jm2r0rjhrxs6nk4jb"))))
+                "0ar5h5v3kas2qx2wgy5iqin15gc4jhqrqs067xacgc3lii1rz549"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -75,7 +75,7 @@
      `(("dbus" ,dbus)))
     (arguments
      `(#:phases
-       (alist-delete 'configure %standard-phases)
+       (modify-phases %standard-phases (delete 'configure))
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "CC=gcc"
                           "COPTS=\"-DHAVE_DBUS\"")
@@ -483,14 +483,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.5.5")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bwv2a290inkjb5x9a9sahls39rgaqyq9dwfrk1ilmzy9nmls87f"))
+                "1zc3ybhcxgbysyy68kbmndh6xzy4jnr5iikyrf9s2sxzs1hlkq38"))
               (modules '((guix build utils)))
               (snippet
                '(begin

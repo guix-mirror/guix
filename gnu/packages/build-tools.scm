@@ -70,7 +70,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.42.0")
+    (version "0.42.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -78,7 +78,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0vyp9rkymzzzilhnf04ryszslyp9a0y0wf4agyijd4w5lcnqlcbc"))))
+                "1494hdnd40g2v6pky34j0f2iwc6kwn51vck37qwz7nl2xr17b18q"))))
     (build-system python-build-system)
     (inputs `(("ninja", ninja)))
     (propagated-inputs `(("python" ,python)))
@@ -97,7 +97,7 @@ Python.")
   (package
     (inherit meson)
     (name "meson-for-build")
-    (version "0.42.0")
+    (version "0.42.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -105,7 +105,7 @@ Python.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0vyp9rkymzzzilhnf04ryszslyp9a0y0wf4agyijd4w5lcnqlcbc"))
+                "1494hdnd40g2v6pky34j0f2iwc6kwn51vck37qwz7nl2xr17b18q"))
               (patches (search-patches "meson-for-build-rpath.patch"))))
 
     ;; People should probably install "meson", not "meson-for-build".

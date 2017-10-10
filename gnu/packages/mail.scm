@@ -225,14 +225,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.8.3")
+    (version "1.9.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "0hpd896mw630sd6ps60hpka8cg691nvr627n8kmabv7zcxnp90cv"))
+               "1c8vv4anl555a03pbnwf8wnf0d8pcnd4p35y3q8f5ikkcflq76vl"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -416,7 +416,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.1.2")
+    (version "7.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -424,7 +424,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rnw7gpx3cp4irja5143haszgv4xhndc8wivhg8r0gpp6ig460vj"))))
+                "0iaznh8q3fmia43r0600vrd3w8njis1x65ry9fv3zsyx0ili1z02"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -811,7 +811,7 @@ and search library.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "5.1")
+    (version "5.4")
     (source
      (origin
        (method url-fetch)
@@ -819,7 +819,7 @@ and search library.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0zh220vx10wi6x61qi0mjayjxgvllk9f6vd4hjrgzha1xbjj0vix"))))
+         "1iwss9z94p165gxr2yw7s9q12a0bn71fcdbikzkykr5s7xxnz2ds"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1034,51 +1034,51 @@ delivery.")
        ("perl" ,perl)))
     (arguments
      '(#:phases
-       (alist-replace
-        'configure
-        ;; We'd use #:make-flags but the top-level Makefile calls others
-        ;; recursively, so just set all variables this way.
-        (lambda* (#:key outputs inputs #:allow-other-keys)
-          (substitute* '("Makefile" "OS/Makefile-Default")
-            (("(RM_COMMAND=).*" all var)
-             (string-append var "rm\n")))
-          (copy-file "src/EDITME" "Local/Makefile")
-          (copy-file "exim_monitor/EDITME" "Local/eximon.conf")
-          (let ((out (assoc-ref outputs "out"))
-                (gzip (assoc-ref inputs "gzip"))
-                (bzip2 (assoc-ref inputs "bzip2"))
-                (xz (assoc-ref inputs "xz")))
-            (substitute* '("Local/Makefile")
-              (("(BIN_DIRECTORY=).*" all var)
-               (string-append var out "/bin\n"))
-              (("(CONFIGURE_FILE=).*" all var)
-               (string-append var out "/etc/exim.conf\n"))
-              (("(EXIM_USER=).*" all var)
-               (string-append var "nobody\n"))
-              (("(FIXED_NEVER_USERS=).*" all var)
-               (string-append var "\n"))  ;XXX no root in build environment
-              (("(COMPRESS_COMMAND=).*" all var)
-               (string-append var gzip "/bin/gzip\n"))
-              (("(ZCAT_COMMAND=).*" all var)
-               (string-append var gzip "/bin/zcat\n")))
-            ;; This file has hardcoded names for tools despite the zcat
-            ;; configuration above.
-            (substitute* '("src/exigrep.src")
-              (("'zcat'") (string-append "'" gzip "/bin/zcat'"))
-              (("'bzcat'") (string-append "'" bzip2 "/bin/bzcat'"))
-              (("'xzcat'") (string-append "'" xz "/bin/xzcat'"))
-              (("'lzma'") (string-append "'" xz "/bin/lzma'")))))
-        (alist-cons-before
-         'build 'fix-sh-paths
-         (lambda* (#:key inputs #:allow-other-keys)
-           (substitute* '("scripts/lookups-Makefile" "scripts/reversion")
-             (("SHELL=/bin/sh") "SHELL=sh"))
-           (substitute* '("scripts/Configure-config.h")
-             (("\\| /bin/sh") "| sh"))
-           (let ((bash (assoc-ref inputs "bash")))
-             (substitute* '("scripts/Configure-eximon")
-               (("#!/bin/sh") (string-append "#!" bash "/bin/sh")))))
-         %standard-phases))
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; We'd use #:make-flags but the top-level Makefile calls others
+           ;; recursively, so just set all variables this way.
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (substitute* '("Makefile" "OS/Makefile-Default")
+               (("(RM_COMMAND=).*" all var)
+                (string-append var "rm\n")))
+             (copy-file "src/EDITME" "Local/Makefile")
+             (copy-file "exim_monitor/EDITME" "Local/eximon.conf")
+             (let ((out (assoc-ref outputs "out"))
+                   (gzip (assoc-ref inputs "gzip"))
+                   (bzip2 (assoc-ref inputs "bzip2"))
+                   (xz (assoc-ref inputs "xz")))
+               (substitute* '("Local/Makefile")
+                 (("(BIN_DIRECTORY=).*" all var)
+                  (string-append var out "/bin\n"))
+                 (("(CONFIGURE_FILE=).*" all var)
+                  (string-append var out "/etc/exim.conf\n"))
+                 (("(EXIM_USER=).*" all var)
+                  (string-append var "nobody\n"))
+                 (("(FIXED_NEVER_USERS=).*" all var)
+                  (string-append var "\n"))  ;XXX no root in build environment
+                 (("(COMPRESS_COMMAND=).*" all var)
+                  (string-append var gzip "/bin/gzip\n"))
+                 (("(ZCAT_COMMAND=).*" all var)
+                  (string-append var gzip "/bin/zcat\n")))
+               ;; This file has hardcoded names for tools despite the zcat
+               ;; configuration above.
+               (substitute* '("src/exigrep.src")
+                 (("'zcat'") (string-append "'" gzip "/bin/zcat'"))
+                 (("'bzcat'") (string-append "'" bzip2 "/bin/bzcat'"))
+                 (("'xzcat'") (string-append "'" xz "/bin/xzcat'"))
+                 (("'lzma'") (string-append "'" xz "/bin/lzma'"))))
+             #t))
+         (add-before 'build 'fix-sh-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("scripts/lookups-Makefile" "scripts/reversion")
+               (("SHELL=/bin/sh") "SHELL=sh"))
+             (substitute* '("scripts/Configure-config.h")
+               (("\\| /bin/sh") "| sh"))
+             (let ((bash (assoc-ref inputs "bash")))
+               (substitute* '("scripts/Configure-eximon")
+                 (("#!/bin/sh") (string-append "#!" bash "/bin/sh"))))
+             #t)))
        #:make-flags '("INSTALL_ARG=-no_chown")
        ;; No 'check' target.
        #:tests? #f))
@@ -1244,15 +1244,17 @@ hashing schemes plugin for @code{Dovecot}.")
 (define-public isync
   (package
     (name "isync")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/isync/isync/"
                            version "/isync-" version ".tar.gz"))
        (sha256 (base32
-                "1bij6nm06ghkg98n2pdyacam2fyg5y8f7ajw0d5653m0r4ldw5p7"))))
+                "173wd7x8y5sp94slzwlnb7zhgs32r57zl9xspl2rf4g3fqwmhpwd"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
     (inputs
      `(("bdb" ,bdb)
        ("openssl" ,openssl)))

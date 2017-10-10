@@ -25,9 +25,12 @@
   #:use-module (gnu services)
   #:use-module (gnu services databases)
   #:use-module (gnu services networking)
+  #:use-module (gnu packages databases)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:export (%test-memcached))
+  #:export (%test-memcached
+            %test-mongodb
+            %test-mysql))
 
 (define %memcached-os
   (simple-operating-system
@@ -121,3 +124,143 @@
    (name "memcached")
    (description "Connect to a running MEMCACHED server.")
    (value (run-memcached-test))))
+
+(define %mongodb-os
+  (operating-system
+    (inherit
+     (simple-operating-system
+      (dhcp-client-service)
+      (service mongodb-service-type)))
+    (packages (cons* mongodb
+                     %base-packages))))
+
+(define* (run-mongodb-test #:optional (port 27017))
+  "Run tests in %MONGODB-OS, forwarding PORT."
+  (define os
+    (marionette-operating-system
+     %mongodb-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (memory-size 1024)
+     (disk-image-size (* 1024 (expt 2 20)))
+     (port-forwardings `((27017 . ,port)))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-11) (srfi srfi-64)
+                       (gnu build marionette)
+                       (ice-9 popen)
+                       (ice-9 rdelim))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "mongodb")
+
+          (test-assert "service running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (match (start-service 'mongodb)
+                  (#f #f)
+                  (('service response-parts ...)
+                   (match (assq-ref response-parts 'running)
+                     ((pid) (number? pid))))))
+             marionette))
+
+          (test-eq "test insert"
+            0
+            (system* (string-append #$mongodb "/bin/mongo")
+                     "test"
+                     "--eval"
+                     "db.testCollection.insert({data: 'test-data'})"))
+
+          (test-equal "test find"
+            "test-data"
+            (let* ((port (open-pipe*
+                          OPEN_READ
+                          (string-append #$mongodb "/bin/mongo")
+                          "test"
+                          "--quiet"
+                          "--eval"
+                          "db.testCollection.findOne().data"))
+                   (output (read-line port))
+                   (status (close-pipe port)))
+              output))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "mongodb-test" test))
+
+(define %test-mongodb
+  (system-test
+   (name "mongodb")
+   (description "Connect to a running MONGODB server.")
+   (value (run-mongodb-test))))
+
+
+;;;
+;;; The MySQL service.
+;;;
+
+(define %mysql-os
+  (simple-operating-system
+   (mysql-service)))
+
+(define* (run-mysql-test)
+  "Run tests in %MYSQL-OS."
+  (define os
+    (marionette-operating-system
+     %mysql-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (memory-size 512)))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-11) (srfi srfi-64)
+                       (gnu build marionette))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "mysql")
+
+          (test-assert "service running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (match (start-service 'mysql)
+                  (#f #f)
+                  (('service response-parts ...)
+                   (match (assq-ref response-parts 'running)
+                     ((pid) (number? pid))))))
+             marionette))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "mysql-test" test))
+
+(define %test-mysql
+  (system-test
+   (name "mysql")
+   (description "Start the MySQL service.")
+   (value (run-mysql-test))))

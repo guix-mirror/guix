@@ -167,7 +167,7 @@ APNG patch provides APNG support to libpng.")
 (define-public libpng-1.2
   (package
     (inherit libpng)
-    (version "1.2.57")
+    (version "1.2.59")
     (source
      (origin
        (method url-fetch)
@@ -180,7 +180,8 @@ APNG patch provides APNG support to libpng.")
                    "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
                    "/libpng12/libpng-" version ".tar.xz")))
        (sha256
-        (base32 "1n2lrzjkm5jhfg2bs10q398lkwbbx742fi27zgdgx0x23zhj0ihg"))))))
+        (base32
+         "1izw9ybm27llk8531w6h4jp4rk2rxy2s9vil16nwik5dp0amyqxl"))))))
 
 (define-public r-png
   (package
@@ -509,7 +510,7 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.2.0")
+    (version "2.3.0")
     (source
       (origin
         (method url-fetch)
@@ -519,13 +520,7 @@ work.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0yvfghxwfm3dcqr9krkw63pcd76hzkknc3fh7bh11s8qlvjvrpbg"))
-        (patches (search-patches "openjpeg-CVE-2017-12982.patch"
-                                 "openjpeg-CVE-2017-14040.patch"
-                                 "openjpeg-CVE-2017-14041.patch"
-                                 "openjpeg-CVE-2017-14151.patch"
-                                 "openjpeg-CVE-2017-14152.patch"
-                                 "openjpeg-CVE-2017-14164.patch"))))
+          "06npqzkg20avnygdwaqpap91r7qpdqgrn39adj2bl8v0pg0qgirx"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
@@ -743,15 +738,15 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
 (define-public vigra
   (package
    (name "vigra")
-   (version "1.11.0")
+   (version "1.11.1")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "https://github.com/ukoethe/vigra/releases/download/"
-                          "Version-1-11-0/vigra-"
-                          version "-src.tar.gz"))
+                          "Version-" (string-join (string-split version #\.) "-")
+                          "/vigra-" version "-src.tar.gz"))
       (sha256 (base32
-                "1jzm79kqiiilvys3b8mlzy9cvmiirrcwsrlg19qd9rza8zipsqb8"))))
+                "1bqs8vx5i1bzamvv563i24gx2xxdidqyxh9iaj46mbznhc84wmm5"))))
    (build-system cmake-build-system)
    (inputs
     `(("boost" ,boost)
@@ -797,7 +792,7 @@ processing and analysis library that puts its main emphasis on customizable
 algorithms and data structures.  It is particularly strong for
 multi-dimensional image processing.")
    (license license:expat)
-   (home-page "https://hci.iwr.uni-heidelberg.de/vigra")))
+   (home-page "https://ukoethe.github.io/vigra/")))
 
 (define-public libwebp
   (package

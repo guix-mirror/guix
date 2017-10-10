@@ -3166,11 +3166,9 @@ at the end of the scope.")
     (build-system perl-build-system)
     (arguments
      `(#:phases
-       (alist-cons-after
-        'unpack 'cd
-        (lambda* _
-         (chdir "List"))
-       %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'cd
+           (lambda _ (chdir "List") #t)))))
     (license (package-license perl))
     (synopsis "Perl extension for crawling directory trees and compiling
 lists of files")
@@ -7342,16 +7340,17 @@ contents of a file is equal to a particular string.")
          "0chiqnzmna2mglm37nzxvn9qhq2j31iwz3i9isqjs7bf3k449gb9"))))
     (build-system perl-build-system)
     (arguments
-     `(#:phases (alist-cons-before
-                 'check 'patch-test
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; This test looks for "#!/usr/bin/perl" in some source.
-                   ;; Patch what the test looks for.
-                   (substitute* "t/source.t"
-                     (("#!/usr/bin/perl")
-                      (string-append "#!" (assoc-ref inputs "perl")
-                                     "/bin/perl"))))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-test
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This test looks for "#!/usr/bin/perl" in some source.
+             ;; Patch what the test looks for.
+             (substitute* "t/source.t"
+               (("#!/usr/bin/perl")
+                (string-append "#!" (assoc-ref inputs "perl")
+                               "/bin/perl")))
+             #t)))))
     (home-page "http://search.cpan.org/dist/Test-Harness")
     (synopsis "Run Perl standard test scripts with statistics")
     (description "Simple test harness which allows tests to be run and results
@@ -8884,6 +8883,31 @@ best YAML support to date.")
 YAML-style files, written with as little code as possible, reducing load time
 and memory overhead.")
     (license (package-license perl))))
+
+(define-public perl-parse-recdescent
+  (package
+    (name "perl-parse-recdescent")
+    (version "1.967015")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JT/JTBRAUN/Parse-RecDescent-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0dvfcn2xvj9r4ra5xqgasl847nsm1iy85w1kly41fkxm9im36hqr"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page
+     "http://search.cpan.org/dist/Parse-RecDescent")
+    (synopsis "Generate recursive-descent parsers")
+    (description
+     "@code{Parse::RecDescent} can incrementally generate top-down
+recursive-descent text parsers from simple yacc-like grammar specifications.")
+    (license perl-license)))
 
 (define-public perl-parse-yapp
   (package

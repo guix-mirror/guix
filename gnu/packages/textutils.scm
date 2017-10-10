@@ -97,15 +97,15 @@ to DOS format and vice versa.")
     (native-inputs `(("python" ,python-2)))
     (arguments
      '(#:phases
-       (alist-cons-before
-        'check 'pre-check
-        (lambda _
-          (substitute* "tests/setup.py"
-            (("([[:space:]]*)include_dirs=.*" all space)
-             (string-append all space "library_dirs=['../src/.libs'],\n")))
-          ;; The test extension 'Recode.so' lacks RUNPATH for 'librecode.so'.
-          (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/src/.libs")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             (substitute* "tests/setup.py"
+               (("([[:space:]]*)include_dirs=.*" all space)
+                (string-append all space "library_dirs=['../src/.libs'],\n")))
+             ;; The test extension 'Recode.so' lacks RUNPATH for 'librecode.so'.
+             (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/src/.libs"))
+             #t)))))
     (home-page "https://github.com/pinard/Recode")
     (synopsis "Text encoding converter")
     (description "The Recode library converts files between character sets and
@@ -208,10 +208,9 @@ encoding, supporting Unicode version 9.0.0.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       (alist-cons-after
-        'unpack 'autoreconf
-        (lambda _ (zero? (system* "autoreconf" "-vif")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoreconf
+           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

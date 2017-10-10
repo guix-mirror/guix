@@ -326,6 +326,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/plotutils.scm			\
   %D%/packages/polkit.scm			\
   %D%/packages/popt.scm				\
+  %D%/packages/profiling.scm			\
   %D%/packages/pth.scm				\
   %D%/packages/pulseaudio.scm			\
   %D%/packages/pumpio.scm			\
@@ -501,6 +502,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/networking.scm			\
   %D%/tests/rsync.scm				\
   %D%/tests/ssh.scm				\
+  %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\
   %D%/tests/web.scm
 
@@ -541,7 +543,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-ld-new-dtags.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
-  %D%/packages/patches/bluez-CVE-2017-1000250.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
@@ -558,6 +559,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/chmlib-inttypes.patch			\
   %D%/packages/patches/clang-libc-search-path.patch		\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
+  %D%/packages/patches/clisp-remove-failing-test.patch		\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/clx-remove-demo.patch			\
   %D%/packages/patches/cmake-fix-tests.patch			\
@@ -574,7 +576,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
   %D%/packages/patches/crossmap-allow-system-pysam.patch	\
   %D%/packages/patches/clucene-contribs-lib.patch               \
-  %D%/packages/patches/curl-bounds-check.patch			\
+  %D%/packages/patches/cube-nocheck.patch			\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-2017-12836.patch			\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
@@ -685,6 +687,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/graphicsmagick-CVE-2017-13776+CVE-2017-13777.patch	\
   %D%/packages/patches/graphicsmagick-CVE-2017-14042.patch	\
   %D%/packages/patches/graphicsmagick-CVE-2017-14165.patch	\
+  %D%/packages/patches/graphicsmagick-CVE-2017-14649.patch	\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groff-source-date-epoch.patch		\
@@ -789,7 +792,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
   %D%/packages/patches/libmad-frame-length.patch		\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
-  %D%/packages/patches/libmwaw-CVE-2017-9433.patch		\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
@@ -808,8 +810,16 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunistring-gnulib-multi-core.patch	\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
+  %D%/packages/patches/libvisio-fix-tests.patch			\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
+  %D%/packages/patches/libxfont-CVE-2017-13720.patch		\
+  %D%/packages/patches/libxfont-CVE-2017-13722.patch		\
+  %D%/packages/patches/libxml2-CVE-2017-0663.patch		\
+  %D%/packages/patches/libxml2-CVE-2017-7375.patch		\
+  %D%/packages/patches/libxml2-CVE-2017-7376.patch		\
+  %D%/packages/patches/libxml2-CVE-2017-9047+CVE-2017-9048.patch	\
+  %D%/packages/patches/libxml2-CVE-2017-9049+CVE-2017-9050.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
   %D%/packages/patches/lierolibre-check-unaligned-access.patch	\
@@ -850,6 +860,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
+  %D%/packages/patches/mongodb-support-unknown-linux-distributions.patch	\
   %D%/packages/patches/mozjs17-aarch64-support.patch		\
   %D%/packages/patches/mozjs24-aarch64-support.patch		\
   %D%/packages/patches/mozjs38-pkg-config-version.patch		\
@@ -888,12 +899,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openscenegraph-ffmpeg3.patch             \
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
-  %D%/packages/patches/openjpeg-CVE-2017-12982.patch		\
-  %D%/packages/patches/openjpeg-CVE-2017-14040.patch		\
-  %D%/packages/patches/openjpeg-CVE-2017-14041.patch		\
-  %D%/packages/patches/openjpeg-CVE-2017-14151.patch		\
-  %D%/packages/patches/openjpeg-CVE-2017-14152.patch		\
-  %D%/packages/patches/openjpeg-CVE-2017-14164.patch		\
   %D%/packages/patches/openldap-CVE-2017-9287.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssl-runpath.patch			\
@@ -967,6 +972,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-genshi-isstring-helper.patch	\
   %D%/packages/patches/python-genshi-stripping-of-unsafe-script-tags.patch	\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
+  %D%/packages/patches/python-nose-timer-drop-ordereddict.patch \
   %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
@@ -981,8 +987,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
-  %D%/packages/patches/qemu-CVE-2017-13711.patch		\
-  %D%/packages/patches/qemu-CVE-2017-14167.patch		\
+  %D%/packages/patches/python2-unittest2-remove-argparse.patch \
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
@@ -1107,8 +1112,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
-  %D%/packages/patches/xorg-server-CVE-2017-10971.patch		\
-  %D%/packages/patches/xorg-server-CVE-2017-10972.patch 	\
   %D%/packages/patches/libyaml-CVE-2014-9130.patch 		\
   %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
   %D%/packages/patches/zziplib-CVE-2017-5974.patch		\

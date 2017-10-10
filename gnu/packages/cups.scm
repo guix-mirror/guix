@@ -57,7 +57,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.14.1")
+    (version "1.17.7")
     (source(origin
               (method url-fetch)
               (uri
@@ -65,7 +65,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0175jhqpsyn7bkh7w43ydhyws5zsdak05hr1fsadvzslvwqkffgi"))
+                "1mg397kgfx0rs9j852f8ppmvaz2al5l75ildbgiqg6j3gwq5jssw"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -93,6 +93,13 @@
        #:configure-flags
        `("--disable-driverless" ; TODO: enable this
          "--disable-mutool"     ; depends on yet another PDF library (mupdf)
+
+         ;; Look for the "domain socket of CUPS" in /var/run/cups.
+         "--localstatedir=/var"
+
+         ;; Free software for the win.
+         "--with-acroread-path=evince"
+
          ,(string-append "--with-test-font-path="
                          (assoc-ref %build-inputs "font-dejavu")
                          "/share/fonts/truetype/DejaVuSans.ttf")
@@ -103,7 +110,34 @@
                          (assoc-ref %build-inputs "bash")
                          "/bin/bash")
          ,(string-append "--with-rcdir="
-                         (assoc-ref %outputs "out") "/etc/rc.d"))))
+                         (assoc-ref %outputs "out") "/etc/rc.d"))
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-foomatic-hardcoded-file-names
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Foomatic has hardcoded file names we need to fix.
+                      (let ((out (assoc-ref outputs "out"))
+                            (gs  (assoc-ref inputs "ghostscript")))
+                        (substitute* "filter/foomatic-rip/foomaticrip.c"
+                          (("/usr/local/lib/cups/filter")
+                           (string-append out "/lib/cups/filter")))
+                        #t)))
+                  (add-after 'install 'wrap-filters
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Some filters expect to find 'gs' in $PATH.  We cannot
+                      ;; just hard-code its absolute file name in the source
+                      ;; because foomatic-rip, for example, has tests like
+                      ;; 'startswith(cmd, "gs")'.
+                      (let ((out         (assoc-ref outputs "out"))
+                            (ghostscript (assoc-ref inputs "ghostscript")))
+                        (for-each (lambda (file)
+                                    (wrap-program file
+                                      `("PATH" ":" prefix
+                                        (,(string-append ghostscript
+                                                         "/bin")))))
+                                  (find-files (string-append
+                                               out "/lib/cups/filter")))
+                        #t))))))
     (native-inputs
      `(("glib" ,glib "bin") ; for gdbus-codegen
        ("pkg-config" ,pkg-config)))

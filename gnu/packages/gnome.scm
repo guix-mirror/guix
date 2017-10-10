@@ -812,16 +812,16 @@ for settings shared by various components of the GNOME desktop.")
        ("perl-xml-simple" ,perl-xml-simple)))
     (arguments
      '(#:phases
-       (alist-cons-after
-        'install 'set-load-paths
-        ;; Tell 'icon-name-mapping' where XML::Simple is.
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((out  (assoc-ref outputs "out"))
-                 (prog (string-append out "/libexec/icon-name-mapping")))
-            (wrap-program
-             prog
-             `("PERL5LIB" = ,(list (getenv "PERL5LIB"))))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'set-load-paths
+           ;; Tell 'icon-name-mapping' where XML::Simple is.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (prog (string-append out "/libexec/icon-name-mapping")))
+               (wrap-program
+                   prog
+                 `("PERL5LIB" = ,(list (getenv "PERL5LIB")))))
+             #t)))))
     (home-page "http://tango.freedesktop.org/Standard_Icon_Naming_Specification")
     (synopsis
      "Utility to implement the Freedesktop Icon Naming Specification")
@@ -1055,7 +1055,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
 (define-public glade3
   (package
     (name "glade")
-    (version "3.20.0")
+    (version "3.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1063,7 +1063,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zhqvhagy0m85p54jfiayfl0v9af7g0lj7glw8sfwh7cbp56vnc2"))))
+                "1pxikhzdzd092d4x3nacf5gfzi3mvhywrhcfqc07xakbsinnfr40"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f ; needs X, GL, and software rendering
@@ -1165,7 +1165,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.17")
+    (version "2.40.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1173,7 +1173,7 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1k39gyf7f5m9x0jvpcxvfcqswdb04xhm1lbwbjabn1f4xk5wbxp6"))))
+                "0k2nbd4g31qinkdfd8r5c5ih2ixl85fbkgkqqh9747lwr24c9j5z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1263,12 +1263,12 @@ functionality was designed to be as reusable and portable as possible.")
        '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
        ;; ... which they then completly ignore !!
        #:phases
-       (alist-cons-before
-        'configure 'ignore-deprecations
-        (lambda _
-          (substitute* "linc2/src/Makefile.in"
-            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'ignore-deprecations
+           (lambda _
+             (substitute* "linc2/src/Makefile.in"
+               (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
+             #t)))))
     (inputs `(("glib" ,glib)
               ("libidl" ,libidl)))
     (native-inputs
@@ -1303,12 +1303,12 @@ featuring mature C, C++ and Python bindings.")
        '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
        ;; ... which they then completly ignore !!
        #:phases
-       (alist-cons-before
-        'configure 'ignore-deprecations
-        (lambda _
-          (substitute* "activation-server/Makefile.in"
-            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'ignore-deprecations
+           (lambda _
+             (substitute* "activation-server/Makefile.in"
+               (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
+             #t)))))
     (inputs `(("popt" ,popt)
               ("libxml2" ,libxml2)))
     ;; The following are Required by the .pc file
@@ -1411,19 +1411,18 @@ designed to be accessed through the MIME functions in GnomeVFS.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-before
-        'configure 'ignore-deprecations
-        (lambda _
-          (substitute* '("libgnomevfs/Makefile.in"
-                         "daemon/Makefile.in")
-            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
-          #t)
-        (alist-cons-before
-         'configure 'patch-test-async-cancel-to-never-fail
-         (lambda _
-           (substitute* "test/test-async-cancel.c"
-             (("EXIT_FAILURE") "77")))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (add-before 'configure 'ignore-deprecations
+           (lambda _
+             (substitute* '("libgnomevfs/Makefile.in"
+                            "daemon/Makefile.in")
+               (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
+             #t))
+         (add-before 'configure 'patch-test-async-cancel-to-never-fail
+           (lambda _
+             (substitute* "test/test-async-cancel.c"
+               (("EXIT_FAILURE") "77"))
+             #t)))))
     (inputs `(("libxml2" ,libxml2)
               ("dbus-glib" ,dbus-glib)
               ("gconf" ,gconf)
@@ -1458,12 +1457,12 @@ to access local and remote files with a single consistent API.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-before
-        'configure 'enable-deprecated
-        (lambda _
-          (substitute* "libgnome/Makefile.in"
-            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'enable-deprecated
+           (lambda _
+             (substitute* "libgnome/Makefile.in"
+               (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
+             #t)))))
     (inputs `(("libxml2" ,libxml2)))
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
@@ -1698,18 +1697,17 @@ since ca. 2006, when GTK+ itself incorporated printing support.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-before
-        'check 'start-xserver
-        (lambda* (#:key inputs #:allow-other-keys)
-          (let ((xorg-server (assoc-ref inputs "xorg-server"))
-                (disp ":1"))
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                   (disp ":1"))
 
-            (setenv "HOME" (getcwd))
-            (setenv "DISPLAY" disp)
-            ;; There must be a running X server and make check doesn't start one.
-            ;; Therefore we must do it.
-            (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))
-        %standard-phases)))
+               (setenv "HOME" (getcwd))
+               (setenv "DISPLAY" disp)
+               ;; There must be a running X server and make check doesn't start one.
+               ;; Therefore we must do it.
+               (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))))))
     ;; Mentioned as Required by the .pc file
     (propagated-inputs `(("libxml2" ,libxml2)))
     (inputs
@@ -1823,14 +1821,13 @@ Hints specification (EWMH).")
                (base32 "05fvzbs5bin05bbsr4dp79aiva3lnq0a3a40zq55i13vnsz70l0n"))))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'unpack 'fix-pcre-check
-        (lambda _
-          ;; Only glib.h can be included directly.  See
-          ;; https://bugzilla.gnome.org/show_bug.cgi?id=670316
-          (substitute* "configure"
-            (("glib/gregex\\.h") "glib.h")) #t)
-        %standard-phases)
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-pcre-check
+           (lambda _
+             ;; Only glib.h can be included directly.  See
+             ;; https://bugzilla.gnome.org/show_bug.cgi?id=670316
+             (substitute* "configure"
+               (("glib/gregex\\.h") "glib.h")) #t)))
 
        ,@(package-arguments goffice)))
     (propagated-inputs
@@ -2053,7 +2050,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.48.3.a")
+    (version "0.50.1.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
@@ -2068,7 +2065,7 @@ editors, IDEs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1wdkf090zclqy11hxdjgy8f6fgzajl0xzzirajikhbaiill7f8zh"))))
+                "1r70jysdrc7r1vyn3mikpc8hh7rm4lpr0psakj8yssy11p451pja"))))
     (arguments
       `(#:configure-flags '("CXXFLAGS=-Wformat=0")
         #:phases (modify-phases %standard-phases
@@ -2172,7 +2169,7 @@ and RDP protocols.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.26.0")
+    (version "0.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2181,7 +2178,7 @@ and RDP protocols.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1jaqsr1r0grpd25rbsc2v3vb0sc51lia9w31wlqswgqsncp2k0w6"))))
+                "0da587hpiqy8h3pswn1102h4b905x8k6mk3ajpi7kf4kzkvv30ym"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk+" ,gtk+)
@@ -2203,19 +2200,19 @@ and RDP protocols.")
                             (assoc-ref %outputs "out") "/lib")
              "--disable-gtk-doc-html") ; FIXME: requires gtk-doc
        #:phases
-       (alist-cons-before
-        'configure 'fix-docbook
-        (lambda* (#:key inputs #:allow-other-keys)
-          (substitute* "docs/Makefile.in"
-            (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
-             (string-append (assoc-ref inputs "docbook-xsl")
-                            "/xml/xsl/docbook-xsl-"
-                            ,(package-version docbook-xsl)
-                            "/manpages/docbook.xsl")))
-          (setenv "XML_CATALOG_FILES"
-                  (string-append (assoc-ref inputs "docbook-xml")
-                                 "/xml/dtd/docbook/catalog.xml")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "docs/Makefile.in"
+               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             (setenv "XML_CATALOG_FILES"
+                     (string-append (assoc-ref inputs "docbook-xml")
+                                    "/xml/dtd/docbook/catalog.xml"))
+             #t)))))
     (home-page "https://developer.gnome.org/dconf")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
@@ -3091,7 +3088,7 @@ playlists in a variety of formats.")
 (define-public aisleriot
   (package
     (name "aisleriot")
-    (version "3.22.2")
+    (version "3.22.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3099,7 +3096,7 @@ playlists in a variety of formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0a8cir7vgi67sncl0m7cypq11amardm7r68gr3q52a11l8ajycdx"))))
+                "12bqbyiqn2dwknz7ndgwgqqqz993s1ynh8qb82sshr7fy4zw8qph"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -3114,7 +3111,7 @@ playlists in a variety of formats.")
        ("xmllint" ,libxml2)))
     (inputs
      `(("gtk+" ,gtk+)
-       ("guile" ,guile-2.0)
+       ("guile" ,guile-2.2)
        ("libcanberra" ,libcanberra)
        ("librsvg" ,librsvg)))
     (home-page "https://wiki.gnome.org/Apps/Aisleriot")
@@ -4933,7 +4930,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.8.2")
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4941,7 +4938,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "1x0vzxvrck0snga2n3pc7g74m20zz74cr4r8gfspl8sckv6yz9bi"))
+                "04lj081a5cdkhcnj1xs77chhy08d2h0648kmj1csxp46cfrjwpk2"))
               (snippet
               '(begin
                  (use-modules (guix build utils))
@@ -5057,7 +5054,7 @@ services.")
 (define-public network-manager-openvpn
   (package
     (name "network-manager-openvpn")
-    (version "1.2.10")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5066,7 +5063,7 @@ services.")
                     "/NetworkManager-openvpn-" version ".tar.xz"))
               (sha256
                (base32
-                "0q9x61fq509gybz3ljzyvf9zn8nlya1r2vk7jl0gk3fp76jsg1mc"))))
+                "1973n89g66a3jfx8r45a811fga4kadh6r1w35cb25cz1mlii2vhn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-absolute-paths")))
@@ -5111,7 +5108,7 @@ to virtual private networks (VPNs) via OpenVPN.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.8.2")
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5119,7 +5116,7 @@ to virtual private networks (VPNs) via OpenVPN.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09f9hjpn9nkhw57mk6pi7q1bq3lhf5hvmwas0fknscssak7yjmry"))))
+                "0ag3pvjp58ykrzsjfbdxi0j5xd2i796jk7nns67zy03xwg9i0l0h"))))
     (build-system glib-or-gtk-build-system)
     (arguments '(#:configure-flags '("--disable-migration")))
     (native-inputs
@@ -6065,7 +6062,7 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
 (define-public gnome-calendar
   (package
     (name "gnome-calendar")
-    (version "3.24.3")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6073,22 +6070,27 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1v7k1wcl5yg9bd4l0rz0z03h32d35zgfp4qzz21widjcyis41jry"))))
-    (build-system glib-or-gtk-build-system)
+                "03n51mvlc0vabr1rx9577z927icl3mrxrrv8zckfjav6p4vwg8hr"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       ;; gnome-calendar has to be installed before the tests can be run
+       ;; https://bugzilla.gnome.org/show_bug.cgi?id=788224
+       #:tests? #f))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
+       ("glib-bin" ,glib "bin")         ; For glib-compile-schemas
+       ("gtk+-bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("bdb" ,bdb)
-       ("desktop-file-utils" ,desktop-file-utils)
-       ("evolution-data-server" ,evolution-data-server)
+     `(("evolution-data-server" ,evolution-data-server)
        ("gnome-online-accounts" ,gnome-online-accounts)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (home-page "https://wiki.gnome.org/Apps/Calendar")
     (synopsis "GNOME's calendar application")
     (description
      "GNOME Calendar is a simple calendar application designed to fit the GNOME
-desktop.  It supports multiple calendars, monthly view and yearly view.")
+desktop.  It supports multiple calendars, month, week and year view.")
     (license license:gpl3+)))
 
 (define-public gnome-todo

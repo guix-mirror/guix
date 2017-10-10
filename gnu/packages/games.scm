@@ -24,7 +24,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
-;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
+;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
@@ -133,6 +133,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages networking)
+  #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
@@ -2796,60 +2797,67 @@ http://lavachat.symlynx.com/unix/")
     (license license:gpl2+)))
 
 (define-public red-eclipse
-  (let ((data-sources
-         '(("acerspyro"   "0zmg78scrfdv33h7vszqvzylcqjwg7d5b0j2riav3rjfh326j8xx")
-           ("actors"      "0l00rsvppqzdpsikm5qpj38jiygirszxlzay2nxp4g4n2qjq0m4a")
-           ("appleflap"   "0jhfr7f13hk3nswwxqc4jajriipr6zz6j63v955nv4sgxs7lzbjd")
-           ("blendbrush"  "1nk0zaisbqf2khrivq8ls6z2lnh6d51m133m2ppxk7k4c9gq1imq")
-           ("caustics"    "1hq08k476wayi0kmk4ps8h6jr75yinq04f1r2p8r79xsdpxq9my5")
-           ("crosshairs"  "1gmrmjm7i7n9py0qrzamk7ygi63yx1mr2pp6iwz2vwngprl03n8m")
-           ("dziq"        "0gr36ydrv8syjxv7w9dw3ix8waaq201fzxr0klkqp260p8xp215s")
-           ("elyvisions"  "05syxlpsap6nfwxnnd0ls7qj1p4vhw2jxi41pi5inwpfifapfphz")
-           ("fonts"       "184syks602xc657q08973w5ji50x5zssvd4vp2q2ig8m68iyr51c")
+  (let ((release "1.5.8")
+        (revision 2)
+        (data-sources
+         '(("acerspyro" "0zmg78scrfdv33h7vszqvzylcqjwg7d5b0j2riav3rjfh326j8xx")
+           ("actors" "0l00rsvppqzdpsikm5qpj38jiygirszxlzay2nxp4g4n2qjq0m4a")
+           ("appleflap" "0jhfr7f13hk3nswwxqc4jajriipr6zz6j63v955nv4sgxs7lzbjd")
+           ("blendbrush" "1nk0zaisbqf2khrivq8ls6z2lnh6d51m133m2ppxk7k4c9gq1imq")
+           ("caustics" "1hq08k476wayi0kmk4ps8h6jr75yinq04f1r2p8r79xsdpxq9my5")
+           ("crosshairs" "1gmrmjm7i7n9py0qrzamk7ygi63yx1mr2pp6iwz2vwngprl03n8m")
+           ("dziq" "0gr36ydrv8syjxv7w9dw3ix8waaq201fzxr0klkqp260p8xp215s")
+           ("elyvisions" "05syxlpsap6nfwxnnd0ls7qj1p4vhw2jxi41pi5inwpfifapfphz")
+           ("fonts" "184syks602xc657q08973w5ji50x5zssvd4vp2q2ig8m68iyr51c")
            ("freezurbern" "020gpgcpy4rqjd9d18npfm96j8f02jcjnccbxcgzk1yb58y687ya")
-           ("john"        "0hj5kwlb2gb0gsnl9bk7dkqlk8r7vxcw8gxpgrb3kfn8d9cwcb7k")
-           ("jojo"        "0fij06040r7s5p7jksxm7wxi9jqwkhhm8iywys0dagk8j2wcbvsz")
-           ("jwin"        "0ysfynjvypc8dszf7rsvk02jgw8fmsli49vy2xpm83zpkrqpddgf")
+           ("john" "0hj5kwlb2gb0gsnl9bk7dkqlk8r7vxcw8gxpgrb3kfn8d9cwcb7k")
+           ("jojo" "0fij06040r7s5p7jksxm7wxi9jqwkhhm8iywys0dagk8j2wcbvsz")
+           ("jwin" "0ysfynjvypc8dszf7rsvk02jgw8fmsli49vy2xpm83zpkrqpddgf")
            ("luckystrike" "1bm0xdqjv35ry5xwbzw3a3v1xf2gj1jwfg29nyl6w3ch0h6crr11")
-           ("maps"        "0c9d1zxmpnngwhchzw6xb6cf84cx8xyycmdqcvyhamrd95d96qma")
-           ("mayhem"      "133pdql7ari159skd9qdmw0p1m73x32d1v6jswkz0xwk8vgxmkil")
-           ("mikeplus64"  "1d5npn9wlw0mviz9vhzzcsj98jvfh1wbvlh1nyqfj4ws5nfxhs7x")
-           ("misc"        "19x2ps6yxnfrz0xdhqdwncaq25ds7i4w2l8sdfi95yh2r7c5k1qn")
-           ("nieb"        "15029nipl92cb0jbh46z00k51hf3jk4v05pwx266b6b11bapdz0c")
-           ("nobiax"      "0k9apim5z4ihd5ajmnbq4gyh24w872dv0mr5v8wqn31a8gxzahhp")
-           ("particles"   "06827r9pnhzjil381xiwcbc93v9nxin7qlr59yrvk9gdzxmklk9m")
-           ("philipk"     "1l6fhl6qz471vjn05hvk29bm8dhwnzqbmi2hdylpa9k998nzkfc1")
+           ("maps" "0c9d1zxmpnngwhchzw6xb6cf84cx8xyycmdqcvyhamrd95d96qma")
+           ("mayhem" "133pdql7ari159skd9qdmw0p1m73x32d1v6jswkz0xwk8vgxmkil")
+           ("mikeplus64" "1d5npn9wlw0mviz9vhzzcsj98jvfh1wbvlh1nyqfj4ws5nfxhs7x")
+           ("misc" "19x2ps6yxnfrz0xdhqdwncaq25ds7i4w2l8sdfi95yh2r7c5k1qn")
+           ("nieb" "15029nipl92cb0jbh46z00k51hf3jk4v05pwx266b6b11bapdz0c")
+           ("nobiax" "0k9apim5z4ihd5ajmnbq4gyh24w872dv0mr5v8wqn31a8gxzahhp")
+           ("particles" "06827r9pnhzjil381xiwcbc93v9nxin7qlr59yrvk9gdzxmklk9m")
+           ("philipk" "1l6fhl6qz471vjn05hvk29bm8dhwnzqbmi2hdylpa9k998nzkfc1")
            ("projectiles" "03ay8ik52n3vx723swqlnl5gpkzf1v1gadwj3zcnh43ch7nd2bqh")
-           ("props"       "1yxz7gfmb79sqqrkyfdzp4ar9rf5f1kpfij4nrkk1l8vbw9liksc")
-           ("skyboxes"    "1mm98mhb6yhb006p1hlic91jcwjxhq79mblxciwbqqa9c5g4yki6")
-           ("snipergoth"  "1vlpmwlg71g6l5b706gp82bc07i5bbw2zphzynm2fx49za0zdi44")
-           ("sounds"      "156g5wh8cvdh6zr33haqm566sd28ylnzdf2h4pqzpxbb2i19vbfg")
-           ("textures"    "0wkhl5cgymr9kslzhksi83hs15rb0q01xvax5khi6b4dcl3mrmsh")
-           ("torley"      "1xlag6ndjyqafl984n6d9zi96dv9aif7vrc2nvikc3iwgjwlbxav")
-           ("trak"        "12x9ix8zkqn9svy56qmdgj4x2814qh25f4srplgq691lqn9qjhvd")
-           ("ulukai"      "0gz1hd8hca2biskc85hw4jjacpsmqg9x4w6cwrka8x987xmc92k5")
-           ("unnamed"     "09v8fjy6jqypm1i121kilg3z6zpw7dm0i4gxhd9b7ihprvzvy8r7")
-           ("vanities"    "0m3vfq9l71pbb80qz4s3k8r5azmm158chqbw8snch09ymxm6h462")
-           ("vegetation"  "07yzm9lbzr624j4i652ny5p762p83gadg40c1k8gwff4y7yk55gn")
-           ("weapons"     "05fsp17gdrhjqdwia7rwdw9gcijaqwcnny8lf6krms43xmn8cj0x")
-           ("wicked"      "0jjgwzdibr5my369gwvmvbklpjlwq939zgf643rv0168xc087xb2"))))
+           ("props" "1yxz7gfmb79sqqrkyfdzp4ar9rf5f1kpfij4nrkk1l8vbw9liksc")
+           ("skyboxes" "1mm98mhb6yhb006p1hlic91jcwjxhq79mblxciwbqqa9c5g4yki6")
+           ("snipergoth" "1vlpmwlg71g6l5b706gp82bc07i5bbw2zphzynm2fx49za0zdi44")
+           ("sounds" "156g5wh8cvdh6zr33haqm566sd28ylnzdf2h4pqzpxbb2i19vbfg")
+           ("textures" "0wkhl5cgymr9kslzhksi83hs15rb0q01xvax5khi6b4dcl3mrmsh")
+           ("torley" "1xlag6ndjyqafl984n6d9zi96dv9aif7vrc2nvikc3iwgjwlbxav")
+           ("trak" "12x9ix8zkqn9svy56qmdgj4x2814qh25f4srplgq691lqn9qjhvd")
+           ("ulukai" "0gz1hd8hca2biskc85hw4jjacpsmqg9x4w6cwrka8x987xmc92k5")
+           ("unnamed" "09v8fjy6jqypm1i121kilg3z6zpw7dm0i4gxhd9b7ihprvzvy8r7")
+           ("vanities" "0m3vfq9l71pbb80qz4s3k8r5azmm158chqbw8snch09ymxm6h462")
+           ("vegetation" "07yzm9lbzr624j4i652ny5p762p83gadg40c1k8gwff4y7yk55gn")
+           ("weapons" "05fsp17gdrhjqdwia7rwdw9gcijaqwcnny8lf6krms43xmn8cj0x")
+           ("wicked" "0jjgwzdibr5my369gwvmvbklpjlwq939zgf643rv0168xc087xb2"))))
     (package
       (name "red-eclipse")
-      (version "1.5.8")
+      (version (if (zero? revision)
+                   release
+                   (string-append release "-"
+                                  (number->string revision))))
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://github.com/red-eclipse/base"
-                                    "/archive/v" version ".tar.gz"))
+                                    "/archive/v" release ".tar.gz"))
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "1ah92axwcai0fhgm7pvfb2dxvfdiwwyh8iqyiffndh6782hxz3bc"))))
+                  "0r66rsqxvd7hxrhb0fahqqmf3r0cw2drhv5vndbswcq90l1bxfmf"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f            ; no check target
          #:make-flags (list "CC=gcc" "-Csrc"
                             (string-append "INSTDIR="
-                                           (assoc-ref %outputs "out") "/bin"))
+                                           (assoc-ref %outputs "out") "/bin")
+                            (string-append "prefix="
+                                           (assoc-ref %outputs "out")))
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'unpack-data
@@ -2862,9 +2870,24 @@ http://lavachat.symlynx.com/unix/")
                                     "-Cdata"
                                     "--transform"
                                     (string-append "s/"
-                                                   name "-" ,version "/"
+                                                   name "-" ,release "/"
                                                    name "/")))
                          (list ,@(map car data-sources)))
+               #t))
+	   (add-after 'unpack-data 'add-store-data-package-path-as-default
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "src/engine/server.cpp"
+                 (("(else[[:space:]]*)((addpackagedir\\()\"data\"(\\);))" _ else_part addpackagedir_original addpackagedir_open addpackagedir_close)
+                  (string-append else_part
+                                 "{ "
+                                 addpackagedir_open
+                                 "\""
+                                 (assoc-ref outputs "out")
+                                 "/share/redeclipse/data\""
+                                 addpackagedir_close
+                                 " "
+                                 addpackagedir_original
+                                 " }")))
                #t))
            (delete 'configure)  ; no configure script
            (add-after 'set-paths 'set-sdl-paths
@@ -2881,7 +2904,10 @@ http://lavachat.symlynx.com/unix/")
                  (copy-file "doc/examples/servinit.cfg"
                             (string-append out "/config/servinit.cfg"))
                  (copy-recursively "data"
-                                   (string-append out "/data")))
+                                   (string-append out "/share/redeclipse/data"))
+                 (mkdir-p (string-append out "/lib/redeclipse"))
+		 (symlink (string-append out "/share/redeclipse/data")
+			  (string-append out "/lib/redeclipse/data")))
                #t))
            (add-after 'copy-data 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -2928,7 +2954,7 @@ exec -a \"$0\" ~a/.redeclipse_server_linux-real~%"
                            (method url-fetch)
                            (uri (string-append
                                  "https://github.com/red-eclipse/"
-                                 name "/archive/v" version ".tar.gz"))
+                                 name "/archive/v" release ".tar.gz"))
                            (sha256 (base32 hash))
                            (file-name (string-append name "-" version
                                                      ".tar.gz"))))))
@@ -3045,7 +3071,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mgba-emu/mgba/archive/"
@@ -3053,7 +3079,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01zy2w5pihlkrmbm51icgyff6iqyqa5ha6qrm4aj8ibzznz03kyq"))
+                "0xmq1q1j71hnpd49wm91cqq8w5zdhb921cm17jchp4qjmaqgwy3w"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
@@ -3898,7 +3924,7 @@ to the Space Age.")
 (define-public no-more-secrets
   (package
     (name "no-more-secrets")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -3907,7 +3933,7 @@ to the Space Age.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "00mzdif859vm75n1igrffh8c07p1nr4rlm3yb7lrkwwxhrw8xzla"))))
+         "1kpx1rirc3i7fb4lymp0hx5rqr0s2ay4za261rw3bcy6d23l1kyg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f

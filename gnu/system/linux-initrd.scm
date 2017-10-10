@@ -78,6 +78,19 @@ the derivations referenced by EXP are automatically copied to the initrd."
           (use-modules (gnu build linux-initrd))
 
           (mkdir #$output)
+
+          ;; The guile used in the initrd must be present in the store, so
+          ;; that module loading works once the root is switched.
+          ;;
+          ;; To ensure that is the case, add an explicit reference to the
+          ;; guile package used in the initrd to the output.
+          ;;
+          ;; This fixes guix-patches bug #28399, "Fix mysql activation, and
+          ;; add a basic test".
+          (call-with-output-file (string-append #$ output "/references")
+            (lambda (port)
+              (simple-format port "~A\n" #$guile)))
+
           (build-initrd (string-append #$output "/initrd")
                         #:guile #$guile
                         #:init #$init

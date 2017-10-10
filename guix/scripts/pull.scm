@@ -82,7 +82,7 @@ Install it by running:
                (resolve-interface '(git))))
 
 (define %repository-url
-  "https://git.savannah.gnu.org/git/guix.git")
+  (or (getenv "GUIX_PULL_URL") "https://git.savannah.gnu.org/git/guix.git"))
 
 
 ;;;

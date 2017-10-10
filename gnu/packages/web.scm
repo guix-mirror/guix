@@ -43,6 +43,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix cvs-download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
@@ -139,6 +140,8 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
+    ;; Consider updating the nginx-docs package if the nginx package is
+    ;; updated.
     (version "1.12.1")
     (source (origin
               (method url-fetch)
@@ -224,6 +227,101 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;;   * The 'nginx-development-kit' module is mostly covered by bsd-3,
     ;;     except for two source files which are bsd-4 licensed.
     (license (list l:bsd-2 l:expat l:bsd-3 l:bsd-4))))
+
+(define nginx-xslscript
+  (let ((revision 11)
+        (changeset "01dc9ba12e1b"))
+    (package
+      (name "nginx-xslscript")
+      (version
+       (simple-format #f "2014-03-31-~A-~A" revision changeset))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "http://hg.nginx.org/xslscript")
+                      (changeset changeset)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "0am8zvdx3jmiwkg5q07qjaw5r26r4i2v5i4yr8a1k0jgib6ii08g"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f  ; No test suite
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out-bin (string-append
+                               (assoc-ref outputs "out")
+                               "/bin")))
+                 (mkdir-p out-bin)
+                 (copy-file "xslscript.pl"
+                            (string-append
+                             out-bin
+                             "/xslscript.pl"))
+                 #t))))))
+      (home-page "http://hg.nginx.org/xslscript")
+      (synopsis "XSLScript with NGinx specific modifications")
+      (description
+       "XSLScript is a terse notation for writing complex XSLT stylesheets.
+This is modified version, specifically intended for use with the NGinx
+documentation.")
+      (license l:bsd-2))))
+
+(define-public nginx-documentation
+  ;; This documentation should be relevant for nginx-1.12.0
+  (let ((revision 1961)
+        (changeset "dd4b6c564e10"))
+    (package
+      (name "nginx-documentation")
+      (version
+       (simple-format #f "2017-04-12-~A-~A" revision changeset))
+      (source
+       (origin (method hg-fetch)
+               (uri (hg-reference
+                     (url "http://hg.nginx.org/nginx.org")
+                     (changeset changeset)))
+               (file-name (string-append name "-" version))
+               (sha256
+                (base32
+                 "0rycfnnm2xkm777769h1zib428q45j64mx8nzzfzs4v07jbfc8m5"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f  ; No test suite
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((output (assoc-ref outputs "out")))
+                 (substitute* "umasked.sh"
+                   ((" /bin/sh") (string-append " " (which "sh"))))
+                 ;; The documentation includes a banner, which makes sense on
+                 ;; the NGinx website, but doesn't make much sense when
+                 ;; viewing locally. Therefore, modify the CSS to remove the
+                 ;; banner.
+                 (substitute* "xslt/style.xslt"
+                   (("#banner           \\{ background:     black;")
+                    "#banner           { background:     black;
+                            display:     none;"))
+                 (zero? (system* "make")))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((output (assoc-ref outputs "out")))
+                 (mkdir-p output)
+                 (copy-recursively "libxslt" output)
+                 #t))))))
+      (native-inputs
+       `(("libxml2" ,libxml2)
+         ("libxslt" ,libxslt)
+         ("nginx-xslscript" ,nginx-xslscript)))
+      (home-page "https://nginx.org")
+      (synopsis "Documentation for nginx web server")
+      (description
+       "This package provides HTML documentation for the nginx web server.")
+      (license l:bsd-2))))
 
 (define-public fcgi
   (package
@@ -677,14 +775,13 @@ used to validate and fix HTML data.")
         ;; For the log file, etc.
         "--localstatedir=/var")
        #:phases
-       (alist-cons-before
-        'build 'pre-build
-        (lambda* (#:key inputs #:allow-other-keys #:rest args)
-          ;; Uncommenting the next two lines may assist in debugging
-          ;; (substitute* "docs/man5/Makefile" (("a2x") "a2x -v"))
-          ;; (setenv "XML_DEBUG_CATALOG" "1")
-          #t)
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda* (#:key inputs #:allow-other-keys #:rest args)
+             ;; Uncommenting the next two lines may assist in debugging
+             ;; (substitute* "docs/man5/Makefile" (("a2x") "a2x -v"))
+             ;; (setenv "XML_DEBUG_CATALOG" "1")
+             #t)))))
     ;; All of the below are used to generate the documentation
     ;; (Should they be propagated inputs of asciidoc ??)
     (native-inputs `(("asciidoc" ,asciidoc)))

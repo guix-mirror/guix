@@ -84,13 +84,13 @@ data units.")
 (define-public khal
   (package
     (name "khal")
-    (version "0.9.5")
+    (version "0.9.8")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "khal" version))
              (sha256
               (base32
-               "0fvv0kjym9q8v20zbpr5m8ig65b8hva4p0c935qsdvgdni68jidr"))))
+               "1blx3gxnv7sj302biqphfw7i6ilzl2xlmvzp130n3113scg9w17y"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -99,18 +99,24 @@ data units.")
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Make installed package available for running the tests
             (add-installed-pythonpath inputs outputs)
-            (zero? (system* "make" "--directory=doc/" "man"))
-            (install-file
-              "doc/build/man/khal.1"
-              (string-append (assoc-ref outputs "out") "/share/man/man1"))))
-
-        ;; The tests require us to choose a timezone.
+            (and
+              (zero? (system* "make" "--directory=doc/" "man"))
+              (install-file
+                "doc/build/man/khal.1"
+                (string-append (assoc-ref outputs "out") "/share/man/man1")))))
         (replace 'check
           (lambda* (#:key inputs #:allow-other-keys)
+            ;; The tests require us to choose a timezone.
             (setenv "TZ"
                     (string-append (assoc-ref inputs "tzdata")
                                    "/share/zoneinfo/Zulu"))
-            (zero? (system* "py.test" "tests")))))))
+            (zero? (system* "py.test" "tests" "-k"
+                            (string-append
+                              ;; These tests are known to fail in when not
+                              ;; running in a TTY:
+                              ;; https://github.com/pimutils/khal/issues/683
+                              "not test_printics_read_from_stdin "
+                              "and not test_import_from_stdin"))))))))
     (native-inputs
       ;; XXX Uses tmpdir_factory, introduced in pytest 2.8.
      `(("python-pytest" ,python-pytest-3.0)

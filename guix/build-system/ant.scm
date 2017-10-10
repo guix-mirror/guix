@@ -99,6 +99,9 @@
                     (make-flags ''())
                     (build-target "jar")
                     (jar-name #f)
+                    (main-class #f)
+                    (test-include (list "**/*Test.java"))
+                    (test-exclude (list "**/Abstract*.java"))
                     (source-dir "src")
                     (test-dir "src/test")
                     (phases '(@ (guix build ant-build-system)
@@ -130,6 +133,9 @@
                   #:test-target ,test-target
                   #:build-target ,build-target
                   #:jar-name ,jar-name
+                  #:main-class ,main-class
+                  #:test-include (list ,@test-include)
+                  #:test-exclude (list ,@test-exclude)
                   #:source-dir ,source-dir
                   #:test-dir ,test-dir
                   #:phases ,phases

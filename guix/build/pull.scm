@@ -178,7 +178,8 @@ containing the source code.  Write any debugging output to DEBUG-PORT."
         ;; Make sure compilation related modules are loaded before starting to
         ;; compile files in parallel.
         (compile #f)
-        (par-for-each
+        (n-par-for-each
+         (parallel-job-count)
          (lambda (file)
            (with-mutex mutex
              (display #\cr log-port)

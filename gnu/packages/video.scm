@@ -530,15 +530,19 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libva
   (package
     (name "libva")
-    (version "1.8.2")
+    (version "1.8.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://www.freedesktop.org/software/vaapi/releases/libva/libva-"
-             version".tar.bz2"))
+       (uri (list
+             ;; Newer releases are only available on GitHub.
+             (string-append "https://github.com/01org/libva/releases/download/"
+                            version "/libva-" version ".tar.bz2")
+             ;; Keep the old URL around for compatibility.
+             (string-append "https://www.freedesktop.org/software/vaapi/releases/"
+                            "libva/libva-" version "/libva-" version ".tar.bz2")))
        (sha256
-        (base32 "1pnfl3q7dzxs26l3jk9xi97gr0qwnaz6dhvf9ifp2yplr3fy7lwy"))))
+        (base32 "16xbk0awl7wp0vy0nyjvxk11spbw25mp8kwd9bmhd6x9xffi5vjn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1111,7 +1115,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.09.24")
+    (version "2017.10.07")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1119,7 +1123,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0j2m75j0d1n83i7jzpkcj7ir0bkskj024j9b0yi88zipcg740wbx"))))
+                "10xs3d3ksfhalmvacpw2drkzi84y3rgy2jjr0wrzmqn1hx897a6r"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1395,11 +1399,10 @@ encapsulated.")
        ("libtool" ,libtool)))
     (arguments
      '(#:phases
-       (alist-cons-after
-        'unpack 'autoreconf
-        (lambda _
-          (zero? (system* "autoreconf" "-vif")))
-        %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))))
 
 (define-public libdvdcss
   (package

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -28,6 +28,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -63,7 +64,7 @@
               (sha256
                (base32
                 "1cc4qbg1m3i04lj5p6i6xbd0zvy1320pxdgmjhz5p3j95ibsbfki"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
                  (add-before 'patch-source-shebangs 'autogen
@@ -77,9 +78,7 @@
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib "bin")
-       ("gtk+" ,gtk+)
-       ("libconfuse" ,libconfuse)
+     `(("libconfuse" ,libconfuse)
        ("vte" ,vte)))
     (synopsis "GTK+-based drop-down terminal")
     (description "Tilda is a terminal emulator similar to normal terminals like

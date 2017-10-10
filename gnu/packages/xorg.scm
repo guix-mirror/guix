@@ -119,26 +119,25 @@
         ("xproto" ,xproto)))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'install 'install-data
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((cf-files (assoc-ref inputs "xorg-cf-files"))
-                (out (assoc-ref outputs "out"))
-                (unpack (assoc-ref %standard-phases 'unpack))
-                (patch-source-shebangs
-                 (assoc-ref %standard-phases 'patch-source-shebangs)))
-            (mkdir "xorg-cf-files")
-            (with-directory-excursion "xorg-cf-files"
-              (apply unpack (list #:source cf-files))
-              (apply patch-source-shebangs (list #:source cf-files))
-              (substitute* '("mingw.cf" "Imake.tmpl" "nto.cf" "os2.cf"
-                             "linux.cf" "Amoeba.cf" "cygwin.cf")
-                (("/bin/sh") (which "bash")))
-              (and (zero? (system* "./configure"
-                                   (string-append "SHELL=" (which "bash"))
-                                   (string-append "--prefix=" out)))
-                   (zero? (system* "make" "install"))))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((cf-files (assoc-ref inputs "xorg-cf-files"))
+                   (out (assoc-ref outputs "out"))
+                   (unpack (assoc-ref %standard-phases 'unpack))
+                   (patch-source-shebangs
+                    (assoc-ref %standard-phases 'patch-source-shebangs)))
+               (mkdir "xorg-cf-files")
+               (with-directory-excursion "xorg-cf-files"
+                 (apply unpack (list #:source cf-files))
+                 (apply patch-source-shebangs (list #:source cf-files))
+                 (substitute* '("mingw.cf" "Imake.tmpl" "nto.cf" "os2.cf"
+                                "linux.cf" "Amoeba.cf" "cygwin.cf")
+                   (("/bin/sh") (which "bash")))
+                 (and (zero? (system* "./configure"
+                                      (string-append "SHELL=" (which "bash"))
+                                      (string-append "--prefix=" out)))
+                      (zero? (system* "make" "install"))))))))))
     (home-page "http://www.x.org")
     (synopsis "Source code configuration and build system")
     (description
@@ -4862,6 +4861,8 @@ an X Window System display.")
                "mirror://xorg/individual/lib/libXfont-"
                version
                ".tar.bz2"))
+        (patches (search-patches "libxfont-CVE-2017-13720.patch"
+                                 "libxfont-CVE-2017-13722.patch"))
         (sha256
           (base32
             "0w8d07bkmjiarkx09579bl8zsq903mn8javc7qpi0ix4ink5x502"))))
@@ -4891,6 +4892,7 @@ new API's in libXft, or the legacy API's in libX11.")
   (package
     (inherit libxfont)
     (version "2.0.1")
+    (replacement libxfont2/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
@@ -4898,6 +4900,15 @@ new API's in libXft, or the legacy API's in libX11.")
               (sha256
                (base32
                 "0znvwk36nhmyqpmhbm9mzisgixp1mp5qkfald8x1n5yxbm3vpyz9"))))))
+
+(define libxfont2/fixed
+  (package
+    (inherit libxfont2)
+    (source
+     (origin
+       (inherit (package-source libxfont2))
+       (patches (search-patches "libxfont-CVE-2017-13720.patch"
+                                "libxfont-CVE-2017-13722.patch"))))))
 
 (define-public libxi
   (package
@@ -5067,7 +5078,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.19.3")
+    (version "1.19.4")
     (source
       (origin
         (method url-fetch)
@@ -5076,9 +5087,9 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7"))
+          "1a690fzv5l5ks45g9zhlzdskdq8q73mcbpb9a3wz3shxm778lxda"))
         (patches
-         (cons
+         (list
           ;; See:
           ;;   https://lists.fedoraproject.org/archives/list/devel@lists.
           ;;      fedoraproject.org/message/JU655YB7AM4OOEQ4MOMCRHJTYJ76VFOK/
@@ -5090,9 +5101,7 @@ over Xlib, including:
             (sha256
              (base32
               "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
-            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))
-          (search-patches "xorg-server-CVE-2017-10971.patch"
-                          "xorg-server-CVE-2017-10972.patch")))))
+            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
@@ -5204,23 +5213,20 @@ draggable titlebars and borders.")
     (license license:x11)))
 
 ;; This package is intended to be used when building GTK+.
-;; Note: It's currently marked as "hidden" to avoid having two non-eq?
-;; packages with the same name and version.
 (define-public xorg-server-1.19.3
-  (hidden-package
-   (package
-     (inherit xorg-server)
-     (name "xorg-server")
-     (version "1.19.3")
-     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-              "mirror://xorg/individual/xserver/"
-              name "-" version ".tar.bz2"))
-        (sha256
-         (base32
-          "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7")))))))
+  (package
+    (inherit xorg-server)
+    (name "xorg-server")
+    (version "1.19.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/xserver/"
+             name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7"))))))
 
 (define-public xorg-server-xwayland
   (package
@@ -5302,6 +5308,15 @@ draggable titlebars and borders.")
         ("xproto" ,xproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
+;; TODO: add XCURSOR_PATH=.../share/icons to profile search paths, so
+;; libXcursor finds cursors installed into a profile.  If we solve bugs
+;; <http://bugs.gnu.org/20255> and <http://bugs.gnu.org/22138>, we can fix
+;; this with a search-path as follows:
+;;
+;;    (native-search-paths
+;;     (list (search-path-specification
+;;            (variable "XCURSOR_PATH")
+;;            (files '("share/icons")))))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Cursor management library")
     (description "Xorg Cursor management library.")

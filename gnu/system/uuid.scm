@@ -29,6 +29,7 @@
             uuid?
             uuid-type
             uuid-bytevector
+            uuid=?
 
             bytevector->uuid
 
@@ -281,3 +282,15 @@ corresponding bytevector; otherwise return #f."
        ((_ . (? procedure? unparse)) (unparse bv))))
     (((? uuid? uuid))
      (uuid->string (uuid-bytevector uuid) (uuid-type uuid)))))
+
+(define uuid=?
+  ;; Return true if A is equal to B, comparing only the actual bits.
+  (match-lambda*
+    (((? bytevector? a) (? bytevector? b))
+     (bytevector=? a b))
+    (((? uuid? a) (? bytevector? b))
+     (bytevector=? (uuid-bytevector a) b))
+    (((? uuid? a) (? uuid? b))
+     (bytevector=? (uuid-bytevector a) (uuid-bytevector b)))
+    ((a b)
+     (uuid=? b a))))

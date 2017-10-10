@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
-;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -119,7 +119,7 @@ spying and/or modification by the server.")
 (define-public par2cmdline
   (package
     (name "par2cmdline")
-    (version "0.7.3")
+    (version "0.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
@@ -127,7 +127,7 @@ spying and/or modification by the server.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0dqwarc2aw5clgpf24d9dxh43b0k0z3l6kksn30arx9bdlmrk5rx"))))
+                "0iwwskiag3262mvhinvnbk6n0qh6sh56m86y4d0m285v0jl0y9pa"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
@@ -279,20 +279,20 @@ random access nor for in-place modification.")
        ("nettle" ,nettle)))
     (arguments
      `(#:parallel-build? #f             ;race conditions
-       #:phases (alist-cons-before
-                 'build 'remove-Werror
-                 ;; rdup uses a deprecated function from libarchive
-                 (lambda _
-                   (substitute* "GNUmakefile"
-                     (("^(CFLAGS=.*)-Werror" _ front) front)))
-                 (alist-cons-before
-                  'check 'pre-check
-                  (lambda _
-                    (setenv "HOME" (getcwd))
-                    (substitute* "testsuite/rdup/rdup.rdup-up-t-with-file.exp"
-                      (("/bin/cat") (which "cat"))))
-
-                  %standard-phases))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-Werror
+           ;; rdup uses a deprecated function from libarchive
+           (lambda _
+             (substitute* "GNUmakefile"
+               (("^(CFLAGS=.*)-Werror" _ front) front))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (substitute* "testsuite/rdup/rdup.rdup-up-t-with-file.exp"
+               (("/bin/cat") (which "cat")))
+             #t)))))
     (home-page "http://archive.miek.nl/projects/rdup/index.html")
     (synopsis "Provide a list of files to backup")
     (description
@@ -322,9 +322,9 @@ list and implement the backup strategy.")
                       "CC=gcc")
        #:tests? #f                      ;test input not distributed
        #:phases
-       (alist-delete
-        'configure                      ;no configure phase
-        %standard-phases)))
+       ;; no configure phase
+       (modify-phases %standard-phases
+         (delete 'configure))))
     (home-page "http://viric.name/cgi-bin/btar/doc/trunk/doc/home.wiki")
     (synopsis "Tar-compatible archiver")
     (description
@@ -448,13 +448,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.0.11")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
               (sha256
                (base32
-                "14fjk5dfwmjkn7nmkbhhbrk3g1wfrn8arvqd5r9jaij534nzsvpw"))
+                "0vwyg0b4kxb0rspqwhvgi5c78dzimgkydf03wif27a40qhh1235l"))
               (modules '((guix build utils)))
               (snippet
                '(for-each
@@ -526,7 +526,7 @@ detection, and lossless compression.")
        ("python-pytest" ,python-pytest-3.0)
        ;; For generating the documentation.
        ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+       ("python-guzzle-sphinx-theme" ,python-guzzle-sphinx-theme)))
     (inputs
      `(("acl" ,acl)
        ("lz4" ,lz4)

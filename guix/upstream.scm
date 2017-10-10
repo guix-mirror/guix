@@ -20,6 +20,7 @@
 (define-module (guix upstream)
   #:use-module (guix records)
   #:use-module (guix utils)
+  #:use-module (guix discovery)
   #:use-module ((guix download)
                 #:select (download-to-store))
   #:use-module (guix gnupg)
@@ -55,6 +56,7 @@
             upstream-updater-predicate
             upstream-updater-latest
 
+            %updaters
             lookup-updater
 
             download-tarball
@@ -145,6 +147,22 @@ correspond to the same version."
   (description upstream-updater-description)
   (pred        upstream-updater-predicate)
   (latest      upstream-updater-latest))
+
+(define (importer-modules)
+  "Return the list of importer modules."
+  (cons (resolve-interface '(guix gnu-maintenance))
+        (all-modules (map (lambda (entry)
+                            `(,entry . "guix/import"))
+                          %load-path))))
+
+(define %updaters
+  ;; The list of publically-known updaters.
+  (delay (fold-module-public-variables (lambda (obj result)
+                                         (if (upstream-updater? obj)
+                                             (cons obj result)
+                                             result))
+                                       '()
+                                       (importer-modules))))
 
 (define (lookup-updater package updaters)
   "Return an updater among UPDATERS that matches PACKAGE, or #f if none of

@@ -417,73 +417,73 @@ implementation techniques and as an expository tool.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       (alist-cons-before
-        'configure 'pre-configure
-        (lambda* (#:key inputs #:allow-other-keys)
-          ;; Patch dynamically loaded libraries with their absolute paths.
-          (let* ((library-path   (search-path-as-string->list
-                                  (getenv "LIBRARY_PATH")))
-                 (find-so        (lambda (soname)
-                                   (search-path
-                                    library-path
-                                    (format #f "~a.so" soname))))
-                 (patch-ffi-libs (lambda (file libs)
-                                   (for-each
-                                    (lambda (lib)
-                                      (substitute* file
-                                        (((format #f "\"~a\"" lib))
-                                         (format #f "\"~a\"" (find-so lib)))))
-                                    libs))))
-            (substitute* "collects/db/private/sqlite3/ffi.rkt"
-              (("ffi-lib sqlite-so")
-               (format #f "ffi-lib \"~a\"" (find-so "libsqlite3"))))
-            (substitute* "collects/openssl/libssl.rkt"
-              (("ffi-lib libssl-so")
-               (format #f "ffi-lib \"~a\"" (find-so "libssl"))))
-            (substitute* "collects/openssl/libcrypto.rkt"
-              (("ffi-lib libcrypto-so")
-               (format #f "ffi-lib \"~a\"" (find-so "libcrypto"))))
-            (substitute* "share/pkgs/math-lib/math/private/bigfloat/gmp.rkt"
-              (("ffi-lib libgmp-so")
-               (format #f "ffi-lib \"~a\"" (find-so "libgmp"))))
-            (substitute* "share/pkgs/math-lib/math/private/bigfloat/mpfr.rkt"
-              (("ffi-lib libmpfr-so")
-               (format #f "ffi-lib \"~a\"" (find-so "libmpfr"))))
-            (for-each
-             (lambda (x) (apply patch-ffi-libs x))
-             '(("share/pkgs/draw-lib/racket/draw/unsafe/cairo-lib.rkt"
-                ("libfontconfig" "libcairo"))
-               ("share/pkgs/draw-lib/racket/draw/unsafe/glib.rkt"
-                ("libglib-2.0" "libgmodule-2.0" "libgobject-2.0"))
-               ("share/pkgs/draw-lib/racket/draw/unsafe/jpeg.rkt"
-                ("libjpeg"))
-               ("share/pkgs/draw-lib/racket/draw/unsafe/pango.rkt"
-                ("libpango-1.0" "libpangocairo-1.0"))
-               ("share/pkgs/draw-lib/racket/draw/unsafe/png.rkt"
-                ("libpng"))
-               ("share/pkgs/db-lib/db/private/odbc/ffi.rkt"
-                ("libodbc"))
-               ("share/pkgs/gui-lib/mred/private/wx/gtk/x11.rkt"
-                ("libX11"))
-               ("share/pkgs/gui-lib/mred/private/wx/gtk/gsettings.rkt"
-                ("libgio-2.0"))
-               ("share/pkgs/gui-lib/mred/private/wx/gtk/gtk3.rkt"
-                ("libgdk-3" "libgtk-3"))
-               ("share/pkgs/gui-lib/mred/private/wx/gtk/unique.rkt"
-                ("libunique-1.0"))
-               ("share/pkgs/gui-lib/mred/private/wx/gtk/utils.rkt"
-                ("libgdk-x11-2.0" "libgdk_pixbuf-2.0" "libgtk-x11-2.0"))
-               ("share/pkgs/gui-lib/mred/private/wx/gtk/gl-context.rkt"
-                ("libGL"))
-               ("share/pkgs/sgl/gl.rkt"
-                ("libGL" "libGLU")))))
-          (chdir "src"))
-        (alist-cons-after
-         'unpack 'patch-/bin/sh
-         (lambda _
-           (substitute* "collects/racket/system.rkt"
-             (("/bin/sh") (which "sh"))))
-         %standard-phases))
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Patch dynamically loaded libraries with their absolute paths.
+             (let* ((library-path   (search-path-as-string->list
+                                     (getenv "LIBRARY_PATH")))
+                    (find-so        (lambda (soname)
+                                      (search-path
+                                       library-path
+                                       (format #f "~a.so" soname))))
+                    (patch-ffi-libs (lambda (file libs)
+                                      (for-each
+                                       (lambda (lib)
+                                         (substitute* file
+                                           (((format #f "\"~a\"" lib))
+                                            (format #f "\"~a\"" (find-so lib)))))
+                                       libs))))
+               (substitute* "collects/db/private/sqlite3/ffi.rkt"
+                 (("ffi-lib sqlite-so")
+                  (format #f "ffi-lib \"~a\"" (find-so "libsqlite3"))))
+               (substitute* "collects/openssl/libssl.rkt"
+                 (("ffi-lib libssl-so")
+                  (format #f "ffi-lib \"~a\"" (find-so "libssl"))))
+               (substitute* "collects/openssl/libcrypto.rkt"
+                 (("ffi-lib libcrypto-so")
+                  (format #f "ffi-lib \"~a\"" (find-so "libcrypto"))))
+               (substitute* "share/pkgs/math-lib/math/private/bigfloat/gmp.rkt"
+                 (("ffi-lib libgmp-so")
+                  (format #f "ffi-lib \"~a\"" (find-so "libgmp"))))
+               (substitute* "share/pkgs/math-lib/math/private/bigfloat/mpfr.rkt"
+                 (("ffi-lib libmpfr-so")
+                  (format #f "ffi-lib \"~a\"" (find-so "libmpfr"))))
+               (for-each
+                (lambda (x) (apply patch-ffi-libs x))
+                '(("share/pkgs/draw-lib/racket/draw/unsafe/cairo-lib.rkt"
+                   ("libfontconfig" "libcairo"))
+                  ("share/pkgs/draw-lib/racket/draw/unsafe/glib.rkt"
+                   ("libglib-2.0" "libgmodule-2.0" "libgobject-2.0"))
+                  ("share/pkgs/draw-lib/racket/draw/unsafe/jpeg.rkt"
+                   ("libjpeg"))
+                  ("share/pkgs/draw-lib/racket/draw/unsafe/pango.rkt"
+                   ("libpango-1.0" "libpangocairo-1.0"))
+                  ("share/pkgs/draw-lib/racket/draw/unsafe/png.rkt"
+                   ("libpng"))
+                  ("share/pkgs/db-lib/db/private/odbc/ffi.rkt"
+                   ("libodbc"))
+                  ("share/pkgs/gui-lib/mred/private/wx/gtk/x11.rkt"
+                   ("libX11"))
+                  ("share/pkgs/gui-lib/mred/private/wx/gtk/gsettings.rkt"
+                   ("libgio-2.0"))
+                  ("share/pkgs/gui-lib/mred/private/wx/gtk/gtk3.rkt"
+                   ("libgdk-3" "libgtk-3"))
+                  ("share/pkgs/gui-lib/mred/private/wx/gtk/unique.rkt"
+                   ("libunique-1.0"))
+                  ("share/pkgs/gui-lib/mred/private/wx/gtk/utils.rkt"
+                   ("libgdk-x11-2.0" "libgdk_pixbuf-2.0" "libgtk-x11-2.0"))
+                  ("share/pkgs/gui-lib/mred/private/wx/gtk/gl-context.rkt"
+                   ("libGL"))
+                  ("share/pkgs/sgl/gl.rkt"
+                   ("libGL" "libGLU")))))
+             (chdir "src")
+             #t))
+         (add-after 'unpack 'patch-/bin/sh
+           (lambda _
+             (substitute* "collects/racket/system.rkt"
+               (("/bin/sh") (which "sh")))
+             #t)))
        #:tests? #f                                ; XXX: how to run them?
        ))
     (inputs

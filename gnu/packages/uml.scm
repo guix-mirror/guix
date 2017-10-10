@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;

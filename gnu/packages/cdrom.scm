@@ -454,7 +454,7 @@ the data.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
-       #:phases (alist-delete 'configure %standard-phases)
+       #:phases (modify-phases %standard-phases (delete 'configure))
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))))

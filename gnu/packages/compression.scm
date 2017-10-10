@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -479,7 +479,7 @@ some compression ratio).")
     (description
      "Lzip is a lossless data compressor with a user interface similar to the
 one of gzip or bzip2.  Lzip decompresses almost as fast as gzip and compresses
-more than bzip2, which makes it well suited for software distribution and data
+more than bzip2, which makes it well-suited for software distribution and data
 archiving.  Lzip is a clean implementation of the LZMA algorithm.")
     (license license:gpl3+)))
 
@@ -530,14 +530,14 @@ decompressors when faced with corrupted input.")
      `(("which" ,which)))
     (arguments
      `(#:phases
-        (alist-cons-after
-         'patch-source-shebangs 'unpatch-source-shebang
-         ;; revert the patch-shebang phase on a script which is
-         ;; in fact test data
-         (lambda _
-           (substitute* "tests/shar-1.ok"
-             (((which "sh")) "/bin/sh")))
-         %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'unpatch-source-shebang
+           ;; revert the patch-shebang phase on a script which is
+           ;; in fact test data
+           (lambda _
+             (substitute* "tests/shar-1.ok"
+               (((which "sh")) "/bin/sh"))
+             #t)))))
     (home-page "https://www.gnu.org/software/sharutils/")
     (synopsis "Archives in shell scripts, uuencode/uudecode")
     (description
@@ -1312,7 +1312,7 @@ RAR archives.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/zstd/archive/v"
@@ -1320,17 +1320,7 @@ RAR archives.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1imddqjhczira626nf3nqmjwj3wb37xcfcwgkjydv2k6fpfbjbri"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Remove non-free source files.
-               '(begin
-                  (for-each delete-file-recursively
-                            (list
-                             ;; Commercial use of the following is not allowed.
-                             "examples"
-                             "LICENSE-examples"))
-                  #t))))
+                "12krs9k5f408kyn0d7dwxqyc67177mgd14783ay10rafqsim8l5c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1349,7 +1339,10 @@ zlib.  In most scenarios, both compression and decompression can be performed in
 trade-off between compression ratio and speed, without affecting decompression
 speed.")
     (license (list license:bsd-3         ; the main top-level LICENSE file
-                   license:bsd-2         ; quite a few files have but 2 clauses
+                   license:bsd-2         ; many files explicitly state 2-Clause
+                   license:gpl2          ; the mail top-level COPYING file
+                   license:gpl3+         ; tests/gzip/*.sh
+                   license:expat         ; lib/dictBuilder/divsufsort.[ch]
                    license:public-domain ; zlibWrapper/examples/fitblk*
                    license:zlib))))      ; zlibWrapper/{gz*.c,gzguts.h}
 

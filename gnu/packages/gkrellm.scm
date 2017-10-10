@@ -49,10 +49,7 @@
      `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:tests? #f ; there is no check target
-       #:phases
-       (alist-delete
-        'configure
-        %standard-phases)
+       #:phases (modify-phases %standard-phases (delete 'configure))
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list (string-append "INSTALLROOT=" out)

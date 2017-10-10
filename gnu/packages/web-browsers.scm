@@ -165,11 +165,11 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
            "--enable-nls"
            "--enable-ipv6"))
        #:tests? #f  ; no check target
-       #:phases (alist-replace
-                 'install
-                 (lambda* (#:key (make-flags '()) #:allow-other-keys)
-                   (zero? (apply system* "make" "install-full" make-flags)))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (zero? (apply system* "make" "install-full" make-flags)))))))
     (synopsis "Text Web Browser")
     (description
      "Lynx is a fully-featured World Wide Web (WWW) client for users running

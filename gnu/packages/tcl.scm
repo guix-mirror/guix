@@ -114,13 +114,14 @@
                (string-append "--exec-prefix=" out)
                (string-append "--mandir=" out "/share/man")))
 
-       #:phases (alist-cons-before
-                 'configure 'set-path-to-stty
-                 (lambda _
-                   (substitute* "configure"
-                     (("STTY_BIN=/bin/stty")
-                      (string-append "STTY_BIN=" (which "stty")))))
-                 %standard-phases)
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-path-to-stty
+           (lambda _
+             (substitute* "configure"
+               (("STTY_BIN=/bin/stty")
+                (string-append "STTY_BIN=" (which "stty"))))
+             #t)))
 
        #:test-target "test"))
     (home-page "http://expect.nist.gov/")

@@ -46,14 +46,14 @@
     ;; The 7 release series has an incompatible API, while the 6 series is still
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
-    (version "6.9.9-15")
+    (version "6.9.9-18")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0bxgdc1qiyvag6a2iiqcbwp4ak0m1mzi9qhs51fbrvv6syy12m6c"))))
+               "1d70dvrgcasa3cla4c1dag4mw7vq4jk1nzbd604fk20l0l6xa78j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch")
@@ -185,7 +185,8 @@ script.")
                                "graphicsmagick-CVE-2017-13775.patch"
                                "graphicsmagick-CVE-2017-13776+CVE-2017-13777.patch"
                                "graphicsmagick-CVE-2017-14042.patch"
-                               "graphicsmagick-CVE-2017-14165.patch"))))
+                               "graphicsmagick-CVE-2017-14165.patch"
+                               "graphicsmagick-CVE-2017-14649.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

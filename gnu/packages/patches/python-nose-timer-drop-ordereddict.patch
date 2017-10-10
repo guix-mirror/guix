@@ -1,0 +1,44 @@
+From 700076019b5aff72aac7651cc830aaef21ee9a47 Mon Sep 17 00:00:00 2001
+From: jakirkham <jakirkham@gmail.com>
+Date: Fri, 7 Jul 2017 05:57:56 -0400
+Subject: [PATCH] Drop ordereddict requirement (#84)
+
+* Drop ordereddict requirement
+
+As Python 2.7 is the minimum Python supported, every version of Python
+should have `ordereddict` preincluded in the standard library one way or
+another. So we can drop this dependency and just handle the differences
+between Python 2 and Python 3.
+---
+ nosetimer/plugin.py | 5 +----
+ setup.py            | 1 -
+ 2 files changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/nosetimer/plugin.py b/nosetimer/plugin.py
+index ef28e11..d093a51 100644
+--- a/nosetimer/plugin.py
++++ b/nosetimer/plugin.py
+@@ -12,10 +12,7 @@
+ except ImportError:
+     import queue as Queue
+ 
+-try:
+-    from collections import OrderedDict
+-except ImportError:
+-    from ordereddict import OrderedDict
++from collections import OrderedDict
+ 
+ 
+ # define constants
+diff --git a/setup.py b/setup.py
+index 6a55b82..d249325 100755
+--- a/setup.py
++++ b/setup.py
+@@ -27,7 +27,6 @@
+     install_requires=[
+         'nose',
+         'termcolor',
+-        'ordereddict',
+     ],
+     license='MIT',
+     entry_points={

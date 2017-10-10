@@ -30,7 +30,6 @@
   #:use-module (guix packages)
   #:use-module (guix profiles)
   #:use-module (guix upstream)
-  #:use-module (guix discovery)
   #:use-module (guix graph)
   #:use-module (guix scripts graph)
   #:use-module (guix monads)
@@ -46,8 +45,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 binary-ports)
-  #:export (guix-refresh
-            %updaters))
+  #:export (guix-refresh))
 
 
 ;;;
@@ -161,22 +159,6 @@ specified with `--select'.\n"))
 ;;;
 ;;; Updates.
 ;;;
-
-(define (importer-modules)
-  "Return the list of importer modules."
-  (cons (resolve-interface '(guix gnu-maintenance))
-        (all-modules (map (lambda (entry)
-                            `(,entry . "guix/import"))
-                          %load-path))))
-
-(define %updaters
-  ;; The list of publically-known updaters.
-  (delay (fold-module-public-variables (lambda (obj result)
-                                         (if (upstream-updater? obj)
-                                             (cons obj result)
-                                             result))
-                                       '()
-                                       (importer-modules))))
 
 (define (lookup-updater-by-name name)
   "Return the updater called NAME."

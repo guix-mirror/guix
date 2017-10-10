@@ -369,32 +369,33 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
      '(#:tests? #f
        #:make-flags (list (string-append "BINDIR=" %output "/bin"))
        #:phases
-       (alist-cons-after
-         'unpack 'unpack-tarballs
-         (lambda _
-           ;; FIXME: Bedops includes tarballs of minimally patched upstream
-           ;; libraries jansson, zlib, and bzip2.  We cannot just use stock
-           ;; libraries because at least one of the libraries (zlib) is
-           ;; patched to add a C++ function definition (deflateInit2cpp).
-           ;; Until the Bedops developers offer a way to link against system
-           ;; libraries we have to build the in-tree copies of these three
-           ;; libraries.
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-tarballs
+           (lambda _
+             ;; FIXME: Bedops includes tarballs of minimally patched upstream
+             ;; libraries jansson, zlib, and bzip2.  We cannot just use stock
+             ;; libraries because at least one of the libraries (zlib) is
+             ;; patched to add a C++ function definition (deflateInit2cpp).
+             ;; Until the Bedops developers offer a way to link against system
+             ;; libraries we have to build the in-tree copies of these three
+             ;; libraries.
 
-           ;; See upstream discussion:
-           ;; https://github.com/bedops/bedops/issues/124
+             ;; See upstream discussion:
+             ;; https://github.com/bedops/bedops/issues/124
 
-           ;; Unpack the tarballs to benefit from shebang patching.
-           (with-directory-excursion "third-party"
-             (and (zero? (system* "tar" "xvf" "jansson-2.6.tar.bz2"))
-                  (zero? (system* "tar" "xvf" "zlib-1.2.7.tar.bz2"))
-                  (zero? (system* "tar" "xvf" "bzip2-1.0.6.tar.bz2"))))
-           ;; Disable unpacking of tarballs in Makefile.
-           (substitute* "system.mk/Makefile.linux"
-             (("^\tbzcat .*") "\t@echo \"not unpacking\"\n")
-             (("\\./configure") "CONFIG_SHELL=bash ./configure"))
-           (substitute* "third-party/zlib-1.2.7/Makefile.in"
-             (("^SHELL=.*$") "SHELL=bash\n")))
-         (alist-delete 'configure %standard-phases))))
+             ;; Unpack the tarballs to benefit from shebang patching.
+             (with-directory-excursion "third-party"
+               (and (zero? (system* "tar" "xvf" "jansson-2.6.tar.bz2"))
+                    (zero? (system* "tar" "xvf" "zlib-1.2.7.tar.bz2"))
+                    (zero? (system* "tar" "xvf" "bzip2-1.0.6.tar.bz2"))))
+             ;; Disable unpacking of tarballs in Makefile.
+             (substitute* "system.mk/Makefile.linux"
+               (("^\tbzcat .*") "\t@echo \"not unpacking\"\n")
+               (("\\./configure") "CONFIG_SHELL=bash ./configure"))
+             (substitute* "third-party/zlib-1.2.7/Makefile.in"
+               (("^SHELL=.*$") "SHELL=bash\n"))
+             #t))
+         (delete 'configure))))
     (home-page "https://github.com/bedops/bedops")
     (synopsis "Tools for high-performance genomic feature operations")
     (description
@@ -1325,20 +1326,21 @@ splice junctions between exons.")
     (arguments
      '(#:tests? #f ;no "check" target
        #:phases
-       (alist-replace
-        'install
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((bin (string-append
-                      (assoc-ref outputs "out") "/bin"))
-                (doc (string-append
-                      (assoc-ref outputs "out") "/share/doc/bwa"))
-                (man (string-append
-                      (assoc-ref outputs "out") "/share/man/man1")))
-            (install-file "bwa" bin)
-            (install-file "README.md" doc)
-            (install-file "bwa.1" man)))
-        ;; no "configure" script
-        (alist-delete 'configure %standard-phases))))
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append
+                         (assoc-ref outputs "out") "/bin"))
+                   (doc (string-append
+                         (assoc-ref outputs "out") "/share/doc/bwa"))
+                   (man (string-append
+                         (assoc-ref outputs "out") "/share/man/man1")))
+               (install-file "bwa" bin)
+               (install-file "README.md" doc)
+               (install-file "bwa.1" man))
+             #t))
+           ;; no "configure" script
+          (delete 'configure))))
     (inputs `(("zlib" ,zlib)))
     ;; Non-portable SSE instructions are used so building fails on platforms
     ;; other than x86_64.
@@ -1815,10 +1817,9 @@ time.")
     (arguments
      `(#:python ,python-2
        #:phases
-       (alist-cons-after
-        'unpack 'set-env
-        (lambda _ (setenv "CROSSMAP_USE_SYSTEM_PYSAM" "1"))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env
+           (lambda _ (setenv "CROSSMAP_USE_SYSTEM_PYSAM" "1") #t)))))
     (inputs
      `(("python-numpy" ,python2-numpy)
        ("python-pysam" ,python2-pysam)
@@ -2365,19 +2366,18 @@ dynamic programming or a variety of heuristics.")
     (arguments
      `(#:tests? #f ;no "check" target
        #:phases
-       (alist-cons-after
-        'unpack 'use-shared-boost-libs-and-set-bamtools-paths
-        (lambda* (#:key inputs #:allow-other-keys)
-          (substitute* "CMakeLists.txt"
-            (("set\\(Boost_USE_STATIC_LIBS ON\\)")
-             "set(Boost_USE_STATIC_LIBS OFF)")
-            (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/bamtools/include")
-             (string-append (assoc-ref inputs "bamtools") "/include/bamtools")))
-          (substitute* "src/CMakeLists.txt"
-            (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/\\.\\./bamtools/lib")
-             (string-append (assoc-ref inputs "bamtools") "/lib/bamtools")))
-          #t)
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-shared-boost-libs-and-set-bamtools-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("set\\(Boost_USE_STATIC_LIBS ON\\)")
+                "set(Boost_USE_STATIC_LIBS OFF)")
+               (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/bamtools/include")
+                (string-append (assoc-ref inputs "bamtools") "/include/bamtools")))
+             (substitute* "src/CMakeLists.txt"
+               (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/\\.\\./bamtools/lib")
+                (string-append (assoc-ref inputs "bamtools") "/lib/bamtools")))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("bamtools" ,bamtools)
@@ -2544,15 +2544,15 @@ results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
                                          (assoc-ref %outputs "out")
                                          "/bin/"))
        #:phases
-       (alist-replace
-        'check
-        (lambda* (#:key outputs #:allow-other-keys)
-          (setenv "PATH" (string-append
-                          (assoc-ref outputs "out") "/bin:"
-                          (getenv "PATH")))
-          (chdir "../flexbar_v2.5_src/test")
-          (zero? (system* "bash" "flexbar_validate.sh")))
-        (alist-delete 'install %standard-phases))))
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "PATH" (string-append
+                             (assoc-ref outputs "out") "/bin:"
+                             (getenv "PATH")))
+             (chdir "../flexbar_v2.5_src/test")
+             (zero? (system* "bash" "flexbar_validate.sh"))))
+         (delete 'install))))
     (inputs
      `(("tbb" ,tbb)
        ("zlib" ,zlib)))
@@ -2788,21 +2788,21 @@ association studies (GWAS).")
     (arguments
      `(#:python ,python-2
        #:phases
-       (alist-cons-after
-        'unpack 'generate-from-cython-sources
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          ;; Delete these C files to force fresh generation from pyx sources.
-          (delete-file "grit/sparsify_support_fns.c")
-          (delete-file "grit/call_peaks_support_fns.c")
-          (substitute* "setup.py"
-            (("Cython.Setup") "Cython.Build")
-            ;; Add numpy include path to fix compilation
-            (("pyx\", \\]")
-             (string-append "pyx\", ], include_dirs = ['"
-                            (assoc-ref inputs "python-numpy")
-                            "/lib/python2.7/site-packages/numpy/core/include/"
-                            "']"))) #t)
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'generate-from-cython-sources
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Delete these C files to force fresh generation from pyx sources.
+             (delete-file "grit/sparsify_support_fns.c")
+             (delete-file "grit/call_peaks_support_fns.c")
+             (substitute* "setup.py"
+               (("Cython.Setup") "Cython.Build")
+               ;; Add numpy include path to fix compilation
+               (("pyx\", \\]")
+                (string-append "pyx\", ], include_dirs = ['"
+                               (assoc-ref inputs "python-numpy")
+                               "/lib/python2.7/site-packages/numpy/core/include/"
+                               "']")))
+             #t)))))
     (inputs
      `(("python-scipy" ,python2-scipy)
        ("python-numpy" ,python2-numpy)
@@ -2845,28 +2845,29 @@ estimates transcript expression.")
                             '()
                             '("POPCNT_CAPABILITY=0")))
        #:phases
-       (alist-cons-after
-        'unpack 'patch-sources
-        (lambda _
-          ;; XXX Cannot use snippet because zip files are not supported
-          (substitute* "Makefile"
-            (("^CC = .*$") "CC = gcc")
-            (("^CPP = .*$") "CPP = g++")
-            ;; replace BUILD_HOST and BUILD_TIME for deterministic build
-            (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
-            (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))
-          (substitute* '("hisat-build" "hisat-inspect")
-            (("/usr/bin/env") (which "env"))))
-        (alist-replace
-         'install
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-             (for-each (lambda (file)
-                         (install-file file bin))
-                       (find-files
-                        "."
-                        "hisat(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))))
-         (alist-delete 'configure %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-sources
+           (lambda _
+             ;; XXX Cannot use snippet because zip files are not supported
+             (substitute* "Makefile"
+               (("^CC = .*$") "CC = gcc")
+               (("^CPP = .*$") "CPP = g++")
+               ;; replace BUILD_HOST and BUILD_TIME for deterministic build
+               (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
+               (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))
+             (substitute* '("hisat-build" "hisat-inspect")
+               (("/usr/bin/env") (which "env")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files
+                          "."
+                          "hisat(-(build|align|inspect)(-(s|l)(-debug)*)*)*$")))
+             #t))
+         (delete 'configure))))
     (native-inputs
      `(("unzip" ,unzip)))
     (inputs
@@ -4680,23 +4681,21 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
      `(#:parallel-build? #f ; not supported
        #:tests? #f ; no "check" target
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            ;; Allow 'konfigure.perl' to find 'package.prl'.
-            (setenv "PERL5LIB"
-                    (string-append ".:" (getenv "PERL5LIB")))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Allow 'konfigure.perl' to find 'package.prl'.
+               (setenv "PERL5LIB"
+                       (string-append ".:" (getenv "PERL5LIB")))
 
-            ;; The 'configure' script doesn't recognize things like
-            ;; '--enable-fast-install'.
-            (zero? (system* "./configure"
-                            (string-append "--build-prefix=" (getcwd) "/build")
-                            (string-append "--prefix=" out)))))
-        (alist-cons-after
-         'unpack 'enter-dir
-         (lambda _ (chdir "ngs-sdk") #t)
-         %standard-phases))))
+               ;; The 'configure' script doesn't recognize things like
+               ;; '--enable-fast-install'.
+               (zero? (system* "./configure"
+                               (string-append "--build-prefix=" (getcwd) "/build")
+                               (string-append "--prefix=" out))))))
+         (add-after 'unpack 'enter-dir
+           (lambda _ (chdir "ngs-sdk") #t)))))
     (native-inputs `(("perl" ,perl)))
     ;; According to the test
     ;;   unless ($MARCH =~ /x86_64/i || $MARCH =~ /i?86/i)
@@ -5460,17 +5459,16 @@ sequences.")
              "-f" "Makefile.Linux"
              "CC=gcc ${CCFLAGS}")
        #:phases
-       (alist-cons-after
-        'unpack 'enter-dir
-        (lambda _ (chdir "src") #t)
-        (alist-replace
-         'install
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-             (mkdir-p bin)
-             (copy-recursively "../bin" bin)))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-dir
+           (lambda _ (chdir "src") #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (mkdir-p bin)
+               (copy-recursively "../bin" bin))))
          ;; no "configure" script
-         (alist-delete 'configure %standard-phases)))))
+         (delete 'configure))))
     (inputs `(("zlib" ,zlib)))
     (home-page "http://bioinf.wehi.edu.au/subread-package/")
     (synopsis "Tool kit for processing next-gen sequencing data")
@@ -6163,7 +6161,7 @@ SELECT or UPDATE queries to an end-point.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.4.4")
+    (version "2.5.0")
     (source
      (origin
        (method url-fetch)
@@ -6173,7 +6171,7 @@ SELECT or UPDATE queries to an end-point.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1d8a4gjwaqdv57krlr80x18mg5py1bbdiqs5m0jdn38filc9z40k"))
+         "1k8wf3qns4mqrsizywbkqcasqjw000m4drxsag3qd7390pwvf9kz"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin

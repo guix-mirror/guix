@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,6 +88,20 @@
      (method url-fetch)
       (uri (string-append "ftp://tug.org/historic/systems/texlive/2017/"
                           "texlive-" version "-source.tar.xz"))
+      (patches
+       (list
+        ;; This is required for compatibility with Poppler >= 0.58.
+        ;; See <http://tutex.tug.org/pipermail/tex-k/2017-September/002809.html>
+        ;; and <https://bugs.archlinux.org/task/55720> for some discussion.
+        (origin
+          (method url-fetch)
+          (uri (string-append "https://git.archlinux.org/svntogit/packages.git/plain"
+                              "/trunk/texlive-poppler-0.59.patch?h=packages/texlive-bin"
+                              "&id=ba2de374e2b21ecc4b85cc9777f2f15c4d356c61"))
+          (file-name "texlive-poppler-compat.patch")
+          (sha256
+           (base32
+            "1c4ikq4kxw48bi3i33bzpabrjvbk01fwjr2lz20gkc9kv8l0bg3n")))))
       (sha256 (base32
                "1amjrxyasplv4alfwcxwnw4nrx7dz2ydmddkq16k6hg90i9njq81"))))
    (build-system gnu-build-system)
@@ -123,6 +138,9 @@
     `(#:out-of-source? #t
       #:configure-flags
        `("--disable-native-texlive-build"
+         ;; XXX: This is needed because recent Poppler requires C++11 or later.
+         ;; Remove after switch to GCC >= 6.
+         "CXXFLAGS=-std=gnu++11"
          "--with-system-cairo"
          "--with-system-freetype2"
          "--with-system-gd"

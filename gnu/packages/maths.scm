@@ -14,11 +14,12 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017 Theodoros Foradis <theodoros.for@openmailbox.org>
+;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,7 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages less)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages logging)
@@ -456,13 +458,14 @@ large scale eigenvalue problems.")
 
                           ;; Build the 'LAPACKE_clatms' functions.
                           "-DLAPACKE_WITH_TMG=ON")
-       #:phases (alist-cons-before
-                 'check 'patch-python
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((python (assoc-ref inputs "python")))
-                     (substitute* "lapack_testing.py"
-                       (("/usr/bin/env python") python))))
-                  %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-python
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((python (assoc-ref inputs "python")))
+               (substitute* "lapack_testing.py"
+                 (("/usr/bin/env python") python)))
+             #t)))))
     (synopsis "Library for numerical linear algebra")
     (description
      "LAPACK is a Fortran 90 library for solving the most commonly occurring
@@ -741,6 +744,124 @@ incompatible with HDF5.")
 extremely large and complex data collections.")
     (license (license:x11-style
               "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
+
+(define-public hdf-java
+  (package
+   (name "hdf-java")
+   (version "3.3.2")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+            "http://www.hdfgroup.org/ftp/HDF5/releases/HDF-JAVA/hdfjni-"
+            version "/src/CMake-hdfjava-" version ".tar.gz"))
+      (sha256
+       (base32 "0m1gp2aspcblqzmpqbdpfp6giskws85ds6p5gz8sx7asyp7wznpr"))
+      (modules '((guix build utils)))
+      (snippet ; Make sure we don't use the bundled sources and binaries.
+       `(begin
+          (for-each delete-file
+                    (list "SZip.tar.gz" "ZLib.tar.gz" "JPEG8d.tar.gz"
+                          "HDF4.tar.gz" "HDF5.tar.gz"))
+          (delete-file-recursively ,(string-append "hdfjava-" version "/lib"))))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("jdk" ,icedtea "jdk")
+      ("automake" ,automake) ; For up to date 'config.guess' and 'config.sub'.
+      ;; For tests:
+      ("hamcrest-core" ,java-hamcrest-core)
+      ("junit" ,java-junit)
+      ("slf4j-simple" ,java-slf4j-simple)))
+   (inputs
+    `(("hdf4" ,hdf4)
+      ("hdf5" ,hdf5)
+      ("zlib" ,zlib)
+      ("libjpeg" ,libjpeg)
+      ("slf4j-api" ,java-slf4j-api)))
+   (arguments
+    `(#:configure-flags
+      (list (string-append "--target=" ,(or (%current-target-system) (%current-system)))
+            (string-append "--with-jdk=" (assoc-ref %build-inputs "jdk") "/include,"
+                           (assoc-ref %build-inputs "jdk") "/lib" )
+            (string-append "--with-hdf4=" (assoc-ref %build-inputs "hdf4") "/lib")
+            (string-append "--with-hdf5=" (assoc-ref %build-inputs "hdf5") "/lib"))
+
+      #:make-flags
+      (list (string-append "HDFLIB=" (assoc-ref %build-inputs "hdf4") "/lib")
+            (string-append "HDF5LIB=" (assoc-ref %build-inputs "hdf5") "/lib")
+            (string-append "ZLIB=" (assoc-ref %build-inputs "zlib") "/lib/libz.so")
+            (string-append "JPEGLIB="
+                           (assoc-ref %build-inputs "libjpeg") "/lib/libjpeg.so")
+            "LLEXT=so")
+
+      #:phases
+      (modify-phases %standard-phases
+        (add-before 'configure 'chdir-to-source
+          (lambda _ (chdir ,(string-append "hdfjava-" version))))
+        (add-before 'configure 'patch-build
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "configure"
+              (("COPT=\"") "COPT=\"-O2 ") ; CFLAGS is ignored in Makefiles
+              (("/bin/cat") (which "cat")))
+            ;; Set classpath for compilation
+            (substitute* '("hdf/hdf5lib/Makefile.in"
+                           "hdf/hdf5lib/exceptions/Makefile.in"
+                           "hdf/hdflib/Makefile.in")
+              (("\\$\\(TOP\\)/lib/slf4j-api-1\\.7\\.5\\.jar")
+               (string-append (assoc-ref inputs "slf4j-api")
+                              "/share/java/slf4j-api.jar")))
+            ;; Replace outdated config.sub and config.guess:
+            (with-directory-excursion "config"
+              (for-each (lambda (file)
+                          (copy-file
+                           (string-append (assoc-ref inputs "automake")
+                                          "/share/automake-1.15/" file) file))
+                        '("config.sub" "config.guess")))
+            (mkdir-p (string-append (assoc-ref outputs "out")))
+            ;; Set classpath for tests
+            (let* ((build-dir (getcwd))
+                   (lib (string-append build-dir "/lib"))
+                   (jhdf (string-append lib "/jhdf.jar"))
+                   (jhdf5 (string-append lib "/jhdf5.jar"))
+                   (testjars
+                    (map (lambda (i)
+                           (string-append (assoc-ref inputs i)
+                                          "/share/java/" i ".jar"))
+                         '("junit" "hamcrest-core" "slf4j-api" "slf4j-simple")))
+                   (class-path
+                    (string-join `("." ,build-dir ,jhdf ,jhdf5 ,@testjars) ":")))
+
+              (substitute* '("test/hdf5lib/Makefile.in"
+                             "test/hdf5lib/junit.sh.in"
+                             "examples/runExample.sh.in")
+                (("/usr/bin/test")
+                 (string-append (assoc-ref inputs "coreutils")
+                                "/bin/test"))
+                (("/usr/bin/uname")
+                 (string-append (assoc-ref inputs "coreutils")
+                                "/bin/uname"))
+                (("CLASSPATH=[^\n]*")
+                 (string-append "CLASSPATH=" class-path)))
+              (setenv "CLASSPATH" class-path))
+            #t))
+        (add-before 'check 'build-examples
+          (lambda _
+            (zero? (apply system* `("javac"
+                                    ,@(find-files "examples" ".*\\.java")))))))
+
+      #:parallel-build? #f
+
+      #:parallel-tests? #f ))
+   (home-page "https://support.hdfgroup.org/products/java")
+   (synopsis "Java interface for the HDF4 and HDF5 libraries")
+   (description "Java HDF Interface (JHI) and Java HDF5 Interface (JHI5) use
+the Java Native Interface to wrap the HDF4 and HDF5 libraries, which are
+implemented in C.")
+
+   ;; BSD-style license:
+   (license (license:x11-style
+             "https://support.hdfgroup.org/ftp/HDF5/hdf-java\
+/current/src/unpacked/COPYING"))))
 
 (define-public hdf-eos2
   (package
@@ -1126,7 +1247,7 @@ can solve two kinds of problems:
     (license license:bsd-3)))
 
 ;; For a fully featured Octave, users  are strongly recommended also to install
-;; the following packages: texinfo, less, ghostscript, gnuplot.
+;; the following packages: less, ghostscript, gnuplot.
 (define-public octave
   (package
     (name "octave")
@@ -1158,6 +1279,7 @@ can solve two kinds of problems:
        ("glu" ,glu)
        ("zlib" ,zlib)
        ("curl" ,curl)
+       ("texinfo" ,texinfo)
        ("graphicsmagick" ,graphicsmagick)))
     (native-inputs
      `(("lzip" ,lzip)
@@ -1172,14 +1294,23 @@ can solve two kinds of problems:
        ;; will still run without them, albeit without the features they
        ;; provide.
        ("less" ,less)
-       ("texinfo" ,texinfo)
        ("ghostscript" ,ghostscript)
        ("gnuplot" ,gnuplot)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-shell="
                             (assoc-ref %build-inputs "bash")
-                            "/bin/sh"))))
+                            "/bin/sh"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'configure-makeinfo
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "libinterp/corefcn/help.cc"
+               (("Vmakeinfo_program = \"makeinfo\"")
+                (string-append "Vmakeinfo_program = \""
+                               (assoc-ref inputs "texinfo")
+                               "/bin/makeinfo\"")))
+             #t)))))
     (home-page "https://www.gnu.org/software/octave/")
     (synopsis "High-level language for numerical computation")
     (description "GNU Octave is a high-level interpreted language that is
@@ -1866,12 +1997,12 @@ void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
     (arguments
      `(#:parallel-build? #f             ;race conditions using ar
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (call-with-output-file "make.inc"
-            (lambda (port)
-              (format port "
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (call-with-output-file "make.inc"
+               (lambda (port)
+                 (format port "
 PLAT        =
 DSuperLUroot = ~a
 DSUPERLULIB  = ~a/lib/libsuperlu_dist.a
@@ -1894,47 +2025,46 @@ FORTRAN     = mpifort
 FFLAGS      = -O2 -g $(PIC)
 LOADER      = $(CC)
 CDEFS       = -DAdd_"
-                      (getcwd)
-                      (assoc-ref outputs "out")
-                      (assoc-ref inputs "lapack")
-                      (assoc-ref inputs "pt-scotch")))))
-        (alist-cons-after
-         'unpack 'remove-broken-symlinks
-         (lambda _
-           (for-each delete-file
-                     (find-files "MAKE_INC" "\\.#make\\..*")))
-         (alist-cons-before
-          'build 'create-install-directories
-          (lambda* (#:key outputs #:allow-other-keys)
-            (for-each
-             (lambda (dir)
-               (mkdir-p (string-append (assoc-ref outputs "out")
-                                       "/" dir)))
-             '("lib" "include")))
-          (alist-replace
-           'check
+                         (getcwd)
+                         (assoc-ref outputs "out")
+                         (assoc-ref inputs "lapack")
+                         (assoc-ref inputs "pt-scotch"))))
+             #t))
+         (add-after 'unpack 'remove-broken-symlinks
+           (lambda _
+             (for-each delete-file
+                       (find-files "MAKE_INC" "\\.#make\\..*"))
+             #t))
+         (add-before 'build 'create-install-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each
+              (lambda (dir)
+                (mkdir-p (string-append (assoc-ref outputs "out")
+                                        "/" dir)))
+              '("lib" "include"))
+             #t))
+         (replace 'check
            (lambda _
              (with-directory-excursion "EXAMPLE"
                (and
                 (zero? (system* "mpirun" "-n" "2"
                                 "./pddrive" "-r" "1" "-c" "2" "g20.rua"))
                 (zero? (system* "mpirun" "-n" "2"
-                                "./pzdrive" "-r" "1" "-c" "2" "cg20.cua")))))
-           (alist-replace
-            'install
-            (lambda* (#:key outputs #:allow-other-keys)
-              ;; Library is placed in lib during the build phase.  Copy over
-              ;; headers to include.
-              (let* ((out    (assoc-ref outputs "out"))
-                     (incdir (string-append out "/include")))
-                (for-each (lambda (file)
-                            (let ((base (basename file)))
-                              (format #t "installing `~a' to `~a'~%"
-                                      base incdir)
-                              (copy-file file
-                                         (string-append incdir "/" base))))
-                          (find-files "SRC" ".*\\.h$"))))
-            %standard-phases)))))))
+                                "./pzdrive" "-r" "1" "-c" "2" "cg20.cua"))))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Library is placed in lib during the build phase.  Copy over
+             ;; headers to include.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (incdir (string-append out "/include")))
+               (for-each (lambda (file)
+                           (let ((base (basename file)))
+                             (format #t "installing `~a' to `~a'~%"
+                                     base incdir)
+                             (copy-file file
+                                        (string-append incdir "/" base))))
+                         (find-files "SRC" ".*\\.h$")))
+             #t)))))
     (home-page (package-home-page superlu))
     (synopsis "Parallel supernodal direct solver")
     (description
@@ -2621,7 +2751,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        ;; no configure script
-       (alist-delete 'configure %standard-phases)
+       (modify-phases %standard-phases (delete 'configure))
        #:tests? #f)) ;the tests are part of the default target
     (home-page "http://openlibm.org/")
     (synopsis "Portable C mathematical library (libm)")
@@ -2660,7 +2790,7 @@ environments.")
        #:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
        ;; no configure script
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("fortran" ,gfortran)))
     (home-page "https://github.com/JuliaLang/openspecfun")

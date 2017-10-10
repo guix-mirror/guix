@@ -152,13 +152,14 @@ from digital cameras.")
        ("libexif" ,libexif)
        ("libgphoto2" ,libgphoto2)))
     (arguments
-     '(#:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* (find-files "tests/data" "\\.param$")
-                     (("/usr/bin/env")
-                      (which "env"))))
-                 %standard-phases)
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (find-files "tests/data" "\\.param$")
+               (("/usr/bin/env")
+                (which "env")))
+             #t)))
 
        ;; FIXME: There are 2 test failures, most likely related to the build
        ;; environment.

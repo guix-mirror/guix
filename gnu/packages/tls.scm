@@ -106,7 +106,7 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.8")
+    (version "0.23.9")
     (source
      (origin
       (method url-fetch)
@@ -114,7 +114,7 @@ in intelligent transportation networks.")
                           "download/" version "/p11-kit-" version ".tar.gz"))
       (sha256
        (base32
-        "0gqk1d09yyin75lvlywpbf3kxlnrcwbq8ridgapvqqjbzvjk98ab"))))
+        "0qyvnkb5hfi94wv3bn67y20hcbbvynvjwxpk7k9sh1si6ff69hg1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -491,13 +491,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.18.2")
+    (version "0.19.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1xiy8m7501g5l9kpdmyvyz72nfnl72l19qkrf76fyvby7adzm3ki"))))
+                "08p8w50zciqlhgn3ab0wbbvi1zyg3x37r1gywq0z1allsij3v8hz"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -545,7 +545,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "16lw4n7kwnkvh9sz2f97c7ad1wwp33mg5fc332lpy5n17zpfc8h1"))))
+                "0lwxqz3r0fg3dy06fgba1dfs7n6ribc25z0rh5rqbl7mvy8hf8x7"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)

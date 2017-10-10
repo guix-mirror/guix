@@ -151,16 +151,16 @@ a focus on simplicity and productivity.")
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
-        (alist-cons-before
-         'configure 'replace-bin-sh
-         (lambda _
-           (substitute* '("Makefile.in"
-                          "ext/pty/pty.c"
-                          "io.c"
-                          "lib/mkmf.rb"
-                          "process.c")
-             (("/bin/sh") (which "sh"))))
-         %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'replace-bin-sh
+           (lambda _
+             (substitute* '("Makefile.in"
+                            "ext/pty/pty.c"
+                            "io.c"
+                            "lib/mkmf.rb"
+                            "process.c")
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (native-search-paths
      (list (search-path-specification
             (variable "GEM_PATH")
@@ -185,16 +185,21 @@ a focus on simplicity and productivity.")
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
-        (alist-cons-before
-         'configure 'replace-bin-sh
-         (lambda _
-           (substitute* '("Makefile.in"
-                          "ext/pty/pty.c"
-                          "io.c"
-                          "lib/mkmf.rb"
-                          "process.c")
-             (("/bin/sh") (which "sh"))))
-         %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-before 'configure 'replace-bin-sh
+           (lambda _
+             (substitute* '("Makefile.in"
+                            "ext/pty/pty.c"
+                            "io.c"
+                            "lib/mkmf.rb"
+                            "process.c")
+               (("/bin/sh") (which "sh")))
+             #t)))))))
+
+(define (gem-directory ruby-version)
+  "Return the relative gem install directory for RUBY-VERSION."
+  (string-append "/lib/ruby/gems/" (version-major+minor ruby-version)
+                 ".0/gems"))
 
 (define-public ruby-highline
   (package
@@ -2087,17 +2092,19 @@ both CSS3 selector and XPath 1.0 support.")
 (define-public ruby-method-source
   (package
     (name "ruby-method-source")
-    (version "0.8.2")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "method_source" version))
        (sha256
         (base32
-         "1g5i4w0dmlhzd18dijlqw5gk27bv6dj2kziqzrzb7mpgxgsd1sf2"))))
+         "0xqj21j3vfq4ldia6i2akhn2qd84m0iqcnsl49kfpq3xk6x0dzgn"))))
     (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"))
     (native-inputs
-     `(("ruby-bacon" ,ruby-bacon)
+     `(("ruby-rspec" ,ruby-rspec)
        ("git" ,git)))
     (synopsis "Retrieve the source code for Ruby methods")
     (description "Method_source retrieves the source code for Ruby methods.
@@ -2160,21 +2167,20 @@ rate.")
 (define-public ruby-pry
   (package
     (name "ruby-pry")
-    (version "0.10.4")
+    (version "0.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pry" version))
        (sha256
         (base32
-         "05xbzyin63aj2prrv8fbq2d5df2mid93m81hz5bvf2v4hnzs42ar"))))
+         "0ci461a55sn50rlrmcl97ycf79681glp443a2gzp23rnm7y70fkj"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
     (propagated-inputs
      `(("ruby-coderay" ,ruby-coderay)
-       ("ruby-method-source" ,ruby-method-source)
-       ("ruby-slop" ,ruby-slop-3)))
+       ("ruby-method-source" ,ruby-method-source)))
     (synopsis "Ruby REPL")
     (description "Pry is an IRB alternative and runtime developer console for
 Ruby.  It features syntax highlighting, a plugin architecture, runtime
@@ -3779,10 +3785,9 @@ requests either using arguments or with an interactive prompt.")
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (file (string-append out "/lib/ruby/gems/"
-                                         ,(package-version ruby)
-                                         "/gems/ansi-" ,version
-                                         "/lib/ansi.yml")))
+                    (file (string-append out
+                                         ,(gem-directory (package-version ruby))
+                                         "/ansi-" ,version "/lib/ansi.yml")))
                ;; XXX: This symlink is broken since ruby 2.4.
                ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
                (delete-file file)
@@ -3980,10 +3985,9 @@ requirement specifications systems like Cucumber.")
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (file (string-append out "/lib/ruby/gems/"
-                                         ,(package-version ruby)
-                                         "/gems/ae-" ,version
-                                         "/lib/ae.yml")))
+                    (file (string-append out
+                                         ,(gem-directory (package-version ruby))
+                                         "/ae-" ,version "/lib/ae.yml")))
                ;; XXX: This symlink is broken since ruby 2.4.
                ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
                (delete-file file)

@@ -159,44 +159,42 @@ selected in various ways.  For text, 35 fonts are available.")
     (arguments
      `(#:tests? #f
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((imake (assoc-ref inputs "imake"))
-                (out   (assoc-ref outputs "out")))
-            (substitute* '("fig2dev/Imakefile"
-                           "transfig/Imakefile")
-              (("XCOMM (BINDIR = )[[:graph:]]*" _ front)
-               (string-append front out "/bin"))
-              (("XCOMM USEINLINE") "USEINLINE")
-              ;; The variable name is deceptive.  The directory is used as an
-              ;; installation path for bitmaps.
-              (("(XFIGLIBDIR =[[:blank:]]*)[[:graph:]]*" _ front)
-               (string-append front out "/lib"))
-              (("(XPMLIBDIR = )[[:graph:]]*" _ front)
-               (string-append front (assoc-ref inputs "libxpm") "/lib"))
-              (("(XPMINC = -I)[[:graph:]]*" _ front)
-               (string-append front (assoc-ref inputs "libxpm") "/include/X11"))
-              (("/usr/local/lib/fig2dev") (string-append out "/lib")))
-            ;; The -a argument is required in order to pick up the correct paths
-            ;; to several X header files.
-            (zero? (system* "xmkmf" "-a"))
-            (substitute* '("Makefile"
-                           "fig2dev/Makefile"
-                           "transfig/Makefile")
-              ;; These imake variables somehow remain undefined
-              (("DefaultGcc2[[:graph:]]*Opt") "-O2")
-              ;; Reset a few variable defaults that are set in imake templates
-              ((imake) out)
-              (("(MANPATH = )[[:graph:]]*" _ front)
-               (string-append front out "/share/man"))
-              (("(CONFDIR = )([[:graph:]]*)" _ front default)
-               (string-append front out default)))))
-        (alist-cons-after
-         'install 'install/doc
-         (lambda _
-           (zero? (system* "make" "install.man")))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((imake (assoc-ref inputs "imake"))
+                   (out   (assoc-ref outputs "out")))
+               (substitute* '("fig2dev/Imakefile"
+                              "transfig/Imakefile")
+                 (("XCOMM (BINDIR = )[[:graph:]]*" _ front)
+                  (string-append front out "/bin"))
+                 (("XCOMM USEINLINE") "USEINLINE")
+                 ;; The variable name is deceptive.  The directory is used as an
+                 ;; installation path for bitmaps.
+                 (("(XFIGLIBDIR =[[:blank:]]*)[[:graph:]]*" _ front)
+                  (string-append front out "/lib"))
+                 (("(XPMLIBDIR = )[[:graph:]]*" _ front)
+                  (string-append front (assoc-ref inputs "libxpm") "/lib"))
+                 (("(XPMINC = -I)[[:graph:]]*" _ front)
+                  (string-append front (assoc-ref inputs "libxpm") "/include/X11"))
+                 (("/usr/local/lib/fig2dev") (string-append out "/lib")))
+               ;; The -a argument is required in order to pick up the correct paths
+               ;; to several X header files.
+               (zero? (system* "xmkmf" "-a"))
+               (substitute* '("Makefile"
+                              "fig2dev/Makefile"
+                              "transfig/Makefile")
+                 ;; These imake variables somehow remain undefined
+                 (("DefaultGcc2[[:graph:]]*Opt") "-O2")
+                 ;; Reset a few variable defaults that are set in imake templates
+                 ((imake) out)
+                 (("(MANPATH = )[[:graph:]]*" _ front)
+                  (string-append front out "/share/man"))
+                 (("(CONFDIR = )([[:graph:]]*)" _ front default)
+                  (string-append front out default))))))
+         (add-after 'install 'install/doc
+           (lambda _
+             (zero? (system* "make" "install.man")))))))
     (home-page "http://www.xfig.org/")
     (synopsis "Create portable LaTeX figures")
     (description
