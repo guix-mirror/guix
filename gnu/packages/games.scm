@@ -133,7 +133,6 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages networking)
-  #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
