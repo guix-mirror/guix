@@ -5855,6 +5855,12 @@ tools for mocking system commands and recording calls to those.")
        ("python-numpy" ,python-numpy)
        ("python-numpydoc" ,python-numpydoc)
        ("python-jinja2" ,python-jinja2)
+       ("python-jupyter-console"
+        ;; The python-ipython and python-jupyter-console require each
+        ;; other. To get the functionality in both packages working, strip
+        ;; down the python-jupyter-console package when using it as an input
+        ;; to python-ipython.
+        ,python-jupyter-console-minimal)
        ("python-mistune" ,python-mistune)
        ("python-pexpect" ,python-pexpect)
        ("python-pickleshare" ,python-pickleshare)
@@ -8559,6 +8565,31 @@ Jupyter kernels such as IJulia and IRKernel.")
 
 (define-public python2-jupyter-console
   (package-with-python2 python-jupyter-console))
+
+;; The python-ipython and python-jupyter-console require each other. To get
+;; the functionality in both packages working, strip down the
+;; python-jupyter-console package when using it as an input to python-ipython.
+(define python-jupyter-console-minimal
+  (package
+    (inherit python-jupyter-console)
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments python-jupyter-console)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'delete-bin
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Delete the bin files, to avoid conflicts in profiles
+               ;; where python-ipython and python-jupyter-console are
+               ;; both present.
+               (delete-file-recursively
+                (string-append
+                 (assoc-ref outputs "out") "/bin"))))))))
+    ;; Remove the python-ipython propagated input, to avoid the cycle
+    (propagated-inputs
+     (alist-delete
+      "python-ipython"
+      (package-propagated-inputs python-jupyter-console)))))
 
 (define-public jupyter
   (package
