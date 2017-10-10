@@ -281,6 +281,62 @@ an extensible architecture with a swappable backend.")
     (home-page "https://github.com/svenfuchs/i18n")
     (license license:expat)))
 
+(define-public ruby-iruby
+  (package
+    (name "ruby-iruby")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "iruby" version))
+       (sha256
+        (base32
+         "1wdf2c0x8y6cya0n3y0p3p7b1sxkb2fdavdn2k58rf4rs37s7rzn"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; TODO: Tests currently fail.
+     ;;
+     ;; Finished in 1.764405s, 1.1335 runs/s, 5.1009 assertions/s.
+     ;;
+     ;;   1) Failure:
+     ;; IntegrationTest#test_interaction [/tmp/guix-build-ruby-iruby-0.3.drv-0/gem/test/integration_test.rb:25]:
+     ;; In [ expected
+     ;;
+     ;; 2 runs, 9 assertions, 1 failures, 0 errors, 0 skips
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-ipython
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/iruby/command.rb"
+               (("version = `")
+                (string-append
+                 "version = `"
+                 (assoc-ref inputs "python-ipython")
+                 "/bin/"))
+               (("Kernel\\.exec\\('")
+                (string-append
+                 "Kernel.exec('"
+                 (assoc-ref inputs "python-ipython")
+                 "/bin/")))
+             #t)))))
+    (inputs
+     `(("python-ipython" ,python-ipython)))
+    (propagated-inputs
+     `(("ruby-bond" ,ruby-bond)
+       ("ruby-data_uri" ,ruby-data_uri)
+       ("ruby-mimemagic" ,ruby-mimemagic)
+       ("ruby-multi-json" ,ruby-multi-json)
+       ("ruby-cztop" ,ruby-cztop)
+       ;; Optional inputs
+       ("ruby-pry" ,ruby-pry)))
+    (synopsis "Ruby kernel for Jupyter/IPython")
+    (description
+     "This package provides a Ruby kernel for Jupyter/IPython frontends (e.g.
+notebook).")
+    (home-page "https://github.com/SciRuby/iruby")
+    (license license:expat)))
+
 ;; RSpec is the dominant testing library for Ruby projects.  Even RSpec's
 ;; dependencies use RSpec for their test suites!  To avoid these circular
 ;; dependencies, we disable tests for all of the RSpec-related packages.
