@@ -156,14 +156,14 @@ project (but it is usable outside of the Gnome platform).")
 (define-public libxslt
   (package
     (name "libxslt")
-    (version "1.1.30")
+    (version "1.1.31")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxslt/libxslt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1cxn21wi0wms3afhnlxwjm8iiykrk29bvckq6gc2d0yy2rhj6rds"))
+               "1azk48vf91nfajhm7k9cz3zrvh0aaq85ph37gqkl84c0ddmyj9fv"))
              (patches (search-patches "libxslt-generated-ids.patch"))))
     (build-system gnu-build-system)
     (home-page "http://xmlsoft.org/XSLT/index.html")
