@@ -53,6 +53,21 @@ else
 fi
 
 
+cat > "$tmpfile"<<EOF
+;; This is line 1, and the next one is line 2.
+   (operating-system
+;; This is line 3, and there is no closing paren!
+EOF
+
+if guix system vm "$tmpfile" 2> "$errorfile"
+then
+    # This must not succeed.
+    exit 1
+else
+    grep "$tmpfile:4:1: missing closing paren" "$errorfile"
+fi
+
+
 # Reporting of unbound variables.
 
 cat > "$tmpfile" <<EOF

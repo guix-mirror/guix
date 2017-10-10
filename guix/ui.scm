@@ -257,6 +257,15 @@ ARGS is the list of arguments received by the 'throw' handler."
     (('system-error . rest)
      (let ((err (system-error-errno args)))
        (report-error (G_ "failed to load '~a': ~a~%") file (strerror err))))
+    (('read-error "scm_i_lreadparen" message _ ...)
+     ;; Guile's missing-paren messages are obscure so we make them more
+     ;; intelligible here.
+     (if (string-suffix? "end of file" message)
+         (let ((location (string-drop-right message
+                                            (string-length "end of file"))))
+           (format (current-error-port) (G_ "~amissing closing parenthesis~%")
+                   location))
+         (apply throw args)))
     (('syntax-error proc message properties form . rest)
      (let ((loc (source-properties->location properties)))
        (format (current-error-port) (G_ "~a: error: ~a~%")
