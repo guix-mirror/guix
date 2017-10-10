@@ -1502,6 +1502,30 @@ allows mocking and stubbing of methods on real (non-mock) classes.")
     (home-page "http://gofreerange.com/mocha/docs")
     (license license:expat)))
 
+(define-public ruby-mocha-on-bacon
+  (package
+    (name "ruby-mocha-on-bacon")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mocha-on-bacon" version))
+       (sha256
+        (base32
+         "1h49b33rq889hn8x3wp9byczl91va16jh1w4d2wyy4yj23icdrcp"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; rubygems.org release missing tests
+     '(#:tests? #f))
+    (propagated-inputs `(("ruby-mocha" ,ruby-mocha)))
+    (synopsis "Mocha adapter for Bacon")
+    (description
+     "This package provides a Mocha adapter for Bacon, allowing you to use the
+Mocha stubbing and mocking library with Bacon, a small RSpec clone.")
+    (home-page
+     "https://github.com/alloy/mocha-on-bacon")
+    (license license:expat)))
+
 (define-public ruby-net-ssh
   (package
     (name "ruby-net-ssh")
