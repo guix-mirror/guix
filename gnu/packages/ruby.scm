@@ -36,6 +36,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ragel)
   #:use-module (gnu packages tls)
@@ -634,6 +635,46 @@ read by a continuous integration system that understands Ant's JUnit report
 format.")
     (home-page "https://github.com/nicksieger/ci_reporter")
     (license license:expat)))
+
+(define-public ruby-czmq-ffi-gen
+  (package
+    (name "ruby-czmq-ffi-gen")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "czmq-ffi-gen" version))
+       (sha256
+        (base32
+         "1yf719dmf4mwks1hqdsy6i5kzfvlsha69sfnhb2fr2cgk2snbys3"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f ;; Tests are not included in the release on rubygems.org
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-lib_dirs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/czmq-ffi-gen/czmq/ffi.rb"
+               (("lib\\_dirs = \\[.*\\]")
+                (string-append "lib_dirs = ['"
+                               (assoc-ref inputs "czmq") "/lib"
+                               "']")))
+             (substitute* "lib/czmq-ffi-gen/libzmq.rb"
+               (("lib\\_dirs = \\[.*\\]")
+                (string-append "lib_dirs = ['"
+                               (assoc-ref inputs "zeromq") "/lib"
+                               "']"))))))))
+    (inputs
+     `(("zeromq" ,zeromq)
+       ("czmq" ,czmq)))
+    (propagated-inputs `(("ruby-ffi" ,ruby-ffi)))
+    (synopsis "Low-level Ruby bindings for CZMQ (generated using zproject)")
+    (description
+     "These Ruby bindings are not intended to be directly used, but rather
+used by higher level bindings like those provided by CZTop.")
+    (home-page
+     "https://github.com/paddor/czmq-ffi-gen")
+    (license license:isc)))
 
 (define-public ruby-saikuro-treemap
   (package
