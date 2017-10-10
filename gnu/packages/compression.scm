@@ -1303,7 +1303,7 @@ RAR archives.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/zstd/archive/v"
@@ -1311,17 +1311,7 @@ RAR archives.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1imddqjhczira626nf3nqmjwj3wb37xcfcwgkjydv2k6fpfbjbri"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Remove non-free source files.
-               '(begin
-                  (for-each delete-file-recursively
-                            (list
-                             ;; Commercial use of the following is not allowed.
-                             "examples"
-                             "LICENSE-examples"))
-                  #t))))
+                "12krs9k5f408kyn0d7dwxqyc67177mgd14783ay10rafqsim8l5c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1340,7 +1330,10 @@ zlib.  In most scenarios, both compression and decompression can be performed in
 trade-off between compression ratio and speed, without affecting decompression
 speed.")
     (license (list license:bsd-3         ; the main top-level LICENSE file
-                   license:bsd-2         ; quite a few files have but 2 clauses
+                   license:bsd-2         ; many files explicitly state 2-Clause
+                   license:gpl2          ; the mail top-level COPYING file
+                   license:gpl3+         ; tests/gzip/*.sh
+                   license:expat         ; lib/dictBuilder/divsufsort.[ch]
                    license:public-domain ; zlibWrapper/examples/fitblk*
                    license:zlib))))      ; zlibWrapper/{gz*.c,gzguts.h}
 
