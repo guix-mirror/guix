@@ -1097,7 +1097,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.2.32")
+    (version "2.2.33")
     (source
      (origin
        (method url-fetch)
@@ -1105,7 +1105,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "0bmwyvi1crmrca2knvknsf517x53w7gxrclwyrvrhddgw98j22qn"))))
+                "0662s2wpa52frz07wv4qqa067wdiw7vgq931q0dp13b9lxl3sj79"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
