@@ -2852,17 +2852,7 @@ alternative to Marshal for Object serialization. ")
          ;; existing gemspec.
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "redcloth.gemspec"))))
-         ;; Make sure that the "redcloth" executable finds required Ruby
-         ;; libraries.
-         (add-after 'install 'wrap-bin-redcloth
-          (lambda* (#:key outputs #:allow-other-keys)
-            (wrap-program (string-append (assoc-ref outputs "out")
-                                         "/bin/redcloth")
-              `("GEM_PATH" ":" prefix (,(string-append
-                                         (assoc-ref outputs "out")
-                                         "/lib/ruby/vendor_ruby"))))
-            #t)))))
+            (zero? (system* "gem" "build" "redcloth.gemspec")))))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-diff-lcs" ,ruby-diff-lcs)
@@ -3710,13 +3700,7 @@ It has built-in support for the legacy @code{cookies.txt} and
                   (system* "ruby"
                            "-Ilib"
                            "test/runner.rb"))
-                 #t)))
-         (add-after 'install 'wrap-bin-httpclient
-           (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/httpclient")
-               `("GEM_PATH" ":" prefix (,(getenv "GEM_PATH"))))
-             #t)))))
+                 #t))))))
     (native-inputs
      `(("ruby-rack" ,ruby-rack)))
     (synopsis

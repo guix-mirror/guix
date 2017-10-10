@@ -291,18 +291,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
          "020yk7f1hw48clmf5501z3xv9shsdchyymcv0y2cci2c1xvr1mim"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f ;; No testsuite.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-bin-es_dump_restore
-           (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/es_dump_restore")
-               `("GEM_PATH" ":" prefix (,(getenv "GEM_PATH")
-                                        ,(string-append
-                                          (assoc-ref outputs "out")
-                                          "/lib/ruby/vendor_ruby"))))
-             #t)))))
+     '(#:tests? #f)) ;; No testsuite.
     (propagated-inputs
      `(("ruby-httpclient" ,ruby-httpclient)
        ("ruby-multi-json" ,ruby-multi-json)
