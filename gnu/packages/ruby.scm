@@ -676,6 +676,44 @@ used by higher level bindings like those provided by CZTop.")
      "https://github.com/paddor/czmq-ffi-gen")
     (license license:isc)))
 
+(define-public ruby-cztop
+  (package
+    (name "ruby-cztop")
+    (version "0.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "cztop" version))
+       (sha256
+        (base32
+         "0yqbpaiw5d7f271d73lyrsh8xpx6n4zi6xqwfgi00dacxrq3s3fa"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-lib_paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/cztop/poller/zmq.rb"
+               (("lib\\_paths = \\[.*\\]")
+                (string-append "lib_paths = ['"
+                               (assoc-ref inputs "zeromq") "/lib"
+                               "']"))))))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (inputs
+     `(("zeromq" ,zeromq)))
+    (propagated-inputs
+     `(("ruby-czmq-ffi-gen" ,ruby-czmq-ffi-gen)))
+    (synopsis "CZMQ Ruby bindings")
+    (description
+     "CZMQ Ruby bindings, based on the generated low-level FFI bindings of
+CZMQ.  The focus of of CZTop is on being easy to use and providing first class
+support for security mechanisms.")
+    (home-page "https://github.com/paddor/cztop")
+    (license license:isc)))
+
 (define-public ruby-saikuro-treemap
   (package
     (name "ruby-saikuro-treemap")
