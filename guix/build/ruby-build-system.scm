@@ -173,6 +173,109 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
                                         "Makefile")))))
            #t))))
 
+(define* (wrap-ruby-program prog #:key (gem-clear-paths #t) #:rest vars)
+  "Make a wrapper for PROG.  VARS should look like this:
+
+  '(VARIABLE DELIMITER POSITION LIST-OF-DIRECTORIES)
+
+where DELIMITER is optional.  ':' will be used if DELIMITER is not given.
+
+For example, this command:
+
+  (wrap-ruby-program \"foo\"
+                '(\"PATH\" \":\" = (\"/gnu/.../bar/bin\"))
+                '(\"CERT_PATH\" suffix (\"/gnu/.../baz/certs\"
+                                        \"/qux/certs\")))
+
+will copy 'foo' to '.real/fool' and create the file 'foo' with the following
+contents:
+
+  #!location/of/bin/ruby
+  ENV['PATH'] = \"/gnu/.../bar/bin\"
+  ENV['CERT_PATH'] = (ENV.key?('CERT_PATH') ? (ENV['CERT_PATH'] + ':') : '') + '/gnu/.../baz/certs:/qux/certs'
+  load location/of/.real/foo
+
+This is useful for scripts that expect particular programs to be in $PATH, for
+programs that expect particular gems to be in the GEM_PATH.
+
+This is preferable to wrap-program, which uses a bash script, as this prevents
+ruby scripts from being executed with @command{ruby -S ...}.
+
+If PROG has previously been wrapped by 'wrap-ruby-program', the wrapper is
+extended with definitions for VARS."
+  (define wrapped-file
+    (string-append (dirname prog) "/.real/" (basename prog)))
+
+  (define already-wrapped?
+    (file-exists? wrapped-file))
+
+  (define (last-line port)
+    ;; Return the last line read from PORT and leave PORT's cursor right
+    ;; before it.
+    (let loop ((previous-line-offset 0)
+               (previous-line "")
+               (position (seek port 0 SEEK_CUR)))
+      (match (read-line port 'concat)
+        ((? eof-object?)
+         (seek port previous-line-offset SEEK_SET)
+         previous-line)
+        ((? string? line)
+         (loop position line (+ (string-length line) position))))))
+
+  (define (export-variable lst)
+    ;; Return a string that exports an environment variable.
+    (match lst
+      ((var sep '= rest)
+       (format #f "ENV['~a'] = '~a'"
+               var (string-join rest sep)))
+      ((var sep 'prefix rest)
+       (format #f "ENV['~a'] = '~a' + (ENV.key?('~a') ? ('~a' + ENV['~a']) : '')"
+               var (string-join rest sep) var sep var))
+      ((var sep 'suffix rest)
+       (format #f "ENV['~a'] = (ENV.key?('~a') ? (ENV['~a'] + '~a') : '') + '~a'"
+               var var var sep (string-join rest sep)))
+      ((var '= rest)
+       (format #f "ENV['~a'] = '~a'"
+               var (string-join rest ":")))
+      ((var 'prefix rest)
+       (format #f "ENV['~a'] = '~a' + (ENV.key?('~a') ? (':' + ENV['~a']) : '')"
+               var (string-join rest ":") var var))
+      ((var 'suffix rest)
+       (format #f "ENV['~a'] = (ENV.key?('~a') ? (ENV['~a'] + ':') : '') + '~a'"
+               var var var (string-join rest ":")))))
+
+  (if already-wrapped?
+
+      ;; PROG is already a wrapper: add the new "export VAR=VALUE" lines just
+      ;; before the last line.
+      (let* ((port (open-file prog "r+"))
+             (last (last-line port)))
+        (for-each (lambda (var)
+                    (display (export-variable var) port)
+                    (newline port))
+                  vars)
+        (display last port)
+        (close-port port))
+
+      ;; PROG is not wrapped yet: create a shell script that sets VARS.
+      (let ((prog-tmp (string-append wrapped-file "-tmp")))
+        (mkdir-p (dirname prog-tmp))
+        (link prog wrapped-file)
+
+        (call-with-output-file prog-tmp
+          (lambda (port)
+            (format port
+                    "#!~a~%~a~%~a~%load '~a'~%"
+                    (which "ruby")
+                    (string-join (map export-variable vars) "\n")
+                    ;; This ensures that if the GEM_PATH has been changed,
+                    ;; then that change will be noticed.
+                    (if gem-clear-paths "Gem.clear_paths" "")
+                    (canonicalize-path wrapped-file))))
+
+        (chmod prog-tmp #o755)
+        (rename-file prog-tmp prog))))
+
 (define (log-file-deletion file)
   (display (string-append "deleting '" file "' for reproducibility\n")))
 
