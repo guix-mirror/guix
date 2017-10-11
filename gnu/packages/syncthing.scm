@@ -356,3 +356,30 @@ file that is running.  This can be used for upgrading the current executable or
 finding resources located relative to the executable file.")
       (home-page "https://github.com/kardianos/osext")
       (license bsd-3))))
+
+(define-public go-github-com-lib-pq
+  (let ((commit "2704adc878c21e1329f46f6e56a1c387d788ff94")
+        (revision "0"))
+    (package
+      (name "go-github-com-lib-pq")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/lib/pq")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "160fmvi7bczxw3i3h5s821hv029ph5ld8x3c36b4cz2sr30wp110"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/lib/pq"
+         ;; The tests seem to fail without access to the network or a running
+         ;; Postgres instance.
+         #:tests? #f))
+      (synopsis "Golang Postgres driver for Go's database/sql")
+      (description "This packages provides a pure Go Postgres driver for Go's
+database/sql package.")
+      (home-page "https://github.com/lib/pq")
+      (license expat))))
