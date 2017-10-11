@@ -57,16 +57,7 @@
               (match (waitpid pid)
                 ((_ . status)
                  (and (zero? status)
-
-                      ;; PORT itself isn't closed but its underlying file
-                      ;; descriptor must have been closed by 'gzclose'.
-                      (catch 'system-error
-                        (lambda ()
-                          (seek (fileno parent) 0 SEEK_CUR)
-                          #f)
-                        (lambda args
-                          (= EBADF (system-error-errno args))))
-
+                      (port-closed? parent)
                       (bytevector=? received data))))))))))))
 
 (test-end)
