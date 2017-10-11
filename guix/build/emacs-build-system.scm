@@ -92,7 +92,7 @@ store in '.el' files."
          (el-dir (string-append out %install-suffix "/" elpa-name-ver))
          (substitute-cmd (lambda ()
                            (substitute* (find-files "." "\\.el$")
-                             (("\"/bin/([^.].*)\"" _ cmd-name)
+                             (("\"/bin/([^.]\\S*)\"" _ cmd-name)
                               (let ((cmd (which cmd-name)))
                                 (unless cmd
                                   (error
