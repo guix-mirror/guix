@@ -5087,7 +5087,7 @@ to virtual private networks (VPNs) via OpenVPN.")
 (define-public mobile-broadband-provider-info
   (package
     (name "mobile-broadband-provider-info")
-    (version "20151214")
+    (version "20170310")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5096,7 +5096,7 @@ to virtual private networks (VPNs) via OpenVPN.")
                     "mobile-broadband-provider-info-" version ".tar.xz"))
               (sha256
                (base32
-                "1905nab1h8p4hx0m1w0rn4mkg9209x680dcr4l77bngy21pmvr4a"))))
+                "0fxm11x8k9hxjg8l5inaldfmmjnwkay3ibjv899jra03bv4h6kql"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; No tests
