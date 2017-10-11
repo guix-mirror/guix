@@ -780,15 +780,23 @@ accountsservice web site} for more information."
   gnome-desktop-configuration
   (gnome-package gnome-package (default gnome)))
 
+(define (gnome-polkit-settings config)
+  "Return the list of GNOME dependencies that provide polkit actions and
+rules."
+  (let ((gnome (gnome-package config)))
+    (map (lambda (name)
+           ((package-direct-input-selector name) gnome))
+         '("gnome-settings-daemon"
+           "gnome-control-center"
+           "gnome-system-monitor"
+           "gvfs"))))
+
 (define gnome-desktop-service-type
   (service-type
    (name 'gnome-desktop)
    (extensions
     (list (service-extension polkit-service-type
-                             (compose list
-                                      (package-direct-input-selector
-                                       "gnome-settings-daemon")
-                                      gnome-package))
+                             gnome-polkit-settings)
           (service-extension profile-service-type
                              (compose list
                                       gnome-package))))))
