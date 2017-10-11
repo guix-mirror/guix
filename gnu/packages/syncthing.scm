@@ -515,6 +515,32 @@ Metrics library.")
       (home-page "https://github.com/rcrowley/go-metrics")
       (license bsd-2))))
 
+(define-public go-github-com-sasha-s-go-deadlock
+  (let ((commit "341000892f3dd25f440e6231e8533eb3688ed7ec")
+        (revision "0"))
+    (package
+      (name "go-github-com-sasha-s-go-deadlock")
+      (version (git-version "0.1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/sasha-s/go-deadlock")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1bcdyxwm5qpqynxahwaahbqi7ghgdajmg7b4276pdalkxkxkhsv8"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/sasha-s/go-deadlock"))
+      (propagated-inputs
+       `(("go-github-com-petermattis-goid" ,go-github-com-petermattis-goid)))
+      (synopsis "Deadlock detection in go")
+      (description "This package provides tools for detecting deadlocks at
+run-time in Go.")
+      (home-page "https://github.com/sasha-s/go-deadlock")
+      (license asl2.0))))
+
 (define-public go-golang-org-x-sys-unix
   (let ((commit "f3918c30c5c2cb527c0b071a27c35120a6c0719a")
         (revision "0"))
