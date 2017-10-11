@@ -92,3 +92,28 @@ the LZ4 compression algorithm.")
 information, such as how much storage space is available, free, and used.")
     (home-page "https://github.com/calmh/du")
     (license public-domain)))
+
+(define-public go-github-com-calmh-xdr
+  (let ((commit "08e072f9cb164f943a92eb59f90f3abc64ac6e8f")
+        (revision "0"))
+    (package
+      (name "go-github-com-calmh-xdr")
+      (version (git-version "2.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/calmh/xdr")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "072wqdncz3nd4a3zkhvzzx1y3in1lm29wfvl0d8wrnqs5pyqh0mh"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/calmh/xdr"))
+      (synopsis "XDR marshalling and unmarshalling")
+      (description "XDR is an External Data Representation (XDR)
+marshalling and unmarshalling library in Go.  It uses code generation and not
+reflection.")
+      (home-page "https://github.com/calmh/xdr")
+      (license expat))))
