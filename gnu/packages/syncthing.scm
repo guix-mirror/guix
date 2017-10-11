@@ -256,3 +256,30 @@ generation features.  This code generation is used to achieve:
 @end itemize")
       (home-page "https://github.com/gogo/protobuf")
       (license bsd-3))))
+
+(define-public go-github-com-golang-groupcache-lru
+  (let ((commit "72d04f9fcdec7d3821820cc4a6f150eae553639a")
+        (revision "0"))
+    (package
+      (name "go-github-com-golang-groupcache-lru")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/golang/groupcache")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1l3ryh7bq1f2mhr3sd3x1wav99pd27r8l3ydgqh375wn4x7v5qd6"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/golang/groupcache/lru"
+         #:unpack-path "github.com/golang/groupcache"))
+      (synopsis "Groupcache is a caching and cache-filling library")
+      (description "Groupcache is a caching and cache-filling library, intended
+as a replacement for memcached in many cases.  It provides a data loading
+mechanism with caching and de-duplication that works across a set of peer
+processes.")
+      (home-page "https://github.com/golang/groupcache")
+      (license asl2.0))))
