@@ -5365,3 +5365,22 @@ file links.")
 file upload, download, on-screen display, namespace operations (move/copy),
 collection creation and deletion, and locking operations.")
     (license l:gpl2)))
+
+(define-public python-py-ubjson
+  (package
+    (name "python-py-ubjson")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "py-ubjson" version))
+       (sha256
+        (base32
+         "03l9m9w5ip4hw0y69wlys5gzsfb7zcq3a77blj88grgiqhn5vm5n"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/Iotic-Labs/py-ubjson")
+    (synopsis "Universal Binary JSON encoder/decoder")
+    (description
+     "Py-ubjson is a Python module providing an Universal Binary JSON
+encoder/decoder based on the draft-12 specification for UBJSON.")
+    (license l:asl2.0)))
