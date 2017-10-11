@@ -1057,6 +1057,32 @@ multidimensional conditioning system and a consistent interface to map data to
 aesthetic attributes.")
     (license license:gpl2+)))
 
+(define-public r-ggdendro
+  (package
+    (name "r-ggdendro")
+    (version "0.1-20")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "ggdendro" version))
+              (sha256
+               (base32
+                "1zzq1hxd0d1qa5hrzwfkdw6fzscpcafbwbpkrb62dm559y8awp0j"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-mass" ,r-mass)
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/andrie/ggdendro")
+    (synopsis "Create Dendrograms and Tree Diagrams Using ggplot2")
+    (description "This is a set of tools for dendrograms and tree plots using
+ggplot2.  The ggplot2 philosophy is to clearly separate data from the
+presentation.  Unfortunately the plot method for dendrograms plots directly
+to a plot device with out exposing the data.  The ggdendro package resolves
+this by making available functions that extract the dendrogram plot data.
+The package provides implementations for tree, rpart, as well as diana and
+agnes cluster diagrams.")
+    (license license:gpl2+)))
+
 (define-public r-gdtools
   (package
     (name "r-gdtools")
