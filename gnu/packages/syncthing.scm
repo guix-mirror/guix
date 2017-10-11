@@ -569,6 +569,37 @@ database in Go.")
       (home-page "https://github.com/syndtr/goleveldb")
       (license bsd-2))))
 
+(define-public go-github-com-thejerf-suture
+  (let ((commit "0ac47afae95ad5bc5184ed346bc945168e883f5d")
+        (revision "0"))
+    (package
+      (name "go-github-com-thejerf-suture")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/thejerf/suture")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0f860fkaibnnkmh4q6q9yn3r26sraaj8wx9irwm76cmsp48zcxfy"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/thejerf/suture"))
+      (synopsis "Supervisor trees for Go")
+      (description "Suture provides Erlang-ish supervisor trees for Go.
+\"Supervisor trees\" -> \"sutree\" -> \"suture\" -> holds your code together
+when it's trying to die.
+
+It is intended to deal gracefully with the real failure cases that can occur
+with supervision trees (such as burning all your CPU time endlessly restarting
+dead services), while also making no unnecessary demands on the \"service\"
+code, and providing hooks to perform adequate logging with in a production
+environment")
+      (home-page "https://github.com/thejerf/suture")
+      (license expat))))
+
 (define-public go-golang-org-x-sys-unix
   (let ((commit "f3918c30c5c2cb527c0b071a27c35120a6c0719a")
         (revision "0"))
