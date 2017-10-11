@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -39,6 +39,7 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages search)
   #:use-module (gnu packages serialization)
@@ -594,3 +595,39 @@ or millenia for an attacker to try them all.
 data on your platform, so the seed itself will be as random as possible.
 @end enumerate\n")
     (license license:artistic2.0)))
+
+(define-public python-pynacl
+  (package
+    (name "python-pynacl")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyNaCl" version))
+       (modules '((guix build utils)))
+       ;; Remove bundled libsodium
+       (snippet '(delete-file-recursively "src/libsodium"))
+       (sha256
+        (base32
+         "135gz0020fqx8fbr9izpwyq49aww202nkqacq0cw61xz99sjpx9j"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'use-system-sodium
+           (lambda _
+             (setenv "SODIUM_INSTALL" "system")
+             #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-six" ,python-six)
+       ("libsodium" ,libsodium)))
+    (home-page "https://github.com/pyca/pynacl/")
+    (synopsis "Python bindings to libsodium")
+    (description
+     "PyNaCl is a Python binding to libsodium, which is a fork of the
+Networking and Cryptography library.  These libraries have a stated goal
+of improving usability, security and speed.")
+    (license license:asl2.0)))
