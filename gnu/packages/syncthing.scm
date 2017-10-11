@@ -164,3 +164,26 @@ structs in the Go programming language.")
       (description "This packages provides a Go implementation of mmap.")
       (home-page "https://github.com/edsrzf/mmap-go")
       (license bsd-3))))
+
+(define-public go-github-com-gobwas-glob
+  (let ((commit "51eb1ee00b6d931c66d229ceeb7c31b985563420")
+        (revision "0"))
+    (package
+      (name "go-github-com-gobwas-glob")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/gobwas/glob")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "090wzpwsjana1qas8ipwh1pj959gvc4b7vwybzi01f3bmd79jwlp"))))
+      (build-system go-build-system)
+      (arguments
+        `(#:import-path "github.com/gobwas/glob"))
+      (synopsis "Go globbing library")
+      (description "This packages provides a Go implementation of globs.")
+      (home-page "https://github.com/gobwas/glob")
+      (license expat))))
