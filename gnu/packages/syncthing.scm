@@ -188,6 +188,42 @@ structs in the Go programming language.")
       (home-page "https://github.com/gobwas/glob")
       (license expat))))
 
+(define-public go-github-com-gogo-protobuf
+  (let ((commit "efccd33a0c20aa078705571d5ddbfa14c8395a63")
+        (revision "0"))
+    (package
+      (name "go-github-com-gogo-protobuf")
+      (version (git-version "0.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/gogo/protobuf")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "09kfa3aqmhh7p0rc6wd4fw5cjccidsk9vgcy13albv0g8vnbmmgw"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/gogo/protobuf/proto"
+         #:unpack-path "github.com/gogo/protobuf"))
+      (propagated-inputs
+       `(("go-github-com-gogo-protobuf-protoc-gen-gogo"
+          ,go-github-com-gogo-protobuf-protoc-gen-gogo)))
+      (synopsis "Protocol Buffers for Go with Gadgets")
+      (description "Gogoprotobuf is a fork of golang/protobuf with extra code
+generation features.  This code generation is used to achieve:
+@itemize
+@item fast marshalling and unmarshalling
+@item more canonical Go structures
+@item goprotobuf compatibility
+@item less typing by optionally generating extra helper code
+@item peace of mind by optionally generating test and benchmark code
+@item other serialization formats
+@end itemize")
+      (home-page "https://github.com/gogo/protobuf")
+      (license bsd-3))))
+
 (define-public go-github-com-gogo-protobuf-protoc-gen-gogo
   (let ((commit "efccd33a0c20aa078705571d5ddbfa14c8395a63")
         (revision "0"))
