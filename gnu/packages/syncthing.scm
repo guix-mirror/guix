@@ -141,3 +141,26 @@ reflection.")
 structs in the Go programming language.")
       (home-page "https://github.com/d4l3k/messagediff")
       (license expat))))
+
+(define-public go-github-com-edsrzf-mmap-go
+  (let ((commit "0bce6a6887123b67a60366d2c9fe2dfb74289d2e")
+        (revision "0"))
+    (package
+      (name "go-github-com-edsrzf-mmap-go")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/edsrzf/mmap-go")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1am4m2k451bksnbiqj6lxknk4lsgmrhv0q3ajqac818vj0cpfgs9"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/edsrzf/mmap-go"))
+      (synopsis "Go implementation of mmap")
+      (description "This packages provides a Go implementation of mmap.")
+      (home-page "https://github.com/edsrzf/mmap-go")
+      (license bsd-3))))
