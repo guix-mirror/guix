@@ -70,3 +70,25 @@ firewall.")
 the LZ4 compression algorithm.")
       (home-page "https://github.com/bkaradzic/go-lz4")
       (license bsd-2))))
+
+(define-public go-github-com-calmh-du
+  (package
+    (name "go-github-com-calmh-du")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/calmh/du")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qb3a6y3p9nkyn3s66k6zcm16y8n8578qh23ddj14cxf2scrr2n2"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/calmh/du"))
+    (synopsis "Get total and available disk space of a given volume")
+    (description "This is a Go implementation of `du`.  It provides disk usage
+information, such as how much storage space is available, free, and used.")
+    (home-page "https://github.com/calmh/du")
+    (license public-domain)))
