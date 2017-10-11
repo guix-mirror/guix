@@ -1,0 +1,65 @@
+Fix a bug whereby the 'have_easy_codec' would be left undefined
+when passing '-D enable-easy-codec-installation=no'.  Likewise,
+don't rely on GStreamer's plug-in support when it's disabled.
+
+--- totem-3.26.0/meson.build	2017-10-11 22:29:44.506280919 +0200
++++ totem-3.26.0/meson.build	2017-10-11 22:29:50.902252058 +0200
+@@ -203,6 +203,8 @@ if easy_codec_option != 'no'
+   missing_plugins_deps += gst_pbutils_dep
+   config_h.set('ENABLE_MISSING_PLUGIN_INSTALLATION', have_easy_codec,
+                description: 'Whether we can and want to do installation of missing plugins')
++else
++  have_easy_codec = false
+ endif
+ 
+ # python support
+
+--- totem-3.26.0/src/backend/bacon-video-widget.c	2017-10-11 22:40:52.531217356 +0200
++++ totem-3.26.0/src/backend/bacon-video-widget.c	2017-10-11 22:45:44.973847231 +0200
+@@ -341,6 +341,22 @@ get_type_name (GType class_type, int typ
+   return value->value_nick;
+ }
+ 
++#ifndef ENABLE_MISSING_PLUGIN_INSTALLATION
++
++gchar *
++gst_missing_plugin_message_get_installer_detail (GstMessage *message)
++{
++  return NULL;
++}
++
++char *
++gst_missing_plugin_message_get_description (GstMessage *message)
++{
++  return NULL;
++}
++
++#endif
++
+ static gchar **
+ bvw_get_missing_plugins_foo (const GList * missing_plugins, MsgToStrFunc func)
+ {
+@@ -1654,10 +1670,12 @@ bvw_handle_element_message (BaconVideoWi
+       }
+     }
+     goto done;
++#ifdef ENABLE_MISSING_PLUGIN_INSTALLATION
+   } else if (gst_is_missing_plugin_message (msg)) {
+     bvw->priv->missing_plugins =
+       g_list_prepend (bvw->priv->missing_plugins, gst_message_ref (msg));
+     goto done;
++#endif
+   } else if (strcmp (type_name, "not-mounted") == 0) {
+     const GValue *val;
+     GFile *file;
+@@ -6109,7 +6127,9 @@ bacon_video_widget_initable_init (GInita
+   GST_DEBUG ("Initialised %s", version_str);
+   g_free (version_str);
+ 
++#ifdef ENABLE_MISSING_PLUGIN_INSTALLATION
+   gst_pb_utils_init ();
++#endif
+ 
+   /* Instantiate all the fallible plugins */
+   bvw->priv->play = element_make_or_warn ("playbin", "play");
+

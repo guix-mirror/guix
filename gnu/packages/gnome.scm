@@ -3581,7 +3581,7 @@ for application developers.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.24.0")
+    (version "3.26.0")
     (source
      (origin
        (method url-fetch)
@@ -3590,12 +3590,15 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "00cdlll5b0wj5ckl1pc0a3g39a0hlq0gxkcsh1f6p20fjixqzmwv"))))
-    (build-system glib-or-gtk-build-system)
+         "04zfx47mgyd0f4p3pjrxl6iaw0awgwbvilbsr1smw14ph2kbjbz3"))
+       (patches (search-patches "totem-meson-easy-codec.patch"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("desktop-file-utils" ,desktop-file-utils)
        ("gobject-introspection" ,gobject-introspection)
+       ("glib:bin" ,glib "bin")                   ;for 'glib-mkenums'
+       ("gtk:bin" ,gtk+ "bin")                    ;for 'gtk-update-icon-cache'
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("xmllint" ,libxml2)))
@@ -3636,13 +3639,15 @@ for application developers.")
        ("nettle" ,nettle)
        ("vala" ,vala)))
     (arguments
-     `(;; Disable automatic GStreamer plugin installation via PackageKit and
+     `(#:glib-or-gtk? #t
+
+       ;; Disable automatic GStreamer plugin installation via PackageKit and
        ;; all that.
-       #:configure-flags '("--disable-easy-codec-installation"
+       #:configure-flags '("-D" "enable-easy-codec-installation=no"
 
                            ;; Do not build .a files for the plugins, it's
                            ;; completely useless.  This saves 2 MiB.
-                           "--disable-static")
+                           "--default-library" "shared")
 
        #:phases
        (modify-phases %standard-phases
