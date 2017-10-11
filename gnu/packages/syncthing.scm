@@ -46,3 +46,27 @@ protocol for port mapping and discovering the external IP address of a
 firewall.")
       (home-page "https://github.com/AudriusButkevicius/go-nat-pmp")
       (license asl2.0))))
+
+(define-public go-github-com-bkaradzic-go-lz4
+  (let ((commit "7224d8d8f27ef618c0a95f1ae69dbb0488abc33a")
+        (revision "0"))
+    (package
+      (name "go-github-com-bkaradzic-go-lz4")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/bkaradzic/go-lz4")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                  (base32
+                    "10lmya17vdqg2pvqni0p73iahni48s1v11ya9a0hcz4jh5vw4dkb"))))
+      (build-system go-build-system)
+      (arguments
+        `(#:import-path "github.com/bkaradzic/go-lz4"))
+      (synopsis "LZ4 compression algorithm")
+      (description "This package provides @code{go-lz4}, a Go implementation of
+the LZ4 compression algorithm.")
+      (home-page "https://github.com/bkaradzic/go-lz4")
+      (license bsd-2))))
