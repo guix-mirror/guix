@@ -408,3 +408,28 @@ using SIMD (Single instruction, multiple data) instructions for Intel and ARM
 architectures.")
       (home-page "https://github.com/minio/sha256-simd")
       (license asl2.0))))
+
+(define-public go-golang-org-x-sys-unix
+  (let ((commit "f3918c30c5c2cb527c0b071a27c35120a6c0719a")
+        (revision "0"))
+    (package
+      (name "go-golang-org-x-sys-unix")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/sys")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "02967mw0nq7hp39bcf8rdbid4jgz2fn6hd1x03mmavvca03scxbh"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/sys/unix"
+         #:unpack-path "golang.org/x/sys"))
+      (synopsis "Go support for low-level system interaction")
+      (description "This package provides @code{unix}, which offers Go support
+for low-level interaction with the operating system.")
+      (home-page "https://go.googlesource.com/sys")
+      (license bsd-3))))
