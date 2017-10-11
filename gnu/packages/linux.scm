@@ -3051,6 +3051,16 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                (string-append "--with-udevdir=" out "/lib/udev")))
        #:phases
        (modify-phases %standard-phases
+         ,@(if (string=? (%current-system) "armhf-linux")
+               ;; This test fails unpredictably.
+               ;; TODO: skip it for all architectures.
+               `((add-before 'check 'skip-wonky-test
+                  (lambda _
+                    (substitute* "unit/test-gatt.c"
+                      (("tester_init\\(&argc, &argv\\);") "return 77;"))
+                    #t)))
+               `())
+
          (add-after 'install 'post-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out        (assoc-ref outputs "out"))
@@ -3069,12 +3079,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                   (string-append out "/lib/udev/hid2hci --method"))
                  (("/sbin/udevadm")
                   (string-append (assoc-ref inputs "eudev") "/bin/udevadm")))
-               #t))))
-
-       ;; FIXME: Skip one test that segfaults on ARM.
-       ,@(if (string=? (%current-system) "armhf-linux")
-             '(#:make-flags '("XFAIL_TESTS=unit/test-gatt"))
-             '())))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)))
