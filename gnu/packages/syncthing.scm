@@ -383,3 +383,28 @@ finding resources located relative to the executable file.")
 database/sql package.")
       (home-page "https://github.com/lib/pq")
       (license expat))))
+
+(define-public go-github-com-minio-sha256-simd
+  (let ((commit "6124d070eb4e7001c244b6ccc282620a5dce44a0")
+        (revision "0"))
+    (package
+      (name "go-github-com-minio-sha256-simd")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/minio/sha256-simd")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1azrdp7x7vl9ngkxs890blspz0345xhadvssdlb0435hdqa0gkll"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/minio/sha256-simd"))
+      (synopsis "Hardware-accelerated SHA256 in Go using SIMD")
+      (description "This packages provides a pure Go implementation of SHA256
+using SIMD (Single instruction, multiple data) instructions for Intel and ARM
+architectures.")
+      (home-page "https://github.com/minio/sha256-simd")
+      (license asl2.0))))
