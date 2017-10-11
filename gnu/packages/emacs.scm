@@ -4099,6 +4099,50 @@ also is an authoring system with unique support for literate programming and
 reproducible research.")
     (license license:gpl3+)))
 
+(define-public emacs-org-contrib
+  (package
+    (inherit emacs-org)
+    (name "emacs-org-contrib")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://orgmode.org/elpa/org-plus-contrib-"
+                                  (package-version emacs-org) ".tar"))
+              (sha256
+               (base32
+                "1ya4kah8kg13ka3gpsw8hn6y8358843g986p1bgw5w77n9bgbwsl"))))
+    (arguments
+     `(#:modules ((guix build emacs-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils)
+                  (ice-9 ftw)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'delete-org-files
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (org (assoc-ref inputs "emacs-org"))
+                    (contrib-files
+                     (map basename (find-files out)))
+                    (org+contrib-files
+                     (map basename (find-files org)))
+                    (duplicates (lset-intersection
+                                 string=? contrib-files org+contrib-files)))
+               (with-directory-excursion
+                   (string-append
+                    out "/share/emacs/site-lisp/guix.d/org-contrib-"
+                    ,(package-version emacs-org))
+                 (for-each delete-file duplicates))
+               #t))))))
+    (propagated-inputs
+     `(("emacs-org" ,emacs-org)))
+    (synopsis "Contributed packages to Org-mode")
+    (description "Org is an Emacs mode for keeping notes, maintaining TODO
+lists, and project planning with a fast and effective plain-text system.
+
+This package is equivilent to org-plus-contrib, but only includes additional
+files that you would find in @file{contrib/} from the git repository.")))
+
 (define-public emacs-flx
   (package
     (name "emacs-flx")
