@@ -23,7 +23,7 @@
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
@@ -6612,6 +6612,26 @@ of the structure, dynamics, and functions of complex networks.")
 providing a clean and modern domain specific specification language (DSL) in
 Python style, together with a fast and comfortable execution environment.")
     (license license:expat)))
+
+(define-public python-pyqrcode
+  (package
+    (name "python-pyqrcode")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyQRCode" version))
+       (sha256
+        (base32
+         "1m9ln8k9v7dfbh1i81225hx5mdsh8mpf9g7r4wpbfmiyfcs7dgzx"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/mnooner256/pyqrcode")
+    (synopsis "QR code generator")
+    (description
+     "Pyqrcode is a QR code generator written purely in Python with
+SVG, EPS, PNG and terminal output.")
+    (license license:bsd-3)))
 
 (define-public python-seaborn
   (package
