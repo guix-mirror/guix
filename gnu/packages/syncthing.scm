@@ -331,3 +331,28 @@ compression format.")
 address of the default LAN gateway.")
       (home-page "https://github.com/jackpal/gateway")
       (license bsd-3))))
+
+(define-public go-github-com-kardianos-osext
+  (let ((commit "9d302b58e975387d0b4d9be876622c86cefe64be")
+        (revision "0"))
+    (package
+      (name "go-github-com-kardianos-osext")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/kardianos/osext")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0r6f727s16g4f66k8c2z1xh8ga1p53hg9g2v95pmhd1i60fhy47a"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/kardianos/osext"))
+      (synopsis "Find the running executable")
+      (description "Osext provides a method for finding the current executable
+file that is running.  This can be used for upgrading the current executable or
+finding resources located relative to the executable file.")
+      (home-page "https://github.com/kardianos/osext")
+      (license bsd-3))))
