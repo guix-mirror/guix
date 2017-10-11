@@ -361,7 +361,7 @@ when typing parentheses directly or commenting out code line by line.")
 (define-public git-modes
   (package
     (name "git-modes")
-    (version "1.2.4")
+    (version "1.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -370,7 +370,7 @@ when typing parentheses directly or commenting out code line by line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xxrmf0jnyljxvllc22qa0v8lgi4k1ldnayjm5hf68m25jsr378l"))))
+                "18z04wn5ird9l0h6n6x97v0kyzdj73832bj9qakm3fjjl7vcn0pw"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/magit/git-modes")
     (synopsis "Emacs major modes for Git configuration files")
