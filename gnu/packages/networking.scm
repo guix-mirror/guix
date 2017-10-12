@@ -510,12 +510,12 @@ which can be used to encrypt a password with @code{crypt(3)}.")
               ("openssl" ,openssl)
               ("portaudio" ,portaudio)
               ("qtbase" ,qtbase)
-              ("qttools" ,qttools)
               ("sbc" ,sbc)
               ("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)
                      ("pkg-config" ,pkg-config)
-                     ("python" ,python-wrapper)))
+                     ("python" ,python-wrapper)
+                     ("qttools" ,qttools)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-c-ares=" (assoc-ref %build-inputs "c-ares"))
@@ -529,7 +529,6 @@ which can be used to encrypt a password with @code{crypt(3)}.")
              (string-append "--with-sbc=" (assoc-ref %build-inputs "sbc"))
              (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl"))
              (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib")))))
-    (home-page "https://www.wireshark.org/")
     (synopsis "Network traffic analyzer")
     (description "Wireshark is a network protocol analyzer, or @dfn{packet
 sniffer}, that lets you capture and interactively browse the contents of
