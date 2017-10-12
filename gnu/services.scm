@@ -368,6 +368,12 @@ boot."
                                                 #t))))
                     ;; Ignore I/O errors so the system can boot.
                     (fail-safe
+                     ;; Remove stale Shadow lock files as they would lead to
+                     ;; failures of 'useradd' & co.
+                     (delete-file "/etc/group.lock")
+                     (delete-file "/etc/passwd.lock")
+                     (delete-file "/etc/.pwd.lock") ;from 'lckpwdf'
+
                      (delete-file-recursively "/tmp")
                      (delete-file-recursively "/var/run")
                      (mkdir "/tmp")
