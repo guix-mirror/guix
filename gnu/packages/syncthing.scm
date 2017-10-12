@@ -19,6 +19,7 @@
 
 (define-module (gnu packages syncthing)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system trivial)
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix licenses))
@@ -687,6 +688,43 @@ inherent errors.  This @code{qart} component, @code{qr}, provides QR code
 generation.")
       (home-page "https://github.com/vitrun/qart")
       (license bsd-3))))
+
+;; Go searches for library modules by looking in the GOPATH environment
+;; variable.  This variable is a list of paths.  However, Go does not
+;; keep searching on GOPATH if it tries and fails to import a module.
+;; So, we use a union for packages sharing a namespace.
+(define* (go-golang-org-x-crypto-union #:optional
+                                    (packages (list go-golang-org-x-crypto-blowfish
+                                                    go-golang-org-x-crypto-bcrypt
+                                                    go-golang-org-x-crypto-tea
+                                                    go-golang-org-x-crypto-xtea
+                                                    go-golang-org-x-crypto-pbkdf2
+                                                    go-golang-org-x-crypto-twofish
+                                                    go-golang-org-x-crypto-cast5
+                                                    go-golang-org-x-crypto-salsa20)))
+  (package
+    (name "go-golang-org-x-crypto")
+    (version (package-version go-golang-org-x-crypto-bcrypt))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories))))))
+    (inputs (map (lambda (package)
+                   (list (package-name package) package))
+                 packages))
+    (synopsis "Union of the Go x crypto libraries")
+    (description "A union of the Golang cryptographic libraries.  A
+union is required because `go build` assumes that all of the headers and
+libraries are in the same directory.")
+    (home-page (package-home-page go-golang-org-x-crypto-bcrypt))
+    (license (package-license go-golang-org-x-crypto-bcrypt))))
 
 (define-public go-golang-org-x-crypto-bcrypt
   (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
