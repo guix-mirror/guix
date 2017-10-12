@@ -5213,20 +5213,23 @@ draggable titlebars and borders.")
     (license license:x11)))
 
 ;; This package is intended to be used when building GTK+.
+;; Note: It's currently marked as "hidden" to avoid having two non-eq?
+;; packages with the same name and version.
 (define-public xorg-server-1.19.3
-  (package
-    (inherit xorg-server)
-    (name "xorg-server")
-    (version "1.19.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://xorg/individual/xserver/"
-             name "-" version ".tar.bz2"))
-       (sha256
-        (base32
-         "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7"))))))
+  (hidden-package
+   (package
+     (inherit xorg-server)
+     (name "xorg-server")
+     (version "1.19.3")
+     (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "mirror://xorg/individual/xserver/"
+              name "-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7")))))))
 
 (define-public xorg-server-xwayland
   (package
