@@ -626,6 +626,32 @@ environment")
       (home-page "https://github.com/thejerf/suture")
       (license expat))))
 
+(define* (go-github-com-vitrun-qart-union
+           #:optional (packages (list go-github-com-vitrun-qart-coding
+                                      go-github-com-vitrun-qart-gf256
+                                      go-github-com-vitrun-qart-qr)))
+  (package
+    (name "go-github-com-vitrun-qart")
+    (version (package-version go-github-com-vitrun-qart-qr))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories))))))
+    (inputs (map (lambda (package)
+                   (list (package-name package) package))
+                 packages))
+    (synopsis "Union of qart libraries")
+    (description "This is a union of qart libraries.")
+    (home-page (package-home-page go-github-com-vitrun-qart-qr))
+    (license (package-license go-github-com-vitrun-qart-qr))))
+
 (define-public go-github-com-vitrun-qart-coding
   (let ((commit "bf64b92db6b05651d6c25a3dabf2d543b360c0aa")
         (revision "0"))
