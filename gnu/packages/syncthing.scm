@@ -1073,6 +1073,35 @@ Tiny Encryption Algorithm (XTEA) block cipher.")
       (home-page "https://go.googlesource.com/crypto/")
       (license bsd-3))))
 
+(define* (go-golang-org-x-net-union #:optional
+                                 (packages (list go-golang-org-x-net-ipv4
+                                                 go-golang-org-x-net-bpf
+                                                 go-golang-org-x-net-context
+                                                 go-golang-org-x-net-ipv6
+                                                 go-golang-org-x-net-proxy
+                                                 go-golang-org-x-net-internal-iana)))
+  (package
+    (name "go-golang-org-x-net")
+    (version (package-version go-golang-org-x-net-ipv4))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories))))))
+    (inputs (map (lambda (package)
+                   (list (package-name package) package))
+                 packages))
+    (synopsis "Union of the Go net libraries")
+    (description "A union of the Golang net libraries.")
+    (home-page (package-home-page go-golang-org-x-net-ipv4))
+    (license (package-license go-golang-org-x-net-ipv4))))
+
 (define-public go-golang-org-x-net-ipv4
   (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
         (revision "0"))
