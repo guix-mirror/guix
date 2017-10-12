@@ -388,7 +388,7 @@
         (check-home-page pkg)))
     "domain not found")))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "home-page: Connection refused"
   (->bool
    (string-contains
@@ -399,7 +399,7 @@
         (check-home-page pkg)))
     "Connection refused")))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "home-page: 200"
   ""
   (with-warnings
@@ -409,7 +409,7 @@
                   (home-page (%local-url)))))
        (check-home-page pkg)))))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "home-page: 200 but short length"
   (->bool
    (string-contains
@@ -421,7 +421,7 @@
           (check-home-page pkg))))
     "suspiciously small")))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "home-page: 404"
   (->bool
    (string-contains
@@ -510,7 +510,7 @@
          (check-source-file-name pkg)))
      "file name should contain the package name"))))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 200"
   ""
   (with-warnings
@@ -523,7 +523,7 @@
                             (sha256 %null-sha256))))))
        (check-source pkg)))))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "source: 200 but short length"
   (->bool
    (string-contains
@@ -538,7 +538,7 @@
           (check-source pkg))))
     "suspiciously small")))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "source: 404"
   (->bool
    (string-contains

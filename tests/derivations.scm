@@ -222,7 +222,7 @@
       (build-derivations %store (list drv))
       #f)))
 
-(unless (force %http-server-socket)
+(unless (http-server-can-listen?)
   (test-skip 1))
 (test-assert "'download' built-in builder"
   (let ((text (random-text)))
@@ -238,7 +238,7 @@
                          get-string-all)
                        text))))))
 
-(unless (force %http-server-socket)
+(unless (http-server-can-listen?)
   (test-skip 1))
 (test-assert "'download' built-in builder, invalid hash"
   (with-http-server 200 "hello, world!"
@@ -253,7 +253,7 @@
         (build-derivations %store (list drv))
         #f))))
 
-(unless (force %http-server-socket)
+(unless (http-server-can-listen?)
   (test-skip 1))
 (test-assert "'download' built-in builder, not found"
   (with-http-server 404 "not found"
@@ -279,7 +279,7 @@
       (build-derivations %store (list drv))
       #f)))
 
-(unless (force %http-server-socket)
+(unless (http-server-can-listen?)
   (test-skip 1))
 (test-assert "'download' built-in builder, check mode"
   ;; Make sure rebuilding the 'builtin:download' derivation in check mode
