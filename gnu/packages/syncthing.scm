@@ -189,6 +189,31 @@ structs in the Go programming language.")
       (home-page "https://github.com/gobwas/glob")
       (license expat))))
 
+(define* (go-github-com-gogo-protobuf-union
+           #:optional (packages (list go-github-com-gogo-protobuf
+                                      go-github-com-gogo-protobuf-protoc-gen-gogo)))
+  (package
+    (name "go-github-com-gogo-protobuf-union")
+    (version (package-version go-github-com-gogo-protobuf))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories))))))
+    (inputs (map (lambda (package)
+                   (list (package-name package) package))
+                 packages))
+    (synopsis "Union of Go protobuf libraries")
+    (description "This is a union of Go protobuf libraries")
+    (home-page (package-home-page go-github-com-gogo-protobuf))
+    (license (package-license go-github-com-gogo-protobuf))))
+
 (define-public go-github-com-gogo-protobuf
   (let ((commit "efccd33a0c20aa078705571d5ddbfa14c8395a63")
         (revision "0"))
