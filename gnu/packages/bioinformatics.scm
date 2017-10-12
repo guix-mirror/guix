@@ -10085,3 +10085,51 @@ straight away.  Its main features are:
   and CHH context
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public paml
+  (package
+    (name "paml")
+    (version "4.9e")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://abacus.gene.ucl.ac.uk/software/"
+                                  "paml" version ".tgz"))
+              (sha256
+               (base32
+                "13zf6h9fiqghwhch2h06x1zdr6s42plsnqahflp5g7myr3han3s6"))
+              (modules '((guix build utils)))
+              ;; Remove Windows binaries
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." "\\.exe$"))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "src/BFdriver.c"
+               (("/bin/bash") (which "bash")))
+             (chdir "src")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((tools '("baseml" "basemlg" "codeml"
+                            "pamp" "evolver" "yn00" "chi2"))
+                   (bin    (string-append (assoc-ref outputs "out") "/bin"))
+                   (docdir (string-append (assoc-ref outputs "out")
+                                           "/share/doc/paml")))
+               (mkdir-p bin)
+               (for-each (lambda (file) (install-file file bin)) tools)
+               (copy-recursively "../doc" docdir)
+               #t))))))
+    (home-page "http://abacus.gene.ucl.ac.uk/software/paml.html")
+    (synopsis "Phylogentic analysis by maximum likelihood")
+    (description "PAML (for Phylogentic Analysis by Maximum Likelihood)
+contains a few programs for model fitting and phylogenetic tree reconstruction
+using nucleotide or amino-acid sequence data.")
+    ;; GPLv3 only
+    (license license:gpl3)))
