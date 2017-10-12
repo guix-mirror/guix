@@ -1295,6 +1295,43 @@ rolling hash.")
       (home-page "https://github.com/chmduquesne/rollinghash")
       (license expat))))
 
+(define-public go-github-com-audriusbutkevicius-kcp-go
+  (let ((commit "02298ef4d96d48912e016f5fb36dcc0cd93c257f")
+        (revision "0"))
+    (package
+      (name "go-github-com-audriusbutkevicius-kcp-go")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/AudriusButkevicius/kcp-go")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1xanidjz8rhk28ybxnfk55nsd3h0a707dsq7mmxpjmycdacbm0j0"))))
+      (build-system go-build-system)
+      (propagated-inputs
+       `(("go-golang-org-x-net-ipv4" ,go-golang-org-x-net-ipv4)
+         ("go-github-com-templexxx-reedsolomon"
+          ,go-github-com-templexxx-reedsolomon)
+         ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+         ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
+         ("go-github-com-templexxx-xor" ,go-github-com-templexxx-xor)))
+      (arguments
+       '(#:import-path "github.com/AudriusButkevicius/kcp-go"
+         ;; 'TestListenerClose' is known to fail. It seems that the test suite
+         ;; is not being used upstream:
+         ;; https://github.com/AudriusButkevicius/kcp-go/pull/1
+         #:tests? #f))
+      (synopsis "Reliable UDP connections in Go")
+      (description "This package provides @code{kcp-go}, a reliable UDP library
+written in Go.  It offers fast, ordered and error-checked delivery of streams
+over UDP packets.")
+      (home-page "https://github.com/xtaci/kcp-go")
+      (license expat))))
+
 (define-public go-github-com-templexxx-xor
   (let ((commit "42f9c041c330b560afb991153bf183c25444bcdc")
         (revision "0"))
