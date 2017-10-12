@@ -1219,6 +1219,31 @@ functions for normalizing Unicode strings.")
       (home-page "https://go.googlesource.com/text")
       (license bsd-3))))
 
+(define-public go-github-com-audriusbutkevicius-pfilter
+  (let ((commit "09b3cfdd04de89f0196caecb0b335d7149a6593a")
+        (revision "0"))
+    (package
+      (name "go-github-com-audriusbutkevicius-pfilter")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/AudriusButkevicius/pfilter.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "176g8dmi2i94bxpnpgvj3dv5y9hripi45kbrfvy2bk884hwbp1zq"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/AudriusButkevicius/pfilter"))
+      (synopsis "Filter packets into mulitple virtual connections")
+      (description "Pfilter is a Go package for filtering packets into multiple
+virtual connections from a single physical connection.")
+      (home-page "https://github.com/AudriusButkevicius/pfilter")
+      (license expat))))
+
 (define-public go-github-com-petermattis-goid
   (let ((commit "3db12ebb2a599ba4a96bea1c17b61c2f78a40e02")
         (revision "0"))
