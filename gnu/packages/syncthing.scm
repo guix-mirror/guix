@@ -1371,6 +1371,33 @@ error handling primitives in Go.")
       (home-page "https://github.com/pkg/errors")
       (license bsd-2))))
 
+(define-public go-golang-org-x-time-rate
+  (let ((commit "f51c12702a4d776e4c1fa9b0fabab841babae631")
+        (revision "0"))
+    (package
+      (name "go-golang-org-x-time-rate")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/time")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "07wc6g2fvafkr6djsscm0jpbpl4135khhb6kpyx1953hi5d1jvyy"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/time/rate"
+         #:unpack-path "golang.org/x/time"))
+      (propagated-inputs
+       `(("go-golang-org-x-net-context" ,go-golang-org-x-net-context)))
+      (synopsis "Rate limiting in Go")
+      (description "This package provides @{rate}, which implements rate
+limiting in Go.")
+      (home-page "https://godoc.org/golang.org/x/time/rate")
+      (license bsd-3))))
+
 (define-public go-github-com-petermattis-goid
   (let ((commit "3db12ebb2a599ba4a96bea1c17b61c2f78a40e02")
         (revision "0"))
