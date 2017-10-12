@@ -1319,6 +1319,30 @@ rolling hash.")
       (home-page "https://github.com/templexxx/xor")
       (license expat))))
 
+(define-public go-github-com-pkg-errors
+  (let ((commit "ff09b135c25aae272398c51a07235b90a75aa4f0")
+        (revision "0"))
+    (package
+      (name "go-github-com-pkg-errors")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pkg/errors.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0pwl6v3hmc22zp32gkyqykl4kg69xk1mlp0vmhgd1f44difd5fvz"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/pkg/errors"))
+      (synopsis "Go error handling primitives")
+      (description "This packages provides @code{error}, which offers simple
+error handling primitives in Go.")
+      (home-page "https://github.com/pkg/errors")
+      (license bsd-2))))
+
 (define-public go-github-com-petermattis-goid
   (let ((commit "3db12ebb2a599ba4a96bea1c17b61c2f78a40e02")
         (revision "0"))
