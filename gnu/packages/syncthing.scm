@@ -1269,6 +1269,32 @@ and RFC 5389).")
       (home-page "https://github.com/ccding/go-stun")
       (license asl2.0))))
 
+(define-public go-github-com-chmduquesne-rollinghash-adler32
+  (let ((commit "043b8fdecc9816f0011a056f6d92f9a091ab63dd")
+        (revision "0"))
+    (package
+      (name "go-github-com-chmduquesne-rollinghash-adler32")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/chmduquesne/rollinghash.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "0pc87laxgydqv03bdirfv32y9k0bdk2cwjxn28yh42nvay9p6y0k"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/chmduquesne/rollinghash/adler32"
+         #:unpack-path "github.com/chmduquesne/rollinghash"))
+      (synopsis "Adler-32 rolling hash in Go")
+      (description "This package provides a Go implementation of the Adler-32
+rolling hash.")
+      (home-page "https://github.com/chmduquesne/rollinghash")
+      (license expat))))
+
 (define-public go-github-com-petermattis-goid
   (let ((commit "3db12ebb2a599ba4a96bea1c17b61c2f78a40e02")
         (revision "0"))
