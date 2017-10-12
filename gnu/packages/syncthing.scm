@@ -1283,6 +1283,31 @@ for low-level interaction with the operating system.")
       (home-page "https://go.googlesource.com/sys")
       (license bsd-3))))
 
+(define* (go-golang-org-x-text-union #:optional
+                                  (packages (list go-golang-org-x-text-transform
+                                                  go-golang-org-x-text-unicode-norm)))
+  (package
+    (name "go-golang-org-x-text")
+    (version (package-version go-golang-org-x-text-transform))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories))))))
+    (inputs (map (lambda (package)
+                   (list (package-name package) package))
+                 packages))
+    (synopsis "Union of the Go text libraries")
+    (description "A union of the Golang text libraries.")
+    (home-page (package-home-page go-golang-org-x-text-transform))
+    (license (package-license go-golang-org-x-text-transform))))
+
 (define-public go-golang-org-x-text-transform
   (let ((commit "f4b4367115ec2de254587813edaa901bc1c723a8")
         (revision "0"))
