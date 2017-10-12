@@ -725,6 +725,43 @@ password hashing function.")
       (home-page "https://go.googlesource.com/crypto/")
       (license bsd-3))))
 
+(define-public go-golang-org-x-crypto-blowfish
+  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
+        (revision "0"))
+    (package
+      (name "go-golang-org-x-crypto-blowfish")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/crypto")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-crypto-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/crypto/blowfish"
+         #:unpack-path "golang.org/x/crypto"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map (lambda (file)
+                      (make-file-writable file))
+                    (find-files
+                      (string-append (assoc-ref outputs "out")
+                                     "/src/golang.org/x/crypto/ed25519/testdata")
+                      ".*\\.gz$"))
+               #t)))))
+      (synopsis "Blowfish in Go")
+      (description "This package provides a Go implementation of the Blowfish
+symmetric-key block cipher.")
+      (home-page "https://go.googlesource.com/crypto/")
+      (license bsd-3))))
+
 (define-public go-golang-org-x-sys-unix
   (let ((commit "f3918c30c5c2cb527c0b071a27c35120a6c0719a")
         (revision "0"))
