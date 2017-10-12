@@ -1446,3 +1446,27 @@ the current goroutine's ID.")
 interfaces in Go.")
       (home-page "https://github.com/AudriusButkevicius/cli")
       (license expat))))
+
+(define-public go-github-com-kballard-go-shellquote
+  (let ((commit "cd60e84ee657ff3dc51de0b4f55dd299a3e136f2")
+        (revision "0"))
+    (package
+      (name "go-github-com-kballard-go-shellquote")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/kballard/go-shellquote.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1xjpin4jq1zl84dcn96xhjmn9bsfyszf6g9aqyj2dc0xfi6c88y0"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/kballard/go-shellquote"))
+      (synopsis "Shell-style string joins and splits")
+      (description "Shellquote provides utilities for joining/splitting strings
+using sh's word-splitting rules.")
+      (home-page "https://github.com/kballard/go-shellquote")
+      (license expat))))
