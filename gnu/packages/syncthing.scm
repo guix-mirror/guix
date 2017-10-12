@@ -1114,6 +1114,32 @@ IP-level socket options for the Internet Protocol version 6.")
       (home-page "https://go.googlesource.com/net")
       (license bsd-3))))
 
+(define-public go-golang-org-x-net-proxy
+  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
+        (revision "0"))
+    (package
+      (name "go-golang-org-x-net-proxy")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/net")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-net-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/net/proxy"
+         #:unpack-path "golang.org/x/net/"))
+      (synopsis "Go support for network proxies")
+      (description "This packages provides @code{proxy}, which provides support
+for a variety of protocols to proxy network data.")
+      (home-page "https://go.googlesource.com/net")
+      (license bsd-3))))
+
 (define-public go-golang-org-x-sys-unix
   (let ((commit "f3918c30c5c2cb527c0b071a27c35120a6c0719a")
         (revision "0"))
