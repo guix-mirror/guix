@@ -414,8 +414,7 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
                    (close-connection port))))
 
              (case (response-code response)
-               ((301                    ; moved permanently
-                 302                    ; found (redirection)
+               ((302                    ; found (redirection)
                  303                    ; see other
                  307                    ; temporary redirection
                  308)                   ; permanent redirection
@@ -423,6 +422,22 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
                   (if (or (not location) (member location visited))
                       (values 'http-response response)
                       (loop location (cons location visited))))) ;follow the redirect
+               ((301)                   ; moved permanently
+                (let ((location (response-location response)))
+                  ;; Return RESPONSE, unless the final response as we follow
+                  ;; redirects is not 200.
+                  (if location
+                      (let-values (((status response2)
+                                    (loop location (cons location visited))))
+                        (case status
+                          ((http-response)
+                           (values 'http-response
+                                   (if (= 200 (response-code response2))
+                                       response
+                                       response2)))
+                          (else
+                           (values status response2))))
+                      (values 'http-response response)))) ;invalid redirect
                (else
                 (values 'http-response response)))))
          (lambda (key . args)
@@ -474,31 +489,46 @@ warning for PACKAGE mentionning the FIELD."
                 (probe-uri uri #:timeout 3)))     ;wait at most 3 seconds
     (case status
       ((http-response)
-       (if (= 200 (response-code argument))
-           (match (response-content-length argument)
-             ((? number? length)
-              ;; As of July 2016, SourceForge returns 200 (instead of 404)
-              ;; with a small HTML page upon failure.  Attempt to detect such
-              ;; malicious behavior.
-              (or (> length 1000)
+       (cond ((= 200 (response-code argument))
+              (match (response-content-length argument)
+                ((? number? length)
+                 ;; As of July 2016, SourceForge returns 200 (instead of 404)
+                 ;; with a small HTML page upon failure.  Attempt to detect
+                 ;; such malicious behavior.
+                 (or (> length 1000)
+                     (begin
+                       (emit-warning package
+                                     (format #f
+                                             (G_ "URI ~a returned \
+suspiciously small file (~a bytes)")
+                                             (uri->string uri)
+                                             length))
+                       #f)))
+                (_ #t)))
+             ((= 301 (response-code argument))
+              (if (response-location argument)
                   (begin
                     (emit-warning package
-                                  (format #f
-                                          (G_ "URI ~a returned \
-suspiciously small file (~a bytes)")
+                                  (format #f (G_ "permanent redirect from ~a to ~a")
                                           (uri->string uri)
-                                          length))
+                                          (uri->string
+                                           (response-location argument))))
+                    #t)
+                  (begin
+                    (emit-warning package
+                                  (format #f (G_ "invalid permanent redirect \
+from ~a")
+                                          (uri->string uri)))
                     #f)))
-             (_ #t))
-           (begin
-             (emit-warning package
-                           (format #f
-                                   (G_ "URI ~a not reachable: ~a (~s)")
-                                   (uri->string uri)
-                                   (response-code argument)
-                                   (response-reason-phrase argument))
-                           field)
-             #f)))
+             (else
+              (emit-warning package
+                            (format #f
+                                    (G_ "URI ~a not reachable: ~a (~s)")
+                                    (uri->string uri)
+                                    (response-code argument)
+                                    (response-reason-phrase argument))
+                            field)
+              #f)))
       ((ftp-response)
        (match argument
          (('ok) #t)
@@ -534,7 +564,7 @@ suspiciously small file (~a bytes)")
       ((invalid-http-response gnutls-error)
        ;; Probably a misbehaving server; ignore.
        #f)
-      ((unknown-protocol)                             ;nothing we can do
+      ((unknown-protocol)                         ;nothing we can do
        #f)
       (else
        (error "internal linter error" status)))))
