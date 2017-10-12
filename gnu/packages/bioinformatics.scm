@@ -9977,7 +9977,7 @@ browser.")
         (revision "1"))
     (package
       (name "f-seq")
-      (version (string-append "1.1-" revision "." commit))
+      (version (string-append "1.1-" revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
