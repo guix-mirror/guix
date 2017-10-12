@@ -10829,7 +10829,7 @@ introspection of @code{zope.interface} instances in code.")
      ;; and a running postgresql database management service.
      `(#:tests? #f)) ; TODO re-enable after providing a test-db.
     (inputs
-     `(("postgresql" ,postgresql))) ; libpq
+     `(("postgresql" ,postgresql-9.6))) ; libpq
     (home-page "http://initd.org/psycopg/")
     (synopsis "Python PostgreSQL adapter")
     (description
