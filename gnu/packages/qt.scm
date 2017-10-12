@@ -100,7 +100,8 @@ system, and the core design of Django is reused in Grantlee.")
 (define-public qt
   (package
     (name "qt")
-    (version "5.6.2")
+    (version "5.9.2")
+    (outputs '("out" "examples"))
     (source (origin
              (method url-fetch)
              (uri
@@ -112,7 +113,7 @@ system, and the core design of Django is reused in Grantlee.")
                  version ".tar.xz"))
              (sha256
                (base32
-                 "1cw93mrlkqbwndfqyjpsvjzkpzi39px2is040xvk18mvg3y1prl3"))
+                 "1zr0hvhryn2ada53ln7cycymh602cncli86n291bsgzas6j72qbc"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -124,32 +125,52 @@ system, and the core design of Django is reused in Grantlee.")
                 ;; Alternatively, we could use the "-skip qtwebengine"
                 ;; configuration option.
                 (delete-file-recursively "qtwebengine")
-                ;; Remove one of the two bundled harfbuzz copies in addition
-                ;; to passing "-system-harfbuzz".
-                (delete-file-recursively "qtbase/src/3rdparty/harfbuzz-ng")
-                ;; Remove the bundled sqlite copy in addition to
-                ;; passing "-system-sqlite".
-                (delete-file-recursively "qtbase/src/3rdparty/sqlite")))))
+                ;; The following snippets are copied from their mondular-qt counterparts.
+                (for-each
+                  (lambda (dir)
+                    (delete-file-recursively (string-append "qtbase/src/3rdparty/" dir)))
+                  (list "double-conversion" "freetype" "harfbuzz-ng"
+                        "libpng" "libjpeg" "pcre2" "sqlite" "xcb"
+                        "xkbcommon" "zlib"))
+                (for-each
+                  (lambda (dir)
+                    (delete-file-recursively dir))
+                  (list "qtimageformats/src/3rdparty"
+                        "qtmultimedia/examples/multimedia/spectrum/3rdparty"
+                        "qtwayland/examples"
+                        "qtcanvas3d/examples/canvas3d/3rdparty"))
+                ;; Tests depend on this example, which depends on the 3rd party code.
+                (substitute* "qtmultimedia/examples/multimedia/multimedia.pro"
+                  (("spectrum") "#"))))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("dbus" ,dbus)
+       ("bluez" ,bluez)
        ("cups" ,cups)
+       ("dbus" ,dbus)
+       ("double-conversion" ,double-conversion)
        ("expat" ,expat)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glib" ,glib)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
        ("harfbuzz" ,harfbuzz)
        ("icu4c" ,icu4c)
+       ("jasper" ,jasper)
+       ("libinput" ,libinput-minimal)
        ("libjpeg" ,libjpeg)
        ("libmng" ,libmng)
        ("libpci" ,pciutils)
        ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)
        ("libxcursor" ,libxcursor)
+       ("libxext" ,libxext)
        ("libxfixes" ,libxfixes)
        ("libxi" ,libxi)
        ("libxinerama" ,libxinerama)
@@ -165,10 +186,11 @@ system, and the core design of Django is reused in Grantlee.")
        ("openssl" ,openssl)
        ("postgresql" ,postgresql)
        ("pulseaudio" ,pulseaudio)
-       ("pcre" ,pcre)
+       ("pcre2" ,pcre2)
        ("sqlite" ,sqlite)
        ("udev" ,eudev)
        ("unixodbc" ,unixodbc)
+       ("wayland" ,wayland)
        ("xcb-util" ,xcb-util)
        ("xcb-util-image" ,xcb-util-image)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
@@ -185,24 +207,19 @@ system, and the core design of Django is reused in Grantlee.")
        ("ruby" ,ruby)
        ("which" ,(@ (gnu packages base) which))))
     (arguments
-     `(;; FIXME: Disabling parallel building is a quick hack to avoid the
-       ;; failure described in
-       ;; https://lists.gnu.org/archive/html/guix-devel/2016-01/msg00837.html
-       ;; A more structural fix is needed.
-       #:parallel-build? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-bin-sh
            (lambda _
-             (substitute* '("qtbase/config.status"
-                            "qtbase/configure"
+             (substitute* '("qtbase/configure"
                             "qtbase/mkspecs/features/qt_functions.prf"
                             "qtbase/qmake/library/qmakebuiltins.cpp")
                           (("/bin/sh") (which "sh")))
              #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
+             (let ((out      (assoc-ref outputs "out"))
+                   (examples (assoc-ref outputs "examples")))
                (substitute* '("configure" "qtbase/configure")
                  (("/bin/pwd") (which "pwd")))
                (substitute* "qtbase/src/corelib/global/global.pri"
@@ -213,12 +230,12 @@ system, and the core design of Django is reused in Grantlee.")
                        "./configure"
                        "-verbose"
                        "-prefix" out
+                       "-examplesdir" examples ; 89MiB
                        "-opensource"
                        "-confirm-license"
-                       ;; Do not build examples; if desired, these could go
-                       ;; into a separate output, but for the time being, we
+                       ;; Do not build examples; for the time being, we
                        ;; prefer to save the space and build time.
-                       "-nomake" "examples"
+                       "-no-compile-examples"
                        ;; Most "-system-..." are automatic, but some use
                        ;; the bundled copy by default.
                        "-system-sqlite"
@@ -227,6 +244,8 @@ system, and the core design of Django is reused in Grantlee.")
                        "-openssl-linked"
                        ;; explicitly link with dbus instead of dlopening it
                        "-dbus-linked"
+                       ;; don't use the precompiled headers
+                       "-no-pch"
                        ;; drop special machine instructions not supported
                        ;; on all instances of the target
                        ,@(if (string-prefix? "x86_64"
@@ -234,12 +253,6 @@ system, and the core design of Django is reused in Grantlee.")
                                                  (%current-system)))
                              '()
                              '("-no-sse2"))
-                       "-no-sse3"
-                       "-no-ssse3"
-                       "-no-sse4.1"
-                       "-no-sse4.2"
-                       "-no-avx"
-                       "-no-avx2"
                        "-no-mips_dsp"
                        "-no-mips_dspr2"))))))))
     (home-page "https://www.qt.io/")
