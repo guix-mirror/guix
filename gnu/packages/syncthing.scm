@@ -1165,6 +1165,34 @@ for low-level interaction with the operating system.")
       (home-page "https://go.googlesource.com/sys")
       (license bsd-3))))
 
+(define-public go-golang-org-x-text-transform
+  (let ((commit "f4b4367115ec2de254587813edaa901bc1c723a8")
+        (revision "0"))
+    (package
+      (name "go-golang-org-x-text-transform")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/text")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-text-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "1a5m97y7sdxks02p4swg8ffp8bgr95aaf5fhfw511p7h3xg1dm0d"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/text/transform"
+         #:unpack-path "golang.org/x/text"))
+      (synopsis "Go text transformation")
+      (description "This package provides @code{transform}, which provides
+reader and writer wrappers that transform the bytes passing through.  Example
+transformations provided by other packages include normalization and conversion
+between character sets.")
+      (home-page "https://go.googlesource.com/text")
+      (license bsd-3))))
+
 (define-public go-github-com-petermattis-goid
   (let ((commit "3db12ebb2a599ba4a96bea1c17b61c2f78a40e02")
         (revision "0"))
