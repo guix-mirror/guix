@@ -10815,21 +10815,21 @@ introspection of @code{zope.interface} instances in code.")
 (define-public python-psycopg2
   (package
     (name "python-psycopg2")
-    (version "2.6.2")
+    (version "2.7.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psycopg2" version))
        (sha256
         (base32
-         "0p60z2gwfcal30y2w8gprflchp1kcg9qblc5rn782p4wxl90wjbh"))))
+         "0rda1j02ds6s28752fhmpwg761sh6jsxi1gpczqkrd28cki1cywv"))))
     (build-system python-build-system)
     (arguments
      ;; Tests would require a postgresql database "psycopg2_test"
      ;; and a running postgresql database management service.
      `(#:tests? #f)) ; TODO re-enable after providing a test-db.
     (inputs
-     `(("postgresql" ,postgresql-9.6))) ; libpq
+     `(("postgresql" ,postgresql))) ; libpq
     (home-page "http://initd.org/psycopg/")
     (synopsis "Python PostgreSQL adapter")
     (description
