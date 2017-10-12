@@ -3699,7 +3699,7 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
        ;; The tests will only run as root on certain supported CPU models.
        #:tests? #f))
     (supported-systems (list "i686-linux" "x86_64-linux"))
-    (home-page "http://mcelog.org/")
+    (home-page "https://mcelog.org/")
     (synopsis "Machine check monitor for x86 Linux systems")
     (description
      "The mcelog daemon is required by the Linux kernel to log memory, I/O, CPU,
