@@ -138,7 +138,7 @@
                                       (string-append "SHELL=" (which "bash"))
                                       (string-append "--prefix=" out)))
                       (zero? (system* "make" "install"))))))))))
-    (home-page "http://www.x.org")
+    (home-page "https://www.x.org/")
     (synopsis "Source code configuration and build system")
     (description
      "Imake is a deprecated source code configuration and build system which
@@ -167,7 +167,7 @@ autotools system.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("xproto" ,xproto)))
-    (home-page "http://www.x.org")
+    (home-page "https://www.x.org/")
     (synopsis "Symlink directory into tree")
     (description "Create a shadow directory of symbolic links to another
 directory tree.")
@@ -1037,7 +1037,7 @@ of new capabilities and controls for text keyboards.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("xproto" ,xproto)))
-    (home-page "http://xorg.freedesktop.org")
+    (home-page "https://www.x.org/")
     (synopsis "Xorg shared memory fences library")
     (description
      "This library provides an interface to shared-memory fences for
@@ -4454,7 +4454,7 @@ formatted dump file, such as produced by xwd.")
      `(("xproto" ,xproto)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "X color name database")
     (description
      "This package provides the X color name database.")
@@ -5641,7 +5641,7 @@ The XCB util-wm module provides the following libraries:
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("xauth" ,xauth)))
-    (home-page "http://x.org")
+    (home-page "https://www.x.org/")
     (synopsis "Commands to start the X Window server")
     (description
      "The xinit program is used to start the X Window System server and a
@@ -5775,7 +5775,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
        ("libXt" ,libxt)
        ("xproto" ,xproto)
        ("libXaw" ,libxaw)))
-    (home-page "http://invisible-island.net/xterm")
+    (home-page "http://invisible-island.net/xterm/")
     (synopsis "Terminal emulator for the X Window System")
     (description
      "The xterm program is a terminal emulator for the X Window System.  It
