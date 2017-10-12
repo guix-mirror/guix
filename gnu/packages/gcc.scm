@@ -382,17 +382,16 @@ Go.  It also includes runtime support libraries for these languages.")
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
   ;; them in a VPATH build.
   (package (inherit gcc-4.9)
-    (version "5.4.0")
+    (version "5.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
-                                  version "/gcc-" version ".tar.bz2"))
+                                  version "/gcc-" version ".tar.xz"))
               (sha256
                (base32
-                "0fihlcy5hnksdxk0sn6bvgnyq8gfrgs8m794b1jxwd1dxinzg3b0"))
+                "11zd1hgzkli3b2v70qsm2hyqppngd4616qc96lmm9zl2kl9yl32k"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
                                        "gcc-strmov-store-file-names.patch"
-                                       "gcc-asan-powerpc-missing-include.patch"
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
                                        "gcc-5-source-date-epoch-2.patch"

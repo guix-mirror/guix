@@ -625,7 +625,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
-  %D%/packages/patches/gcc-asan-powerpc-missing-include.patch	\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-fix-texi2pod.patch			\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
