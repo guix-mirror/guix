@@ -1774,15 +1774,14 @@ collections of DNA motifs.")
 (define-public clustal-omega
   (package
     (name "clustal-omega")
-    (version "1.2.1")
+    (version "1.2.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://www.clustal.org/omega/clustal-omega-"
-                    version ".tar.gz"))
+              (uri (string-append "http://www.clustal.org/omega/clustal-omega-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "02ibkx0m0iwz8nscg998bh41gg251y56cgh86bvyrii5m8kjgwqf"))))
+                "1vm30mzncwdv881vrcwg11vzvrsmwy4wg80j5i0lcfk6dlld50w6"))))
     (build-system gnu-build-system)
     (inputs
      `(("argtable" ,argtable)))
