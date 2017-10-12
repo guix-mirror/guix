@@ -21,8 +21,129 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system trivial)
   #:use-module (guix packages)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses))
+
+(define-public syncthing
+  (package
+    (name "syncthing")
+    (version "0.14.39")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/syncthing/syncthing"
+                                  "/releases/download/v" version
+                                  "/syncthing-source-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "07mrvd3vq0p4f550dpq73xg1vpa2h7xxz7vq07sjw0whapknkw9f"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/syncthing/syncthing"
+       #:unpack-path "github.com/syncthing"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-bundled-source-code
+           (lambda _
+             ;; Keep the bundled cznic libraries. There are some "internal"
+             ;; cznic libraries that complicate the use of non-bundled copies.
+             (rename-file "src/github.com/syncthing/syncthing/vendor/github.com/cznic"
+                          "cznic")
+             (delete-file-recursively "src/github.com/syncthing/syncthing/vendor")
+             (mkdir-p "src/github.com/syncthing/syncthing/vendor/github.com/")
+             (rename-file "cznic"
+                          "src/github.com/syncthing/syncthing/vendor/github.com/cznic")
+             #t))
+
+         ;; We don't need to install the source code for end-user applications.
+         (delete 'install-source)
+
+         (add-before 'build 'increase-test-timeout
+           (lambda _
+             (substitute* "src/github.com/syncthing/syncthing/build.go"
+               (("60s") "999s"))
+             #t))
+
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "src/github.com/syncthing/syncthing"
+               (zero? (system* "go" "run" "build.go" "-no-upgrade")))))
+
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "src/github.com/syncthing/syncthing"
+               (zero? (system* "go" "run" "build.go" "test")))))
+
+         (replace 'install
+           (lambda _
+             (copy-recursively "src/github.com/syncthing/syncthing/bin/"
+                               (string-append (assoc-ref %outputs "out") "/bin"))
+             #t))
+
+         (add-after 'install 'install-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man/man"))
+                    (src "src/github.com/syncthing/syncthing/man/"))
+               (for-each
+                 (lambda (file)
+                   (install-file file
+                                 (string-append man (string-take-right file 1))))
+                 (find-files src "\\.[1-9]"))
+             #t))))))
+    ;; When updating Syncthing, check 'vendor/manifest' in the source
+    ;; distribution to ensure we are using the correct versions of these
+    ;; dependencies.
+    (inputs
+     `(("go-github-com-audriusbutkevicius-cli"
+        ,go-github-com-audriusbutkevicius-cli)
+       ("go-github-com-audriusbutkevicius-kcp-go"
+        ,go-github-com-audriusbutkevicius-kcp-go)
+       ("go-github-com-audriusbutkevicius-go-nat-pmp"
+        ,go-github-com-audriusbutkevicius-go-nat-pmp)
+       ("go-github-com-audriusbutkevicius-pfilter"
+        ,go-github-com-audriusbutkevicius-pfilter)
+       ("go-github-com-bkaradzic-go-lz4" ,go-github-com-bkaradzic-go-lz4)
+       ("go-github-com-calmh-du" ,go-github-com-calmh-du)
+       ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
+       ("go-github-com-ccding-go-stun"
+        ,go-github-com-ccding-go-stun)
+       ("go-github-com-chmduquesne-rollinghash-adler32"
+        ,go-github-com-chmduquesne-rollinghash-adler32)
+;       ("go-github-com-cznic-ql" ,go-github-com-cznic-ql) ; bundled
+       ; Used by bundled ql
+       ("go-github-com-edsrzf-mmap-go" ,go-github-com-edsrzf-mmap-go)
+       ("go-github-com-gobwas-glob" ,go-github-com-gobwas-glob)
+       ("go-github-com-gogo-protobuf-union"
+        ,(go-github-com-gogo-protobuf-union))
+       ("go-github-com-golang-groupcache-lru"
+        ,go-github-com-golang-groupcache-lru)
+       ("go-github-com-jackpal-gateway" ,go-github-com-jackpal-gateway)
+       ("go-github-com-kardianos-osext" ,go-github-com-kardianos-osext)
+       ("go-github-com-kballard-go-shellquote"
+        ,go-github-com-kballard-go-shellquote)
+       ("go-github-com-lib-pq" ,go-github-com-lib-pq)
+       ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
+       ("go-github-com-oschwald-geoip2-golang"
+        ,go-github-com-oschwald-geoip2-golang)
+       ("go-github-com-rcrowley-go-metrics" ,go-github-com-rcrowley-go-metrics)
+       ("go-github-com-sasha-s-go-deadlock" ,go-github-com-sasha-s-go-deadlock)
+       ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
+       ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
+       ("go-github-com-vitrun-qart" ,(go-github-com-vitrun-qart-union))
+       ("go-github-com-xtaci-smux" ,go-github-com-xtaci-smux)
+       ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
+       ("go-golang-org-x-net-union" ,(go-golang-org-x-net-union))
+       ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
+       ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
+       ("go-github-com-d4l3k-messagediff"
+        ,go-github-com-d4l3k-messagediff)))
+    (synopsis "Decentralized continuous filesystem synchronization")
+    (description "Syncthing is a peer-to-peer file synchronization tool that
+supports a wide variety of computing platforms.  It uses the Block Exchange
+Protocol.")
+    (home-page "https://github.com/syncthing/syncthing")
+    (license mpl2.0)))
 
 (define-public go-github-com-audriusbutkevicius-go-nat-pmp
   (let ((commit "452c97607362b2ab5a7839b8d1704f0396b640ca")
