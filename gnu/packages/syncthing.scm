@@ -489,6 +489,32 @@ higher-level API for doing so.")
       (home-page "https://github.com/stathat/go")
       (license expat))))
 
+(define-public go-github-com-rcrowley-go-metrics
+  (let ((commit "1f30fe9094a513ce4c700b9a54458bbb0c96996c")
+        (revision "0"))
+    (package
+      (name "go-github-com-rcrowley-go-metrics")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/rcrowley/go-metrics")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1hvbiaq4b6dqgjz6jkkxglfh9gf71zin6qsg508sh0r0ixfavrzj"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/rcrowley/go-metrics"))
+      (propagated-inputs
+       `(("go-github-com-stathat-go" ,go-github-com-stathat-go)))
+      (synopsis "Go port of Coda Hale's Metrics library")
+      (description "This package provides a Go implementation of Coda Hale's
+Metrics library.")
+      (home-page "https://github.com/rcrowley/go-metrics")
+      (license bsd-2))))
+
 (define-public go-golang-org-x-sys-unix
   (let ((commit "f3918c30c5c2cb527c0b071a27c35120a6c0719a")
         (revision "0"))
