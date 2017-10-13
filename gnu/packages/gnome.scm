@@ -2015,7 +2015,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.48.3")
+    (version "0.50.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2023,7 +2023,7 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hsqc7238862mqnva5qqdfxnhpwq3ak6zx6kbjj95cs04wcgpad3"))))
+                "1hm88nn1r38fszz770v6dgzgx208ywz4n087n4fhw5kkwpihh5yg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
