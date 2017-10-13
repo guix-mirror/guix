@@ -5800,7 +5800,7 @@ beautifying border effects.")
 (define-public dconf-editor
   (package
     (name "dconf-editor")
-    (version "3.22.3")
+    (version "3.26.1")
     (source
      (origin
        (method url-fetch)
@@ -5809,7 +5809,7 @@ beautifying border effects.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1939yq3fl55c2dqkc6nzp6cbpxq9sli74gdj0rj7c50pwvbngwam"))))
+         "0agay5zbhjbfznlwk7n3gg5cn0c7ih4vnmah6kb6m969li120cs9"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
