@@ -4039,23 +4039,29 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.0")
+    (version "0.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/gnumdk/eolie/"
-                                  "releases/download/"
-                                  (version-major+minor version)
+                                  "releases/download/" version
                                   "/eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "1lb3rd2as12vq24fcf9nmlhggf8vka3kli2i92i8iylwi7nq5n2a"))))
+                "0zw2zqgnpsvk35nrp4kqkh2hb5kchzpvi684xjv7a9hhrlsxkdqd"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:modules ((guix build glib-or-gtk-build-system)
-                  (guix build utils)
-                  (ice-9 match))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "meson" "build"
+                             "--prefix" (assoc-ref outputs "out")))))
+         (replace 'check
+           (lambda _ (zero? (system* "ninja" "-C" "build" "test"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "ninja" "-C" "build" "install"))))
          (add-after 'wrap 'wrap-more
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -4076,7 +4082,11 @@ work and the interface is well tested.")
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("meson" ,meson-for-build)
+       ("ninja" ,ninja)
+       ("python" ,python)
+       ("gtk+" ,gtk+ "bin")))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("glib-networking" ,glib-networking)
