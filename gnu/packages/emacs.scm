@@ -5995,3 +5995,22 @@ an elisp expression.")
     "@code{bash-completion} defines dynamic completion hooks for shell-mode
 and shell-command prompts that are based on bash completion.")
    (license license:gpl2+)))
+
+(define-public emacs-easy-kill
+  (package
+    (name "emacs-easy-kill")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/easy-kill-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "17nw0mglmg877axwg1d0gs03yc0p04lzmd3pl0nsnqbh3303fnqb"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/leoliu/easy-kill")
+    (synopsis "Kill and mark things easily in Emacs")
+    (description
+     "This package provides commands @code{easy-kill} and @code{easy-mark} to
+let users kill or mark things easily.")
+    (license license:gpl3+)))
