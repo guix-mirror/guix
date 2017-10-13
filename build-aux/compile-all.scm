@@ -19,6 +19,7 @@
 
 (use-modules (ice-9 match)
              (ice-9 threads)
+             (srfi srfi-1)
              (guix build compile)
              (guix build utils))
 
@@ -44,6 +45,39 @@
     (or (not (file-exists? go))
         (file-mtime<? go file))))
 
+(define* (parallel-job-count #:optional (flags (getenv "MAKEFLAGS")))
+  "Return the number of parallel jobs as determined by FLAGS, the flags passed
+to 'make'."
+  (match flags
+    (#f (current-processor-count))
+    (flags
+     (let ((initial-flags (string-tokenize flags)))
+       (let loop ((flags initial-flags))
+         (match flags
+           (()
+            ;; Note: GNU make prior to version 4.2 would hide "-j" flags from
+            ;; $MAKEFLAGS.  Thus, check for a "--jobserver" flag here and
+            ;; assume we're using all cores if specified.
+            (if (any (lambda (flag)
+                       (string-prefix? "--jobserver" flag))
+                     initial-flags)
+                (current-processor-count)         ;GNU make < 4.2
+                1))                               ;sequential make
+           (("-j" (= string->number count) _ ...)
+            (if (integer? count)
+                count
+                (current-processor-count)))
+           ((head tail ...)
+            (if (string-prefix? "-j" head)
+                (match (string-drop head 2)
+                  (""
+                   (current-processor-count))
+                  ((= string->number count)
+                   (if (integer? count)
+                       count
+                       (current-processor-count))))
+                (loop tail)))))))))
+
 ;; Install a SIGINT handler to give unwind handlers in 'compile-file' an
 ;; opportunity to run upon SIGINT and to remove temporary output files.
 (sigaction SIGINT
@@ -54,6 +88,7 @@
   ((_ . files)
    (compile-files srcdir (getcwd)
                   (filter file-needs-compilation? files)
+                  #:workers (parallel-job-count)
                   #:host host
                   #:report-load (lambda (file total completed)
                                   (when file
