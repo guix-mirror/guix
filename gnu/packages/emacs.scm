@@ -3408,19 +3408,26 @@ programming language.")
 (define-public emacs-ess
   (package
     (name "emacs-ess")
-    (version "16.04")
+    (version "16.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ess.r-project.org/downloads/ess/ess-"
                                   version ".tgz"))
               (sha256
                (base32
-                "0w7mbbajn377gdmvnd21mpyr368b2ia46gq6cb99y4y5rspf9pcg"))))
+                "04m8lwp3ylh2vl7k2bjjs7mxbm64j4sdckqpvnm9k0qhaqf02pjk"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Stop ESS from trying to bundle an external julia-mode.el.
+                  (substitute* "lisp/Makefile"
+                    (("^\tjulia-mode.elc\\\\\n") "")
+                    (("^all: \\$\\(ELC\\) ess-custom.el julia-mode.el")
+                     "all: $(ELC) ess-custom.el"))))))
     (build-system gnu-build-system)
     (arguments
      (let ((base-directory "/share/emacs/site-lisp/guix.d/ess"))
-       `(#:tests? #f ; There is no test suite.
-         #:make-flags (list (string-append "PREFIX=" %output)
+       `(#:make-flags (list (string-append "PREFIX=" %output)
                             (string-append "ETCDIR=" %output "/"
                                            ,base-directory "/etc")
                             (string-append "LISPDIR=" %output "/"
@@ -3436,7 +3443,10 @@ programming language.")
            ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
            ;; them in HOME, so it needs to be writeable.
            (add-before 'build 'set-HOME
-             (lambda _ (setenv "HOME" "/tmp") #t))))))
+             (lambda _ (setenv "HOME" "/tmp") #t))
+           (replace 'check
+             (lambda _
+               (zero? (system* "make" "test"))))))))
     (inputs
      `(("emacs" ,emacs-minimal)
        ("r-minimal" ,r-minimal)))
