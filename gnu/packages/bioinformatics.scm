@@ -4889,6 +4889,43 @@ subsequent visualization, annotation and storage of results.")
     ;; LGPLv2.1+
     (license (list license:gpl2 license:lgpl2.1+))))
 
+(define-public plink-ng
+  (package (inherit plink)
+    (name "plink-ng")
+    (version "1.90b4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/chrchang/plink-ng/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09ixrds009aczjswxr2alcb774mksq5g0v78dgjjn1h4dky0kf9a"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;no "check" target
+       #:make-flags (list "BLASFLAGS=-llapack -lopenblas"
+                          "CFLAGS=-Wall -O2 -DDYNAMIC_ZLIB=1"
+                          "ZLIB=-lz"
+                          "-f" "Makefile.std")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "1.9") #t))
+         (delete 'configure) ; no "configure" script
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((bin (string-append (assoc-ref outputs "out")
+                                              "/bin/")))
+                      (install-file "plink" bin)
+                      #t))))))
+    (inputs
+     `(("zlib" ,zlib)
+       ("lapack" ,lapack)
+       ("openblas" ,openblas)))
+    (home-page "https://www.cog-genomics.org/plink/")
+    (license license:gpl3+)))
+
 (define-public smithlab-cpp
   (let ((revision "1")
         (commit "728a097bec88c6f4b8528b685932049e660eff2e"))
