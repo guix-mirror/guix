@@ -146,7 +146,7 @@
        ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
        ("libdrm" ,libdrm)
        ("libepoxy" ,libepoxy)
-       ("libjpeg" ,libjpeg-8)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libusb" ,libusb)                         ;USB pass-through support
        ("mesa" ,mesa)
