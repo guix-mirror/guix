@@ -398,11 +398,11 @@ It has been modified to remove all non-free binary blobs.")
                           (origin
                             (method url-fetch)
                             (uri "\
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=4a01092a5fa819397484fe2b50e9518356858156")
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/patch/?id=f7ec367c8ea7021517c9c04b0022c225d2d0785a")
                             (file-name "linux-libre-4.4-CVE-2017-1000251.patch")
                             (sha256
                              (base32
-                              "0zmkw9zvzpwy2ihiyfrw6mrf8qzv77cm23lxadr20qvzqlc1xzb3"))))))
+                              "1glnjvs3xkvana2wfdv47dxi7jz2s4dz3v0b8ryglf2vbflm388w"))))))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
