@@ -24,7 +24,7 @@
   #:use-module (system base target)
   #:use-module (system base compile)
   #:use-module (system base message)
-  #:use-module (guix discovery)
+  #:use-module (guix modules)
   #:use-module (guix build utils)
   #:export (%default-optimizations
             %lightweight-optimizations

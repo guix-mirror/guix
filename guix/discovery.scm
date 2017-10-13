@@ -18,15 +18,14 @@
 
 (define-module (guix discovery)
   #:use-module (guix ui)
+  #:use-module (guix modules)
   #:use-module (guix combinators)
   #:use-module (guix build syscalls)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 ftw)
-  #:export (file-name->module-name
-
-            scheme-modules
+  #:export (scheme-modules
             fold-modules
             all-modules
             fold-module-public-variables))
@@ -89,13 +88,6 @@ DIRECTORY is not accessible."
                       (warning (G_ "cannot access `~a': ~a~%")
                                directory (strerror errno)))
                     '())))))
-
-(define file-name->module-name
-  (let ((not-slash (char-set-complement (char-set #\/))))
-    (lambda (file)
-      "Return the module name (a list of symbols) corresponding to FILE."
-      (map string->symbol
-           (string-tokenize (string-drop-right file 4) not-slash)))))
 
 (define* (scheme-modules directory #:optional sub-directory)
   "Return the list of Scheme modules available under DIRECTORY.
