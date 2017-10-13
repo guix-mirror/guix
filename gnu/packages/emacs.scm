@@ -1245,6 +1245,56 @@ written in the Go programming language.")
 Maps directly inside Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-graphviz-dot-mode
+  (let ((commit "fdaabbcc95d9156e3dadc84f81a4750c5b692580")
+        (revision "1"))
+    (package
+      (name "emacs-graphviz-dot-mode")
+      (version (string-append "0.3.10-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ppareit/graphviz-dot-mode.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1s1qh5r0xp6hs0rl5yz5mkmjhpg04bh449c7vgjbb1pjsl1dl714"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'make-info
+             (lambda* (#:key inputs #:allow-other-keys)
+               (with-directory-excursion "texinfo"
+                 (substitute* "Makefile"
+                   (("\\/usr\\/bin\\/gzip")
+                    (string-append (assoc-ref inputs "gzip") "/bin/gzip")))
+                 (zero?
+                  (system* "make"
+                           "clean"
+                           "info"
+                           (string-append "TEXINFODIR="
+                                          (assoc-ref inputs "texinfo")
+                                          "/bin"))))))
+           (add-after 'install 'install-info
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out  (assoc-ref outputs "out"))
+                      (info (string-append out "/share/info")))
+                 (install-file "texinfo/graphviz-dot-mode.info.gz" info)
+                 #t))))))
+      (native-inputs
+       `(("texinfo" ,texinfo)
+         ("gzip" ,gzip)))
+      (home-page "http://ppareit.github.com/graphviz-dot-mode")
+      (synopsis "Major mode for editing Graphviz Dot files")
+      (description
+       "This Emacs packages helps you to create @file{.dot} or @file{.gv}
+files using the dot syntax, and use Graphviz to convert these files to
+diagrams.")
+      (license license:gpl2+))))
+
 (define-public emacs-mmm-mode
   (package
     (name "emacs-mmm-mode")
