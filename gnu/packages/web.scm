@@ -5875,3 +5875,29 @@ infrastructure")))
 container capable of serving static and dynamic content either from a standalone
 or embedded instantiation.  This package provides the core jetty servlet
 container.")))
+
+(define-public java-eclipse-jetty-servlet-9.2
+  (package
+    (inherit java-eclipse-jetty-servlet)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (arguments
+     `(#:jar-name "eclipse-jetty-servlet.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; doesn't work
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-servlet")
+             #t)))))
+    (inputs
+     `(("util" ,java-eclipse-jetty-util-9.2)
+       ("jmx" ,java-eclipse-jetty-jmx-9.2)
+       ("io" ,java-eclipse-jetty-io-9.2)
+       ("http" ,java-eclipse-jetty-http-9.2)
+       ("security" ,java-eclipse-jetty-security-9.2)
+       ("http-test" ,java-eclipse-jetty-http-test-classes-9.2)
+       ("server" ,java-eclipse-jetty-server-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))))
