@@ -8619,7 +8619,7 @@ simulation, statistical modeling, machine learning and much more.")
 (define-public python-chardet
   (package
     (name "python-chardet")
-    (version "2.3.0")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
@@ -8629,7 +8629,11 @@ simulation, statistical modeling, machine learning and much more.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ak87ikcw34fivcgiz2xvi938dmclh078az65l9x3rmgljrkhgp5"))))
+         "1bpalpia6r5x1kknbk11p1fzph56fmmnp405ds8icksd3knr5aw4"))))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (build-system python-build-system)
     (home-page "https://github.com/chardet/chardet")
     (synopsis "Universal encoding detector for Python 2 and 3")
