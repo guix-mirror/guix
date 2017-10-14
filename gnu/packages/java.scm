@@ -6089,3 +6089,34 @@ the subsequent value resolution at any given level.")
 software engineering people who are interested in Aspect-Oriented Programming
 (AOP) and Java.")
     (license license:public-domain)))
+
+(define-public java-javax-inject
+  (package
+    (name "java-javax-inject")
+    (version "tck-1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/javax-inject/javax-inject/"
+                                  "archive/javax.inject-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ydrlvh2r7vr1g7lhjwy3w2dggpj9h6pix1lakkkgdywb365n6g0"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-javax-inject.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f)); no tests
+    (home-page "http://github.com/javax-inject/javax-inject")
+    (synopsis "JSR-330: Dependency Injection for Java")
+    (description "This package specifies a means for obtaining objects in such
+a way as to maximize reusability, testability and maintainability compared to
+traditional approaches such as constructors, factories, and service locators
+(e.g., JNDI).  This process, known as dependency injection, is beneficial to
+most nontrivial applications.
+
+Many types depend on other types.  For example, a @var{Stopwatch} might depend
+on a @var{TimeSource}.  The types on which a type depends are known as its
+dependencies.  The process of finding an instance of a dependency to use at run
+time is known as resolving the dependency.  If no such instance can be found,
+the dependency is said to be unsatisfied, and the application is broken.")
+    (license license:asl2.0)))
