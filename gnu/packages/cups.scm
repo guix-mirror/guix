@@ -61,7 +61,7 @@
     (source(origin
               (method url-fetch)
               (uri
-               (string-append "http://openprinting.org/download/cups-filters/"
+               (string-append "https://openprinting.org/download/cups-filters/"
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
