@@ -6017,6 +6017,29 @@ running a customisable handler command (@code{ignore} by default). ")
 a @url{http://json.org/, JSON} file.")
     (license license:gpl3+)))
 
+(define-public emacs-json-mode
+  (package
+    (name "emacs-json-mode")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/joshwnj/json-mode/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06h45p4cn767pk9sqi2zb1c65wy5gyyijqxzpglp80zwxhvajdz5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-json-reformat" ,emacs-json-reformat)
+       ("emacs-json-snatcher" ,emacs-json-snatcher)))
+    (home-page "https://github.com/joshwnj/json-mode")
+    (synopsis "Major mode for editing JSON files")
+    (description "@code{json-mode} extends the builtin js-mode syntax
+highlighting.")
+    (license license:gpl3+)))
+
 (define-public emacs-restclient
   (let ((commit "07a3888bb36d0e29608142ebe743b4362b800f40")
         (revision "1"))                 ;Guix package revision,
