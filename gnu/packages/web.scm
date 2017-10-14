@@ -5708,3 +5708,73 @@ or embedded instantiation.  This package provides the JMX management.")))
     (inputs
      `(("util" ,java-eclipse-jetty-util-9.2)
        ,@(package-inputs java-eclipse-jetty-util-9.2)))))
+
+(define java-eclipse-jetty-http-test-classes
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-http-test-classes")
+    (arguments
+     `(#:jar-name "eclipse-jetty-http.jar"
+       #:source-dir "src/test"
+       #:tests? #f
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-http"))))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)
+       ("http" ,java-eclipse-jetty-http)
+       ("io" ,java-eclipse-jetty-io)
+       ("util" ,java-eclipse-jetty-util)))))
+
+(define-public java-eclipse-jetty-server
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-server")
+    (arguments
+     `(#:jar-name "eclipse-jetty-server.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; requires a mockito version we don't have
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-server")
+             #t))
+         (add-before 'build 'fix-source
+           (lambda _
+             ;; Explicit casts to prevent build failures
+             (substitute* "src/main/java/org/eclipse/jetty/server/Request.java"
+               (("append\\(LazyList")
+                "append((CharSequence)LazyList"))
+             (substitute*
+               "src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java"
+               (((string-append
+                   "Class<\\? extends EventListener> clazz = _classLoader==null"
+                   "\\?Loader.loadClass\\(ContextHandler.class,className\\):"
+                   "_classLoader.loadClass\\(className\\);"))
+                (string-append "Class<? extends EventListener> clazz = "
+                               "(Class<? extends EventListener>) "
+                               "(_classLoader==null?Loader.loadClass("
+                               "ContextHandler.class,className):"
+                               "_classLoader.loadClass(className));")))
+             #t)))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)
+       ("http" ,java-eclipse-jetty-http)
+       ("io" ,java-eclipse-jetty-io)
+       ("jmx" ,java-eclipse-jetty-jmx)
+       ("util" ,java-eclipse-jetty-util)))
+    (native-inputs
+     `(("test-classes" ,java-eclipse-jetty-http-test-classes)
+       ,@(package-native-inputs java-eclipse-jetty-util)))
+    (synopsis "Core jetty server artifact")
+    (description "The Jetty Web Server provides an HTTP server and Servlet
+container capable of serving static and dynamic content either from a standalone
+or embedded instantiation.  This package provides the core jetty server
+artifact.")))
