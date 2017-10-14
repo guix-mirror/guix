@@ -153,9 +153,11 @@ buffered data is lost."
                   (close-port in)
                   (dump-port input out))
                 (lambda ()
+                  (close-port input)
                   (false-if-exception (close out))
                   (primitive-_exit 0))))
              (child
+              (close-port input)
               (close-port out)
               (loop in (cons child pids)))))))))
 

@@ -956,19 +956,22 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
                                      #:abbreviation nar-uri-abbreviation)))
                      (progress-report-port reporter raw)))
                   ((input pids)
+                   ;; NOTE: This 'progress' port of current process will be
+                   ;; closed here, while the child process doing the
+                   ;; reporting will close it upon exit.
                    (decompressed-port (and=> (narinfo-compression narinfo)
                                              string->symbol)
                                       progress)))
       ;; Unpack the Nar at INPUT into DESTINATION.
       (restore-file input destination)
       (close-port input)
-      (close-port progress)
+
+      ;; Wait for the reporter to finish.
+      (every (compose zero? cdr waitpid) pids)
 
       ;; Skip a line after what 'progress-reporter/file' printed, and another
       ;; one to visually separate substitutions.
-      (display "\n\n" (current-error-port))
-
-      (every (compose zero? cdr waitpid) pids))))
+      (display "\n\n" (current-error-port)))))
 
 
 ;;;
