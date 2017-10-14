@@ -2362,6 +2362,30 @@ front-ends.  Company comes with many back-ends, e.g. @code{company-elisp}.
 These are distributed in separate files and can be used individually.")
     (license license:gpl3+)))
 
+(define-public emacs-company-quickhelp
+  (package
+    (name "emacs-company-quickhelp")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/expez/company-quickhelp/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xrn2z1dgk5gmkmp2jkn9g83ckk39lqp5pyyv8rl7f6gqvib3qh0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-pos-tip" ,emacs-pos-tip)
+       ("emacs-company" ,emacs-company)))
+    (home-page "https://github.com/expez/company-quickhelp")
+    (synopsis "Popup documentation for completion candidates")
+    (description "@code{company-quickhelp} shows documentation for the
+completion candidate when using the Company text completion framework.")
+    (license license:gpl3+)))
+
 (define-public emacs-multiple-cursors
   (package
     (name "emacs-multiple-cursors")
