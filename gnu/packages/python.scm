@@ -16670,7 +16670,7 @@ their files and supports any packaging format (including wheels).")
      `(;; The tests depend on unittest2, and our version is a bit too old.
        #:tests? #f))
     (native-inputs
-     `(("python-pbr" ,python-pbr)))
+     `(("python-pbr" ,python-pbr-minimal)))
     (home-page
       "https://github.com/testing-cabal/linecache2")
     (synopsis "Backports of the linecache module")
@@ -16699,7 +16699,7 @@ lines are read from a single file.")
      `(;; python-traceback2 and python-unittest2 depend on one another.
        #:tests? #f))
     (native-inputs
-     `(("python-pbr" ,python-pbr)))
+     `(("python-pbr" ,python-pbr-minimal)))
     (propagated-inputs
       `(("python-linecache2" ,python-linecache2)))
     (home-page
