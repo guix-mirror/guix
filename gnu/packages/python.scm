@@ -1169,14 +1169,14 @@ password storage.")
 (define-public python-six
   (package
     (name "python-six")
-    (version "1.10.0")
+    (version "1.11.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "six" version))
       (sha256
        (base32
-        "0snmb8xffb3vsma0z67i0h0w2g2dy0p3gsgh9gi4i0kgc5l8spqh"))))
+        "1scqzwc51c875z23phj48gircqjgnn3af8zy2izjwmnlxrxsgs3h"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
