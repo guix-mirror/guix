@@ -54,6 +54,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux) ;alsa
+  #:use-module (gnu packages web)
   #:use-module (gnu packages wget)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
@@ -6119,4 +6120,34 @@ on a @var{TimeSource}.  The types on which a type depends are known as its
 dependencies.  The process of finding an instance of a dependency to use at run
 time is known as resolving the dependency.  If no such instance can be found,
 the dependency is said to be unsatisfied, and the application is broken.")
+    (license license:asl2.0)))
+
+(define-public java-guice
+  (package
+    (name "java-guice")
+    (version "4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/guice/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dwmqjzlavb144ywqqglj3h68hqszkff8ai0a42hyb5il0qh4rbp"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-guice.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f; FIXME: tests are not in a java sub directory
+       #:source-dir "core/src"))
+    (inputs
+     `(("guava" ,java-guava)
+       ("java-cglib" ,java-cglib)
+       ("java-aopalliance" ,java-aopalliance)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-asm" ,java-asm)))
+    (home-page "https://github.com/google/guice")
+    (synopsis "Lightweight dependency injection framework")
+    (description "Guice is a lightweight dependency injection framework fo
+Java 6 and above.")
     (license license:asl2.0)))
