@@ -6151,3 +6151,17 @@ the dependency is said to be unsatisfied, and the application is broken.")
     (description "Guice is a lightweight dependency injection framework fo
 Java 6 and above.")
     (license license:asl2.0)))
+
+(define-public java-guice-servlet
+  (package
+    (inherit java-guice)
+    (name "java-guice-servlet")
+    (arguments
+     `(#:jar-name "guice-servlet.jar"
+       #:source-dir "extensions/servlet/src/"
+       #:jdk ,icedtea-8
+       #:tests? #f)); FIXME: not in a java subdir
+    (inputs
+     `(("guice" ,java-guice)
+       ("servlet" ,java-tomcat)
+       ,@(package-inputs java-guice)))))
