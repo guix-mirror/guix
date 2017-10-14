@@ -5436,3 +5436,54 @@ WebSocket")
 Servlet, JavaServer Pages, Java Expression Language and Java WebSocket
 technologies.")
     (license l:asl2.0)))
+
+(define-public java-eclipse-jetty-test-helper
+  (package
+    (name "java-eclipse-jetty-test-helper")
+    (version "4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/eclipse/jetty.toolchain/"
+                                  "archive/jetty-test-helper-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jd6r9wc26fa11si4rn2gvy8ml8q4zw1nr6v04mjp8wvwpgvzwx5"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "eclipse-jetty-test-helper.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-test-helper")))
+         (add-before 'build 'fix-paths
+           (lambda _
+             ;; TODO:
+             ;; This file assumes that the build directory is named "target"
+             ;; but it is not the case with our ant-build-system. Once we have
+             ;; maven though, we will have to rebuild this package because this
+             ;; assumption is correct with maven-build-system.
+             (substitute*
+               "src/main/java/org/eclipse/jetty/toolchain/test/MavenTestingUtils.java"
+               (("\"target\"") "\"build\"")
+               (("\"tests\"") "\"test-classes\""))
+             ;; Tests assume we are building with maven, so that the build
+             ;; directory is named "target", and not "build".
+             (with-directory-excursion "src/test/java/org/eclipse/jetty/toolchain/test"
+               (substitute* '("FSTest.java" "OSTest.java" "TestingDirTest.java"
+                              "MavenTestingUtilsTest.java")
+                 (("target/tests") "build/test-classes")
+                 (("\"target") "\"build")))
+             #t)))))
+    (inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-all)))
+    (home-page "https://www.eclipse.org/jetty/")
+    (synopsis "Helper classes for jetty tests")
+    (description "This packages contains helper classes for testing the Jetty
+Web Server.")
+    ;; This program is licensed under both epl and asl.
+    (license (list l:epl1.0 l:asl2.0))))
