@@ -3106,18 +3106,6 @@ for Python.")
         (base32
          "1zzrkywhziqffrzks14kzixz7nd4yh2vc0fb04a68vfd2ai03anx"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; These files cannot be built with Python < 3.6.  See
-         ;; https://github.com/pallets/jinja/issues/655
-         ;; FIXME: Remove this when the "python" package is upgraded.
-         (add-after 'unpack 'delete-incompatible-files
-           (lambda _
-             (for-each delete-file
-                       '("jinja2/asyncsupport.py"
-                         "jinja2/asyncfilters.py"))
-             #t)))))
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (home-page "http://jinja.pocoo.org/")
