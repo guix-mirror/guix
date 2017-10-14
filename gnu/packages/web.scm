@@ -5595,3 +5595,29 @@ or embedded instantiation.  This package provides utility classes.")
                  (("testdir.getFile\\(name\\)")
                   "testdir.getPathFile(name).toFile()")))
              #t)))))))
+
+(define-public java-eclipse-jetty-io
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-io")
+    (arguments
+     `(#:jar-name "eclipse-jetty-io.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-exclude (list "**/Abstract*.java"
+                            ;; Abstract class
+                            "**/EndPointTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-io")
+             #t)))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)
+       ("util" ,java-eclipse-jetty-util)))
+    (synopsis "Jetty :: IO Utility")
+    (description "The Jetty Web Server provides an HTTP server and Servlet
+container capable of serving static and dynamic content either from a standalone
+or embedded instantiation.  This package provides IO-related utility classes.")))
