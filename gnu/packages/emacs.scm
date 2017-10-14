@@ -1216,6 +1216,51 @@ Using emacs-direnv means that programs started from Emacs will use the
 environment set through Direnv.")
     (license license:gpl3+)))
 
+(define-public emacs-ggtags
+  (package
+    (name "emacs-ggtags")
+    (version "0.8.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://elpa.gnu.org/packages/ggtags-"
+                           version ".el"))
+       (sha256
+        (base32
+         "0ny3llk021g6r0s75xdm4hzpbxv393ddm2r6f2xdk8kqnq4gnirp"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/leoliu/ggtags")
+    (synopsis "Frontend to the GNU Global source code tagging system")
+    (description "@code{ggtags} provides a frontend to the GNU Global source
+code tagging system.
+
+Features:
+
+@itemize
+@item Build on @code{compile.el} for asynchronicity and its large feature-set.
+@item Automatically update Global's tag files when needed with tuning for
+large source trees.
+@item Intuitive navigation among multiple matches with mode-line display of
+current match, total matches and exit status.
+@item Read tag with completion.
+@item Show definition at point.
+@item Jump to #include files.
+@item Support search history and saving a search to register/bookmark.
+@item Query replace.
+@item Manage Global's environment variables on a per-project basis.
+@item Highlight (definition) tag at point.
+@item Abbreviated display of file names.
+@item Support all Global search backends: @code{grep}, @code{idutils}, etc.
+@item Support exuberant ctags @url{http://ctags.sourceforge.net/} and
+@code{pygments} backend.
+@item Support all Global's output formats: @code{grep}, @code{ctags-x},
+@code{cscope} etc.
+@item Support projects on remote hosts (e.g. via @code{tramp}).
+@item Support eldoc.
+@item Search @code{GTAGSLIBPATH} for references and symbols.
+@end itemize\n")
+    (license license:gpl3+)))
+
 (define-public emacs-go-mode
   (package
     (name "emacs-go-mode")
