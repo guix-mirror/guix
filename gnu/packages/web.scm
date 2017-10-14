@@ -5675,3 +5675,27 @@ or embedded instantiation.  This package provides HTTP-related utility classes."
      `(("util" ,java-eclipse-jetty-util-9.2)
        ("io" ,java-eclipse-jetty-io-9.2)
        ,@(package-inputs java-eclipse-jetty-util-9.2)))))
+
+(define-public java-eclipse-jetty-jmx
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-jmx")
+    (arguments
+     `(#:jar-name "eclipse-jetty-jmx.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; FIXME: requires com.openpojo.validation
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-jmx")
+             #t)))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)
+       ("util" ,java-eclipse-jetty-util)))
+    (synopsis "Jetty :: JMX Management")
+    (description "The Jetty Web Server provides an HTTP server and Servlet
+container capable of serving static and dynamic content either from a standalone
+or embedded instantiation.  This package provides the JMX management.")))
