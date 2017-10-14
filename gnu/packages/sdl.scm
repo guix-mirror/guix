@@ -403,7 +403,7 @@ directory.")
        ("xorg-server" ,xorg-server)
        ("libjpeg" ,libjpeg)))
     (inputs
-     `(("guile" ,guile-2.0)
+     `(("guile" ,guile-2.2)
        ("sdl-union" ,(sdl-union))))
     (arguments
      '(#:configure-flags
@@ -446,6 +446,16 @@ directory.")
              (system (format #f "~a/bin/Xvfb :1 &"
                              (assoc-ref inputs "xorg-server")))
              (setenv "DISPLAY" ":1")
+             #t))
+         (add-before 'check 'skip-cursor-test
+           (lambda _
+             ;; XXX: This test sometimes enters an endless loop, and sometimes
+             ;; crashes with:
+             ;;   guile: xcb_io.c:147: append_pending_request: Assertion `!xcb_xlib_unknown_seq_number' failed.
+             ;; Skip it.
+             (substitute* "test/cursor.scm"
+               (("\\(SDL:init .*" all)
+                (string-append "(exit 77)  ;" all "\n")))
              #t)))))
     (synopsis "Guile interface for SDL (Simple DirectMedia Layer)")
     (description "Guile-SDL is a set of bindings to the Simple DirectMedia

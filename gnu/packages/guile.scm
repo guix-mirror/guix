@@ -1374,7 +1374,7 @@ users and in some situations.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("guile" ,guile-2.0)
+     `(("guile" ,guile-2.2)
        ("guile-sdl" ,guile-sdl)
        ("guile-opengl" ,guile-opengl)))
     (inputs
