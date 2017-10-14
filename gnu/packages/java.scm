@@ -6196,3 +6196,38 @@ Java 6 and above.")
 interface for writing assertions.  Its main goal is to improve test code
 readability and make maintenance of tests easier.")
     (license license:asl2.0)))
+
+(define-public java-jboss-javassist
+  (package
+    (name "java-jboss-javassist")
+    (version "3.21.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jboss-javassist/javassist/"
+                                  "archive/rel_"
+                                  (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
+                                  "_ga.tar.gz"))
+              (sha256
+               (base32
+                "10lpcr3sbf7y6fq6fc2h2ik7rqrivwcy4747bg0kxhwszil3cfmf"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jboss-javassist.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main"
+       #:tests? #f; FIXME: requires junit-awtui and junit-swingui from junit3
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'remove-binary
+           (lambda _
+             (delete-file "javassist.jar")
+             #t)))))
+    (native-inputs
+     `(("junit" ,java-junit)))
+    (home-page "https://github.com/jboss-javassist/javassist")
+    (synopsis "Java bytecode engineering toolkit")
+    (description "Javassist (JAVA programming ASSISTant) makes Java bytecode
+manipulation simple.  It is a class library for editing bytecodes in Java; it
+enables Java programs to define a new class at runtime and to modify a class
+file when the JVM loads it.")
+    (license (list license:gpl2 license:cddl1.0)))); either gpl2 only or cddl.
