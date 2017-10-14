@@ -6059,3 +6059,33 @@ is expressed as the number of significant digits in the value recording, and
 provides control over value quantization behavior across the value range and
 the subsequent value resolution at any given level.")
     (license license:public-domain)))
+
+(define-public java-aopalliance
+  (package
+    (name "java-aopalliance")
+    (version "1.0")
+    (source (origin
+              (method git-fetch)
+              ;; Note: this git repository is not official, but contains the
+              ;; source code that is in the CVS repository.  Downloading the
+              ;; tarball from sourceforge is undeterministic, and the cvs download
+              ;; fails.
+              (uri (git-reference
+                     (url "https://github.com/hoverruan/aopalliance")
+                     (commit "0d7757ae204e5876f69431421fe9bc2a4f01e8a0")))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "0rsg2b0v3hxlq2yk1i3m2gw3xwq689j3cwx9wbxvqfpdcjbca0qr"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-aopalliance.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f; no tests
+       #:source-dir "aopalliance/src/main"))
+    (home-page "http://aopalliance.sourceforge.net")
+    (synopsis "Aspect-Oriented Programming")
+    (description "The AOP Alliance project is a joint project between several
+software engineering people who are interested in Aspect-Oriented Programming
+(AOP) and Java.")
+    (license license:public-domain)))
