@@ -10150,9 +10150,9 @@ seamlessly into your existing Python unit testing work flow.")
   (let ((hypothesis (package-with-python2
                      (strip-python2-variant python-hypothesis))))
     (package (inherit hypothesis)
-      (native-inputs
+      (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
-         ,@(package-native-inputs hypothesis))))))
+         ,@(package-propagated-inputs hypothesis))))))
 
 (define-public python-pytest-subtesthack
   (package
