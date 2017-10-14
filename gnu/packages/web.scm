@@ -5665,3 +5665,13 @@ or embedded instantiation.  This package provides IO-related utility classes."))
     (description "The Jetty Web Server provides an HTTP server and Servlet
 container capable of serving static and dynamic content either from a standalone
 or embedded instantiation.  This package provides HTTP-related utility classes.")))
+
+(define-public java-eclipse-jetty-http-9.2
+  (package
+    (inherit java-eclipse-jetty-http)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (inputs
+     `(("util" ,java-eclipse-jetty-util-9.2)
+       ("io" ,java-eclipse-jetty-io-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))))
