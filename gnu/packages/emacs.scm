@@ -5667,6 +5667,26 @@ pair of minor modes which suppress all mouse events by intercepting them and
 running a customisable handler command (@code{ignore} by default). ")
     (license license:gpl3+)))
 
+(define-public emacs-json-snatcher
+  (package
+    (name "emacs-json-snatcher")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Sterlingg/json-snatcher/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nfiwsifpdiz0lbrqa77nl0crnfrv5h85ans9b0g5rggnmyshcfb"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/sterlingg/json-snatcher")
+    (synopsis "Grabs the path to JSON values in a JSON file")
+    (description "@code{emacs-json-snatcher} grabs the path to JSON values in
+a @url{http://json.org/, JSON} file.")
+    (license license:gpl3+)))
+
 (define-public emacs-restclient
   (let ((commit "07a3888bb36d0e29608142ebe743b4362b800f40")
         (revision "1"))                 ;Guix package revision,
