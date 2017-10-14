@@ -409,7 +409,12 @@ directory.")
      '(#:configure-flags
        (list (string-append "--with-sdl-prefix="
                             (assoc-ref %build-inputs "sdl-union")))
+       #:modules ((ice-9 popen)
+                  (guix build utils)
+                  (guix build gnu-build-system))
+
        #:parallel-build? #f ; parallel build fails
+
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-env-and-patch
@@ -418,9 +423,16 @@ directory.")
              ;; SDL_image needs to dlopen libjpeg in the test suite.
              (setenv "LD_LIBRARY_PATH"
                      (string-append (assoc-ref inputs "libjpeg") "/lib"))
-             ;; Change the site directory /site/2.0 like Guile expects.
+
+             ;; Change the site directory /site/X.Y like Guile expects.
              (substitute* "build-aux/guile-baux/re-prefixed-site-dirs"
-               (("\"/site\"") "\"/site/2.0\""))
+               (("\"/site\"")
+                (let ((effective
+                       (read
+                        (open-pipe* OPEN_READ
+                                    "guile" "-c"
+                                    "(write (effective-version))"))))
+                  (string-append "\"/site/" effective "\""))))
 
              ;; Skip tests that rely on sound support, which is unavailable in
              ;; the build environment.
