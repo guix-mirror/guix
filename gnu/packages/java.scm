@@ -6165,3 +6165,34 @@ Java 6 and above.")
      `(("guice" ,java-guice)
        ("servlet" ,java-tomcat)
        ,@(package-inputs java-guice)))))
+
+(define-public java-assertj
+  (package
+    (name "java-assertj")
+    (version "3.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/joel-costigliola/"
+                                  "assertj-core/archive/"
+                                  "assertj-core-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kf124fxskf548rklkg86294w2x6ajqrff94rrhyqns31danqkfz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-assertj.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main/java"
+       #:tests? #f)); depends on tng-junit which depends on assertj
+    (inputs
+     `(("cglib" ,java-cglib)
+       ("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (native-inputs
+     `(("mockito" ,java-mockito-1)))
+    (home-page "https://joel-costigliola.github.io/assertj/index.html")
+    (synopsis "Fluent assertions for java")
+    (description "AssertJ core is a Java library that provides a fluent
+interface for writing assertions.  Its main goal is to improve test code
+readability and make maintenance of tests easier.")
+    (license license:asl2.0)))
