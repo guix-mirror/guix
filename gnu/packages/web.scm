@@ -5831,3 +5831,17 @@ artifact.")))
 container capable of serving static and dynamic content either from a standalone
 or embedded instantiation.  This package provides the core jetty security
 infrastructure")))
+
+(define-public java-eclipse-jetty-security-9.2
+  (package
+    (inherit java-eclipse-jetty-security)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (inputs
+     `(("util" ,java-eclipse-jetty-util-9.2)
+       ("http" ,java-eclipse-jetty-http-9.2)
+       ("server" ,java-eclipse-jetty-server-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))
+    (native-inputs
+     `(("io" ,java-eclipse-jetty-io-9.2)
+       ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
