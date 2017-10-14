@@ -5730,6 +5730,15 @@ or embedded instantiation.  This package provides the JMX management.")))
        ("io" ,java-eclipse-jetty-io)
        ("util" ,java-eclipse-jetty-util)))))
 
+(define java-eclipse-jetty-http-test-classes-9.2
+  (package
+    (inherit java-eclipse-jetty-http-test-classes)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (inputs
+     `(("http" ,java-eclipse-jetty-http-9.2)
+       ,@(package-inputs java-eclipse-jetty-http-9.2)))))
+
 (define-public java-eclipse-jetty-server
   (package
     (inherit java-eclipse-jetty-util)
@@ -5778,3 +5787,18 @@ or embedded instantiation.  This package provides the JMX management.")))
 container capable of serving static and dynamic content either from a standalone
 or embedded instantiation.  This package provides the core jetty server
 artifact.")))
+
+(define-public java-eclipse-jetty-server-9.2
+  (package
+    (inherit java-eclipse-jetty-server)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (inputs
+     `(("util" ,java-eclipse-jetty-util-9.2)
+       ("jmx" ,java-eclipse-jetty-jmx-9.2)
+       ("io" ,java-eclipse-jetty-io-9.2)
+       ("http" ,java-eclipse-jetty-http-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))
+    (native-inputs
+     `(("test-classes" ,java-eclipse-jetty-http-test-classes-9.2)
+       ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
