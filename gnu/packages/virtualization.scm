@@ -86,7 +86,7 @@
      '(;; Running tests in parallel can occasionally lead to failures, like:
        ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
        #:parallel-tests? #f
-       #:configure-flags '("--enable-usb-redir")
+       #:configure-flags '("--enable-usb-redir" "--enable-opengl")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -144,6 +144,8 @@
        ("libaio" ,libaio)
        ("libattr" ,attr)
        ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
+       ("libdrm" ,libdrm)
+       ("libepoxy" ,libepoxy)
        ("libjpeg" ,libjpeg-8)
        ("libpng" ,libpng)
        ("libusb" ,libusb)                         ;USB pass-through support
@@ -198,7 +200,7 @@ server and embedded PowerPC, and S390 guests.")
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (inputs (fold alist-delete (package-inputs qemu)
                   '("libusb" "mesa" "sdl" "spice" "virglrenderer"
-                    "usbredir")))))
+                    "usbredir" "libdrm" "libepoxy")))))
 
 (define-public libosinfo
   (package
