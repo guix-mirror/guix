@@ -5709,7 +5709,7 @@ files.")
 (define-public baobab
   (package
     (name "baobab")
-    (version "3.24.0")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5718,7 +5718,7 @@ files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0gzwzn8p0agidjq3wnkxcsny6jhqph3yqscqjqd7blgkz5nyk02r"))))
+                "0zkqxyqyxd6j270jf5hbcrb3yh4k31ddh40v4cjhgngm8mcsnnbs"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
