@@ -554,7 +554,8 @@ virtualization library.")
          (add-after 'install 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (inputs
-     `(("gtk+" ,gtk+)
+     `(("dconf" ,dconf)
+       ("gtk+" ,gtk+)
        ("gtk-vnc" ,gtk-vnc)
        ("libvirt" ,libvirt)
        ("libvirt-glib" ,libvirt-glib)
