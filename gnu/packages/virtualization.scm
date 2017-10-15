@@ -509,9 +509,12 @@ virtualization library.")
        ;; Some of the tests seem to require network access to install virtual
        ;; machines.
        #:tests? #f
+       #:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%python-build-system-modules)
        #:modules ((ice-9 match)
                   (srfi srfi-26)
                   (guix build python-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
                   (guix build utils))
        #:phases
        (modify-phases %standard-phases
@@ -545,7 +548,11 @@ virtualization library.")
                              `("GI_TYPELIB_PATH" ":" prefix
                                ,(filter identity paths))))
                          bin-files))
-             #t)))))
+             #t))
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (inputs
      `(("gtk+" ,gtk+)
        ("gtk-vnc" ,gtk-vnc)
