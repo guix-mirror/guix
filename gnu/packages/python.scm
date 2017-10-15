@@ -5137,13 +5137,13 @@ a front-end for C compilers or analysis tools.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.10.0")
+    (version "1.11.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "1mffyilq4qycm8gs4wkgb18rnqil8a9blqq77chdlshzxc8jkc5k"))))
+       (base32 "19h0wwz9cww74gw8cyq0izj8zkhjyzjw2d3ks1c3f1y4q28xv1xb"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
@@ -5198,7 +5198,7 @@ a front-end for C compilers or analysis tools.")
                  (copy-recursively "build/html" html))
                (copy-file "LICENSE" (string-append doc "/LICENSE"))
                #t))))))
-    (home-page "http://cffi.readthedocs.org")
+    (home-page "https://cffi.readthedocs.org")
     (synopsis "Foreign function interface for Python")
     (description
      "Foreign Function Interface for Python calling C code.")
