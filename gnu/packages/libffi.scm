@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +24,10 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public libffi
   (let ((post-install-phase
@@ -66,3 +71,75 @@ conversions for values passed between the two languages.")
     ;; See <https://github.com/atgreen/libffi/blob/master/LICENSE>.
     (license expat))))
 
+(define-public python-cffi
+  (package
+    (name "python-cffi")
+    (version "1.11.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "cffi" version))
+      (sha256
+       (base32 "19h0wwz9cww74gw8cyq0izj8zkhjyzjw2d3ks1c3f1y4q28xv1xb"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    (inputs
+     `(("libffi" ,libffi)))
+    (propagated-inputs ; required at run-time
+     `(("python-pycparser" ,python-pycparser)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)
+       ("python-pytest" ,python-pytest)))
+    (arguments
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (getenv "PYTHONPATH")
+                      ":" (getcwd) "/build/"
+                      (car (scandir "build" (cut string-prefix? "lib." <>)))))
+
+             ;; XXX The "normal" approach of setting CC and friends does
+             ;; not work here.  Is this the correct way of doing things?
+             (substitute* "testing/embedding/test_basic.py"
+               (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
+                (string-append "c = distutils.ccompiler.new_compiler();"
+                               "c.set_executables(compiler='gcc',"
+                               "compiler_so='gcc',linker_exe='gcc',"
+                               "linker_so='gcc -shared')")))
+             (substitute* "testing/cffi0/test_ownlib.py"
+               (("'cc testownlib") "'gcc testownlib"))
+             (zero? (system* "py.test" "-v" "c/" "testing/"))))
+         (add-before 'check 'disable-failing-test
+           ;; This is assumed to be a libffi issue:
+           ;; https://bitbucket.org/cffi/cffi/issues/312/tests-failed-with-armv8
+           (lambda _
+             (substitute* "testing/cffi0/test_ownlib.py"
+               (("ret.left") "ownlib.left"))
+             #t))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (html (string-append doc "/html")))
+               (with-directory-excursion "doc"
+                 (system* "make" "html")
+                 (mkdir-p html)
+                 (copy-recursively "build/html" html))
+               (copy-file "LICENSE" (string-append doc "/LICENSE"))
+               #t))))))
+    (home-page "https://cffi.readthedocs.org")
+    (synopsis "Foreign function interface for Python")
+    (description
+     "Foreign Function Interface for Python calling C code.")
+    (license expat)))
+
+(define-public python2-cffi
+  (package-with-python2 python-cffi))
