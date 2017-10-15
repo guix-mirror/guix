@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,7 +86,7 @@
      '(;; Running tests in parallel can occasionally lead to failures, like:
        ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
        #:parallel-tests? #f
-
+       #:configure-flags '("--enable-usb-redir")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -152,6 +153,7 @@
        ("pixman" ,pixman)
        ("sdl" ,sdl)
        ("spice" ,spice)
+       ("usbredir" ,usbredir)
        ("util-linux" ,util-linux)
        ;; ("vde2" ,vde2)
        ("virglrenderer" ,virglrenderer)
@@ -188,14 +190,15 @@ server and embedded PowerPC, and S390 guests.")
     (name "qemu-minimal")
     (synopsis "Machine emulator and virtualizer (without GUI)")
     (arguments
-     `(#:configure-flags
-       ;; Restrict to the targets supported by Guix.
-       '("--target-list=i386-softmmu,x86_64-softmmu,mips64el-softmmu,arm-softmmu,aarch64-softmmu")
-       ,@(package-arguments qemu)))
+     (substitute-keyword-arguments (package-arguments qemu)
+       ((#:configure-flags _ '(list))
+        ;; Restrict to the targets supported by Guix.
+        ''("--target-list=i386-softmmu,x86_64-softmmu,mips64el-softmmu,arm-softmmu,aarch64-softmmu"))))
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (inputs (fold alist-delete (package-inputs qemu)
-                  '("libusb" "mesa" "sdl" "spice" "virglrenderer")))))
+                  '("libusb" "mesa" "sdl" "spice" "virglrenderer"
+                    "usbredir")))))
 
 (define-public libosinfo
   (package
