@@ -544,7 +544,8 @@ virtualization library.")
        ("python2-requests" ,python2-requests)
        ("python2-ipaddr" ,python2-ipaddr)
        ("python2-pygobject" ,python2-pygobject)
-       ("python2-libxml2" ,python2-libxml2)))
+       ("python2-libxml2" ,python2-libxml2)
+       ("spice-gtk" ,spice-gtk)))
     ;; virt-manager searches for qemu-img or kvm-img in the PATH.
     (propagated-inputs
      `(("qemu" ,qemu)))
