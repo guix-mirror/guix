@@ -515,6 +515,13 @@ virtualization library.")
              (substitute* "virtcli/cliconfig.py"
                (("/usr") (assoc-ref outputs "out")))
              #t))
+         (add-after 'unpack 'fix-default-uri
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; xen is not available for now - so only patch qemu
+             (substitute* "virtManager/connect.py"
+               (("/usr(/bin/qemu-system)" _ suffix)
+                (string-append (assoc-ref inputs "qemu") suffix)))
+             #t))
          (add-before 'wrap 'wrap-with-GI_TYPELIB_PATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((bin       (string-append (assoc-ref outputs "out") "/bin"))
