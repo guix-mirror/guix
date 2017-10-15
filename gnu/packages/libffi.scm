@@ -1,7 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Ricardo Wurmus <ricardo.wurmus@mdc-berlin.de>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -26,8 +28,10 @@
   #:use-module (guix download)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages ruby)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system ruby))
 
 (define-public libffi
   (let ((post-install-phase
@@ -143,3 +147,31 @@ conversions for values passed between the two languages.")
 
 (define-public python2-cffi
   (package-with-python2 python-cffi))
+
+(define-public ruby-ffi
+  (package
+    (name "ruby-ffi")
+    (version "1.9.18")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "ffi" version))
+              (sha256
+               (base32
+                "034f52xf7zcqgbvwbl20jwdyjwznvqnwpbaps9nk18v9lgb1dpx0"))))
+    (build-system ruby-build-system)
+    ;; FIXME: Before running tests the build system attempts to build libffi
+    ;; from sources.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+    (inputs
+     `(("libffi" ,libffi)))
+    (synopsis "Ruby foreign function interface library")
+    (description "Ruby-FFI is a Ruby extension for programmatically loading
+dynamic libraries, binding functions within them, and calling those functions
+from Ruby code.  Moreover, a Ruby-FFI extension works without changes on Ruby
+and JRuby.")
+    (home-page "http://wiki.github.com/ffi/ffi")
+    (license bsd-3)))
