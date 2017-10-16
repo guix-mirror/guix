@@ -47,6 +47,7 @@ MODULES =					\
   guix/hash.scm					\
   guix/pk-crypto.scm				\
   guix/pki.scm					\
+  guix/progress.scm				\
   guix/combinators.scm				\
   guix/memoization.scm				\
   guix/utils.scm				\

@@ -33,13 +33,12 @@
   #:use-module (guix pki)
   #:use-module ((guix build utils) #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
-                #:select (current-terminal-columns
-                          progress-reporter/file
-                          uri-abbreviation nar-uri-abbreviation
+                #:select (uri-abbreviation nar-uri-abbreviation
                           (open-connection-for-uri
                            . guix:open-connection-for-uri)
                           close-connection
                           store-path-abbreviation byte-count->string))
+  #:use-module (guix progress)
   #:use-module ((guix build syscalls)
                 #:select (set-thread-name))
   #:use-module (ice-9 rdelim)
