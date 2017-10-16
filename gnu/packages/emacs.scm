@@ -4082,14 +4082,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20170917")
+    (version "20171016")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0qyis5ph3h99zn9kx7sgraddz41c1cf6yjkwi4im6ikwxk9x8cgc"))))
+                "1196kv83p953nd9c5gxkn8ndw2kmm2kfw34dldap6m89khqflz5a"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4109,7 +4109,7 @@ reproducible research.")
                                   (package-version emacs-org) ".tar"))
               (sha256
                (base32
-                "1ya4kah8kg13ka3gpsw8hn6y8358843g986p1bgw5w77n9bgbwsl"))))
+                "0xy2xrndlhs4kyvh6mmv24dnh3fn5p63d2gaimnrypf1p8znwzh4"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
