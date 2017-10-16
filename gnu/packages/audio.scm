@@ -580,7 +580,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0f67vyy3r29hn26qkkcwnizrnzzy8p7gmg3say5q3wjhxns3b5yl"))))
+                "0xqpqws4jsv7fyawcjzwaw544qbfh29xq164kdf30a9v1n3yklp4"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

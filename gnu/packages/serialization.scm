@@ -248,7 +248,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
                     "yaml-cpp-" version ".tar.gz"))
               (sha256
                (base32
-                "1vk6pjh0f5k6jwk2sszb9z5169whmiha9ainbdpa1arxlkq7v3b6"))))
+                "1ck7jk0wjfigrf4cgcjqsir4yp1s6vamhhxhpsgfvs46pgm5pk6y"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))

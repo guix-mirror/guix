@@ -244,7 +244,7 @@ exception-handling library.")
                            "/archive/v" version ".tar.gz"))
        (sha256
         (base32
-         "1ab354bmwwryxr4zgxchfkm6h4z38mjgif8yn89x640rsrgw5ipj"))
+         "1p0c91cc7zg3c00wjaibnxb0a0xm14mkg0h65pzpw93m0d6nc8wd"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments

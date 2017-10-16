@@ -363,7 +363,7 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1fdk9yhwvl1w1z71ykzcvgh4nsf8scxcbclz5anh98zpplmhmisa"))
+                "1b3figbhp5l83vd37vq6j2narrq4yl9pfw6mw0px0dzb1hz3jqka"))
               (patches (search-patches "libgit2-0.25.1-mtime-0.patch"))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))

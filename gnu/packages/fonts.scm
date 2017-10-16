@@ -1027,7 +1027,7 @@ monospace, slab-serif fonts.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "183n0qv3q8w6n27libarq1fhc4mqv2d3sasbfmbn7x9r5pw9c6ga"))
+                "018i3za9r6kf6svci33z09lc5pr5yz4164m8gzzwjzzqcrng0p5j"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system font-build-system)
     (home-page "http://google.github.io/material-design-icons")
