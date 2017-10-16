@@ -5007,6 +5007,17 @@ denoting the target file.  Here's an example:
 This yields an @code{etc} directory containing these two files.
 @end deffn
 
+@deffn {Scheme Procedure} directory-union @var{name} @var{things}
+Return a directory that is the union of @var{things}, where @var{things} is a list of
+file-like objects denoting directories.  For example:
+
+@example
+(directory-union "guile+emacs" (list guile emacs))
+@end example
+
+yields a directory that is the union of the @code{guile} and @code{emacs} packages.
+@end deffn
+
 @deffn {Scheme Procedure} file-append @var{obj} @var{suffix} @dots{}
 Return a file-like object that expands to the concatenation of @var{obj}
 and @var{suffix}, where @var{obj} is a lowerable object and each

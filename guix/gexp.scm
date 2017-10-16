@@ -79,6 +79,7 @@
             text-file*
             mixed-text-file
             file-union
+            directory-union
             imported-files
             imported-modules
             compiled-modules
@@ -1202,6 +1203,25 @@ This yields an 'etc' directory containing these two files."
                                 (symlink (ungexp source)
                                          (ungexp target))))))
                           files))))))
+
+(define (directory-union name things)
+  "Return a directory that is the union of THINGS, where THINGS is a list of
+file-like objects denoting directories.  For example:
+
+  (directory-union \"guile+emacs\" (list guile emacs))
+
+yields a directory that is the union of the 'guile' and 'emacs' packages."
+  (match things
+    ((one)
+     ;; Only one thing; return it.
+     one)
+    (_
+     (computed-file name
+                    (with-imported-modules '((guix build union))
+                      (gexp (begin
+                              (use-modules (guix build union))
+                              (union-build (ungexp output)
+                                           '(ungexp things)))))))))
 
 
 ;;;
