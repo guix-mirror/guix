@@ -6034,14 +6034,14 @@ It supports dired buffers and opens them in tree mode at destination.")
 (define-public emacs-tiny
   (package
     (name "emacs-tiny")
-    (version "0.1.1")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://elpa.gnu.org/packages/tiny-" version ".tar"))
        (sha256
         (base32
-         "1nhg8375qdn457wj0xmfaj72s87xbabk2w1nl6q7rjvwxv08yyn7"))))
+         "1cr73a8gba549ja55x0c2s554f3zywf69zbnd7v82jz5q1k9wd2v"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abo-abo/tiny")
     (synopsis "Quickly generate linear ranges in Emacs")
