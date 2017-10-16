@@ -3247,14 +3247,14 @@ The purpose of this library is to wrap all the quirks and hassle of
 (define-public emacs-queue
   (package
     (name "emacs-queue")
-    (version "0.1.1")
+    (version "0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/queue-"
                                   version ".el"))
               (sha256
                (base32
-                "0jw24fxqnf9qcaf2nh09cnds1kqfk7hal35dw83x1ari95say391"))))
+                "0cx2848sqnnkkr4zisvqadzxngjyhmb36mh0q3if7q19yjjhmrkb"))))
     (build-system emacs-build-system)
     (home-page "http://www.dr-qubit.org/tags/computing-code-emacs.html")
     (synopsis "Queue data structure for Emacs")
