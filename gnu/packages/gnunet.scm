@@ -66,14 +66,14 @@
 (define-public libextractor
   (package
    (name "libextractor")
-   (version "1.5")
+   (version "1.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libextractor/libextractor-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0lrmjiqr57rdalj68p0y3q94935fwpj881yvq8pwzl2n2ddk1h70"))))
+              "17gnpgspdhfgcr27j8sn9105vb4lw22yqdrhic62l79q5v5avm16"))))
    (build-system gnu-build-system)
    ;; WARNING: Checks require /dev/shm to be in the build chroot, especially
    ;; not to be a symbolic link to /run/shm.
