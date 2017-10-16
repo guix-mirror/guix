@@ -4990,6 +4990,23 @@ as in:
 This is the declarative counterpart of @code{text-file*}.
 @end deffn
 
+@deffn {Scheme Procedure} file-union @var{name} @var{files}
+Return a @code{<computed-file>} that builds a directory containing all of @var{files}.
+Each item in @var{files} must be a two-element list where the first element is the
+file name to use in the new directory, and the second element is a gexp
+denoting the target file.  Here's an example:
+
+@example
+(file-union "etc"
+            `(("hosts" ,(plain-file "hosts"
+                                    "127.0.0.1 localhost"))
+              ("bashrc" ,(plain-file "bashrc"
+                                     "alias ls='ls --color'"))))
+@end example
+
+This yields an @code{etc} directory containing these two files.
+@end deffn
+
 @deffn {Scheme Procedure} file-append @var{obj} @var{suffix} @dots{}
 Return a file-like object that expands to the concatenation of @var{obj}
 and @var{suffix}, where @var{obj} is a lowerable object and each
