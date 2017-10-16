@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -27,9 +27,11 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 ftw)
   #:use-module (guix build utils)
-  #:use-module (guix build syscalls)
+  #:use-module ((guix build syscalls)
+                #:hide (file-system-type))
   #:use-module (gnu build linux-modules)
   #:use-module (gnu build file-systems)
+  #:use-module (gnu system file-systems)
   #:export (mount-essential-file-systems
             linux-command-line
             find-long-option
@@ -349,19 +351,17 @@ supports kernel command-line options '--load', '--root', and '--repl'.
 Mount the root file system, specified by the '--root' command-line argument,
 if any.
 
-MOUNTS must be a list suitable for 'mount-file-system'.
+MOUNTS must be a list of <file-system> objects.
 
 When VOLATILE-ROOT? is true, the root file system is writable but any changes
 to it are lost."
-  (define root-mount-point?
-    (match-lambda
-     ((device _ "/" _ ...) #t)
-     (_ #f)))
+  (define (root-mount-point? fs)
+    (string=? (file-system-mount-point fs) "/"))
 
   (define root-fs-type
-    (or (any (match-lambda
-              ((device _ "/" type _ ...) type)
-              (_ #f))
+    (or (any (lambda (fs)
+               (and (root-mount-point? fs)
+                    (file-system-type fs)))
              mounts)
         "ext4"))
 

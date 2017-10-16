@@ -646,6 +646,19 @@ TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
 
+(define-public postgresql-9.6
+  (package
+    (inherit postgresql)
+    (name "postgresql")
+    (version "9.6.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
+                                  version "/postgresql-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0k3ls2x182jz6djjiqj9kycddabdl2gk1y1ajq1vipnxwfki5nh6"))))))
+
 (define-public qdbm
   (package
     (name "qdbm")

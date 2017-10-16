@@ -92,8 +92,12 @@ store in '.el' files."
          (el-dir (string-append out %install-suffix "/" elpa-name-ver))
          (substitute-cmd (lambda ()
                            (substitute* (find-files "." "\\.el$")
-                             (("\"/bin/([^.].*)\"" _ cmd)
-                              (string-append "\"" (which cmd) "\""))))))
+                             (("\"/bin/([^.]\\S*)\"" _ cmd-name)
+                              (let ((cmd (which cmd-name)))
+                                (unless cmd
+                                  (error
+                                   "patch-el-files: unable to locate " cmd-name))
+                                (string-append "\"" cmd "\"")))))))
     (with-directory-excursion el-dir
       ;; Some old '.el' files (e.g., tex-buf.el in AUCTeX) are still encoded
       ;; with the "ISO-8859-1" locale.

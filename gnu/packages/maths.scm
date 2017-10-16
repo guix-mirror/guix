@@ -473,6 +473,19 @@ problems in numerical linear algebra.")
     (license (license:non-copyleft "file://LICENSE"
                                 "See LICENSE in the distribution."))))
 
+(define-public lapack-3.5
+  (package
+    (inherit lapack)
+    (version "3.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.netlib.org/lapack/lapack-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "0lk3f97i9imqascnlf6wr5mjpyxqcdj73pgj97dj2mgvyg9z1n4s"))))))
+
 (define-public scalapack
   (package
     (name "scalapack")
@@ -2374,7 +2387,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.40.0")
+    (version "5.41.0")
     (source
      (origin
        (method url-fetch)
@@ -2382,7 +2395,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "15pp35ayglv723bjbqc60gcdv2bm54s6pywsm4i4cwbjsf64dzkl"))
+         "0x0n81z0s4pl8nwpf7ivlsbvsdphm9w42250g7qdkizl0132by6s"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs

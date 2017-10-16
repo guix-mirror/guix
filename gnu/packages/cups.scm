@@ -61,7 +61,7 @@
     (source(origin
               (method url-fetch)
               (uri
-               (string-append "http://openprinting.org/download/cups-filters/"
+               (string-append "https://openprinting.org/download/cups-filters/"
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
@@ -226,13 +226,13 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
     (home-page "https://www.cups.org")
     (synopsis "The Common Unix Printing System")
     (description
-     "CUPS is a printing system that uses the Internet Printing
-Protocol (IPP).  It provides System V and BSD command-line interfaces, as well
+     "CUPS is a printing system that uses the Internet Printing Protocol
+(@dfn{IPP}).  It provides System V and BSD command-line interfaces, as well
 as a Web interface and a C programming interface to manage printers and print
 jobs.  It supports printing to both local (parallel, serial, USB) and
 networked printers, and printers can be shared from one computer to another.
-Internally, CUPS uses PostScript Printer Description (PPD) files to describe
-printer capabilities and features and a wide variety of generic and
+Internally, CUPS uses PostScript Printer Description (@dfn{PPD}) files to
+describe printer capabilities and features, and a wide variety of generic and
 device-specific programs to convert and print many types of files.")
     (license license:gpl2)))
 

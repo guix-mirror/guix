@@ -961,21 +961,27 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "1.1.6")
+    (version "1.1.8")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/fluidsynth/fluidsynth-"
-                    version "/fluidsynth-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/FluidSynth/fluidsynth.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))
-    (build-system gnu-build-system)
+                "12q7hv0zvgylsdj1ipssv5zr7ap2y410dxsd63dz22y05fa2hwwd"))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:phases
+     '(#:tests? #f  ; no check phase
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-broken-symlinks
-           (lambda _ (delete-file-recursively "m4") #t)))))
+         (add-after 'unpack 'fix-libdir
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("LIB_SUFFIX \\$\\{_init_lib_suffix\\}")
+                "LIB_SUFFIX \"\""))
+             #t)))))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("alsa-lib" ,alsa-lib)
@@ -993,7 +999,7 @@ follower.")
 specifications.  FluidSynth reads and handles MIDI events from the MIDI input
 device.  It is the software analogue of a MIDI synthesizer.  FluidSynth can
 also play midifiles using a Soundfont.")
-    (license license:gpl2+)))
+    (license license:lgpl2.1+)))
 
 (define-public faad2
   (package

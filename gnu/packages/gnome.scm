@@ -700,7 +700,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.24.1")
+    (version "3.26.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -708,7 +708,7 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0dqgzwxl0xfr341r5i8j8hn6j6rhv62lmc6xbzjppcq76hhwb84w"))))
+               "1n69lkiagx2x8lrdbvdlz6c051cvzhma73b3ggnw7w1wfkdpnmkr"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
@@ -866,7 +866,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
 (define-public adwaita-icon-theme
   (package (inherit gnome-icon-theme)
     (name "adwaita-icon-theme")
-    (version "3.24.0")
+    (version "3.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -874,7 +874,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ai73gs44yyw276xag6db0rlpvncy23qplp4girm80ilpprrzxyc"))))
+                "04i2s6hkgzxgmq85dynmzih8rw5krc5apkks962mhgri37g8bbcw"))))
     (native-inputs
      `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
 
@@ -2015,7 +2015,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.48.3")
+    (version "0.50.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2023,7 +2023,7 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hsqc7238862mqnva5qqdfxnhpwq3ak6zx6kbjj95cs04wcgpad3"))))
+                "1hm88nn1r38fszz770v6dgzgx208ywz4n087n4fhw5kkwpihh5yg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2681,7 +2681,7 @@ more fun.")
 (define-public gnome-terminal
   (package
     (name "gnome-terminal")
-    (version "3.24.2")
+    (version "3.26.1")
     (source
      (origin
        (method url-fetch)
@@ -2690,7 +2690,7 @@ more fun.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "03zcvxlzg7n4pz65vrg5xj3qpkqr4bz162mgmaz4bjh71b1xl7i8"))))
+         "0fh7vshhzgypd66sinns5z1vskswl7ybs1ica080pskzyx75db5r"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -3581,7 +3581,7 @@ for application developers.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.24.0")
+    (version "3.26.0")
     (source
      (origin
        (method url-fetch)
@@ -3590,12 +3590,15 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "00cdlll5b0wj5ckl1pc0a3g39a0hlq0gxkcsh1f6p20fjixqzmwv"))))
-    (build-system glib-or-gtk-build-system)
+         "04zfx47mgyd0f4p3pjrxl6iaw0awgwbvilbsr1smw14ph2kbjbz3"))
+       (patches (search-patches "totem-meson-easy-codec.patch"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("desktop-file-utils" ,desktop-file-utils)
        ("gobject-introspection" ,gobject-introspection)
+       ("glib:bin" ,glib "bin")                   ;for 'glib-mkenums'
+       ("gtk:bin" ,gtk+ "bin")                    ;for 'gtk-update-icon-cache'
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("xmllint" ,libxml2)))
@@ -3636,13 +3639,21 @@ for application developers.")
        ("nettle" ,nettle)
        ("vala" ,vala)))
     (arguments
-     `(;; Disable automatic GStreamer plugin installation via PackageKit and
+     `(#:glib-or-gtk? #t
+
+       ;; Disable parallel builds until
+       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=28813 is
+       ;; fixed.  Try enabling it when updating this package in case
+       ;; upstream has fixed it.
+       #:parallel-build? #f
+
+       ;; Disable automatic GStreamer plugin installation via PackageKit and
        ;; all that.
-       #:configure-flags '("--disable-easy-codec-installation"
+       #:configure-flags '("-D" "enable-easy-codec-installation=no"
 
                            ;; Do not build .a files for the plugins, it's
                            ;; completely useless.  This saves 2 MiB.
-                           "--disable-static")
+                           "--default-library" "shared")
 
        #:phases
        (modify-phases %standard-phases
@@ -4034,23 +4045,29 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.0")
+    (version "0.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/gnumdk/eolie/"
-                                  "releases/download/"
-                                  (version-major+minor version)
+                                  "releases/download/" version
                                   "/eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "1lb3rd2as12vq24fcf9nmlhggf8vka3kli2i92i8iylwi7nq5n2a"))))
+                "0zw2zqgnpsvk35nrp4kqkh2hb5kchzpvi684xjv7a9hhrlsxkdqd"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:modules ((guix build glib-or-gtk-build-system)
-                  (guix build utils)
-                  (ice-9 match))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "meson" "build"
+                             "--prefix" (assoc-ref outputs "out")))))
+         (replace 'check
+           (lambda _ (zero? (system* "ninja" "-C" "build" "test"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "ninja" "-C" "build" "install"))))
          (add-after 'wrap 'wrap-more
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -4071,7 +4088,11 @@ work and the interface is well tested.")
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("meson" ,meson-for-build)
+       ("ninja" ,ninja)
+       ("python" ,python)
+       ("gtk+" ,gtk+ "bin")))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("glib-networking" ,glib-networking)
@@ -4405,7 +4426,7 @@ share them with others via social networking and more.")
 (define-public file-roller
   (package
     (name "file-roller")
-    (version "3.24.1")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4413,7 +4434,7 @@ share them with others via social networking and more.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0fkz9h9a6149crmf6311fsqlmv9wyrxk86470vxib941ppl4a581"))))
+                "1bliwib59jrlfpdbpqc4rc3kzv4ns7pfyn8c28ananj3p34y9mgc"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -5087,7 +5108,7 @@ to virtual private networks (VPNs) via OpenVPN.")
 (define-public mobile-broadband-provider-info
   (package
     (name "mobile-broadband-provider-info")
-    (version "20151214")
+    (version "20170310")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5096,7 +5117,7 @@ to virtual private networks (VPNs) via OpenVPN.")
                     "mobile-broadband-provider-info-" version ".tar.xz"))
               (sha256
                (base32
-                "1905nab1h8p4hx0m1w0rn4mkg9209x680dcr4l77bngy21pmvr4a"))))
+                "0fxm11x8k9hxjg8l5inaldfmmjnwkay3ibjv899jra03bv4h6kql"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; No tests
@@ -5694,7 +5715,7 @@ files.")
 (define-public baobab
   (package
     (name "baobab")
-    (version "3.24.0")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5703,7 +5724,7 @@ files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0gzwzn8p0agidjq3wnkxcsny6jhqph3yqscqjqd7blgkz5nyk02r"))))
+                "0zkqxyqyxd6j270jf5hbcrb3yh4k31ddh40v4cjhgngm8mcsnnbs"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -5726,7 +5747,7 @@ is complete it provides a graphical representation of each selected folder.")
 (define-public gnome-backgrounds
   (package
     (name "gnome-backgrounds")
-    (version "3.24.0")
+    (version "3.26.2")
     (source
      (origin
        (method url-fetch)
@@ -5735,7 +5756,7 @@ is complete it provides a graphical representation of each selected folder.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1jkikis9k3psp6rb8axnqy86awdyg5rzfbcp9gx40a99b4hlrnnb"))))
+         "0kzrh5h0cfby3rhsy31d1w1c0rr3wcc845kv6zibqw1x8v9si2rs"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)))
@@ -5785,7 +5806,7 @@ beautifying border effects.")
 (define-public dconf-editor
   (package
     (name "dconf-editor")
-    (version "3.22.3")
+    (version "3.26.1")
     (source
      (origin
        (method url-fetch)
@@ -5794,7 +5815,7 @@ beautifying border effects.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1939yq3fl55c2dqkc6nzp6cbpxq9sli74gdj0rj7c50pwvbngwam"))))
+         "0agay5zbhjbfznlwk7n3gg5cn0c7ih4vnmah6kb6m969li120cs9"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -6679,7 +6700,7 @@ accessibility infrastructure.")
 (define-public orca
   (package
     (name "orca")
-    (version "3.24.0")
+    (version "3.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6688,7 +6709,7 @@ accessibility infrastructure.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1la6f815drykrgqf791jx1dda6716cfv6052frqp7nhjxr75xg97"))))
+                "0xk5k9cbswymma60nrfj00dl97wypx59c107fb1hwi75gm0i07a7"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases

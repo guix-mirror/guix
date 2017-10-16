@@ -3576,6 +3576,24 @@ debugging information''), which roughly means that code is compiled with
 @code{-O2 -g}, as is the case for Autoconf-based packages by default.
 @end defvr
 
+@defvr {Scheme Variable} go-build-system
+This variable is exported by @code{(guix build-system go)}.  It
+implements a build procedure for Go packages using the standard
+@url{https://golang.org/cmd/go/#hdr-Compile_packages_and_dependencies,
+Go build mechanisms}.
+
+The user is expected to provide a value for the key @code{#:import-path}
+and, in some cases, @code{#:unpack-path}.  The
+@url{https://golang.org/doc/code.html#ImportPaths, import path}
+corresponds to the filesystem path expected by the package's build
+scripts and any referring packages, and provides a unique way to
+refer to a Go package.  It is typically based on a combination of the
+package source code's remote URI and filesystem hierarchy structure.  In
+some cases, you will need to unpack the package's source code to a
+different directory structure than the one indicated by the import path,
+and @code{#:unpack-path} should be used in such cases.
+@end defvr
+
 @defvr {Scheme Variable} glib-or-gtk-build-system
 This variable is exported by @code{(guix build-system glib-or-gtk)}.  It
 is intended for use with packages making use of GLib or GTK+.
@@ -8406,12 +8424,17 @@ management, power management, and more, would look like this:
 @include os-config-desktop.texi
 @end lisp
 
+@cindex UEFI
 A graphical UEFI system with a choice of lightweight window managers
 instead of full-blown desktop environments would look like this:
 
 @lisp
 @include os-config-lightweight-desktop.texi
 @end lisp
+
+This example refers to the @file{/boot/efi} partition by its UUID,
+@code{1234-ABCD}.  Replace this UUID with the right UUID on your system,
+as returned by the @command{blkid} command.
 
 @xref{Desktop Services}, for the exact list of services provided by
 @var{%desktop-services}.  @xref{X.509 Certificates}, for background
@@ -9767,8 +9790,32 @@ Return a service that runs the Guix build daemon according to
 @var{config}.
 @end deffn
 
-@deffn {Scheme Procedure} udev-service [#:udev udev]
+@cindex udev-service
+@cindex udev-rule
+@deffn {Scheme Procedure} udev-service [#:udev @var{udev}] [#:rules @var{'()}]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
+Additional udev rules can be provided as a list of files through the
+@var{rules} variable.  The procedure @var{udev-rule} simplifies the
+creation of these rule files.
+
+In the following example, a rule for a USB device is defined to be
+stored in the file @file{90-usb-thing.rules}, and the default
+@var{udev-service} is extended with it.  The rule runs a script upon
+detecting a USB device with a given product identifier.
+
+@example
+(define %example-udev-rule
+  (udev-rule "90-usb-thing.rules"
+             "ACTION==\"add\", SUBSYSTEM==\"usb\", ATTR@{product@}==\"Example\", RUN+=\"/path/to/script\""))
+
+(operating-system
+  ;; @dots{}
+  (services (modify-services %desktop-services
+              (udev-service-type config =>
+                (udev-configuration (inherit config)
+                  (rules (append (udev-configuration-rules config)
+                                 (list %example-udev-rule))))))))
+@end example
 @end deffn
 
 @deffn {Scheme Procedure} urandom-seed-service @var{#f}

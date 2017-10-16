@@ -361,7 +361,7 @@ when typing parentheses directly or commenting out code line by line.")
 (define-public git-modes
   (package
     (name "git-modes")
-    (version "1.2.4")
+    (version "1.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -370,7 +370,7 @@ when typing parentheses directly or commenting out code line by line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xxrmf0jnyljxvllc22qa0v8lgi4k1ldnayjm5hf68m25jsr378l"))))
+                "18z04wn5ird9l0h6n6x97v0kyzdj73832bj9qakm3fjjl7vcn0pw"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/magit/git-modes")
     (synopsis "Emacs major modes for Git configuration files")
@@ -382,7 +382,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.5.10")
+    (version "2.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -391,7 +391,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lsxa1hghybkzvqhqvvym3hxbyp9vjcnnpb9j800z0vyhbnlka67"))))
+                "0kah7pv211zx9fsb5g4hd51bqcq2bxd1chdykd488ihvfz1l5y14"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -407,7 +407,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.10.3")
+    (version "2.11.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -415,7 +415,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "03ln65ss420gc3h4pi56dayd1p163xfxrxrd9fkb9xnkl8mjglqk"))))
+               "11xly5bma9jc1jhs8fqbqrci8kz1y26yfq7dqjkqfy956wvfg6hz"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
@@ -543,7 +543,7 @@ support for Git-SVN.")
               (file-name (string-append "magit-popup-" version ".el"))
               (sha256
                (base32
-                "08b6ypfiq8zavjfq0wcdh26xziwq7rqvvv3lfpib9101146kzx6d"))))
+                "0w750kwngq63hi9drad3jxldwkg83sldb9w9r2xl2mqm3hm4l8s6"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -1244,6 +1244,56 @@ written in the Go programming language.")
     (description "The @code{google-maps} package allows to display Google
 Maps directly inside Emacs.")
     (license license:gpl3+)))
+
+(define-public emacs-graphviz-dot-mode
+  (let ((commit "fdaabbcc95d9156e3dadc84f81a4750c5b692580")
+        (revision "1"))
+    (package
+      (name "emacs-graphviz-dot-mode")
+      (version (string-append "0.3.10-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ppareit/graphviz-dot-mode.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1s1qh5r0xp6hs0rl5yz5mkmjhpg04bh449c7vgjbb1pjsl1dl714"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'make-info
+             (lambda* (#:key inputs #:allow-other-keys)
+               (with-directory-excursion "texinfo"
+                 (substitute* "Makefile"
+                   (("\\/usr\\/bin\\/gzip")
+                    (string-append (assoc-ref inputs "gzip") "/bin/gzip")))
+                 (zero?
+                  (system* "make"
+                           "clean"
+                           "info"
+                           (string-append "TEXINFODIR="
+                                          (assoc-ref inputs "texinfo")
+                                          "/bin"))))))
+           (add-after 'install 'install-info
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out  (assoc-ref outputs "out"))
+                      (info (string-append out "/share/info")))
+                 (install-file "texinfo/graphviz-dot-mode.info.gz" info)
+                 #t))))))
+      (native-inputs
+       `(("texinfo" ,texinfo)
+         ("gzip" ,gzip)))
+      (home-page "http://ppareit.github.com/graphviz-dot-mode")
+      (synopsis "Major mode for editing Graphviz Dot files")
+      (description
+       "This Emacs packages helps you to create @file{.dot} or @file{.gv}
+files using the dot syntax, and use Graphviz to convert these files to
+diagrams.")
+      (license license:gpl2+))))
 
 (define-public emacs-mmm-mode
   (package
@@ -2762,14 +2812,14 @@ package provides a light and a dark variant.")
 (define-public emacs-ahungry-theme
   (package
     (name "emacs-ahungry-theme")
-    (version "1.4.0")
+    (version "1.6.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://elpa.gnu.org/packages/ahungry-theme-"
                                  version ".tar"))
              (sha256
               (base32
-               "1n8k12mfn01f20j0pyd7ycj77x0y3a008xc94frklaaqjc0v26s4"))))
+               "1b0x7g753gn7mym8286b937zmxv50jgdish2h6wc05w1g1lygwsz"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ahungry/color-theme-ahungry")
     (synopsis "Ahungry color theme for Emacs")
@@ -3197,14 +3247,14 @@ The purpose of this library is to wrap all the quirks and hassle of
 (define-public emacs-queue
   (package
     (name "emacs-queue")
-    (version "0.1.1")
+    (version "0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/queue-"
                                   version ".el"))
               (sha256
                (base32
-                "0jw24fxqnf9qcaf2nh09cnds1kqfk7hal35dw83x1ari95say391"))))
+                "0cx2848sqnnkkr4zisvqadzxngjyhmb36mh0q3if7q19yjjhmrkb"))))
     (build-system emacs-build-system)
     (home-page "http://www.dr-qubit.org/tags/computing-code-emacs.html")
     (synopsis "Queue data structure for Emacs")
@@ -3321,22 +3371,63 @@ that highlights non-conforming text.  The subset of the English language called
 E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
       (license license:gpl3+))))
 
+(define-public emacs-julia-mode
+  ;; XXX: Upstream version remained stuck at 0.3.  See
+  ;; <https://github.com/JuliaEditorSupport/julia-emacs/issues/46>.
+  (let ((commit "115d4dc8a07445301772da8376b232fa8c7168f4")
+        (revision "1"))
+    (package
+      (name "emacs-julia-mode")
+      (version (string-append "0.3-" revision "." (string-take commit 8)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/JuliaEditorSupport/julia-emacs.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1is4dcv6blslpzbjcg8l2jpxi8xj96q4cm0nxjxsyswpm8bw8ki0"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'check
+             (lambda _
+               (zero? (system* "emacs" "-batch"
+                               "-l" "julia-mode.el"
+                               "-l" "julia-mode-tests.el"
+                               "-f" "ert-run-tests-batch-and-exit")))))))
+      (home-page "https://github.com/JuliaEditorSupport/julia-emacs")
+      (synopsis "Major mode for Julia")
+      (description "This Emacs package provides a mode for the Julia
+programming language.")
+      (license license:expat))))
+
 (define-public emacs-ess
   (package
     (name "emacs-ess")
-    (version "16.04")
+    (version "16.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ess.r-project.org/downloads/ess/ess-"
                                   version ".tgz"))
               (sha256
                (base32
-                "0w7mbbajn377gdmvnd21mpyr368b2ia46gq6cb99y4y5rspf9pcg"))))
+                "04m8lwp3ylh2vl7k2bjjs7mxbm64j4sdckqpvnm9k0qhaqf02pjk"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Stop ESS from trying to bundle an external julia-mode.el.
+                  (substitute* "lisp/Makefile"
+                    (("^\tjulia-mode.elc\\\\\n") "")
+                    (("^all: \\$\\(ELC\\) ess-custom.el julia-mode.el")
+                     "all: $(ELC) ess-custom.el"))))))
     (build-system gnu-build-system)
     (arguments
      (let ((base-directory "/share/emacs/site-lisp/guix.d/ess"))
-       `(#:tests? #f ; There is no test suite.
-         #:make-flags (list (string-append "PREFIX=" %output)
+       `(#:make-flags (list (string-append "PREFIX=" %output)
                             (string-append "ETCDIR=" %output "/"
                                            ,base-directory "/etc")
                             (string-append "LISPDIR=" %output "/"
@@ -3352,7 +3443,10 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
            ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
            ;; them in HOME, so it needs to be writeable.
            (add-before 'build 'set-HOME
-             (lambda _ (setenv "HOME" "/tmp") #t))))))
+             (lambda _ (setenv "HOME" "/tmp") #t))
+           (replace 'check
+             (lambda _
+               (zero? (system* "make" "test"))))))))
     (inputs
      `(("emacs" ,emacs-minimal)
        ("r-minimal" ,r-minimal)))
@@ -3717,7 +3811,7 @@ the file buffer.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "2.7.1")
+    (version "2.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3726,7 +3820,7 @@ the file buffer.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0pay8pi3fszykgskfbxsp4byad497cgfz4m886mxnkba1naxf6h7"))))
+                "15xlnjm9rsbn0xq7xc09y52h2kn41zwn7ldryammf6i46wl02kq3"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -3988,14 +4082,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20170917")
+    (version "20171016")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0qyis5ph3h99zn9kx7sgraddz41c1cf6yjkwi4im6ikwxk9x8cgc"))))
+                "1196kv83p953nd9c5gxkn8ndw2kmm2kfw34dldap6m89khqflz5a"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4004,6 +4098,50 @@ lists, and project planning with a fast and effective plain-text system.  It
 also is an authoring system with unique support for literate programming and
 reproducible research.")
     (license license:gpl3+)))
+
+(define-public emacs-org-contrib
+  (package
+    (inherit emacs-org)
+    (name "emacs-org-contrib")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://orgmode.org/elpa/org-plus-contrib-"
+                                  (package-version emacs-org) ".tar"))
+              (sha256
+               (base32
+                "0xy2xrndlhs4kyvh6mmv24dnh3fn5p63d2gaimnrypf1p8znwzh4"))))
+    (arguments
+     `(#:modules ((guix build emacs-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils)
+                  (ice-9 ftw)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'delete-org-files
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (org (assoc-ref inputs "emacs-org"))
+                    (contrib-files
+                     (map basename (find-files out)))
+                    (org+contrib-files
+                     (map basename (find-files org)))
+                    (duplicates (lset-intersection
+                                 string=? contrib-files org+contrib-files)))
+               (with-directory-excursion
+                   (string-append
+                    out "/share/emacs/site-lisp/guix.d/org-contrib-"
+                    ,(package-version emacs-org))
+                 (for-each delete-file duplicates))
+               #t))))))
+    (propagated-inputs
+     `(("emacs-org" ,emacs-org)))
+    (synopsis "Contributed packages to Org-mode")
+    (description "Org is an Emacs mode for keeping notes, maintaining TODO
+lists, and project planning with a fast and effective plain-text system.
+
+This package is equivilent to org-plus-contrib, but only includes additional
+files that you would find in @file{contrib/} from the git repository.")))
 
 (define-public emacs-flx
   (package
@@ -4691,7 +4829,7 @@ consistent and well-integrated user interface.")
 (define-public emacs-adaptive-wrap
   (package
     (name "emacs-adaptive-wrap")
-    (version "0.5")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4699,7 +4837,7 @@ consistent and well-integrated user interface.")
                     version ".el"))
               (sha256
                (base32
-                "0frgmp8vrrml4iykm60j4d6cl9rbcivy9yh24q6kd10bcyx59ypy"))))
+                "0qi7gjprcpywk2daivnlavwsx53hl5wcqvpxbwinvigg42vxh3ll"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/adaptive-wrap.html")
     (synopsis "Smart line-wrapping with wrap-prefix")
@@ -5896,14 +6034,14 @@ It supports dired buffers and opens them in tree mode at destination.")
 (define-public emacs-tiny
   (package
     (name "emacs-tiny")
-    (version "0.1.1")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://elpa.gnu.org/packages/tiny-" version ".tar"))
        (sha256
         (base32
-         "1nhg8375qdn457wj0xmfaj72s87xbabk2w1nl6q7rjvwxv08yyn7"))))
+         "1cr73a8gba549ja55x0c2s554f3zywf69zbnd7v82jz5q1k9wd2v"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abo-abo/tiny")
     (synopsis "Quickly generate linear ranges in Emacs")
@@ -5945,3 +6083,22 @@ an elisp expression.")
     "@code{bash-completion} defines dynamic completion hooks for shell-mode
 and shell-command prompts that are based on bash completion.")
    (license license:gpl2+)))
+
+(define-public emacs-easy-kill
+  (package
+    (name "emacs-easy-kill")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/easy-kill-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "17nw0mglmg877axwg1d0gs03yc0p04lzmd3pl0nsnqbh3303fnqb"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/leoliu/easy-kill")
+    (synopsis "Kill and mark things easily in Emacs")
+    (description
+     "This package provides commands @code{easy-kill} and @code{easy-mark} to
+let users kill or mark things easily.")
+    (license license:gpl3+)))

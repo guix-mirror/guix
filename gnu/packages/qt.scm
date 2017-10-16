@@ -78,6 +78,7 @@
         (sha256
          (base32 "1lf9rkv0i0kd7fvpgg5l8jb87zw8dzcwd1liv6hji7g4wlpmfdiq"))))
     (native-inputs
+     ;; Optional: lcov and cccc, both are for code coverage
      `(("doxygen" ,doxygen)))
     (inputs
      `(("qtbase" ,qtbase)
@@ -86,10 +87,11 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check
-                  (lambda _
-                    (zero? (system* "ctest" ;; exclude 2 tests which require a display
-                                    "-E" "htmlbuildertest|plainmarkupbuildertest")))))))
+         (add-before 'check 'check-setup
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     (home-page "https://github.com/steveire/grantlee")
     (synopsis "Libraries for text templating with Qt")
     (description "Grantlee Templates can be used for theming and generation of
@@ -100,7 +102,8 @@ system, and the core design of Django is reused in Grantlee.")
 (define-public qt
   (package
     (name "qt")
-    (version "5.6.2")
+    (version "5.9.2")
+    (outputs '("out" "examples"))
     (source (origin
              (method url-fetch)
              (uri
@@ -112,7 +115,7 @@ system, and the core design of Django is reused in Grantlee.")
                  version ".tar.xz"))
              (sha256
                (base32
-                 "1cw93mrlkqbwndfqyjpsvjzkpzi39px2is040xvk18mvg3y1prl3"))
+                 "1zr0hvhryn2ada53ln7cycymh602cncli86n291bsgzas6j72qbc"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -124,32 +127,52 @@ system, and the core design of Django is reused in Grantlee.")
                 ;; Alternatively, we could use the "-skip qtwebengine"
                 ;; configuration option.
                 (delete-file-recursively "qtwebengine")
-                ;; Remove one of the two bundled harfbuzz copies in addition
-                ;; to passing "-system-harfbuzz".
-                (delete-file-recursively "qtbase/src/3rdparty/harfbuzz-ng")
-                ;; Remove the bundled sqlite copy in addition to
-                ;; passing "-system-sqlite".
-                (delete-file-recursively "qtbase/src/3rdparty/sqlite")))))
+                ;; The following snippets are copied from their mondular-qt counterparts.
+                (for-each
+                  (lambda (dir)
+                    (delete-file-recursively (string-append "qtbase/src/3rdparty/" dir)))
+                  (list "double-conversion" "freetype" "harfbuzz-ng"
+                        "libpng" "libjpeg" "pcre2" "sqlite" "xcb"
+                        "xkbcommon" "zlib"))
+                (for-each
+                  (lambda (dir)
+                    (delete-file-recursively dir))
+                  (list "qtimageformats/src/3rdparty"
+                        "qtmultimedia/examples/multimedia/spectrum/3rdparty"
+                        "qtwayland/examples"
+                        "qtcanvas3d/examples/canvas3d/3rdparty"))
+                ;; Tests depend on this example, which depends on the 3rd party code.
+                (substitute* "qtmultimedia/examples/multimedia/multimedia.pro"
+                  (("spectrum") "#"))))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("dbus" ,dbus)
+       ("bluez" ,bluez)
        ("cups" ,cups)
+       ("dbus" ,dbus)
+       ("double-conversion" ,double-conversion)
        ("expat" ,expat)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glib" ,glib)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
        ("harfbuzz" ,harfbuzz)
        ("icu4c" ,icu4c)
+       ("jasper" ,jasper)
+       ("libinput" ,libinput-minimal)
        ("libjpeg" ,libjpeg)
        ("libmng" ,libmng)
        ("libpci" ,pciutils)
        ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)
        ("libxcursor" ,libxcursor)
+       ("libxext" ,libxext)
        ("libxfixes" ,libxfixes)
        ("libxi" ,libxi)
        ("libxinerama" ,libxinerama)
@@ -165,10 +188,11 @@ system, and the core design of Django is reused in Grantlee.")
        ("openssl" ,openssl)
        ("postgresql" ,postgresql)
        ("pulseaudio" ,pulseaudio)
-       ("pcre" ,pcre)
+       ("pcre2" ,pcre2)
        ("sqlite" ,sqlite)
        ("udev" ,eudev)
        ("unixodbc" ,unixodbc)
+       ("wayland" ,wayland)
        ("xcb-util" ,xcb-util)
        ("xcb-util-image" ,xcb-util-image)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
@@ -185,24 +209,19 @@ system, and the core design of Django is reused in Grantlee.")
        ("ruby" ,ruby)
        ("which" ,(@ (gnu packages base) which))))
     (arguments
-     `(;; FIXME: Disabling parallel building is a quick hack to avoid the
-       ;; failure described in
-       ;; https://lists.gnu.org/archive/html/guix-devel/2016-01/msg00837.html
-       ;; A more structural fix is needed.
-       #:parallel-build? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-bin-sh
            (lambda _
-             (substitute* '("qtbase/config.status"
-                            "qtbase/configure"
+             (substitute* '("qtbase/configure"
                             "qtbase/mkspecs/features/qt_functions.prf"
                             "qtbase/qmake/library/qmakebuiltins.cpp")
                           (("/bin/sh") (which "sh")))
              #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
+             (let ((out      (assoc-ref outputs "out"))
+                   (examples (assoc-ref outputs "examples")))
                (substitute* '("configure" "qtbase/configure")
                  (("/bin/pwd") (which "pwd")))
                (substitute* "qtbase/src/corelib/global/global.pri"
@@ -213,12 +232,12 @@ system, and the core design of Django is reused in Grantlee.")
                        "./configure"
                        "-verbose"
                        "-prefix" out
+                       "-examplesdir" examples ; 89MiB
                        "-opensource"
                        "-confirm-license"
-                       ;; Do not build examples; if desired, these could go
-                       ;; into a separate output, but for the time being, we
+                       ;; Do not build examples; for the time being, we
                        ;; prefer to save the space and build time.
-                       "-nomake" "examples"
+                       "-no-compile-examples"
                        ;; Most "-system-..." are automatic, but some use
                        ;; the bundled copy by default.
                        "-system-sqlite"
@@ -227,6 +246,8 @@ system, and the core design of Django is reused in Grantlee.")
                        "-openssl-linked"
                        ;; explicitly link with dbus instead of dlopening it
                        "-dbus-linked"
+                       ;; don't use the precompiled headers
+                       "-no-pch"
                        ;; drop special machine instructions not supported
                        ;; on all instances of the target
                        ,@(if (string-prefix? "x86_64"
@@ -234,12 +255,6 @@ system, and the core design of Django is reused in Grantlee.")
                                                  (%current-system)))
                              '()
                              '("-no-sse2"))
-                       "-no-sse3"
-                       "-no-ssse3"
-                       "-no-sse4.1"
-                       "-no-sse4.2"
-                       "-no-avx"
-                       "-no-avx2"
                        "-no-mips_dsp"
                        "-no-mips_dspr2"))))))))
     (home-page "https://www.qt.io/")
@@ -376,7 +391,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                 #t))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("mesa" ,mesa)))
+     `(("mesa" ,mesa)
+       ("which" ,(@ (gnu packages base) which))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cups" ,cups)
@@ -427,8 +443,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
-       ("ruby" ,ruby)
-       ("which" ,(@ (gnu packages base) which))))
+       ("ruby" ,ruby)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -460,6 +475,12 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                        "./configure"
                        "-verbose"
                        "-prefix" out
+                       "-docdir" (string-append out "/share/doc/qt5")
+                       "-headerdir" (string-append out "/include/qt5")
+                       "-archdatadir" (string-append out "/lib/qt5")
+                       "-datadir" (string-append out "/share/qt5")
+                       "-examplesdir" (string-append
+                                       out "/share/doc/qt5/examples")
                        "-opensource"
                        "-confirm-license"
                        ;; Do not build examples; if desired, these could go
@@ -486,41 +507,49 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                              '("-no-sse2"))
                        "-no-mips_dsp"
                        "-no-mips_dspr2")))))
-         (add-after 'install 'patch-qt_config.prf
+         (add-after 'install 'patch-mkspecs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
+                    (archdata (string-append out "/lib/qt5"))
+                    (mkspecs (string-append archdata "/mkspecs"))
                     (qt_config.prf (string-append
-                                    out "/mkspecs/features/qt_config.prf")))
+                                    mkspecs "/features/qt_config.prf")))
                ;; For each Qt module, let `qmake' uses search paths in the
                ;; module directory instead of all in QT_INSTALL_PREFIX.
                (substitute* qt_config.prf
                  (("\\$\\$\\[QT_INSTALL_HEADERS\\]")
-                  "$$replace(dir, mkspecs/modules, include)")
+                  "$$clean_path($$replace(dir, mkspecs/modules, ../../include/qt5))")
                  (("\\$\\$\\[QT_INSTALL_LIBS\\]")
-                  "$$replace(dir, mkspecs/modules, lib)")
+                  "$$clean_path($$replace(dir, mkspecs/modules, ../../lib))")
                  (("\\$\\$\\[QT_HOST_LIBS\\]")
-                  "$$replace(dir, mkspecs/modules, lib)")
-                 (("\\$\\$\\[QT_INSTALL_PLUGINS\\]")
-                  "$$replace(dir, mkspecs/modules, plugins)")
-                 (("\\$\\$\\[QT_INSTALL_LIBEXECS\\]")
-                  "$$replace(dir, mkspecs/modules, libexec)")
+                  "$$clean_path($$replace(dir, mkspecs/modules, ../../lib))")
                  (("\\$\\$\\[QT_INSTALL_BINS\\]")
-                  "$$replace(dir, mkspecs/modules, bin)")
-                 (("\\$\\$\\[QT_INSTALL_IMPORTS\\]")
-                  "$$replace(dir, mkspecs/modules, imports)")
-                 (("\\$\\$\\[QT_INSTALL_QML\\]")
-                  "$$replace(dir, mkspecs/modules, qml)"))
+                  "$$clean_path($$replace(dir, mkspecs/modules, ../../bin))"))
+
+               ;; Searches Qt tools in the current PATH instead of QT_HOST_BINS.
+               (substitute* (string-append mkspecs "/features/qt_functions.prf")
+                 (("cmd = \\$\\$\\[QT_HOST_BINS\\]/\\$\\$2")
+                  "cmd = $$system(which $${2}.pl 2>/dev/null || which $${2})"))
+
+               ;; Resolve qmake spec files within qtbase by absolute paths.
+               (substitute*
+                   (map (lambda (file)
+                          (string-append mkspecs "/features/" file))
+                        '("device_config.prf" "moc.prf" "qt_build_config.prf"
+                          "qt_config.prf" "winrt/package_manifest.prf"))
+                 (("\\$\\$\\[QT_HOST_DATA/get\\]") archdata)
+                 (("\\$\\$\\[QT_HOST_DATA/src\\]") archdata))
                #t))))))
     (native-search-paths
      (list (search-path-specification
             (variable "QMAKEPATH")
-            (files '("")))
+            (files '("lib/qt5")))
            (search-path-specification
             (variable "QML2_IMPORT_PATH")
-            (files '("qml")))
+            (files '("lib/qt5/qml")))
            (search-path-specification
             (variable "QT_PLUGIN_PATH")
-            (files '("plugins")))
+            (files '("lib/qt5/plugins")))
            (search-path-specification
             (variable "XDG_DATA_DIRS")
             (files '("share")))
@@ -555,26 +584,51 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; Valid QT_BUILD_PARTS variables are:
-               ;; libs tools tests examples demos docs translations
-               (zero? (system* "qmake" "QT_BUILD_PARTS = libs tools tests"
-                               (string-append "PREFIX=" out))))))
-         (add-before 'install 'fix-Makefiles
+         (add-before 'configure 'configure-qmake
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out    (assoc-ref outputs "out"))
-                   (qtbase (assoc-ref inputs "qtbase")))
-               (substitute* (find-files "." "Makefile")
-                            (((string-append "INSTALL_ROOT)" qtbase))
-                             (string-append "INSTALL_ROOT)" out)))
+             (let* ((out (assoc-ref outputs "out"))
+                    (qtbase (assoc-ref inputs "qtbase"))
+                    (tmpdir (string-append (getenv "TMPDIR")))
+                    (qmake (string-append tmpdir "/qmake"))
+                    (qt.conf (string-append tmpdir "/qt.conf")))
+               ;; Use qmake with a customized qt.conf to override install
+               ;; paths to $out.
+               (symlink (which "qmake") qmake)
+               (setenv "PATH" (string-append tmpdir ":" (getenv "PATH")))
+               (with-output-to-file qt.conf
+                 (lambda ()
+                   (format #t "[Paths]
+Prefix=~a
+ArchData=lib/qt5
+Data=share/qt5
+Documentation=share/doc/qt5
+Headers=include/qt5
+Libraries=lib
+LibraryExecutables=lib/qt5/libexec
+Binaries=bin
+Tests=tests
+Plugins=lib/qt5/plugins
+Imports=lib/qt5/imports
+Qml2Imports=lib/qt5/qml
+Translations=share/qt5/translations
+Settings=etc/xdg
+Examples=share/doc/qt5/examples
+HostPrefix=~a
+HostData=lib/qt5
+HostBinaries=bin
+HostLibraries=lib
+" out out)))
                #t)))
-            (add-before 'check 'set-display
-              (lambda _
-                ;; make Qt render "offscreen", required for tests
-                (setenv "QT_QPA_PLATFORM" "offscreen")
-                #t)))))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Valid QT_BUILD_PARTS variables are:
+             ;; libs tools tests examples demos docs translations
+             (zero? (system* "qmake" "QT_BUILD_PARTS = libs tools tests"))))
+         (add-before 'check 'set-display
+           (lambda _
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     (synopsis "Qt module for displaying SVGs")
     (description "The QtSvg module provides classes for displaying the
  contents of SVG files.")))
@@ -853,6 +907,18 @@ set of plugins for interacting with pulseaudio and GStreamer.")))
              (snippet
                ;; The examples try to build and cause the build to fail
               '(delete-file-recursively "examples"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'set-ld-library-path
+             ;; <https://lists.gnu.org/archive/html/guix-devel/2017-09/msg00019.html>
+             ;;
+             ;; Make the uninstalled libQt5WaylandClient.so.5 available to the
+             ;; wayland platform plugin.
+             (lambda _
+               (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/lib"))
+               #t))))))
     (native-inputs
      `(("glib" ,glib)
        ("perl" ,perl)
@@ -1609,8 +1675,10 @@ contain over 620 classes.")
                   (string-append out "/include"))
                  (("\\$\\$\\[QT_INSTALL_TRANSLATIONS\\]")
                   (string-append out "/translations"))
-                 (("\\$\\$\\[QT_INSTALL_DATA\\]") out)
-                 (("\\$\\$\\[QT_HOST_DATA\\]") out))
+                 (("\\$\\$\\[QT_INSTALL_DATA\\]")
+                  (string-append out "/lib/qt$${QT_MAJOR_VERSION}"))
+                 (("\\$\\$\\[QT_HOST_DATA\\]")
+                 (string-append out "/lib/qt$${QT_MAJOR_VERSION}")))
                (zero? (system* "qmake"))))))))
     (native-inputs `(("qtbase" ,qtbase)))
     (home-page "http://www.riverbankcomputing.co.uk/software/qscintilla/intro")
@@ -1699,7 +1767,8 @@ This package provides the Python bindings.")))
          (base32 "0bxi5pfhxdvwk8yxa06lk2d7lcibmfqhahbin82bqf3m341zd4ml"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("qttools" ,qttools)))
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
@@ -1742,11 +1811,27 @@ securely.  It will not store any data unencrypted unless explicitly requested.")
      (modify-phases %standard-phases
        (replace 'configure
          (lambda* (#:key outputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out")))
+           (let* ((out (assoc-ref outputs "out"))
+                  (docdir (string-append out "/share/doc/qwt"))
+                  (incdir (string-append out "/include/qwt"))
+                  (pluginsdir (string-append out "/lib/qt5/plugins/designer"))
+                  (featuresdir (string-append out "/lib/qt5/mkspecs/features")))
              (substitute* '("qwtconfig.pri")
-               (("/usr/local/qwt-\\$\\$QWT\\_VERSION") out))
+               (("^(\\s*QWT_INSTALL_PREFIX)\\s*=.*" _ x)
+                (format #f "~a = ~a\n" x out))
+               (("^(QWT_INSTALL_DOCS)\\s*=.*" _ x)
+                (format #f "~a = ~a\n" x docdir))
+               (("^(QWT_INSTALL_HEADERS)\\s*=.*" _ x)
+                (format #f "~a = ~a\n" x incdir))
+               (("^(QWT_INSTALL_PLUGINS)\\s*=.*" _ x)
+                (format #f "~a = ~a\n" x pluginsdir))
+               (("^(QWT_INSTALL_FEATURES)\\s*=.*" _ x)
+                (format #f "~a = ~a\n" x featuresdir)))
+             (substitute* '("doc/doc.pro")
+               ;; We'll install them in the 'install-man-pages' phase.
+               (("^unix:doc\\.files.*") ""))
              (zero? (system* "qmake")))))
-       (add-after 'install 'install-documentation
+       (add-after 'install 'install-man-pages
          (lambda* (#:key outputs #:allow-other-keys)
            (let* ((out (assoc-ref outputs "out"))
                   (man (string-append out "/share/man")))
@@ -1810,6 +1895,15 @@ different kinds of sliders, and much more.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'fix-qmlwebkit-plugins-rpath
+           (lambda _
+             (substitute* "Source/WebKit/qt/declarative/experimental/experimental.pri"
+               (("RPATHDIR_RELATIVE_TO_DESTDIR = \\.\\./\\.\\./lib")
+                "RPATHDIR_RELATIVE_TO_DESTDIR = ../../../../../lib"))
+             (substitute* "Source/WebKit/qt/declarative/public.pri"
+               (("RPATHDIR_RELATIVE_TO_DESTDIR = \\.\\./\\.\\./lib")
+                "RPATHDIR_RELATIVE_TO_DESTDIR = ../../../../lib"))
+             #t))
          (replace 'configure
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let ((out (assoc-ref outputs "out")))

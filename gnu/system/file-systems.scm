@@ -18,6 +18,7 @@
 
 (define-module (gnu system file-systems)
   #:use-module (ice-9 match)
+  #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (guix records)
   #:use-module (gnu system uuid)
@@ -161,7 +162,7 @@ initrd code."
   (match fs
     (($ <file-system> device title mount-point type flags options _ _ check?)
      (list (if (uuid? device)
-               (uuid-bytevector device)
+               `(uuid ,(uuid-type device) ,(uuid-bytevector device))
                device)
            title mount-point type flags options check?))))
 
@@ -170,7 +171,12 @@ initrd code."
   (match sexp
     ((device title mount-point type flags options check?)
      (file-system
-       (device device) (title title)
+       (device (match device
+                 (('uuid (? symbol? type) (? bytevector? bv))
+                  (bytevector->uuid bv type))
+                 (_
+                  device)))
+       (title title)
        (mount-point mount-point) (type type)
        (flags flags) (options options)
        (check? check?)))))

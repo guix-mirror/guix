@@ -30,6 +30,7 @@
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -1279,3 +1280,197 @@ an embedded event driven algorithm.")
     (inputs
      `(("libngspice" ,libngspice)
        ("readline" ,readline)))))
+
+(define trilinos-serial-xyce
+  ;; Note: This is a Trilinos containing only the packages Xyce needs, so we
+  ;; keep it private.  See
+  ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=27344#248>.
+  ;; TODO: Remove when we have modular Trilinos packages?
+  (package
+    (name "trilinos-serial-xyce")
+    (version "12.6.3")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append "https://trilinos.org/oldsite/download/files/trilinos-"
+                                 version "-Source.tar.gz"))
+             (sha256
+              (base32
+               "07jd1qpsbf31cmbyyngr4l67xzwyan24dyx5wlcahgbw7x6my3wn"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:out-of-source? #t
+       #:configure-flags
+       (list "-DCMAKE_CXX_FLAGS=-O3 -fPIC"
+             "-DCMAKE_C_FLAGS=-O3 -fPIC"
+             "-DCMAKE_Fortran_FLAGS=-O3 -fPIC"
+             "-DTrilinos_ENABLE_NOX=ON"
+             "-DNOX_ENABLE_LOCA=ON"
+             "-DTrilinos_ENABLE_EpetraExt=ON"
+             "-DEpetraExt_BUILD_BTF=ON"
+             "-DEpetraExt_BUILD_EXPERIMENTAL=ON"
+             "-DEpetraExt_BUILD_GRAPH_REORDERINGS=ON"
+             "-DTrilinos_ENABLE_TrilinosCouplings=ON"
+             "-DTrilinos_ENABLE_Ifpack=ON"
+             "-DTrilinos_ENABLE_Isorropia=ON"
+             "-DTrilinos_ENABLE_AztecOO=ON"
+             "-DTrilinos_ENABLE_Belos=ON"
+             "-DTrilinos_ENABLE_Teuchos=ON"
+             "-DTeuchos_ENABLE_COMPLEX=ON"
+             "-DTrilinos_ENABLE_Amesos=ON"
+             "-DAmesos_ENABLE_KLU=ON"
+             "-DAmesos_ENABLE_UMFPACK=ON"
+             "-DTrilinos_ENABLE_Sacado=ON"
+             "-DTrilinos_ENABLE_Kokkos=OFF"
+             "-DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES=OFF"
+             "-DTPL_ENABLE_AMD=ON"
+             "-DTPL_ENABLE_UMFPACK=ON"
+             "-DTPL_ENABLE_BLAS=ON"
+             "-DTPL_ENABLE_LAPACK=ON")))
+    (native-inputs
+     `(("fortran" ,gfortran)
+       ("swig" ,swig)))
+    (inputs
+     `(("boost" ,boost)
+       ("lapack" ,lapack-3.5)
+       ("suitesparse" ,suitesparse)))
+    (home-page "https://trilinos.org")
+    (synopsis "Engineering and scientific problems algorithms")
+    (description
+     "The Trilinos Project is an effort to develop algorithms and enabling
+technologies within an object-oriented software framework for the solution of
+large-scale, complex multi-physics engineering and scientific problems.  A
+unique design feature of Trilinos is its focus on packages.")
+    (license (list license:lgpl2.1+
+                   license:bsd-3))))
+
+(define-public xyce-serial
+  (package
+    (name "xyce-serial")
+    (version "6.7")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append "https://archive.org/download/Xyce-"
+                                 version "/Xyce-" version ".tar.gz"))
+             (sha256
+              (base32
+               "02k952mnvrnc5kv7r65fdrn7khwq1lbyhwyvd7jznafzdpsvgm4x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:configure-flags
+       (list
+        "CXXFLAGS=-O3 -std=c++11"
+        (string-append "ARCHDIR="
+                       (assoc-ref %build-inputs "trilinos")))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("fortran" ,gfortran)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("suitesparse" ,suitesparse)
+       ("lapack" ,lapack-3.5)
+       ("trilinos" ,trilinos-serial-xyce)))
+    (home-page "https://xyce.sandia.gov/")
+    (synopsis "High-performance analog circuit simulator")
+    (description
+     "Xyce is a SPICE-compatible, high-performance analog circuit simulator,
+capable of solving extremely large circuit problems by supporting large-scale
+parallel computing platforms.  It also supports serial execution.")
+    (license license:gpl3+)))
+
+(define trilinos-parallel-xyce
+  (package (inherit trilinos-serial-xyce)
+    (name "trilinos-parallel-xyce")
+    (arguments
+     `(,@(substitute-keyword-arguments (package-arguments trilinos-serial-xyce)
+           ((#:configure-flags flags)
+            `(append (list "-DTrilinos_ENABLE_ShyLU=ON"
+                           "-DTrilinos_ENABLE_Zoltan=ON"
+                           "-DTPL_ENABLE_MPI=ON")
+                     ,flags)))))
+    (inputs
+     `(("mpi" ,openmpi)
+       ,@(package-inputs trilinos-serial-xyce)))))
+
+(define-public xyce-parallel
+  (package (inherit xyce-serial)
+    (name "xyce-parallel")
+    (arguments
+     `(,@(substitute-keyword-arguments (package-arguments xyce-serial)
+           ((#:configure-flags flags)
+            `(list "CXXFLAGS=-O3 -std=c++11"
+                   "CXX=mpiCC"
+                   "CC=mpicc"
+                   "F77=mpif77"
+                   "--enable-mpi"
+                   "--enable-isorropia=no"
+                   "--enable-zoltan=no"
+                   (string-append
+                    "ARCHDIR="
+                    (assoc-ref %build-inputs "trilinos")))))))
+    (propagated-inputs
+     `(("mpi" ,openmpi)))
+    (inputs
+     `(("trilinos" ,trilinos-parallel-xyce)
+       ,@(alist-delete "trilinos"
+                       (package-inputs xyce-serial))))))
+
+(define-public freehdl
+  (package
+    (name "freehdl")
+    (version "0.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://downloads.sourceforge.net/qucs/freehdl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "117dqs0d4pcgbzvr3jn5ppra7n7x2m6c161ywh6laa934pw7h2bz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-pkg-config
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "freehdl/freehdl-config"
+               (("pkg-config")
+                (string-append (assoc-ref inputs "pkg-config")
+                               "/bin/pkg-config"))
+               (("cat")
+                (string-append (assoc-ref inputs "coreutils")
+                               "/bin/cat")))
+             #t))
+         (add-after 'configure 'patch-freehdl-pc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "freehdl.pc"
+               (("=g\\+\\+")
+                (string-append "=" (assoc-ref inputs "gcc")
+                               "/bin/g++"))
+               (("=libtool")
+                (string-append "=" (assoc-ref inputs "libtool")
+                               "/bin/libtool")))
+             #t))
+         (add-after 'install-scripts 'make-wrapper
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/freehdl-config")
+                 `("PKG_CONFIG_PATH" ":" prefix (,(string-append out "/lib/pkgconfig")))))
+             #t)))))
+    (inputs
+     `(("coreutils" ,coreutils)
+       ("gcc" ,gcc)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)))
+    (native-inputs
+     `(("pkg-config-native" ,pkg-config)
+       ("libtool-native" ,libtool)))
+    (home-page "http://www.freehdl.seul.org/")
+    (synopsis "VHDL simulator")
+    (description
+     "FreeHDL is a compiler/simulator suite for the hardware description language VHDL.
+  VHDL'93 as well as VHDL'87 standards are supported.")
+    (license (list license:gpl2+
+                   license:lgpl2.0+)))) ; freehdl's libraries
+

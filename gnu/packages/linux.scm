@@ -367,8 +367,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.13.5")
-(define %linux-libre-hash "1crw61x7qrijhpw0azxf9b3fra0cxq87ncni2419p0s23jfdpc4m")
+(define %linux-libre-version "4.13.7")
+(define %linux-libre-hash "1znf2zrhfb6wmlv09c14y6sawl4nb0jr7gzwwnakspvy0yjs95r3")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -377,14 +377,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.53"
-                    "174i53cd090akbjq34dj4z00h1nyfmy3sl3fk6svcmbx6h34381h"
+  (make-linux-libre "4.9.56"
+                    "05wy73yh4jbn1881djs21wl4hws62lyc1frb5di6cg6m3z7j658i"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.90"
-                    "1sqzvz8yrcf99vhphkxp1wm2agq6q9nshxb1mkypspm8rhm11vhw"
+  (make-linux-libre "4.4.92"
+                    "038mrv36n2521xd1f4nlpn00ar4vwzbwkldf6pk7rflbc3zi0p8g"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -398,11 +398,11 @@ It has been modified to remove all non-free binary blobs.")
                           (origin
                             (method url-fetch)
                             (uri "\
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/patch/?id=4a01092a5fa819397484fe2b50e9518356858156")
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/patch/?id=f7ec367c8ea7021517c9c04b0022c225d2d0785a")
                             (file-name "linux-libre-4.4-CVE-2017-1000251.patch")
                             (sha256
                              (base32
-                              "0zmkw9zvzpwy2ihiyfrw6mrf8qzv77cm23lxadr20qvzqlc1xzb3"))))))
+                              "1glnjvs3xkvana2wfdv47dxi7jz2s4dz3v0b8ryglf2vbflm388w"))))))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -3071,6 +3071,16 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                (string-append "--with-udevdir=" out "/lib/udev")))
        #:phases
        (modify-phases %standard-phases
+         ,@(if (string=? (%current-system) "armhf-linux")
+               ;; This test fails unpredictably.
+               ;; TODO: skip it for all architectures.
+               `((add-before 'check 'skip-wonky-test
+                  (lambda _
+                    (substitute* "unit/test-gatt.c"
+                      (("tester_init\\(&argc, &argv\\);") "return 77;"))
+                    #t)))
+               `())
+
          (add-after 'install 'post-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out        (assoc-ref outputs "out"))
@@ -3089,13 +3099,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                   (string-append out "/lib/udev/hid2hci --method"))
                  (("/sbin/udevadm")
                   (string-append (assoc-ref inputs "eudev") "/bin/udevadm")))
-               #t))))
-
-       ;; FIXME: Skip a test that segfaults on some machines.  Seems to be a
-       ;; timing issue (discussion on upstream mailing list:
-       ;; https://marc.info/?t=149578476300002&r=1&w=2)
-       #:make-flags '("XFAIL_TESTS=unit/test-gatt")))
-
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)))
@@ -3689,14 +3693,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "153")
+    (version "154")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "0q40d60p1klzg0aznvxhxgjlddwcxfj2q59s4q86sf9ild6rcdhl"))
+                "07628cr05f50m7lsvw26wxlnb7qcl0x6rymdpp5spqzhz91l58p3"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -3715,7 +3719,7 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
        ;; The tests will only run as root on certain supported CPU models.
        #:tests? #f))
     (supported-systems (list "i686-linux" "x86_64-linux"))
-    (home-page "http://mcelog.org/")
+    (home-page "https://mcelog.org/")
     (synopsis "Machine check monitor for x86 Linux systems")
     (description
      "The mcelog daemon is required by the Linux kernel to log memory, I/O, CPU,

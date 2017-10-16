@@ -42,7 +42,7 @@
             string->ext3-uuid
             string->ext4-uuid
             string->btrfs-uuid
-            string->fat32-uuid
+            string->fat-uuid
             iso9660-uuid->string
 
             ;; XXX: For lack of a better place.
@@ -164,25 +164,25 @@ ISO9660 UUID representation."
 
 
 ;;;
-;;; FAT32.
+;;; FAT32/FAT16.
 ;;;
 
-(define-syntax %fat32-endianness
-  ;; Endianness of FAT file systems.
+(define-syntax %fat-endianness
+  ;; Endianness of FAT32/FAT16 file systems.
   (identifier-syntax (endianness little)))
 
-(define (fat32-uuid->string uuid)
-  "Convert fat32 UUID, a 4-byte bytevector, to its string representation."
-  (let ((high  (bytevector-uint-ref uuid 0 %fat32-endianness 2))
-        (low (bytevector-uint-ref uuid 2 %fat32-endianness 2)))
+(define (fat-uuid->string uuid)
+  "Convert FAT32/FAT16 UUID, a 4-byte bytevector, to its string representation."
+  (let ((high  (bytevector-uint-ref uuid 0 %fat-endianness 2))
+        (low (bytevector-uint-ref uuid 2 %fat-endianness 2)))
     (format #f "~:@(~x-~x~)" low high)))
 
-(define %fat32-uuid-rx
+(define %fat-uuid-rx
   (make-regexp "^([[:xdigit:]]{4})-([[:xdigit:]]{4})$"))
 
-(define (string->fat32-uuid str)
-  "Parse STR, which is in FAT32 format, and return a bytevector or #f."
-  (match (regexp-exec %fat32-uuid-rx str)
+(define (string->fat-uuid str)
+  "Parse STR, which is in FAT32/FAT16 format, and return a bytevector or #f."
+  (match (regexp-exec %fat-uuid-rx str)
     (#f
      #f)
     (rx-match
@@ -190,7 +190,7 @@ ISO9660 UUID representation."
                                    (match:substring rx-match 2) 16)
                                   (string->number
                                    (match:substring rx-match 1) 16))
-                            %fat32-endianness
+                            %fat-endianness
                             2))))
 
 
@@ -216,14 +216,14 @@ ISO9660 UUID representation."
 (define %uuid-parsers
   (vhashq
    ('dce 'ext2 'ext3 'ext4 'btrfs 'luks => string->dce-uuid)
-   ('fat32 'fat => string->fat32-uuid)
+   ('fat32 'fat16 'fat => string->fat-uuid)
    ('iso9660 => string->iso9660-uuid)))
 
 (define %uuid-printers
   (vhashq
    ('dce 'ext2 'ext3 'ext4 'btrfs 'luks => dce-uuid->string)
    ('iso9660 => iso9660-uuid->string)
-   ('fat32 'fat => fat32-uuid->string)))
+   ('fat32 'fat16 'fat => fat-uuid->string)))
 
 (define* (string->uuid str #:optional (type 'dce))
   "Parse STR as a UUID of the given TYPE.  On success, return the

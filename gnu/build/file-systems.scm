@@ -20,9 +20,11 @@
 
 (define-module (gnu build file-systems)
   #:use-module (gnu system uuid)
+  #:use-module (gnu system file-systems)
   #:use-module (guix build utils)
   #:use-module (guix build bournish)
-  #:use-module (guix build syscalls)
+  #:use-module ((guix build syscalls)
+                #:hide (file-system-type))
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
@@ -192,13 +194,40 @@ if DEVICE does not contain a btrfs file system."
 Trailing spaces are trimmed."
   (string-trim-right (latin1->string (sub-bytevector sblock 71 11) (lambda (c) #f)) #\space))
 
-(define (check-fat32-file-system device)
+(define (check-fat-file-system device)
   "Return the health of a fat file system on DEVICE."
   (match (status:exit-val
           (system* "fsck.vfat" "-v" "-a" device))
     (0 'pass)
     (1 'errors-corrected)
     (_ 'fatal-error)))
+
+
+;;;
+;;; FAT16 file systems.
+;;;
+
+(define (fat16-superblock? sblock)
+  "Return #t when SBLOCK is a fat16 boot record."
+  (bytevector=? (sub-bytevector sblock 54 8)
+                (string->utf8 "FAT16   ")))
+
+(define (read-fat16-superblock device)
+  "Return the raw contents of DEVICE's fat16 superblock as a bytevector, or
+#f if DEVICE does not contain a fat16 file system."
+  (read-superblock device 0 62 fat16-superblock?))
+
+(define (fat16-superblock-uuid sblock)
+  "Return the Volume ID of a fat superblock SBLOCK as a 4-byte bytevector."
+  (sub-bytevector sblock 39 4))
+
+(define (fat16-superblock-volume-name sblock)
+  "Return the volume name of SBLOCK as a string of at most 11 characters, or
+#f if SBLOCK has no volume name.  The volume name is a latin1 string.
+Trailing spaces are trimmed."
+  (string-trim-right (latin1->string (sub-bytevector sblock 43 11)
+                                     (lambda (c) #f))
+                     #\space))
 
 
 ;;;
@@ -384,7 +413,9 @@ partition field reader that returned a value."
         (partition-field-reader read-btrfs-superblock
                                 btrfs-superblock-volume-name)
         (partition-field-reader read-fat32-superblock
-                                fat32-superblock-volume-name)))
+                                fat32-superblock-volume-name)
+        (partition-field-reader read-fat16-superblock
+                                fat16-superblock-volume-name)))
 
 (define %partition-uuid-readers
   (list (partition-field-reader read-iso9660-superblock
@@ -394,7 +425,9 @@ partition field reader that returned a value."
         (partition-field-reader read-btrfs-superblock
                                 btrfs-superblock-uuid)
         (partition-field-reader read-fat32-superblock
-                                fat32-superblock-uuid)))
+                                fat32-superblock-uuid)
+        (partition-field-reader read-fat16-superblock
+                                fat16-superblock-uuid)))
 
 (define read-partition-label
   (cut read-partition-field <> %partition-label-readers))
@@ -448,8 +481,7 @@ the following:
      \"/dev/sda1\";
   • 'label', in which case SPEC is known to designate a partition label--e.g.,
      \"my-root-part\";
-  • 'uuid', in which case SPEC must be a UUID (a 16-byte bytevector)
-     designating a partition;
+  • 'uuid', in which case SPEC must be a UUID designating a partition;
   • 'any', in which case SPEC can be anything.
 "
   (define max-trials
@@ -495,9 +527,11 @@ the following:
      (resolve find-partition-by-label spec identity))
     ((uuid)
      (resolve find-partition-by-uuid
-              (if (string? spec)
-                  (string->uuid spec)
-                  spec)
+              (cond ((string? spec)
+                     (string->uuid spec))
+                    ((uuid? spec)
+                     (uuid-bytevector spec))
+                    (else spec))
               uuid->string))
     (else
      (error "unknown device title" title))))
@@ -508,7 +542,7 @@ the following:
     (cond
      ((string-prefix? "ext" type) check-ext2-file-system)
      ((string-prefix? "btrfs" type) check-btrfs-file-system)
-     ((string-suffix? "fat" type) check-fat32-file-system)
+     ((string-suffix? "fat" type) check-fat-file-system)
      (else #f)))
 
   (if check-procedure
@@ -552,11 +586,8 @@ corresponds to the symbols listed in FLAGS."
       (()
        0))))
 
-(define* (mount-file-system spec #:key (root "/root"))
-  "Mount the file system described by SPEC under ROOT.  SPEC must have the
-form:
-
-  (DEVICE TITLE MOUNT-POINT TYPE (FLAGS ...) OPTIONS CHECK?)
+(define* (mount-file-system fs #:key (root "/root"))
+  "Mount the file system described by FS, a <file-system> object, under ROOT.
 
 DEVICE, MOUNT-POINT, and TYPE must be strings; OPTIONS can be a string or #f;
 FLAGS must be a list of symbols.  CHECK? is a Boolean indicating whether to
@@ -582,34 +613,36 @@ run a file system check."
                             (if options
                                 (string-append "," options)
                                 "")))))
-  (match spec
-    ((source title mount-point type (flags ...) options check?)
-     (let ((source      (canonicalize-device-spec source title))
-           (mount-point (string-append root "/" mount-point))
-           (flags       (mount-flags->bit-mask flags)))
-       (when check?
-         (check-file-system source type))
+  (let ((type        (file-system-type fs))
+        (options     (file-system-options fs))
+        (source      (canonicalize-device-spec (file-system-device fs)
+                                               (file-system-title fs)))
+        (mount-point (string-append root "/"
+                                    (file-system-mount-point fs)))
+        (flags       (mount-flags->bit-mask (file-system-flags fs))))
+    (when (file-system-check? fs)
+      (check-file-system source type))
 
-       ;; Create the mount point.  Most of the time this is a directory, but
-       ;; in the case of a bind mount, a regular file or socket may be needed.
-       (if (and (= MS_BIND (logand flags MS_BIND))
-                (not (file-is-directory? source)))
-           (unless (file-exists? mount-point)
-             (mkdir-p (dirname mount-point))
-             (call-with-output-file mount-point (const #t)))
-           (mkdir-p mount-point))
+    ;; Create the mount point.  Most of the time this is a directory, but
+    ;; in the case of a bind mount, a regular file or socket may be needed.
+    (if (and (= MS_BIND (logand flags MS_BIND))
+             (not (file-is-directory? source)))
+        (unless (file-exists? mount-point)
+          (mkdir-p (dirname mount-point))
+          (call-with-output-file mount-point (const #t)))
+        (mkdir-p mount-point))
 
-       (cond
-        ((string-prefix? "nfs" type)
-         (mount-nfs source mount-point type flags options))
-        (else
-         (mount source mount-point type flags options)))
+    (cond
+     ((string-prefix? "nfs" type)
+      (mount-nfs source mount-point type flags options))
+     (else
+      (mount source mount-point type flags options)))
 
-       ;; For read-only bind mounts, an extra remount is needed, as per
-       ;; <http://lwn.net/Articles/281157/>, which still applies to Linux 4.0.
-       (when (and (= MS_BIND (logand flags MS_BIND))
-                  (= MS_RDONLY (logand flags MS_RDONLY)))
-         (let ((flags (logior MS_BIND MS_REMOUNT MS_RDONLY)))
-           (mount source mount-point type flags #f)))))))
+    ;; For read-only bind mounts, an extra remount is needed, as per
+    ;; <http://lwn.net/Articles/281157/>, which still applies to Linux 4.0.
+    (when (and (= MS_BIND (logand flags MS_BIND))
+               (= MS_RDONLY (logand flags MS_RDONLY)))
+      (let ((flags (logior MS_BIND MS_REMOUNT MS_RDONLY)))
+        (mount source mount-point type flags #f)))))
 
 ;;; file-systems.scm ends here

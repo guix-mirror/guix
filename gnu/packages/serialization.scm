@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -385,3 +386,25 @@ style and key ordering are kept, so you can diff the source.")
 
 (define-public python2-ruamel.yaml
   (package-with-python2 python-ruamel.yaml))
+
+(define-public python-cbor
+  (package
+    (name "python-cbor")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cbor" version))
+       (sha256
+        (base32
+         "1dmv163cnslyqccrybkxn0c9s1jk1mmafmgxv75iamnz5lk5l8hk"))))
+    (build-system python-build-system)
+    (home-page "https://bitbucket.org/bodhisnarkva/cbor")
+    (synopsis "Implementation of the Concise Binary Object Representation")
+    (description
+     "Python-cbor provides an implementation of the Concise Binary Object
+Representation (CBOR).  CBOR is comparable to JSON, has a superset of JSON's
+ability, but serializes to a binary format which is smaller and faster to
+generate and parse.  The two primary functions are @code{cbor.loads} and
+@code{cbor.dumps}.")
+    (license license:asl2.0)))

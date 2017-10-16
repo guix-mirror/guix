@@ -138,7 +138,7 @@
                                       (string-append "SHELL=" (which "bash"))
                                       (string-append "--prefix=" out)))
                       (zero? (system* "make" "install"))))))))))
-    (home-page "http://www.x.org")
+    (home-page "https://www.x.org/")
     (synopsis "Source code configuration and build system")
     (description
      "Imake is a deprecated source code configuration and build system which
@@ -167,7 +167,7 @@ autotools system.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("xproto" ,xproto)))
-    (home-page "http://www.x.org")
+    (home-page "https://www.x.org/")
     (synopsis "Symlink directory into tree")
     (description "Create a shadow directory of symbolic links to another
 directory tree.")
@@ -1037,7 +1037,7 @@ of new capabilities and controls for text keyboards.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("xproto" ,xproto)))
-    (home-page "http://xorg.freedesktop.org")
+    (home-page "https://www.x.org/")
     (synopsis "Xorg shared memory fences library")
     (description
      "This library provides an interface to shared-memory fences for
@@ -4454,7 +4454,7 @@ formatted dump file, such as produced by xwd.")
      `(("xproto" ,xproto)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "X color name database")
     (description
      "This package provides the X color name database.")
@@ -5070,7 +5070,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.19.4")
+    (version "1.19.5")
     (source
       (origin
         (method url-fetch)
@@ -5079,7 +5079,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1a690fzv5l5ks45g9zhlzdskdq8q73mcbpb9a3wz3shxm778lxda"))
+          "0iql4pgsgpyqcrd3256pv227cdadvz01ych61n0d41ixp67gmzqq"))
         (patches
          (list
           ;; See:
@@ -5205,20 +5205,23 @@ draggable titlebars and borders.")
     (license license:x11)))
 
 ;; This package is intended to be used when building GTK+.
+;; Note: It's currently marked as "hidden" to avoid having two non-eq?
+;; packages with the same name and version.
 (define-public xorg-server-1.19.3
-  (package
-    (inherit xorg-server)
-    (name "xorg-server")
-    (version "1.19.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://xorg/individual/xserver/"
-             name "-" version ".tar.bz2"))
-       (sha256
-        (base32
-         "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7"))))))
+  (hidden-package
+   (package
+     (inherit xorg-server)
+     (name "xorg-server")
+     (version "1.19.3")
+     (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "mirror://xorg/individual/xserver/"
+              name "-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7")))))))
 
 (define-public xorg-server-xwayland
   (package
@@ -5630,7 +5633,7 @@ The XCB util-wm module provides the following libraries:
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("xauth" ,xauth)))
-    (home-page "http://x.org")
+    (home-page "https://www.x.org/")
     (synopsis "Commands to start the X Window server")
     (description
      "The xinit program is used to start the X Window System server and a
@@ -5764,7 +5767,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
        ("libXt" ,libxt)
        ("xproto" ,xproto)
        ("libXaw" ,libxaw)))
-    (home-page "http://invisible-island.net/xterm")
+    (home-page "http://invisible-island.net/xterm/")
     (synopsis "Terminal emulator for the X Window System")
     (description
      "The xterm program is a terminal emulator for the X Window System.  It

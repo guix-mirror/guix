@@ -87,6 +87,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/check.scm			\
   %D%/packages/chez.scm				\
   %D%/packages/ci.scm				\
+  %D%/packages/cinnamon.scm			\
   %D%/packages/cmake.scm			\
   %D%/packages/cobol.scm			\
   %D%/packages/code.scm				\
@@ -382,6 +383,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/suckless.scm			\
   %D%/packages/swig.scm				\
   %D%/packages/sync.scm			\
+  %D%/packages/syncthing.scm			\
   %D%/packages/synergy.scm			\
   %D%/packages/syndication.scm			\
   %D%/packages/task-management.scm		\
@@ -1048,6 +1050,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tophat-build-with-later-seqan.patch	\
+  %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/unrtf-CVE-2016-10091.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\

@@ -1346,7 +1346,24 @@ users and in some situations.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1svzlbz2vripmyq2kjh0rig16bsrnbkwbsm558pjln9l65mcl4qq"))))
+                "1svzlbz2vripmyq2kjh0rig16bsrnbkwbsm558pjln9l65mcl4qq"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "configure"
+                    (("_guile_required_version=\"2.0.11\"")
+                     "_guile_required_version=\"2\"")
+                    (("ac_subst_vars='")
+                     "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
+                  (substitute* (find-files "." "Makefile.in")
+                    (("moddir = .*$")
+                     (string-append
+                      "moddir = "
+                      "$(prefix)/share/guile/site/@GUILE_EFFECTIVE_VERSION@\n"))
+                    (("godir = .*$")
+                     (string-append
+                      "godir = "
+                      "$(prefix)/lib/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")))))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1357,7 +1374,7 @@ users and in some situations.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("guile" ,guile-2.0)
+     `(("guile" ,guile-2.2)
        ("guile-sdl" ,guile-sdl)
        ("guile-opengl" ,guile-opengl)))
     (inputs

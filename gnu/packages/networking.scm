@@ -486,7 +486,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
@@ -494,7 +494,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1k8zj44pkb2ny2x46f100y7cxddm1kh0zh7f6qggm78gn7wvrp82"))))
+         "0zglapd3sz08p2z9x8a5va3jnz17b3n5a1bskf7f2dgx6m3v5b6i"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)
@@ -510,12 +510,12 @@ which can be used to encrypt a password with @code{crypt(3)}.")
               ("openssl" ,openssl)
               ("portaudio" ,portaudio)
               ("qtbase" ,qtbase)
-              ("qttools" ,qttools)
               ("sbc" ,sbc)
               ("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)
                      ("pkg-config" ,pkg-config)
-                     ("python" ,python-wrapper)))
+                     ("python" ,python-wrapper)
+                     ("qttools" ,qttools)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-c-ares=" (assoc-ref %build-inputs "c-ares"))
@@ -529,7 +529,6 @@ which can be used to encrypt a password with @code{crypt(3)}.")
              (string-append "--with-sbc=" (assoc-ref %build-inputs "sbc"))
              (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl"))
              (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib")))))
-    (home-page "https://www.wireshark.org/")
     (synopsis "Network traffic analyzer")
     (description "Wireshark is a network protocol analyzer, or @dfn{packet
 sniffer}, that lets you capture and interactively browse the contents of

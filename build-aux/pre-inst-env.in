@@ -2,6 +2,7 @@
 
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2017 Eric Bavier <bavier@cray.com>
 #
 # This file is part of GNU Guix.
 #
@@ -50,13 +51,9 @@ NIX_LIBEXEC_DIR="@abs_top_builddir@/nix/scripts" # for 'guix-authenticate'
 export NIX_ROOT_FINDER NIX_SUBSTITUTERS NIX_LIBEXEC_DIR
 
 NIX_BUILD_HOOK="$abs_top_builddir/nix/scripts/offload"
-if [ -x "$NIX_BUILD_HOOK" ]
-then
-    export NIX_BUILD_HOOK
-else
-    # No offloading support.
-    unset NIX_BUILD_HOOK
-fi
+@BUILD_DAEMON_OFFLOAD_TRUE@export NIX_BUILD_HOOK
+@BUILD_DAEMON_OFFLOAD_FALSE@# No offloading support.
+@BUILD_DAEMON_OFFLOAD_FALSE@unset NIX_BUILD_HOOK
 
 # The 'guix-register' program.
 GUIX_REGISTER="$abs_top_builddir/guix-register"

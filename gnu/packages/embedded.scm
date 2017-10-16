@@ -416,13 +416,15 @@ language.")
 with a layered architecture of JTAG interface and TAP support.")
     (license license:gpl2+)))
 
-;; The commits for all propeller tools are the latest versions as published
-;; here: https://github.com/dbetz/propeller-gcc
+;; The commits for all propeller tools are the stable versions published at
+;; https://github.com/propellerinc/propgcc in the release_1_0.  According to
+;; personal correspondence with the developers in July 2017, more recent
+;; versions are currently incompatible with the "Simple Libraries".
 
 (define propeller-binutils
   (let ((xbinutils (cross-binutils "propeller-elf"))
-        (commit "3bfba30076f8ce160a2f42914fdb68f24445fd44")
-        (revision "1"))
+        (commit "4c46ecbe79ffbecd2ce918497ace5b956736b5a3")
+        (revision "2"))
     (package
       (inherit xbinutils)
       (name "propeller-binutils")
@@ -430,28 +432,24 @@ with a layered architecture of JTAG interface and TAP support.")
       (source (origin (inherit (package-source xbinutils))
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/totalspectrum/binutils-propeller.git")
+                      (url "https://github.com/parallaxinc/propgcc.git")
                       (commit commit)))
                 (file-name (string-append name "-" commit "-checkout"))
                 (sha256
                  (base32
-                  "1v3rgxwj7b8817wy5ccf8621v75qcxvcxygk4acr3hbc6yqybr8h"))))
+                  "0w0dff3s7wv2d9m78a4jhckiik58q38wx6wpbba5hzbs4yxz35ck"))
+                (patch-flags (list "-p1" "--directory=binutils"))))
       (arguments
-       `(;; FIXME: For some reason there are many test failures.  Some of them
-         ;; appear to be due to regular expression mismatch, but it's not
+       `(;; FIXME: For some reason there are many test failures.  It's not
          ;; obvious how to fix the failures.
          #:tests? #f
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'patch-/bin/sh-in-tests
-             (lambda _
-               (substitute* '("sim/testsuite/Makefile.in"
-                              "sim/testsuite/mips64el-elf/Makefile.in"
-                              "sim/testsuite/d10v-elf/Makefile.in"
-                              "sim/testsuite/sim/cris/asm/badarch1.ms")
-                 (("/bin/sh") (which "sh")))
-               #t)))
-         ,@(package-arguments xbinutils)))
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "binutils") #t)))
+         ,@(substitute-keyword-arguments (package-arguments xbinutils)
+            ((#:configure-flags flags)
+             `(cons "--disable-werror" ,flags)))))
       (native-inputs
        `(("bison" ,bison)
          ("flex" ,flex)
@@ -497,26 +495,33 @@ with a layered architecture of JTAG interface and TAP support.")
 
 (define-public propeller-gcc-4
   (let ((xgcc propeller-gcc-6)
-        (commit "f1b01001b760d691a91ff1db4830d41bb712557f")
-        (revision "1"))
+        (commit "4c46ecbe79ffbecd2ce918497ace5b956736b5a3")
+        (revision "2"))
     (package (inherit xgcc)
       (name "propeller-gcc")
       (version (string-append "4.6.1-" revision "." (string-take commit 9)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/dbetz/propgcc-gcc.git")
+                      (url "https://github.com/parallaxinc/propgcc.git")
                       (commit commit)))
                 (file-name (string-append name "-" commit "-checkout"))
                 (sha256
                  (base32
-                  "15mxrhk2v4vqmdkvcqy33ag1wrg9x9q20kx2w33kkw8pkrijknbi"))
+                  "0w0dff3s7wv2d9m78a4jhckiik58q38wx6wpbba5hzbs4yxz35ck"))
+                (patch-flags (list "-p1" "--directory=gcc"))
                 (patches
                  (append
                   (origin-patches (package-source gcc-4.7))
                   (search-patches "gcc-4.6-gnu-inline.patch"
                                   "gcc-cross-environment-variables.patch")))))
-      (home-page "https://github.com/dbetz/propgcc-gcc")
+      (arguments
+       (substitute-keyword-arguments (package-arguments propeller-gcc-6)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "gcc") #t))))))
+      (home-page "https://github.com/parallaxinc/propgcc")
       (supported-systems (delete "aarch64-linux" %supported-systems)))))
 
 ;; Version 6 is experimental and may not work correctly.  This is why we
@@ -524,23 +529,25 @@ with a layered architecture of JTAG interface and TAP support.")
 ;; provided by Parallax Inc.
 (define-public propeller-gcc propeller-gcc-4)
 
-;; There is no release, so we take the latest version as referenced from here:
-;; https://github.com/dbetz/propeller-gcc
+
+;; FIXME: We do not build the tiny library because that would require C++
+;; headers, which are not available.  This may require adding a propeller-elf
+;; variant of the libstdc++ package.
 (define-public proplib
-  (let ((commit "844741fe0ceb140ab2fdf9d0667f68c1c39c31da")
-        (revision "1"))
+  (let ((commit "4c46ecbe79ffbecd2ce918497ace5b956736b5a3")
+        (revision "2"))
     (package
       (name "proplib")
       (version (string-append "0.0.0-" revision "." (string-take commit 9)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/totalspectrum/proplib.git")
+                      (url "https://github.com/parallaxinc/propgcc.git")
                       (commit commit)))
                 (file-name (string-append name "-" commit "-checkout"))
                 (sha256
                  (base32
-                  "0q7irf1x8iqx07n7lzksax9armrdkizs49swsz76nbks0mw67wiv"))))
+                  "0w0dff3s7wv2d9m78a4jhckiik58q38wx6wpbba5hzbs4yxz35ck"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; no tests
@@ -550,12 +557,11 @@ with a layered architecture of JTAG interface and TAP support.")
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
-           (add-after 'unpack 'fix-Makefile
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "lib") #t))
+           (add-after 'chdir 'fix-Makefile
              (lambda _
                (substitute* "Makefile"
-                 ;; The GCC sources are not part of this package, so we cannot
-                 ;; install the out-of-tree license file.
-                 (("cp \\.\\..*") "")
                  ;; Control the installation time of the headers.
                  ((" install-includes") ""))
                #t))
@@ -575,23 +581,14 @@ with a layered architecture of JTAG interface and TAP support.")
                                       "/propeller-elf/include:"
                                       (or (getenv "CROSS_C_INCLUDE_PATH") "")))
                #t))
-           (add-after 'build 'build-tiny
+           (add-before 'install 'install-includes
              (lambda* (#:key make-flags #:allow-other-keys)
-               (zero? (apply system* "make" "tiny" make-flags))))
-           ;; The build of the tiny libraries depends on the includes to be
-           ;; available.  Since we set CROSS_C_INCLUDE_PATH to the output
-           ;; directory, we have to install the includes first.
-           (add-before 'build-tiny 'install-includes
-             (lambda* (#:key make-flags #:allow-other-keys)
-               (zero? (apply system* "make" "install-includes" make-flags))))
-           (add-after 'install 'install-tiny
-             (lambda* (#:key make-flags #:allow-other-keys)
-               (zero? (apply system* "make" "install-tiny" make-flags)))))))
+               (zero? (apply system* "make" "install-includes" make-flags)))))))
       (native-inputs
        `(("propeller-gcc" ,propeller-gcc)
          ("propeller-binutils" ,propeller-binutils)
          ("perl" ,perl)))
-      (home-page "https://github.com/totalspectrum/proplib")
+      (home-page "https://github.com/parallaxinc/propgcc")
       (synopsis "C library for the Parallax Propeller")
       (description "This is a C library for the Parallax Propeller
 micro-controller.")
@@ -655,20 +652,20 @@ code.")
     (license license:expat)))
 
 (define-public propeller-load
-  (let ((commit "ba9c0a7251cf751d8d292ae19ffa03132097c0c0")
-        (revision "1"))
+  (let ((commit "4c46ecbe79ffbecd2ce918497ace5b956736b5a3")
+        (revision "2"))
     (package
       (name "propeller-load")
       (version "3.4.0")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/dbetz/propeller-load.git")
+                      (url "https://github.com/parallaxinc/propgcc.git")
                       (commit commit)))
                 (file-name (string-append name "-" commit "-checkout"))
                 (sha256
                  (base32
-                  "1qv3xaapl9fmj3zn58b60sprp4rnvnlpci8ci0pdrzkw6fhvx3pg"))))
+                  "0w0dff3s7wv2d9m78a4jhckiik58q38wx6wpbba5hzbs4yxz35ck"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; no tests
@@ -677,11 +674,13 @@ code.")
                (string-append "TARGET=" (assoc-ref %outputs "out")))
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "loader") #t))
            (delete 'configure))))
       (native-inputs
        `(("openspin" ,openspin)
          ("propeller-toolchain" ,propeller-toolchain)))
-      (home-page "https://github.com/dbetz/propeller-load")
+      (home-page "https://github.com/parallaxinc/propgcc")
       (synopsis "Loader for Parallax Propeller micro-controllers")
       (description "This package provides the tool @code{propeller-load} to
 upload binaries to a Parallax Propeller micro-controller.")

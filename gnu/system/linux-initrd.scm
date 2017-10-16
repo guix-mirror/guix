@@ -187,9 +187,11 @@ to it are lost."
                            '((gnu build linux-boot)
                              (guix build utils)
                              (guix build bournish)
+                             (gnu system file-systems)
                              (gnu build file-systems)))
      #~(begin
          (use-modules (gnu build linux-boot)
+                      (gnu system file-systems)
                       (guix build utils)
                       (guix build bournish)   ;add the 'bournish' meta-command
                       (srfi srfi-26)
@@ -206,7 +208,9 @@ to it are lost."
              (set-path-environment-variable "PATH" '("bin" "sbin")
                                             '#$helper-packages)))
 
-         (boot-system #:mounts '#$(map file-system->spec file-systems)
+         (boot-system #:mounts
+                      (map spec->file-system
+                           '#$(map file-system->spec file-systems))
                       #:pre-mount (lambda ()
                                     (and #$@device-mapping-commands))
                       #:linux-modules '#$linux-modules

@@ -133,7 +133,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages networking)
-  #:use-module (guix build utils)
+  #:use-module (gnu packages web)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
@@ -2628,6 +2628,56 @@ Transport Tycoon Deluxe.")
        ("openmsx" ,openttd-openmsx)
        ("opensfx" ,openttd-opensfx)
        ,@(package-native-inputs openttd-engine)))))
+
+(define-public openrct2
+  (package
+    (name "openrct2")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/OpenRCT2/OpenRCT2/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1bahkzlf9k92cc4zs4nk4wy59323kiw8d3wm0vjps3kp7iznqyjx"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;; no tests available
+       #:phases
+        (modify-phases %standard-phases
+          (add-after 'build 'fix-cmake-install-file
+            (lambda _
+              ;; The build system tries to download a file and compare hashes.
+              ;; Since we have no network, remove this so the install doesn't fail.
+              (substitute* "cmake_install.cmake"
+                (("EXPECTED_HASH SHA1=b587d83de508d0b104d14c599b76f8565900fce0")
+                "")))))))
+    (inputs `(("curl", curl)
+              ("fontconfig", fontconfig)
+              ("freetype", freetype)
+              ("jansson", jansson)
+              ("libpng", libpng)
+              ("libzip", libzip)
+              ("mesa", mesa)
+              ("openssl", openssl)
+              ("sdl2", sdl2)
+              ("speexdsp", speexdsp)
+              ("zlib", zlib)))
+    (native-inputs
+      `(("pkg-config", pkg-config)))
+    (home-page "https://github.com/OpenRCT2/OpenRCT2")
+    (synopsis "Free software re-implementation of RollerCoaster Tycoon 2")
+    (description "OpenRCT2 is a free software re-implementation of
+RollerCoaster Tycoon 2 (RCT2).  The gameplay revolves around building and
+maintaining an amusement park containing attractions, shops and facilities.
+
+Note that this package does @emph{not} provide the game assets (sounds,
+images, etc.)")
+    ;; See <https://github.com/OpenRCT2/OpenRCT2/wiki/Required-RCT2-files>
+    ;; regarding assets.
+    (license license:gpl3+)))
 
 (define-public pinball
   (package

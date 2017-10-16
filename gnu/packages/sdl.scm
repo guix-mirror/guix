@@ -403,13 +403,18 @@ directory.")
        ("xorg-server" ,xorg-server)
        ("libjpeg" ,libjpeg)))
     (inputs
-     `(("guile" ,guile-2.0)
+     `(("guile" ,guile-2.2)
        ("sdl-union" ,(sdl-union))))
     (arguments
      '(#:configure-flags
        (list (string-append "--with-sdl-prefix="
                             (assoc-ref %build-inputs "sdl-union")))
+       #:modules ((ice-9 popen)
+                  (guix build utils)
+                  (guix build gnu-build-system))
+
        #:parallel-build? #f ; parallel build fails
+
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-env-and-patch
@@ -418,9 +423,16 @@ directory.")
              ;; SDL_image needs to dlopen libjpeg in the test suite.
              (setenv "LD_LIBRARY_PATH"
                      (string-append (assoc-ref inputs "libjpeg") "/lib"))
-             ;; Change the site directory /site/2.0 like Guile expects.
+
+             ;; Change the site directory /site/X.Y like Guile expects.
              (substitute* "build-aux/guile-baux/re-prefixed-site-dirs"
-               (("\"/site\"") "\"/site/2.0\""))
+               (("\"/site\"")
+                (let ((effective
+                       (read
+                        (open-pipe* OPEN_READ
+                                    "guile" "-c"
+                                    "(write (effective-version))"))))
+                  (string-append "\"/site/" effective "\""))))
 
              ;; Skip tests that rely on sound support, which is unavailable in
              ;; the build environment.
@@ -434,6 +446,16 @@ directory.")
              (system (format #f "~a/bin/Xvfb :1 &"
                              (assoc-ref inputs "xorg-server")))
              (setenv "DISPLAY" ":1")
+             #t))
+         (add-before 'check 'skip-cursor-test
+           (lambda _
+             ;; XXX: This test sometimes enters an endless loop, and sometimes
+             ;; crashes with:
+             ;;   guile: xcb_io.c:147: append_pending_request: Assertion `!xcb_xlib_unknown_seq_number' failed.
+             ;; Skip it.
+             (substitute* "test/cursor.scm"
+               (("\\(SDL:init .*" all)
+                (string-append "(exit 77)  ;" all "\n")))
              #t)))))
     (synopsis "Guile interface for SDL (Simple DirectMedia Layer)")
     (description "Guile-SDL is a set of bindings to the Simple DirectMedia

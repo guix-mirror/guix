@@ -307,7 +307,8 @@ FILE-SYSTEM."
                                                                 '#$packages))))
                            (lambda ()
                              (mount-file-system
-                              '#$(file-system->spec file-system)
+                              (spec->file-system
+                               '#$(file-system->spec file-system))
                               #:root "/"))
                            (lambda ()
                              (setenv "PATH" $PATH)))
@@ -322,9 +323,10 @@ FILE-SYSTEM."
                       (umount #$target)
                       #f))
 
-            ;; We need an additional module.
+            ;; We need additional modules.
             (modules `(((gnu build file-systems)
                         #:select (mount-file-system))
+                       (gnu system file-systems)
                        ,@%default-modules)))))))
 
 (define (file-system-shepherd-services file-systems)

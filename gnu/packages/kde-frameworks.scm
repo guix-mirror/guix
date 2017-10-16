@@ -31,6 +31,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages bison)
@@ -42,6 +43,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -92,7 +94,17 @@
            (lambda _
              ;; Always install into /lib and not into /lib64.
              (substitute* "kde-modules/KDEInstallDirs.cmake"
-               (("\"lib64\"") "\"lib\""))))
+               (("\"lib64\"") "\"lib\"")
+               ;; TODO: Base the following on values taken from Qt
+               ;; Install plugins into lib/qt5/plugins
+               (("_define_relative\\(QTPLUGINDIR LIBDIR \"plugins\"")
+                "_define_relative(QTPLUGINDIR LIBDIR \"qt5/plugins\"")
+               ;; Install imports into lib/qt5/imports
+               (("_define_relative\\(QTQUICKIMPORTSDIR QTPLUGINDIR \"imports\"")
+                "_define_relative(QTQUICKIMPORTSDIR LIBDIR \"qt5/imports\"")
+               ;; Install qml-files into lib/qt5/qml
+               (("_define_relative\\(QMLDIR LIBDIR \"qml\"")
+                "_define_relative(QMLDIR LIBDIR \"qt5/qml\""))))
          ;; install and check phase are swapped to prevent install from failing
          ;; after testsuire has run
          (add-after 'install 'check-post-install
@@ -128,16 +140,17 @@ common build settings used in software produced by the KDE community.")
                 "177647r2jqfm32hqcz2nqfqv6v48hn5ab2vc31svba2wz23fkgk7"))))
     (build-system cmake-build-system)
     (native-inputs
-     ;; TODO: Add qttools to build the Qt Designer plugin.
      ;; TODO: Think about adding pulseaudio. Is it required for sound?
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     ;; TODO: Add building the super experimental QML support
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("qttools", qttools)))
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
        '("-DCMAKE_CXX_FLAGS=-fPIC"
-         "-DPHONON_BUILD_PHONON4QT5=ON"
-         "-DPHONON_INSTALL_QT_EXTENSIONS_INTO_SYSTEM_QT=ON")
+         "-DPHONON_BUILD_PHONON4QT5=ON")
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'patch-installdir
@@ -307,8 +320,11 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
      `(("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
-       '("-DINSTALL_UDEV_RULE:BOOL=OFF")
-       #:tests? #f)) ; DBUS_FATAL_WARNINGS=0 still yields 7/8 tests failing
+       (list (string-append
+              "-DUDEV_RULES_INSTALL_DIR=" %output "/lib/udev/rules.d"))
+       ;; TODO: Make tests pass: DBUS_FATAL_WARNINGS=0 still yields 7/8 tests
+       ;; failing.  When running after install, tests hang.
+       #:tests? #f))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "QML wrapper for BlueZ")
     (description "bluez-qt is a Qt-style library for accessing the bluez
@@ -540,6 +556,8 @@ propagate their changes to their respective configuration files.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)
+       ("shared-mime-info" ,shared-mime-info)
+       ;; TODO: FAM: File alteration notification http://oss.sgi.com/projects/fam
        ("xorg-server" ,xorg-server))) ; for the tests
     (inputs
      `(("qtbase" ,qtbase)))
@@ -624,7 +642,8 @@ as well as an API to create KDED modules.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("avahi" ,avahi) ; alternativly dnssd could be used
+       ("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Network service discovery using Zeroconf")
     (description "KDNSSD is a library for handling the DNS-based Service
@@ -729,9 +748,11 @@ translation scripting.")
                 "01m4q3l2yq83f2dpbv6jry7cjkj6bqdgfpy5b8byaf1gf9w2firs"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("libxscrnsaver" ,libxscrnsaver) ; X-Screensaver based poller, fallback mode
+       ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Reporting of idle time of user and system")
@@ -1042,7 +1063,7 @@ configuration pages, message boxes, and password requests.")
                  (begin
                    (let ((out (assoc-ref outputs "out")))
                      (setenv "QT_PLUGIN_PATH"
-                             (string-append out "/lib/plugins:"
+                             (string-append out "/lib/qt5/plugins:"
                                             (getenv "QT_PLUGIN_PATH"))))
                    ;; The test suite requires a running X server, setting
                    ;; QT_QPA_PLATFORM=offscreen does not suffice and even make
@@ -1213,7 +1234,7 @@ system.")
 (define-public prison
   (package
     (name "prison")
-    (version "5.34.0")
+    (version "5.37.0")
     (source
      (origin
        (method url-fetch)
@@ -1221,7 +1242,7 @@ system.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "00wj4yyfhhcq9b54civ5hy1grz70mmi676x50y12crcbbgkxm1lx"))))
+        (base32 "1icsirwfh7zscm8x9g2gp7aqzhs81ahhjflwjcwpz9bh0r9f1wb7"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1251,6 +1272,7 @@ provides uniform access to generation of barcodes with data.")
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
      `(("hunspell" ,hunspell)
@@ -1452,6 +1474,15 @@ application crashes.")
                (("^.*xml/docbook/stylesheet.*$")
                 (string-append "xml/xsl/docbook-xsl-"
                                ,(package-version docbook-xsl) "\n")))
+             #t))
+         (add-after 'install 'add-symlinks
+           ;; Some package(s) (e.g. kdelibs4support) refer to this locale by a
+           ;; different spelling.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((xsl (string-append (assoc-ref outputs "out")
+                                       "/share/kf5/kdoctools/customization/xsl/")))
+               (symlink (string-append xsl "pt_br.xml")
+                        (string-append xsl "pt-BR.xml")))
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Create documentation from DocBook")
@@ -1485,23 +1516,26 @@ from DocBook files.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (setenv "QT_PLUGIN_PATH"
-                       (string-append out "/lib/plugins:"
+                       (string-append out "/lib/qt5/plugins:"
                                     (getenv "QT_PLUGIN_PATH"))))
              #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
        ("python-2" ,python-2)))
     (inputs
      `(("attr" ,attr)
+       ;; TODO: EPub http://sourceforge.net/projects/ebook-tools
        ("karchive" ,karchive)
        ("ki18n" ,ki18n)
+       ("qtmultimedia" ,qtmultimedia)
        ("qtbase" ,qtbase)
        ;; Required run-time packages
        ("catdoc" ,catdoc)
        ;; Optional run-time packages
        ("exiv2" ,exiv2)
        ("ffmpeg" ,ffmpeg)
-       ("poppler" ,poppler)
+       ("poppler-qt5" ,poppler-qt5)
        ("taglib" ,taglib)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Extract metadata from different fileformats")
@@ -1995,7 +2029,8 @@ KCModules can be created with the KConfigWidgets framework.")
        ("kconfig" ,kconfig)
        ("kwidgetsaddons" ,kwidgetsaddons)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)))
     (inputs
      `(("kcoreaddons" ,kcoreaddons)
        ("kguiaddons" ,kguiaddons)
@@ -2036,6 +2071,7 @@ their settings.")
        ("kpackage" ,kpackage)))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server)))
     (inputs
      `(("kauth" ,kauth)
@@ -2055,6 +2091,7 @@ their settings.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
+       ("libepoxy", libepoxy)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
        ("solid" ,solid)))
@@ -2132,7 +2169,20 @@ started on demand.")
      `(("kconfig" ,kconfig)
        ("kcoreaddons" ,kcoreaddons)
        ("kdoctools" ,kdoctools)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase)
+       ;; optional:
+       ("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kiconthemes" ,kiconthemes)
+       ("kitemviews" ,kitemviews)
+       ("kio" ,kio)
+       ("kplotting" ,kplotting)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kdewebkit" ,kdewebkit)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtwebkit" ,qtwebkit)
+       ("sonnet" ,sonnet)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2237,6 +2287,7 @@ emoticons coming from different providers.")
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
      `(("kconfig" ,kconfig)
@@ -2386,7 +2437,7 @@ makes starting KDE applications faster and reduces memory consumption.")
      `(("dbus" ,dbus)
        ("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("acl" ,acl)
+     `(;; TODO:  LibACL , <ftp://oss.sgi.com/projects/xfs/cmd_tars>
        ("krb5" ,mit-krb5)
        ("karchive" ,karchive)
        ("kauth" ,kauth)
@@ -2411,13 +2462,30 @@ makes starting KDE applications faster and reduces memory consumption.")
      `(#:tests? #f ; FIXME: 41/50 tests fail.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             ;; Better error message (taken from nix)
+             (substitute* "src/kiod/kiod_main.cpp"
+               (("(^\\s*qCWarning(KIOD_CATEGORY) << \"Error loading plugin:\")( << loader.errorString();)" _ a b)
+                (string-append a "<< name" b)))
+             ;; TODO: samba-search-path.patch from nix: search smbd on $PATH
+             #t))
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
+             #t))
+         (add-after 'install 'add-symlinks
+           ;; Some package(s) (e.g. bluedevil) refer to these service types by
+           ;; the wrong name.  I would prefer to patch those packages, but I
+           ;; cannot find the files!
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((kst5 (string-append (assoc-ref outputs "out")
+                                        "/share/kservicetypes5/")))
+               (symlink (string-append kst5 "kfileitemactionplugin.desktop")
+                        (string-append kst5 "kfileitemaction-plugin.desktop"))))))))
     ;;(replace 'check
     ;;  (lambda _
     ;;    (setenv "DBUS_FATAL_WARNINGS" "0")
@@ -2551,7 +2619,9 @@ notifications which can be embedded in your application.")
        ("ktextwidgets" ,ktextwidgets)
        ("kxmlgui" ,kxmlgui)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("shared-mime-info" ,shared-mime-info)
+       ))
     (inputs
      `(("kauth" ,kauth)
        ("kbookmarks" ,kbookmarks)
@@ -2788,7 +2858,16 @@ types or handled by application specific code.")
              (setenv "HOME" (getcwd))
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
+             #t))
+         (add-after 'install 'add-symlinks
+           ;; Some package(s) (e.g. plasma-sdk) refer to these service types
+           ;; by the wrong name.  I would prefer to patch those packages, but
+           ;; I cannot find the files!
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((kst5 (string-append (assoc-ref outputs "out")
+                                        "/share/kservicetypes5/")))
+               (symlink (string-append kst5 "ktexteditorplugin.desktop")
+                        (string-append kst5 "ktexteditor-plugin.desktop"))))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Full text editor component")
     (description "KTextEditor provides a powerful text editor component that you
@@ -2861,7 +2940,7 @@ It supports rich text as well as plain text.")
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("gpgme" ,gpgme) ;; TODO: Add gpgme Qt-bindings
+     `(("gpgme" ,gpgme)
        ("kauth" ,kauth)
        ("kcodecs" ,kcodecs)
        ("kconfig" ,kconfig)
@@ -2877,12 +2956,45 @@ It supports rich text as well as plain text.")
        ("kwindowsystem" ,kwindowsystem)
        ("libgcrypt" ,libgcrypt)
        ("phonon" ,phonon)
+       ("qgpgme" ,qgpgme)
        ("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Safe desktop-wide storage for passwords")
     (description "This framework contains an interface to KWallet, a safe
 desktop-wide storage for passwords and the kwalletd daemon used to safely store
 the passwords on KDE work spaces.")
+    (license license:lgpl2.1+)))
+
+(define-public kdewebkit
+  (package
+    (name "kdewebkit")
+    (version "5.37.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1ph3a50wix42hmsbc9jbfxla172aihjx9yzp9rza09j1a7va3hg1"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kio" ,kio)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kparts" ,kparts)
+       ("kservice" ,kservice)
+       ("kwallet" ,kwallet)
+       ("qtbase" ,qtbase)
+       ("qtwebkit" ,qtwebkit)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Integration for QtWebKit")
+    (description "This library provides KDE integration of the HTML rendering
+engine WebKit via QtWebKit.")
     (license license:lgpl2.1+)))
 
 (define-public kxmlgui
@@ -3182,12 +3294,8 @@ workspace.")
     (inputs
      `(("kcompletion" ,kcompletion)
        ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
        ("kded" ,kded)
-       ("kdesignerplugin" ,kdesignerplugin)
-       ("kdoctools" ,kdoctools)
        ("kglobalaccel" ,kglobalaccel)
-       ("kguiaddons" ,kguiaddons)
        ("ki18n" ,ki18n)
        ("kio" ,kio)
        ("kservice" ,kservice)

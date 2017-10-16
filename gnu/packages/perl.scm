@@ -162,7 +162,7 @@
         (base32
          "01hlcaxndls86bl92rkd3fvf9pfa3inxqaimv88bxs95803kmkss"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Algorithm-C3")
+    (home-page "http://search.cpan.org/dist/Algorithm-C3/")
     (synopsis "Module for merging hierarchies using the C3 algorithm")
     (description "This module implements the C3 algorithm, which aims to
 provide a sane method resolution order under multiple inheritance.")
@@ -181,7 +181,7 @@ provide a sane method resolution order under multiple inheritance.")
         (base32
          "0l8pk7ziz72d022hsn4xldhhb9f5649j5cgpjdibch0xng24ms1h"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Algorithm-Diff")
+    (home-page "http://search.cpan.org/dist/Algorithm-Diff/")
     (synopsis "Compute differences between two files or lists")
     (description "This is a module for computing the difference between two
 files, two strings, or any other two lists of things.  It uses an intelligent
@@ -204,7 +204,7 @@ differences.")
          "1syyqzy462501kn5ma9gl6xbmcahqcn4qpafhsmpz0nd0x2m4l63"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/aliased")
+    (home-page "http://search.cpan.org/dist/aliased/")
     (synopsis "Use shorter versions of class names")
     (description "The alias module loads the class you specify and exports
 into your namespace a subroutine that returns the class name.  You can
@@ -227,7 +227,7 @@ implicitly.")
     (native-inputs
      `(("perl-mouse" ,perl-mouse)
        ("perl-moose" ,perl-moose)))
-    (home-page "http://search.cpan.org/dist/Any-Moose")
+    (home-page "http://search.cpan.org/dist/Any-Moose/")
     (synopsis "Transparently use Moose or Mouse modules")
     (description
      "This module facilitates using @code{Moose} or @code{Mouse} modules
@@ -252,7 +252,7 @@ variable ANY_MOOSE to be Moose or Mouse.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-pod" ,perl-test-pod)))
-    (home-page "http://search.cpan.org/dist/AppConfig")
+    (home-page "http://search.cpan.org/dist/AppConfig/")
     (synopsis "Configuration files and command line parsing")
     (description "AppConfig is a bundle of Perl5 modules for reading
 configuration files and parsing command line arguments.")
@@ -293,7 +293,7 @@ manipulate, read, and write Zip archive files.")
         (base32
          "0w1pwvnjdpb0n6k07zbknxwx6v7y75p4jxrs594pjhwvrmzippc9"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Array-Utils")
+    (home-page "http://search.cpan.org/dist/Array-Utils/")
     (synopsis "Small utils for array manipulation")
     (description "@code{Array::Utils} is a small pure-perl module containing
 list manipulation routines.")
@@ -313,7 +313,7 @@ list manipulation routines.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
-    (home-page "http://search.cpan.org/dist/Async-Interrupt")
+    (home-page "http://search.cpan.org/dist/Async-Interrupt/")
     (synopsis "Allow C/XS libraries to interrupt perl asynchronously")
     (description
      "@code{Async::Interrupt} implements a single feature only of interest
@@ -345,7 +345,7 @@ sometimes even without using a single syscall.")
         (base32
          "1422kw9fknv7rbjkgdfflg1q3mb69d3yryszp38dn0bgzkqhwkc1"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/autovivification")
+    (home-page "http://search.cpan.org/dist/autovivification/")
     (synopsis "Lexically disable autovivification")
     (description "When an undefined variable is dereferenced, it gets silently
 upgraded to an array or hash reference (depending of the type of the
@@ -372,7 +372,7 @@ error when it would have happened.")
         (base32
          "01n3l5ifmn2wd0aadpnzya27b75imibj9zdivkfzcpnviqgx5c2m"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/base")
+    (home-page "http://search.cpan.org/dist/base/")
     (synopsis "Establish an ISA relationship with base classes at compile time")
     (description "Allows you to both load one or more modules, while setting
 up inheritance from those modules at the same time.  Unless you are using the
@@ -398,7 +398,7 @@ parent.")
        ("perl-module-implementation" ,perl-module-implementation)
        ("perl-sub-exporter-progressive" ,perl-sub-exporter-progressive)
        ("perl-variable-magic" ,perl-variable-magic)))
-    (home-page "http://search.cpan.org/dist/B-Hooks-EndOfScope")
+    (home-page "http://search.cpan.org/dist/B-Hooks-EndOfScope/")
     (synopsis "Execute code after a scope finished compilation")
     (description "This module allows you to execute code when perl finished
 compiling the surrounding scope.")
@@ -428,7 +428,7 @@ trials.  It is perfect for when you need more precise information about the
 running time of portions of your code than the Benchmark module will give you,
 but don't want to go all out and profile your code.")
     (home-page (string-append "http://search.cpan.org/~dcoppit/"
-                              "Benchmark-Timer-" version))
+                              "Benchmark-Timer-" version "/"))
     (license gpl2)))
 
 (define-public perl-bit-vector
@@ -446,7 +446,7 @@ but don't want to go all out and profile your code.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-carp-clan" ,perl-carp-clan)))
-    (home-page "http://search.cpan.org/dist/Bit-Vector")
+    (home-page "http://search.cpan.org/dist/Bit-Vector/")
     (synopsis "Bit vector library")
     (description "Bit::Vector is an efficient C library which allows you to
 handle bit vectors, sets (of integers), \"big integer arithmetic\" and boolean
@@ -469,7 +469,7 @@ library can nevertheless be used stand-alone, without Perl.")
         (base32
          "18hrgldzwnhs0c0r8hxx6r05qvk9p7gwinjwcybixfs2h0n43ypj"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/boolean")
+    (home-page "http://search.cpan.org/dist/boolean/")
     (synopsis "Boolean support for Perl")
     (description "This module provides basic Boolean support, by defining two
 special objects: true and false.")
@@ -488,7 +488,7 @@ special objects: true and false.")
         (base32
          "1jc5jrjwkr6pqga7998zkgw0yrxgb5n1y7lzgddawxibkf608mn7"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Business-ISBN-Data")
+    (home-page "http://search.cpan.org/dist/Business-ISBN-Data/")
     (synopsis "Data files for Business::ISBN")
     (description "This package provides a data pack for @code{Business::ISBN}.
 These data are generated from the RangeMessage.xml file provided by the ISBN
@@ -511,7 +511,7 @@ Agency.")
     (propagated-inputs
      `(("perl-business-isbn-data" ,perl-business-isbn-data)
        ("perl-mojolicious" ,perl-mojolicious)))
-    (home-page "http://search.cpan.org/dist/Business-ISBN")
+    (home-page "http://search.cpan.org/dist/Business-ISBN/")
     (synopsis "Work with International Standard Book Numbers")
     (description "This modules provides tools to deal with International
 Standard Book Numbers, including ISBN-10 and ISBN-13.")
@@ -530,7 +530,7 @@ Standard Book Numbers, including ISBN-10 and ISBN-13.")
         (base32
          "1dfnm7h7lbqj356700ldlmgbr51v6hyjn1qig2bb4ysl1wn1jnzi"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Business-ISSN")
+    (home-page "http://search.cpan.org/dist/Business-ISSN/")
     (synopsis "Work with International Standard Serial Numbers")
     (description "This modules provides tools to deal with International
 Standard Serial Numbers.")
@@ -551,7 +551,7 @@ Standard Serial Numbers.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-tie-cycle" ,perl-tie-cycle)))
-    (home-page "http://search.cpan.org/dist/Business-ISMN")
+    (home-page "http://search.cpan.org/dist/Business-ISMN/")
     (synopsis "Work with International Standard Music Numbers")
     (description "This modules provides tools to deal with International
 Standard Music Numbers.")
@@ -573,7 +573,7 @@ Standard Music Numbers.")
      `(("perl-digest-sha1" ,perl-digest-sha1)
        ("perl-error" ,perl-error)
        ("perl-ipc-sharelite" ,perl-ipc-sharelite)))
-    (home-page "http://search.cpan.org/dist/Cache-Cache")
+    (home-page "http://search.cpan.org/dist/Cache-Cache/")
     (synopsis "Cache interface for Perl")
     (description "The Cache modules are designed to assist a developer in
 persisting data for a specified period of time.  Often these modules are used
@@ -597,7 +597,7 @@ easy to use abstraction of the file system or shared memory.")
         (base32
          "0h3ckr04cdn6dvl40m4m97vl5ybf30v1lwhw3jvkr92kpksvq4hd"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Cache-FastMmap")
+    (home-page "http://search.cpan.org/dist/Cache-FastMmap/")
     (synopsis "Shared memory interprocess cache via mmap")
     (description "A shared memory cache through an mmap'ed file.  It's core is
 written in C for performance.  It uses fcntl locking to ensure multiple
@@ -619,7 +619,7 @@ algorithm to keep the most used entries in the cache.")
         (base32
          "05bhlx6d4nzamhkkh0pkckg7wlvaq6mazf7q1fbb5wpp1j1nlyjx"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Capture-Tiny")
+    (home-page "http://search.cpan.org/dist/Capture-Tiny/")
     (synopsis "Capture STDOUT and STDERR from Perl, XS or external programs")
     (description
      "Capture::Tiny provides a simple, portable way to capture almost anything
@@ -640,7 +640,7 @@ is captured while being passed through to the original file handles.")
                (base32
                 "01vih43hvpqy67m6a6fwmlswli91mqpv8n8ccglvlkc33l8hn97x"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Canary-Stability")
+    (home-page "http://search.cpan.org/dist/Canary-Stability/")
     (synopsis "Check compatibility with the installed perl version")
     (description
      "This module is used by Schmorp's modules during configuration stage
@@ -660,7 +660,7 @@ to test the installed perl for compatibility with his modules.")
         (base32
          "0km5fc6r6whxh6h5yd7g1j0bi96sgk0gkda6cardicrw9qmqwkwj"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Carp-Assert")
+    (home-page "http://search.cpan.org/dist/Carp-Assert/")
     (synopsis "Executable comments for Perl")
     (description "Carp::Assert is intended for a purpose like the ANSI C
 library assert.h.")
@@ -683,7 +683,7 @@ library assert.h.")
      `(("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-carp-assert" ,perl-carp-assert)))
-    (home-page "http://search.cpan.org/dist/Carp-Assert-More")
+    (home-page "http://search.cpan.org/dist/Carp-Assert-More/")
     (synopsis "Convenience wrappers around Carp::Assert")
     (description "Carp::Assert::More is a set of handy assertion functions for
 Perl.")
@@ -704,7 +704,7 @@ Perl.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
-    (home-page "http://search.cpan.org/dist/Carp-Clan")
+    (home-page "http://search.cpan.org/dist/Carp-Clan/")
     (synopsis "Report errors from a \"clan\" of modules")
     (description "This module allows errors from a clan (or family) of modules
 to appear to originate from the caller of the clan.  This is necessary in
@@ -725,7 +725,7 @@ the Carp.pm module doesn't help.")
                (base32
                 "1jfrwvfasylcafbvb0jjm94ad4v6k99a7rf5i4qwzhg4m0gvmk5x"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/CDDB_get")
+    (home-page "http://search.cpan.org/dist/CDDB_get/")
     (synopsis "Read the CDDB entry for an audio CD in your drive")
     (description "This module can retrieve information from the CDDB.")
     ;; Either GPLv2 or the "Artistic" license.
@@ -748,7 +748,7 @@ the Carp.pm module doesn't help.")
      `(("perl-sub-name" ,perl-sub-name)))
     (propagated-inputs
      `(("perl-base" ,perl-base)))
-    (home-page "http://search.cpan.org/dist/Class-Accessor")
+    (home-page "http://search.cpan.org/dist/Class-Accessor/")
     (synopsis "Automated accessor generation")
     (description "This module automagically generates accessors/mutators for
 your class.")
@@ -771,7 +771,7 @@ your class.")
      `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-class-accessor" ,perl-class-accessor)))
-    (home-page "http://search.cpan.org/dist/Class-Accessor-Chained")
+    (home-page "http://search.cpan.org/dist/Class-Accessor-Chained/")
     (synopsis "Faster, but less expandable, chained accessors")
     (description "A chained accessor is one that always returns the object
 when called with parameters (to set), and the value of the field when called
@@ -799,7 +799,7 @@ the same mk_accessors interface.")
      `(("perl-class-xsaccessor" ,perl-class-xsaccessor)
        ("perl-module-runtime" ,perl-module-runtime)
        ("perl-sub-name" ,perl-sub-name)))
-    (home-page "http://search.cpan.org/dist/Class-Accessor-Grouped")
+    (home-page "http://search.cpan.org/dist/Class-Accessor-Grouped/")
     (synopsis "Build groups of accessors")
     (description "This class lets you build groups of accessors that will call
 different getters and setters.")
@@ -820,7 +820,7 @@ different getters and setters.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-algorithm-c3" ,perl-algorithm-c3)))
-    (home-page "http://search.cpan.org/dist/Class-C3")
+    (home-page "http://search.cpan.org/dist/Class-C3/")
     (synopsis "Pragma to use the C3 method resolution order algorithm")
     (description "This is pragma to change Perl 5's standard method resolution
 order from depth-first left-to-right (a.k.a - pre-order) to the more
@@ -845,7 +845,7 @@ sophisticated C3 method resolution order.")
     (propagated-inputs
      `(("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-mro-compat" ,perl-mro-compat)))
-    (home-page "http://search.cpan.org/dist/Class-C3-Adopt-NEXT")
+    (home-page "http://search.cpan.org/dist/Class-C3-Adopt-NEXT/")
     (synopsis "Drop-in replacement for NEXT")
     (description "This module is intended as a drop-in replacement for NEXT,
 supporting the same interface, but using Class::C3 to do the hard work.")
@@ -871,7 +871,7 @@ supporting the same interface, but using Class::C3 to do the hard work.")
      `(("perl-class-c3" ,perl-class-c3)
        ("perl-class-inspector" ,perl-class-inspector)
        ("perl-mro-compat" ,perl-mro-compat)))
-    (home-page "http://search.cpan.org/dist/Class-C3-Componentised")
+    (home-page "http://search.cpan.org/dist/Class-C3-Componentised/")
     (synopsis "Load mix-ins or components to your C3-based class")
     (description "This module will inject base classes to your module using
 the Class::C3 method resolution order.")
@@ -890,7 +890,7 @@ the Class::C3 method resolution order.")
         (base32
          "0jpi38wy5xh6p1mg2cbyjjw76vgbccqp46685r27w8hmxb7gwrwr"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Class-Data-Inheritable")
+    (home-page "http://search.cpan.org/dist/Class-Data-Inheritable/")
     (synopsis "Inheritable, overridable class data")
     (description "Class::Data::Inheritable is for creating accessor/mutators
 to class data.  That is, if you want to store something about your class as a
@@ -912,7 +912,7 @@ subclasses and can be overridden.")
          "0dd707sq8ix2dqbnp7ga77ba69r3vsn0cd6scnkn13s0gm2g4b00"))))
     (build-system perl-build-system)
     (arguments `(#:tests? #f))          ;timezone tests in chroot
-    (home-page "http://search.cpan.org/dist/Class-Date")
+    (home-page "http://search.cpan.org/dist/Class-Date/")
     (synopsis "Class for easy date and time manipulation")
     (description "This module provides a general-purpose date and datetime
 type for perl.")
@@ -930,7 +930,7 @@ type for perl.")
                (base32
                 "00j5f0z4riyq7i95jww291dpmbn0hmmvkcbrh7p0p8lpqz7jsb9l"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Class-ErrorHandler")
+    (home-page "http://search.cpan.org/dist/Class-ErrorHandler/")
     (synopsis "Base class for error handling")
     (description
      "@code{Class::ErrorHandler} provides an error-handling mechanism that is generic
@@ -953,7 +953,7 @@ to the calling program.")
          "09ifd6v0c94vr20n9yr1dxgcp7hyscqq851szdip7y24bd26nlbc"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Class-Factory-Util")
+    (home-page "http://search.cpan.org/dist/Class-Factory-Util/")
     (synopsis "Utility methods for factory classes")
     (description "This module exports methods useful for factory classes.")
     (license (package-license perl))))
@@ -971,7 +971,7 @@ to the calling program.")
         (base32
          "1sqfjgzxx1f951fykc6vgfvys4j8rxaw2zf3jq26yrvs3ygn8pq6"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Class-Inspector")
+    (home-page "http://search.cpan.org/dist/Class-Inspector/")
     (synopsis "Get information about a class and its structure")
     (description "Class::Inspector allows you to get information about a
 loaded class.")
@@ -1000,7 +1000,7 @@ loaded class.")
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-module-runtime" ,perl-module-runtime)
        ("perl-module-implementation" ,perl-module-implementation)))
-    (home-page "http://search.cpan.org/dist/Class-Load")
+    (home-page "http://search.cpan.org/dist/Class-Load/")
     (synopsis "Working (require \"Class::Name\") and more")
     (description "\"require EXPR\" only accepts Class/Name.pm style module
 names, not Class::Name.  For that, this module provides \"load_class
@@ -1024,7 +1024,7 @@ names, not Class::Name.  For that, this module provides \"load_class
      `(("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-requires" ,perl-test-requires)))
     (inputs `(("perl-class-load" ,perl-class-load)))
-    (home-page "http://search.cpan.org/dist/Class-Load-XS")
+    (home-page "http://search.cpan.org/dist/Class-Load-XS/")
     (synopsis "XS implementation of parts of Class::Load")
     (description "This module provides an XS implementation for portions of
 Class::Load.")
@@ -1044,7 +1044,7 @@ Class::Load.")
         (base32
          "0a03i4k3a33qqwhykhz5k437ld5mag2vq52vvsy03gbynb65ivsy"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Class-MethodMaker")
+    (home-page "http://search.cpan.org/dist/Class-MethodMaker/")
     (synopsis "Create generic methods for OO Perl")
     (description "This module solves the problem of having to continually
 write accessor methods for your objects that perform standard tasks.")
@@ -1066,7 +1066,7 @@ write accessor methods for your objects that perform standard tasks.")
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-requires" ,perl-test-requires)))
-    (home-page "http://search.cpan.org/dist/Class-Method-Modifiers")
+    (home-page "http://search.cpan.org/dist/Class-Method-Modifiers/")
     (synopsis "Moose-like method modifiers")
     (description "Class::Method::Modifiers provides three modifiers: 'before',
 'around', and 'after'.  'before' and 'after' are run just before and after the
@@ -1088,7 +1088,7 @@ original method.")
         (base32
          "0y7ngrjf551bjgmijp5rsidbkq6c8hb5lmy2jcqq0fify020s8iq"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Class-Singleton")
+    (home-page "http://search.cpan.org/dist/Class-Singleton/")
     (synopsis "Implementation of a singleton class for Perl")
     (description "This module implements a Singleton class from which other
 classes can be derived.  By itself, the Class::Singleton module does very
@@ -1108,7 +1108,7 @@ little other than manage the instantiation of a single object.")
         (base32
          "0jll90byj0nl16hwpf28k54i4n53jidjsj1bnlbx72v0n56qfpb2"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Class-Tiny")
+    (home-page "http://search.cpan.org/dist/Class-Tiny/")
     (synopsis "Minimalist class construction")
     (description "This module offers a minimalist class construction kit.  It
 uses no non-core modules for any recent Perl.")
@@ -1129,7 +1129,7 @@ uses no non-core modules for any recent Perl.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-class-inspector" ,perl-class-inspector)))
-    (home-page "http://search.cpan.org/dist/Class-Unload")
+    (home-page "http://search.cpan.org/dist/Class-Unload/")
     (synopsis "Unload a class")
     (description "Class:Unload unloads a given class by clearing out its
 symbol table and removing it from %INC.")
@@ -1148,7 +1148,7 @@ symbol table and removing it from %INC.")
         (base32
          "1wm6013il899jnm0vn50a7iv9v6r4nqywbqzj0csyf8jbwwnpicr"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Class-XSAccessor")
+    (home-page "http://search.cpan.org/dist/Class-XSAccessor/")
     (synopsis "Generate fast XS accessors without runtime compilation")
     (description "Class::XSAccessor implements fast read, write, and
 read/write accessors in XS.  Additionally, it can provide predicates such as
@@ -1176,7 +1176,7 @@ arrays for their internal representation.")
 nested hash, array, scalar and reference types, including tied variables and
 objects.")
     (home-page (string-append "http://search.cpan.org/~garu/"
-                              "Clone-" version))
+                              "Clone-" version "/"))
     (license (package-license perl))))
 
 (define-public perl-common-sense
@@ -1192,7 +1192,7 @@ objects.")
         (base32
          "1wxv2s0hbjkrnssvxvsds0k213awg5pgdlrpkr6xkpnimc17s7vp"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/common-sense")
+    (home-page "http://search.cpan.org/dist/common-sense/")
     (synopsis "Sane defaults for Perl programs")
     (description "This module implements some sane defaults for Perl programs,
 as defined by two typical specimens of Perl coders.")
@@ -1213,7 +1213,7 @@ as defined by two typical specimens of Perl coders.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-module-pluggable" ,perl-module-pluggable)))
-    (home-page "http://search.cpan.org/dist/Config-Any")
+    (home-page "http://search.cpan.org/dist/Config-Any/")
     (synopsis "Load configuration from different file formats")
     (description "Config::Any provides a facility for Perl applications and
 libraries to load configuration data from multiple different file formats.  It
@@ -1235,7 +1235,7 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
-    (home-page "http://search.cpan.org/dist/Config-AutoConf")
+    (home-page "http://search.cpan.org/dist/Config-AutoConf/")
     (synopsis "Module to implement some AutoConf macros in Perl")
     (description "Config::AutoConf is intended to provide the same
 opportunities to Perl developers as GNU Autoconf does for Shell developers.")
@@ -1254,7 +1254,7 @@ opportunities to Perl developers as GNU Autoconf does for Shell developers.")
         (base32
          "0szxxaihz71pr0r2jp9wvbrfc3hrsxi9xrd9vnyrxlrax8sci5h9"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Config-General")
+    (home-page "http://search.cpan.org/dist/Config-General/")
     (synopsis "Generic Config Module")
     (description "This module opens a config file and parses its contents for
 you.  The format of config files supported by Config::General is inspired by
@@ -1282,7 +1282,7 @@ options.")
      `(("perl-mixin-linewise" ,perl-mixin-linewise)
        ("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
        ("perl-sub-exporter" ,perl-sub-exporter)))
-    (home-page "http://search.cpan.org/dist/Config-INI")
+    (home-page "http://search.cpan.org/dist/Config-INI/")
     (synopsis "Simple .ini-file format reader and writer")
     (description "@code{Config::INI} is a module that facilates the reading
 and writing of @code{.ini}-style configuration files.")
@@ -1304,7 +1304,7 @@ and writing of @code{.ini}-style configuration files.")
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)
        ("perl-test-simple" ,perl-test-simple)))
-    (home-page "http://search.cpan.org/dist/Context-Preserve")
+    (home-page "http://search.cpan.org/dist/Context-Preserve/")
     (synopsis "Preserve context during subroutine call")
     (description "This module runs code after a subroutine call, preserving
 the context the subroutine would have seen if it were the last statement in
@@ -1330,7 +1330,7 @@ the caller.")
      `(("perl-file-slurp" ,perl-file-slurp)
        ("perl-test-most" ,perl-test-most)))
     (home-page
-     "http://search.cpan.org/dist/Convert-BinHex")
+     "http://search.cpan.org/dist/Convert-BinHex/")
     (synopsis "Extract data from Macintosh BinHex files")
     (description
      "BinHex is a format for transporting files safely through electronic
@@ -1354,7 +1354,7 @@ data.")
     (build-system perl-build-system)
     (native-inputs `(("perl-test-deep" ,perl-test-deep)))
     (propagated-inputs `(("perl-cpan-meta" ,perl-cpan-meta)))
-    (home-page "http://search.cpan.org/dist/CPAN-Meta-Check")
+    (home-page "http://search.cpan.org/dist/CPAN-Meta-Check/")
     (synopsis "Verify requirements in a CPAN::Meta object")
     (description "This module verifies if requirements described in a
 CPAN::Meta object are present.")
@@ -1375,7 +1375,7 @@ CPAN::Meta object are present.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
-    (home-page "http://search.cpan.org/dist/Cpanel-JSON-XS")
+    (home-page "http://search.cpan.org/dist/Cpanel-JSON-XS/")
     (synopsis "JSON::XS for Cpanel")
     (description "This module converts Perl data structures to JSON and vice
 versa.")
@@ -1394,7 +1394,7 @@ versa.")
         (base32
          "0ca8544371wp4vvqsa19lnhl02hczpkbwkgsgm65ziwwim3r1gdi"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Crypt-RandPasswd")
+    (home-page "http://search.cpan.org/dist/Crypt-RandPasswd/")
     (synopsis "Random password generator")
     (description "Crypt::RandPasswd provides three functions that can be used
 to generate random passwords, constructed from words, letters, or characters.
@@ -1420,7 +1420,7 @@ Password Generator\".")
         (base32
          "1sp099cws0q225h6j4y68hmfd1lnv5877gihjs40f8n2ddf45i2y"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Crypt-RC4")
+    (home-page "http://search.cpan.org/dist/Crypt-RC4/")
     (synopsis "Perl implementation of the RC4 encryption algorithm")
     (description "A pure Perl implementation of the RC4 algorithm.")
     (license (package-license perl))))
@@ -1440,7 +1440,7 @@ Password Generator\".")
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-requires" ,perl-test-requires)))
-    (home-page "http://search.cpan.org/dist/Cwd-Guard")
+    (home-page "http://search.cpan.org/dist/Cwd-Guard/")
     (synopsis "Temporarily change working directory")
     (description
      "@code{Cwd::Guard} changes the current directory using a limited scope.
@@ -1502,7 +1502,7 @@ bioinformatics data.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-find-rule" ,perl-file-find-rule)))
-    (home-page "http://search.cpan.org/dist/Data-Compare")
+    (home-page "http://search.cpan.org/dist/Data-Compare/")
     (synopsis "Compare Perl data structures")
     (description "This module compares arbitrary data structures to see if
 they are copies of each other.")
@@ -1521,7 +1521,7 @@ they are copies of each other.")
         (base32
          "1jsc6acmv97pzsvx1fqywz4qvxxpp7kwmb78ygyqpsczkfj9p4dn"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Data-Uniqid")
+    (home-page "http://search.cpan.org/dist/Data-Uniqid/")
     (synopsis "Perl extension for generating unique identifiers")
     (description "@code{Data::Uniqid} provides three simple routines for
 generating unique ids.  These ids are coded with a Base62 systen to make them
@@ -1541,7 +1541,7 @@ short and handy (e.g. to use it as part of a URL).")
         (base32
          "1ciqlwsy1q35s94dry9bjy1pwanbq6b7q4rhxm9z8prgkzbslg2k"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Data-Dump")
+    (home-page "http://search.cpan.org/dist/Data-Dump/")
     (synopsis "Pretty printing of data structures")
     (description "This module provide functions that takes a list of values as
 their argument and produces a string as its result.  The string contains Perl
@@ -1561,7 +1561,7 @@ code that, when \"eval\"ed, produces a deep copy of the original arguments.")
         (base32
          "0lsqbl1mxhkj0qnjfa1jrvx8wwbyi81bgwfyj1si6cdg7h8jzhm6"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Data-Dumper-Concise")
+    (home-page "http://search.cpan.org/dist/Data-Dumper-Concise/")
     (synopsis "Concise data dumper")
     (description "Data::Dumper::Concise provides a dumper with Less
 indentation and newlines plus sub deparsing.")
@@ -1584,7 +1584,7 @@ indentation and newlines plus sub deparsing.")
     (propagated-inputs
      `(("perl-sub-install" ,perl-sub-install)
        ("perl-params-util" ,perl-params-util)))
-    (home-page "http://search.cpan.org/dist/Data-OptList")
+    (home-page "http://search.cpan.org/dist/Data-OptList/")
     (synopsis "Parse and validate simple name/value option pairs")
     (description
      "Data::OptList provides a simple syntax for name/value option pairs.")
@@ -1608,7 +1608,7 @@ indentation and newlines plus sub deparsing.")
        ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-class-accessor-chained" ,perl-class-accessor-chained)))
-    (home-page "http://search.cpan.org/dist/Data-Page")
+    (home-page "http://search.cpan.org/dist/Data-Page/")
     (synopsis "Help when paging through sets of results")
     (description "When searching through large amounts of data, it is often
 the case that a result set is returned that is larger than we want to display
@@ -1644,7 +1644,7 @@ The maths behind this is unfortunately fiddly, hence this module.")
     (propagated-inputs
      `(("perl-list-moreutils" ,perl-list-moreutils)))
     (home-page
-     "http://search.cpan.org/dist/Data-Perl")
+     "http://search.cpan.org/dist/Data-Perl/")
     (synopsis "Base classes wrapping fundamental Perl data types")
     (description
      "@code{Data::Perl} is a container class for the following classes:
@@ -1674,7 +1674,7 @@ The maths behind this is unfortunately fiddly, hence this module.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-string" ,perl-io-string)))
-    (home-page "http://search.cpan.org/dist/Data-Stag")
+    (home-page "http://search.cpan.org/dist/Data-Stag/")
     (synopsis "Structured tags datastructures")
     (description
      "This module is for manipulating data as hierarchical tag/value
@@ -1703,7 +1703,7 @@ Perl.")
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-path-class" ,perl-path-class)
        ("perl-sub-exporter" ,perl-sub-exporter)))
-    (home-page "http://search.cpan.org/dist/Data-Stream-Bulk")
+    (home-page "http://search.cpan.org/dist/Data-Stream-Bulk/")
     (synopsis "N at a time iteration API")
     (description "This module tries to find middle ground between one at a
 time and all at once processing of data sets.  The purpose of this module is
@@ -1729,7 +1729,7 @@ necessary later on.")
      `(("perl-test-most" ,perl-test-most)))
     (propagated-inputs
      `(("perl-file-homedir" ,perl-file-homedir)))
-    (home-page "http://search.cpan.org/dist/Data-Tumbler")
+    (home-page "http://search.cpan.org/dist/Data-Tumbler/")
     (synopsis "Dynamic generation of nested combinations of variants")
     (description "Data::Tumbler - Dynamic generation of nested combinations of
 variants.")
@@ -1756,7 +1756,7 @@ variants.")
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-task-weaken" ,perl-task-weaken)
        ("perl-tie-toobject" ,perl-tie-toobject)))
-    (home-page "http://search.cpan.org/dist/Data-Visitor")
+    (home-page "http://search.cpan.org/dist/Data-Visitor/")
     (synopsis "Visitor style traversal of Perl data structures")
     (description "This module is a simple visitor implementation for Perl
 values.  It has a main dispatcher method, visit, which takes a single perl
@@ -1782,7 +1782,7 @@ structures, and all ref types (hashes, arrays, scalars, code, globs).")
     (propagated-inputs
      `(("perl-bit-vector" ,perl-bit-vector)
        ("perl-carp-clan" ,perl-carp-clan)))
-    (home-page "http://search.cpan.org/dist/Date-Calc")
+    (home-page "http://search.cpan.org/dist/Date-Calc/")
     (synopsis "Gregorian calendar date calculations")
     (description "This package consists of a Perl module for date calculations
 based on the Gregorian calendar, thereby complying with all relevant norms and
@@ -1807,7 +1807,7 @@ applicable).")
      `(("perl-bit-vector" ,perl-bit-vector)
        ("perl-carp-clan" ,perl-carp-clan)
        ("perl-date-calc" ,perl-date-calc)))
-    (home-page "http://search.cpan.org/dist/Date-Calc-XS")
+    (home-page "http://search.cpan.org/dist/Date-Calc-XS/")
     (synopsis "XS wrapper for Date::Calc")
     (description "Date::Calc::XS is an XS wrapper and C library plug-in for
 Date::Calc.")
@@ -1832,7 +1832,7 @@ Date::Calc.")
      ;; (gnu packages base) which would create a circular dependency.  TODO:
      ;; Maybe put this package elsewhere so we can turn on tests.
      '(#:tests? #f))
-    (home-page "http://search.cpan.org/dist/Date-Manip")
+    (home-page "http://search.cpan.org/dist/Date-Manip/")
     (synopsis "Date manipulation routines")
     (description "Date::Manip is a series of modules for common date/time
 operations, such as comparing two times, determining a date a given amount of
@@ -1852,7 +1852,7 @@ time from another, or parsing international times.")
         (base32
          "016x17r9wi6ffdc4idwirzd1sxqcb4lmq5fn2aiq25nf2iir5899"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Date-Simple")
+    (home-page "http://search.cpan.org/dist/Date-Simple/")
     (synopsis "Simple date handling")
     (description "Dates are complex enough without times and timezones.  This
 module may be used to create simple date objects.  It handles validation,
@@ -1885,7 +1885,7 @@ hours, minutes, seconds, and time zones.")
        ("perl-file-sharedir" ,perl-file-sharedir)
        ("perl-params-validate" ,perl-params-validate)
        ("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/DateTime")
+    (home-page "http://search.cpan.org/dist/DateTime/")
     (synopsis "Date and time object for Perl")
     (description "DateTime is a class for the representation of date/time
 combinations.  It represents the Gregorian calendar, extended backwards in
@@ -1908,7 +1908,7 @@ time before its creation (in 1582).")
     ;; Only needed for tests
     (native-inputs
      `(("perl-datetime" ,perl-datetime)))
-    (home-page "http://search.cpan.org/dist/DateTime-Calendar-Julian")
+    (home-page "http://search.cpan.org/dist/DateTime-Calendar-Julian/")
     (synopsis "Dates in the Julian calendar")
     (description "This package is a companion module to @code{DateTime.pm}.
 It implements the Julian calendar.  It supports everything that
@@ -1935,7 +1935,7 @@ precise.")
      `(("perl-datetime" ,perl-datetime)
        ("perl-params-validate" ,perl-params-validate)
        ("perl-set-infinite" ,perl-set-infinite)))
-    (home-page "http://search.cpan.org/dist/DateTime-Set")
+    (home-page "http://search.cpan.org/dist/DateTime-Set/")
     (synopsis "DateTime set objects")
     (description "The DateTime::Set module provides a date/time sets
 implementation.  It allows, for example, the generation of groups of dates,
@@ -1959,7 +1959,7 @@ within a time range.")
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-datetime-event-recurrence" ,perl-datetime-event-recurrence)))
-    (home-page "http://search.cpan.org/dist/DateTime-Event-ICal")
+    (home-page "http://search.cpan.org/dist/DateTime-Event-ICal/")
     (synopsis "DateTime rfc2445 recurrences")
     (description "This module provides convenience methods that let you easily
 create DateTime::Set objects for RFC 2445 style recurrences.")
@@ -1981,7 +1981,7 @@ create DateTime::Set objects for RFC 2445 style recurrences.")
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-datetime-set" ,perl-datetime-set)))
-    (home-page "http://search.cpan.org/dist/DateTime-Event-Recurrence")
+    (home-page "http://search.cpan.org/dist/DateTime-Event-Recurrence/")
     (synopsis "DateTime::Set extension for basic recurrences")
     (description "This module provides convenience methods that let you easily
 create DateTime::Set objects for various recurrences, such as \"once a month\"
@@ -2007,7 +2007,7 @@ or \"every day\".  You can also create more complicated recurrences, such as
        ("perl-datetime" ,perl-datetime)
        ("perl-datetime-format-strptime" ,perl-datetime-format-strptime)
        ("perl-params-validate" ,perl-params-validate)))
-    (home-page "http://search.cpan.org/dist/DateTime-Format-Builder")
+    (home-page "http://search.cpan.org/dist/DateTime-Format-Builder/")
     (synopsis "Create DateTime parser classes and objects")
     (description "DateTime::Format::Builder creates DateTime parsers.  Many
 string formats of dates and times are simple and just require a basic regular
@@ -2035,7 +2035,7 @@ to do this without writing reams of structural code.")
        ("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-module-pluggable" ,perl-module-pluggable)
        ("perl-test-mocktime" ,perl-test-mocktime)))
-    (home-page "http://search.cpan.org/dist/DateTime-Format-Flexible")
+    (home-page "http://search.cpan.org/dist/DateTime-Format-Flexible/")
     (synopsis "Parse data/time strings")
     (description "DateTime::Format::Flexible attempts to take any string you
 give it and parse it into a DateTime object.")
@@ -2062,7 +2062,7 @@ give it and parse it into a DateTime object.")
        ("perl-datetime-set" ,perl-datetime-set)
        ("perl-datetime-timezone" ,perl-datetime-timezone)
        ("perl-params-validate" ,perl-params-validate)))
-    (home-page "http://search.cpan.org/dist/DateTime-Format-ICal")
+    (home-page "http://search.cpan.org/dist/DateTime-Format-ICal/")
     (synopsis "Parse and format iCal datetime and duration strings")
     (description "This module understands the ICal date/time and duration
 formats, as defined in RFC 2445.  It can be used to parse these formats in
@@ -2095,7 +2095,7 @@ order to create the appropriate objects.")
        ("perl-datetime-timezone" ,perl-datetime-timezone)
        ("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-params-validate" ,perl-params-validate)))
-    (home-page "http://search.cpan.org/dist/DateTime-Format-Natural")
+    (home-page "http://search.cpan.org/dist/DateTime-Format-Natural/")
     (synopsis "Machine-readable date/time with natural parsing")
     (description "DateTime::Format::Natural takes a string with a human
 readable date/time and creates a machine readable one by applying natural
@@ -2123,7 +2123,7 @@ parsing logic.")
        ("perl-params-validate" ,perl-params-validate)
        ("perl-sub-name" ,perl-sub-name)
        ("perl-test-warnings" ,perl-test-warnings)))
-    (home-page "http://search.cpan.org/dist/DateTime-Format-Strptime")
+    (home-page "http://search.cpan.org/dist/DateTime-Format-Strptime/")
     (synopsis "Parse and format strp and strf time patterns")
     (description "This module implements most of `strptime(3)`, the POSIX
 function that is the reverse of `strftime(3)`, for `DateTime`.  While
@@ -2156,7 +2156,7 @@ takes a string and a pattern and returns the `DateTime` object associated.")
     (propagated-inputs
      `(("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-params-validationcompiler" ,perl-params-validationcompiler)))
-    (home-page "http://search.cpan.org/dist/DateTime-Locale")
+    (home-page "http://search.cpan.org/dist/DateTime-Locale/")
     (synopsis "Localization support for DateTime.pm")
     (description "The DateTime::Locale modules provide localization data for
 the DateTime.pm class.")
@@ -2185,7 +2185,7 @@ the DateTime.pm class.")
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)
        ("perl-params-validationcompiler" ,perl-params-validationcompiler)
        ("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/DateTime-TimeZone")
+    (home-page "http://search.cpan.org/dist/DateTime-TimeZone/")
     (synopsis "Time zone object for Perl")
     (description "This class is the base class for all time zone objects.  A
 time zone is represented internally as a set of observances, each of which
@@ -2216,7 +2216,7 @@ DateTime::TimeZone methods.")
        ("perl-datetime-format-ical" ,perl-datetime-format-ical)
        ("perl-datetime-format-natural" ,perl-datetime-format-natural)
        ("perl-timedate" ,perl-timedate)))
-    (home-page "http://search.cpan.org/dist/DateTimeX-Easy")
+    (home-page "http://search.cpan.org/dist/DateTimeX-Easy/")
     (synopsis "Parse date/time strings")
     (description "DateTimeX::Easy uses a variety of DateTime::Format packages
 to create DateTime objects, with some custom tweaks to smooth out the rough
@@ -2238,7 +2238,7 @@ edges (mainly concerning timezone detection and selection).")
     (inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-params-validate" ,perl-params-validate)))
-    (home-page "http://search.cpan.org/dist/DateTime-Format-Mail")
+    (home-page "http://search.cpan.org/dist/DateTime-Format-Mail/")
     (synopsis "Convert between DateTime and RFC2822/822 formats")
     (description "RFCs 2822 and 822 specify date formats to be used by email.
 This module parses and emits such dates.")
@@ -2261,7 +2261,7 @@ This module parses and emits such dates.")
     (native-inputs
      `(("perl-test-pod" ,perl-test-pod)
        ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
-    (home-page "http://search.cpan.org/dist/DateTime-Format-W3CDTF")
+    (home-page "http://search.cpan.org/dist/DateTime-Format-W3CDTF/")
     (synopsis "Parse and format W3CDTF datetime strings")
     (description
      "This module understands the W3CDTF date/time format, an ISO 8601 profile,
@@ -2285,7 +2285,7 @@ the appropriate objects.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-padwalker" ,perl-padwalker)))
-    (home-page "http://search.cpan.org/dist/Devel-Caller")
+    (home-page "http://search.cpan.org/dist/Devel-Caller/")
     (synopsis "Meatier version of caller")
     (description "Devel::Caller provides meatier version of caller.")
     (license (package-license perl))))
@@ -2304,7 +2304,7 @@ the appropriate objects.")
          "0g71sma9jy0fjm619hcrcsb9spg2y03vjxx36y8k1xpa2553sr7m"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Devel-CheckBin")
+    (home-page "http://search.cpan.org/dist/Devel-CheckBin/")
     (synopsis "Check that a command is available")
     (description "Devel::CheckBin is a perl module that checks whether a
 particular command is available.")
@@ -2324,7 +2324,7 @@ particular command is available.")
   (build-system perl-build-system)
   (native-inputs
    `(("perl-module-build-tiny" ,perl-module-build-tiny)))
-  (home-page "http://search.cpan.org/dist/Devel-CheckCompiler")
+  (home-page "http://search.cpan.org/dist/Devel-CheckCompiler/")
   (synopsis "Check compiler availability")
   (description "@code{Devel::CheckCompiler} is a tiny module to check
 whether a compiler is available.  It can test for a C99 compiler, or
@@ -2347,7 +2347,7 @@ you can tell it to compile a C source file with optional linker flags.")
          "1hhb77kz3dys8yaik452j22cm3510zald2mpvfyv5clqv326aczx"))))
     (build-system perl-build-system)
     (home-page
-     "http://search.cpan.org/dist/Devel-Cycle")
+     "http://search.cpan.org/dist/Devel-Cycle/")
     (synopsis "Find memory cycles in objects")
     (description
      "@code{Devel::Cycle} This is a tool for finding circular references in
@@ -2370,7 +2370,7 @@ based memory management, circular references will cause memory leaks.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-sub-exporter-progressive" ,perl-sub-exporter-progressive)))
-    (home-page "http://search.cpan.org/dist/Devel-GlobalDestruction")
+    (home-page "http://search.cpan.org/dist/Devel-GlobalDestruction/")
     (synopsis "Provides equivalent of ${^GLOBAL_PHASE} eq 'DESTRUCT' for older perls")
     (description "Devel::GlobalDestruction provides a function returning the
 equivalent of \"$@{^GLOBAL_PHASE@} eq 'DESTRUCT'\" for older perls.")
@@ -2391,7 +2391,7 @@ equivalent of \"$@{^GLOBAL_PHASE@} eq 'DESTRUCT'\" for older perls.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-devel-caller" ,perl-devel-caller)))
-    (home-page "http://search.cpan.org/dist/Devel-LexAlias")
+    (home-page "http://search.cpan.org/dist/Devel-LexAlias/")
     (synopsis "Alias lexical variables")
     (description "Devel::LexAlias provides the ability to alias a lexical
 variable in a subroutines scope to one of your choosing.")
@@ -2416,7 +2416,7 @@ variable in a subroutines scope to one of your choosing.")
      `(("perl-package-stash" ,perl-package-stash)
        ("perl-sub-identify" ,perl-sub-identify)
        ("perl-mro-compat" ,perl-mro-compat)))
-    (home-page "http://search.cpan.org/dist/Devel-OverloadInfo")
+    (home-page "http://search.cpan.org/dist/Devel-OverloadInfo/")
     (synopsis "Introspect overloaded operators")
     (description "Devel::OverloadInfo returns information about overloaded
 operators for a given class (or object), including where in the inheritance
@@ -2444,7 +2444,7 @@ hierarchy the overloads are declared and where the code implementing it is.")
      `(("perl-class-tiny" ,perl-class-tiny)
        ("perl-sub-exporter" ,perl-sub-exporter)
        ("perl-namespace-clean" ,perl-namespace-clean)))
-    (home-page "http://search.cpan.org/dist/Devel-PartialDump")
+    (home-page "http://search.cpan.org/dist/Devel-PartialDump/")
     (synopsis "Partial dumping of data structures")
     (description "This module is a data dumper optimized for logging of
 arbitrary parameters.")
@@ -2463,7 +2463,7 @@ arbitrary parameters.")
         (base32
          "1r65iq5i11xh0r0kp3pdycydnd3kxpdmxnp0hq9hx9lr60kygsqx"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Devel-StackTrace")
+    (home-page "http://search.cpan.org/dist/Devel-StackTrace/")
     (synopsis "Object representing a stack trace")
     (description "The Devel::StackTrace module contains two classes,
 Devel::StackTrace and Devel::StackTrace::Frame.  These objects encapsulate the
@@ -2486,7 +2486,7 @@ providing a simple interface to this data.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-devel-stacktrace" ,perl-devel-stacktrace)))
-    (home-page "http://search.cpan.org/dist/Devel-StackTrace-AsHTML")
+    (home-page "http://search.cpan.org/dist/Devel-StackTrace-AsHTML/")
     (synopsis "Displays stack trace in HTML")
     (description "Devel::StackTrace::AsHTML adds as_html method to
 Devel::StackTrace which displays the stack trace in beautiful HTML, with code
@@ -2508,7 +2508,7 @@ each stack frame.")
         (base32
          "1h3n0w23camhj20a97nw7v40rqa7xcxx8vkn2qjjlngm0yhq2vw2"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Devel-Symdump")
+    (home-page "http://search.cpan.org/dist/Devel-Symdump/")
     (synopsis "Dump symbol names or the symbol table")
     (description "Devel::Symdump provides access to the perl symbol table.")
     (license (package-license perl))))
@@ -2526,7 +2526,7 @@ each stack frame.")
         (base32
          "0naavabbm1c9zgn325ndy66da4insdw9l3mrxwxdfi7i7xnjrirv"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Digest-HMAC")
+    (home-page "http://search.cpan.org/dist/Digest-HMAC/")
     (synopsis "Keyed-Hashing for Message Authentication")
     (description "The Digest::HMAC module follows the common Digest::
 interface for the RFC 2104 HMAC mechanism.")
@@ -2552,7 +2552,7 @@ interface for the RFC 2104 HMAC mechanism.")
            (lambda _
              ;; Make MD5.so read-write so it can be stripped.
              (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755))))))
-    (home-page "http://search.cpan.org/dist/Digest-MD5")
+    (home-page "http://search.cpan.org/dist/Digest-MD5/")
     (synopsis "Perl interface to the MD-5 algorithm")
     (description
      "The @code{Digest::MD5} module allows you to use the MD5 Message Digest
@@ -2596,7 +2596,7 @@ SHA-1 message digest algorithm for use by Perl programs.")
     (native-inputs `(("perl-test-fatal" ,perl-test-fatal)))
     (propagated-inputs
      `(("perl-module-runtime" ,perl-module-runtime)))
-    (home-page "http://search.cpan.org/dist/Dist-CheckConflicts")
+    (home-page "http://search.cpan.org/dist/Dist-CheckConflicts/")
     (synopsis "Declare version conflicts for your dist")
     (description "This module allows you to specify conflicting versions of
 modules separately and deal with them after the module is done installing.")
@@ -2617,7 +2617,7 @@ modules separately and deal with them after the module is done installing.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Encode-Detect")
+    (home-page "http://search.cpan.org/dist/Encode-Detect/")
     (synopsis "Detect the encoding of data")
     (description "This package provides a class @code{Encode::Detect} to detect
 the encoding of data.")
@@ -2636,7 +2636,7 @@ the encoding of data.")
         (base32
          "0qg8kmi7r9jcf8326b4fyq5sdpqyim2a11h7j77q577xam6x767r"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Encode-EUCJPASCII")
+    (home-page "http://search.cpan.org/dist/Encode-EUCJPASCII/")
     (synopsis "ASCII mapping for eucJP encoding")
     (description "This package provides an ASCII mapping for the eucJP
 encoding.")
@@ -2655,7 +2655,7 @@ encoding.")
         (base32
          "1k1mdj4rd9m1z4h7qd2dl92ky0r1rk7mmagwsvdb9pirvdr4vj0y"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Encode-JIS2K")
+    (home-page "http://search.cpan.org/dist/Encode-JIS2K/")
     (synopsis "JIS X 0212 (aka JIS 2000) encodings")
     (description "This package provides encodings for JIS X 0212, which is
 also known as JIS 2000.")
@@ -2679,7 +2679,7 @@ also known as JIS 2000.")
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
            (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
-    (home-page "http://search.cpan.org/dist/Encode-HanExtra")
+    (home-page "http://search.cpan.org/dist/Encode-HanExtra/")
     (synopsis "Additional Chinese encodings")
     (description "This Perl module provides Chinese encodings that are not
 part of Perl by default, including \"BIG5-1984\", \"BIG5-2003\", \"BIG5PLUS\",
@@ -2702,7 +2702,7 @@ part of Perl by default, including \"BIG5-1984\", \"BIG5-2003\", \"BIG5PLUS\",
         (base32
          "1qhmj15a66h90pjl2dgnxsb9jj3b1r5mpvnr87cafcl8g69z0jr4"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Env-Path")
+    (home-page "http://search.cpan.org/dist/Env-Path/")
     (synopsis "Advanced operations on path variables")
     (description "@code{Env::Path} presents an object-oriented interface to
 path variables, defined as that subclass of environment variables which name
@@ -2723,7 +2723,7 @@ separator.")
                 "0dsxic78mxy30qvbbdzfyp501hbkwhnbmafqfxipr0yqfy8f2j5g"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Error")
+    (home-page "http://search.cpan.org/dist/Error/")
     (synopsis "OO-ish Error/Exception handling for Perl")
     (description "The Error package provides two interfaces.  Firstly Error
 provides a procedural interface to exception handling.  Secondly Error is a
@@ -2749,7 +2749,7 @@ catch, or can simply be recorded.")
        ("perl-test-requires" ,perl-test-requires)))
     (propagated-inputs
      `(("perl-devel-lexalias" ,perl-devel-lexalias)))
-    (home-page "http://search.cpan.org/dist/Eval-Closure")
+    (home-page "http://search.cpan.org/dist/Eval-Closure/")
     (synopsis "Safely and cleanly create closures via string eval")
     (description "String eval is often used for dynamic code generation.  For
 instance, Moose uses it heavily, to generate inlined versions of accessors and
@@ -2779,7 +2779,7 @@ errors are rethrown automatically.")
     (propagated-inputs
      `(("perl-devel-stacktrace" ,perl-devel-stacktrace)
        ("perl-class-data-inheritable" ,perl-class-data-inheritable)))
-    (home-page "http://search.cpan.org/dist/Exception-Class")
+    (home-page "http://search.cpan.org/dist/Exception-Class/")
     (synopsis "Allows you to declare real exception classes in Perl")
     (description "Exception::Class allows you to declare exception hierarchies
 in your modules in a \"Java-esque\" manner.")
@@ -2802,7 +2802,7 @@ in your modules in a \"Java-esque\" manner.")
      "Exporter::Lite is an alternative to Exporter, intended to provide a
 lightweight subset of the most commonly-used functionality.  It supports
 import(), @@EXPORT and @@EXPORT_OK and not a whole lot else.")
-    (home-page "http://search.cpan.org/dist/Exporter-Lite")
+    (home-page "http://search.cpan.org/dist/Exporter-Lite/")
     (license (package-license perl))))
 
 (define-public perl-exporter-tiny
@@ -2818,7 +2818,7 @@ import(), @@EXPORT and @@EXPORT_OK and not a whole lot else.")
         (base32
          "0gq2ia8c6n84gdrlc73vab61djs8gs8zf7fqx8cxbg5zxg2j45lg"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Exporter-Tiny")
+    (home-page "http://search.cpan.org/dist/Exporter-Tiny/")
     (synopsis "Exporter with the features of Sub::Exporter but only core dependencies")
     (description "Exporter::Tiny supports many of Sub::Exporter's
 external-facing features including renaming imported functions with the `-as`,
@@ -2842,7 +2842,7 @@ only about 40% as many lines of code and with zero non-core dependencies.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-extutils-config" ,perl-extutils-config)))
-    (home-page "http://search.cpan.org/dist/ExtUtils-InstallPaths")
+    (home-page "http://search.cpan.org/dist/ExtUtils-InstallPaths/")
     (synopsis "Build.PL install path logic made easy")
     (description "This module tries to make install path resolution as easy as
 possible.")
@@ -2861,7 +2861,7 @@ possible.")
         (base32
          "130s5zk4krrymbynqxx62g13jynnb7xi7vdpg65cw3b56kv08ldf"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/ExtUtils-Config")
+    (home-page "http://search.cpan.org/dist/ExtUtils-Config/")
     (synopsis "Wrapper for perl's configuration")
     (description "ExtUtils::Config is an abstraction around the %Config hash.
 By itself it is not a particularly interesting module by any measure, however
@@ -2882,7 +2882,7 @@ it ties together a family of modern toolchain modules.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-number-delta" ,perl-test-number-delta)))
-    (home-page "http://search.cpan.org/dist/ExtUtils-Depends")
+    (home-page "http://search.cpan.org/dist/ExtUtils-Depends/")
     (synopsis "Easily build XS extensions that depend on XS extensions")
     (description
      "This module tries to make it easy to build Perl extensions that use
@@ -2904,7 +2904,7 @@ XS interface besides the perl one.")
         (base32
          "15dalfwmpfmifw312i5pwiai8134pxf7b2804shlqhdk1xqczy6k"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/ExtUtils-Helpers")
+    (home-page "http://search.cpan.org/dist/ExtUtils-Helpers/")
     (synopsis "Various portability utilities for module builders")
     (description "This module provides various portable helper functions for
 module building modules.")
@@ -2925,7 +2925,7 @@ module building modules.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/ExtUtils-LibBuilder")
+    (home-page "http://search.cpan.org/dist/ExtUtils-LibBuilder/")
     (synopsis "Tool to build C libraries")
     (description "Some Perl modules need to ship C libraries together with
 their Perl code.  Although there are mechanisms to compile and link (or glue)
@@ -2947,7 +2947,7 @@ self-contained C libraries.  This module main goal is to help in that task.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://search.cpan.org/dist/ExtUtils-PkgConfig")
+    (home-page "http://search.cpan.org/dist/ExtUtils-PkgConfig/")
     (synopsis "Simplistic interface to pkg-config")
     (description
      "@code{ExtUtils::PkgConfig} is a very simplistic interface to the
@@ -2981,7 +2981,7 @@ It is really just boilerplate code that you would have written yourself.")
        ("perl-moosex-semiaffordanceaccessor"
         ,perl-moosex-semiaffordanceaccessor)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (home-page "http://search.cpan.org/dist/File-ChangeNotify")
+    (home-page "http://search.cpan.org/dist/File-ChangeNotify/")
     (synopsis "Watch for changes to files")
     (description "This module provides a class to monitor a directory for
 changes made to any file.")
@@ -3000,7 +3000,7 @@ changes made to any file.")
         (base32
          "1syyyvylr51iicialdmv0dw06q49xzv8zrkb5cn8ma4l73gvvk44"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/File-Copy-Recursive")
+    (home-page "http://search.cpan.org/dist/File-Copy-Recursive/")
     (synopsis "Recursively copy files and directories")
     (description "This module has 3 functions: one to copy files only, one to
 copy directories only, and one to do either depending on the argument's
@@ -3023,7 +3023,7 @@ type.")
     (propagated-inputs
      `(("perl-text-glob" ,perl-text-glob)
        ("perl-number-compare" ,perl-number-compare)))
-    (home-page "http://search.cpan.org/dist/File-Find-Rule")
+    (home-page "http://search.cpan.org/dist/File-Find-Rule/")
     (synopsis "Alternative interface to File::Find")
     (description "File::Find::Rule is a friendlier interface to File::Find.
 It allows you to build rules which specify the desired files and
@@ -3047,7 +3047,7 @@ directories.")
      `(("perl-file-find-rule" ,perl-file-find-rule)
        ("perl-params-util" ,perl-params-util)
        ("perl-parse-cpan-meta" ,perl-parse-cpan-meta)))
-    (home-page "http://search.cpan.org/dist/File-Find-Rule-Perl")
+    (home-page "http://search.cpan.org/dist/File-Find-Rule-Perl/")
     (synopsis "Common rules for searching for Perl things")
     (description "File::Find::Rule::Perl provides methods for finding various
 types Perl-related files, or replicating search queries run on a distribution
@@ -3069,7 +3069,7 @@ in various parts of the CPAN ecosystem.")
         (base32
          "0cjnz3ak7s3x3y3q48xb9ka2q9d7xvch58vy80hqa9xn9qkiabj6"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/File-Grep")
+    (home-page "http://search.cpan.org/dist/File-Grep/")
     (synopsis "Matches patterns in a series of files")
     (description "@code{File::Grep} provides similar functionality as perl's
 builtin @code{grep}, @code{map}, and @code{foreach} commands, but iterating
@@ -3093,7 +3093,7 @@ provide a quick dropin when such functionality is needed.")
     (propagated-inputs
      `(("perl-file-which" ,perl-file-which)))
     (arguments `(#:tests? #f))          ;Not appropriate for chroot
-    (home-page "http://search.cpan.org/dist/File-HomeDir")
+    (home-page "http://search.cpan.org/dist/File-HomeDir/")
     (synopsis "Find your home and other directories on any platform")
     (description "File::HomeDir is a module for locating the directories that
 are \"owned\" by a user (typically your user) and to solve the various issues
@@ -3116,7 +3116,7 @@ platforms.")
         (base32
          "039gc0i5cbdmidl8j8x195yykwcdmzwawmpapnysvljl8l33jqwj"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/File-Path")
+    (home-page "http://search.cpan.org/dist/File-Path/")
     (synopsis "Create or remove directory trees")
     (description "This module provide a convenient way to create directories
 of arbitrary depth and to delete an entire directory subtree from the
@@ -3139,7 +3139,7 @@ file system.")
          "02rlqvyy7gly3dsqwaa81aisyy9c791b8xvwzczcbgmcwgzkgaxm"))))
     (build-system perl-build-system)
     (home-page
-     "http://search.cpan.org/dist/File-pushd")
+     "http://search.cpan.org/dist/File-pushd/")
     (synopsis
      "Change directory temporarily for a limited scope")
     (description "@code{File::pushd} does a temporary @code{chdir} that is
@@ -3176,7 +3176,7 @@ lists of files")
      "The File::List module crawls the directory tree starting at the
 provided base directory and can return files (and/or directories if desired)
 matching a regular expression.")
-    (home-page "http://search.cpan.org/~dopacki/File-List/")))
+    (home-page "http://search.cpan.org/~dopacki/File-List//")))
 
 (define-public perl-file-remove
   (package
@@ -3191,7 +3191,7 @@ matching a regular expression.")
         (base32
          "1b814lw181kkqh6c1n4p2zlzzsq6ic5pfpr831nphf2w2rhcvgmk"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/File-Remove")
+    (home-page "http://search.cpan.org/dist/File-Remove/")
     (synopsis "Remove files and directories in Perl")
     (description "File::Remove::remove removes files and directories.  It acts
 like /bin/rm, for the most part.  Although \"unlink\" can be given a list of
@@ -3216,7 +3216,7 @@ accepts wildcards, * and ?, as arguments for file names.")
      `(("perl-file-sharedir-install" ,perl-file-sharedir-install)))
     (propagated-inputs
      `(("perl-class-inspector" ,perl-class-inspector)))
-    (home-page "http://search.cpan.org/dist/File-ShareDir")
+    (home-page "http://search.cpan.org/dist/File-ShareDir/")
     (synopsis "Locate per-dist and per-module shared files")
     (description "The intent of File::ShareDir is to provide a companion to
 Class::Inspector and File::HomeDir.  Quite often you want or need your Perl
@@ -3239,7 +3239,7 @@ the installation.")
         (base32
          "028vnjw3fdmwk540w3b07cmr93ap0s13ni2b4c7iv56mgyy6gfc1"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/File-ShareDir-Dist")
+    (home-page "http://search.cpan.org/dist/File-ShareDir-Dist/")
     (synopsis "Locate per-dist shared files")
     (description "File::ShareDir::Dist finds share directories for
 distributions.  It is a companion module to File::ShareDir.")
@@ -3260,7 +3260,7 @@ distributions.  It is a companion module to File::ShareDir.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/File-ShareDir-Install")
+    (home-page "http://search.cpan.org/dist/File-ShareDir-Install/")
     (synopsis "Install shared files")
     (description "File::ShareDir::Install allows you to install read-only data
 files from a distribution.  It is a companion module to File::ShareDir, which
@@ -3280,7 +3280,7 @@ allows you to locate these files after installation.")
         (base32
          "0hrn4nipwx40d6ji8ssgr5nw986z9iqq8cn0kdpbszh9jplynaff"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/File-Slurp")
+    (home-page "http://search.cpan.org/dist/File-Slurp/")
     (synopsis "Reading/Writing/Modifying of complete files")
     (description "File::Slurp provides subroutines to read or write entire
 files with a simple call.  It also has a subroutine for reading the list of
@@ -3304,7 +3304,7 @@ file names in a directory.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)))
-    (home-page "http://search.cpan.org/dist/File-Slurper")
+    (home-page "http://search.cpan.org/dist/File-Slurper/")
     (synopsis "Simple, sane and efficient module to slurp a file")
     (description "This module provides functions for fast and correct file
 slurping and spewing.  All functions are optionally exported.")
@@ -3322,7 +3322,7 @@ slurping and spewing.  All functions are optionally exported.")
                (base32
                 "07kzfmibl43dq4c803f022g2rcfv4nkjgipxclz943mzxaz9aaa5"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/File-Slurp-Tiny")
+    (home-page "http://search.cpan.org/dist/File-Slurp-Tiny/")
     (synopsis "Simple file reader and writer")
     (description
      "This module provides functions for fast reading and writing of files.")
@@ -3343,7 +3343,7 @@ slurping and spewing.  All functions are optionally exported.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-parent" ,perl-parent)))
-    (home-page "http://search.cpan.org/dist/File-Temp")
+    (home-page "http://search.cpan.org/dist/File-Temp/")
     (synopsis "Return name and handle of a temporary file safely")
     (description "File::Temp can be used to create and open temporary files in
 a safe way.")
@@ -3367,7 +3367,7 @@ a safe way.")
      "File::Which was created to be able to get the paths to executable
 programs on systems under which the `which' program wasn't implemented in the
 shell.")
-    (home-page (string-append "http://search.cpan.org/~adamk/"
+    (home-page (string-append "http://search.cpan.org/~adamk//"
                               "File-Which-" version))
     (license (package-license perl))))
 
@@ -3386,7 +3386,7 @@ shell.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
-    (home-page "http://search.cpan.org/dist/File-Zglob")
+    (home-page "http://search.cpan.org/dist/File-Zglob/")
     (synopsis "Extended Unix style glob functionality")
     (description "@code{File::Zglob} provides a traditional Unix @code{glob}
 functionality; it returns a list of file names that match the given pattern.
@@ -3406,7 +3406,7 @@ For instance, it supports the @code{**/*.pm} form.")
         (base32
          "0bw8gbhj8s5gmkqvs3m7pk9arqhgqssrby4yimh29ah9alix9ylq"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Getopt-Long")
+    (home-page "http://search.cpan.org/dist/Getopt-Long/")
     (synopsis "Module to handle parsing command line options")
     (description "The @code{Getopt::Long} module implements an extended getopt
 function called @code{GetOptions()}.  It parses the command line from
@@ -3440,7 +3440,7 @@ single-letter approach, is provided but not enabled by default.")
     (propagated-inputs
      `(("perl-params-validate" ,perl-params-validate)
        ("perl-sub-exporter" ,perl-sub-exporter)))
-    (home-page "http://search.cpan.org/dist/Getopt-Long-Descriptive")
+    (home-page "http://search.cpan.org/dist/Getopt-Long-Descriptive/")
     (synopsis "Getopt::Long, but simpler and more powerful")
     (description "Getopt::Long::Descriptive is yet another Getopt library.
 It's built atop Getopt::Long, and gets a lot of its features, but tries to
@@ -3464,7 +3464,7 @@ usage (help) messages, data validation, and a few other useful features.")
     (description
      "Getopt::Tabular is a Perl 5 module for table-driven argument parsing,
 vaguely inspired by John Ousterhout's Tk_ParseArgv.")
-    (home-page (string-append "http://search.cpan.org/~gward/"
+    (home-page (string-append "http://search.cpan.org/~gward//"
                               "Getopt-Tabular-" version))
     (license (package-license perl))))
 
@@ -3483,7 +3483,7 @@ vaguely inspired by John Ousterhout's Tk_ParseArgv.")
         (base32
          "099a1gca0wj5zs0cffncjqp2mjrdlk9i6325ks89ml72gfq8wpij"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Graph")
+    (home-page "http://search.cpan.org/dist/Graph/")
     (synopsis "Graph data structures and algorithms")
     (description "This is @code{Graph}, a Perl module for dealing with graphs,
 the abstract data structures.")
@@ -3501,7 +3501,7 @@ the abstract data structures.")
                (base32
                 "1p6i9mfmbs9cw40jqdv71ihv2xfi0vvlv8bdv2810gf93zwxvi1l"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Guard")
+    (home-page "http://search.cpan.org/dist/Guard/")
     (synopsis "Safe cleanup blocks implemented as guards")
     (description "@code{Guard} implements so-called @dfn{guards}.  A guard is
 something (usually an object) that \"guards\" a resource, ensuring that it is
@@ -3538,7 +3538,7 @@ which are tied to the scope exit.")
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-leaktrace" ,perl-test-leaktrace)))
-    (home-page "http://search.cpan.org/dist/Hash-FieldHash")
+    (home-page "http://search.cpan.org/dist/Hash-FieldHash/")
     (synopsis "Lightweight field hash for inside-out objects")
     (description "@code{Hash::FieldHash} provides the field hash mechanism
 which supports the inside-out technique.  It is an alternative to
@@ -3559,7 +3559,7 @@ relic support.")
         (base32
          "0r1a2axz85wn6573zrl9rk8mkfl2cvf1gp9vwya5qndp60rz1ya7"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Hash-Merge")
+    (home-page "http://search.cpan.org/dist/Hash-Merge/")
     (synopsis "Merge arbitrarily deep hashes into a single hash")
     (description "Hash::Merge merges two arbitrarily deep hashes into a single
 hash.  That is, at any level, it will add non-conflicting key-value pairs from
@@ -3582,7 +3582,7 @@ merged.")
         (base32
          "1jc37kwpa1fl88va8bd1p95h0vjv1gsvmn7pc2pxj62ga6x0wpc0"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Hash-MultiValue")
+    (home-page "http://search.cpan.org/dist/Hash-MultiValue/")
     (synopsis "Store multiple values per key")
     (description "Hash::MultiValue is an object (and a plain hash reference)
 that may contain multiple values per key, inspired by MultiDict of WebOb.")
@@ -3601,7 +3601,7 @@ that may contain multiple values per key, inspired by MultiDict of WebOb.")
          (base32
           "0mx50xds7iphxykbr9b0w2qki92l3gpagsdchm4ncsrnxc67c68x"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Importer/")
+    (home-page "http://search.cpan.org/dist/Importer//")
     (synopsis "Alternative but compatible interface to modules that export symbols")
     (description "This module acts as a layer between Exporter and modules which
 consume exports.  It is feature-compatible with Exporter, plus some much needed
@@ -3626,7 +3626,7 @@ variables.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-module-runtime" ,perl-module-runtime)))
-    (home-page "http://search.cpan.org/dist/Import-Into")
+    (home-page "http://search.cpan.org/dist/Import-Into/")
     (synopsis "Import packages into other packages")
     (description "Writing exporters is a pain.  Some use Exporter, some use
 Sub::Exporter, some use Moose::Exporter, some use Exporter::Declare ... and
@@ -3649,7 +3649,7 @@ compilation.  Import::Into provides global methods to make this painless.")
         (base32
          "04f6qf6ll2hkdsr9aglykg3wlgsnf0w4f264nzg4i9y6cgrhbafs"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/inc-latest")
+    (home-page "http://search.cpan.org/dist/inc-latest/")
     (synopsis "Use modules in inc/ if newer than installed")
     (description "The inc::latest module helps bootstrap configure-time
 dependencies for CPAN distributions.  These dependencies get bundled into the
@@ -3671,7 +3671,7 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
         (base32
          "0c437zvzpqi8f0h3nmblwdi2bvsb92b7g30fndr7my9qnky35izw"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/IO-CaptureOutput")
+    (home-page "http://search.cpan.org/dist/IO-CaptureOutput/")
     (synopsis "Capture STDOUT and STDERR from Perl code, subprocesses or XS")
     (description "@code{IO::CaptureOutput} provides routines for capturing
 @code{STDOUT} and @code{STDERR} from perl subroutines, forked system
@@ -3694,7 +3694,7 @@ try @code{Capture::Tiny} instead.")
         (base32
          "1303q6rbcf2cag5z08pq3d1y91wls5q51jrpw4kh0l2bv75idh4w"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/IO-Interactive")
+    (home-page "http://search.cpan.org/dist/IO-Interactive/")
     (synopsis "Utilities for interactive I/O")
     (description "This module provides three utility subroutines that make it
 easier to develop interactive applications: is_interactive(), interactive(),
@@ -3714,7 +3714,7 @@ and busy().")
         (base32
          "18755m410yl70s17rgq3m0hyxl8r5mr47vsq1rw7141d8kc4lgra"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/~gaas/IO-String-1.08/")
+    (home-page "http://search.cpan.org/~gaas/IO-String-1.08//")
     (synopsis "Emulate file interface for in-core strings")
     (description "IO::String is an IO::File (and IO::Handle) compatible class
 that reads or writes data from in-core strings.")
@@ -3733,7 +3733,7 @@ that reads or writes data from in-core strings.")
         (base32
          "1vh4n0k22hx20rwvf6h7lp25wb7spg0089shrf92d2lkncwg8g3y"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/IO-stringy")
+    (home-page "http://search.cpan.org/dist/IO-stringy/")
     (synopsis "IO:: interface for reading/writing an array of lines")
     (description "This toolkit primarily provides modules for performing both
 traditional and object-oriented i/o) on things *other* than normal
@@ -3752,7 +3752,7 @@ filehandles; in particular, IO::Scalar, IO::ScalarArray, and IO::Lines.")
                (base32
                 "0lgd9xcbi4gf4gw1ka6fj94my3w1f3k1zamb4pfln0qxz45zlxx4"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/~toddr/IO-Tty/")
+    (home-page "http://search.cpan.org/~toddr/IO-Tty//")
     (synopsis "Perl interface to pseudo ttys")
     (description
      "This package provides the 'IO::Pty' and 'IO::Tty' Perl interfaces to
@@ -3772,7 +3772,7 @@ pseudo ttys.")
         (base32
          "0a2v44x70gj9fd5wa8i08f9z6n14qppj1j49m1hc333wh72mzk6i"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/IPC-Cmd")
+    (home-page "http://search.cpan.org/dist/IPC-Cmd/")
     (synopsis "Run interactive command-line programs")
     (description "@code{IPC::Cmd} allows for the searching and execution of
 any binary on your system.  It adheres to verbosity settings and is able to
@@ -3802,7 +3802,7 @@ run interactively.  It also has an option to capture output/error buffers.")
                      ;; This test fails, and we're not really interested in
                      ;; it, so disable it.
                      (delete-file "t/win32_compile.t"))))))
-    (home-page "http://search.cpan.org/dist/IPC-Run")
+    (home-page "http://search.cpan.org/dist/IPC-Run/")
     (synopsis "Run system() and background procs w/ piping, redirs, ptys")
     (description "IPC::Run allows you run and interact with child processes
 using files, pipes, and pseudo-ttys.  Both system()-style and scripted usages
@@ -3828,7 +3828,7 @@ both supported and may be mixed.")
 stdout, and/or stderr to files and perl data structures.  It aims to satisfy
 99% of the need for using system, qx, and open3 with a simple, extremely
 Perlish API and none of the bloat and rarely used features of IPC::Run.")
-    (home-page (string-append "http://search.cpan.org/~rjbs/"
+    (home-page (string-append "http://search.cpan.org/~rjbs//"
                               "IPC-Run3-" version))
     ;; "You may use this module under the terms of the BSD, Artistic, or GPL
     ;; licenses, any version."
@@ -3847,7 +3847,7 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
         (base32
          "1gz7dbwxrzbzdsjv11kb49jlf9q6lci2va6is0hnavd93nwhdm0l"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/IPC-ShareLite")
+    (home-page "http://search.cpan.org/dist/IPC-ShareLite/")
     (synopsis "Lightweight interface to shared memory")
     (description "IPC::ShareLite provides a simple interface to shared memory,
 allowing data to be efficiently communicated between processes.")
@@ -3866,7 +3866,7 @@ allowing data to be efficiently communicated between processes.")
                (base32
                 "0fsdb81shjj4hifyyzvj7vpkhq5jrfhlcpw2xbjfi1mqz8fsmdpi"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/IPC-System-Simple")
+    (home-page "http://search.cpan.org/dist/IPC-System-Simple/")
     (synopsis "Run commands simply, with detailed diagnostics")
     (description "Calling Perl's in-built @code{system} function is easy,
 determining if it was successful is hard.  Let's face it, @code{$?} isn't the
@@ -3892,7 +3892,7 @@ commands.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-json-xs" ,perl-json-xs))) ;recommended
-    (home-page "http://search.cpan.org/dist/JSON")
+    (home-page "http://search.cpan.org/dist/JSON/")
     (synopsis "JSON encoder/decoder for Perl")
     (description "This module converts Perl data structures to JSON and vice
 versa using either JSON::XS or JSON::PP.")
@@ -3918,7 +3918,7 @@ versa using either JSON::XS or JSON::PP.")
        ("perl-test-without-module" ,perl-test-without-module)))
     (propagated-inputs
      `(("perl-namespace-clean" ,perl-namespace-clean)))
-    (home-page "http://search.cpan.org/dist/JSON-Any")
+    (home-page "http://search.cpan.org/dist/JSON-Any/")
     (synopsis "Wrapper for Perl JSON classes")
     (description
      "This module tries to provide a coherent API to bring together the
@@ -3944,7 +3944,7 @@ installed.")
      `(("perl-test-without-module" ,perl-test-without-module)))
     (inputs
      `(("perl-cpanel-json-xs" ,perl-cpanel-json-xs)))
-    (home-page "http://search.cpan.org/dist/JSON-MaybeXS")
+    (home-page "http://search.cpan.org/dist/JSON-MaybeXS/")
     (synopsis "Cpanel::JSON::XS with fallback")
     (description "This module first checks to see if either Cpanel::JSON::XS
 or JSON::XS is already loaded, in which case it uses that module.  Otherwise
@@ -3968,7 +3968,7 @@ either uses the first module it finds or throws an error.")
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)
        ("perl-types-serialiser" ,perl-types-serialiser)))
-    (home-page "http://search.cpan.org/dist/JSON-XS")
+    (home-page "http://search.cpan.org/dist/JSON-XS/")
     (synopsis "JSON serialising/deserialising for Perl")
     (description "This module converts Perl data structures to JSON and vice
 versa.")
@@ -3987,7 +3987,7 @@ versa.")
         (base32
          "0r1q7cclgwl24gzdnjzvd8y0r7j17dngjk492x35w198zhdj2ncp"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Log-Any")
+    (home-page "http://search.cpan.org/dist/Log-Any/")
     (synopsis "Bringing loggers and listeners together")
     (description "@code{Log::Any} provides a standard log production API for
 modules.  @code{Log::Any::Adapter} allows applications to choose the mechanism
@@ -4024,7 +4024,7 @@ logging mechanism.")
      `(("perl-log-any" ,perl-log-any)
        ("perl-log-log4perl" ,perl-log-log4perl)))
     (home-page
-     "http://search.cpan.org/dist/Log-Any-Adapter-Log4perl")
+     "http://search.cpan.org/dist/Log-Any-Adapter-Log4perl/")
     (synopsis "Log::Any adapter for Log::Log4perl")
     (description "@code{Log::Any::Adapter::Log4perl} provides a
 @code{Log::Any} adapter using @code{Log::Log4perl} for logging.")
@@ -4046,7 +4046,7 @@ logging mechanism.")
          "0vxraq9navx5mgf8y8g6l5rbl3dv2ml8bishka5m69hj07nxs0ch"))))
     (build-system perl-build-system)
     (home-page
-     "http://search.cpan.org/dist/Log-Log4perl")
+     "http://search.cpan.org/dist/Log-Log4perl/")
     (synopsis "Log4j implementation for Perl")
     (description "@code{Log::Log4perl} lets you remote-control and fine-tune
 the logging behaviour of your system from the outside.  It implements the
@@ -4067,7 +4067,7 @@ widely popular (Java-based) Log4j logging package in pure Perl.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-string-print" ,perl-string-print)))
-    (home-page "http://search.cpan.org/dist/Log-Report-Optional")
+    (home-page "http://search.cpan.org/dist/Log-Report-Optional/")
     (synopsis "Log::Report in the lightest form")
     (description
      "This module allows libraries to have a dependency to a small module
@@ -4094,7 +4094,7 @@ version.")
      `(("perl-devel-globaldestruction" ,perl-devel-globaldestruction)
        ("perl-log-report-optional" ,perl-log-report-optional)
        ("perl-string-print" ,perl-string-print)))
-    (home-page "http://search.cpan.org/dist/Log-Report")
+    (home-page "http://search.cpan.org/dist/Log-Report/")
     (synopsis "Get messages to users and logs")
     (description
      "@code{Log::Report} combines three tasks which are closely related in
@@ -4114,7 +4114,7 @@ one: logging, exceptions, and translations.")
         (base32
          "161589h08kzliga17i2g0hb0yn4cjmb8rdiyadq5bw97974bac14"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Lingua-Translit")
+    (home-page "http://search.cpan.org/dist/Lingua-Translit/")
     (synopsis "Transliterate text between writing systems")
     (description "@code{Lingua::Translit} can be used to convert text from one
 writing system to another, based on national or international transliteration
@@ -4139,7 +4139,7 @@ tables.  Where possible a reverse transliteration is supported.")
     (propagated-inputs
      `(("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-scalar-list-utils" ,perl-scalar-list-utils)))
-    (home-page "http://search.cpan.org/dist/List-AllUtils")
+    (home-page "http://search.cpan.org/dist/List-AllUtils/")
     (synopsis "Combination of List::Util and List::MoreUtils")
     (description "This module exports all of the functions that either
 List::Util or List::MoreUtils defines, with preference to List::Util.")
@@ -4162,7 +4162,7 @@ List::Util or List::MoreUtils defines, with preference to List::Util.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-io-captureoutput" ,perl-io-captureoutput)))
-    (home-page "http://search.cpan.org/dist/List-Compare")
+    (home-page "http://search.cpan.org/dist/List-Compare/")
     (synopsis "Compare elements of two or more lists")
     (description "@code{List::Compare} provides a module to perform
 comparative operations on two or more lists.  Provided operations include
@@ -4188,7 +4188,7 @@ intersections, unions, unique elements, complements and many more.")
        ("perl-test-writevariants" ,perl-test-writevariants)))
     (propagated-inputs
      `(("perl-exporter-tiny" ,perl-exporter-tiny)))
-    (home-page "http://search.cpan.org/dist/List-MoreUtils")
+    (home-page "http://search.cpan.org/dist/List-MoreUtils/")
     (synopsis "Provide the stuff missing in List::Util")
     (description "List::MoreUtils provides some trivial but commonly needed
 functionality on lists which is not going to go into List::Util.")
@@ -4215,7 +4215,7 @@ functionality on lists which is not going to go into List::Util.")
      `(("perl-exporter-tiny" ,perl-exporter-tiny)
        ("perl-module-implementation"
         ,perl-module-implementation)))
-    (home-page "http://search.cpan.org/dist/List-SomeUtils")
+    (home-page "http://search.cpan.org/dist/List-SomeUtils/")
     (synopsis "Provide the stuff missing in List::Util")
     (description "@code{List::SomeUtils} provides some trivial but commonly
 needed functionality on lists which is not going to go into @code{List::Util}.
@@ -4245,7 +4245,7 @@ portions of this module couldn't be compiled on this machine.")
     (propagated-inputs
      `(("perl-timedate" ,perl-timedate)))
     (home-page
-     "http://search.cpan.org/dist/MailTools")
+     "http://search.cpan.org/dist/MailTools/")
     (synopsis "Bundle of ancient email modules")
     (description "MailTools contains the following modules:
 @table @asis
@@ -4285,7 +4285,7 @@ Build a Mail::Internet object, and then send it out using Mail::Mailer.
         (base32
          "0klk0vj78lr259mnv1rbxib8gzf2cfp4zhkhbcxyhadkkl73myvj"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Memoize-ExpireLRU")
+    (home-page "http://search.cpan.org/dist/Memoize-ExpireLRU/")
     (synopsis "Expiry plug-in for Memoize that adds LRU cache expiration")
     (description "This module implements an expiry policy for Memoize that
 follows LRU semantics, that is, the last n results, where n is specified as
@@ -4304,7 +4304,7 @@ the argument to the CACHESIZE parameter, will be cached.")
                (base32
                 "04qxgcg9mvia121i3zcqxgp20y0d9kg0qv6hddk93ian0af7g347"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/MIME-Charset")
+    (home-page "http://search.cpan.org/dist/MIME-Charset/")
     (synopsis "Charset information for MIME messages")
     (description
      "@code{MIME::Charset} provides information about character sets used for
@@ -4333,7 +4333,7 @@ MIME messages on Internet.")
     (propagated-inputs
      `(("perl-mailtools" ,perl-mailtools)))
     (home-page
-     "http://search.cpan.org/dist/MIME-tools")
+     "http://search.cpan.org/dist/MIME-tools/")
     (synopsis "Tools to manipulate MIME messages")
     (description
      "MIME-tools is a collection of Perl5 MIME:: modules for parsing,
@@ -4354,7 +4354,7 @@ messages.")
         (base32
          "0s7s2z9xc1nc2l59rk80iaa04r36k0y95231212kz5p3ln7szk1c"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/MIME-Types")
+    (home-page "http://search.cpan.org/dist/MIME-Types/")
     (synopsis "Definition of MIME types")
     (description "This module provides a list of known mime-types, combined
 from various sources.  For instance, it contains all IANA types and the
@@ -4377,7 +4377,7 @@ knowledge of Apache.")
     (inputs
      `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
        ("perl-sub-exporter" ,perl-sub-exporter)))
-    (home-page "http://search.cpan.org/dist/Mixin-Linewise")
+    (home-page "http://search.cpan.org/dist/Mixin-Linewise/")
     (synopsis "Write your linewise code for handles; this does the rest")
     (description "It's boring to deal with opening files for IO, converting
 strings to handle-like objects, and all that.  With
@@ -4403,7 +4403,7 @@ file names are added for you.")
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
     (home-page
-     "http://search.cpan.org/dist/Modern-Perl")
+     "http://search.cpan.org/dist/Modern-Perl/")
     (synopsis
      "Enable all of the features of Modern Perl with one import")
     (description "@code{Modern::Perl} provides a simple way to enable
@@ -4433,7 +4433,7 @@ multiple, by now, standard libraries in a Perl program.")
        ("perl-extutils-config" ,perl-extutils-config)
        ("perl-extutils-helpers" ,perl-extutils-helpers)
        ("perl-test-harness" ,perl-test-harness)))
-    (home-page "http://search.cpan.org/dist/Module-Build-Tiny")
+    (home-page "http://search.cpan.org/dist/Module-Build-Tiny/")
     (synopsis "Tiny replacement for Module::Build")
     (description "Many Perl distributions use a Build.PL file instead of a
 Makefile.PL file to drive distribution configuration, build, test and
@@ -4462,7 +4462,7 @@ has less than 120, yet supports the features needed by most distributions.")
        ("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-devel-checkcompiler" ,perl-devel-checkcompiler)))
-    (home-page "http://search.cpan.org/dist/Module-Build-XSUtil")
+    (home-page "http://search.cpan.org/dist/Module-Build-XSUtil/")
     (synopsis "Module::Build class for building XS modules")
     (description
      "@code{Module::Build::XSUtil} is subclass of @code{Module::Build}
@@ -4500,7 +4500,7 @@ debug options.
         (base32
          "1lc33jdv4pgmm7nkr9bff0lhwjhhw91kaf6iiy2n7i7mw8dfv47l"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Module-Find")
+    (home-page "http://search.cpan.org/dist/Module-Find/")
     (synopsis "Find and use installed modules in a (sub)category")
     (description "Module::Find lets you find and use modules in categories.
 This can be useful for auto-detecting driver or plugin modules.  You can
@@ -4527,7 +4527,7 @@ subcategories.")
     (propagated-inputs
      `(("perl-module-runtime" ,perl-module-runtime)
        ("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/Module-Implementation")
+    (home-page "http://search.cpan.org/dist/Module-Implementation/")
     (synopsis "Loads alternate underlying implementations for a module")
     (description "This module abstracts out the process of choosing one of
 several underlying implementations for a module.  This can be used to provide
@@ -4566,7 +4566,7 @@ implementations.")
     ;; TODO: One test requires Test::More >= 0.99, another fails with unicode
     ;; character handling.
     (arguments `(#:tests? #f))
-    (home-page "http://search.cpan.org/dist/Module-Install")
+    (home-page "http://search.cpan.org/dist/Module-Install/")
     (synopsis "Standalone, extensible Perl module installer")
     (description "Module::Install is a package for writing installers for
 CPAN (or CPAN-like) distributions that are clean, simple, minimalist, act in a
@@ -4588,7 +4588,7 @@ installation version 5.005 or newer.")
          "1px6qmszmfc69v36vd8d92av4nkrif6xf4nrj3xv647xwi2svwmk"))
        (patches (search-patches "perl-module-pluggable-search.patch"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Module-Pluggable")
+    (home-page "http://search.cpan.org/dist/Module-Pluggable/")
     (synopsis "Give your Perl module the ability to have plugins")
     (description "This module provides a simple but extensible way of having
 'plugins' for your Perl module.")
@@ -4608,7 +4608,7 @@ installation version 5.005 or newer.")
          "19326f094jmjs6mgpwkyisid54k67w34br8yfh0gvaaml87gwi2c"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Module-Runtime")
+    (home-page "http://search.cpan.org/dist/Module-Runtime/")
     (synopsis "Perl runtime module handling")
     (description "The functions exported by this module deal with runtime
 handling of Perl modules, which are normally handled at compile time.")
@@ -4632,7 +4632,7 @@ handling of Perl modules, which are normally handled at compile time.")
     (propagated-inputs
      `(("perl-module-runtime" ,perl-module-runtime)
        ("perl-dist-checkconflicts" ,perl-dist-checkconflicts)))
-    (home-page "http://search.cpan.org/dist/Module-Runtime-Conflicts")
+    (home-page "http://search.cpan.org/dist/Module-Runtime-Conflicts/")
     (synopsis "Provide information on conflicts for Module::Runtime")
     (description "This module provides conflicts checking for Module::Runtime,
 which had a recent release that broke some versions of Moose.  It is called
@@ -4654,7 +4654,7 @@ from Moose::Conflicts and moose-outdated.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)))
-    (home-page "http://search.cpan.org/dist/Module-ScanDeps")
+    (home-page "http://search.cpan.org/dist/Module-ScanDeps/")
     (synopsis "Recursively scan Perl code for dependencies")
     (description "Module::ScanDeps is a module to recursively scan Perl
 programs for dependencies.")
@@ -4675,7 +4675,7 @@ programs for dependencies.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build))) ; >= 0.40
-    (home-page "http://search.cpan.org/dist/Module-Util")
+    (home-page "http://search.cpan.org/dist/Module-Util/")
     (synopsis "Module name tools and transformations")
     (description "This module provides a few useful functions for manipulating
 module names.  Its main aim is to centralise some of the functions commonly
@@ -4706,7 +4706,7 @@ module names to relative paths.")
        ("perl-module-runtime" ,perl-module-runtime)
        ("perl-role-tiny" ,perl-role-tiny)
        ("perl-strictures" ,perl-strictures)))
-    (home-page "http://search.cpan.org/dist/Moo")
+    (home-page "http://search.cpan.org/dist/Moo/")
     (synopsis "Minimalist Object Orientation (with Moose compatibility)")
     (description "Moo is an extremely light-weight Object Orientation system.
 It allows one to concisely define objects and roles with a convenient syntax
@@ -4783,7 +4783,7 @@ Moose and is optimised for rapid startup.")
        ("perl-sub-name" ,perl-sub-name)
        ("perl-task-weaken" ,perl-task-weaken)
        ("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/Moose")
+    (home-page "http://search.cpan.org/dist/Moose/")
     (synopsis "Postmodern object system for Perl 5")
     (description
      "Moose is a complete object system for Perl 5.  It provides keywords for
@@ -4814,7 +4814,7 @@ sentences.")
        ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-moose" ,perl-moose)))
-    (home-page "http://search.cpan.org/dist/MooseX-Emulate-Class-Accessor-Fast")
+    (home-page "http://search.cpan.org/dist/MooseX-Emulate-Class-Accessor-Fast/")
     (synopsis "Emulate Class::Accessor::Fast behavior using Moose attributes")
     (description "This module attempts to emulate the behavior of
 Class::Accessor::Fast as accurately as possible using the Moose attribute
@@ -4847,7 +4847,7 @@ private methods are not.")
        ("perl-moose" ,perl-moose)
        ("perl-moosex-role-parameterized" ,perl-moosex-role-parameterized)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (home-page "http://search.cpan.org/dist/MooseX-Getopt")
+    (home-page "http://search.cpan.org/dist/MooseX-Getopt/")
     (synopsis "Moose role for processing command line options")
     (description "This is a Moose role which provides an alternate constructor
 for creating objects using parameters passed in from the command line.")
@@ -4869,7 +4869,7 @@ for creating objects using parameters passed in from the command line.")
     (inputs
      `(("perl-moose" ,perl-moose)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (home-page "http://search.cpan.org/dist/MooseX-MarkAsMethods")
+    (home-page "http://search.cpan.org/dist/MooseX-MarkAsMethods/")
     (synopsis "Mark overload code symbols as methods")
     (description "MooseX::MarkAsMethods allows one to easily mark certain
 functions as Moose methods.  This will allow other packages such as
@@ -4900,7 +4900,7 @@ overloads will \"just work\".")
      `(("perl-moose" ,perl-moose)
        ("perl-moosex-types" ,perl-moosex-types)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (home-page "http://search.cpan.org/dist/MooseX-MethodAttributes")
+    (home-page "http://search.cpan.org/dist/MooseX-MethodAttributes/")
     (synopsis "Code attribute introspection")
     (description "This module allows code attributes of methods to be
 introspected using Moose meta method objects.")
@@ -4927,7 +4927,7 @@ introspected using Moose meta method objects.")
       ("perl-module-runtime" ,perl-module-runtime)
       ("perl-moose" ,perl-moose)
       ("perl-try-tiny" ,perl-try-tiny)))
-  (home-page "http://search.cpan.org/dist/MooseX-NonMoose")
+  (home-page "http://search.cpan.org/dist/MooseX-NonMoose/")
   (synopsis "Subclassing of non-Moose classes")
   (description "MooseX::NonMoose allows for easily subclassing non-Moose
 classes with Moose, taking care of the details connected with doing this, such
@@ -4957,7 +4957,7 @@ BUILD methods are called.  It tries to be as non-intrusive as possible.")
        ("perl-moose" ,perl-moose)
        ("perl-params-validate" ,perl-params-validate)
        ("perl-sub-exporter" ,perl-sub-exporter)))
-    (home-page "http://search.cpan.org/dist/MooseX-Params-Validate")
+    (home-page "http://search.cpan.org/dist/MooseX-Params-Validate/")
     (synopsis "Extension of Params::Validate using Moose's types")
     (description "This module fills a gap in Moose by adding method parameter
 validation to Moose.")
@@ -4979,7 +4979,7 @@ validation to Moose.")
     (propagated-inputs
      `(("perl-moose" ,perl-moose)
        ("perl-moosex-role-parameterized" ,perl-moosex-role-parameterized)))
-    (home-page "http://search.cpan.org/dist/MooseX-RelatedClassRoles")
+    (home-page "http://search.cpan.org/dist/MooseX-RelatedClassRoles/")
     (synopsis "Apply roles to a related Perl class")
     (description "This module applies roles to make a subclass instead of
 manually setting up a subclass.")
@@ -5007,7 +5007,7 @@ manually setting up a subclass.")
     (propagated-inputs
      `(("perl-moose" ,perl-moose)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (home-page "http://search.cpan.org/dist/MooseX-Role-Parameterized")
+    (home-page "http://search.cpan.org/dist/MooseX-Role-Parameterized/")
     (synopsis "Moose roles with composition parameters")
     (description "Because Moose roles serve many different masters, they
 usually provide only the least common denominator of functionality.  To
@@ -5034,7 +5034,7 @@ Parameterized roles offer a solution to these (and other) kinds of problems.")
      `(("perl-aliased" ,perl-aliased)
        ("perl-moose" ,perl-moose)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (home-page "http://search.cpan.org/dist/MooseX-Role-WithOverloading")
+    (home-page "http://search.cpan.org/dist/MooseX-Role-WithOverloading/")
     (synopsis "Roles which support overloading")
     (description "MooseX::Role::WithOverloading allows you to write a
 Moose::Role which defines overloaded operators and allows those overload
@@ -5057,7 +5057,7 @@ where plain Moose::Roles would lose the overloading.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-moose" ,perl-moose)))
-    (home-page "http://search.cpan.org/dist/MooseX-SemiAffordanceAccessor")
+    (home-page "http://search.cpan.org/dist/MooseX-SemiAffordanceAccessor/")
     (synopsis "Name your accessors foo() and set_foo()")
     (description "This module does not provide any methods.  Simply loading it
 changes the default naming policy for the loading class so that accessors are
@@ -5084,7 +5084,7 @@ accessor, while set methods are prefixed with \"_set_\".")
     (propagated-inputs
      `(("perl-moose" ,perl-moose)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (home-page "http://search.cpan.org/dist/MooseX-StrictConstructor")
+    (home-page "http://search.cpan.org/dist/MooseX-StrictConstructor/")
     (synopsis "Strict object constructors for Moose")
     (description "Simply loading this module makes your constructors
 \"strict\".  If your constructor is called with an attribute init argument
@@ -5113,7 +5113,7 @@ that your class does not declare, then it calls Moose->throw_error().")
        ("perl-moose" ,perl-moose)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
     (home-page
-     "http://search.cpan.org/dist/MooseX-Traits-Pluggable")
+     "http://search.cpan.org/dist/MooseX-Traits-Pluggable/")
     (synopsis "Trait loading and resolution for Moose")
     (description "Adds support on top of MooseX::Traits for class precedence
 search for traits and some extra attributes.")
@@ -5140,7 +5140,7 @@ search for traits and some extra attributes.")
      `(("perl-carp-clan" ,perl-carp-clan)
        ("perl-moose" ,perl-moose)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (home-page "http://search.cpan.org/dist/MooseX-Types")
+    (home-page "http://search.cpan.org/dist/MooseX-Types/")
     (synopsis "Organise your Moose types in libraries")
     (description "This package lets you declare types using short names, but
 behind the scenes it namespaces all your type declarations, effectively
@@ -5172,7 +5172,7 @@ prevent name clashes between packages.")
        ("perl-moose" ,perl-moose)
        ("perl-moosex-types" ,perl-moosex-types)
        ("perl-namespace-clean" ,perl-namespace-clean)))
-    (home-page "http://search.cpan.org/dist/MooseX-Types-DateTime")
+    (home-page "http://search.cpan.org/dist/MooseX-Types-DateTime/")
     (synopsis "DateTime related constraints and coercions for Moose")
     (description "This module packages several Moose::Util::TypeConstraints
 with coercions, designed to work with the DateTime suite of objects.")
@@ -5205,7 +5205,7 @@ with coercions, designed to work with the DateTime suite of objects.")
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-time-duration-parse" ,perl-time-duration-parse)))
     (home-page
-     "http://search.cpan.org/dist/MooseX-Types-DateTime-MoreCoercions")
+     "http://search.cpan.org/dist/MooseX-Types-DateTime-MoreCoercions/")
     (synopsis "Extensions to MooseX::Types::DateTime")
     (description "This module builds on MooseX::Types::DateTime to add
 additional custom types and coercions.  Since it builds on an existing type,
@@ -5235,7 +5235,7 @@ all coercions and constraints are inherited.")
      `(("perl-module-runtime" ,perl-module-runtime)
        ("perl-moosex-types" ,perl-moosex-types)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (home-page "http://search.cpan.org/dist/MooseX-Types-LoadableClass")
+    (home-page "http://search.cpan.org/dist/MooseX-Types-LoadableClass/")
     (synopsis "ClassName type constraints for Moose")
     (description "MooseX::Types::LoadableClass provides a ClassName type
 constraint with coercion to load the class.")
@@ -5261,7 +5261,7 @@ constraint with coercion to load the class.")
        ("perl-import-into" ,perl-import-into)
        ("perl-module-runtime" ,perl-module-runtime)
        ("perl-moo" ,perl-moo)))
-    (home-page "http://search.cpan.org/dist/MooX")
+    (home-page "http://search.cpan.org/dist/MooX/")
     (synopsis
      "Using Moo and MooX:: packages the most lazy way")
     (description "Contains the MooX and MooX::Role packages.")
@@ -5296,7 +5296,7 @@ constraint with coercion to load the class.")
     (propagated-inputs
      `(("perl-data-perl" ,perl-data-perl)))
     (home-page
-     "http://search.cpan.org/dist/MooX-HandlesVia")
+     "http://search.cpan.org/dist/MooX-HandlesVia/")
     (synopsis "NativeTrait-like behavior for Moo")
     (description
      "@code{MooX::HandlesVia} is an extension of Moo's @code{handles}
@@ -5329,7 +5329,7 @@ an external class to the given atttribute.")
     (propagated-inputs
      `(("perl-type-tiny" ,perl-type-tiny)))
     (home-page
-     "http://search.cpan.org/dist/MooX-late")
+     "http://search.cpan.org/dist/MooX-late/")
     (synopsis "Easily translate Moose code to Moo")
     (description
      "MooX::late does the following:
@@ -5363,7 +5363,7 @@ MooX::HandlesVia.
     (propagated-inputs
      `(("perl-module-runtime" ,perl-module-runtime)
        ("perl-strictures" ,perl-strictures)))
-    (home-page "http://search.cpan.org/dist/MooX-Types-MooseLike")
+    (home-page "http://search.cpan.org/dist/MooX-Types-MooseLike/")
     (synopsis "Moosish types and type builder")
     (description "MooX::Types::MooseLike provides a possibility to build your
 own set of Moose-like types.  These custom types can then be used to describe
@@ -5418,7 +5418,7 @@ subset of the functionality for reduced startup time.")
        ("perl-test-fatal" ,perl-test-fatal)))
     (propagated-inputs
      `(("perl-mouse" ,perl-mouse)))
-    (home-page "http://search.cpan.org/dist/MouseX-NativeTraits")
+    (home-page "http://search.cpan.org/dist/MouseX-NativeTraits/")
     (synopsis "Extend attribute interfaces for Mouse")
     (description
      "While @code{Mouse} attributes provide a way to name your accessors,
@@ -5440,7 +5440,7 @@ of data.")
         (base32
          "0aizn08lrdrgjz9vagkjmw2c7sxn46fzz521v9dbcqii4jd0d9r7"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Mozilla-CA")
+    (home-page "http://search.cpan.org/dist/Mozilla-CA/")
     (synopsis "Mozilla's CA cert bundle in PEM format")
     (description "@code{Mozilla::CA} provides a copy of Mozilla's bundle of
 Certificate Authority certificates in a form that can be consumed by modules
@@ -5460,7 +5460,7 @@ and libraries based on OpenSSL.")
         (base32
          "1y547lr6zccf7919vx01v22zsajy528psanhg5aqschrrin3nb4a"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/MRO-Compat")
+    (home-page "http://search.cpan.org/dist/MRO-Compat/")
     (synopsis "MRO interface compatibility for Perls < 5.9.5")
     (description "The \"mro\" namespace provides several utilities for dealing
 with method resolution order and method caching in general in Perl 5.9.5 and
@@ -5488,7 +5488,7 @@ Perl (back to 5.6.0).")
      `(("perl-b-hooks-endofscope" ,perl-b-hooks-endofscope)
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-sub-identify" ,perl-sub-identify)))
-    (home-page "http://search.cpan.org/dist/namespace-autoclean")
+    (home-page "http://search.cpan.org/dist/namespace-autoclean/")
     (synopsis "Keep imports out of your namespace")
     (description "The namespace::autoclean pragma will remove all imported
 symbols at the end of the current package's compile cycle.  Functions called
@@ -5515,7 +5515,7 @@ anything that looks like a method.")
     (propagated-inputs
      `(("perl-package-stash" ,perl-package-stash)
        ("perl-b-hooks-endofscope" ,perl-b-hooks-endofscope)))
-    (home-page "http://search.cpan.org/dist/namespace-clean")
+    (home-page "http://search.cpan.org/dist/namespace-clean/")
     (synopsis "Keep imports and functions out of your namespace")
     (description "The namespace::clean pragma will remove all previously
 declared or imported symbols at the end of the current package's compile
@@ -5542,7 +5542,7 @@ name, but they won't show up as methods on your class or instances.")
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-nowarnings" ,perl-test-nowarnings)))
     (home-page
-     "http://search.cpan.org/dist/Net-IDN-Encode")
+     "http://search.cpan.org/dist/Net-IDN-Encode/")
     (synopsis
      "Internationalizing Domain Names in Applications (IDNA)")
     (description
@@ -5571,7 +5571,7 @@ using whatever IDNA standard is the best choice at the moment.")
         "0p2nhrwamic2fyj094y583q088ixv9gbb82c3invqrd17mh57r33"))))
    (build-system perl-build-system)
    (home-page
-    "http://search.cpan.org/dist/Net-Statsd")
+    "http://search.cpan.org/dist/Net-Statsd/")
    (synopsis "Perl client for Etsy's statsd daemon")
    (description "This module implement a UDP client for the statsd statistics
 collector daemon in use at Etsy.com.")
@@ -5590,7 +5590,7 @@ collector daemon in use at Etsy.com.")
         (base32
          "09q8i0mxvr7q9vajwlgawsi0hlpc119gnhq4hc933d03x0vkfac3"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Number-Compare")
+    (home-page "http://search.cpan.org/dist/Number-Compare/")
     (synopsis "Numeric comparisons")
     (description "Number::Compare compiles a simple comparison to an anonymous
 subroutine, which you can call with a value to be tested against.")
@@ -5611,7 +5611,7 @@ subroutine, which you can call with a value to be tested against.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
-    (home-page "http://search.cpan.org/dist/Object-Signature")
+    (home-page "http://search.cpan.org/dist/Object-Signature/")
     (synopsis "Generate cryptographic signatures for objects")
     (description "Object::Signature is an abstract base class that you can
 inherit from in order to allow your objects to generate unique cryptographic
@@ -5633,7 +5633,7 @@ signatures.")
         (base32
          "179cxwqxb0f9dpx8954nvwjmggxxi5ndnang41yav1dx6mf0abp7"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/OLE-Storage_Lite")
+    (home-page "http://search.cpan.org/dist/OLE-Storage_Lite/")
     (synopsis "Read and write OLE storage files")
     (description "This module allows you to read and write
 an OLE-Structured file.  @dfn{OLE} (Object Linking and Embedding) is a
@@ -5657,7 +5657,7 @@ documents within a single file.")
     (propagated-inputs
      `(("perl-sub-exporter" ,perl-sub-exporter)
        ("perl-params-util" ,perl-params-util)))
-    (home-page "http://search.cpan.org/dist/Package-Anon")
+    (home-page "http://search.cpan.org/dist/Package-Anon/")
     (synopsis "Anonymous packages")
     (description "This module allows for anonymous packages that are
 independent of the main namespace and only available through an object
@@ -5686,7 +5686,7 @@ instance, not by name.")
        ("perl-params-util" ,perl-params-util)
        ("perl-sub-install" ,perl-sub-install)))
     (arguments `(#:tests? #f))          ;XXX: Failing for some reason...
-    (home-page "http://search.cpan.org/dist/Package-DeprecationManager")
+    (home-page "http://search.cpan.org/dist/Package-DeprecationManager/")
     (synopsis "Manage deprecation warnings for your distribution")
     (description "This module allows you to manage a set of deprecations for
 one or more modules.")
@@ -5714,7 +5714,7 @@ one or more modules.")
      `(("perl-module-implementation" ,perl-module-implementation)
        ("perl-dist-checkconflicts" ,perl-dist-checkconflicts)
        ("perl-package-stash-xs" ,perl-package-stash-xs)))
-    (home-page "http://search.cpan.org/dist/Package-Stash")
+    (home-page "http://search.cpan.org/dist/Package-Stash/")
     (synopsis "Routines for manipulating stashes")
     (description "Manipulating stashes (Perl's symbol tables) is occasionally
 necessary, but incredibly messy, and easy to get wrong.  This module hides all
@@ -5738,7 +5738,7 @@ of that behind a simple API.")
      `(("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-requires" ,perl-test-requires)
        ("perl-package-anon" ,perl-package-anon)))
-    (home-page "http://search.cpan.org/dist/Package-Stash-XS")
+    (home-page "http://search.cpan.org/dist/Package-Stash-XS/")
     (synopsis "Faster implementation of the Package::Stash API")
     (description "This is a backend for Package::Stash, which provides the
 functionality in a way that's less buggy and much faster.  It will be used by
@@ -5759,7 +5759,7 @@ compiler.")
         (base32
          "058l78rkr6px3rqcv2sdf9sqimdq1nc6py5yb9rrg3wmva7crw84"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/PadWalker")
+    (home-page "http://search.cpan.org/dist/PadWalker/")
     (synopsis "Play with other peoples' lexical variables")
     (description "PadWalker is a module which allows you to inspect (and even
 change) lexical variables in any subroutine which called you.  It will only
@@ -5784,7 +5784,7 @@ is particularly useful for debugging.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-warn" ,perl-test-warn)))
-    (home-page "http://search.cpan.org/dist/Parallel-ForkManager")
+    (home-page "http://search.cpan.org/dist/Parallel-ForkManager/")
     (synopsis "Simple parallel processing fork manager")
     (description "@code{Parallel::ForkManager} is intended for use in
 operations that can be done in parallel where the number of
@@ -5805,7 +5805,7 @@ processes to be forked off should be limited.")
         (base32
          "0v67sx93yhn7xa0nh9mnbf8mixf54czk6wzrjsp6dzzr5hzyrw9h"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Params-Util")
+    (home-page "http://search.cpan.org/dist/Params-Util/")
     (synopsis "Simple, compact and correct param-checking functions")
     (description
      "Params::Util provides a basic set of importable functions that makes
@@ -5831,7 +5831,7 @@ checking parameters easier.")
        ("perl-test-requires" ,perl-test-requires)))
     (propagated-inputs
      `(("perl-module-implementation" ,perl-module-implementation)))
-    (home-page "http://search.cpan.org/dist/Params-Validate")
+    (home-page "http://search.cpan.org/dist/Params-Validate/")
     (synopsis "Validate method/function parameters")
     (description "The Params::Validate module allows you to validate method or
 function call parameters to an arbitrary level of specificity.")
@@ -5880,7 +5880,7 @@ defaults, optional parameters, and extra \"slurpy\" parameters.")
         (base32
          "078ycyn8pw3rba4k3qwcqrqfcym5c1pivymwa0bvs9sab45j4iwy"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/PAR-Dist")
+    (home-page "http://search.cpan.org/dist/PAR-Dist/")
     (synopsis "Create and manipulate PAR distributions")
     (description "PAR::Dist is a toolkit to create and manipulate PAR
 distributions.")
@@ -5899,7 +5899,7 @@ distributions.")
         (base32
          "0w0i02y4z8465z050kml57mvhv7c5gl8w8ivplhr3cms0zbaq87b"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/parent")
+    (home-page "http://search.cpan.org/dist/parent/")
     (synopsis "Establish an ISA relationship with base classes at compile time")
     (description "Allows you to both load one or more modules, while setting
 up inheritance from those modules at the same time.")
@@ -5919,7 +5919,7 @@ up inheritance from those modules at the same time.")
          "1viaj8jyshcj135la0kgfgzalaw06xnbsg9h54jx09v1342v69lj"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Path-Class")
+    (home-page "http://search.cpan.org/dist/Path-Class/")
     (synopsis "Path specification manipulation")
     (description "Path::Class is a module for manipulation of file and
 directory specifications in a cross-platform manner.")
@@ -5944,7 +5944,7 @@ directory specifications in a cross-platform manner.")
     ;;    ("perl-test-mockrandom" ,perl-test-mockrandom)))
     (inputs
      `(("perl-unicode-utf8" ,perl-unicode-utf8)))
-    (home-page "http://search.cpan.org/dist/Path-Tiny")
+    (home-page "http://search.cpan.org/dist/Path-Tiny/")
     (synopsis "File path utility")
     (description "This module provides a small, fast utility for working
 with file paths.")
@@ -5966,7 +5966,7 @@ with file paths.")
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
     (home-page
-     "http://search.cpan.org/dist/PerlIO-utf8_strict")
+     "http://search.cpan.org/dist/PerlIO-utf8_strict/")
     (synopsis "Fast and correct UTF-8 IO")
     (description "@code{PerlIO::utf8_strict} provides a fast and correct UTF-8
 PerlIO layer.  Unlike Perl's default @code{:utf8} layer it checks the input
@@ -5988,7 +5988,7 @@ for correctness.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-devel-symdump" ,perl-devel-symdump)))
-    (home-page "http://search.cpan.org/dist/Pod-Coverage")
+    (home-page "http://search.cpan.org/dist/Pod-Coverage/")
     (synopsis "Check for comprehensive documentation of a module")
     (description "This module provides a mechanism for determining if the pod
 for a given module is comprehensive.")
@@ -6006,7 +6006,7 @@ for a given module is comprehensive.")
                (base32
                 "04705pcs31s71vpmnpfdy8ds0q700q4cs2dlyssyrdjbvx3ymq3l"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Pod-Simple/")
+    (home-page "http://search.cpan.org/dist/Pod-Simple//")
     (synopsis "Parsing library for text in Pod format")
     (description "Pod::Simple is a Perl library for parsing text in
 the Pod (plain old documentation) markup language that is typically
@@ -6028,7 +6028,7 @@ used for writing documentation for Perl and for Perl modules.")
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (arguments `(#:tests? #f))          ;TODO: Timezone test failures
-    (home-page "http://search.cpan.org/dist/POSIX-strftime-Compiler")
+    (home-page "http://search.cpan.org/dist/POSIX-strftime-Compiler/")
     (synopsis "GNU C library compatible strftime for loggers and servers")
     (description "POSIX::strftime::Compiler provides GNU C library compatible
 strftime(3).  But this module is not affected by the system locale.  This
@@ -6053,7 +6053,7 @@ applications.")
      "Probe::Perl provides methods for obtaining information about the
 currently running perl interpreter.  It originally began life as code in the
 Module::Build project, but has been externalized here for general use.")
-    (home-page (string-append "http://search.cpan.org/~kwilliams/"
+    (home-page (string-append "http://search.cpan.org/~kwilliams//"
                               "Probe-Perl-" version))
     (license (package-license perl))))
 
@@ -6071,7 +6071,7 @@ Module::Build project, but has been externalized here for general use.")
          "165zcf9lpijdpkx82za0g9rx8ckjnhipmcivdkyzshl8jmp1bl4v"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Readonly")
+    (home-page "http://search.cpan.org/dist/Readonly/")
     (synopsis "Create read-only scalars, arrays, hashes")
     (description "This module provides a facility for creating non-modifiable
 variables in Perl.  This is useful for configuration files, headers, etc.  It
@@ -6092,7 +6092,7 @@ variables that should not be changed.")
         (base32
          "0l5dzbd71iclv8fdjk7685rq6pbfiiydh0n70br6g9l9iy2smr6f"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Ref-Util-XS")
+    (home-page "http://search.cpan.org/dist/Ref-Util-XS/")
     (synopsis "XS implementation for Ref::Util")
     (description "@code{Ref::Util::XS} is the XS implementation of
 @code{Ref::Util}, which provides several functions to help identify references
@@ -6120,7 +6120,7 @@ balanced parentheses and brackets, delimited text (with escapes), integers and
 floating-point numbers in any base (up to 36), comments in 44 languages,
 offensive language, lists of any pattern, IPv4 addresses, URIs, and Zip
 codes.")
-    (home-page (string-append "http://search.cpan.org/~abigail/"
+    (home-page (string-append "http://search.cpan.org/~abigail//"
                               "Regexp-Common-" version))
     ;; Quad-licensed: Perl Artistic, Perl Artistic 2.0, X11, and BSD.
     (license (list (package-license perl) x11 bsd-3))))
@@ -6138,7 +6138,7 @@ codes.")
         (base32
          "01n1cggiflsnp9f6adkcxzkc0qpgssz60cwnyyd8mzavh2ximr5a"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Regexp-Util")
+    (home-page "http://search.cpan.org/dist/Regexp-Util/")
     (synopsis "Selection of general-utility regexp subroutines")
     (description "This package provides a selection of regular expression
 subroutines including @code{is_regexp}, @code{regexp_seen_evals},
@@ -6164,7 +6164,7 @@ and @code{deserialize_regexp}.")
        ("perl-test-fatal" ,perl-test-fatal)))
     (propagated-inputs
      `(("perl-class-method-modifiers" ,perl-class-method-modifiers)))
-    (home-page "http://search.cpan.org/dist/Role-Tiny")
+    (home-page "http://search.cpan.org/dist/Role-Tiny/")
     (synopsis "Roles, as a slice of Moose")
     (description "Role::Tiny is a minimalist role composition tool.")
     (license (package-license perl))))
@@ -6182,7 +6182,7 @@ and @code{deserialize_regexp}.")
         (base32
          "1vib54cp64dy3ic4n73skadp1pl4gn8s9qpxmzvi078dm3mpnbcw"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Safe-Isa")
+    (home-page "http://search.cpan.org/dist/Safe-Isa/")
     (synopsis "Call isa, can, does, and DOES safely")
     (description "This module allows you to call isa, can, does, and DOES
 safely on things that may not be objects.")
@@ -6201,7 +6201,7 @@ safely on things that may not be objects.")
         (base32
          "1lsagnz6pli035zvx5c1x4qm9fabi773vns86yd8lzfpldhfv3sv"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Scope-Guard")
+    (home-page "http://search.cpan.org/dist/Scope-Guard/")
     (synopsis "Lexically-scoped resource management")
     (description "This module provides a convenient way to perform cleanup or
 other forms of resource management at the end of a scope.  It is particularly
@@ -6225,7 +6225,7 @@ collector.")
         (base32
          "07vyp0jpndcxkbyjk432nillxxk22wrmm2rs985y8ba96h3qig07"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Set-Infinite")
+    (home-page "http://search.cpan.org/dist/Set-Infinite/")
     (synopsis "Infinite sets")
     (description "Set::Infinite is a set theory module for infinite sets.")
     (license (package-license perl))))
@@ -6246,7 +6246,7 @@ collector.")
     (propagated-inputs
      `(("perl-moose" ,perl-moose)
        ("perl-test-leaktrace" ,perl-test-leaktrace)))
-    (home-page "http://search.cpan.org/dist/Set-Object")
+    (home-page "http://search.cpan.org/dist/Set-Object/")
     (synopsis "Unordered collections of Perl Objects")
     (description "Set::Object provides efficient sets, unordered collections
 of Perl objects without duplicates for scalars and references.")
@@ -6265,7 +6265,7 @@ of Perl objects without duplicates for scalars and references.")
         (base32
          "07aiqkyi1p22drpcyrrmv7f8qq6fhrxh007achy2vryxyck1bp53"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Set-Scalar")
+    (home-page "http://search.cpan.org/dist/Set-Scalar/")
     (synopsis "Set operations for Perl")
     (description "The first priority of Set::Scalar is to be a convenient
 interface to sets (as in: unordered collections of Perl scalars).  While not
@@ -6286,7 +6286,7 @@ compact.")
         (base32
          "1kqs10s2plj6c96srk0j8d7xj8dxk1704r7mck8rqk09mg7lqspd"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Sort-Key")
+    (home-page "http://search.cpan.org/dist/Sort-Key/")
     (synopsis "Sort arrays by one or multiple calculated keys")
     (description "This Perl module provides various functions to quickly sort
 arrays by one or multiple calculated keys.")
@@ -6313,7 +6313,7 @@ arrays by one or multiple calculated keys.")
        ("perl-role-tiny" ,perl-role-tiny)
        ("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-needs" ,perl-test-needs)))
-    (home-page "http://search.cpan.org/dist/Specio/")
+    (home-page "http://search.cpan.org/dist/Specio//")
     (synopsis "Classes for representing type constraints and coercion")
     (description "The Specio distribution provides classes for representing type
 constraints and coercion, along with syntax sugar for declaring them.  Note that
@@ -6337,7 +6337,7 @@ coerce values to that type.")
         (base32
          "18qxshrjh0ibpzjm2314157mxlibh3smyg64nr4mq990hh564n4g"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Spiffy")
+    (home-page "http://search.cpan.org/dist/Spiffy/")
     (synopsis "Spiffy Perl Interface Framework For You")
     (description "Spiffy is a framework and methodology for doing object
 oriented (OO) programming in Perl.  Spiffy combines the best parts of
@@ -6360,7 +6360,7 @@ other OO languages like Python, Ruby, Java and Perl 6.")
         (base32
          "0fs2n9zw6isfkha2kbqrvl9mwg572x1x0jlfaps0qsyynn846bcv"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Stream-Buffered")
+    (home-page "http://search.cpan.org/dist/Stream-Buffered/")
     (synopsis "Temporary buffer to save bytes")
     (description "Stream::Buffered is a buffer class to store arbitrary length
 of byte strings and then get a seekable filehandle once everything is
@@ -6381,7 +6381,7 @@ on the length of the size.")
         (base32
          "1bmpv8wr9jbc1lfj634xhq3y42nm28hh01jfsyzxhqhqf6dkdz59"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/strictures")
+    (home-page "http://search.cpan.org/dist/strictures/")
     (synopsis "Turn on strict and make all warnings fatal")
     (description "Strictures turns on strict and make all warnings fatal when
 run from within a source-controlled directory.")
@@ -6410,7 +6410,7 @@ run from within a source-controlled directory.")
                      (string-append (getcwd) ":"
                                     (getenv "PERL5LIB")))
              #t)))))
-    (home-page "http://search.cpan.org/dist/String-CamelCase")
+    (home-page "http://search.cpan.org/dist/String-CamelCase/")
     (synopsis "Camelcase and de-camelcase")
     (description "This module may be used to convert from under_score text to
 CamelCase and back again.")
@@ -6431,7 +6431,7 @@ CamelCase and back again.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-sub-exporter" ,perl-sub-exporter)))
-    (home-page "http://search.cpan.org/dist/String-RewritePrefix")
+    (home-page "http://search.cpan.org/dist/String-RewritePrefix/")
     (synopsis "Rewrite strings based on a set of known prefixes")
     (description "This module allows you to rewrite strings based on a set of
 known prefixes.")
@@ -6451,7 +6451,7 @@ known prefixes.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-unicode-linebreak" ,perl-unicode-linebreak)))
-    (home-page "http://search.cpan.org/dist/String-Print")
+    (home-page "http://search.cpan.org/dist/String-Print/")
     (synopsis "String printing alternatives to printf")
     (description
      "This module inserts values into (translated) strings.  It provides
@@ -6476,7 +6476,7 @@ a functional interface.")
     (propagated-inputs
      `(("perl-data-optlist" ,perl-data-optlist)
        ("perl-params-util" ,perl-params-util)))
-    (home-page "http://search.cpan.org/dist/Sub-Exporter")
+    (home-page "http://search.cpan.org/dist/Sub-Exporter/")
     (synopsis "Sophisticated exporter for custom-built routines")
     (description
      "Sub::Exporter provides a sophisticated alternative to Exporter.pm for
@@ -6497,7 +6497,7 @@ custom-built routines.")
          "01kwzbqwdhvadpphnczid03nlyj0h4cxaq3m3v2401bckkkcc606"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-sub-exporter" ,perl-sub-exporter)))
-    (home-page "http://search.cpan.org/dist/Sub-Exporter-Progressive")
+    (home-page "http://search.cpan.org/dist/Sub-Exporter-Progressive/")
     (synopsis "Only use Sub::Exporter if you need it")
     (description "Sub::Exporter is an incredibly powerful module, but with
 that power comes great responsibility, as well as some runtime penalties.
@@ -6520,7 +6520,7 @@ renaming exports, if they try to use them.")
         (base32
          "087fjcg6w576w47i1slj6mjfd3gl1b0airgddmn3prn0nff6nn2m"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Sub-Identify")
+    (home-page "http://search.cpan.org/dist/Sub-Identify/")
     (synopsis "Retrieve names of code references")
     (description "Sub::Identify allows you to retrieve the real name of code
 references.")
@@ -6541,7 +6541,7 @@ references.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-importer" ,perl-importer)))
-    (home-page "http://search.cpan.org/dist/Sub-Info/")
+    (home-page "http://search.cpan.org/dist/Sub-Info//")
     (synopsis "Tool to inspect subroutines")
     (description "This package provides tools for inspecting subroutines
 in Perl.")
@@ -6561,7 +6561,7 @@ in Perl.")
         (base32
          "03zgk1yh128gciyx3q77zxzxg9kf8yy2gm46gdxqi24mcykngrb1"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Sub-Install")
+    (home-page "http://search.cpan.org/dist/Sub-Install/")
     (synopsis "Install subroutines into packages easily")
     (description
      "Sub::Install makes it easy to install subroutines into packages without
@@ -6584,7 +6584,7 @@ can see them.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-devel-checkbin" ,perl-devel-checkbin)))
-    (home-page "http://search.cpan.org/dist/Sub-Name")
+    (home-page "http://search.cpan.org/dist/Sub-Name/")
     (synopsis "(Re)name a sub")
     (description "Assigns a new name to referenced sub.  If package
 specification is omitted in the name, then the current package is used.  The
@@ -6604,7 +6604,7 @@ return value is the sub.")
         (base32
          "1yzxqsim8vpavzqm2wfksh8dpmy6qbr9s3hdqqicp38br3lzd4qg"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Sub-Uplevel")
+    (home-page "http://search.cpan.org/dist/Sub-Uplevel/")
     (synopsis "Apparently run a function in a higher stack frame")
     (description "Like Tcl's uplevel() function, but not quite so dangerous.
 The idea is just to fool caller().  All the really naughty bits of Tcl's
@@ -6624,7 +6624,7 @@ uplevel() are avoided.")
         (base32
          "12cbncsfxbwg1w3p1qmymfbqdb22kmyajxzdnxnxbq5xjl6yncha"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/SVG")
+    (home-page "http://search.cpan.org/dist/SVG/")
     (synopsis "Perl extension for generating SVG documents")
     (description "SVG is a Perl module which generates a nested data structure
 containing the DOM representation of an SVG (Scalable Vector Graphics) image.
@@ -6646,7 +6646,7 @@ animation content.")
         (base32
          "0xbdjdgzfj9zwa4j3ipr8bfk7bcici4hk89hq5d27rhg2isljd9i"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Switch")
+    (home-page "http://search.cpan.org/dist/Switch/")
     (synopsis "Switch statement for Perl")
     (description "Switch is a Perl module which implements a generalized case
 mechanism.  The module augments the standard Perl syntax with two new
@@ -6669,7 +6669,7 @@ statements: @code{switch} and @code{case}.")
     (description
      "Sys::CPU is a module for counting the number of CPUs on a system, and
 determining their type and clock speed.")
-    (home-page (string-append "http://search.cpan.org/~mzsanford/"
+    (home-page (string-append "http://search.cpan.org/~mzsanford//"
                               "Sys-CPU-" version))
     (license (package-license perl))))
 
@@ -6687,7 +6687,7 @@ determining their type and clock speed.")
          "1jv5n8jv48c1p8svjsigyxndv1ygsq8wgwj9c7ypx1vaf3rns679"))))
     (build-system perl-build-system)
     (arguments `(#:tests? #f))          ;no `hostname' during build
-    (home-page "http://search.cpan.org/dist/Sys-Hostname-Long")
+    (home-page "http://search.cpan.org/dist/Sys-Hostname-Long/")
     (synopsis "Get full hostname in Perl")
     (description "Sys::Hostname::Long tries very hard to get the full hostname
 of a system.")
@@ -6715,7 +6715,7 @@ of a system.")
                               (string-append (getcwd) ":"
                                              (getenv "PERL5LIB")))
                       #t)))))
-    (home-page "http://search.cpan.org/dist/Task-Weaken")
+    (home-page "http://search.cpan.org/dist/Task-Weaken/")
     (synopsis "Ensure that a platform has weaken support")
     (description "One recurring problem in modules that use Scalar::Util's
 weaken function is that it is not present in the pure-perl variant.  If
@@ -6741,7 +6741,7 @@ error encouraging the user to seek support.")
     (propagated-inputs
      `(("perl-appconfig" ,perl-appconfig)
        ("perl-test-leaktrace" ,perl-test-leaktrace)))
-    (home-page "http://search.cpan.org/dist/Template-Toolkit")
+    (home-page "http://search.cpan.org/dist/Template-Toolkit/")
     (synopsis "Template processing system for Perl")
     (description "The Template Toolkit is a collection of modules which
 implement an extensible template processing system.  It was originally
@@ -6765,7 +6765,7 @@ documents: HTML, XML, POD, PostScript, LaTeX, and so on.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-template-toolkit" ,perl-template-toolkit)))
-    (home-page "http://search.cpan.org/dist/Template-Timer")
+    (home-page "http://search.cpan.org/dist/Template-Timer/")
     (synopsis "Profiling for Template Toolkit")
     (description "Template::Timer provides inline profiling of the template
 processing in Perl code.")
@@ -6786,7 +6786,7 @@ processing in Perl code.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
-    (home-page "http://search.cpan.org/dist/Term-Encoding")
+    (home-page "http://search.cpan.org/dist/Term-Encoding/")
     (synopsis "Detect encoding of the current terminal")
     (description "Term::Encoding is a simple module to detect the encoding of
 the current terminal expects in various ways.")
@@ -6811,7 +6811,7 @@ the current terminal expects in various ways.")
     (propagated-inputs
      `(("perl-class-methodmaker" ,perl-class-methodmaker)
        ("perl-term-readkey" ,perl-term-readkey)))
-    (home-page "http://search.cpan.org/dist/Term-ProgressBar")
+    (home-page "http://search.cpan.org/dist/Term-ProgressBar/")
     (synopsis "Progress meter on a standard terminal")
     (description "Term::ProgressBar provides a simple progress bar on the
 terminal, to let the user know that something is happening, roughly how much
@@ -6835,7 +6835,7 @@ stuff has been done, and maybe an estimate at how long remains.")
      `(("perl-io-interactive" ,perl-io-interactive)
        ("perl-term-progressbar" ,perl-term-progressbar)
        ("perl-test-mockobject" ,perl-test-mockobject)))
-    (home-page "http://search.cpan.org/dist/Term-ProgressBar-Quiet")
+    (home-page "http://search.cpan.org/dist/Term-ProgressBar-Quiet/")
     (synopsis "Progress meter if run interactively")
     (description "Term::ProgressBar is a wonderful module for showing progress
 bars on the terminal.  This module acts very much like that module when it is
@@ -6858,7 +6858,7 @@ a cron job) then it does not show the progress bar.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-term-progressbar-quiet" ,perl-term-progressbar-quiet)))
-    (home-page "http://search.cpan.org/dist/Term-ProgressBar-Simple")
+    (home-page "http://search.cpan.org/dist/Term-ProgressBar-Simple/")
     (synopsis "Simple progress bars")
     (description "Term::ProgressBar::Simple tells you how much work has been
 done, how much is left to do, and estimate how long it will take.")
@@ -6877,7 +6877,7 @@ done, how much is left to do, and estimate how long it will take.")
         (base32
          "0hdj5mldpj3pyprd4hbbalfx9yjgi5p59gg2ixk9808f5v7q74sa"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/TermReadKey")
+    (home-page "http://search.cpan.org/dist/TermReadKey/")
     (synopsis "Simple terminal control")
     (description "This module, ReadKey, provides ioctl control for terminals
 so the input modes can be changed (thus allowing reads of a single character
@@ -6901,7 +6901,7 @@ screen size, and retrieval/modification of the control characters.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-importer" ,perl-importer)))
-    (home-page "http://search.cpan.org/dist/Term-Table/")
+    (home-page "http://search.cpan.org/dist/Term-Table//")
     (synopsis "Format a header and rows into a table")
     (description "This module is able to generically format rows of data
 into tables.")
@@ -6950,7 +6950,7 @@ etc built upon the Test2 testing library.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test2-bundle-extended" ,perl-test2-bundle-extended)))
-    (home-page "http://search.cpan.org/dist/Test2-Plugin-NoWarnings/")
+    (home-page "http://search.cpan.org/dist/Test2-Plugin-NoWarnings//")
     (synopsis "Fail if tests warn")
     (description "Loading this plugin causes your tests to fail if there any
 warnings while they run.  Each warning generates a new failing test and the
@@ -6976,7 +6976,7 @@ warning content is outputted via diag.")
     (propagated-inputs
      `(("perl-spiffy" ,perl-spiffy)
        ("perl-test-deep" ,perl-test-deep)))
-    (home-page "http://search.cpan.org/dist/Test-Base")
+    (home-page "http://search.cpan.org/dist/Test-Base/")
     (synopsis "Data-driven testing framework for Perl")
     (description "Test::Base gives a way to trivially write your own test
 framework base class.  It concentrates on offering reusable data driven
@@ -7004,7 +7004,7 @@ patterns, so that you can write tests with a minimum of code.")
      `(("perl-module-runtime" ,perl-module-runtime)
        ("perl-mro-compat" ,perl-mro-compat)
        ("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/Test-Class")
+    (home-page "http://search.cpan.org/dist/Test-Class/")
     (synopsis "Easily create test classes in an xUnit/JUnit style")
     (description "@code{Test::Class} provides a simple way of creating classes
 and objects to test your code in an xUnit style.
@@ -7037,7 +7037,7 @@ Built using @code{Test::Builder}, it was designed to work with other
        ("perl-module-runtime" ,perl-module-runtime)
        ("perl-try-tiny" ,perl-try-tiny)
        ("perl-mro-compat" ,perl-mro-compat)))
-    (home-page "http://search.cpan.org/dist/Test-Class-Most")
+    (home-page "http://search.cpan.org/dist/Test-Class-Most/")
     (synopsis "Test classes the easy way")
     (description "@code{Test::Class::Most} provides some more convenience when
 using @code{Test::Class}.")
@@ -7070,7 +7070,7 @@ using @code{Test::Class}.")
        ("perl-sub-exporter" ,perl-sub-exporter)
        ("perl-file-find-rule" ,perl-file-find-rule)
        ("perl-file-find-rule-perl" ,perl-file-find-rule-perl)))
-    (home-page "http://search.cpan.org/dist/Test-CleanNamespaces")
+    (home-page "http://search.cpan.org/dist/Test-CleanNamespaces/")
     (synopsis "Check for uncleaned imports")
     (description "This module lets you check your module's namespaces for
 imported functions you might have forgotten to remove with
@@ -7098,7 +7098,7 @@ called as methods, which usually isn't want you want.")
        ("perl-test-pod" ,perl-test-pod)
        ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
     (home-page
-     "http://search.cpan.org/dist/Test-CPAN-Meta")
+     "http://search.cpan.org/dist/Test-CPAN-Meta/")
     (synopsis "Validate your CPAN META.yml files")
     (description
      "This module was written to ensure that a META.yml file meets the
@@ -7126,7 +7126,7 @@ specification.")
     (inputs
      `(("perl-json" ,perl-json)))
     (home-page
-     "http://search.cpan.org/dist/Test-CPAN-Meta-JSON")
+     "http://search.cpan.org/dist/Test-CPAN-Meta-JSON/")
     (synopsis "Validate your CPAN META.json files")
     (description
      "This module was written to ensure that a META.json file meets the
@@ -7153,7 +7153,7 @@ specification.")
 that the values match, that arrays and hashes have the same elements and that
 references are blessed into the correct class.  It also handles circular data
 structures without getting caught in an infinite loop.")
-    (home-page "http://search.cpan.org/dist/Test-Deep")
+    (home-page "http://search.cpan.org/dist/Test-Deep/")
     (license gpl1+)))  ; or "Artistic License"
 
 (define-public perl-test-differences
@@ -7174,7 +7174,7 @@ structures without getting caught in an infinite loop.")
     (propagated-inputs
      `(("perl-text-diff" ,perl-text-diff)
        ("perl-capture-tiny" ,perl-capture-tiny)))
-    (home-page "http://search.cpan.org/dist/Test-Differences")
+    (home-page "http://search.cpan.org/dist/Test-Differences/")
     (synopsis "Test strings and data structures and show differences")
     (description "This module exports three test functions and four diff-style
 functions.")
@@ -7196,7 +7196,7 @@ functions.")
          "1ncql08cizhicbxwd753b4czns8nlcnlw0zfjcfrbdd41x4j6hqr"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-test-exception" ,perl-test-exception)))
-    (home-page "http://search.cpan.org/dist/Test-Directory")
+    (home-page "http://search.cpan.org/dist/Test-Directory/")
     (synopsis "Perl extension for maintaining test directories")
     (description "Testing code can involve making sure that files are created
 and deleted as expected.  Doing this manually can be error prone, as it's easy
@@ -7222,7 +7222,7 @@ files, as well as to verify that there are no missing or unknown files.")
          "0l3bxpsw0x7j9nclizcp53mnf9wny25dmg2iglfhzgnk0xfpwzwf"))))
     (build-system perl-build-system)
     (home-page
-     "http://search.cpan.org/dist/Test-EOL")
+     "http://search.cpan.org/dist/Test-EOL/")
     (synopsis
      "Check the correct line endings in your project")
     (description
@@ -7247,7 +7247,7 @@ and/or windows line endings in your perl code.")
      `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-sub-uplevel" ,perl-sub-uplevel)))
-    (home-page "http://search.cpan.org/dist/Test-Exception")
+    (home-page "http://search.cpan.org/dist/Test-Exception/")
     (synopsis "Test exception based code")
     (description "This module provides a few convenience methods for testing
 exception based code.  It is built with Test::Builder and plays happily with
@@ -7268,7 +7268,7 @@ Test::More and friends.")
          "1c6bs68mss4q7cyapkv2c0jn66i21050p0faxf3s3417gdffzp5w"))))
     (build-system perl-build-system)
     (propagated-inputs `(("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/Test-Fatal")
+    (home-page "http://search.cpan.org/dist/Test-Fatal/")
     (synopsis "Simple helpers for testing code with exceptions")
     (description "Test::Fatal is an alternative to the popular
 Test::Exception.  It does much less, but should allow greater flexibility in
@@ -7319,7 +7319,7 @@ for testing.")
     (propagated-inputs
      `(("perl-algorithm-diff" ,perl-algorithm-diff)
        ("perl-text-diff" ,perl-text-diff)))
-    (home-page "http://search.cpan.org/dist/Test-Files")
+    (home-page "http://search.cpan.org/dist/Test-Files/")
     (synopsis "Ease software testing with files and directories")
     (description "This library provides functions to enable testing of files
 and directories.  For instance, the @code{file_ok} helper can test whether the
@@ -7351,7 +7351,7 @@ contents of a file is equal to a particular string.")
                 (string-append "#!" (assoc-ref inputs "perl")
                                "/bin/perl")))
              #t)))))
-    (home-page "http://search.cpan.org/dist/Test-Harness")
+    (home-page "http://search.cpan.org/dist/Test-Harness/")
     (synopsis "Run Perl standard test scripts with statistics")
     (description "Simple test harness which allows tests to be run and results
 automatically aggregated and output to STDOUT.")
@@ -7370,7 +7370,7 @@ automatically aggregated and output to STDOUT.")
         (base32
          "00z4hcjra5nk700f3fgpy8fs036d7ry7glpn8g3wh7jzj7nrw22z"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-LeakTrace")
+    (home-page "http://search.cpan.org/dist/Test-LeakTrace/")
     (synopsis "Traces memory leaks in Perl")
     (description "Test::LeakTrace provides several functions that trace memory
 leaks.  This module scans arenas, the memory allocation system, so it can
@@ -7390,7 +7390,7 @@ detect any leaked SVs in given blocks.")
         (base32
          "0kwp7rfr1i2amz4ckigkv13ah7jr30q6l5k4wk0vxl84myg39i5b"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-LongString")
+    (home-page "http://search.cpan.org/dist/Test-LongString/")
     (synopsis "Tests strings for equality, with more helpful failures")
     (description "This module provides some drop-in replacements for the
 string comparison functions of Test::More, but which are more suitable when
@@ -7412,7 +7412,7 @@ you test against long strings.")
     (native-inputs
      `(("perl-test-pod" ,perl-test-pod)
        ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
-    (home-page "http://search.cpan.org/dist/Test-Manifest")
+    (home-page "http://search.cpan.org/dist/Test-Manifest/")
     (synopsis "Interact with a t/test_manifest file")
     (description "@code{Test::Manifest} overrides the default test file order.  Instead of
 running all of the t/*.t files in ASCII-betical order, it looks in the t/test_manifest
@@ -7440,7 +7440,7 @@ It constructs the right value for the build system to do the right thing.")
     (propagated-inputs
      `(("perl-devel-cycle" ,perl-devel-cycle)))
     (home-page
-     "http://search.cpan.org/dist/Test-Memory-Cycle")
+     "http://search.cpan.org/dist/Test-Memory-Cycle/")
     (synopsis
      "Verifies code hasn't left circular references")
     (description
@@ -7478,7 +7478,7 @@ memory_cycle_ok( $object );
        ("perl-universal-can" ,perl-universal-can)
        ("perl-universal-isa" ,perl-universal-isa)))
     (arguments `(#:tests? #f))          ;TODO: tests require perl-cgi
-    (home-page "http://search.cpan.org/dist/Test-MockObject")
+    (home-page "http://search.cpan.org/dist/Test-MockObject/")
     (synopsis "Emulate troublesome interfaces in Perl")
     (description "Test::MockObject allows you to create objects that conform
 to particular interfaces with very little code.  You don't have to reimplement
@@ -7498,7 +7498,7 @@ the behavior, just the input and the output.")
         (base32
          "0yrqmjg33akannwz2f99rfm7dvvxpzsdj23lsvlvfi4qslrlqfvw"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-MockTime")
+    (home-page "http://search.cpan.org/dist/Test-MockTime/")
     (synopsis "Replaces actual time with simulated time")
     (description "This module was created to enable test suites to test code
 at specific points in time.  Specifically it overrides localtime, gmtime and
@@ -7526,7 +7526,7 @@ to gmtime,time or localtime.")
        ("perl-exception-class" ,perl-exception-class)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-exception" ,perl-test-exception)))
-    (home-page "http://search.cpan.org/dist/Test-Most")
+    (home-page "http://search.cpan.org/dist/Test-Most/")
     (synopsis "Most commonly needed test functions and features")
     (description "This module provides the most commonly used testing
 functions, along with automatically turning on strict and warning and gives a
@@ -7549,7 +7549,7 @@ bit more fine-grained control over test suites.")
          "16gkgpmr9hvkz382iaqd3500269lk2d44fqaw3dsrvc66nc36kss"))))
     (build-system perl-build-system)
     (home-page
-     "http://search.cpan.org/dist/Test-Needs")
+     "http://search.cpan.org/dist/Test-Needs/")
     (synopsis
      "Skip tests when modules not available")
     (description "@code{Test::Needs} allows you to skip test scripts if
@@ -7577,7 +7577,7 @@ If used in a subtest, the remainder of the subtest will be skipped.")
          "127kpl1va267qar2ia4c22xb96jby2jqnda3sj5pjgmxg8si26cg"))))
     (build-system perl-build-system)
     (home-page
-     "http://search.cpan.org/dist/Test-NoTabs")
+     "http://search.cpan.org/dist/Test-NoTabs/")
     (synopsis
      "Check the presence of tabs in your project")
     (description
@@ -7605,7 +7605,7 @@ stored.  It automatically adds an extra test that will run when your script
 ends to check that there were no warnings.  If there were any warnings, the
 test will fail and output diagnostics of where, when and what the warning was,
 including a stack trace of what was going on when it occurred.")
-    (home-page (string-append "http://search.cpan.org/~adamk/"
+    (home-page (string-append "http://search.cpan.org/~adamk//"
                               "Test-NoWarnings-" version))
     (license lgpl2.1)))
 
@@ -7621,7 +7621,7 @@ including a stack trace of what was going on when it occurred.")
                (base32
                 "0jfhzhpzkc23mkrlbnv085ykpfncmy99hvppbzjnrpvgks8k0m2k"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-Number-Delta")
+    (home-page "http://search.cpan.org/dist/Test-Number-Delta/")
     (synopsis
      "Compare the difference between numbers against a given tolerance")
     (description
@@ -7653,7 +7653,7 @@ usually called epsilon.  This module provides such a function for use with
      "Test::Output provides a simple interface for testing output sent to
 STDOUT or STDERR.  A number of different utilities are included to try and be
 as flexible as possible to the tester.")
-    (home-page (string-append "http://search.cpan.org/~bdfoy/"
+    (home-page (string-append "http://search.cpan.org/~bdfoy//"
                               "Test-Output-" version))
     (license (package-license perl))))
 
@@ -7671,7 +7671,7 @@ as flexible as possible to the tester.")
          "1hmwwhabyng4jrnll926b4ab73r40w3pfchlrvs0yx6kh6kwwy14"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Test-Pod")
+    (home-page "http://search.cpan.org/dist/Test-Pod/")
     (synopsis "Check for POD errors in files")
     (description "Check POD files for errors or warnings in a test file, using
 Pod::Simple to do the heavy lifting.")
@@ -7692,7 +7692,7 @@ Pod::Simple to do the heavy lifting.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-pod-coverage" ,perl-pod-coverage)))
-    (home-page "http://search.cpan.org/dist/Test-Pod-Coverage")
+    (home-page "http://search.cpan.org/dist/Test-Pod-Coverage/")
     (synopsis "Check for pod coverage")
     (description "This module adds a test to your Perl distribution which
 checks for pod coverage of all appropriate files.")
@@ -7711,7 +7711,7 @@ checks for pod coverage of all appropriate files.")
         (base32
          "08c29m0dn34384mmmpqqlbb899zpbkkc01c2lsp31mch1frv9cg7"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-Requires")
+    (home-page "http://search.cpan.org/dist/Test-Requires/")
     (synopsis "Checks to see if the module can be loaded")
     (description "Test::Requires checks to see if the module can be loaded.
 If this fails, then rather than failing tests this skips all tests.")
@@ -7737,7 +7737,7 @@ If this fails, then rather than failing tests this skips all tests.")
      "The intent of the Test::Script module is to provide a series of basic
 tests for 80% of the testing you will need to do for scripts in the script (or
 bin as is also commonly used) paths of your Perl distribution.")
-    (home-page "http://search.cpan.org/dist/Test-Script")
+    (home-page "http://search.cpan.org/dist/Test-Script/")
     (license (package-license perl))))
 
 (define-public perl-test-sharedfork
@@ -7755,7 +7755,7 @@ bin as is also commonly used) paths of your Perl distribution.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)))
-    (home-page "http://search.cpan.org/dist/Test-SharedFork")
+    (home-page "http://search.cpan.org/dist/Test-SharedFork/")
     (synopsis "Fork test in Perl")
     (description "Test::SharedFork is a utility module for Test::Builder.  It
 makes fork(2) safe to use in test cases.")
@@ -7776,7 +7776,7 @@ makes fork(2) safe to use in test cases.")
     (synopsis "Basic utilities for writing tests")
     (description
      "Test::Simple contains basic utilities for writing tests.")
-    (home-page (string-append "http://search.cpan.org/~exodist/"
+    (home-page (string-append "http://search.cpan.org/~exodist//"
                               "Test-Simple-" version))
     (license (package-license perl))))
 
@@ -7796,7 +7796,7 @@ makes fork(2) safe to use in test cases.")
     (description
      "Test::Tester allows testing of test modules based on Test::Builder with
 a minimum of effort.")
-    (home-page (string-append "http://search.cpan.org/~fdaly/"
+    (home-page (string-append "http://search.cpan.org/~fdaly//"
                               "Test-Tester-" version))
     ;; "Under the same license as Perl itself"
     (license (package-license perl))))
@@ -7820,7 +7820,7 @@ a minimum of effort.")
     (propagated-inputs
      `(("perl-test-tester" ,perl-test-tester)
        ("perl-data-dump" ,perl-data-dump)))
-    (home-page "http://search.cpan.org/dist/Test-Trap")
+    (home-page "http://search.cpan.org/dist/Test-Trap/")
     (synopsis "Trap exit codes, exceptions, output, and so on")
     (description "This module is primarily (but not exclusively) for use in
 test scripts: A block eval configurable and extensible but by default trapping
@@ -7843,7 +7843,7 @@ from boxed blocks of test code.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
-    (home-page "http://search.cpan.org/dist/Test-utf8")
+    (home-page "http://search.cpan.org/dist/Test-utf8/")
     (synopsis "UTF-8 testing in Perl")
     (description "This module is a collection of tests useful for dealing with
 UTF-8 strings in Perl.  This module has two types of tests: The validity tests
@@ -7866,7 +7866,7 @@ will check that string has a given set of characteristics.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-sub-uplevel" ,perl-sub-uplevel)))
-    (home-page "http://search.cpan.org/dist/Test-Warn")
+    (home-page "http://search.cpan.org/dist/Test-Warn/")
     (synopsis "Perl extension to test methods for warnings")
     (description "This module provides a few convenience methods for testing
 warning based code.")
@@ -7885,7 +7885,7 @@ warning based code.")
         (base32
          "024srkwjckp15dxkni9lb1hc8bg4xwc52zz0iich8rv1nnqnhaxf"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-Warnings")
+    (home-page "http://search.cpan.org/dist/Test-Warnings/")
     (synopsis "Test for warnings and the lack of them")
     (description "This module is intended to be used as a drop-in replacement
 for Test::NoWarnings.  It also adds an extra test, but runs this test before
@@ -7907,7 +7907,7 @@ plan, or not, and things will still Just Work.")
         (base32
          "0zwc2dk5srd02j4p049w77m89iw5nbff381rmhcbaz8x2w5kdhz2"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-Without-Module")
+    (home-page "http://search.cpan.org/dist/Test-Without-Module/")
     (synopsis "Test fallback behaviour in absence of modules")
     (description "This module allows you to deliberately hide modules from a
 program even though they are installed.  This is mostly useful for testing
@@ -7935,7 +7935,7 @@ installed.")
      `(("perl-data-tumbler" ,perl-data-tumbler)
        ("perl-file-homedir" ,perl-file-homedir)
        ("perl-module-pluggable" ,perl-module-pluggable)))
-    (home-page "http://search.cpan.org/dist/Test-WriteVariants")
+    (home-page "http://search.cpan.org/dist/Test-WriteVariants/")
     (synopsis "Dynamic generation of tests")
     (description "The Test::WriteVariants module provides for the dynamic
 generation of tests in nested combinations of contexts.")
@@ -7956,7 +7956,7 @@ generation of tests in nested combinations of contexts.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-base" ,perl-test-base)))
-    (home-page "http://search.cpan.org/dist/Test-YAML")
+    (home-page "http://search.cpan.org/dist/Test-YAML/")
     (synopsis "Testing module for YAML implementations")
     (description "Test::YAML is a subclass of Test::Base with YAML specific
 support.")
@@ -7976,7 +7976,7 @@ support.")
          "0a6zkchc0apvzkch6z18cx6h97xfiv50r7n4xhg90x8dvk75qzcs"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Text-Aligner")
+    (home-page "http://search.cpan.org/dist/Text-Aligner/")
     (synopsis "Align text")
     (description "Text::Aligner exports a single function, align(), which is
 used to justify strings to various alignment styles.")
@@ -7995,7 +7995,7 @@ used to justify strings to various alignment styles.")
         (base32
          "1d3mba2sjpp044h16pkf231cksa34ripaz6rmgxp0ygpl917az57"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Text-Balanced")
+    (home-page "http://search.cpan.org/dist/Text-Balanced/")
     (synopsis "Extract delimited text sequences from strings")
     (description "The Text::Balanced module can be used to extract delimited
 text sequences from strings.")
@@ -8014,7 +8014,7 @@ text sequences from strings.")
         (base32
          "05a1nayxv04n0hx7y3m8327ijm34k9nhngrbxl18zmgzpawqynww"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Text-CSV")
+    (home-page "http://search.cpan.org/dist/Text-CSV/")
     (synopsis "Manipulate comma-separated values")
     (description "Text::CSV provides facilities for the composition and
 decomposition of comma-separated values.  An instance of the Text::CSV class
@@ -8034,7 +8034,7 @@ can combine fields into a CSV string and parse a CSV string into fields.")
         (base32
          "06zlfbqrwbl0g2g3bhk6046yy5pf2rz80fzcp8aj47rnswz2yx5k"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Text-CSV_XS")
+    (home-page "http://search.cpan.org/dist/Text-CSV_XS/")
     (synopsis "Rountines for manipulating CSV files")
     (description "@code{Text::CSV_XS} provides facilities for the composition
 and decomposition of comma-separated values.  An instance of the
@@ -8059,7 +8059,7 @@ and escapes.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-algorithm-diff" ,perl-algorithm-diff)))
-    (home-page "http://search.cpan.org/dist/Text-Diff")
+    (home-page "http://search.cpan.org/dist/Text-Diff/")
     (synopsis "Perform diffs on files and record sets")
     (description "Text::Diff provides a basic set of services akin to the GNU
 diff utility.  It is not anywhere near as feature complete as GNU diff, but it
@@ -8082,7 +8082,7 @@ generally slower on larger files.")
          "0lr76wrsj8wcxrq4wi8z1640w4dmdbkznp06q744rg3g0bd238d5"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Text-Glob")
+    (home-page "http://search.cpan.org/dist/Text-Glob/")
     (synopsis "Match globbing patterns against text")
     (description "Text::Glob implements glob(3) style matching that can be
 used to match against text, rather than fetching names from a file system.  If
@@ -8106,7 +8106,7 @@ you want to do full file globbing use the File::Glob module instead.")
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
     (home-page
-     "http://search.cpan.org/dist/Text-NeatTemplate")
+     "http://search.cpan.org/dist/Text-NeatTemplate/")
     (synopsis "Fast, middleweight template engine")
     (description
      "Text::NeatTemplate provides a simple, middleweight but fast
@@ -8127,7 +8127,7 @@ yet need more features than simple variable substitution.")
         (base32
          "0sh47svzz0wm993ywfgpn0fvhajl2sj5hcnf5zxjz02in6ihhjnb"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Text-Roman")
+    (home-page "http://search.cpan.org/dist/Text-Roman/")
     (synopsis "Convert between Roman and Arabic algorisms")
     (description "This package provides functions to convert between Roman and
 Arabic algorisms.  It supports both conventional Roman algorisms (which range
@@ -8148,7 +8148,7 @@ algorism to indicate multiplication by 1000.")
         (base32
          "15hpry9jwrf1vbjyk21s65rllxrdvp2fdzzv9gsvczggby2yyzfs"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Text-SimpleTable")
+    (home-page "http://search.cpan.org/dist/Text-SimpleTable/")
     (synopsis "Simple ASCII tables")
     (description "Text::SimpleTable draws simple ASCII tables.")
     (license artistic2.0)))
@@ -8170,7 +8170,7 @@ algorism to indicate multiplication by 1000.")
      `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-text-aligner" ,perl-text-aligner)))
-    (home-page "http://search.cpan.org/dist/Text-Table")
+    (home-page "http://search.cpan.org/dist/Text-Table/")
     (synopsis "Organize Data in Tables")
     (description "Text::Table renders plaintext tables.")
     (license x11)))
@@ -8191,7 +8191,7 @@ algorism to indicate multiplication by 1000.")
          "1z781cgz7wbn80lf3kqr2ad0pg6g1wlnim0822h8liw28k3l5msh"))))
     (build-system perl-build-system)
     (home-page
-     "http://search.cpan.org/dist/Text-Template")
+     "http://search.cpan.org/dist/Text-Template/")
     (synopsis
      "Expand template text with embedded Perl")
     (description
@@ -8214,7 +8214,7 @@ evaluate the little programs and replace them with their values.")
         (base32
          "1mnnq57amh0bs6z2ggkmgnn4hz8mqc9lfhr66xv2bsnlvhg7c7fb"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Text-Unidecode")
+    (home-page "http://search.cpan.org/dist/Text-Unidecode/")
     (synopsis "Provide plain ASCII transliterations of Unicode text")
     (description "Text::Unidecode provides a function, unidecode(...) that
 takes Unicode data and tries to represent it in US-ASCII characters (i.e., the
@@ -8243,7 +8243,7 @@ system.")
      `(("perl-devel-stacktrace" ,perl-devel-stacktrace)
        ("perl-module-runtime" ,perl-module-runtime)
        ("perl-moo" ,perl-moo)))
-    (home-page "http://search.cpan.org/dist/Throwable")
+    (home-page "http://search.cpan.org/dist/Throwable/")
     (synopsis "Role for classes that can be thrown")
     (description "Throwable is a role for classes that are meant to be thrown
 as exceptions to standard program flow.")
@@ -8282,7 +8282,7 @@ approximately follow the suggestions in the Perl Style Guide.")
         (base32
          "10g6kirf6jfaldckg98y4pl87vrm7grqlg6ymb7a9vhrznyn7qn6"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Tie-Cycle")
+    (home-page "http://search.cpan.org/dist/Tie-Cycle/")
     (synopsis "Cycle through a list of values")
     (description "You use @code{Tie::Cycle} to go through a list over and over
 again.  Once you get to the end of the list, you go back to the beginning.")
@@ -8302,7 +8302,7 @@ again.  Once you get to the end of the list, you go back to the beginning.")
           "0mmg9iyh42syal3z1p2pn9airq65yrkfs66cnqs9nz76jy60pfzs"))))
   (build-system perl-build-system)
   (native-inputs `(("perl-module-build" ,perl-module-build)))
-  (home-page "http://search.cpan.org/dist/Tie-IxHash")
+  (home-page "http://search.cpan.org/dist/Tie-IxHash/")
   (synopsis "Ordered associative arrays for Perl")
   (description "This Perl module implements Perl hashes that preserve the
 order in which the hash elements were added.  The order is not affected when
@@ -8326,7 +8326,7 @@ operations can also be performed on the IxHash.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-simple" ,perl-test-simple)))
-    (home-page "http://search.cpan.org/dist/Tie-ToObject")
+    (home-page "http://search.cpan.org/dist/Tie-ToObject/")
     (synopsis "Tie to an existing Perl object")
     (description "This class provides a tie constructor that returns the
 object it was given as it's first argument.  This way side effects of calling
@@ -8350,7 +8350,7 @@ $object->TIEHASH are avoided.")
      `(("perl-module-install" ,perl-module-install)
        ("perl-test-pod" ,perl-test-pod)
        ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
-    (home-page "http://search.cpan.org/dist/Time-Duration")
+    (home-page "http://search.cpan.org/dist/Time-Duration/")
     (synopsis "English expression of durations")
     (description "This module provides functions for expressing durations in
 rounded or exact terms.")
@@ -8373,7 +8373,7 @@ rounded or exact terms.")
      `(("perl-time-duration" ,perl-time-duration)))
     (propagated-inputs
      `(("perl-exporter-lite" ,perl-exporter-lite)))
-    (home-page "http://search.cpan.org/dist/Time-Duration-Parse")
+    (home-page "http://search.cpan.org/dist/Time-Duration-Parse/")
     (synopsis "Parse time duration strings")
     (description "Time::Duration::Parse is a module to parse human readable
 duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
@@ -8392,7 +8392,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
         (base32
          "0jgvd6v93hlrcmy56yxbm4yrhzi8yvrq8c3xffpgh28af01wmb5j"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Time-Local")
+    (home-page "http://search.cpan.org/dist/Time-Local/")
     (synopsis "Efficiently compute time from local and GMT time")
     (description "This module provides functions that are the inverse of
 built-in perl functions localtime() and gmtime().  They accept a date as a
@@ -8413,7 +8413,7 @@ the system epoch.")
         (base32
          "11lf54akr9nbivqkjrhvkmfdgkbhw85sq0q4mak56n6bf542bgbm"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/TimeDate")
+    (home-page "http://search.cpan.org/dist/TimeDate/")
     (synopsis "Date parsing/formatting subroutines")
     (description "This module provides routines for parsing date string into
 time values and formatting dates into ASCII strings.")
@@ -8436,7 +8436,7 @@ time values and formatting dates into ASCII strings.")
      `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-timedate" ,perl-timedate))) ;For Date::Parse
-    (home-page "http://search.cpan.org/dist/Time-Mock")
+    (home-page "http://search.cpan.org/dist/Time-Mock/")
     (synopsis "Shift and scale time")
     (description "This module allows you to speed up your sleep(), alarm(),
 and time() calls.")
@@ -8460,7 +8460,7 @@ and time() calls.")
        ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-scalar-list-utils" ,perl-scalar-list-utils)))
-    (home-page "http://search.cpan.org/dist/Tree-Simple")
+    (home-page "http://search.cpan.org/dist/Tree-Simple/")
     (synopsis "Simple tree object")
     (description "This module in a fully object-oriented implementation of a
 simple n-ary tree.")
@@ -8485,7 +8485,7 @@ simple n-ary tree.")
     (propagated-inputs
      `(("perl-tree-simple" ,perl-tree-simple)
        ("perl-base" ,perl-base)))
-    (home-page "http://search.cpan.org/dist/Tree-Simple-VisitorFactory")
+    (home-page "http://search.cpan.org/dist/Tree-Simple-VisitorFactory/")
     (synopsis "Factory object for dispensing Visitor objects")
     (description "This module is a factory for dispensing
 Tree::Simple::Visitor::* objects.")
@@ -8504,7 +8504,7 @@ Tree::Simple::Visitor::* objects.")
         (base32
          "068vdbpacfawc3lkfs0b82xxl27h3l0gj14iada3vlwk8rps9yv0"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Try-Tiny")
+    (home-page "http://search.cpan.org/dist/Try-Tiny/")
     (synopsis "Minimal try/catch with proper preservation of $@@")
     (description "This module provides bare bones try/catch/finally statements
 that are designed to minimize common mistakes with eval blocks, and nothing
@@ -8530,7 +8530,7 @@ else.")
     (propagated-inputs
      `(("perl-exporter-tiny" ,perl-exporter-tiny)
        ("perl-hash-fieldhash" ,perl-hash-fieldhash)))
-    (home-page "http://search.cpan.org/dist/Type-Tie")
+    (home-page "http://search.cpan.org/dist/Type-Tie/")
     (synopsis "Tie a variable to a type constraint")
     (description "This module exports a single function: @code{ttie}.  It ties
 a variable to a type constraint, ensuring that whatever values stored in the
@@ -8564,7 +8564,7 @@ variable conform.")
        ("perl-ref-util-xs" ,perl-ref-util-xs)
        ("perl-regexp-util" ,perl-regexp-util)
        ("perl-type-tie" ,perl-type-tie)))
-    (home-page "http://search.cpan.org/dist/Type-Tiny")
+    (home-page "http://search.cpan.org/dist/Type-Tiny/")
     (synopsis "Tiny, yet Moo(se)-compatible type constraint")
     (description "@code{Type::Tiny} is a small class for writing type
 constraints, inspired by Moose's type constraint API.  It has only one
@@ -8588,7 +8588,7 @@ be used with Moose, Mouse and Moo (or none of the above).")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
-    (home-page "http://search.cpan.org/dist/Types-Serialiser")
+    (home-page "http://search.cpan.org/dist/Types-Serialiser/")
     (synopsis "Data types for common serialisation formats")
     (description "This module provides some extra datatypes that are used by
 common serialisation formats such as JSON or CBOR.")
@@ -8616,7 +8616,7 @@ common serialisation formats such as JSON or CBOR.")
                               (string-append (getcwd) ":"
                                              (getenv "PERL5LIB")))
                       #t)))))
-    (home-page "http://search.cpan.org/dist/Unicode-Normalize")
+    (home-page "http://search.cpan.org/dist/Unicode-Normalize/")
     (synopsis "Unicode normalization forms")
     (description "This Perl module provides Unicode normalization forms.")
     (license (package-license perl))))
@@ -8646,7 +8646,7 @@ common serialisation formats such as JSON or CBOR.")
              #t)))))
     (propagated-inputs
      `(("perl-unicode-normalize" ,perl-unicode-normalize)))
-    (home-page "http://search.cpan.org/dist/Unicode-Collate")
+    (home-page "http://search.cpan.org/dist/Unicode-Collate/")
     (synopsis "Unicode collation algorithm")
     (description "This package provides tools for sorting and comparing
 Unicode data.")
@@ -8668,7 +8668,7 @@ Unicode data.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-mime-charset" ,perl-mime-charset)))
-    (home-page "http://search.cpan.org/dist/Unicode-LineBreak")
+    (home-page "http://search.cpan.org/dist/Unicode-LineBreak/")
     (synopsis "Unicode line breaking algorithm")
     (description
      "@code{Unicode::LineBreak} implements the line breaking algorithm
@@ -8693,7 +8693,7 @@ defined by Annex #11 is used to determine breaking positions.")
        ("perl-test-leaktrace" ,perl-test-leaktrace)
        ("perl-variable-magic" ,perl-variable-magic)
        ("perl-test-pod" ,perl-test-pod)))
-    (home-page "http://search.cpan.org/dist/Unicode-UTF8")
+    (home-page "http://search.cpan.org/dist/Unicode-UTF8/")
     (synopsis "Encoding and decoding of UTF-8 encoding form")
     (description
      "This module provides functions to encode and decode UTF-8 encoding form
@@ -8713,7 +8713,7 @@ as specified by Unicode and ISO/IEC 10646:2011.")
         (base32
          "03wr25zznbfn1g8zmmq3g6a6288xr30priwvm75y4vvqfkrajbaj"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/UNIVERSAL-can")
+    (home-page "http://search.cpan.org/dist/UNIVERSAL-can/")
     (synopsis "UNIVERSAL::can() reimplementation")
     (description "This module attempts to work around people calling
 UNIVERSAL::can() as a function, which it is not.")
@@ -8734,7 +8734,7 @@ UNIVERSAL::can() as a function, which it is not.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)))
-    (home-page "http://search.cpan.org/dist/UNIVERSAL-isa")
+    (home-page "http://search.cpan.org/dist/UNIVERSAL-isa/")
     (synopsis "UNIVERSAL::isa() reimplementation")
     (description "This module attempts to recover from people calling
 UNIVERSAL::isa as a function.")
@@ -8753,7 +8753,7 @@ UNIVERSAL::isa as a function.")
         (base32
          "1mx6z36c3wk61x6lag6kyws5g1cba68cw20vrb92wan7ahpfkbxq"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Variable-Magic")
+    (home-page "http://search.cpan.org/dist/Variable-Magic/")
     (synopsis "Associate user-defined magic to variables from Perl")
     (description "Magic is Perl's way of enhancing variables.  This mechanism
 lets the user add extra data to any variable and hook syntactical
@@ -8777,7 +8777,7 @@ having to write a single line of XS.")
         (base32
          "1gjzs570i67ywbv967g8ylb5sg59clwmyrl2yix3jl70dhn55070"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/XML-Writer")
+    (home-page "http://search.cpan.org/dist/XML-Writer/")
     (synopsis "Easily generate well-formed, namespace-aware XML")
     (description "@code{XML::Writer} is a simple Perl module for writing XML
 documents: it takes care of constructing markup and escaping data correctly.
@@ -8805,7 +8805,7 @@ attribute names.")
      `(("perl-extutils-depends" ,perl-extutils-depends)
        ("perl-module-install" ,perl-module-install)
        ("perl-test-fatal" ,perl-test-fatal)))
-    (home-page "http://search.cpan.org/dist/XS-Object-Magic")
+    (home-page "http://search.cpan.org/dist/XS-Object-Magic/")
     (synopsis "Opaque, extensible XS pointer backed objects using sv_magic")
     (description
      "This way of associating structs with Perl space objects is designed to
@@ -8829,7 +8829,7 @@ neither visible nor modifiable from Perl space).")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-yaml" ,perl-test-yaml)))
-    (home-page "http://search.cpan.org/dist/YAML")
+    (home-page "http://search.cpan.org/dist/YAML/")
     (synopsis "YAML for Perl")
     (description "The YAML.pm module implements a YAML Loader and Dumper based
 on the YAML 1.0 specification.")
@@ -8851,7 +8851,7 @@ on the YAML 1.0 specification.")
          "0izhvz8f29x1f50hhwfgm0iq1lz7apjjvg77lmky949jr07hnwfv"))))
     (build-system perl-build-system)
     (home-page
-     "http://search.cpan.org/dist/YAML-LibYAML")
+     "http://search.cpan.org/dist/YAML-LibYAML/")
     (synopsis
      "Perl YAML Serialization using XS and libyaml")
     (description
@@ -8877,7 +8877,7 @@ best YAML support to date.")
        ("perl-module-build-tiny" ,perl-module-build-tiny)))
     (arguments
      `(#:tests? #f))                    ;requires Test::More >= 0.99
-    (home-page "http://search.cpan.org/dist/YAML-Tiny")
+    (home-page "http://search.cpan.org/dist/YAML-Tiny/")
     (synopsis "Read/Write YAML files")
     (description "YAML::Tiny is a perl class for reading and writing
 YAML-style files, written with as little code as possible, reducing load time
@@ -8902,7 +8902,7 @@ and memory overhead.")
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
     (home-page
-     "http://search.cpan.org/dist/Parse-RecDescent")
+     "http://search.cpan.org/dist/Parse-RecDescent/")
     (synopsis "Generate recursive-descent parsers")
     (description
      "@code{Parse::RecDescent} can incrementally generate top-down
@@ -8924,7 +8924,7 @@ recursive-descent text parsers from simple yacc-like grammar specifications.")
         (base32
          "16p4qgqg28cy76ylcf4wq1r693gqpx8xq0w32b3564i67h49zljb"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Parse-Yapp")
+    (home-page "http://search.cpan.org/dist/Parse-Yapp/")
     (synopsis "Generate and use LALR parsers")
     (description "This package compiles yacc-like @dfn{Look Ahead LR} (LALR)
 grammars to generate Perl object oriented parser modules.")
@@ -8951,7 +8951,7 @@ grammars to generate Perl object oriented parser modules.")
      `(("perl-cpan-meta-requirements" ,perl-cpan-meta-requirements)
        ("perl-cpan-meta-yaml" ,perl-cpan-meta-yaml)
        ("perl-parse-cpan-meta" ,perl-parse-cpan-meta)))
-    (home-page "http://search.cpan.org/dist/CPAN-Meta")
+    (home-page "http://search.cpan.org/dist/CPAN-Meta/")
     (synopsis "Distribution metadata for a CPAN dist")
     (description "Software distributions released to the CPAN include a
 META.json or, for older distributions, META.yml, which describes the
@@ -8975,7 +8975,7 @@ methods for interrogating that data.")
         (base32
          "1a8zflgaayycmn3zvd3n64yypa4jyl1va0h51wpr5w46irg69608"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/CPAN-Meta-Requirements")
+    (home-page "http://search.cpan.org/dist/CPAN-Meta-Requirements/")
     (synopsis "Set of version requirements for a CPAN dist")
     (description "A CPAN::Meta::Requirements object models a set of version
 constraints like those specified in the META.yml or META.json files in CPAN
@@ -8999,7 +8999,7 @@ representation.")
     (build-system perl-build-system)
     (arguments
      `(#:tests? #f))                    ;Tests require Test::More >= 0.99
-    (home-page "http://search.cpan.org/dist/CPAN-Meta-YAML")
+    (home-page "http://search.cpan.org/dist/CPAN-Meta-YAML/")
     (synopsis "Read and write a subset of YAML for CPAN Meta files")
     (description "This module implements a subset of the YAML specification
 for use in reading and writing CPAN metadata files like META.yml and
@@ -9021,7 +9021,7 @@ MYMETA.yml.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cpan-meta" ,perl-cpan-meta)))
-    (home-page "http://search.cpan.org/dist/Module-Build")
+    (home-page "http://search.cpan.org/dist/Module-Build/")
     (synopsis "Build and install Perl modules")
     (description "@code{Module::Build} is a system for building, testing, and
 installing Perl modules; it used to be part of Perl itself until version 5.22,
@@ -9048,7 +9048,7 @@ system---most of the @code{Module::Build} code is pure-Perl.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cpan-meta-yaml" ,perl-cpan-meta-yaml)))
-    (home-page "http://search.cpan.org/dist/Parse-CPAN-Meta")
+    (home-page "http://search.cpan.org/dist/Parse-CPAN-Meta/")
     (synopsis "Parse META.yml and META.json CPAN metadata files")
     (description "Parse::CPAN::Meta is a parser for META.json and META.yml
 files, using JSON::PP and/or CPAN::Meta::YAML.")
@@ -9067,7 +9067,7 @@ files, using JSON::PP and/or CPAN::Meta::YAML.")
         (base32
          "1qgg6zxqwziva5j1k5gjks4xmhmgklm551ni3zb74sd9f9rk90y4"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Scalar-List-Utils")
+    (home-page "http://search.cpan.org/dist/Scalar-List-Utils/")
     (synopsis "Common Scalar and List utility subroutines")
     (description "This package contains a selection of subroutines that people
 have expressed would be nice to have in the perl core, but the usage would not
@@ -9091,7 +9091,7 @@ such that being individual extensions would be wasteful.")
             "1lgc2rb3b5a4lxvbq0cbg08qk0n2i88srxbsz93bwi3razpxxr7k"))))
     (build-system perl-build-system)
     (home-page
-      "http://search.cpan.org/dist/Shell-Command")
+      "http://search.cpan.org/dist/Shell-Command/")
     (synopsis
       "Cross-platform functions emulating common shell commands")
     (description
@@ -9120,7 +9120,7 @@ such that being individual extensions would be wasteful.")
   (inputs
     `(("perl-class-xsaccessor" ,perl-class-xsaccessor)))
   (home-page
-    "http://search.cpan.org/dist/File-Find-Object")
+    "http://search.cpan.org/dist/File-Find-Object/")
   (synopsis
     "Object-oriented File::Find replacement in Perl")
   (description "File::Find::Object is an object-oriented
@@ -9150,7 +9150,7 @@ File::Find replacement in Perl.")
       ("perl-number-compare" ,perl-number-compare)
       ("perl-text-glob" ,perl-text-glob)))
   (home-page
-    "http://search.cpan.org/dist/File-Find-Object-Rule")
+    "http://search.cpan.org/dist/File-Find-Object-Rule/")
   (synopsis
     "Alternative interface to File::Find::Object")
   (description "File::Find::Object::Rule is an alternative Perl
@@ -9181,7 +9181,7 @@ interface to File::Find::Object.")
       ("perl-text-glob" ,perl-text-glob)
       ("perl-number-compare" ,perl-number-compare)))
   (home-page
-    "http://search.cpan.org/dist/Test-TrailingSpace")
+    "http://search.cpan.org/dist/Test-TrailingSpace/")
   (synopsis
     "Test for trailing space in Perl source files")
   (description "Test::TrailingSpace tests for trailing spaces

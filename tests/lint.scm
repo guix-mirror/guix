@@ -37,6 +37,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (web uri)
   #:use-module (web server)
   #:use-module (web server http)
   #:use-module (web response)
@@ -388,7 +389,7 @@
         (check-home-page pkg)))
     "domain not found")))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "home-page: Connection refused"
   (->bool
    (string-contains
@@ -399,7 +400,7 @@
         (check-home-page pkg)))
     "Connection refused")))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "home-page: 200"
   ""
   (with-warnings
@@ -409,7 +410,7 @@
                   (home-page (%local-url)))))
        (check-home-page pkg)))))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "home-page: 200 but short length"
   (->bool
    (string-contains
@@ -421,7 +422,7 @@
           (check-home-page pkg))))
     "suspiciously small")))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "home-page: 404"
   (->bool
    (string-contains
@@ -431,6 +432,52 @@
                      (inherit (dummy-package "x"))
                      (home-page (%local-url)))))
           (check-home-page pkg))))
+    "not reachable: 404")))
+
+(test-skip (if (http-server-can-listen?) 0 1))
+(test-assert "home-page: 301, invalid"
+  (->bool
+   (string-contains
+    (with-warnings
+      (with-http-server 301 %long-string
+        (let ((pkg (package
+                     (inherit (dummy-package "x"))
+                     (home-page (%local-url)))))
+          (check-home-page pkg))))
+    "invalid permanent redirect")))
+
+(test-skip (if (http-server-can-listen?) 0 1))
+(test-assert "home-page: 301 -> 200"
+  (->bool
+   (string-contains
+    (with-warnings
+      (with-http-server 200 %long-string
+        (let ((initial-url (%local-url)))
+          (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+            (with-http-server (301 `((location
+                                      . ,(string->uri initial-url))))
+                ""
+              (let ((pkg (package
+                           (inherit (dummy-package "x"))
+                           (home-page (%local-url)))))
+                (check-home-page pkg)))))))
+    "permanent redirect")))
+
+(test-skip (if (http-server-can-listen?) 0 1))
+(test-assert "home-page: 301 -> 404"
+  (->bool
+   (string-contains
+    (with-warnings
+      (with-http-server 404 "booh!"
+        (let ((initial-url (%local-url)))
+          (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+            (with-http-server (301 `((location
+                                      . ,(string->uri initial-url))))
+                ""
+              (let ((pkg (package
+                           (inherit (dummy-package "x"))
+                           (home-page (%local-url)))))
+                (check-home-page pkg)))))))
     "not reachable: 404")))
 
 (test-assert "source-file-name"
@@ -510,7 +557,7 @@
          (check-source-file-name pkg)))
      "file name should contain the package name"))))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 200"
   ""
   (with-warnings
@@ -523,7 +570,7 @@
                             (sha256 %null-sha256))))))
        (check-source pkg)))))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "source: 200 but short length"
   (->bool
    (string-contains
@@ -538,7 +585,7 @@
           (check-source pkg))))
     "suspiciously small")))
 
-(test-skip (if (force %http-server-socket) 0 1))
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "source: 404"
   (->bool
    (string-contains
@@ -551,6 +598,42 @@
                                (uri (%local-url))
                                (sha256 %null-sha256))))))
           (check-source pkg))))
+    "not reachable: 404")))
+
+(test-skip (if (http-server-can-listen?) 0 1))
+(test-equal "source: 301 -> 200"
+  ""
+  (with-warnings
+    (with-http-server 200 %long-string
+      (let ((initial-url (%local-url)))
+        (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+          (with-http-server (301 `((location . ,(string->uri initial-url))))
+              ""
+            (let ((pkg (package
+                         (inherit (dummy-package "x"))
+                         (source (origin
+                                   (method url-fetch)
+                                   (uri (%local-url))
+                                   (sha256 %null-sha256))))))
+              (check-source pkg))))))))
+
+(test-skip (if (http-server-can-listen?) 0 1))
+(test-assert "source: 301 -> 404"
+  (->bool
+   (string-contains
+    (with-warnings
+      (with-http-server 404 "booh!"
+        (let ((initial-url (%local-url)))
+          (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+            (with-http-server (301 `((location . ,(string->uri initial-url))))
+                ""
+              (let ((pkg (package
+                           (inherit (dummy-package "x"))
+                           (source (origin
+                                     (method url-fetch)
+                                     (uri (%local-url))
+                                     (sha256 %null-sha256))))))
+                (check-source pkg)))))))
     "not reachable: 404")))
 
 (test-assert "mirror-url"

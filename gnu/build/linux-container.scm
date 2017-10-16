@@ -152,8 +152,7 @@ for the process."
 
   ;; Mount user-specified file systems.
   (for-each (lambda (file-system)
-              (mount-file-system (file-system->spec file-system)
-                                 #:root root))
+              (mount-file-system file-system #:root root))
             mounts)
 
   ;; Jail the process inside the container's root file system.

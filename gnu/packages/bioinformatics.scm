@@ -730,14 +730,14 @@ provide a coordinated and extensible framework to do computational biology.")
 (define-public python-biopython
   (package
     (name "python-biopython")
-    (version "1.68")
+    (version "1.70")
     (source (origin
               (method url-fetch)
               ;; use PyPi rather than biopython.org to ease updating
               (uri (pypi-uri "biopython" version))
               (sha256
                (base32
-                "07qc7nz0k77y8hf8s18rscvibvm91zw0kkq7ylrhisf8vp8hkp6i"))))
+                "0nz4n9d2y2dg849gn1z0vjlkwcpzzkzy3fij7x94a6ixy2c54z2a"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1774,15 +1774,14 @@ collections of DNA motifs.")
 (define-public clustal-omega
   (package
     (name "clustal-omega")
-    (version "1.2.1")
+    (version "1.2.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://www.clustal.org/omega/clustal-omega-"
-                    version ".tar.gz"))
+              (uri (string-append "http://www.clustal.org/omega/clustal-omega-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "02ibkx0m0iwz8nscg998bh41gg251y56cgh86bvyrii5m8kjgwqf"))))
+                "1vm30mzncwdv881vrcwg11vzvrsmwy4wg80j5i0lcfk6dlld50w6"))))
     (build-system gnu-build-system)
     (inputs
      `(("argtable" ,argtable)))
@@ -4889,6 +4888,43 @@ subsequent visualization, annotation and storage of results.")
     ;; Code is released under GPLv2, except for fisher.h, which is under
     ;; LGPLv2.1+
     (license (list license:gpl2 license:lgpl2.1+))))
+
+(define-public plink-ng
+  (package (inherit plink)
+    (name "plink-ng")
+    (version "1.90b4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/chrchang/plink-ng/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09ixrds009aczjswxr2alcb774mksq5g0v78dgjjn1h4dky0kf9a"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;no "check" target
+       #:make-flags (list "BLASFLAGS=-llapack -lopenblas"
+                          "CFLAGS=-Wall -O2 -DDYNAMIC_ZLIB=1"
+                          "ZLIB=-lz"
+                          "-f" "Makefile.std")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "1.9") #t))
+         (delete 'configure) ; no "configure" script
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((bin (string-append (assoc-ref outputs "out")
+                                              "/bin/")))
+                      (install-file "plink" bin)
+                      #t))))))
+    (inputs
+     `(("zlib" ,zlib)
+       ("lapack" ,lapack)
+       ("openblas" ,openblas)))
+    (home-page "https://www.cog-genomics.org/plink/")
+    (license license:gpl3+)))
 
 (define-public smithlab-cpp
   (let ((revision "1")
@@ -8070,7 +8106,7 @@ library implementing most of the pipeline's features.")
 (define-public rcas-web
   (package
     (name "rcas-web")
-    (version "0.0.3")
+    (version "0.0.4")
     (source
      (origin
        (method url-fetch)
@@ -8079,7 +8115,7 @@ library implementing most of the pipeline's features.")
                            "/rcas-web-" version ".tar.gz"))
        (sha256
         (base32
-         "0d3my0g8i7js59n184zzzjdki7hgmhpi4rhfvk7i6jsw01ba04qq"))))
+         "1p16frfys41a8yaa4gkm457nzkqhqs2pc3lkac0ds457w9w5j1gm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -9977,7 +10013,7 @@ browser.")
         (revision "1"))
     (package
       (name "f-seq")
-      (version (string-append "1.1-" revision "." commit))
+      (version (string-append "1.1-" revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -10086,3 +10122,51 @@ straight away.  Its main features are:
   and CHH context
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public paml
+  (package
+    (name "paml")
+    (version "4.9e")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://abacus.gene.ucl.ac.uk/software/"
+                                  "paml" version ".tgz"))
+              (sha256
+               (base32
+                "13zf6h9fiqghwhch2h06x1zdr6s42plsnqahflp5g7myr3han3s6"))
+              (modules '((guix build utils)))
+              ;; Remove Windows binaries
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." "\\.exe$"))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "src/BFdriver.c"
+               (("/bin/bash") (which "bash")))
+             (chdir "src")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((tools '("baseml" "basemlg" "codeml"
+                            "pamp" "evolver" "yn00" "chi2"))
+                   (bin    (string-append (assoc-ref outputs "out") "/bin"))
+                   (docdir (string-append (assoc-ref outputs "out")
+                                           "/share/doc/paml")))
+               (mkdir-p bin)
+               (for-each (lambda (file) (install-file file bin)) tools)
+               (copy-recursively "../doc" docdir)
+               #t))))))
+    (home-page "http://abacus.gene.ucl.ac.uk/software/paml.html")
+    (synopsis "Phylogentic analysis by maximum likelihood")
+    (description "PAML (for Phylogentic Analysis by Maximum Likelihood)
+contains a few programs for model fitting and phylogenetic tree reconstruction
+using nucleotide or amino-acid sequence data.")
+    ;; GPLv3 only
+    (license license:gpl3)))
