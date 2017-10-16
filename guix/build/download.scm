@@ -39,6 +39,7 @@
   #:use-module (ice-9 format)
   #:export (open-socket-for-uri
             open-connection-for-uri
+            http-fetch
             %x509-certificate-directory
             close-connection
             resolve-uri-reference
@@ -745,11 +746,11 @@ Return the resulting target URI."
                     #:query    (uri-query    ref)
                     #:fragment (uri-fragment ref)))))
 
-(define* (http-fetch uri file #:key timeout (verify-certificate? #t))
-  "Fetch data from URI and write it to FILE; when TIMEOUT is true, bail out if
-the connection could not be established in less than TIMEOUT seconds.  Return
-FILE on success.  When VERIFY-CERTIFICATE? is true, verify HTTPS
-certificates; otherwise simply ignore them."
+(define* (http-fetch uri #:key timeout (verify-certificate? #t))
+  "Return an input port containing the data at URI, and the expected number of
+bytes available or #f.  When TIMEOUT is true, bail out if the connection could
+not be established in less than TIMEOUT seconds.  When VERIFY-CERTIFICATE? is
+true, verify HTTPS certificates; otherwise simply ignore them."
 
   (define headers
     `(;; Some web sites, such as http://dist.schmorp.de, would block you if
@@ -779,20 +780,10 @@ certificates; otherwise simply ignore them."
                            #:streaming? #t
                            #:headers headers))
                 ((code)
-                 (response-code resp))
-                ((size)
-                 (response-content-length resp)))
+                 (response-code resp)))
     (case code
       ((200)                                      ; OK
-       (begin
-         (call-with-output-file file
-           (lambda (p)
-             (dump-port* port p
-                         #:buffer-size %http-receive-buffer-size
-                         #:reporter (progress-reporter/file
-                                     (uri-abbreviation uri) size))
-             (newline)))
-         file))
+       (values port (response-content-length resp)))
       ((301                                       ; moved permanently
         302                                       ; found (redirection)
         303                                       ; see other
@@ -802,7 +793,7 @@ certificates; otherwise simply ignore them."
          (format #t "following redirection to `~a'...~%"
                  (uri->string uri))
          (close connection)
-         (http-fetch uri file
+         (http-fetch uri
                      #:timeout timeout
                      #:verify-certificate? verify-certificate?)))
       (else
@@ -873,10 +864,19 @@ otherwise simply ignore them."
             file (uri->string uri))
     (case (uri-scheme uri)
       ((http https)
-       (false-if-exception* (http-fetch uri file
-                                        #:verify-certificate?
-                                        verify-certificate?
-                                        #:timeout timeout)))
+       (false-if-exception*
+        (let-values (((port size)
+                      (http-fetch uri
+                                  #:verify-certificate? verify-certificate?
+                                  #:timeout timeout)))
+          (call-with-output-file file
+            (lambda (output)
+              (dump-port* port output
+                          #:buffer-size %http-receive-buffer-size
+                          #:reporter (progress-reporter/file
+                                      (uri-abbreviation uri) size))
+              (newline)))
+          #t)))
       ((ftp)
        (false-if-exception* (ftp-fetch uri file
                                        #:timeout timeout)))
