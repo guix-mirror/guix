@@ -1104,6 +1104,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
+  %D%/packages/patches/wpa-supplicant-CVE-2017-13082.patch	\
+  %D%/packages/patches/wpa-supplicant-fix-key-reuse.patch	\
+  %D%/packages/patches/wpa-supplicant-fix-zeroed-keys.patch	\
+  %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
+  %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
   %D%/packages/patches/xcb-proto-python3-print.patch		\
   %D%/packages/patches/xcb-proto-python3-whitespace.patch	\
   %D%/packages/patches/xdotool-fix-makefile.patch               \

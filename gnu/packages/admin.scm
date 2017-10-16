@@ -902,6 +902,11 @@ commands and their arguments.")
                     "http://w1.fi/releases/wpa_supplicant-"
                     version
                     ".tar.gz"))
+              (patches (search-patches "wpa-supplicant-CVE-2017-13082.patch"
+                                       "wpa-supplicant-fix-key-reuse.patch"
+                                       "wpa-supplicant-fix-zeroed-keys.patch"
+                                       "wpa-supplicant-fix-nonce-reuse.patch"
+                                       "wpa-supplicant-krack-followups.patch"))
               (sha256
                (base32
                 "0l0l5gz3d5j9bqjsbjlfcv4w4jwndllp9fmyai4x9kg6qhs6v4xl"))))
