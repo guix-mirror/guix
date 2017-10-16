@@ -774,7 +774,7 @@ certificates; otherwise simply ignore them."
                                           #:timeout timeout
                                           #:verify-certificate?
                                           verify-certificate?))
-                ((resp bv-or-port)
+                ((resp port)
                  (http-get uri #:port connection #:decode-body? #f
                            #:streaming? #t
                            #:headers headers))
@@ -787,14 +787,11 @@ certificates; otherwise simply ignore them."
        (begin
          (call-with-output-file file
            (lambda (p)
-             (if (port? bv-or-port)
-                 (begin
-                   (dump-port* bv-or-port p
-                               #:buffer-size %http-receive-buffer-size
-                               #:reporter (progress-reporter/file
-                                           (uri-abbreviation uri) size))
-                   (newline))
-                 (put-bytevector p bv-or-port))))
+             (dump-port* port p
+                         #:buffer-size %http-receive-buffer-size
+                         #:reporter (progress-reporter/file
+                                     (uri-abbreviation uri) size))
+             (newline)))
          file))
       ((301                                       ; moved permanently
         302                                       ; found (redirection)
