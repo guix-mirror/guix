@@ -3071,16 +3071,14 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                (string-append "--with-udevdir=" out "/lib/udev")))
        #:phases
        (modify-phases %standard-phases
-         ,@(if (string=? (%current-system) "armhf-linux")
-               ;; This test fails unpredictably.
-               ;; TODO: skip it for all architectures.
-               `((add-before 'check 'skip-wonky-test
-                  (lambda _
-                    (substitute* "unit/test-gatt.c"
-                      (("tester_init\\(&argc, &argv\\);") "return 77;"))
-                    #t)))
-               `())
-
+         ;; Test unit/test-gatt fails unpredictably. Seems to be a timing
+         ;; issue (discussion on upstream mailing list:
+         ;; https://marc.info/?t=149578476300002&r=1&w=2)
+         (add-before 'check 'skip-wonky-test
+            (lambda _
+              (substitute* "unit/test-gatt.c"
+                (("tester_init\\(&argc, &argv\\);") "return 77;"))
+              #t))
          (add-after 'install 'post-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out        (assoc-ref outputs "out"))
