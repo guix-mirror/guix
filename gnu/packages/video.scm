@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
@@ -49,6 +49,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
@@ -2485,3 +2486,29 @@ tools for styling them, including a built-in real-time video preview.")
    ; by upstream). See https://github.com/Aegisub/Aegisub/blob/master/LICENCE
    ; src/MatroskaParser.(c|h) is under bsd-3 with permission from the author
 
+(define-public gst-transcoder
+  (package
+    (name "gst-transcoder")
+    (version "1.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/pitivi/gst-transcoder/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cnwmrsd321s02ff91m3j27ydj7f8wks0jvmp5admlhka6z7zxm9"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("glib" ,glib)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (native-inputs
+     `(("python" ,python)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/pitivi/gst-transcoder/")
+    (synopsis "GStreamer Transcoding API")
+    (description "GStreamer Transcoding API")
+    (license license:lgpl2.1)))
