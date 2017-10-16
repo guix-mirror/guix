@@ -135,7 +135,17 @@
                     (format #f "(tramp-default-remote-path ~s ~s ~s ~s "
                             "~/.guix-profile/bin" "~/.guix-profile/sbin"
                             "/run/current-system/profile/bin"
-                            "/run/current-system/profile/sbin")))))))
+                            "/run/current-system/profile/sbin")))
+
+                 ;; Make sure Man looks for C header files in the right
+                 ;; places.
+                 (substitute* "man.el"
+                   (("\"/usr/local/include\"" line)
+                    (string-join
+                     (list line
+                           "\"~/.guix-profile/include\""
+                           "\"/var/guix/profiles/system/profile/include\"")
+                     " ")))))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
