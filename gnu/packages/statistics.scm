@@ -2480,15 +2480,17 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.7.960.1.2")
+    (version "0.8.100.1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "0kg8vbamaz3413h283f23hzgqkmfpf6fs0vbklmpj0l3ricvp9cc"))))
+                "19sghlkslz6llcrjk5pd8c6dsb338jsi4dnwrbbrjkfq6jdr5jlp"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))  ; needed for vignettes
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/RcppCore/RcppArmadillo")
