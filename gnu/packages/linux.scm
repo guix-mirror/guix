@@ -72,6 +72,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
@@ -2527,6 +2528,8 @@ in a digital read-out.")
        ("python" ,python-2)                    ;'perf' links against libpython
        ("elfutils" ,elfutils)
        ("libiberty" ,libiberty)      ;used alongside BDF for symbol demangling
+       ("libunwind" ,libunwind)      ;better stack walking
+       ("numactl" ,numactl)          ;for 'perf bench numa mem'
 
        ;; Documentation.
        ("libxml2" ,libxml2)                       ;for $XML_CATALOG_FILES
