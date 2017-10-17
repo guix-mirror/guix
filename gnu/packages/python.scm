@@ -7549,6 +7549,27 @@ and MAC network addresses.")
 (define-public python2-netaddr
   (package-with-python2 python-netaddr))
 
+(define-public python2-neo4j-driver
+  (package
+    (name "python2-neo4j-driver")
+    ;; NOTE: When upgrading to 1.5.0, please add a python3 variant.
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "neo4j-driver" version))
+              (sha256
+               (base32
+                "011r1vh182p8mm83d8dz9rfnc3l7rf7fd00cyrbyfzi71jmc4g98"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://neo4j.com/developer/python/")
+    (synopsis "Neo4j driver code written in Python")
+    (description "This package provides the Neo4j Python driver that connects
+to the database using Neo4j's binary protocol.  It aims to be minimal, while
+being idiomatic to Python.")
+    (license license:asl2.0)))
+
 (define-public python-wrapt
   (package
     (name "python-wrapt")
