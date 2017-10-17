@@ -25,9 +25,10 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses)
-                #:select (bsd-3))
+                #:select (bsd-2 bsd-3))
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python))
 
 (define-public protobuf
@@ -51,6 +52,31 @@
 yet extensible format.  Google uses Protocol Buffers for almost all of its
 internal RPC protocols and file formats.")
     (license bsd-3)))
+
+(define-public protobuf-c
+  (package
+    (name "protobuf-c")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/protobuf-c/protobuf-c/"
+                                  "releases/download/v" version
+                                  "/protobuf-c-" version ".tar.gz"))
+              (sha256
+               (base32
+                "18aj4xfv26zjmj44zbb01wk90jl7y4aj5xvbzz4gg748kdxavjax"))))
+    (build-system gnu-build-system)
+    (inputs `(("protobuf" ,protobuf)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/protobuf-c/protobuf-c")
+    (synopsis "Protocol Buffers implementation in C")
+    (description
+     "This is protobuf-c, a C implementation of the Google Protocol Buffers
+data serialization format.  It includes @code{libprotobuf-c}, a pure C library
+that implements protobuf encoding and decoding, and @code{protoc-c}, a code
+generator that converts Protocol Buffer @code{.proto} files to C descriptor
+code.")
+    (license bsd-2)))
 
 (define-public python-protobuf
   (package
