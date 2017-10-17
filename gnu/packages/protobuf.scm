@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,15 +33,15 @@
 (define-public protobuf
   (package
     (name "protobuf")
-    (version "2.6.1")
+    (version "3.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/google/protobuf/releases/"
-                                  "download/v" version "/protobuf-"
-                                  version ".tar.bz2"))
+                                  "download/v" version "/protobuf-cpp-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "040rcs9fpv4bslhiy43v7dcrzakz4vwwpyqg4jp8bn24sl95ci7f"))))
+                "0y6cr4l7bwa6zvjv5flzr4cx28shk5h8dz99xw90v8qih954pcrb"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (home-page "https://github.com/google/protobuf")
