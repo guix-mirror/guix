@@ -142,14 +142,14 @@ and its related documentation.")
     (name "nginx")
     ;; Consider updating the nginx-docs package if the nginx package is
     ;; updated.
-    (version "1.12.1")
+    (version "1.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1yvnmj7vlykrqdi6amkvs63lva6qkxd98sqv0a8hz8w5ci1bz4w7"))))
+                "05h4rwja7170z0l979yjghy9i9ichllwhicylzpmmyyml6fkfprh"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
