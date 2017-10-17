@@ -4301,6 +4301,15 @@ NetSurf project.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'include-PERL5LIB-in-wrapper
+           (lambda _
+             (substitute* "IkiWiki/Wrapper.pm"
+               (("^@wrapper\\_hooks")
+                (string-append
+                 "@wrapper_hooks\n"
+                 "        addenv(\"PERL5LIB\", \""
+                 (getenv "PERL5LIB")
+                 "\");")))))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
