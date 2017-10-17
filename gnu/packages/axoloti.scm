@@ -201,7 +201,7 @@
        ("dfu-util" ,dfu-util-for-axoloti)))
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://axoloti.com")
+    (home-page "http://www.axoloti.com/")
     (synopsis "Audio development environment for the Axoloti core board")
     (description
      "The Axoloti patcher offers a “patcher” environment similar to Pure Data
