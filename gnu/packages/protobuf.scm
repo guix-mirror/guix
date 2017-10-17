@@ -81,14 +81,14 @@ code.")
 (define-public python-protobuf
   (package
     (name "python-protobuf")
-    (version "3.0.0")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "protobuf" version))
        (sha256
         (base32
-         "1xbgbfg4g43bihkyw1a2giqa2gxmqc5wkh0fzqcb90qi1z1hpi7c"))))
+         "0x33xz85cy5ilg1n2rn92l4qwlcw25vzysx2ldv7k625yjg600pg"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
