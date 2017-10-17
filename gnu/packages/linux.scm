@@ -2506,7 +2506,7 @@ in a digital read-out.")
              (setenv "SHELL_PATH" (which "bash"))
              (chdir "tools/perf")
              #t)))
-       #:make-flags (list (string-append "DESTDIR="
+       #:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out"))
                           "WERROR=0"
 
