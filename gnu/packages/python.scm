@@ -7570,6 +7570,27 @@ to the database using Neo4j's binary protocol.  It aims to be minimal, while
 being idiomatic to Python.")
     (license license:asl2.0)))
 
+(define-public python2-py2neo
+  (package
+    (name "python2-py2neo")
+    (version "3.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "py2neo" version))
+              (sha256
+               (base32
+                "1f1q95vqcvlc3nsc33p841swnjdcjazddlq2dzi3qfnjqjrajxw1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "http://py2neo.org")
+    (synopsis "Library and toolkit for working with Neo4j in Python")
+    (description "This package provides a client library and toolkit for
+working with Neo4j from within Python applications and from the command
+line.  The core library has no external dependencies and has been carefully
+designed to be easy and intuitive to use.")
+    (license license:asl2.0)))
+
 (define-public python-wrapt
   (package
     (name "python-wrapt")
