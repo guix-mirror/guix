@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -22,6 +22,7 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix records)
+  #:use-module (guix modules)
   #:use-module (guix packages)
   #:autoload   (guix build-system gnu) (standard-packages)
   #:use-module (ice-9 match)
@@ -59,18 +60,35 @@
   "Return a fixed-output derivation that fetches REF, a <hg-reference>
 object.  The output is expected to have recursive hash HASH of type
 HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
+  (define zlib
+    (module-ref (resolve-interface '(gnu packages compression)) 'zlib))
+
+  (define config.scm
+    (scheme-file "config.scm"
+                 #~(begin
+                     (define-module (guix config)
+                       #:export (%libz))
+
+                     (define %libz
+                       #+(file-append zlib "/lib/libz")))))
+
+  (define modules
+    (cons `((guix config) => ,config.scm)
+          (delete '(guix config)
+                  (source-module-closure '((guix build hg)
+                                           (guix build download-nar))))))
+
   (define build
-    (with-imported-modules '((guix build hg)
-                             (guix build utils))
+    (with-imported-modules modules
       #~(begin
           (use-modules (guix build hg)
-                       (guix build utils)
-                       (ice-9 match))
+                       (guix build download-nar))
 
-          (hg-fetch '#$(hg-reference-url ref)
-                    '#$(hg-reference-changeset ref)
-                    #$output
-                    #:hg-command (string-append #+hg "/bin/hg")))))
+          (or (hg-fetch '#$(hg-reference-url ref)
+                        '#$(hg-reference-changeset ref)
+                        #$output
+                        #:hg-command (string-append #+hg "/bin/hg"))
+              (download-nar #$output)))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "hg-checkout") build

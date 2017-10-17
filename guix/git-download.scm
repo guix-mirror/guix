@@ -25,6 +25,7 @@
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix packages)
+  #:use-module (guix modules)
   #:autoload   (guix build-system gnu) (standard-packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
@@ -77,12 +78,31 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
         (standard-packages)
         '()))
 
+  (define zlib
+    (module-ref (resolve-interface '(gnu packages compression)) 'zlib))
+
+  (define config.scm
+    (scheme-file "config.scm"
+                 #~(begin
+                     (define-module (guix config)
+                       #:export (%libz))
+
+                     (define %libz
+                       #+(file-append zlib "/lib/libz")))))
+
+  (define modules
+    (cons `((guix config) => ,config.scm)
+          (delete '(guix config)
+                  (source-module-closure '((guix build git)
+                                           (guix build utils)
+                                           (guix build download-nar))))))
+
   (define build
-    (with-imported-modules '((guix build git)
-                             (guix build utils))
+    (with-imported-modules modules
       #~(begin
           (use-modules (guix build git)
                        (guix build utils)
+                       (guix build download-nar)
                        (ice-9 match))
 
           ;; The 'git submodule' commands expects Coreutils, sed,
@@ -92,12 +112,13 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                                            (((names dirs) ...)
                                             dirs)))
 
-          (git-fetch (getenv "git url") (getenv "git commit")
-                     #$output
-                     #:recursive? (call-with-input-string
-                                      (getenv "git recursive?")
-                                    read)
-                     #:git-command (string-append #+git "/bin/git")))))
+          (or (git-fetch (getenv "git url") (getenv "git commit")
+                         #$output
+                         #:recursive? (call-with-input-string
+                                          (getenv "git recursive?")
+                                        read)
+                         #:git-command (string-append #+git "/bin/git"))
+              (download-nar #$output)))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "git-checkout") build
