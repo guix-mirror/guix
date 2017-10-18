@@ -9713,13 +9713,13 @@ with a new public API, and RPython support.")
 (define-public python-hy
   (package
     (name "python-hy")
-    (version "0.11.1")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hy" version))
               (sha256
                (base32
-                "1msqv747iz12r73mz4qvsmlwkddwjvrahlrk7ysrcz07h7dsscxs"))))
+                "19sfymaksx9jhksfnb15ahid46mzrhdfzz6yy2craz2qnzvpmky8"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
