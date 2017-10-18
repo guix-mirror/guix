@@ -9077,4 +9077,35 @@ error function, erf, and related functions.  Instances for Float and
 Double.")
     (license license:bsd-3)))
 
+(define-public ghc-math-functions
+  (package
+    (name "ghc-math-functions")
+    (version "0.2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "math-functions-" version "/"
+                           "math-functions-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sv5vabsx332v1lpb6v3jv4zrzvpx1n7yprzd8wlcda5vsc5a6zp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-vector" ,ghc-vector)
+       ("ghc-vector-th-unbox" ,ghc-vector-th-unbox)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-erf" ,ghc-erf)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/bos/math-functions")
+    (synopsis "Special functions and Chebyshev polynomials for Haskell")
+    (description "This Haskell library provides implementations of
+special mathematical functions and Chebyshev polynomials.  These
+functions are often useful in statistical and numerical computing.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
