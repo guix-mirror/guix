@@ -9698,4 +9698,30 @@ the MD5 digest (hash) algorithm.  This now supports the @code{crypto-api} class
 interface.")
     (license license:bsd-3)))
 
+(define-public ghc-cryptohash-md5
+  (package
+    (name "ghc-cryptohash-md5")
+    (version "0.11.100.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "cryptohash-md5-" version "/"
+                           "cryptohash-md5-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1y8q7s2bn4gdknw1wjikdnar2b5pgz3nv3220lxrlgpsf23x82vi"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:tests? #f)) ; tests require old version of ghc-hunit (0.9)
+    (native-inputs `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
+                     ("ghc-puremd5" ,ghc-puremd5)
+                     ("ghc-tasty" ,ghc-tasty)
+                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+                     ("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/hvr/cryptohash-md5")
+    (synopsis "MD5 implementation for Haskell")
+    (description "This Haskell package provides implementation of MD5.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
