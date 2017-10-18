@@ -9648,4 +9648,24 @@ cipher operations using the crypto-api interface.  Known answer tests (KATs)
 for common cryptographic algorithms are included.")
     (license license:bsd-3)))
 
+(define-public ghc-pretty-hex
+  (package
+    (name "ghc-pretty-hex")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "pretty-hex-" version "/"
+                           "pretty-hex-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ylwkvvjvmpprha9nx83xb8gkhyanhk5fffc0r7lb96n4ch5z6pz"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/GaloisInc/hexdump")
+    (synopsis "Haskell library for hex dumps of ByteStrings")
+    (description "This Haskell library generates pretty hex dumps of
+ByteStrings in the style of other common *nix hex dump tools.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
