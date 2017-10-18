@@ -9756,4 +9756,26 @@ The implementation is made in C with a haskell FFI wrapper that hides
 the C implementation.")
     (license license:bsd-3)))
 
+(define-public ghc-network-info
+  (package
+    (name "ghc-network-info")
+    (version "0.2.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "network-info-" version "/"
+                           "network-info-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xndvg776241fgjmynxfpy81f1csjmh8dg33yf0c8m71ychz3pzc"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/jystic/network-info")
+    (synopsis "Access the local computer's basic network configuration")
+    (description "This Haskell library provides simple read-only access to the
+local computer's networking configuration.  It is currently capable of
+getting a list of all the network interfaces and their respective
+IPv4, IPv6 and MAC addresses.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
