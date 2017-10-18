@@ -540,7 +540,8 @@ extracting content or merging files.")
         (sha256
          (base32
           "02phamcchgsmvjnb3ir7r5sssvx9fcrscn297z73b82n1jl79510"))
-        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"))
+        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"
+                                 "mupdf-CVE-2017-15587.patch"))
         (modules '((guix build utils)))
         (snippet
             ;; Delete all the bundled libraries except for mujs, which is
