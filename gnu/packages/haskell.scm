@@ -9840,4 +9840,62 @@ functions.")
 parsing and printing @dfn{Universally Unique Identifiers} or UUIDs.")
     (license license:bsd-3)))
 
+(define-public ghc-rebase
+  (package
+    (name "ghc-rebase")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "rebase-" version "/"
+                           "rebase-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qkhnpcc4g2vd6jmbf3b6psqkan6hyawqzrwzqdd931hsb02l6ia"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-stm" ,ghc-stm)
+              ("ghc-hashable" ,ghc-hashable)
+              ("ghc-vector" ,ghc-vector)
+              ("ghc-unordered-containers" ,ghc-unordered-containers)
+              ("ghc-text" ,ghc-text)
+              ("ghc-scientific" ,ghc-scientific)
+              ("ghc-uuid" ,ghc-uuid)
+              ("ghc-dlist" ,ghc-dlist)
+              ("ghc-void" ,ghc-void)
+              ("ghc-bifunctors" ,ghc-bifunctors)
+              ("ghc-profunctors" ,ghc-profunctors)
+              ("ghc-contravariant" ,ghc-contravariant)
+              ("ghc-contravariant-extras" ,ghc-contravariant-extras)
+              ("ghc-semigroups" ,ghc-semigroups)
+              ("ghc-mtl" ,ghc-mtl)
+              ("ghc-either" ,ghc-either)
+              ("ghc-fail" ,ghc-fail)
+              ("ghc-base-prelude" ,ghc-base-prelude)))
+    (home-page "https://github.com/nikita-volkov/rebase")
+    (synopsis "Progressive alternative to the base package
+for Haskell")
+    (description "This Haskell package is intended for those who are
+tired of keeping long lists of dependencies to the same essential libraries
+in each package as well as the endless imports of the same APIs all over again.
+
+It also supports the modern tendencies in the language.
+
+To solve those problems this package does the following:
+
+@itemize
+@item Reexport the original APIs under the @code{Rebase} namespace.
+
+@item Export all the possible non-conflicting symbols from the
+@code{Rebase.Prelude} module.
+
+@item Give priority to the modern practices in the conflicting cases.
+@end itemize
+
+The policy behind the package is only to reexport the non-ambiguous and
+non-controversial APIs, which the community has obviously settled on.
+The package is intended to rapidly evolve with the contribution from
+the community, with the missing features being added with pull-requests.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
