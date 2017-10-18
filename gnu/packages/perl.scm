@@ -9227,3 +9227,30 @@ in Perl source files.")
     (license (non-copyleft "http://metadata.ftp-master.debian.org/\
 changelogs/main/libt/libtime-parsedate-perl/\
 libtime-parsedate-perl_2015.103-2_copyright"))))
+
+(define-public perl-libtime-period
+  (package
+    (name "perl-libtime-period")
+    (version "1.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://http.debian.net/debian/pool/main/libt/"
+             "libtime-period-perl/libtime-period-perl_"
+             version ".orig.tar.gz"))
+       (sha256
+        (base32 "0c0yd999h0ikj88c9j95wa087m87i0qh7vja3715y2kd7vixkci2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    ;; Unless some other homepage is out there...
+    (home-page "https://packages.debian.org/stretch/libtime-period-perl")
+    (synopsis "Perl library for testing if a time() is in a specific period")
+    (description "This Perl library provides a function which tells whether a
+specific time falls within a specified time period.  Its syntax for specifying
+time periods allows you to test for conditions like \"Monday to Friday, 9am
+till 5pm\" and \"on the second Tuesday of the month\" and \"between 4pm and
+4:15pm\" and \"in the first half of each minute\" and \"in January of
+1998\".")
+    (license perl-license)))
