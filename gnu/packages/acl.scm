@@ -47,16 +47,15 @@
      `(#:tests? #f   ; FIXME: Investigate test suite failures
        #:test-target "tests"
        #:phases
-        (alist-cons-after
-         'build 'patch-exec-bin-sh
-         (lambda _
-           (substitute* "test/run"
-             (("/bin/sh") (which "sh"))))
-         (alist-replace
-          'install
-          (lambda _
-            (zero? (system* "make" "install" "install-lib" "install-dev")))
-          %standard-phases))))
+       (modify-phases %standard-phases
+         (add-after 'build 'patch-exec-bin-sh
+           (lambda _
+             (substitute* "test/run"
+               (("/bin/sh") (which "sh")))
+             #t))
+         (replace 'install
+           (lambda _
+             (zero? (system* "make" "install" "install-lib" "install-dev")))))))
     (inputs `(("attr" ,attr)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
