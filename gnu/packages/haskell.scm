@@ -9318,4 +9318,40 @@ This package also includes a simple reference implementation based on
 @code{IORef} and @code{Data.Sequence}.")
     (license license:bsd-3)))
 
+(define-public ghc-monad-par
+  (package
+    (name "ghc-monad-par")
+    (version "0.3.4.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "monad-par-" version "/"
+                           "monad-par-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ldrzqy24fsszvn2a2nr77m2ih7xm0h9bgkjyv1l274aj18xyk7q"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-abstract-par" ,ghc-abstract-par)
+              ("ghc-abstract-deque" ,ghc-abstract-deque)
+              ("ghc-monad-par-extras" ,ghc-monad-par-extras)
+              ("ghc-mwc-random" ,ghc-mwc-random)
+              ("ghc-parallel" ,ghc-parallel)
+              ("ghc-mtl" ,ghc-mtl)))
+    (native-inputs `(("ghc-quickcheck" ,ghc-quickcheck)
+                     ("ghc-hunit" ,ghc-hunit)
+                     ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+                     ("ghc-test-framework-quickcheck2"
+                      ,ghc-test-framework-quickcheck2)
+                     ("ghc-test-framework" ,ghc-test-framework)
+                     ("ghc-test-framework-th" ,ghc-test-framework-th)))
+    (home-page "https://github.com/simonmar/monad-par")
+    (synopsis "Haskell library for parallel programming based on a monad")
+    (description "The @code{Par} monad offers an API for parallel
+programming.  The library works for parallelising both pure and @code{IO}
+computations, although only the pure version is deterministic.  The default
+implementation provides a work-stealing scheduler and supports forking tasks
+that are much lighter weight than IO-threads.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
