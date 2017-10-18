@@ -9147,4 +9147,29 @@ fares well in tests of randomness.  It is also extremely fast,
 between 2 and 3 times faster than the Mersenne Twister.")
     (license license:bsd-3)))
 
+(define-public ghc-vector-algorithms
+  (package
+    (name "ghc-vector-algorithms")
+    (version "0.7.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "vector-algorithms-" version "/"
+                           "vector-algorithms-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w4hf598lpxfg58rnimcqxrbnpqq2jmpjx82qa5md3q6r90hlipd"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-vector" ,ghc-vector)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-mwc-random" ,ghc-mwc-random)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/bos/math-functions")
+    (synopsis "Algorithms for vector arrays in Haskell")
+    (description "This Haskell library algorithms for vector arrays.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
