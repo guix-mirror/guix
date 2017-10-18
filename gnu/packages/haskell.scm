@@ -9778,4 +9778,34 @@ getting a list of all the network interfaces and their respective
 IPv4, IPv6 and MAC addresses.")
     (license license:bsd-3)))
 
+(define-public ghc-uuid-types
+  (package
+    (name "ghc-uuid-types")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "uuid-types-" version "/"
+                           "uuid-types-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zdka5jnm1h6k36w3nr647yf3b5lqb336g3fkprhd6san9x52xlj"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-hashable" ,ghc-hashable)
+              ("ghc-random" ,ghc-random)
+              ("ghc-text" ,ghc-text)))
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)
+                     ("ghc-quickcheck" ,ghc-quickcheck)
+                     ("ghc-tasty" ,ghc-tasty)
+                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "https://github.com/hvr/uuid")
+    (synopsis "Haskell type definitions for UUIDs")
+    (description "This Haskell library contains type definitions for
+@dfn{Universally Unique Identifiers} or
+@uref{http://en.wikipedia.org/wiki/UUID, UUIDs}, and basic conversion
+functions.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
