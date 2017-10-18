@@ -10041,4 +10041,62 @@ unchunked data")
 as well as a convenient Conduit module.")
     (license license:expat)))
 
+(define-public ghc-aws
+  (package
+    (name "ghc-aws")
+    (version "0.17.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "aws-" version "/aws-" version ".tar.gz"))
+       (sha256 (base32
+                "1q4qh58vj8447a4fl88n3nkpdc4yv293qsh02w6zvszd6ch61yh7"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; Tests require AWS credentials.
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-byteable" ,ghc-byteable)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-cereal" ,ghc-cereal)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-cryptohash" ,ghc-cryptohash)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-http-conduit" ,ghc-http-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-network" ,ghc-network)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-xml-conduit" ,ghc-xml-conduit)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-errors" ,ghc-errors)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-client-tls" ,ghc-http-client-tls)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-conduit-combinators" ,ghc-conduit-combinators)))
+    (home-page "https://github.com/aristidb/aws")
+    (synopsis "Amazon Web Services for Haskell")
+    (description "This package attempts to provide support for using
+Amazon Web Services like S3 (storage), SQS (queuing) and others to
+Haskell programmers.  The ultimate goal is to support all Amazon
+Web Services.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
