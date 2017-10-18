@@ -9589,4 +9589,35 @@ which consume random values.")
 to obtain cryptographically strong entropy.")
     (license license:bsd-3)))
 
+(define-public ghc-crypto-api
+  (package
+    (name "ghc-crypto-api")
+    (version "0.13.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "crypto-api-" version "/"
+                           "crypto-api-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vc27qcgbg7hf50rkqhlrs58zn1888ilh4b6wrrm07bnm48xacak"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-cereal" ,ghc-cereal)
+              ("ghc-tagged" ,ghc-tagged)
+              ("ghc-entropy" ,ghc-entropy)))
+    (home-page "https://github.com/TomMD/crypto-api")
+    (synopsis "Provides generic interface for cryptographic operations
+for Haskell")
+    (description "This Haskell package provides a generic interface for
+cryptographic operations (hashes, ciphers, randomness).
+
+Maintainers of hash and cipher implementations are encouraged to add instances
+for the classes defined in @code{Crypto.Classes}.  @code{Crypto} users are
+similarly encouraged to use the interfaces defined in the @code{Classes} module.
+
+Any concepts or functions of general use to more than one cryptographic
+algorithm (ex: padding) is within scope of this package.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
