@@ -10035,13 +10035,18 @@ browser.")
          #:phases
          (modify-phases %standard-phases
            (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((target (assoc-ref outputs "out"))
                       (doc (string-append target "/share/doc/f-seq/")))
                  (mkdir-p target)
                  (mkdir-p doc)
                  (substitute* "bin/linux/fseq"
-                   (("java") (which "java")))
+                   (("java") (which "java"))
+                   (("\\$REALDIR/../lib/commons-cli-1.1.jar")
+                    (string-append (assoc-ref inputs "java-commons-cli")
+                                   "/share/java/commons-cli.jar"))
+                   (("REALDIR=.*")
+                    (string-append "REALDIR=" target "/bin\n")))
                  (install-file "README.txt" doc)
                  (install-file "bin/linux/fseq" (string-append target "/bin"))
                  (install-file "build~/fseq.jar" (string-append target "/lib"))
