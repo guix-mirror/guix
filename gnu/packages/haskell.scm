@@ -9234,4 +9234,27 @@ using Template Haskell")
 \(e.g. if you want to be able to call the testgroup from another module).")
     (license license:bsd-3)))
 
+(define-public ghc-abstract-par
+  (package
+    (name "ghc-abstract-par")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "abstract-par-" version "/"
+                           "abstract-par-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0q6qsniw4wks2pw6wzncb1p1j3k6al5njnvm2v5n494hplwqg2i4"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/simonmar/monad-par")
+    (synopsis "Abstract parallelization interface for Haskell")
+    (description "This Haskell package is an abstract interface
+only.  It provides a number of type clasess, but not an
+implementation.  The type classes separate different levels
+of @code{Par} functionality.  See the @code{Control.Monad.Par.Class}
+module for more details.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
