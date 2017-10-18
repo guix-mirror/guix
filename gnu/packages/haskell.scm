@@ -9898,4 +9898,38 @@ The package is intended to rapidly evolve with the contribution from
 the community, with the missing features being added with pull-requests.")
     (license license:expat)))
 
+(define-public ghc-vector-builder
+  (package
+    (name "ghc-vector-builder")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "vector-builder-" version "/"
+                           "vector-builder-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l6sfgd2s107zkp1qd1w6jdjcbznp31769qf99pxar087f697wvp"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-vector" ,ghc-vector)
+              ("ghc-semigroups" ,ghc-semigroups)
+              ("ghc-base-prelude" ,ghc-base-prelude)))
+    (native-inputs `(("ghc-tasty" ,ghc-tasty)
+                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+                     ("ghc-hunit" ,ghc-hunit)
+                     ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+                     ("ghc-rebase" ,ghc-rebase)))
+    (home-page "https://github.com/nikita-volkov/vector-builder")
+    (synopsis "Vector builder for Haskell")
+    (description "This Haskell package provides an API for constructing vectors.
+It provides the composable @code{Builder} abstraction, which has instances of the
+@code{Monoid} and @code{Semigroup} classes.
+
+You would first use the @code{Builder} abstraction to specify the structure of
+the vector; then you can execute the builder to actually produce the
+vector. ")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
