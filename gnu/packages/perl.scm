@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config))
 
@@ -9187,3 +9189,41 @@ interface to File::Find::Object.")
   (description "Test::TrailingSpace tests for trailing spaces
 in Perl source files.")
   (license x11)))
+
+(define-public perl-libtime-parsedate
+  (package
+    (name "perl-libtime-parsedate")
+    (version "2015.103")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MU/MUIR/modules/Time-ParseDate-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1lgfr87j4qwqnln0hyyzgik5ixqslzdaksn9m8y824gqbcihc6ic"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This is needed for tests
+         (add-after 'unpack 'set-TZDIR
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
+                                            "/share/zoneinfo"))
+             #t)))))
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("tzdata" ,tzdata-2017a)))
+    (home-page "https://metacpan.org/release/Time-ParseDate")
+    (synopsis "Collection of Perl modules for time/date manipulation")
+    (description "Provides several perl modules for date/time manipulation:
+@code{Time::CTime.pm}, @code{Time::JulianDay.pm}, @code{Time::ParseDate.pm},
+@code{Time::Timezone.pm}, and @code{Time::DaysInMonth.pm}.")
+    ;; License text:
+    ;;   "License hereby granted for anyone to use, modify or redistribute this
+    ;;   module at their own risk. Please feed useful changes back to
+    ;;   cpan@dave.sharnoff.org."
+    (license (non-copyleft "http://metadata.ftp-master.debian.org/\
+changelogs/main/libt/libtime-parsedate-perl/\
+libtime-parsedate-perl_2015.103-2_copyright"))))
