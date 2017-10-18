@@ -9964,4 +9964,39 @@ to derive new folds.  Derived folds still traverse the container just once
 and are often as efficient as hand-written folds.")
     (license license:bsd-3)))
 
+(define-public ghc-mono-traversable
+  (package
+    (name "ghc-mono-traversable")
+    (version "1.0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "mono-traversable-" version "/"
+                           "mono-traversable-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0smirpwika7d5a98h20jr9jqg41n7vqfy7k31crmn449qfig9ljf"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-unordered-containers" ,ghc-unordered-containers)
+              ("ghc-hashable" ,ghc-hashable)
+              ("ghc-text" ,ghc-text)
+              ("ghc-vector" ,ghc-vector)
+              ("ghc-vector-algorithms" ,ghc-vector-algorithms)
+              ("ghc-split" ,ghc-split)))
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)
+                     ("ghc-hunit",ghc-hunit)
+                     ("ghc-quickcheck" ,ghc-quickcheck)
+                     ("ghc-semigroups" ,ghc-semigroups)
+                     ("ghc-foldl" ,ghc-foldl)))
+    (home-page "https://github.com/snoyberg/mono-traversable")
+    (synopsis "Haskell classes for mapping, folding, and traversing monomorphic
+containers")
+    (description "This Haskell package provides Monomorphic variants of the
+Functor, Foldable, and Traversable typeclasses.  If you understand Haskell's
+basic typeclasses, you understand mono-traversable.  In addition to what
+you are used to, it adds on an IsSequence typeclass and has code for marking
+data structures as non-empty.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
