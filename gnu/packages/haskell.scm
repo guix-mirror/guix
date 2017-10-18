@@ -9568,4 +9568,25 @@ which consume random values.")
     (synopsis "Provides an either monad transformer for Haskell")
     (description "This Haskell package provides an either monad transformer.")
     (license license:bsd-3)))
+
+(define-public ghc-entropy
+  (package
+    (name "ghc-entropy")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "entropy-" version "/"
+                           "entropy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l3lfigqvdlmxkz1wl7zdkmc0i2r5p6z4xzhiw8xdsbsw7aljfkl"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/TomMD/entropy")
+    (synopsis "Provides platform independent entropy source for Haskell")
+    (description "This Haskell package provides a platform independent method
+to obtain cryptographically strong entropy.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
