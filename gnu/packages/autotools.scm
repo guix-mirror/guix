@@ -238,21 +238,18 @@ output is indexed in many ways to simplify browsing.")
     (license gpl3+)))
 
 (define-public automake
-  ;; Replace with 'automake/latest' on the next rebuild cycle.
   (package
     (name "automake")
-    (version "1.15")
+    (version "1.15.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/automake/automake-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0dl6vfi2lzz8alnklwxzfz624b95hb1ipjvd3mk177flmddcf24r"))
+               "1bzd9g32dfm4rsbw93ld9x7b5nc1y6i4m6zp032qf1i28a8s6sxg"))
              (patches
-              (search-patches "automake-regexp-syntax.patch"
-                              "automake-skip-amhello-tests.patch"
-                              "automake-test-gzip-warning.patch"))))
+              (search-patches "automake-skip-amhello-tests.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,(autoconf-wrapper))
@@ -316,22 +313,6 @@ standards-compliant Makefiles.  Build requirements are entered in an
 intuitive format and then Automake works with Autoconf to produce a robust
 Makefile, simplifying the entire process for the developer.")
     (license gpl2+)))                      ; some files are under GPLv3+
-
-
-(define-public automake/latest
-  ;; Merge with 'automake' on the next rebuild cycle.
-  (package
-    (inherit automake)
-    (version "1.15.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/automake/automake-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1bzd9g32dfm4rsbw93ld9x7b5nc1y6i4m6zp032qf1i28a8s6sxg"))
-              (patches
-               (search-patches "automake-skip-amhello-tests.patch"))))))
 
 (define-public libtool
   (package
