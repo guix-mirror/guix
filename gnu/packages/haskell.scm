@@ -9056,4 +9056,25 @@ deriver for unboxed vectors, given a pair of coercion functions to
 and from some existing type with an Unbox instance.")
     (license license:bsd-3)))
 
+(define-public ghc-erf
+  (package
+    (name "ghc-erf")
+    (version "2.0.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "erf-" version "/"
+                           "erf-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dxk2r32ajmmc05vaxcp0yw6vgv4lkbmh8jcshncn98xgsfbgw14"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/erf")
+    (synopsis "The error function, erf, and related functions for Haskell")
+    (description "This Haskell library provides a type class for the
+error function, erf, and related functions.  Instances for Float and
+Double.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
