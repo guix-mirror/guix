@@ -9436,4 +9436,37 @@ representations for Haskell")
 classy-prelude.")
     (license license:expat)))
 
+(define-public ghc-base-prelude
+  (package
+    (name "ghc-base-prelude")
+    (version "1.2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "base-prelude-" version "/"
+                           "base-prelude-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17hivs7lmsglagdlzxd9q9zsddmgqin2788mpq911zwnb57lj6l1"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/nikita-volkov/base-prelude")
+    (synopsis "The most complete prelude formed solely from the Haskell's base
+package")
+    (description "This Haskell package aims to reexport all the non-conflicting
+and most general definitions from the \"base\" package.
+
+This includes APIs for applicatives, arrows, monoids, foldables, traversables,
+exceptions, generics, ST, MVars and STM.
+
+This package will never have any dependencies other than \"base\".
+
+Versioning policy:
+
+The versioning policy of this package deviates from PVP in the sense
+that its exports in part are transitively determined by the version of \"base\".
+Therefore it's recommended for the users of @code{ghc-base-prelude} to specify
+the bounds of \"base\" as well.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
