@@ -9354,4 +9354,63 @@ implementation provides a work-stealing scheduler and supports forking tasks
 that are much lighter weight than IO-threads.")
     (license license:bsd-3)))
 
+(define-public ghc-statistics
+  (package
+    (name "ghc-statistics")
+    (version "0.14.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "statistics-" version "/"
+                           "statistics-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y27gafkib0x0fn39qfn2rkgsfrm09ng35sbb5dwr7rclhnxz59l"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-base-orphans" ,ghc-base-orphans)
+       ("ghc-erf" ,ghc-erf)
+       ("ghc-math-functions" ,ghc-math-functions)
+       ("ghc-monad-par" ,ghc-monad-par)
+       ("ghc-mwc-random" ,ghc-mwc-random)
+       ("ghc-primitive" ,ghc-primitive)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-vector-algorithms" ,ghc-vector-algorithms)
+       ("ghc-vector-th-unbox" ,ghc-vector-th-unbox)
+       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-ieee754", ghc-ieee754)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (arguments
+     `(#:tests? #f)) ; FIXME: Test-Suite `spec` fails.
+    (home-page "https://github.com/bos/mwc-random")
+    (synopsis "Haskell library of statistical types, data, and functions")
+    (description "This library provides a number of common functions
+and types useful in statistics.  We focus on high performance, numerical
+robustness, and use of good algorithms.  Where possible, we provide references
+to the statistical literature.
+
+The library's facilities can be divided into four broad categories:
+
+@itemize
+@item Working with widely used discrete and continuous probability
+distributions.  (There are dozens of exotic distributions in use; we focus
+on the most common.)
+
+@item Computing with sample data: quantile estimation, kernel density
+estimation, histograms, bootstrap methods, significance testing,
+and regression and autocorrelation analysis.
+
+@item Random variate generation under several different distributions.
+
+@item Common statistical tests for significant differences between samples.
+@end itemize")
+    (license license:bsd-2)))
+
 ;;; haskell.scm ends here
