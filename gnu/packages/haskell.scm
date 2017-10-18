@@ -5919,14 +5919,14 @@ of a JSON value into a @code{Data.Aeson.Value}.")
 (define-public ghc-conduit
   (package
     (name "ghc-conduit")
-    (version "1.2.5.1")
+    (version "1.2.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "conduit/conduit-" version ".tar.gz"))
               (sha256
                (base32
-                "0aq6wswd5dkhdmy7sjhd99mldpq33dqpgbdcwpm94ahvckqxs7v5"))))
+                "0zl6gflh7y36y2vypjhqx13nhkk5y3h12c1zj7kjfclrmwnvnwh0"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-exceptions" ,ghc-exceptions)
@@ -5939,7 +5939,8 @@ of a JSON value into a @code{Data.Aeson.Value}.")
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hspec" ,ghc-hspec)
-       ("ghc-safe" ,ghc-safe)))
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-split" ,ghc-split)))
     (home-page "https://github.com/snoyberg/conduit")
     (synopsis "Streaming data library ")
     (description
