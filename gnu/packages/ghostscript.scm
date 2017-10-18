@@ -100,23 +100,23 @@ paper size.")
    (arguments
     `(#:tests? #f ; none provided
       #:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
-        (let ((perl (assoc-ref inputs "perl"))
-              (out (assoc-ref outputs "out")))
-         (copy-file "Makefile.unix" "Makefile")
-         (substitute* "Makefile"
-           (("/usr/local/bin/perl") (string-append perl "/bin/perl")))
-         (substitute* "Makefile"
-           (("/usr/local") out))
-         ;; for the install phase
-         (substitute* "Makefile"
-           (("-mkdir") "mkdir -p"))
-         ;; drop installation of non-free files
-         (substitute* "Makefile"
-           ((" install.include") ""))))
-      %standard-phases)))
+      (modify-phases %standard-phases
+        (replace 'configure
+          (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+           (let ((perl (assoc-ref inputs "perl"))
+                 (out (assoc-ref outputs "out")))
+            (copy-file "Makefile.unix" "Makefile")
+            (substitute* "Makefile"
+              (("/usr/local/bin/perl") (string-append perl "/bin/perl")))
+            (substitute* "Makefile"
+              (("/usr/local") out))
+            ;; for the install phase
+            (substitute* "Makefile"
+              (("-mkdir") "mkdir -p"))
+            ;; drop installation of non-free files
+            (substitute* "Makefile"
+              ((" install.include") "")))
+           #t)))))
    (synopsis "Collection of utilities for manipulating PostScript documents")
    (description
     "PSUtils is a collection of utilities for manipulating PostScript
