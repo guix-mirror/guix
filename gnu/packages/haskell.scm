@@ -10000,4 +10000,45 @@ you are used to, it adds on an IsSequence typeclass and has code for marking
 data structures as non-empty.")
     (license license:expat)))
 
+(define-public ghc-conduit-combinators
+  (package
+    (name "ghc-conduit-combinators")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "conduit-combinators-" version "/"
+                           "conduit-combinators-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0609miq03lq9visfb2dqqsxghmvgzm24pq39mqby1jnnah6yh8m0"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-conduit" ,ghc-conduit)
+              ("ghc-conduit-extra" ,ghc-conduit-extra)
+              ("ghc-transformers-base" ,ghc-transformers-base)
+              ("ghc-primitive" ,ghc-primitive)
+              ("ghc-vector" ,ghc-vector)
+              ("ghc-text" ,ghc-text)
+              ("ghc-void" ,ghc-void)
+              ("ghc-mwc-random" ,ghc-mwc-random)
+              ("ghc-unix-compat" ,ghc-unix-compat)
+              ("ghc-base16-bytestring" ,ghc-base16-bytestring)
+              ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+              ("ghc-resourcet" ,ghc-resourcet)
+              ("ghc-monad-control" ,ghc-monad-control)
+              ("ghc-chunked-data" ,ghc-chunked-data)
+              ("ghc-mono-traversable" ,ghc-mono-traversable)))
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)
+                     ("ghc-silently" ,ghc-silently)
+                     ("ghc-mtl" ,ghc-mtl)
+                     ("ghc-safe" ,ghc-safe)
+                     ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/snoyberg/mono-traversable")
+    (synopsis "Commonly used conduit functions, for both chunked and
+unchunked data")
+    (description "This Haskell package provides a replacement for Data.Conduit.List,
+as well as a convenient Conduit module.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
