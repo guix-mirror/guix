@@ -4283,7 +4283,7 @@ command line options in Haskell.")
 (define-public ghc-base-orphans
   (package
     (name "ghc-base-orphans")
-    (version "0.4.4")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
@@ -4293,7 +4293,7 @@ command line options in Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "0hhgpwjvx7jhvlhsygmmf0q5hv2ymijzz4bjilicw99bmv13qcpl"))))
+         "03mdww5j0gwai7aqlx3m71ldmjcr99jzpkcclzjfclk6a6kjla67"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
