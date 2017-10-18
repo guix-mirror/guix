@@ -9724,4 +9724,36 @@ interface.")
     (description "This Haskell package provides implementation of MD5.")
     (license license:bsd-3)))
 
+(define-public ghc-cryptohash-sha1
+  (package
+    (name "ghc-cryptohash-sha1")
+    (version "0.11.100.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "cryptohash-sha1-" version "/"
+                           "cryptohash-sha1-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1aqdxdhxhl9jldh951djpwxx8z7gzaqspxl7iwpl84i5ahrsyy9w"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:tests? #f)) ; tests require old version of ghc-hunit (0.9)
+    (native-inputs `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
+                     ("ghc-sha" ,ghc-sha)
+                     ("ghc-tasty" ,ghc-tasty)
+                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+                     ("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/hvr/cryptohash-sha1")
+    (synopsis "SHA-1 implementation for Haskell")
+    (description "This Haskell package provides an incremental and one-pass,
+pure API to the @uref{https://en.wikipedia.org/wiki/SHA-1, SHA-1 hash algorithm},
+including @uref{https://en.wikipedia.org/wiki/HMAC, HMAC support}, with
+performance close to the fastest implementations available in other languages.
+
+The implementation is made in C with a haskell FFI wrapper that hides
+the C implementation.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
