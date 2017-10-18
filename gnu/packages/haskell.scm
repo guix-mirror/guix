@@ -9257,4 +9257,28 @@ of @code{Par} functionality.  See the @code{Control.Monad.Par.Class}
 module for more details.")
     (license license:bsd-3)))
 
+(define-public ghc-monad-par-extras
+  (package
+    (name "ghc-monad-par-extras")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "monad-par-extras-" version "/"
+                           "monad-par-extras-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bl4bd6jzdc5zm20q1g67ppkfh6j6yn8fwj6msjayj621cck67p2"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-abstract-par" ,ghc-abstract-par)
+              ("ghc-cereal" ,ghc-cereal)
+              ("ghc-random" ,ghc-random)
+              ("ghc-mtl" ,ghc-mtl)))
+    (home-page "https://github.com/simonmar/monad-par")
+    (synopsis "Combinators and extra features for Par monads for Haskell")
+    (description "This Haskell package provides additional data structures,
+and other added capabilities layered on top of the @code{Par} monad.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
