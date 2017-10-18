@@ -9668,4 +9668,34 @@ for common cryptographic algorithms are included.")
 ByteStrings in the style of other common *nix hex dump tools.")
     (license license:bsd-3)))
 
+(define-public ghc-puremd5
+  (package
+    (name "ghc-puremd5")
+    (version "2.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "pureMD5-" version "/"
+                           "pureMD5-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zdilz41cla2ck7mcw1a9702gyg2abq94mqahr4vci9sbs53bwxy"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-cereal" ,ghc-cereal)
+              ("ghc-crypto-api" ,ghc-crypto-api)
+              ("ghc-tagged" ,ghc-tagged)))
+    (native-inputs `(("ghc-crypto-api-tests" ,ghc-crypto-api-tests)
+                     ("ghc-quickcheck" ,ghc-quickcheck)
+                     ("ghc-test-framework" ,ghc-test-framework)
+                     ("ghc-test-framework-quickcheck2"
+                      ,ghc-test-framework-quickcheck2)
+                     ("ghc-pretty-hex" ,ghc-pretty-hex)))
+    (home-page "https://github.com/TomMD/pureMD5")
+    (synopsis "Haskell implementation of the MD5 hash algorithm")
+    (description "This package provides a Haskell-only implementation of
+the MD5 digest (hash) algorithm.  This now supports the @code{crypto-api} class
+interface.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
