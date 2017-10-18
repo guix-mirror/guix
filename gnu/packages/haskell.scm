@@ -9032,4 +9032,28 @@ which allow you to avoid direct usage of conduits.")
 directly uses the type system, rather than out-of-band exceptions.")
     (license license:bsd-3)))
 
+(define-public ghc-vector-th-unbox
+  (package
+    (name "ghc-vector-th-unbox")
+    (version "0.2.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "vector-th-unbox-" version "/"
+                           "vector-th-unbox-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0d82x55f5vvr1jvaia382m23rs690lg55pvavv8f4ph0y6kd91xy"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-vector" ,ghc-vector)
+       ("ghc-data-default" ,ghc-data-default)))
+    (home-page "https://github.com/liyang/vector-th-unbox")
+    (synopsis "Deriver for Data.Vector.Unboxed using Template Haskell")
+    (description "This Haskell library provides a Template Haskell
+deriver for unboxed vectors, given a pair of coercion functions to
+and from some existing type with an Unbox instance.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
