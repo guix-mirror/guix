@@ -9413,4 +9413,27 @@ and regression and autocorrelation analysis.
 @end itemize")
     (license license:bsd-2)))
 
+(define-public ghc-chunked-data
+  (package
+    (name "ghc-chunked-data")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "chunked-data-" version "/"
+                           "chunked-data-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bszq6fijnr4pmadzz89smj7kfmzx0ca3wd9ga8gv0in9jk9vgp1"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-vector" ,ghc-vector)
+              ("ghc-semigroups" ,ghc-semigroups)))
+    (home-page "https://github.com/snoyberg/mono-traversable")
+    (synopsis "Typeclasses for dealing with various chunked data
+representations for Haskell")
+    (description "This Haskell package was originally present in
+classy-prelude.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
