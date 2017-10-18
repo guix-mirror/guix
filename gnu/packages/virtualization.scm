@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
@@ -32,6 +32,8 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages dns)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -40,9 +42,11 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages sdl)
@@ -55,7 +59,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (gpl2 gpl2+ lgpl2.1+))
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
@@ -573,3 +577,96 @@ virtual machines through libvirt.  It primarily targets KVM VMs, but also
 manages Xen and LXC (Linux containers).  It presents a summary view of running
 domains, their live performance and resource utilization statistics.")
     (license gpl2+)))
+
+(define-public criu
+  (package
+    (name "criu")
+    (version "3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.openvz.org/criu/criu-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1w0ybla7ac0ql0jzh0vxdf2w9amqp88jcg0na3b33r3hq8acry6x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:tests? #f ; tests require mounting as root
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "LIBDIR=" (assoc-ref %outputs "out")
+                            "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The includes for libnl are located in a sub-directory.
+             (setenv "C_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "libnl")
+                                    "/include/libnl3:"
+                                    (getenv "C_INCLUDE_PATH")))
+             ;; Prevent xmlto from failing the install phase.
+             (substitute* "Documentation/Makefile"
+               (("XMLTO.*:=.*")
+                (string-append "XMLTO:="
+                               (assoc-ref inputs "xmlto")
+                               "/bin/xmlto"
+                               " --skip-validation "
+                               " -x "
+                               (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             #t))
+         (add-before 'build 'fix-symlink
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The file 'images/google/protobuf/descriptor.proto' points to
+             ;; /usr/include/..., which obviously does not exist.
+             (let* ((file "google/protobuf/descriptor.proto")
+                    (target (string-append "images/" file))
+                    (source (string-append (assoc-ref inputs "protobuf")
+                                           "/include/" file)))
+               (delete-file target)
+               (symlink source target)
+               #t)))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure 'crit' runs with the correct PYTHONPATH.
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (string-append out
+                                         "/lib/python"
+                                         (string-take (string-take-right
+                                                       (assoc-ref inputs "python") 5) 3)
+                                         "/site-packages:"
+                                         (getenv "PYTHONPATH"))))
+               (wrap-program (string-append out "/bin/crit")
+                 `("PYTHONPATH" ":" prefix (,path))))
+             #t)))))
+    (inputs
+     `(("protobuf" ,protobuf)
+       ("python" ,python-2)
+       ("python2-protobuf" ,python2-protobuf)
+       ("python2-ipaddr" ,python2-ipaddr)
+       ("iproute" ,iproute)
+       ("libaio" ,libaio)
+       ("libcap" ,libcap)
+       ("libnet" ,libnet)
+       ("libnl" ,libnl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("protobuf-c" ,protobuf-c)
+       ("asciidoc" ,asciidoc)
+       ("xmlto" ,xmlto)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)))
+    (home-page "https://criu.org")
+    (synopsis "Checkpoint and restore in user space")
+    (description "Using this tool, you can freeze a running application (or
+part of it) and checkpoint it to a hard drive as a collection of files.  You
+can then use the files to restore and run the application from the point it
+was frozen at.  The distinctive feature of the CRIU project is that it is
+mainly implemented in user space.")
+    ;; The project is licensed under GPLv2; files in the lib/ directory are
+    ;; LGPLv2.1.
+    (license (list gpl2 lgpl2.1))))
