@@ -9932,4 +9932,36 @@ the vector; then you can execute the builder to actually produce the
 vector. ")
     (license license:expat)))
 
+(define-public ghc-foldl
+  (package
+    (name "ghc-foldl")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "foldl-" version "/"
+                           "foldl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z3xjz4khs2kr3mqkbh7dz4kd6gkdk2r67wjkvrxnmp533aqh90n"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-mwc-randam" ,ghc-mwc-random)
+              ("ghc-primitive" ,ghc-primitive)
+              ("ghc-text" ,ghc-text)
+              ("ghc-vector" ,ghc-vector)
+              ("ghc-unordered-containers" ,ghc-unordered-containers)
+              ("ghc-hashable" ,ghc-hashable)
+              ("ghc-contravariant" ,ghc-contravariant)
+              ("ghc-profunctors" ,ghc-profunctors)
+              ("ghc-comonad" ,ghc-comonad)
+              ("ghc-vector-builder" ,ghc-vector-builder)))
+    (home-page "https://github.com/Gabriel439/Haskell-Foldl-Library")
+    (synopsis "Composable, streaming, and efficient left folds for Haskell")
+    (description "This Haskell library provides strict left folds that stream
+in constant memory, and you can combine folds using @code{Applicative} style
+to derive new folds.  Derived folds still traverse the container just once
+and are often as efficient as hand-written folds.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
