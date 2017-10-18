@@ -9620,4 +9620,32 @@ Any concepts or functions of general use to more than one cryptographic
 algorithm (ex: padding) is within scope of this package.")
     (license license:bsd-3)))
 
+(define-public ghc-crypto-api-tests
+  (package
+    (name "ghc-crypto-api-tests")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "crypto-api-tests-" version "/"
+                           "crypto-api-tests-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w3j43jdrlj28jryp18hc6q84nkl2yf4vs1hhgrsk7gb9kfyqjpl"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+              ("ghc-crypto-api" ,ghc-crypto-api)
+              ("ghc-cereal" ,ghc-cereal)
+              ("ghc-test-framework" ,ghc-test-framework)
+              ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+              ("ghc-hunit" ,ghc-hunit)
+              ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/TomMD/crypto-api-tests")
+    (synopsis "Test framework and KATs for cryptographic operations for Haskell")
+    (description "This Haskell package provides a test framework for hash and
+cipher operations using the crypto-api interface.  Known answer tests (KATs)
+for common cryptographic algorithms are included.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
