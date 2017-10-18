@@ -9491,4 +9491,27 @@ generating functions similar to those in @code{Data.List} for tuples of
 statically known size.")
     (license license:bsd-3)))
 
+(define-public ghc-contravariant-extras
+  (package
+    (name "ghc-contravariant-extras")
+    (version "0.3.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "contravariant-extras-" version "/"
+                           "contravariant-extras-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mbrgjybdx8fjdck4ldwi8955w4qnmm0ql56zix7dyn0s7s9spgk"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-tuple-th" ,ghc-tuple-th)
+              ("ghc-contravariant" ,ghc-contravariant)
+              ("ghc-base-prelude",ghc-base-prelude)))
+    (home-page "https://github.com/nikita-volkov/contravariant-extras")
+    (synopsis "Extras for the @code{ghc-contravariant} Haskell package")
+    (description "This Haskell package provides extras for the
+@code{ghc-contravariant} package.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
