@@ -9108,4 +9108,43 @@ special mathematical functions and Chebyshev polynomials.  These
 functions are often useful in statistical and numerical computing.")
     (license license:bsd-3)))
 
+(define-public ghc-mwc-random
+  (package
+    (name "ghc-mwc-random")
+    (version "0.13.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "mwc-random-" version "/"
+                           "mwc-random-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05j7yh0hh9nxic3dijmzv44kc6gzclvamdph7sq7w19wq57k6pq6"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-primitive" ,ghc-primitive)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-math-functions" ,ghc-math-functions)))
+    (arguments
+     `(#:tests? #f)) ; FIXME: Test-Suite `spec` fails.
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/bos/mwc-random")
+    (synopsis "Random number generation library for Haskell")
+    (description "This Haskell package contains code for generating
+high quality random numbers that follow either a uniform or normal
+distribution.  The generated numbers are suitable for use in
+statistical applications.
+
+The uniform PRNG uses Marsaglia's MWC256 (also known as MWC8222)
+multiply-with-carry generator, which has a period of 2^{8222} and
+fares well in tests of randomness.  It is also extremely fast,
+between 2 and 3 times faster than the Mersenne Twister.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
