@@ -9514,4 +9514,29 @@ statically known size.")
 @code{ghc-contravariant} package.")
     (license license:expat)))
 
+(define-public ghc-monadrandom
+  (package
+    (name "ghc-monadrandom")
+    (version "0.4.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "MonadRandom-" version "/"
+                           "MonadRandom-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1h1nhswrcmhy3mq6vd530p0df51fcnnf4csbwnljar7cf0mb2h6y"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-transformers-compat" ,ghc-transformers-compat)
+              ("ghc-mtl" ,ghc-mtl)
+              ("ghc-primitive" ,ghc-primitive)
+              ("ghc-fail" ,ghc-fail)
+              ("ghc-random" ,ghc-random)))
+    (home-page "https://github.com/byorgey/MonadRandom")
+    (synopsis "Random-number generation monad for Haskell")
+    (description "This Haskell package provides support for computations
+which consume random values.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
