@@ -391,11 +391,9 @@ complexity of working with shared libraries across platforms.")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-ltdl-install") ;really install it
-       #:phases (alist-cons-before
-                 'configure 'change-directory
-                 (lambda _
-                   (chdir "libltdl"))
-                 %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'change-directory
+                    (lambda _ (chdir "libltdl") #t)))))
 
     (synopsis "System-independent dlopen wrapper of GNU libtool")
     (description (package-description libtool))
