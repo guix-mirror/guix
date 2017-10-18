@@ -5944,11 +5944,11 @@ of a JSON value into a @code{Data.Aeson.Value}.")
     (home-page "https://github.com/snoyberg/conduit")
     (synopsis "Streaming data library ")
     (description
-     "conduit is a solution to the streaming data problem, allowing for
-production, transformation, and consumption of streams of data in constant
-memory.  It is an alternative to lazy I/O which guarantees deterministic
-resource handling, and fits in the same general solution space as
-enumerator/iteratee and pipes." )
+     "The conduit package is a solution to the streaming data problem,
+allowing for production, transformation, and consumption of streams of data
+in constant memory.  It is an alternative to lazy I/O which guarantees
+deterministic resource handling, and fits in the same general solution
+space as enumerator/iteratee and pipes.")
     (license license:expat)))
 
 (define-public ghc-logging-facade
