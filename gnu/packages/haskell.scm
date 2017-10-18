@@ -9200,4 +9200,38 @@ beginning with @code{test} (for a test framework) or all functions beginning
 with @code{wc} (for a web service).")
     (license license:bsd-3)))
 
+(define-public ghc-test-framework-th
+  (package
+    (name "ghc-test-framework-th")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "test-framework-th-" version "/"
+                           "test-framework-th-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12lw7yj02jb9s0i7rb98jjam43j2h0gzmnbj9zi933fx7sg0sy4b"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-language-haskell-extract" ,ghc-language-haskell-extract)
+       ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-regex-posix" ,ghc-regex-posix)))
+    (home-page "https://github.com/finnsson/test-generator")
+    (synopsis "Auto generate the HUnit- and Quickcheck-bulk-code
+using Template Haskell")
+    (description "This library contains two functions:
+@code{defaultMainGenerator} and @code{testGroupGenerator}.
+
+@code{defaultMainGenerator} will extract all functions beginning with
+@code{case_}, @code{prop_}, or @code{test_} in the module and put them in a
+@code{testGroup}.
+
+@code{testGroupGenerator} is like @code{defaultMainGenerator} but without
+@code{defaultMain}.  It is useful if you need a function for the testgroup
+\(e.g. if you want to be able to call the testgroup from another module).")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
