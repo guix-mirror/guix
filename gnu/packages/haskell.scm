@@ -9172,4 +9172,32 @@ between 2 and 3 times faster than the Mersenne Twister.")
     (description "This Haskell library algorithms for vector arrays.")
     (license license:bsd-3)))
 
+(define-public ghc-language-haskell-extract
+  (package
+    (name "ghc-language-haskell-extract")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "language-haskell-extract-" version "/"
+                           "language-haskell-extract-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nxcs7g8a1sp91bzpy4cj6s31k5pvc3gvig04cbrggv5cvjidnhl"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-regex-posix" ,ghc-regex-posix)))
+    (home-page "https://github.com/finnsson/template-helper")
+    (synopsis "Haskell module to automatically extract functions from
+the local code")
+    (description "This package contains helper functions on top of
+Template Haskell.
+
+For example, @code{functionExtractor} extracts all functions after a
+regexp-pattern, which can be useful if you wish to extract all functions
+beginning with @code{test} (for a test framework) or all functions beginning
+with @code{wc} (for a web service).")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
