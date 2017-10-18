@@ -9469,4 +9469,26 @@ Therefore it's recommended for the users of @code{ghc-base-prelude} to specify
 the bounds of \"base\" as well.")
     (license license:expat)))
 
+(define-public ghc-tuple-th
+  (package
+    (name "ghc-tuple-th")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "tuple-th-" version "/"
+                           "tuple-th-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mrl4vvxmby7sf1paf7hklzidnr6wq55822i73smqyz0xpf3gsjn"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/DanielSchuessler/tuple-th")
+    (synopsis "Generate utility functions for tuples of statically known size
+for Haskell")
+    (description "This Haskell package contains Template Haskell functions for
+generating functions similar to those in @code{Data.List} for tuples of
+statically known size.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
