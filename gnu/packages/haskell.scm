@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -9003,6 +9004,32 @@ a WAI handler, via the native Haskell TLS implementation.")
     (description "This library uses attoparsec for parsing the actual
 contents of the HTTP connection.  It also provides higher-level functions
 which allow you to avoid direct usage of conduits.")
+    (license license:bsd-3)))
+
+(define-public ghc-errors
+  (package
+    (name "ghc-errors")
+    (version "2.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "errors-" version "/"
+                           "errors-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13sflhglcm5skwrxb48fw96skdcx7ydiy4zg22200733pxhjncpn"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-text" ,ghc-text)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-unexceptionalio" ,ghc-unexceptionalio)
+       ("ghc-safe" ,ghc-safe)))
+    (home-page "https://github.com/gabriel439/haskell-errors-library")
+    (synopsis "Error handling library for Haskell")
+    (description "This library encourages an error-handling style that
+directly uses the type system, rather than out-of-band exceptions.")
     (license license:bsd-3)))
 
 ;;; haskell.scm ends here
