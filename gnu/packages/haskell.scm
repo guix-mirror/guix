@@ -9808,4 +9808,36 @@ IPv4, IPv6 and MAC addresses.")
 functions.")
     (license license:bsd-3)))
 
+(define-public ghc-uuid
+  (package
+    (name "ghc-uuid")
+    (version "1.3.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "uuid-" version "/"
+                           "uuid-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09xhk42yhxvqmka0iqrv3338asncz8cap3j0ic0ps896f2581b6z"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-cryptohash-sha1" ,ghc-cryptohash-sha1)
+              ("ghc-cryptohash-md5" ,ghc-cryptohash-md5)
+              ("ghc-entropy" ,ghc-entropy)
+              ("ghc-network-info" ,ghc-network-info)
+              ("ghc-random" ,ghc-random)
+              ("ghc-text" ,ghc-text)
+              ("ghc-uuid-types" ,ghc-uuid-types)))
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)
+                     ("ghc-quickcheck" ,ghc-quickcheck)
+                     ("ghc-tasty" ,ghc-tasty)
+                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "https://github.com/hvr/uuid")
+    (synopsis "Haskell library to create, compare, parse, and print UUIDs")
+    (description "This Haskell library provides utilities creating, comparing,
+parsing and printing @dfn{Universally Unique Identifiers} or UUIDs.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
