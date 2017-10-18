@@ -2195,6 +2195,31 @@ tables.")
 mode-line.")
     (license license:gpl2+)))
 
+(define-public emacs-robe
+  (package
+    (name "emacs-robe")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dgutov/robe/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vp45y99fwj88z04ah4yppz4z568qcib646az6m9az5ar0f203br"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-inf-ruby" ,emacs-inf-ruby)))
+    (home-page "https://github.com/dgutov/robe")
+    (synopsis "Ruby code assistance tool for Emacs")
+    (description
+     "Robe can provide information on loaded classes and modules in Ruby code,
+as well as where methods are defined.  This allows the user to jump to method
+definitions, modules and classes, display method documentation and provide
+method and constant name completion.")
+    (license license:gpl3+)))
+
 (define-public emacs-rspec
   (package
     (name "emacs-rspec")
