@@ -9281,4 +9281,41 @@ module for more details.")
 and other added capabilities layered on top of the @code{Par} monad.")
     (license license:bsd-3)))
 
+(define-public ghc-abstract-deque
+  (package
+    (name "ghc-abstract-deque")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "abstract-deque-" version "/"
+                           "abstract-deque-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18jwswjxwzc9bjiy4ds6hw2a74ki797jmfcifxd2ga4kh7ri1ah9"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-random" ,ghc-random)))
+    (home-page "https://github.com/rrnewton/haskell-lockfree/wiki")
+    (synopsis "Abstract, parameterized interface to mutable Deques for Haskell")
+    (description "This Haskell package provides an abstract interface to
+highly-parameterizable queues/deques.
+
+Background: There exists a feature space for queues that extends between:
+
+@itemize
+@item Simple, single-ended, non-concurrent, bounded queues
+
+@item Double-ended, threadsafe, growable queues with important points
+inbetween (such as the queues used for work-stealing).
+@end itemize
+
+This package includes an interface for Deques that allows the programmer
+to use a single API for all of the above, while using the type-system to
+select an efficient implementation given the requirements (using type families).
+
+This package also includes a simple reference implementation based on
+@code{IORef} and @code{Data.Sequence}.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
