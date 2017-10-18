@@ -9539,4 +9539,33 @@ statically known size.")
 which consume random values.")
     (license license:bsd-3)))
 
+(define-public ghc-either
+  (package
+    (name "ghc-either")
+    (version "4.4.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "either-" version "/"
+                           "either-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lrlwqqnm6ibfcydlv5qvvssw7bm0c6yypy0rayjzv1znq7wp1xh"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-bifunctors" ,ghc-bifunctors)
+              ("ghc-exceptions" ,ghc-exceptions)
+              ("ghc-free" ,ghc-free)
+              ("ghc-monad-control" ,ghc-monad-control)
+              ("ghc-manodrandom" ,ghc-monadrandom)
+              ("ghc-mtl" ,ghc-mtl)
+              ("ghc-mmorph" ,ghc-mmorph)
+              ("ghc-profunctors" ,ghc-profunctors)
+              ("ghc-semigroups" ,ghc-semigroups)
+              ("ghc-semigroupoids" ,ghc-semigroupoids)
+              ("ghc-transformers-base" ,ghc-transformers-base)))
+    (home-page "https://github.com/ekmett/either")
+    (synopsis "Provides an either monad transformer for Haskell")
+    (description "This Haskell package provides an either monad transformer.")
+    (license license:bsd-3)))
 ;;; haskell.scm ends here
