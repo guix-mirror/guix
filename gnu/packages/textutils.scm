@@ -53,14 +53,14 @@
 (define-public dos2unix
   (package
     (name "dos2unix")
-    (version "7.3.4")
+    (version "7.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://waterlan.home.xs4all.nl/" name "/"
                            name "-" version ".tar.gz"))
        (sha256
-        (base32 "1i9hbxn0br7xa18z4bjpkdv7mrzmbfxhm44mzpd07yd2qnxsgkcc"))))
+        (base32 "12h4c61g376bhq03y5g2xszkrkrj5hwd928rly3xsp6rvfmnbixs"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
