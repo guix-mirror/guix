@@ -2139,7 +2139,7 @@ tool for remote execution and deployment.")
 (define-public neofetch
   (package
     (name "neofetch")
-    (version "3.2.0")
+    (version "3.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/dylanaraps/neofetch/"
@@ -2147,10 +2147,10 @@ tool for remote execution and deployment.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07a32rzmch51znxspzyc7zyaldmr383v70b49wmnjdjs2qfdbv3a"))))
+                "15p69q0jchfms1fpb4i7kq8b28w2xpgh2zmynln618qxv1myf228"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; there are no tests
+     `(#:tests? #f                      ; there are no tests
        #:make-flags
        (list (string-append "PREFIX=" %output))
        #:phases
@@ -2167,7 +2167,15 @@ tool for remote execution and deployment.")
                  (("\"/usr/share/neofetch")
                   (string-append "\"" out "/share/neofetch"))))
              #t))
-         (delete 'configure))))
+         (delete 'configure)            ; no configure script
+         (replace 'install
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
+                    (etc (string-append doc "/examples/etc")))
+               (zero? (apply system* `("make" ,@make-flags
+                                       ,(string-append "SYSCONFDIR=" etc)
+                                       "install")))))))))
     (home-page "https://github.com/dylanaraps/neofetch")
     (synopsis "System info script")
     (description "Neofetch is a CLI system information tool written in Bash.
