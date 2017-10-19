@@ -1204,13 +1204,24 @@ This yields an 'etc' directory containing these two files."
                                          (ungexp target))))))
                           files))))))
 
-(define (directory-union name things)
+(define* (directory-union name things
+                          #:key (copy? #f))
   "Return a directory that is the union of THINGS, where THINGS is a list of
 file-like objects denoting directories.  For example:
 
   (directory-union \"guile+emacs\" (list guile emacs))
 
-yields a directory that is the union of the 'guile' and 'emacs' packages."
+yields a directory that is the union of the 'guile' and 'emacs' packages.
+
+When COPY? is true, copy files instead of creating symlinks."
+  (define symlink
+    (if copy?
+        (gexp (lambda (old new)
+                (if (file-is-directory? old)
+                    (symlink old new)
+                    (copy-file old new))))
+        (gexp symlink)))
+
   (match things
     ((one)
      ;; Only one thing; return it.
@@ -1221,7 +1232,9 @@ yields a directory that is the union of the 'guile' and 'emacs' packages."
                       (gexp (begin
                               (use-modules (guix build union))
                               (union-build (ungexp output)
-                                           '(ungexp things)))))))))
+                                           '(ungexp things)
+
+                                           #:symlink (ungexp symlink)))))))))
 
 
 ;;;
