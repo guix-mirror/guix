@@ -280,7 +280,10 @@ files) into @file{.grf} and/or @file{.nfo} files.")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "sge-pygame" version))
+       (uri (string-append "mirror://savannah/stellarengine/"
+                           (version-major+minor version) "/sge-pygame-"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "1rl3xjzh78sl0sq3xl8rl7cgp9v9v3h7s2pfwn7nj1vrmffzkcpd"))))
