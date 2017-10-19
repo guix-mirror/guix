@@ -261,9 +261,9 @@ the others like yourself, that want what you have.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'install)
-         (replace 'build
+         (delete 'configure)            ; no configure script
+         (delete 'build)                ; nothing to be built
+         (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (zero? (system* "sh" "install.sh"
                              (assoc-ref outputs "out")))))
