@@ -1205,7 +1205,7 @@ This yields an 'etc' directory containing these two files."
                           files))))))
 
 (define* (directory-union name things
-                          #:key (copy? #f))
+                          #:key (copy? #f) (quiet? #f))
   "Return a directory that is the union of THINGS, where THINGS is a list of
 file-like objects denoting directories.  For example:
 
@@ -1213,7 +1213,8 @@ file-like objects denoting directories.  For example:
 
 yields a directory that is the union of the 'guile' and 'emacs' packages.
 
-When COPY? is true, copy files instead of creating symlinks."
+When HARD-LINKS? is true, create hard links instead of symlinks.  When QUIET?
+is true, the derivation will not print anything."
   (define symlink
     (if copy?
         (gexp (lambda (old new)
@@ -1221,6 +1222,11 @@ When COPY? is true, copy files instead of creating symlinks."
                     (symlink old new)
                     (copy-file old new))))
         (gexp symlink)))
+
+  (define log-port
+    (if quiet?
+        (gexp (%make-void-port "w"))
+        (gexp (current-error-port))))
 
   (match things
     ((one)
@@ -1234,6 +1240,7 @@ When COPY? is true, copy files instead of creating symlinks."
                               (union-build (ungexp output)
                                            '(ungexp things)
 
+                                           #:log-port (ungexp log-port)
                                            #:symlink (ungexp symlink)))))))))
 
 
