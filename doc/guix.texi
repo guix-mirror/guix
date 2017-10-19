@@ -18605,7 +18605,8 @@ The boot script is what the initial RAM disk runs when booting.
 @end defvr
 
 @defvr {Scheme Variable} etc-service-type
-The type of the @file{/etc} service.  This service can be extended by
+The type of the @file{/etc} service.  This service is used to create
+files under @file{/etc} and can be extended by
 passing it name/file tuples such as:
 
 @example
