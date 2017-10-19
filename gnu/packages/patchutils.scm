@@ -171,7 +171,7 @@ refreshed, and more.")
     (inputs
      `(("perl" ,perl)
        ("xmlto" ,xmlto)))
-    (home-page "http://www.colordiff.org")
+    (home-page "https://www.colordiff.org")
     (synopsis "Display diff output with colors")
     (description
      "Colordiff is Perl script wrapper on top of diff command which provides
