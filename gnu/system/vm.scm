@@ -49,7 +49,7 @@
   #:use-module (gnu packages admin)
 
   #:use-module (gnu bootloader)
-  #:use-module ((gnu bootloader grub) #:select (grub-mkrescue-bootloader))
+  #:use-module (gnu bootloader grub)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu system linux-initrd)
@@ -565,6 +565,14 @@ environment with the store shared with the host.  MAPPINGS is a list of
                   user-file-systems)))
 
   (operating-system (inherit os)
+
+    ;; XXX: Until we run QEMU with UEFI support (with the OVMF firmware),
+    ;; force the traditional i386/BIOS method.
+    ;; See <https://bugs.gnu.org/28768>.
+    (bootloader (bootloader-configuration
+                  (bootloader grub-bootloader)
+                  (target "/dev/vda")))
+
     (initrd (lambda (file-systems . rest)
               (apply base-initrd file-systems
                      #:volatile-root? #t
