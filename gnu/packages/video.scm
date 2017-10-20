@@ -69,6 +69,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -2512,3 +2513,36 @@ tools for styling them, including a built-in real-time video preview.")
     (synopsis "GStreamer Transcoding API")
     (description "GStreamer Transcoding API")
     (license license:lgpl2.1)))
+
+(define-public gavl
+  (package
+    (name "gavl")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/gmerlin/"
+                           name "/" version "/"
+                           name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kikkn971a14zzm7svi7190ldc14fjai0xyhpbcmp48s750sraji"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("doxygen" ,doxygen)))
+    (home-page "http://gmerlin.sourceforge.net")
+    (synopsis "Low level library for multimedia API building")
+    (description
+     "Gavl is short for Gmerlin Audio Video Library.  It is a low level
+library, upon which multimedia APIs can be built.  Gavl handles all the
+details of audio and video formats like colorspaces, sample rates,
+multichannel configurations, etc.  It provides standardized definitions for
+those formats as well as container structures for carrying audio samples or
+video images inside an application.
+
+In addition, it handles the sometimes ugly task of converting between all
+these formats and provides some elementary operations (copying, scaling,
+alpha blending etc).")
+    (license license:gpl3)))
