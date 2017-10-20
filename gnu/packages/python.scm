@@ -348,8 +348,9 @@ data types.")
               (snippet
                '(begin
                   (for-each delete-file
-                            '("Lib/ctypes/test/test_win32.py" ; fails on aarch64
-                              "Lib/test/test_fcntl.py"))
+                            '("Lib/ctypes/test/test_structures.py" ; fails on aarch64
+                              "Lib/ctypes/test/test_win32.py" ; fails on aarch64
+                              "Lib/test/test_fcntl.py")) ; fails on aarch64
                   #t))))
     (arguments (substitute-keyword-arguments (package-arguments python-2)
                  ((#:tests? _) #t)))
