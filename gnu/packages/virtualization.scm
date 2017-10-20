@@ -322,6 +322,7 @@ manage system or application containers.")
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
+              (patches (search-patches "libvirt-CVE-2017-1000256.patch"))
               (sha256
                (base32
                 "1fk75cdzg59y9hnfdpdwv83fsc1yffy3lac4ch19zygfkqhcnysf"))))
