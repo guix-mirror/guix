@@ -85,6 +85,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
@@ -2415,3 +2416,59 @@ programmers to access a standard API to open and decompress media files.")
     ;; sources are distributed under a different license that the binary.
     ;; see https://github.com/FFMS/ffms2/blob/master/COPYING
     (license license:gpl2+))); inherits from ffmpeg
+
+(define-public aegisub
+  (package
+    (name "aegisub")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "http://ftp.aegisub.org/pub/archives/releases/source/"
+                     name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "11b83qazc8h0iidyj1rprnnjdivj1lpphvpa08y53n42bfa36pn5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-update-checker"
+             "--without-portaudio"
+             "--without-openal"
+             "--without-oss")
+       ;; tests require busted, a lua package we don't have yet
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-ldflags
+           (lambda _
+             (setenv "LDFLAGS" "-pthread"))))))
+    (inputs
+     `(("boost" ,boost)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("ffms2" ,ffms2)
+       ("fftw" ,fftw)
+       ("hunspell" ,hunspell)
+       ("mesa" ,mesa)
+       ("libass" ,libass)
+       ("alsa-lib" ,alsa-lib)
+       ("pulseaudio" ,pulseaudio)
+       ("libx11" ,libx11)
+       ("freetype" ,freetype)
+       ("wxwidgets-gtk2" ,wxwidgets-gtk2)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://www.aegisub.org/")
+    (synopsis "Subtitle engine")
+    (description
+      "Aegisub is a tool for creating and modifying subtitles.  Aegisub makes
+it quick and easy to time subtitles to audio, and features many powerful
+tools for styling them, including a built-in real-time video preview.")
+    (license (list license:bsd-3 ; the package is licensed under the bsd-3, except
+                   license:mpl1.1 ; for vendor/universalchardet under the mpl1.1
+                   license:expat)))) ; and src/gl that is under a license similar
+   ; the the Expat license, with a rewording (Software -> Materials). (called MIT
+   ; by upstream). See https://github.com/Aegisub/Aegisub/blob/master/LICENCE
+   ; src/MatroskaParser.(c|h) is under bsd-3 with permission from the author
+
