@@ -50,7 +50,7 @@ available via the first URI, the second URI points to the archived version."
 (define (bioconductor-uri name version)
   "Return a URI string for the R package archive on Bioconductor for the
 release corresponding to NAME and VERSION."
-  (string-append "http://bioconductor.org/packages/release/bioc/src/contrib/"
+  (string-append "https://bioconductor.org/packages/release/bioc/src/contrib/"
                  name "_" version ".tar.gz"))
 
 (define %r-build-system-modules

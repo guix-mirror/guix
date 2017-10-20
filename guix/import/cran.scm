@@ -126,7 +126,7 @@ package definition."
      `((,type (,'quasiquote ,(format-inputs package-inputs)))))))
 
 (define %cran-url "http://cran.r-project.org/web/packages/")
-(define %bioconductor-url "http://bioconductor.org/packages/")
+(define %bioconductor-url "https://bioconductor.org/packages/")
 
 ;; The latest Bioconductor release is 3.5.  Bioconductor packages should be
 ;; updated together.
@@ -446,7 +446,7 @@ dependencies."
 (define (bioconductor-package? package)
   "Return true if PACKAGE is an R package from Bioconductor."
   (let ((predicate (lambda (uri)
-                     (and (string-prefix? "http://bioconductor.org" uri)
+                     (and (string-prefix? "https://bioconductor.org" uri)
                           ;; Data packages are neither listed in SVN nor on
                           ;; the Github mirror, so we have to exclude them
                           ;; from the set of bioconductor packages that can be
@@ -465,7 +465,7 @@ dependencies."
 (define (bioconductor-data-package? package)
   "Return true if PACKAGE is an R data package from Bioconductor."
   (let ((predicate (lambda (uri)
-                     (and (string-prefix? "http://bioconductor.org" uri)
+                     (and (string-prefix? "https://bioconductor.org" uri)
                           (string-contains uri "/data/annotation/")))))
     (and (string-prefix? "r-" (package-name package))
          (match (and=> (package-source package) origin-uri)
@@ -478,7 +478,7 @@ dependencies."
 (define (bioconductor-experiment-package? package)
   "Return true if PACKAGE is an R experiment package from Bioconductor."
   (let ((predicate (lambda (uri)
-                     (and (string-prefix? "http://bioconductor.org" uri)
+                     (and (string-prefix? "https://bioconductor.org" uri)
                           (string-contains uri "/data/experiment/")))))
     (and (string-prefix? "r-" (package-name package))
          (match (and=> (package-source package) origin-uri)

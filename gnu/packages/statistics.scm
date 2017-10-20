@@ -2718,7 +2718,7 @@ engine (version 3.8.8.2) is included.")
     (version "1.95-0.1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/extra/src/"
                                   "contrib/RCurl_" version ".tar.gz"))
               (sha256
