@@ -2385,3 +2385,33 @@ tables")
 generation of MPEG TS and DVB PSI tables according to standards ISO/IEC 13818s
 and ITU-T H.222.0.")
     (license license:lgpl2.1)))
+
+(define-public ffms2
+  (package
+    (name "ffms2")
+    (version "2.23")
+    (home-page "https://github.com/FFMS/ffms2/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vbkab8vrplxz5xgag8ggzkwp4f7nf285pd0l2a7zy66n6i2m6xh"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "--enable-avresample")))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("ffmpeg" ,ffmpeg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Cross-platform wrapper around ffmpeg/libav")
+    (description
+      "FFMpegSource is a wrapper library around ffmpeg/libav that allows
+programmers to access a standard API to open and decompress media files.")
+    ;; sources are distributed under a different license that the binary.
+    ;; see https://github.com/FFMS/ffms2/blob/master/COPYING
+    (license license:gpl2+))); inherits from ffmpeg
