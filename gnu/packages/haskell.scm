@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
@@ -8601,7 +8601,7 @@ JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
 (define-public shellcheck
   (package
     (name "shellcheck")
-    (version "0.4.5")
+    (version "0.4.6")
     (source
      (origin
        (method url-fetch)
@@ -8609,7 +8609,7 @@ JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
                            "v" version ".tar.gz"))
        (sha256
         (base32
-         "14r84fcn28rin339avlvca5g0kz832f01x8dpmwb5ql8mbc4rlxr"))
+         "1qkd69lc34n3l23ss9rq1azvx49bfq4hi4bmaj76rgxybscxhg0w"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system haskell-build-system)
     (inputs
