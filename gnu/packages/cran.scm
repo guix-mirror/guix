@@ -1217,3 +1217,27 @@ initial data set and then applied to other data sets.  The resulting design
 matrices can then be used as inputs into statistical or machine learning
 models.")
     (license license:gpl2)))
+
+(define-public r-pdist
+  (package
+    (name "r-pdist")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pdist" version))
+       (sha256
+        (base32
+         "18nd3mgad11f2zmwcp0w3sxlch4a9y6wp8dfdyzvjn7y4b4bq0dd"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/jeffwong/pdist")
+    (synopsis "Partitioned distance function")
+    (description
+     "Pdist computes the euclidean distance between rows of a matrix X and
+rows of another matrix Y.  Previously, this could be done by binding the two
+matrices together and calling @code{dist}, but this creates unnecessary
+computation by computing the distances between a row of X and another row of
+X, and likewise for Y.  Pdist strictly computes distances across the two
+matrices, not within the same matrix, making computations significantly faster
+for certain use cases.")
+    (license license:gpl3+)))
