@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,19 @@
 yet extensible format.  Google uses Protocol Buffers for almost all of its
 internal RPC protocols and file formats.")
     (license bsd-3)))
+
+;; XXX Remove this old version when no other packages depend on it.
+(define-public protobuf-2
+  (package (inherit protobuf)
+    (version "2.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/protobuf/releases/"
+                                  "download/v" version "/protobuf-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "040rcs9fpv4bslhiy43v7dcrzakz4vwwpyqg4jp8bn24sl95ci7f"))))))
 
 (define-public protobuf-c
   (package
