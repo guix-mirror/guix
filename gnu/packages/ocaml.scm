@@ -3657,14 +3657,14 @@ assistant.")
 (define-public coq-mathcomp
   (package
     (name "coq-mathcomp")
-    (version "1.6.1")
+    (version "1.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/math-comp/math-comp/archive/mathcomp-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1j9ylggjzrxz1i2hdl2yhsvmvy5z6l4rprwx7604401080p5sgjw"))))
+                "0lg5ncr7p4y8qqq6pfw6brqc6a9xzlfa0drprwfdn0rnyaq5nca6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
