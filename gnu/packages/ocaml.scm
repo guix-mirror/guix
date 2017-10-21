@@ -3746,6 +3746,38 @@ conservative extension of Coq's standard library and provides correspondence
 theorems between the two libraries.")
     (license license:lgpl3+)))
 
+(define-public coq-bignums
+  (package
+    (name "coq-bignums")
+    (version "8.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/coq/bignums/archive/V"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03iw9jiwq9jx45gsvp315y3lxr8m9ksppmcjvxs5c23qnky6zqjx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("coq" ,coq)))
+    (inputs
+     `(("camlp5" ,camlp5)))
+    (arguments
+     `(#:tests? #f; No test target
+       #:make-flags
+       (list (string-append "COQLIBINSTALL=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/coq/bignums")
+    (synopsis "Coq library for arbitrary large numbers")
+    (description "Bignums is a coq library of arbitrary large numbers.  It
+provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
+    (license license:lgpl2.1+)))
+
 (define-public coq-interval
   (package
     (name "coq-interval")
