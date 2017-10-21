@@ -43,6 +43,7 @@
   #:use-module (gnu packages video)               ;ffmpeg
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake))
@@ -348,14 +349,15 @@ use with CD-recording software).")
 (define-public lame
   (package
     (name "lame")
-    (version "3.99.5")
+    (version "3.100")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/lame/lame/3.99/lame-"
+             (uri (string-append "mirror://sourceforge/lame/lame/"
+                                 (version-major+minor version) "/lame-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1zr3kadv35ii6liia0bpfgxpag27xcivp571ybckpbz4b10nnd14"))))
+               "07nsn5sy3a8xbmw1bidxnsj5fj6kg9ai04icmqw40ybkp353dznx"))))
     (build-system gnu-build-system)
     ;; XXX FIXME: Use gcc-4.8 on i686 to work around
     ;; <http://bugs.gnu.org/20856>.
