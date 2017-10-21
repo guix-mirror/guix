@@ -3781,14 +3781,14 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
 (define-public coq-interval
   (package
     (name "coq-interval")
-    (version "3.2.0")
+    (version "3.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gforge.inria.fr/frs/download.php/"
                                   "file/36538/interval-" version ".tar.gz"))
               (sha256
                (base32
-                "16ir7mizl18kwa1ls8fwjih6r87894bvc1r6lh85cd43la7nriq3"))))
+                "08fdcf3hbwqphglvwprvqzgkg0qbimpyhnqsgv3gac4y1ap0f903"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -3796,6 +3796,7 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
        ("coq" ,coq)))
     (propagated-inputs
      `(("flocq" ,coq-flocq)
+       ("bignums" ,coq-bignums)
        ("coquelicot" ,coq-coquelicot)
        ("mathcomp" ,coq-mathcomp)))
     (arguments
