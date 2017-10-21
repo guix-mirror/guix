@@ -42,6 +42,8 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (srfi srfi-1))
 
@@ -867,3 +869,66 @@ the Raspberry Pi chip.")
       (synopsis "GCC for VC4")
       (description "This package provides @code{gcc} for VideoCore IV,
 the Raspberry Pi chip."))))
+
+(define-public python2-libmpsse
+  (package
+    (name "python2-libmpsse")
+    (version "1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://storage.googleapis.com/"
+                            "google-code-archive-downloads/v2/"
+                            "code.google.com/libmpsse/"
+                            "libmpsse-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0jq7nhqq3na8675jnpfcar3pd3dp3adhhc4lw900swkla01a1wh8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libftdi" ,libftdi)
+       ("python" ,python-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("swig" ,swig)
+       ("which" ,base:which)))
+    (arguments
+     `(#:tests? #f ; No tests exist.
+       #:make-flags
+       (list (string-append "CFLAGS=-Wall -fPIC -fno-strict-aliasing -g -O2 "
+                            "$(shell pkg-config --cflags libftdi1)"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environment-up
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (chdir "src")
+             (setenv "PYDEV" (string-append (assoc-ref inputs "python")
+                             "/include/python2.7"))
+             #t))
+         (add-after 'unpack 'patch-global-variable
+           (lambda _
+             ;; fast_rw_buf was defined in a header file which was making
+             ;; the build not reproducible.
+             (substitute* "src/fast.c"
+               (("^int fast_build_block_buffer") "
+
+unsigned char fast_rw_buf[SPI_RW_SIZE + CMD_SIZE];
+int fast_build_block_buffer"))
+             (substitute* "src/mpsse.h"
+               (("unsigned char fast_rw_buf.*") "
+"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs make-flags #:allow-other-keys #:rest args)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-python (string-append out
+                                               "/lib/python2.7/site-packages"))
+                    (install (assoc-ref %standard-phases 'install)))
+               (install #:make-flags (cons (string-append "PYLIB=" out-python)
+                                           make-flags))))))))
+    (home-page "https://code.google.com/archive/p/libmpsse/")
+    (synopsis "Python library for MPSSE SPI I2C JTAG adapter by FTDI")
+    (description "This package provides a library in order to support the
+MPSSE (Multi-Protocol Synchronous Serial Engine) adapter by FTDI that can do
+SPI, I2C, JTAG.")
+    (license license:gpl2+)))
