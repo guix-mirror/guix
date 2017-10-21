@@ -2648,6 +2648,12 @@ Transport Tycoon Deluxe.")
      `(#:tests? #f ;; no tests available
        #:phases
         (modify-phases %standard-phases
+          (add-after 'unpack 'fix-usr-share-paths
+            (lambda* (#:key make-flags outputs #:allow-other-keys)
+              ;; Fix some references to /usr/share.
+              (substitute* "src/openrct2/platform/linux.c"
+                (("/usr/share")
+                (string-append (assoc-ref %outputs "out") "/share")))))
           (add-after 'build 'fix-cmake-install-file
             (lambda _
               ;; The build system tries to download a file and compare hashes.
