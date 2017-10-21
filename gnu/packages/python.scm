@@ -1183,6 +1183,35 @@ add the log levels NOTICE, SPAM, SUCCESS and VERBOSE.")
 (define-public python2-verboselogs
   (package-with-python2 python-verboselogs))
 
+(define-public python-coloredlogs
+  (package
+    (name "python-coloredlogs")
+    (version "7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "coloredlogs" version))
+       (sha256
+        (base32
+         "1blcann6dyg5dhps9pg12rn0q0rjrlajpmmil0gy0j4cbvnl2il9"))))
+    (build-system python-build-system)
+    (arguments
+     `(;Tests require some updated modules
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-capturer" ,python-capturer)))
+    (home-page "https://coloredlogs.readthedocs.io")
+    (synopsis "Colored stream handler for Python's logging module")
+    (description
+     "The @code{coloredlogs} package enables colored terminal output for
+Python's logging module.  The @code{ColoredFormatter} class inherits from
+@code{logging.Formatter} and uses ANSI escape sequences to render your logging
+messages in color.")
+    (license license:expat)))
+
+(define-public python2-coloredlogs
+  (package-with-python2 python-coloredlogs))
+
 (define-public python-eventlet
   (package
     (name "python-eventlet")
