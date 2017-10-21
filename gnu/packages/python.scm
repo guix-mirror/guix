@@ -1129,6 +1129,34 @@ helpers.")
 (define-public python2-humanfriendly
   (package-with-python2 python-humanfriendly))
 
+(define-public python-capturer
+  (package
+    (name "python-capturer")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "capturer" version))
+       (sha256
+        (base32
+         "05d6ji4j8ipiq0br7bwam38qc6hd9l1djmfxlzrxx19ziyjl4089"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-humanfriendly" ,python-humanfriendly)))
+    (home-page "https://capturer.readthedocs.io")
+    (synopsis "Capture stdout and stderr streams of the current process")
+    (description
+     "The capturer package makes it easy to capture the stdout and stderr
+streams of the current process and subprocesses.  Output can be relayed
+to the terminal in real time but is also available to the Python program
+for additional processing.")
+    (license license:expat)))
+
+(define-public python2-capturer
+  (package-with-python2 python-capturer))
+
 (define-public python-eventlet
   (package
     (name "python-eventlet")
