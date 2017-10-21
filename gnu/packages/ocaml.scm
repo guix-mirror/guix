@@ -401,7 +401,12 @@ syntax of OCaml.")
                   (lambda _
                     (zero? (system* "make" "-j" (number->string
                                                  (parallel-job-count))
-                                    "world.opt")))))))
+                                    "world.opt"))))
+         ;; Required for findlib to find camlp5's libraries
+         (add-after 'install 'install-meta
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "etc/META" (string-append (assoc-ref outputs "out")
+                                                     "/lib/ocaml/camlp5/")))))))
     (home-page "http://camlp5.gforge.inria.fr/")
     (synopsis "Pre-processor Pretty Printer for OCaml")
     (description
