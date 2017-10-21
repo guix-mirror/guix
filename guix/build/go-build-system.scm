@@ -179,6 +179,9 @@ respectively."
     (zero? (system* "go" "install"
                     "-v" ; print the name of packages as they are compiled
                     "-x" ; print each command as it is invoked
+                    ;; Respectively, strip the symbol table and debug
+                    ;; information, and the DWARF symbol table.
+                    "-ldflags=-s -w"
                     import-path))
     (begin
       (display (string-append "Building '" import-path "' failed.\n"
