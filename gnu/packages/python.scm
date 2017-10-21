@@ -1099,6 +1099,36 @@ etc.).  The package is structured to make adding new modules easy.")
             "python"
             (package-inputs pycrypto)))))))
 
+(define-public python-humanfriendly
+  (package
+    (name "python-humanfriendly")
+    (version "4.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "humanfriendly" version))
+       (sha256
+        (base32
+         "0pisgizjql86785jchfjv217g0lsgk114g2lja5j4y3lsc3b9szi"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; XXX: Tests depend on coloredlogs, which in turn depends on humanfriendly.
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-monotonic" ,python-monotonic)))
+    (home-page "https://humanfriendly.readthedocs.io")
+    (synopsis "Human-friendly input and output in Python")
+    (description
+     "The functions and classes in @code{humanfriendly} can be used to make
+text interfaces more user-friendly.  It includes tools to parse and format
+numbers, file sizes, and timespans, timers for long-running operations, menus
+to allow the user to choose from a list of options, and terminal interaction
+helpers.")
+    (license license:expat)))
+
+(define-public python2-humanfriendly
+  (package-with-python2 python-humanfriendly))
+
 (define-public python-eventlet
   (package
     (name "python-eventlet")
