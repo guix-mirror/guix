@@ -3560,14 +3560,14 @@ library is currently designed for Unicode Standard 3.2.")
 (define-public coq-flocq
   (package
     (name "coq-flocq")
-    (version "2.5.2")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gforge.inria.fr/frs/download.php/file"
-                                  "/36199/flocq-" version ".tar.gz"))
+                                  "/37054/flocq-" version ".tar.gz"))
               (sha256
                (base32
-                "0h5mlasirfzc0wwn2isg4kahk384n73145akkpinrxq5jsn5d22h"))))
+                "13fv150dcwnjrk00d7zj2c5x9jwmxgrq0ay440gkr730l8mvk3l3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
