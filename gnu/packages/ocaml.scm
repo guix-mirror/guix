@@ -3699,14 +3699,14 @@ part of the distribution.")
 (define-public coq-coquelicot
   (package
     (name "coq-coquelicot")
-    (version "3.0.0")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/36537/coquelicot-" version ".tar.gz"))
+                                  "file/37045/coquelicot-" version ".tar.gz"))
               (sha256
                (base32
-                "0fx99bvsbdizj00gx2im8939y4wwl05f4qhw184j90kcx5vjxxv9"))))
+                "0hsyhsy2lwqxxx2r8xgi5csmirss42lp9bkb9yy35mnya0w78c8r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
