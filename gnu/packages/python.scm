@@ -1157,6 +1157,32 @@ for additional processing.")
 (define-public python2-capturer
   (package-with-python2 python-capturer))
 
+(define-public python-verboselogs
+  (package
+    (name "python-verboselogs")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "verboselogs" version))
+       (sha256
+        (base32
+         "09z4d1jiasn7k1hs5af2ckmnrd0i1d1m04bhfjhv7z6svzfdwgg3"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-astroid" ,python-astroid)
+       ("python-pylint" ,python-pylint)))
+    (home-page "https://verboselogs.readthedocs.io")
+    (synopsis "Verbose logging level for Python's logging module")
+    (description
+     "The @code{verboselogs} package extends Python's @code{logging} module to
+add the log levels NOTICE, SPAM, SUCCESS and VERBOSE.")
+    (license license:expat)))
+
+(define-public python2-verboselogs
+  (package-with-python2 python-verboselogs))
+
 (define-public python-eventlet
   (package
     (name "python-eventlet")
