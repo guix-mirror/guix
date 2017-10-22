@@ -1916,11 +1916,11 @@ aimed at audio/musical applications.")
     (license license:gpl2+)))
 
 (define-public raul-devel
-  (let ((commit "f8bf77d3c3b77830aedafb9ebb5cdadfea7ed07a")
+  (let ((commit "4db870b2b20b0a608ec0283139056b836c5b1624")
         (revision "1"))
     (package (inherit raul)
       (name "raul")
-      (version (string-append "0.8.4-" revision "."
+      (version (string-append "0.8.9-" revision "."
                               (string-take commit 9)))
       (source (origin
                 (method git-fetch)
@@ -1930,7 +1930,7 @@ aimed at audio/musical applications.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1lby508fb0n8ks6iz959sh18fc37br39d6pbapwvbcw5nckdrxwj")))))))
+                  "04fajrass3ymr72flx5js5vxc601ccrmx8ny8scp0rw7j0igyjdr")))))))
 
 (define-public rubberband
   (package
