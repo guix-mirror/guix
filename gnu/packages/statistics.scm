@@ -5502,3 +5502,28 @@ manually \"recoding\").")
        "The goal of tgstat is to provide fast and efficient statistical
 tools.")
       (license license:gpl2))))
+
+(define-public r-tgconfig
+  (let ((changeset "1e02c7614713bd0866c46f0c679a058f8c6d627e")
+        (revision "1"))
+    (package
+      (name "r-tgconfig")
+      (version (string-append "0.0.0.9000-" revision "." (string-take changeset 7)))
+      (source
+       (origin
+         (method hg-fetch)
+         (uri (hg-reference
+               (url "https://bitbucket.org/tanaylab/tgconfig")
+               (changeset changeset)))
+         (sha256
+          (base32
+           "0xy6c7s7mn1yx191154bwbv1bl424bnvc80syqpl1vdl28ba46rj"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-yaml" ,r-yaml)))
+      (home-page "https://bitbucket.org/tanaylab/tgconfig/")
+      (synopsis "Infrastructure for managing package parameters")
+      (description
+       "The goal of tgconfig is to provide infrastructure for managing package
+parameters.")
+      (license license:gpl3))))
