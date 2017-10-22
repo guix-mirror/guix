@@ -2055,14 +2055,14 @@ the Turtle syntax.")
 (define-public suil
   (package
     (name "suil")
-    (version "0.8.4")
+    (version "0.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/suil-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1kji3lhha26qr6xm9j8ic5c40zbrrb5qnwm2qxzmsfxgmrz29wkf"))))
+               "0j489gm3fhnmwmbgw30bvd4byw1vsy4yazdlnji8jzhcz0qwb5cq"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -2070,7 +2070,8 @@ the Turtle syntax.")
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
      `(("lv2" ,lv2)
-       ("gtk+-2" ,gtk+-2)
+       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("qt" ,qtbase)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2084,7 +2085,7 @@ toolkit.  The API is designed such that hosts do not need to explicitly
 support specific toolkits – if Suil supports a particular toolkit, then UIs in
 that toolkit will work in all hosts that use Suil automatically.
 
-Suil currently supports every combination of Gtk 2, Qt 4, and X11.")
+Suil currently supports every combination of Gtk, Qt, and X11.")
     (license license:isc)))
 
 (define-public timidity++
