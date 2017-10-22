@@ -13168,18 +13168,14 @@ from Facebook.")
          (base32
           "09zhac7igh9ixdz0ay6csy35b40l1jwbf2wrbxmgxwfhy51iy06q"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-django-filter" ,python-django-filter)
-       ("python-mock" ,python-mock)
-       ("python-psycopg2" ,python-psycopg2)
-       ("python-pytest-django" ,python-pytest-django)
-       ("python-sqlalchemy-utils" ,python-sqlalchemy-utils)))
     (propagated-inputs
      `(("python-graphql-core" ,python-graphql-core)
        ("python-graphql-relay" ,python-graphql-relay)
        ("python-iso8601" ,python-iso8601)
        ("python-promise" ,python-promise)
        ("python-six" ,python-six)))
+    (arguments
+     `(#:tests? #f))                    ; no tests/ in the PyPI tarball
     (home-page "http://graphene-python.org/")
     (synopsis "GraphQL Framework for Python")
     (description
