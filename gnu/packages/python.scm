@@ -8623,10 +8623,7 @@ simulation, statistical modeling, machine learning and much more.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/c/chardet/chardet-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "chardet" version))
        (sha256
         (base32
          "1bpalpia6r5x1kknbk11p1fzph56fmmnp405ds8icksd3knr5aw4"))))
