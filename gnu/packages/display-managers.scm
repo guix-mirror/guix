@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -187,6 +188,14 @@ Qt-style API for Wayland clients.")
            (lambda _
              (substitute* "CMakeLists.txt"
                (("/usr/bin/loginctl") (which "loginctl")))
+             #t))
+         (add-before 'configure 'fix-qml-include
+           (lambda _
+             ;; Make sure QtQml is found when building the helper.
+             ;; See <https://github.com/sddm/sddm/pull/918>.
+             (substitute* "src/helper/CMakeLists.txt"
+               (("target_link_libraries\\(sddm-helper")
+                "target_link_libraries(sddm-helper Qt5::Qml"))
              #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
