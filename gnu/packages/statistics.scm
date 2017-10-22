@@ -28,6 +28,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
@@ -5467,3 +5468,37 @@ appearance, reversing, and randomly shuffling), and tools for modifying factor
 levels (including collapsing rare levels into other, \"anonymizing\", and
 manually \"recoding\").")
     (license license:gpl3)))
+
+(define-public r-tgstat
+  (let ((changeset "4f8e60c03598f49aff6f5beeab40f2b995377e9f")
+        (revision "1"))
+    (package
+      (name "r-tgstat")
+      (version (string-append "1.0.2-" revision "." (string-take changeset 7)))
+      (source
+       (origin
+         (method hg-fetch)
+         (uri (hg-reference
+               (url "https://bitbucket.org/tanaylab/tgstat")
+               (changeset changeset)))
+         (sha256
+          (base32
+           "0ilkkyximy77zbncm91kdfqbxf0qyndg16pd3q3p6a3xc9qcmxvn"))))
+      (build-system r-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-isnan
+             (lambda _
+               (substitute* "src/tgstat.h"
+                 (("#define isnan ::isnan")
+                  "#define isnan std::isnan"))
+               #t)))))
+      (propagated-inputs
+       `(("r-rcpp" ,r-rcpp)))
+      (home-page "https://bitbucket.org/tanaylab/tgstat/")
+      (synopsis "Tanay's group statistical utilities")
+      (description
+       "The goal of tgstat is to provide fast and efficient statistical
+tools.")
+      (license license:gpl2))))
