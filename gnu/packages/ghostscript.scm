@@ -131,8 +131,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (replacement ghostscript-9.22)
-    (version "9.21")
+    (version "9.22")
     (source
       (origin
         (method url-fetch)
@@ -142,9 +141,8 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "0lyhjcrkmd5fcmh8h56bs4xr9k4jasmikv5vsix1hd4ai0ad1q9b"))
+          "1fyi4yvdj39bjgs10klr31cda1fbx1ar7a7b7yz7v68gykk65y61"))
         (patches (search-patches "ghostscript-runpath.patch"
-                                 "ghostscript-CVE-2017-8291.patch"
                                  "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))
@@ -254,25 +252,6 @@ capabilities of the PostScript language.  It supports a wide variety of
 output file formats and printers.")
     (home-page "https://www.ghostscript.com/")
     (license license:agpl3+)))
-
-(define ghostscript-9.22
-  (package
-    (inherit ghostscript)
-    (version "9.22")
-    (source
-      (origin
-        (inherit (package-source ghostscript))
-        (uri (string-append "https://github.com/ArtifexSoftware/"
-                            "ghostpdl-downloads/releases/download/gs"
-                            (string-delete #\. version)
-                            "/ghostscript-" version ".tar.xz"))
-        (sha256
-         (base32
-          "1fyi4yvdj39bjgs10klr31cda1fbx1ar7a7b7yz7v68gykk65y61"))
-        (patches (search-patches "ghostscript-runpath.patch"
-                                 "ghostscript-no-header-creationdate.patch"
-                                 "ghostscript-no-header-id.patch"
-                                 "ghostscript-no-header-uuid.patch"))))))
 
 (define-public ghostscript/x
   (package/inherit ghostscript
