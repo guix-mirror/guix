@@ -7,7 +7,7 @@
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Coypright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Coypright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Coypright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Coypright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -747,7 +747,7 @@ vector formats.")
     (build-system python-build-system)
 
     ;; TODO: Add dependency on pdftk.
-    (inputs `(("python-pygame" ,python-pygame)
+    (inputs `(("python2-pygame" ,python2-pygame)
               ("python2-pillow" ,python2-pillow)
               ("sdl" ,sdl)
               ("xpdf" ,xpdf)))
