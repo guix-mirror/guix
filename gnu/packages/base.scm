@@ -508,14 +508,14 @@ store.")
 (define-public glibc/linux
   (package
    (name "glibc")
-   (version "2.25")
+   (version "2.26")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1813dzkgw6v8q8q1m4v96yfis7vjqc9pslqib6j9mrwh6fxxjyq6"))
+              "1ggnj1hzjym7sn93rbwydcqd562q73lsb7g7kd199g6j9j9hlkp5"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -526,13 +526,8 @@ store.")
             (modules '((guix build utils)))
             (patches (search-patches "glibc-ldd-x86_64.patch"
                                      "glibc-versioned-locpath.patch"
-                                     "glibc-o-largefile.patch"
-                                     "glibc-memchr-overflow-i686.patch"
-                                     "glibc-vectorized-strcspn-guards.patch"
                                      "glibc-CVE-2017-15670-15671.patch"
-                                     "glibc-CVE-2017-1000366-pt1.patch"
-                                     "glibc-CVE-2017-1000366-pt2.patch"
-                                     "glibc-CVE-2017-1000366-pt3.patch"))))
+                                     "glibc-o-largefile.patch"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -585,10 +580,10 @@ store.")
                                       "kernel-headers")
                            "/include")
 
-            ;; This is the default for most architectures as of GNU libc 2.21,
+            ;; This is the default for most architectures as of GNU libc 2.26,
             ;; but we specify it explicitly for clarity and consistency.  See
             ;; "kernel-features.h" in the GNU libc for details.
-            "--enable-kernel=2.6.32"
+            "--enable-kernel=3.2.0"
 
             ;; Use our Bash instead of /bin/sh.
             (string-append "BASH_SHELL="
@@ -815,6 +810,27 @@ GLIBC/HURD for a Hurd host"
 
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
+
+(define-public glibc-2.25
+  (package
+    (inherit glibc)
+    (version "2.25")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1813dzkgw6v8q8q1m4v96yfis7vjqc9pslqib6j9mrwh6fxxjyq6"))
+              (patches (search-patches "glibc-ldd-x86_64.patch"
+                                       "glibc-versioned-locpath.patch"
+                                       "glibc-o-largefile.patch"
+                                       "glibc-vectorized-strcspn-guards.patch"
+                                       "glibc-CVE-2015-5180.patch"
+                                       "glibc-CVE-2017-15670-15671.patch"
+                                       "glibc-CVE-2017-1000366-pt1.patch"
+                                       "glibc-CVE-2017-1000366-pt2.patch"
+                                       "glibc-CVE-2017-1000366-pt3.patch"))))))
 
 (define-public glibc-2.24
   (package
