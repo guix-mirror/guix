@@ -617,7 +617,11 @@ HostPrefix=~a
 HostData=lib/qt5
 HostBinaries=bin
 HostLibraries=lib
-" out out)))
+
+[EffectiveSourcePaths]
+HostPrefix=~a
+HostData=lib/qt5
+" out out qtbase)))
                #t)))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
