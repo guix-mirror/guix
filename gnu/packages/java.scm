@@ -2299,7 +2299,7 @@ more.")
                                   "plexus-interpolation-" version ".tar.gz"))
               (sha256
                (base32
-                "1w79ljwk42ymrgy8kqxq4l82pgdj6287gabpfnpkyzbrnclsnfrp"))))
+                "03377yzlx5q440m6sxxgv6a5qb8fl30zzcgxgc0hxk5qgl2z1jjn"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-interpolation.jar"
@@ -4429,7 +4429,7 @@ StringTemplate also powers ANTLR.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07zff5frmjd53rnqdx31h0pmswz1lv0p2lp28cspfszh25ysz6sj"))))
+                "0218v683081lg54z9hvjxinhxd4dqp870jx6n39gslm0bkyi4vd6"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name (string-append ,name "-" ,version ".jar")

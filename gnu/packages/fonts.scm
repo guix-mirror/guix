@@ -764,17 +764,15 @@ glyph designs, not just an added slant.")
 (define-public font-hack
   (package
     (name "font-hack")
-    (version "2.020")
+    (version "3.000")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
-                    "https://github.com/chrissimpkins/Hack/releases/download/v"
-                    version "/Hack-v"
-                    (string-replace-substring version "." "_")
-                    "-ttf.zip"))
+                    "https://github.com/source-foundry/Hack/releases/download/v"
+                    version "/Hack-v" version "-ttf.zip"))
               (sha256
                (base32
-                "16kkmc3psckw1b7k07ccn1gi5ymhlg9djh43nqjzg065g6p6d184"))))
+                "0h6slqg25a6cq57k6rh5hmnk8dxbprmf8shs4iyj1pc83sw6b1r3"))))
     (build-system font-build-system)
     (home-page "https://sourcefoundry.org/hack/")
     (synopsis "Typeface designed for source code")
@@ -782,9 +780,12 @@ glyph designs, not just an added slant.")
      "Hack is designed to be a workhorse typeface for code.  It expands upon
 the Bitstream Vera & DejaVu projects, provides 1561 glyphs, and includes
 Powerline support.")
-    (license (license:x11-style
-              "https://github.com/chrissimpkins/Hack/blob/master/LICENSE.md"
-              "Hack Open Font License v2.0"))))
+    (license
+     ;; See https://github.com/source-foundry/Hack/issues/271 for details.
+     (list license:expat                ; the Hack modifications to...
+           license:public-domain        ; ...the DejaVu modifications to...
+           (license:x11-style           ; ...the Bitstream Vera typeface
+            "file://LICENSE.md" "Bitstream Vera License")))))
 
 (define-public font-adobe-source-code-pro
   (package
@@ -1026,7 +1027,7 @@ monospace, slab-serif fonts.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "183n0qv3q8w6n27libarq1fhc4mqv2d3sasbfmbn7x9r5pw9c6ga"))
+                "018i3za9r6kf6svci33z09lc5pr5yz4164m8gzzwjzzqcrng0p5j"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system font-build-system)
     (home-page "http://google.github.io/material-design-icons")

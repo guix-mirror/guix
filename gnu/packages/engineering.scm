@@ -429,7 +429,7 @@ multipole-accelerated algorithm.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0pvk57z2pxz89pcwwm61lkpvj4w9qxqz8mi0zkpj6pnaljabp7bf"))))
+                "15rwjp4xdj9w1z9f709rz9p0k2mi9k9idma9hvzkj5j8p04mg7yd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

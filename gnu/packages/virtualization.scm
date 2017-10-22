@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,7 +86,7 @@
      '(;; Running tests in parallel can occasionally lead to failures, like:
        ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
        #:parallel-tests? #f
-
+       #:configure-flags '("--enable-usb-redir" "--enable-opengl")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -143,7 +144,9 @@
        ("libaio" ,libaio)
        ("libattr" ,attr)
        ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
-       ("libjpeg" ,libjpeg-8)
+       ("libdrm" ,libdrm)
+       ("libepoxy" ,libepoxy)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libusb" ,libusb)                         ;USB pass-through support
        ("mesa" ,mesa)
@@ -152,6 +155,7 @@
        ("pixman" ,pixman)
        ("sdl" ,sdl)
        ("spice" ,spice)
+       ("usbredir" ,usbredir)
        ("util-linux" ,util-linux)
        ;; ("vde2" ,vde2)
        ("virglrenderer" ,virglrenderer)
@@ -188,14 +192,15 @@ server and embedded PowerPC, and S390 guests.")
     (name "qemu-minimal")
     (synopsis "Machine emulator and virtualizer (without GUI)")
     (arguments
-     `(#:configure-flags
-       ;; Restrict to the targets supported by Guix.
-       '("--target-list=i386-softmmu,x86_64-softmmu,mips64el-softmmu,arm-softmmu,aarch64-softmmu")
-       ,@(package-arguments qemu)))
+     (substitute-keyword-arguments (package-arguments qemu)
+       ((#:configure-flags _ '(list))
+        ;; Restrict to the targets supported by Guix.
+        ''("--target-list=i386-softmmu,x86_64-softmmu,mips64el-softmmu,arm-softmmu,aarch64-softmmu"))))
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (inputs (fold alist-delete (package-inputs qemu)
-                  '("libusb" "mesa" "sdl" "spice" "virglrenderer")))))
+                  '("libusb" "mesa" "sdl" "spice" "virglrenderer"
+                    "usbredir" "libdrm" "libepoxy")))))
 
 (define-public libosinfo
   (package
@@ -317,6 +322,7 @@ manage system or application containers.")
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
+              (patches (search-patches "libvirt-CVE-2017-1000256.patch"))
               (sha256
                (base32
                 "1fk75cdzg59y9hnfdpdwv83fsc1yffy3lac4ch19zygfkqhcnysf"))))
@@ -510,6 +516,13 @@ virtualization library.")
              (substitute* "virtcli/cliconfig.py"
                (("/usr") (assoc-ref outputs "out")))
              #t))
+         (add-after 'unpack 'fix-default-uri
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; xen is not available for now - so only patch qemu
+             (substitute* "virtManager/connect.py"
+               (("/usr(/bin/qemu-system)" _ suffix)
+                (string-append (assoc-ref inputs "qemu") suffix)))
+             #t))
          (add-before 'wrap 'wrap-with-GI_TYPELIB_PATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((bin       (string-append (assoc-ref outputs "out") "/bin"))
@@ -540,8 +553,10 @@ virtualization library.")
        ("python2-libvirt" ,python2-libvirt)
        ("python2-requests" ,python2-requests)
        ("python2-ipaddr" ,python2-ipaddr)
+       ("python2-pycairo" ,python2-pycairo)
        ("python2-pygobject" ,python2-pygobject)
-       ("python2-libxml2" ,python2-libxml2)))
+       ("python2-libxml2" ,python2-libxml2)
+       ("spice-gtk" ,spice-gtk)))
     ;; virt-manager searches for qemu-img or kvm-img in the PATH.
     (propagated-inputs
      `(("qemu" ,qemu)))

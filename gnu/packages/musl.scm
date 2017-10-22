@@ -27,15 +27,14 @@
 (define-public musl
   (package
     (name "musl")
-    (version "1.1.15")
+    (version "1.1.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.musl-libc.org/releases/"
                                   name "-" version ".tar.gz"))
-              (patches (search-patches "musl-CVE-2016-8859.patch"))
               (sha256
                (base32
-                "1ymhxkskivzph0q34zadwfglc5gyahqajm7chqqn2zraxv3lgr4p"))))
+                "0r0lyp2w6v2bvm8h1si7w3p2qx037szl14qnxm5p00568z3m3an8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; Musl has no tests

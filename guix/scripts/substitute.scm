@@ -33,13 +33,12 @@
   #:use-module (guix pki)
   #:use-module ((guix build utils) #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
-                #:select (current-terminal-columns
-                          progress-reporter/file
-                          uri-abbreviation nar-uri-abbreviation
+                #:select (uri-abbreviation nar-uri-abbreviation
                           (open-connection-for-uri
                            . guix:open-connection-for-uri)
                           close-connection
                           store-path-abbreviation byte-count->string))
+  #:use-module (guix progress)
   #:use-module ((guix build syscalls)
                 #:select (set-thread-name))
   #:use-module (ice-9 rdelim)
@@ -956,19 +955,22 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
                                      #:abbreviation nar-uri-abbreviation)))
                      (progress-report-port reporter raw)))
                   ((input pids)
+                   ;; NOTE: This 'progress' port of current process will be
+                   ;; closed here, while the child process doing the
+                   ;; reporting will close it upon exit.
                    (decompressed-port (and=> (narinfo-compression narinfo)
                                              string->symbol)
                                       progress)))
       ;; Unpack the Nar at INPUT into DESTINATION.
       (restore-file input destination)
       (close-port input)
-      (close-port progress)
+
+      ;; Wait for the reporter to finish.
+      (every (compose zero? cdr waitpid) pids)
 
       ;; Skip a line after what 'progress-reporter/file' printed, and another
       ;; one to visually separate substitutions.
-      (display "\n\n" (current-error-port))
-
-      (every (compose zero? cdr waitpid) pids))))
+      (display "\n\n" (current-error-port)))))
 
 
 ;;;

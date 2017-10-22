@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -676,3 +677,110 @@ using GnuPG.  Backups can be stored on local hard disks, or online via
 the SSH SFTP protocol.  The backup server, if used, does not require
 any special software, on top of SSH.")
     (license license:gpl3+)))
+
+(define-public dirvish
+  (package
+    (name "dirvish")
+    (version "1.2.1")
+    (build-system gnu-build-system)
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://dirvish.org/dirvish-" version ".tgz"))
+              (sha256
+               (base32
+                "1kbxa1irszp2zw8hd5qzqnrrzb4vxfivs1vn64yxnj0lak1jjzvb"))))
+    (arguments
+     `(#:modules ((ice-9 match) (ice-9 rdelim)
+                  ,@%gnu-build-system-modules)
+       #:phases
+       ;; This mostly mirrors the steps taken in the install.sh that ships
+       ;; with dirvish, but simplified because we aren't prompting interactively
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; These are mostly the same steps the install.sh that comes with
+             ;; dirvish does
+             (let* (;; Files we'll be copying
+                    (executables
+                     '("dirvish" "dirvish-runall"
+                       "dirvish-expire" "dirvish-locate"))
+                    (man-pages
+                     '(("dirvish" "8") ("dirvish-runall" "8")
+                       ("dirvish-expire" "8") ("dirvish-locate" "8")
+                       ("dirvish.conf" "5")))
+
+                    (output-dir
+                     (assoc-ref outputs "out"))
+
+                    ;; Just a default... not so useful on guixsd though
+                    ;; You probably want to a service with file(s) to point to.
+                    (confdir "/etc/dirvish")
+
+                    (perl (string-append (assoc-ref %build-inputs "perl")
+                                         "/bin/perl"))
+                    (loadconfig.pl (call-with-input-file "loadconfig.pl"
+                                     read-string)))
+
+
+               (define (write-pl filename)
+                 (define pl-header
+                   (string-append "#!" perl "\n\n"
+                                  "$CONFDIR = \"" confdir "\";\n\n"))
+                 (define input-file-location
+                   (string-append filename ".pl"))
+                 (define target-file-location
+                   (string-append output-dir "/bin/" filename ".pl"))
+                 (define text-to-write
+                   (string-append pl-header
+                                  (call-with-input-file input-file-location
+                                    read-string)
+                                  "\n" loadconfig.pl))
+                 (with-output-to-file target-file-location
+                   (lambda ()
+                     (display text-to-write)))
+                 (chmod target-file-location #o755)
+                 (wrap-program target-file-location
+                   `("PERL5LIB" ":" prefix
+                     ,(map (lambda (l) (string-append (assoc-ref %build-inputs l)
+                                                      "/lib/perl5/site_perl"))
+                           '("perl-libtime-period"
+                             "perl-libtime-parsedate")))))
+
+               (define write-man
+                 (match-lambda
+                   ((file-base man-num)
+                    (let* ((filename
+                            (string-append file-base "." man-num))
+                           (output-path
+                            (string-append output-dir
+                                           "/share/man/man" man-num
+                                           "/" filename)))
+                      (copy-file filename output-path)))))
+
+               ;; Make directories
+               (mkdir-p (string-append output-dir "/bin/"))
+               (mkdir-p (string-append output-dir "/share/man/man8/"))
+               (mkdir-p (string-append output-dir "/share/man/man5/"))
+
+               ;; Write out executables
+               (for-each write-pl executables)
+               ;; Write out man pages
+               (for-each write-man man-pages)
+               #t))))))
+    (inputs
+     `(("perl" ,perl)
+       ("rsync" ,rsync)
+       ("perl-libtime-period" ,perl-libtime-period)
+       ("perl-libtime-parsedate" ,perl-libtime-parsedate)))
+    (home-page "http://dirvish.org/")
+    (synopsis "Fast, disk based, rotating network backup system")
+    (description
+     "With dirvish you can maintain a set of complete images of your
+filesystems with unattended creation and expiration.  A dirvish backup vault
+is like a time machine for your data. ")
+    (license (license:fsf-free "file://COPYING"
+                               "Open Software License 2.0"))))

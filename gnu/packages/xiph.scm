@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -139,7 +139,11 @@ compressed video format.")
        (base32
         "150047wnllz4r94whb9r73l5qf0z5z3rlhy98bawfbblmkq8mbpa"))))
     (build-system gnu-build-system)
-    (inputs `(("libogg" ,libogg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libogg" ,libogg)
+       ("speexdsp" ,speexdsp)))
     (home-page "https://gnu.org/software/speex")
     (synopsis "Library for patent-free audio compression format")
     (description
@@ -163,6 +167,11 @@ stereo encoding, and voice activity detection.")
                (base32
                 "1wcjyrnwlkayb20zdhp48y260rfyzg925qpjpljd5x9r01h8irja"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '(,@(if (string=? "aarch64-linux"
+                                           (%current-system))
+                               '("--enable-neon=no") ; neon defaults to armv7-a
+                               '()))))
     (home-page "https://speex.org/")
     (synopsis "Speex processing library")
     (description

@@ -413,6 +413,41 @@ using libspectre.")
 using the DjVuLibre library.")
     (license license:zlib)))
 
+(define-public zathura-pdf-mupdf
+  (package
+    (name "zathura-pdf-mupdf")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/zathura-pdf-mupdf"
+                              "/download/zathura-pdf-mupdf-" version ".tar.gz"))
+              (sha256
+               (base32
+                "06zqn8z6a0hfsx3s1kzqvqzb73afgcl6z5r062sxv7kv570fvffr"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `(("girara" ,girara)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("jbig2dec" ,jbig2dec)
+       ("libjpeg" ,libjpeg)
+       ("mupdf" ,mupdf)
+       ("openjpeg" ,openjpeg)
+       ("openssl" ,openssl)
+       ("zathura" ,zathura)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "PLUGINDIR=" %output "/lib/zathura")
+                          "CC=gcc")
+       #:tests? #f ;No tests.
+       #:phases (modify-phases %standard-phases (delete 'configure))))
+    (home-page "https://pwmt.org/projects/zathura-pdf-mupdf/")
+    (synopsis "PDF support for zathura (mupdf backend)")
+    (description "The zathura-pdf-mupdf plugin adds PDF support to zathura
+by using the @code{mupdf} rendering library.")
+    (license license:zlib)))
+
 (define-public zathura-pdf-poppler
   (package
     (name "zathura-pdf-poppler")
@@ -540,7 +575,8 @@ extracting content or merging files.")
         (sha256
          (base32
           "02phamcchgsmvjnb3ir7r5sssvx9fcrscn297z73b82n1jl79510"))
-        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"))
+        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"
+                                 "mupdf-CVE-2017-15587.patch"))
         (modules '((guix build utils)))
         (snippet
             ;; Delete all the bundled libraries except for mujs, which is

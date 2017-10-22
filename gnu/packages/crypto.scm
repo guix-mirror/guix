@@ -556,7 +556,7 @@ generator.")
     (synopsis "Get weak or strong random data from pluggable sources")
     (description "This module provides implementations for a number of
 byte-oriented sources of random data.")
-    (license (package-license perl))))
+    (license license:perl-license)))
 
 (define-public perl-math-random-secure
   (package

@@ -875,7 +875,7 @@ offline emulation of DNS.")
 (define-public perl-geo-ip
  (package
   (name "perl-geo-ip")
-  (version "1.50")
+  (version "1.51")
   (source
     (origin
       (method url-fetch)
@@ -885,7 +885,7 @@ offline emulation of DNS.")
              ".tar.gz"))
       (sha256
         (base32
-          "0ar69lrm26rp6sqxjf0p6cvjfprjx8gkxx11r399lvh99rqfl7zr"))))
+          "1fka8fr7fw6sh3xa9glhs1zjg3s2gfkhi7n7da1l2m2wblqj0c0n"))))
   (build-system perl-build-system)
   (home-page "http://search.cpan.org/dist/Geo-IP")
   (synopsis
@@ -1267,7 +1267,7 @@ networks.")
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
@@ -1276,7 +1276,7 @@ networks.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1alambi1ljng6j04k7pq58jqwd0wh1q9630f17nl34ljabji5lwy"))))
+         "1fbq4kpx8sj50g74hwpixisfjjgxq6zyn40d3m28dxhn7mxbnlrq"))))
     (build-system python-build-system)
     (home-page "https://github.com/sivel/speedtest-cli")
     (synopsis "Internet bandwidth tester")

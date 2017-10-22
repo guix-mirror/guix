@@ -142,14 +142,14 @@ and its related documentation.")
     (name "nginx")
     ;; Consider updating the nginx-docs package if the nginx package is
     ;; updated.
-    (version "1.12.1")
+    (version "1.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1yvnmj7vlykrqdi6amkvs63lva6qkxd98sqv0a8hz8w5ci1bz4w7"))))
+                "05h4rwja7170z0l979yjghy9i9ichllwhicylzpmmyyml6fkfprh"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -3788,13 +3788,13 @@ LaTeX.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "2.8.1")
+    (version "3.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "0dgfl7wn4r8inv55xnk4ybf1y2x4qmi4cbr6phr3lfi1dnjm4hsm"))))
+                "01m52jz2q38yc32xbnmpm48hck2xj9fyhxq262p04y67gjpf7y3v"))))
     (build-system r-build-system)
     (arguments
      `(#:phases

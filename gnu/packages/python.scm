@@ -7550,6 +7550,48 @@ and MAC network addresses.")
 (define-public python2-netaddr
   (package-with-python2 python-netaddr))
 
+(define-public python2-neo4j-driver
+  (package
+    (name "python2-neo4j-driver")
+    ;; NOTE: When upgrading to 1.5.0, please add a python3 variant.
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "neo4j-driver" version))
+              (sha256
+               (base32
+                "011r1vh182p8mm83d8dz9rfnc3l7rf7fd00cyrbyfzi71jmc4g98"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://neo4j.com/developer/python/")
+    (synopsis "Neo4j driver code written in Python")
+    (description "This package provides the Neo4j Python driver that connects
+to the database using Neo4j's binary protocol.  It aims to be minimal, while
+being idiomatic to Python.")
+    (license license:asl2.0)))
+
+(define-public python2-py2neo
+  (package
+    (name "python2-py2neo")
+    (version "3.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "py2neo" version))
+              (sha256
+               (base32
+                "1f1q95vqcvlc3nsc33p841swnjdcjazddlq2dzi3qfnjqjrajxw1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "http://py2neo.org")
+    (synopsis "Library and toolkit for working with Neo4j in Python")
+    (description "This package provides a client library and toolkit for
+working with Neo4j from within Python applications and from the command
+line.  The core library has no external dependencies and has been carefully
+designed to be easy and intuitive to use.")
+    (license license:asl2.0)))
+
 (define-public python-wrapt
   (package
     (name "python-wrapt")
@@ -8578,7 +8620,7 @@ simulation, statistical modeling, machine learning and much more.")
 (define-public python-chardet
   (package
     (name "python-chardet")
-    (version "2.3.0")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
@@ -8588,7 +8630,11 @@ simulation, statistical modeling, machine learning and much more.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ak87ikcw34fivcgiz2xvi938dmclh078az65l9x3rmgljrkhgp5"))))
+         "1bpalpia6r5x1kknbk11p1fzph56fmmnp405ds8icksd3knr5aw4"))))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (build-system python-build-system)
     (home-page "https://github.com/chardet/chardet")
     (synopsis "Universal encoding detector for Python 2 and 3")
@@ -9672,13 +9718,13 @@ with a new public API, and RPython support.")
 (define-public python-hy
   (package
     (name "python-hy")
-    (version "0.11.1")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hy" version))
               (sha256
                (base32
-                "1msqv747iz12r73mz4qvsmlwkddwjvrahlrk7ysrcz07h7dsscxs"))))
+                "19sfymaksx9jhksfnb15ahid46mzrhdfzz6yy2craz2qnzvpmky8"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -10109,9 +10155,9 @@ seamlessly into your existing Python unit testing work flow.")
   (let ((hypothesis (package-with-python2
                      (strip-python2-variant python-hypothesis))))
     (package (inherit hypothesis)
-      (native-inputs
+      (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
-         ,@(package-native-inputs hypothesis))))))
+         ,@(package-propagated-inputs hypothesis))))))
 
 (define-public python-pytest-subtesthack
   (package

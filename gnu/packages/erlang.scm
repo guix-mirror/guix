@@ -46,7 +46,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1azjjyb743i6vjq7rnh5qnslsqg0x60a9zrlhg9n3dpm13z1b22l"))
+                "11xp6vv1v7iay9dg1xc6xm7izfsanbn5pgwp96ba0j1fmlkhjw92"))
               (patches (search-patches "erlang-man-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs

@@ -517,7 +517,7 @@ and keep up to date translations of documentation.")
 (define-public gnome-disk-utility
   (package
     (name "gnome-disk-utility")
-    (version "3.24.1")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -525,10 +525,11 @@ and keep up to date translations of documentation.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "18akarcbhm8djlmz49jzavc7qx8dg71gvxc9xd23p0bwjj4h93w7"))))
-    (build-system gnu-build-system)
+                "10spllvcq2q71xk3dnhzjk8v4qx9am8y1h68k8z2j0l94g1c8bi3"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")
+       ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("docbook-xml" ,docbook-xml)
@@ -2371,7 +2372,7 @@ library.")
 (define-public rest
   (package
     (name "rest")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/rest/"
@@ -2379,7 +2380,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0iznvzhab1jq9z3nwy97dh2pid9azwkqm7kkxwx0f5ql1hh9pf77"))))
+                "1j81bgqmd55s5lxyaxcplym9n6xywcs1cm9wmvafsg2xiv9sl4q5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests require internet connection
@@ -3769,7 +3770,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
 (define-public eog
  (package
    (name "eog")
-   (version "3.24.1")
+   (version "3.26.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3777,7 +3778,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1rr7zy8afqgl15j1zz8l37svyv6bw4r3l04yf70zlnf1w8bf27pm"))))
+              "125wzr1mai4raybfb2hwjzxv59q20bjpw9j4wn682nn5bd9ypnwq"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:phases
@@ -3824,7 +3825,7 @@ supports image conversion, rotation, and slideshows.")
   ;; 'XDG_DATA_DIRS' appropriately set.
   (package
     (name "eog-plugins")
-    (version "3.25.1")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3832,7 +3833,7 @@ supports image conversion, rotation, and slideshows.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0an04z8v83qa6j950rbwdzf1s86y7zd8h1r4p2x36fwbkk1m617q"))))
+                "0v45f2m3b60ygkwpq6jrl49nwrivw6qy0ciibpv821qrm73hsgd7"))))
     (build-system gnu-build-system)
     (home-page "https://wiki.gnome.org/Apps/EyeOfGnome/Plugins")
     (synopsis "Extensions for the Eye of GNOME image viewer")

@@ -72,6 +72,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
@@ -367,8 +368,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.13.7")
-(define %linux-libre-hash "1znf2zrhfb6wmlv09c14y6sawl4nb0jr7gzwwnakspvy0yjs95r3")
+(define %linux-libre-version "4.13.8")
+(define %linux-libre-hash "0qi2n5lczqwq2v0q5zl08ac3x4lixpj1dmb0kza6hsllmx8hbybw")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -377,32 +378,22 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.56"
-                    "05wy73yh4jbn1881djs21wl4hws62lyc1frb5di6cg6m3z7j658i"
+  (make-linux-libre "4.9.57"
+                    "02ldxzbazdbhvgkwxl6xblkwj75s5cm33fpm77kv394w35jan3by"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.92"
-                    "038mrv36n2521xd1f4nlpn00ar4vwzbwkldf6pk7rflbc3zi0p8g"
+  (make-linux-libre "4.4.93"
+                    "1llpqkm7vvwi5fm92y4n6qrc89ps7kdfl83s7m38a2yivm3kgzr6"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.44"
-                    "1h1v2n8fxnn98y0jz9pnr4xdmc0v4l5d3hfxa5n5r3xmjksf1xs3"
+  (make-linux-libre "4.1.45"
+                    "1ifpyyq86x0imjdfb9vm7m8dbnkw82a7bqczx166zrssc1fc677l"
                     %intel-compatible-systems
-                    #:configuration-file kernel-config
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            (method url-fetch)
-                            (uri "\
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/patch/?id=f7ec367c8ea7021517c9c04b0022c225d2d0785a")
-                            (file-name "linux-libre-4.4-CVE-2017-1000251.patch")
-                            (sha256
-                             (base32
-                              "1glnjvs3xkvana2wfdv47dxi7jz2s4dz3v0b8ryglf2vbflm388w"))))))
+                    #:configuration-file kernel-config))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -2525,7 +2516,7 @@ in a digital read-out.")
              (setenv "SHELL_PATH" (which "bash"))
              (chdir "tools/perf")
              #t)))
-       #:make-flags (list (string-append "DESTDIR="
+       #:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out"))
                           "WERROR=0"
 
@@ -2547,6 +2538,8 @@ in a digital read-out.")
        ("python" ,python-2)                    ;'perf' links against libpython
        ("elfutils" ,elfutils)
        ("libiberty" ,libiberty)      ;used alongside BDF for symbol demangling
+       ("libunwind" ,libunwind)      ;better stack walking
+       ("numactl" ,numactl)          ;for 'perf bench numa mem'
 
        ;; Documentation.
        ("libxml2" ,libxml2)                       ;for $XML_CATALOG_FILES
@@ -3186,7 +3179,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.13.2")
+    (version "4.13.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3194,7 +3187,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1ga8jk2hkaxpm17z3gdfrpq0i62kqpv2wm5yzbzmsj862cgk7ivm"))))
+                "10yp0b4pwrw5mcd81yn3d0d87fnqpp4si5d25dfhl6n2640dnnw0"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"

@@ -135,7 +135,17 @@
                     (format #f "(tramp-default-remote-path ~s ~s ~s ~s "
                             "~/.guix-profile/bin" "~/.guix-profile/sbin"
                             "/run/current-system/profile/bin"
-                            "/run/current-system/profile/sbin")))))))
+                            "/run/current-system/profile/sbin")))
+
+                 ;; Make sure Man looks for C header files in the right
+                 ;; places.
+                 (substitute* "man.el"
+                   (("\"/usr/local/include\"" line)
+                    (string-join
+                     (list line
+                           "\"~/.guix-profile/include\""
+                           "\"/var/guix/profiles/system/profile/include\"")
+                     " ")))))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -5655,6 +5665,26 @@ running tests easier.")
      "Provides @code{disable-mouse-mode} and @code{global-disable-mouse-mode},
 pair of minor modes which suppress all mouse events by intercepting them and
 running a customisable handler command (@code{ignore} by default). ")
+    (license license:gpl3+)))
+
+(define-public emacs-json-snatcher
+  (package
+    (name "emacs-json-snatcher")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Sterlingg/json-snatcher/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nfiwsifpdiz0lbrqa77nl0crnfrv5h85ans9b0g5rggnmyshcfb"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/sterlingg/json-snatcher")
+    (synopsis "Grabs the path to JSON values in a JSON file")
+    (description "@code{emacs-json-snatcher} grabs the path to JSON values in
+a @url{http://json.org/, JSON} file.")
     (license license:gpl3+)))
 
 (define-public emacs-restclient

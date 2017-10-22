@@ -377,14 +377,14 @@ device-specific programs to convert and print many types of files.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.17.7")
+    (version "3.17.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "03a0vkbrzvgj15il9rvr93kf5pc706gxcjk6akbkzds0zmdbsxrm"))))
+                "0v27hg856b5z2rilczcbfgz8ksxn0n810g1glac3mxkj8qbl8wqg"))))
     (build-system gnu-build-system)
     (home-page "http://hplipopensource.com/")
     (synopsis "HP Printer Drivers")

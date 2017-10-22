@@ -306,12 +306,12 @@ diagrams.")
     (license license:gpl3+)))
 
 (define-public ganv-devel
-  (let ((commit "31685d283e9b811b61014f820c42807f4effa071")
+  (let ((commit "12f7d6b0438c94dd87f773a92eee3453d971846e")
         (revision "1"))
     (package
       (inherit ganv)
       (name "ganv")
-      (version (string-append "1.4.2-" revision "."
+      (version (string-append "1.5.4-" revision "."
                               (string-take commit 9)))
       (source (origin
                 (method git-fetch)
@@ -320,7 +320,7 @@ diagrams.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0xmbykdl42jn9cgzrqrys5lng67d26nk5xq10wkkvjqldiwdck56")))))))
+                  "1cr8w02lr6bk9mkxa12j3imq721b2an2yn4bj5wnwmpm91ddn2gi")))))))
 
 (define-public gtksourceview-2
   (package

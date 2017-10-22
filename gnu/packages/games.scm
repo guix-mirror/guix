@@ -248,22 +248,22 @@ the others like yourself, that want what you have.")
 (define-public cowsay
   (package
     (name "cowsay")
-    (version "3.03")
+    (version "3.04")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://web.archive.org/web/20071026043648/"
-                                  "http://www.nog.net:80/~tony/warez/"
-                                  "cowsay-" version ".tar.gz"))
+              (uri (string-append "https://github.com/tnalpgge/"
+                                  "rank-amateur-cowsay/archive/"
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1bxj802na2si2bk5zh7n0b7c33mg8a5n2wnvh0vihl9bmjkp51hb"))))
+                "12w7apbf6a9qffk92r32b16w22na2fjcqbl32rn0n7zw5hrp3f6q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'install)
-         (replace 'build
+         (delete 'configure)            ; no configure script
+         (delete 'build)                ; nothing to be built
+         (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (zero? (system* "sh" "install.sh"
                              (assoc-ref outputs "out")))))
@@ -275,12 +275,12 @@ the others like yourself, that want what you have.")
     (inputs
      `(("perl" ,perl)))
     (home-page (string-append "https://web.archive.org/web/20071026043648/"
-                              "http://www.nog.net:80/~tony/warez/"))
+                              "http://www.nog.net:80/~tony/warez/cowsay.shtml"))
     (synopsis "Speaking cow text filter")
     (description "Cowsay is basically a text filter.  Send some text into it,
 and you get a cow saying your text.  If you think a talking cow isn't enough,
-cows can think too.  All you have to do is run @code{cowthink}.")
-    ;; Any version of the GPL.
+cows can think too: all you have to do is run @command{cowthink}.  If you're
+tired of cows, a variety of other ASCII-art messengers are available.")
     (license license:gpl3+)))
 
 (define-public freedoom

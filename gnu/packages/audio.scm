@@ -580,7 +580,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0f67vyy3r29hn26qkkcwnizrnzzy8p7gmg3say5q3wjhxns3b5yl"))))
+                "0xqpqws4jsv7fyawcjzwaw544qbfh29xq164kdf30a9v1n3yklp4"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1660,6 +1660,21 @@ add functionality to support the needs of increasingly powerful audio
 software.")
     (license license:isc)))
 
+(define-public lv2-devel
+  (let ((commit "39c7c726cd52b2863fcea356cafe1bcab2ba7f37")
+        (revision "1"))
+    (package (inherit lv2)
+      (name "lv2-devel")
+      (version (string-append "1.15.3-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://lv2plug.in/git/lv2.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1gp2rd99dfmpibvpixrqn115mrhybzf3if3h8bssf6siyi13f29r")))))))
+
 (define-public lv2-mda-piano
   (package
     (name "lv2-mda-piano")
@@ -1916,11 +1931,11 @@ aimed at audio/musical applications.")
     (license license:gpl2+)))
 
 (define-public raul-devel
-  (let ((commit "f8bf77d3c3b77830aedafb9ebb5cdadfea7ed07a")
+  (let ((commit "4db870b2b20b0a608ec0283139056b836c5b1624")
         (revision "1"))
     (package (inherit raul)
       (name "raul")
-      (version (string-append "0.8.4-" revision "."
+      (version (string-append "0.8.9-" revision "."
                               (string-take commit 9)))
       (source (origin
                 (method git-fetch)
@@ -1930,7 +1945,7 @@ aimed at audio/musical applications.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1lby508fb0n8ks6iz959sh18fc37br39d6pbapwvbcw5nckdrxwj")))))))
+                  "04fajrass3ymr72flx5js5vxc601ccrmx8ny8scp0rw7j0igyjdr")))))))
 
 (define-public rubberband
   (package
@@ -2040,14 +2055,14 @@ the Turtle syntax.")
 (define-public suil
   (package
     (name "suil")
-    (version "0.8.4")
+    (version "0.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/suil-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1kji3lhha26qr6xm9j8ic5c40zbrrb5qnwm2qxzmsfxgmrz29wkf"))))
+               "0j489gm3fhnmwmbgw30bvd4byw1vsy4yazdlnji8jzhcz0qwb5cq"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -2055,7 +2070,8 @@ the Turtle syntax.")
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
      `(("lv2" ,lv2)
-       ("gtk+-2" ,gtk+-2)
+       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("qt" ,qtbase)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2069,7 +2085,7 @@ toolkit.  The API is designed such that hosts do not need to explicitly
 support specific toolkits – if Suil supports a particular toolkit, then UIs in
 that toolkit will work in all hosts that use Suil automatically.
 
-Suil currently supports every combination of Gtk 2, Qt 4, and X11.")
+Suil currently supports every combination of Gtk, Qt, and X11.")
     (license license:isc)))
 
 (define-public timidity++

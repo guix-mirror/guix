@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1574,3 +1576,39 @@ zip archives.  Files can be added from data buffers, files, or compressed data
 copied directly from other zip archives.  Changes made without closing the
 archive can be reverted.")
     (license license:bsd-3)))
+
+(define-public atool
+  (package
+    (name "atool")
+    (version "0.39.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://savannah.nongnu.org/download/atool/atool-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0fvhzip2v08jgnlfpyj6rapan39xlsl1ksgq4lp8gfsai2ah1xma"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'embed-absolute-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "atool"
+               (("(^\\$::cfg_path_file.*= )'file'" _ pre)
+                (string-append pre "'" (assoc-ref inputs "file")
+                               "/bin/file'")))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)
+       ("file" ,file)))
+    (home-page "http://www.nongnu.org/atool/")
+    (synopsis  "Universal tool to manage file archives of various types")
+    (description "The main command is @command{aunpack} which extracts files
+from an archive.  The other commands provided are @command{apack} (to create
+archives), @command{als} (to list files in archives), and @command{acat} (to
+extract files to standard out).  As @command{atool} invokes external programs
+to handle the archives, not all commands may be supported for a certain type
+of archives.")
+    (license license:gpl2+)))

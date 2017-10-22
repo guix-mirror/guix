@@ -25,7 +25,9 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages bioinformatics)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
@@ -116,3 +118,31 @@ It can handle large graphs very well and provides functions for generating
 random and regular graphs, graph visualization, centrality methods and much
 more.")
     (license license:gpl2+)))
+
+(define-public r-rgraphviz
+  (package
+    (name "r-rgraphviz")
+    (version "2.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rgraphviz" version))
+       (sha256
+        (base32
+         "0mwdqsmmhpk8szp3pf3bw66nv2sazpjiflpwdvqwjamvxyynmp67"))))
+    (properties `((upstream-name . "Rgraphviz")))
+    (build-system r-build-system)
+    ;; FIXME: Rgraphviz bundles the sources of an older variant of
+    ;; graphviz.  It does not build with the latest version of graphviz, so
+    ;; we do not add graphviz to the inputs.
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-graph" ,r-graph)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://bioconductor.org/packages/Rgraphviz")
+    (synopsis "Plotting capabilities for R graph objects")
+    (description
+     "This package interfaces R with the graphviz library for plotting R graph
+objects from the @code{graph} package.")
+    (license license:epl1.0)))

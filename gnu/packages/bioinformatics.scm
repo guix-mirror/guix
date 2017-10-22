@@ -5747,7 +5747,7 @@ data types as well.")
        ("r-xml" ,r-xml)
        ("r-xtable" ,r-xtable)))
     (home-page
-     "http://bioconductor.org/packages/annotate")
+     "https://bioconductor.org/packages/annotate")
     (synopsis "Annotation for microarrays")
     (description "This package provides R environments for the annotation of
 microarrays.")
@@ -5772,7 +5772,7 @@ microarrays.")
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-lattice" ,r-lattice)
        ("r-rcolorbrewer" ,r-rcolorbrewer)))
-    (home-page "http://bioconductor.org/packages/geneplotter")
+    (home-page "https://bioconductor.org/packages/geneplotter")
     (synopsis "Graphics functions for genomic data")
     (description
      "This package provides functions for plotting genomic data.")
@@ -5798,7 +5798,7 @@ microarrays.")
        ("r-biobase" ,r-biobase)
        ("r-s4vectors" ,r-s4vectors)
        ("r-survival" ,r-survival)))
-    (home-page "http://bioconductor.org/packages/genefilter")
+    (home-page "https://bioconductor.org/packages/genefilter")
     (synopsis "Filter genes from high-throughput experiments")
     (description
      "This package provides basic functions for filtering genes from
@@ -5833,7 +5833,7 @@ high-throughput sequencing experiments.")
        ("r-rcpparmadillo" ,r-rcpparmadillo)
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
-    (home-page "http://bioconductor.org/packages/DESeq2")
+    (home-page "https://bioconductor.org/packages/DESeq2")
     (synopsis "Differential gene expression analysis")
     (description
      "This package provides functions to estimate variance-mean dependence in
@@ -5873,7 +5873,7 @@ distribution.")
        ("r-statmod" ,r-statmod)
        ("r-stringr" ,r-stringr)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
-    (home-page "http://bioconductor.org/packages/DEXSeq")
+    (home-page "https://bioconductor.org/packages/DEXSeq")
     (synopsis "Inference of differential exon usage in RNA-Seq")
     (description
      "This package is focused on finding differential exon usage using RNA-seq
@@ -5908,7 +5908,7 @@ exploration of the results.")
        ("r-rsqlite" ,r-rsqlite)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xml" ,r-xml)))
-    (home-page "http://bioconductor.org/packages/AnnotationForge")
+    (home-page "https://bioconductor.org/packages/AnnotationForge")
     (synopsis "Code for building annotation database packages")
     (description
      "This package provides code for generating Annotation packages and their
@@ -5929,7 +5929,7 @@ databases.  Packages produced are intended to be used with AnnotationDbi.")
     (properties `((upstream-name . "RBGL")))
     (build-system r-build-system)
     (propagated-inputs `(("r-graph" ,r-graph)))
-    (home-page "http://www.bioconductor.org/packages/RBGL")
+    (home-page "https://www.bioconductor.org/packages/RBGL")
     (synopsis "Interface to the Boost graph library")
     (description
      "This package provides a fairly extensive and comprehensive interface to
@@ -5956,7 +5956,7 @@ the graph algorithms contained in the Boost library.")
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-graph" ,r-graph)
        ("r-xml" ,r-xml)))
-    (home-page "http://bioconductor.org/packages/GSEABase")
+    (home-page "https://bioconductor.org/packages/GSEABase")
     (synopsis "Gene set enrichment data structures and methods")
     (description
      "This package provides classes and methods to support @dfn{Gene Set
@@ -5987,7 +5987,7 @@ Enrichment Analysis} (GSEA).")
        ("r-matrix" ,r-matrix)
        ("r-rbgl" ,r-rbgl)
        ("r-rsqlite" ,r-rsqlite)))
-    (home-page "http://bioconductor.org/packages/Category")
+    (home-page "https://bioconductor.org/packages/Category")
     (synopsis "Category analysis")
     (description
      "This package provides a collection of tools for performing category
@@ -6016,7 +6016,7 @@ analysis.")
        ("r-go-db" ,r-go-db)
        ("r-graph" ,r-graph)
        ("r-rbgl" ,r-rbgl)))
-    (home-page "http://bioconductor.org/packages/GOstats")
+    (home-page "https://bioconductor.org/packages/GOstats")
     (synopsis "Tools for manipulating GO and microarrays")
     (description
      "This package provides a set of tools for interacting with GO and
@@ -6055,7 +6055,7 @@ testing and other simple calculations.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-xvector" ,r-xvector)
        ("r-zlibbioc" ,r-zlibbioc)))
-    (home-page "http://bioconductor.org/packages/ShortRead")
+    (home-page "https://bioconductor.org/packages/ShortRead")
     (synopsis "FASTQ input and manipulation tools")
     (description
      "This package implements sampling, iteration, and input of FASTQ files.
@@ -6147,7 +6147,7 @@ annotation infrastructure.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://bioconductor.org/packages/"
+              (uri (string-append "https://bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib"
                                   "/TxDb.Hsapiens.UCSC.hg19.knownGene_"
                                   version ".tar.gz"))
@@ -6163,7 +6163,7 @@ annotation infrastructure.")
     (propagated-inputs
      `(("r-genomicfeatures" ,r-genomicfeatures)))
     (home-page
-     "http://bioconductor.org/packages/TxDb.Hsapiens.UCSC.hg19.knownGene/")
+     "https://bioconductor.org/packages/TxDb.Hsapiens.UCSC.hg19.knownGene/")
     (synopsis "Annotation package for human genome in TxDb format")
     (description
      "This package provides an annotation database of Homo sapiens genome
@@ -6444,7 +6444,7 @@ barplots or heatmaps.")
     (properties
      `((upstream-name . "BiocGenerics")))
     (build-system r-build-system)
-    (home-page "http://bioconductor.org/packages/BiocGenerics")
+    (home-page "https://bioconductor.org/packages/BiocGenerics")
     (synopsis "S4 generic functions for Bioconductor")
     (description
      "This package provides S4 generic functions needed by many Bioconductor
@@ -6464,7 +6464,7 @@ packages.")
     (properties
      `((upstream-name . "BiocInstaller")))
     (build-system r-build-system)
-    (home-page "http://bioconductor.org/packages/BiocInstaller")
+    (home-page "https://bioconductor.org/packages/BiocInstaller")
     (synopsis "Install Bioconductor packages")
     (description "This package is used to install and update R packages from
 Bioconductor, CRAN, and Github.")
@@ -6491,7 +6491,7 @@ Bioconductor, CRAN, and Github.")
        ("r-xml" ,r-xml)
        ("r-knitr" ,r-knitr)
        ("r-runit" ,r-runit)))
-    (home-page "http://bioconductor.org/packages/biocViews")
+    (home-page "https://bioconductor.org/packages/biocViews")
     (synopsis "Bioconductor package categorization helper")
     (description "The purpose of biocViews is to create HTML pages that
 categorize packages in a Bioconductor package repository according to keywords,
@@ -6538,7 +6538,7 @@ authoring books and technical documents with R Markdown.")
        ("r-knitr" ,r-knitr)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-yaml" ,r-yaml)))
-    (home-page "http://bioconductor.org/packages/BiocStyle")
+    (home-page "https://bioconductor.org/packages/BiocStyle")
     (synopsis "Bioconductor formatting styles")
     (description "This package provides standard formatting styles for
 Bioconductor PDF and HTML documents.  Package vignettes illustrate use and
@@ -6586,7 +6586,7 @@ functionality.")
        ("r-optparse" ,r-optparse)
        ("r-biocinstaller" ,r-biocinstaller)
        ("r-biocviews" ,r-biocviews)))
-    (home-page "http://bioconductor.org/packages/BiocCheck")
+    (home-page "https://bioconductor.org/packages/BiocCheck")
     (synopsis "Executes Bioconductor-specific package checks")
     (description "This package contains tools to perform additional quality
 checks on R packages that are to be submitted to the Bioconductor repository.")
@@ -6674,7 +6674,7 @@ abnormal copy number.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)))
-    (home-page "http://bioconductor.org/packages/S4Vectors")
+    (home-page "https://bioconductor.org/packages/S4Vectors")
     (synopsis "S4 implementation of vectors and lists")
     (description
      "The S4Vectors package defines the @code{Vector} and @code{List} virtual
@@ -6727,7 +6727,7 @@ utilities for sequence data management under the ACNUC system.")
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-s4vectors" ,r-s4vectors)))
-    (home-page "http://bioconductor.org/packages/IRanges")
+    (home-page "https://bioconductor.org/packages/IRanges")
     (synopsis "Infrastructure for manipulating intervals on sequences")
     (description
      "This package provides efficient low-level and highly reusable S4 classes
@@ -6757,7 +6757,7 @@ possible.")
     (properties
      `((upstream-name . "GenomeInfoDbData")))
     (build-system r-build-system)
-    (home-page "http://bioconductor.org/packages/GenomeInfoDbData")
+    (home-page "https://bioconductor.org/packages/GenomeInfoDbData")
     (synopsis "Species and taxonomy ID look up tables for GenomeInfoDb")
     (description "This package contains data for mapping between NCBI taxonomy
 ID and species.  It is used by functions in the GenomeInfoDb package.")
@@ -6782,7 +6782,7 @@ ID and species.  It is used by functions in the GenomeInfoDb package.")
        ("r-iranges" ,r-iranges)
        ("r-rcurl" ,r-rcurl)
        ("r-s4vectors" ,r-s4vectors)))
-    (home-page "http://bioconductor.org/packages/GenomeInfoDb")
+    (home-page "https://bioconductor.org/packages/GenomeInfoDb")
     (synopsis "Utilities for manipulating chromosome identifiers")
     (description
      "This package contains data and functions that define and allow
@@ -6904,7 +6904,7 @@ different technologies, including microarrays, RNA-seq, and quantitative PCR.")
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-iranges" ,r-iranges)
        ("r-s4vectors" ,r-s4vectors)))
-    (home-page "http://bioconductor.org/packages/XVector")
+    (home-page "https://bioconductor.org/packages/XVector")
     (synopsis "Representation and manpulation of external sequences")
     (description
      "This package provides memory efficient S4 classes for storing sequences
@@ -6930,7 +6930,7 @@ different technologies, including microarrays, RNA-seq, and quantitative PCR.")
        ("r-iranges" ,r-iranges)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xvector" ,r-xvector)))
-    (home-page "http://bioconductor.org/packages/GenomicRanges")
+    (home-page "https://bioconductor.org/packages/GenomicRanges")
     (synopsis "Representation and manipulation of genomic intervals")
     (description
      "This package provides tools to efficiently represent and manipulate
@@ -6955,7 +6955,7 @@ manipulating genomic intervals and variables defined along a genome.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)))
-    (home-page "http://bioconductor.org/packages/Biobase")
+    (home-page "https://bioconductor.org/packages/Biobase")
     (synopsis "Base functions for Bioconductor")
     (description
      "This package provides functions that are needed by many other packages
@@ -6982,7 +6982,7 @@ on Bioconductor or which replace R functions.")
        ("r-iranges" ,r-iranges)
        ("r-rsqlite" ,r-rsqlite)
        ("r-s4vectors" ,r-s4vectors)))
-    (home-page "http://bioconductor.org/packages/AnnotationDbi")
+    (home-page "https://bioconductor.org/packages/AnnotationDbi")
     (synopsis "Annotation database interface")
     (description
      "This package provides user interface and database connection code for
@@ -7006,7 +7006,7 @@ annotation data packages using SQLite data storage.")
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-rcurl" ,r-rcurl)
        ("r-xml" ,r-xml)))
-    (home-page "http://bioconductor.org/packages/biomaRt")
+    (home-page "https://bioconductor.org/packages/biomaRt")
     (synopsis "Interface to BioMart databases")
     (description
      "biomaRt provides an interface to a growing collection of databases
@@ -7035,7 +7035,7 @@ powerful online queries from gene annotation to database mining.")
     (propagated-inputs
      `(("r-futile-logger" ,r-futile-logger)
        ("r-snow" ,r-snow)))
-    (home-page "http://bioconductor.org/packages/BiocParallel")
+    (home-page "https://bioconductor.org/packages/BiocParallel")
     (synopsis "Bioconductor facilities for parallel evaluation")
     (description
      "This package provides modified versions and novel implementation of
@@ -7061,7 +7061,7 @@ objects.")
        ("r-iranges" ,r-iranges)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xvector" ,r-xvector)))
-    (home-page "http://bioconductor.org/packages/Biostrings")
+    (home-page "https://bioconductor.org/packages/Biostrings")
     (synopsis "String objects and algorithms for biological sequences")
     (description
      "This package provides memory efficient string containers, string
@@ -7104,7 +7104,7 @@ biological sequences or sets of sequences.")
        ("r-iranges" ,r-iranges)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xvector" ,r-xvector)))
-    (home-page "http://bioconductor.org/packages/release/bioc/html/Rsamtools.html")
+    (home-page "https://bioconductor.org/packages/release/bioc/html/Rsamtools.html")
     (synopsis "Interface to samtools, bcftools, and tabix")
     (description
      "This package provides an interface to the 'samtools', 'bcftools', and
@@ -7131,7 +7131,7 @@ files.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-iranges" ,r-iranges)
        ("r-matrixstats" ,r-matrixstats)))
-    (home-page "http://bioconductor.org/packages/DelayedArray")
+    (home-page "https://bioconductor.org/packages/DelayedArray")
     (synopsis "Delayed operations on array-like objects")
     (description
      "Wrapping an array-like object (typically an on-disk object) in a
@@ -7165,7 +7165,7 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
        ("r-iranges" ,r-iranges)
        ("r-matrix" ,r-matrix)
        ("r-s4vectors" ,r-s4vectors)))
-    (home-page "http://bioconductor.org/packages/SummarizedExperiment")
+    (home-page "https://bioconductor.org/packages/SummarizedExperiment")
     (synopsis "Container for representing genomic ranges by sample")
     (description
      "The SummarizedExperiment container contains one or more assays, each
@@ -7197,7 +7197,7 @@ samples.")
        ("r-rsamtools" ,r-rsamtools)
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
-    (home-page "http://bioconductor.org/packages/GenomicAlignments")
+    (home-page "https://bioconductor.org/packages/GenomicAlignments")
     (synopsis "Representation and manipulation of short genomic alignments")
     (description
      "This package provides efficient containers for storing and manipulating
@@ -7242,7 +7242,7 @@ alignments.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-xml" ,r-xml)
        ("r-xvector" ,r-xvector)))
-    (home-page "http://bioconductor.org/packages/rtracklayer")
+    (home-page "https://bioconductor.org/packages/rtracklayer")
     (synopsis "R interface to genome browsers and their annotation tracks")
     (description
      "rtracklayer is an extensible framework for interacting with multiple
@@ -7280,7 +7280,7 @@ as well as query and modify the browser state, such as the current viewport.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xvector" ,r-xvector)))
-    (home-page "http://bioconductor.org/packages/GenomicFeatures")
+    (home-page "https://bioconductor.org/packages/GenomicFeatures")
     (synopsis "Tools for working with transcript centric annotations")
     (description
      "This package provides a set of tools and methods for making and
@@ -7299,7 +7299,7 @@ extracting the desired features in a convenient format.")
     (version "3.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/GO.db_"
                                   version ".tar.gz"))
               (sha256
@@ -7310,7 +7310,7 @@ extracting the desired features in a convenient format.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)))
-    (home-page "http://bioconductor.org/packages/GO.db")
+    (home-page "https://bioconductor.org/packages/GO.db")
     (synopsis "Annotation maps describing the entire Gene Ontology")
     (description
      "The purpose of this GO.db annotation package is to provide detailed
@@ -7330,7 +7330,7 @@ information about the latest version of the Gene Ontologies.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)))
-    (home-page "http://bioconductor.org/packages/graph")
+    (home-page "https://bioconductor.org/packages/graph")
     (synopsis "Handle graph data structures in R")
     (description
      "This package implements some simple graph handling capabilities for R.")
@@ -7359,7 +7359,7 @@ information about the latest version of the Gene Ontologies.")
        ("r-lattice" ,r-lattice)
        ("r-matrixstats" ,r-matrixstats)
        ("r-sparsem" ,r-sparsem)))
-    (home-page "http://bioconductor.org/packages/topGO")
+    (home-page "https://bioconductor.org/packages/topGO")
     (synopsis "Enrichment analysis for gene ontology")
     (description
      "The topGO package provides tools for testing @dfn{gene ontology} (GO)
@@ -7392,7 +7392,7 @@ dependencies between GO terms can be implemented and applied.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xvector" ,r-xvector)))
-    (home-page "http://bioconductor.org/packages/BSgenome")
+    (home-page "https://bioconductor.org/packages/BSgenome")
     (synopsis "Infrastructure for Biostrings-based genome data packages")
     (description
      "This package provides infrastructure shared by all Biostrings-based
@@ -7407,7 +7407,7 @@ genome data packages and support for efficient SNP representation.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "BSgenome.Hsapiens.1000genomes.hs37d5_"
                                   version ".tar.gz"))
@@ -7423,7 +7423,7 @@ genome data packages and support for efficient SNP representation.")
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
-     "http://www.bioconductor.org/packages/BSgenome.Hsapiens.1000genomes.hs37d5/")
+     "https://www.bioconductor.org/packages/BSgenome.Hsapiens.1000genomes.hs37d5/")
     (synopsis "Full genome sequences for Homo sapiens")
     (description
      "This package provides full genome sequences for Homo sapiens from
@@ -7443,7 +7443,7 @@ genome data packages and support for efficient SNP representation.")
     (inputs
      `(("gfortran" ,gfortran)))
     (build-system r-build-system)
-    (home-page "http://bioconductor.org/packages/impute")
+    (home-page "https://bioconductor.org/packages/impute")
     (synopsis "Imputation for microarray data")
     (description
      "This package provides a function to impute missing gene expression
@@ -7469,7 +7469,7 @@ microarray data, using nearest neighbor averaging.")
        ("r-iranges" ,r-iranges)
        ("r-kernsmooth" ,r-kernsmooth)
        ("r-plotrix" ,r-plotrix)))
-    (home-page "http://bioconductor.org/packages/seqPattern")
+    (home-page "https://bioconductor.org/packages/seqPattern")
     (synopsis "Visualising oligonucleotide patterns and motif occurrences")
     (description
      "This package provides tools to visualize oligonucleotide patterns and
@@ -7562,7 +7562,7 @@ downloaded from Encode.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "org.Hs.eg.db_" version ".tar.gz"))
               (sha256
@@ -7573,7 +7573,7 @@ downloaded from Encode.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)))
-    (home-page "http://www.bioconductor.org/packages/org.Hs.eg.db/")
+    (home-page "https://www.bioconductor.org/packages/org.Hs.eg.db/")
     (synopsis "Genome wide annotation for Human")
     (description
      "This package provides mappings from Entrez gene identifiers to various
@@ -7588,7 +7588,7 @@ annotations for the human genome.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "org.Ce.eg.db_" version ".tar.gz"))
               (sha256
@@ -7599,7 +7599,7 @@ annotations for the human genome.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)))
-    (home-page "http://www.bioconductor.org/packages/org.Ce.eg.db/")
+    (home-page "https://www.bioconductor.org/packages/org.Ce.eg.db/")
     (synopsis "Genome wide annotation for Worm")
     (description
      "This package provides mappings from Entrez gene identifiers to various
@@ -7614,7 +7614,7 @@ annotations for the genome of the model worm Caenorhabditis elegans.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "org.Dm.eg.db_" version ".tar.gz"))
               (sha256
@@ -7625,7 +7625,7 @@ annotations for the genome of the model worm Caenorhabditis elegans.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)))
-    (home-page "http://www.bioconductor.org/packages/org.Dm.eg.db/")
+    (home-page "https://www.bioconductor.org/packages/org.Dm.eg.db/")
     (synopsis "Genome wide annotation for Fly")
     (description
      "This package provides mappings from Entrez gene identifiers to various
@@ -7640,7 +7640,7 @@ annotations for the genome of the model fruit fly Drosophila melanogaster.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "org.Mm.eg.db_" version ".tar.gz"))
               (sha256
@@ -7651,7 +7651,7 @@ annotations for the genome of the model fruit fly Drosophila melanogaster.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)))
-    (home-page "http://www.bioconductor.org/packages/org.Mm.eg.db/")
+    (home-page "https://www.bioconductor.org/packages/org.Mm.eg.db/")
     (synopsis "Genome wide annotation for Mouse")
     (description
      "This package provides mappings from Entrez gene identifiers to various
@@ -7671,7 +7671,7 @@ annotations for the genome of the model mouse Mus musculus.")
          "19d5zmy7m8svljwgbmrb4vxkq18slq0f3all6k2ayv42b8w44h6q"))))
     (properties `((upstream-name . "seqLogo")))
     (build-system r-build-system)
-    (home-page "http://bioconductor.org/packages/seqLogo")
+    (home-page "https://bioconductor.org/packages/seqLogo")
     (synopsis "Sequence logos for DNA sequence alignments")
     (description
      "seqLogo takes the position weight matrix of a DNA sequence motif and
@@ -7687,7 +7687,7 @@ Stephens (1990).")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "BSgenome.Hsapiens.UCSC.hg19_"
                                   version ".tar.gz"))
@@ -7703,7 +7703,7 @@ Stephens (1990).")
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
-     "http://www.bioconductor.org/packages/BSgenome.Hsapiens.UCSC.hg19/")
+     "https://www.bioconductor.org/packages/BSgenome.Hsapiens.UCSC.hg19/")
     (synopsis "Full genome sequences for Homo sapiens")
     (description
      "This package provides full genome sequences for Homo sapiens as provided
@@ -7718,7 +7718,7 @@ by UCSC (hg19, February 2009) and stored in Biostrings objects.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "BSgenome.Mmusculus.UCSC.mm9_"
                                   version ".tar.gz"))
@@ -7734,7 +7734,7 @@ by UCSC (hg19, February 2009) and stored in Biostrings objects.")
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
-     "http://www.bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm9/")
+     "https://www.bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm9/")
     (synopsis "Full genome sequences for Mouse")
     (description
      "This package provides full genome sequences for Mus musculus (Mouse) as
@@ -7749,7 +7749,7 @@ provided by UCSC (mm9, July 2007) and stored in Biostrings objects.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "BSgenome.Mmusculus.UCSC.mm10_"
                                   version ".tar.gz"))
@@ -7765,7 +7765,7 @@ provided by UCSC (mm9, July 2007) and stored in Biostrings objects.")
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
-     "http://www.bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm10/")
+     "https://www.bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm10/")
     (synopsis "Full genome sequences for Mouse")
     (description
      "This package provides full genome sequences for Mus
@@ -7781,7 +7781,7 @@ in Biostrings objects.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "TxDb.Mmusculus.UCSC.mm10.knownGene_"
                                   version ".tar.gz"))
@@ -7799,7 +7799,7 @@ in Biostrings objects.")
        ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-annotationdbi" ,r-annotationdbi)))
     (home-page
-     "http://bioconductor.org/packages/TxDb.Mmusculus.UCSC.mm10.knownGene/")
+     "https://bioconductor.org/packages/TxDb.Mmusculus.UCSC.mm10.knownGene/")
     (synopsis "Annotation package for TxDb knownGene object(s) for Mouse")
     (description
      "This package loads a TxDb object, which is an R interface to
@@ -7816,7 +7816,7 @@ based on the knownGene track.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "BSgenome.Celegans.UCSC.ce6_"
                                   version ".tar.gz"))
@@ -7832,7 +7832,7 @@ based on the knownGene track.")
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
-     "http://www.bioconductor.org/packages/BSgenome.Celegans.UCSC.ce6/")
+     "https://www.bioconductor.org/packages/BSgenome.Celegans.UCSC.ce6/")
     (synopsis "Full genome sequences for Worm")
     (description
      "This package provides full genome sequences for Caenorhabditis
@@ -7848,7 +7848,7 @@ objects.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "BSgenome.Celegans.UCSC.ce10_"
                                   version ".tar.gz"))
@@ -7864,7 +7864,7 @@ objects.")
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
-     "http://www.bioconductor.org/packages/BSgenome.Celegans.UCSC.ce10/")
+     "https://www.bioconductor.org/packages/BSgenome.Celegans.UCSC.ce10/")
     (synopsis "Full genome sequences for Worm")
     (description
      "This package provides full genome sequences for Caenorhabditis
@@ -7880,7 +7880,7 @@ objects.")
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
               ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
+              (uri (string-append "https://www.bioconductor.org/packages/"
                                   "release/data/annotation/src/contrib/"
                                   "BSgenome.Dmelanogaster.UCSC.dm3_"
                                   version ".tar.gz"))
@@ -7896,7 +7896,7 @@ objects.")
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
-     "http://www.bioconductor.org/packages/BSgenome.Dmelanogaster.UCSC.dm3/")
+     "https://www.bioconductor.org/packages/BSgenome.Dmelanogaster.UCSC.dm3/")
     (synopsis "Full genome sequences for Fly")
     (description
      "This package provides full genome sequences for Drosophila
@@ -7924,7 +7924,7 @@ Biostrings objects.")
        ("r-iranges" ,r-iranges)
        ("r-seqlogo" ,r-seqlogo)
        ("r-xvector" ,r-xvector)))
-    (home-page "http://bioconductor.org/packages/motifRG")
+    (home-page "https://bioconductor.org/packages/motifRG")
     (synopsis "Discover motifs in high throughput sequencing data")
     (description
      "This package provides tools for discriminative motif discovery in high
@@ -8046,7 +8046,7 @@ of other R packages who wish to make use of HTSlib.")
        ("r-zlibbioc" ,r-zlibbioc)))
     (inputs
      `(("zlib" ,zlib)))
-    (home-page "http://bioconductor.org/packages/bamsignals")
+    (home-page "https://bioconductor.org/packages/bamsignals")
     (synopsis "Extract read count signals from bam files")
     (description
      "This package allows to efficiently obtain count vectors from indexed bam
@@ -8175,7 +8175,7 @@ library implementing most of the pipeline's features.")
        ("r-reshape2" ,r-reshape2)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-variantannotation" ,r-variantannotation)))
-    (home-page "http://bioconductor.org/packages/MutationalPatterns/")
+    (home-page "https://bioconductor.org/packages/MutationalPatterns/")
     (synopsis "Extract and visualize mutational patterns in genomic data")
     (description "This package provides an extensive toolset for the
 characterization and visualization of a wide range of mutational patterns
@@ -8331,7 +8331,7 @@ kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
                (base32
                 "1mklb02bj4gnbjlmb7vv6k4lr3w9fp3pzli9rddbrwd0y5n8fcpx"))))
     (build-system r-build-system)
-    (home-page "http://bioconductor.org/packages/tximport")
+    (home-page "https://bioconductor.org/packages/tximport")
     (synopsis "Import and summarize transcript-level estimates for gene-level analysis")
     (description
      "This package provides tools to import transcript-level abundance,
@@ -8373,7 +8373,7 @@ of gene-level counts.")
     (inputs
      `(("perl" ,perl)
        ("zlib" ,zlib)))
-    (home-page "http://bioconductor.org/packages/rhdf5")
+    (home-page "https://bioconductor.org/packages/rhdf5")
     (synopsis "HDF5 interface to R")
     (description
      "This R/Bioconductor package provides an interface between HDF5 and R.
@@ -8692,7 +8692,7 @@ common bioinformatics tools.")
        ("r-iranges" ,r-iranges)
        ("r-s4vectors" ,r-s4vectors)
        ("r-shortread" ,r-shortread)))
-    (home-page "http://bioconductor.org/packages/chipseq")
+    (home-page "https://bioconductor.org/packages/chipseq")
     (synopsis "Package for analyzing ChIPseq data")
     (description
      "This package provides tools for processing short read data from ChIPseq
@@ -8706,7 +8706,7 @@ experiments.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://bioconductor.org/packages/release/"
+       (uri (string-append "https://bioconductor.org/packages/release/"
                            "data/experiment/src/contrib/CopyhelpeR_"
                            version ".tar.gz"))
        (sha256
@@ -8714,7 +8714,7 @@ experiments.")
          "0x7cyynjmxls9as2gg0iyp9x5fpalxmdjq914ss7i84i9zyk5bhq"))))
     (properties `((upstream-name . "CopyhelpeR")))
     (build-system r-build-system)
-    (home-page "http://bioconductor.org/packages/CopyhelpeR/")
+    (home-page "https://bioconductor.org/packages/CopyhelpeR/")
     (synopsis "Helper files for CopywriteR")
     (description
      "This package contains the helper files that are required to run the
@@ -8829,7 +8829,7 @@ TAB-Seq.")
        ("r-biocparallel" ,r-biocparallel)
        ("r-matrixstats" ,r-matrixstats)
        ("r-limma" ,r-limma)))
-    (home-page "http://bioconductor.org/packages/sva")
+    (home-page "https://bioconductor.org/packages/sva")
     (synopsis "Surrogate variable analysis")
     (description
      "This package contains functions for removing batch effects and other
@@ -9017,7 +9017,7 @@ CDF file formats.")
        ("r-biocinstaller" ,r-biocinstaller)
        ("r-preprocesscore" ,r-preprocesscore)
        ("r-zlibbioc" ,r-zlibbioc)))
-    (home-page "http://bioconductor.org/packages/affy")
+    (home-page "https://bioconductor.org/packages/affy")
     (synopsis "Methods for affymetrix oligonucleotide arrays")
     (description
      "This package contains functions for exploratory oligonucleotide array
@@ -9043,7 +9043,7 @@ analysis.")
        ("r-hexbin" ,r-hexbin)
        ("r-lattice" ,r-lattice)
        ("r-limma" ,r-limma)))
-    (home-page "http://bioconductor.org/packages/release/bioc/html/vsn.html")
+    (home-page "https://bioconductor.org/packages/release/bioc/html/vsn.html")
     (synopsis "Variance stabilization and calibration for microarray data")
     (description
      "The package implements a method for normalising microarray intensities,
@@ -9080,7 +9080,7 @@ and specific in detecting differential transcription.")
        ("r-protgenerics" ,r-protgenerics)
        ("r-rcpp" ,r-rcpp)
        ("r-xml" ,r-xml)))
-    (home-page "http://bioconductor.org/packages/mzID")
+    (home-page "https://bioconductor.org/packages/mzID")
     (synopsis "Parser for mzIdentML files")
     (description
      "This package provides a parser for mzIdentML files implemented using the
@@ -9187,7 +9187,7 @@ of mass spectrometry based proteomics data.")
        ("r-r-cache" ,r-r-cache)
        ("r-rcpp" ,r-rcpp)
        ("r-reshape2" ,r-reshape2)))
-    (home-page "http://bioconductor.org/packages/MSnID")
+    (home-page "https://bioconductor.org/packages/MSnID")
     (synopsis "Utilities for LC-MSn proteomics identifications")
     (description
      "This package extracts @dfn{tandem mass spectrometry} (MS/MS) ID data
@@ -9391,7 +9391,7 @@ global-scaling and full-quantile normalization.")
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-shiny" ,r-shiny)))
-    (home-page "http://bioconductor.org/packages/interactiveDisplayBase")
+    (home-page "https://bioconductor.org/packages/interactiveDisplayBase")
     (synopsis "Base package for web displays of Bioconductor objects")
     (description
      "This package contains the basic methods needed to generate interactive
@@ -9420,7 +9420,7 @@ Shiny-based display methods for Bioconductor objects.")
        ("r-rsqlite" ,r-rsqlite)
        ("r-s4vectors" ,r-s4vectors)
        ("r-yaml" ,r-yaml)))
-    (home-page "http://bioconductor.org/packages/AnnotationHub")
+    (home-page "https://bioconductor.org/packages/AnnotationHub")
     (synopsis "Client to access AnnotationHub resources")
     (description
      "This package provides a client for the Bioconductor AnnotationHub web
@@ -10035,13 +10035,18 @@ browser.")
          #:phases
          (modify-phases %standard-phases
            (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((target (assoc-ref outputs "out"))
                       (doc (string-append target "/share/doc/f-seq/")))
                  (mkdir-p target)
                  (mkdir-p doc)
                  (substitute* "bin/linux/fseq"
-                   (("java") (which "java")))
+                   (("java") (which "java"))
+                   (("\\$REALDIR/../lib/commons-cli-1.1.jar")
+                    (string-append (assoc-ref inputs "java-commons-cli")
+                                   "/share/java/commons-cli.jar"))
+                   (("REALDIR=.*")
+                    (string-append "REALDIR=" target "/bin\n")))
                  (install-file "README.txt" doc)
                  (install-file "bin/linux/fseq" (string-append target "/bin"))
                  (install-file "build~/fseq.jar" (string-append target "/lib"))

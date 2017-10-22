@@ -284,7 +284,7 @@ asynchronous fashion.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.6.3")
+    (version "1.6.7")
     (source
      (origin
        (method url-fetch)
@@ -292,7 +292,7 @@ asynchronous fashion.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0pw4m4z5qspsagxzbjb61xq5bhd57amw26xqvqzi6b8d3mf6azjc"))))
+         "17qwfmlls0w9kpkya3dlpn44b3kr87wsswzg3gawc13hh8yx8ysf"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
@@ -443,9 +443,9 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.2.5")
+    (version "2.2.6")
     (source
-     (let ((build "6937"))
+     (let ((build "7246"))
        (origin
          (method url-fetch)
          (uri
@@ -453,7 +453,7 @@ served by AS112.  Stub and forward zones are supported.")
                          name "-" version "-" build ".tar.gz"))
          (sha256
           (base32
-           "146fs52izf6dfwsxal3srpwin2yyl41g31cy4pyvbi5mqy2craj7")))))
+           "041a35f5jz2wcn8pxk1m7b2qln2wbvj4ddwb0a53lqabl912xi6p")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))

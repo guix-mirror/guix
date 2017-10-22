@@ -85,6 +85,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
@@ -1115,7 +1116,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.10.15.1")
+    (version "2017.10.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1123,7 +1124,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0zr9sx0nxk36si8xbvhlnazb69xzlygrhsxcyiydm0dy5y5ycsns"))))
+                "0npr8b1xg1dylz717kfllw433h1y16251npzch48lchq69bhm4iy"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2385,3 +2386,89 @@ tables")
 generation of MPEG TS and DVB PSI tables according to standards ISO/IEC 13818s
 and ITU-T H.222.0.")
     (license license:lgpl2.1)))
+
+(define-public ffms2
+  (package
+    (name "ffms2")
+    (version "2.23")
+    (home-page "https://github.com/FFMS/ffms2/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vbkab8vrplxz5xgag8ggzkwp4f7nf285pd0l2a7zy66n6i2m6xh"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "--enable-avresample")))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("ffmpeg" ,ffmpeg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Cross-platform wrapper around ffmpeg/libav")
+    (description
+      "FFMpegSource is a wrapper library around ffmpeg/libav that allows
+programmers to access a standard API to open and decompress media files.")
+    ;; sources are distributed under a different license that the binary.
+    ;; see https://github.com/FFMS/ffms2/blob/master/COPYING
+    (license license:gpl2+))); inherits from ffmpeg
+
+(define-public aegisub
+  (package
+    (name "aegisub")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "http://ftp.aegisub.org/pub/archives/releases/source/"
+                     name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "11b83qazc8h0iidyj1rprnnjdivj1lpphvpa08y53n42bfa36pn5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-update-checker"
+             "--without-portaudio"
+             "--without-openal"
+             "--without-oss")
+       ;; tests require busted, a lua package we don't have yet
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-ldflags
+           (lambda _
+             (setenv "LDFLAGS" "-pthread"))))))
+    (inputs
+     `(("boost" ,boost)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("ffms2" ,ffms2)
+       ("fftw" ,fftw)
+       ("hunspell" ,hunspell)
+       ("mesa" ,mesa)
+       ("libass" ,libass)
+       ("alsa-lib" ,alsa-lib)
+       ("pulseaudio" ,pulseaudio)
+       ("libx11" ,libx11)
+       ("freetype" ,freetype)
+       ("wxwidgets-gtk2" ,wxwidgets-gtk2)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://www.aegisub.org/")
+    (synopsis "Subtitle engine")
+    (description
+      "Aegisub is a tool for creating and modifying subtitles.  Aegisub makes
+it quick and easy to time subtitles to audio, and features many powerful
+tools for styling them, including a built-in real-time video preview.")
+    (license (list license:bsd-3 ; the package is licensed under the bsd-3, except
+                   license:mpl1.1 ; for vendor/universalchardet under the mpl1.1
+                   license:expat)))) ; and src/gl that is under a license similar
+   ; the the Expat license, with a rewording (Software -> Materials). (called MIT
+   ; by upstream). See https://github.com/Aegisub/Aegisub/blob/master/LICENCE
+   ; src/MatroskaParser.(c|h) is under bsd-3 with permission from the author
+

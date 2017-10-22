@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix modules)
   #:use-module (guix packages)
   #:use-module (ice-9 match)
   #:export (cvs-reference
@@ -59,16 +60,35 @@
   "Return a fixed-output derivation that fetches REF, a <cvs-reference>
 object.  The output is expected to have recursive hash HASH of type
 HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
+  (define zlib
+    (module-ref (resolve-interface '(gnu packages compression)) 'zlib))
+
+  (define config.scm
+    (scheme-file "config.scm"
+                 #~(begin
+                     (define-module (guix config)
+                       #:export (%libz))
+
+                     (define %libz
+                       #+(file-append zlib "/lib/libz")))))
+
+  (define modules
+    (cons `((guix config) => ,config.scm)
+          (delete '(guix config)
+                  (source-module-closure '((guix build cvs)
+                                           (guix build download-nar))))))
   (define build
-    (with-imported-modules '((guix build cvs)
-                             (guix build utils))
+    (with-imported-modules modules
       #~(begin
-          (use-modules (guix build cvs))
-          (cvs-fetch '#$(cvs-reference-root-directory ref)
-                     '#$(cvs-reference-module ref)
-                     '#$(cvs-reference-revision ref)
-                     #$output
-                     #:cvs-command (string-append #+cvs "/bin/cvs")))))
+          (use-modules (guix build cvs)
+                       (guix build download-nar))
+
+          (or (cvs-fetch '#$(cvs-reference-root-directory ref)
+                         '#$(cvs-reference-module ref)
+                         '#$(cvs-reference-revision ref)
+                         #$output
+                         #:cvs-command (string-append #+cvs "/bin/cvs"))
+              (download-nar #$output)))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "cvs-checkout") build

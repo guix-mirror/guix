@@ -47,6 +47,7 @@ MODULES =					\
   guix/hash.scm					\
   guix/pk-crypto.scm				\
   guix/pki.scm					\
+  guix/progress.scm				\
   guix/combinators.scm				\
   guix/memoization.scm				\
   guix/utils.scm				\
@@ -105,6 +106,7 @@ MODULES =					\
   guix/ui.scm					\
   guix/build/ant-build-system.scm		\
   guix/build/download.scm			\
+  guix/build/download-nar.scm			\
   guix/build/cargo-build-system.scm		\
   guix/build/cmake-build-system.scm		\
   guix/build/dub-build-system.scm		\

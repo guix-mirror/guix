@@ -617,7 +617,11 @@ HostPrefix=~a
 HostData=lib/qt5
 HostBinaries=bin
 HostLibraries=lib
-" out out)))
+
+[EffectiveSourcePaths]
+HostPrefix=~a
+HostData=lib/qt5
+" out out qtbase)))
                #t)))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -1443,7 +1447,7 @@ message.")))
 (define-public python-sip
   (package
     (name "python-sip")
-    (version "4.19.2")
+    (version "4.19.3")
     (source
       (origin
         (method url-fetch)
@@ -1452,7 +1456,7 @@ message.")))
                          "sip-" version "/sip-" version ".tar.gz"))
         (sha256
          (base32
-          "0cq5r21fmjyw5v7a6l4sfbaj3zgm7k5b2cryj6bnjki54nnllas3"))))
+          "0x2bghbprwl3az1ni3p87i0bq8r99694la93kg65vi0cz12gh3bl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))
@@ -1506,7 +1510,7 @@ module provides support functions to the automatically generated code.")
 (define-public python-pyqt
   (package
     (name "python-pyqt")
-    (version "5.8.2")
+    (version "5.9")
     (source
       (origin
         (method url-fetch)
@@ -1516,7 +1520,7 @@ module provides support functions to the automatically generated code.")
                          version ".tar.gz"))
         (sha256
          (base32
-          "1s1nalcspam9dc7f63jkqn1i2sv9lrqn57p2zsc61g8bncahbmzb"))
+          "15hh4z5vd45dcswjla58q6rrfr6ic7jfz2n7c8lwfb10rycpj3mb"))
        (patches (search-patches "pyqt-configure.patch"))))
     (build-system gnu-build-system)
     (native-inputs

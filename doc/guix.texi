@@ -5881,7 +5881,7 @@ dependency graph of the given upstream package recursively and generate
 package expressions for all those packages that are not yet in Guix.
 
 When @code{--archive=bioconductor} is added, metadata is imported from
-@uref{http://www.bioconductor.org/, Bioconductor}, a repository of R
+@uref{https://www.bioconductor.org/, Bioconductor}, a repository of R
 packages for for the analysis and comprehension of high-throughput
 genomic data in bioinformatics.
 
@@ -6236,7 +6236,7 @@ the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
 @item cran
 the updater for @uref{http://cran.r-project.org/, CRAN} packages;
 @item bioconductor
-the updater for @uref{http://www.bioconductor.org/, Bioconductor} R packages;
+the updater for @uref{https://www.bioconductor.org/, Bioconductor} R packages;
 @item cpan
 the updater for @uref{http://www.cpan.org/, CPAN} packages;
 @item pypi
@@ -18605,7 +18605,8 @@ The boot script is what the initial RAM disk runs when booting.
 @end defvr
 
 @defvr {Scheme Variable} etc-service-type
-The type of the @file{/etc} service.  This service can be extended by
+The type of the @file{/etc} service.  This service is used to create
+files under @file{/etc} and can be extended by
 passing it name/file tuples such as:
 
 @example

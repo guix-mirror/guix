@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
@@ -117,19 +117,19 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.2")
+    (version "3.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0c06yj5hgqibi24ib9sx865kq6i1h18wn201g6iwcfbpi2a7psdm"))))
+               "1v110avpdz0bvz3yh3cfvvd0dnn7sa6hrpql2h8dgnri8fww6cag"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'pre-build
+         (add-before 'check 'prepare-test-suite
            (lambda _
              ;; Use the right file name for `cat'.
              (substitute* "testsuite/lib/mailutils.exp"
@@ -161,6 +161,17 @@
              (substitute* "comsat/tests/Makefile.in"
                (("\\$\\(SHELL\\) \\$\\(TESTSUITE\\)" all)
                 (string-append "-" all)))
+
+             ;; 'frm' tests expect write access to $HOME.
+             (setenv "HOME" (getcwd))
+
+             ;; Avoid the message "I'm going to create the standard MH path
+             ;; for you", which would lead to one test failure (when diffing
+             ;; stdout of 'fmtcheck'.)
+             (call-with-output-file ".mh_profile"
+               (lambda (port)
+                 (format port "Path: ~a/Mail-for-tests~%"
+                         (getcwd))))
 
              #t)))
        ;; TODO: Add `--with-sql'.
@@ -1097,7 +1108,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.2.33.1")
+    (version "2.2.33.2")
     (source
      (origin
        (method url-fetch)
@@ -1105,7 +1116,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "02w932hq8v9889k709gbg94jl983lzwd3nh51vkxq041821a3ng4"))))
+                "117f9i62liz2pm96zi2lpldzlj2knzj7g410zhifwmlsc1w3n7py"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

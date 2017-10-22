@@ -162,6 +162,7 @@ which allows users to view a desktop computing environment.")
         ("spice-protocol" ,spice-protocol)))
     (inputs
       `(("glib-networking" ,glib-networking)
+        ("gobject-introspection" ,gobject-introspection)
         ("gtk+" ,gtk+)
         ("libepoxy" ,libepoxy)
         ("libjpeg" ,libjpeg)
@@ -182,7 +183,8 @@ which allows users to view a desktop computing environment.")
       `(#:configure-flags
         '("--enable-gstaudio"
           "--enable-gstvideo"
-          "--enable-pulse")
+          "--enable-pulse"
+          "--enable-introspection")
         #:phases
          (modify-phases %standard-phases
            (add-after

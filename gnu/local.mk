@@ -66,6 +66,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/autotools.scm			\
   %D%/packages/avahi.scm			\
   %D%/packages/avr.scm				\
+  %D%/packages/axoloti.scm			\
   %D%/packages/backup.scm			\
   %D%/packages/base.scm				\
   %D%/packages/bash.scm				\
@@ -810,6 +811,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunistring-gnulib-multi-core.patch	\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
+  %D%/packages/patches/libusb-for-axoloti.patch			\
+  %D%/packages/patches/libvirt-CVE-2017-1000256.patch		\
   %D%/packages/patches/libvisio-fix-tests.patch			\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
@@ -864,8 +867,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-version-detection.patch		\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\
+  %D%/packages/patches/mupdf-CVE-2017-15587.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
-  %D%/packages/patches/musl-CVE-2016-8859.patch			\
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/ncurses-CVE-2017-10684-10685.patch	\
   %D%/packages/patches/net-tools-bitrot.patch			\
@@ -1092,6 +1095,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
+  %D%/packages/patches/wpa-supplicant-CVE-2017-13082.patch	\
+  %D%/packages/patches/wpa-supplicant-fix-key-reuse.patch	\
+  %D%/packages/patches/wpa-supplicant-fix-zeroed-keys.patch	\
+  %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
+  %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
   %D%/packages/patches/xcb-proto-python3-print.patch		\
   %D%/packages/patches/xcb-proto-python3-whitespace.patch	\
   %D%/packages/patches/xdotool-fix-makefile.patch               \
