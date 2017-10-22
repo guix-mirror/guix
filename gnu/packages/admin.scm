@@ -783,6 +783,11 @@ over ssh connections.")
                                          "/etc"))
 
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-paths
+                    (lambda _
+                      (substitute* "rc/rc"
+                        (("/usr/sbin/sendmail") "sendmail"))
+                      #t))
                   (add-after 'build 'set-packdir
                     (lambda _
                       ;; Set a default location for archived logs.
