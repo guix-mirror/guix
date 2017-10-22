@@ -1582,14 +1582,14 @@ on another machine, accessed via TCP/IP.")
 (define-public python-peewee
   (package
     (name "python-peewee")
-    (version "2.8.3")
+    (version "2.10.2")
       (source
         (origin
         (method url-fetch)
         (uri (pypi-uri "peewee" version))
         (sha256
          (base32
-          "1605bk11s7aap2q4qyba93rx7yfh8b11kk0cqi08z8klx2iar8yd"))))
+          "10f2mrd5hw6rjklrzaix2lsxlgc8vx3xak54arcy6yd791zhchi3"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; Fails to import test data
