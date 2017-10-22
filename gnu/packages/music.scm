@@ -2807,8 +2807,8 @@ plugins, a switch trigger, a toggle switch, and a peakmeter.")
       (license license:gpl2+))))
 
 (define-public ingen
-  (let ((commit "fd147d0b888090bfb897505852c1f25dbdf77e18")
-        (revision "1"))
+  (let ((commit "cc4a4db33f4d126a07a4a498e053c5fb9a883be3")
+        (revision "2"))
     (package
       (name "ingen")
       (version (string-append "0.0.0-" revision "."
@@ -2822,7 +2822,7 @@ plugins, a switch trigger, a toggle switch, and a peakmeter.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "1qmg79962my82c43vyrv5sxbqci9c7gc2s9bwaaqd0fcf08xcz1z"))))
+           "1wg47vjw9djn99gbnsl2bcwj4xhdid61m4wrbn2nlp797flj91ic"))))
       (build-system waf-build-system)
       (arguments
        `(#:tests? #f ; no "check" target
@@ -2866,7 +2866,7 @@ plugins, a switch trigger, a toggle switch, and a peakmeter.")
          ("python-rdflib" ,python-rdflib)
          ("python" ,python)
          ("jack" ,jack-1)
-         ("lv2" ,lv2)
+         ("lv2" ,lv2-devel)
          ("lilv" ,lilv)
          ("raul" ,raul-devel)
          ("ganv" ,ganv-devel)
