@@ -2526,8 +2526,22 @@ in applications using the KDE Frameworks.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rq9b59gdgcpvwd694l8h55sqahpdaky0n7ag5psjlfn5myf1d95"))))
+                "1rq9b59gdgcpvwd694l8h55sqahpdaky0n7ag5psjlfn5myf1d95"))
+              ;; Use the store paths for other packages and dynamically loaded
+              ;; libs
+              (patches (search-patches "kinit-kdeinit-extra_libs.patch"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Set patched-in values:
+             (substitute* "src/kdeinit/kinit.cpp"
+               (("GUIX_PKGS_KF5_KIO") (assoc-ref inputs "kio"))
+               (("GUIX_PKGS_KF5_PARTS") (assoc-ref inputs "kparts"))
+               (("GUIX_PKGS_KF5_PLASMA") (assoc-ref inputs "plasma-framework")))
+             #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
@@ -2545,11 +2559,13 @@ in applications using the KDE Frameworks.")
        ("kitemviews" ,kitemviews)
        ("ki18n" ,ki18n)
        ("kjobwidgets" ,kjobwidgets)
+       ("kparts" ,kparts)
        ("kservice" ,kservice)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
        ("libcap" ,libcap) ; to install start_kdeinit with CAP_SYS_RESOURCE
+       ("plasma-framework" ,plasma-framework)
        ("qtbase" ,qtbase)
        ("solid" ,solid)))
     (home-page "https://community.kde.org/Frameworks")

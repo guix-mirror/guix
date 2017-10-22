@@ -1,0 +1,55 @@
+Search the "extra libs" in GUIX_KF5INIT_LIB_PATH (which basically is a
+collection of all /lib directories). We can not hard-code the full path to the
+libsKF5Plasam, since adding palse-workspace
+
+Adopted from NixOS
+pkgs/development/libraries/kde-frameworks/kinit/kdeinit-extra_libs.patch
+
+===================================================================
+--- kinit-5.32.0/src/kdeinit/kinit-5.32.0/src/kdeinit/.orig
++++ kinit-5.32.0/src/kdeinit/kinit.cpp
+@@ -96,11 +96,9 @@
+     "libKF5Parts.5.dylib",
+     "libKF5Plasma.5.dylib"
+ #else
+-    "libKF5KIOCore.so.5",
+-    "libKF5Parts.so.5",
+-//#ifdef __KDE_HAVE_GCC_VISIBILITY // Removed for KF5, we'll see.
+-    "libKF5Plasma.so.5"
+-//#endif
++    "GUIX_PKGS_KF5_KIO/lib/libKF5KIOCore.so.5",
++    "GUIX_PKGS_KF5_PARTS/lib/libKF5Parts.so.5",
++    "GUIX_PKGS_KF5_PLASMA/lib/libKF5Plasma.so.5"
+ #endif
+ };
+ #endif
+@@ -1533,20 +1531,6 @@ static int initXconnection()
+ }
+ #endif
+ 
+-#ifndef Q_OS_OSX
+-// Find a shared lib in the lib dir, e.g. libkio.so.
+-// Completely unrelated to plugins.
+-static QString findSharedLib(const QString &lib)
+-{
+-    QString path = QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIB_INSTALL_DIR "/") + lib;
+-    if (QFile::exists(path)) {
+-        return path;
+-    }
+-    // We could also look in LD_LIBRARY_PATH, but really, who installs the main libs in different prefixes?
+-    return QString();
+-}
+-#endif
+-
+ extern "C" {
+ 
+     static void secondary_child_handler(int)
+@@ -1689,7 +1693,7 @@
+     if (!d.suicide && qEnvironmentVariableIsEmpty("KDE_IS_PRELINKED")) {
+         const int extrasCount = sizeof(extra_libs) / sizeof(extra_libs[0]);
+         for (int i = 0; i < extrasCount; i++) {
+-            const QString extra = findSharedLib(QString::fromLatin1(extra_libs[i]));
++            const QString extra = QString::fromLatin1(extra_libs[i]);
+             if (!extra.isEmpty()) {
+                 QLibrary l(extra);
+                 l.setLoadHints(QLibrary::ExportExternalSymbolsHint);
