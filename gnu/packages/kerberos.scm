@@ -46,8 +46,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (replacement mit-krb5-1.15.2)
-    (version "1.15.1")
+    (version "1.15.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://web.mit.edu/kerberos/dist/krb5/"
@@ -55,7 +54,7 @@
                                   "/krb5-" version ".tar.gz"))
               (sha256
                (base32
-                "0igbi5d095c2hgpn2cixpc4q2ij8vgg2bx7yjfly5zfmvlqqhz23"))))
+                "0zn8s7anb10hw3nzwjz7vg10fgmmgvwnibn2zrn3nppjxn9f6f8n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -93,19 +92,6 @@ cryptography.")
                                    "See NOTICE in the distribution."))
     (home-page "http://web.mit.edu/kerberos/")
     (properties '((cpe-name . "kerberos")))))
-
-(define mit-krb5-1.15.2 ; CVE-2017-{11368,11462}
-  (package
-    (inherit mit-krb5)
-    (version "1.15.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://web.mit.edu/kerberos/dist/krb5/"
-                                  (version-major+minor version)
-                                  "/krb5-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0zn8s7anb10hw3nzwjz7vg10fgmmgvwnibn2zrn3nppjxn9f6f8n"))))))
 
 (define-public shishi
   (package
