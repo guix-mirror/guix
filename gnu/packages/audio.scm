@@ -1660,6 +1660,21 @@ add functionality to support the needs of increasingly powerful audio
 software.")
     (license license:isc)))
 
+(define-public lv2-devel
+  (let ((commit "39c7c726cd52b2863fcea356cafe1bcab2ba7f37")
+        (revision "1"))
+    (package (inherit lv2)
+      (name "lv2-devel")
+      (version (string-append "1.15.3-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://lv2plug.in/git/lv2.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1gp2rd99dfmpibvpixrqn115mrhybzf3if3h8bssf6siyi13f29r")))))))
+
 (define-public lv2-mda-piano
   (package
     (name "lv2-mda-piano")
