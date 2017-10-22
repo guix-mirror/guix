@@ -2780,7 +2780,7 @@ typed.")
        ("ki18n" ,ki18n)
        ("qtbase" ,qtbase)))
     (arguments
-     `(#:tests? #f ; FIXME: 8/10 tests fail.
+     `(#:tests? #f ; FIXME: 6/10 tests fail.
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
