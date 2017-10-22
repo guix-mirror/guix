@@ -2573,7 +2573,8 @@ makes starting KDE applications faster and reduces memory consumption.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0rrsg3g1b204cdp58vxd5dig1ggwyvk1382p1c86vn6w8qbrq27k"))))
+                "0rrsg3g1b204cdp58vxd5dig1ggwyvk1382p1c86vn6w8qbrq27k"))
+              (patches (search-patches "kio-search-smbd-on-PATH.patch"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kbookmarks" ,kbookmarks)
@@ -2616,11 +2617,10 @@ makes starting KDE applications faster and reduces memory consumption.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch
            (lambda _
-             ;; Better error message (taken from nix)
+             ;; Better error message (taken from NixOS)
              (substitute* "src/kiod/kiod_main.cpp"
                (("(^\\s*qCWarning(KIOD_CATEGORY) << \"Error loading plugin:\")( << loader.errorString();)" _ a b)
                 (string-append a "<< name" b)))
-             ;; TODO: samba-search-path.patch from nix: search smbd on $PATH
              #t))
          (add-before 'check 'check-setup
            (lambda _
