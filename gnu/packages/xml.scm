@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1266,3 +1267,28 @@ This framework aids the development of XML systems with minimal effort and
 reduced errors.  It offers full object serialization and deserialization,
 maintaining each reference encountered.")
     (license license:asl2.0)))
+
+(define-public perl-xml-xpathengine
+  (package
+    (name "perl-xml-xpathengine")
+    (version "0.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MI/MIROD/"
+                                  "XML-XPathEngine-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0r72na14bmsxfd16s9nlza155amqww0k8wsa9x2a3sqbpp5ppznj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/XML-XPathEngine/")
+    (synopsis "Re-usable XPath engine for DOM-like trees")
+    (description
+     "This module provides an XPath engine, that can be re-used by other
+modules/classes that implement trees.
+
+In order to use the XPath engine, nodes in the user module need to mimick DOM
+nodes.  The degree of similitude between the user tree and a DOM dictates how
+much of the XPath features can be used.  A module implementing all of the DOM
+should be able to use this module very easily (you might need to add the
+@code{cmp} method on nodes in order to get ordered result sets).")
+    (license license:perl-license)))
