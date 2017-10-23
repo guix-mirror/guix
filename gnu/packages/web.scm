@@ -52,6 +52,7 @@
   #:use-module (guix build-system r)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system ant)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages check)
@@ -5383,4 +5384,55 @@ collection creation and deletion, and locking operations.")
     (description
      "Py-ubjson is a Python module providing an Universal Binary JSON
 encoder/decoder based on the draft-12 specification for UBJSON.")
+    (license l:asl2.0)))
+
+(define-public java-tomcat
+  (package
+    (name "java-tomcat")
+    (version "8.5.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/tomcat/tomcat-8/v"
+                                  version "/src/apache-tomcat-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1m6b1dikib46kbgz9gf0p6svi00nsw62b9kgjzn6sda151skbbza"))))
+    (build-system ant-build-system)
+    (inputs
+     `(("java-eclipse-jdt-core" ,java-eclipse-jdt-core)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (arguments
+     `(#:build-target "package"
+       #:tests? #f; requires downloading some files.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prevent-download
+           (lambda _
+             ;; This directory must exist
+             (mkdir "downloads")
+             ;; We patch build.xml so it doesn't download any dependency, because
+             ;; we already have all of them.
+             (substitute* "build.xml"
+               (("download-compile,") "")
+               (("depends=\"validate\"") "depends=\"build-prepare\"")
+               ((",download-validate") ""))
+             #t))
+         (add-after 'unpack 'generate-properties
+           (lambda _
+             ;; This could have been passed to make-flags, but getcwd returns
+             ;; a different directory then.
+             (with-output-to-file "build.properties"
+               (lambda _
+                 (display
+                   (string-append "base.path=" (getcwd) "/downloads\n"))))
+             #t))
+         (replace 'install
+           (install-jars "output/build/lib")))))
+    (home-page "https://tomcat.apache.org")
+    (synopsis "Java Servlet, JavaServer Pages, Java Expression Language and Java
+WebSocket")
+    (description "Apache Tomcat is a free implementation of the Java
+Servlet, JavaServer Pages, Java Expression Language and Java WebSocket
+technologies.")
     (license l:asl2.0)))
