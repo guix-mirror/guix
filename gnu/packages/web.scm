@@ -5487,3 +5487,21 @@ technologies.")
 Web Server.")
     ;; This program is licensed under both epl and asl.
     (license (list l:epl1.0 l:asl2.0))))
+
+(define-public java-eclipse-jetty-perf-helper
+  (package
+    (inherit java-eclipse-jetty-test-helper)
+    (name "java-eclipse-jetty-perf-helper")
+    (arguments
+     `(#:jar-name "eclipse-jetty-perf-helper.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f; no tests
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-perf-helper")
+             #t)))))
+    (inputs
+     `(("hdrhistogram" ,java-hdrhistogram)))))
