@@ -655,6 +655,7 @@ domains, their live performance and resource utilization statistics.")
        ("libnl" ,libnl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
        ("protobuf-c" ,protobuf-c)
        ("asciidoc" ,asciidoc)
        ("xmlto" ,xmlto)
