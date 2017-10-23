@@ -1313,3 +1313,27 @@ module/classes that implement trees.  It is designed to be compatible with
 @code{Class::XPath}, ie it passes its tests if you replace @code{Class::XPath}
 by @code{Tree::XPathEngine}.")
     (license license:perl-license)))
+
+(define-public perl-xml-filter-buffertext
+  (package
+    (name "perl-xml-filter-buffertext")
+    (version "1.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RB/RBERJON/"
+                           "XML-Filter-BufferText-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p5785c1dsk6kdp505vapb5h54k8krrz8699hpgm9igf7dni5llg"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-xml-sax-base" ,perl-xml-sax-base)))
+    (home-page "http://search.cpan.org/dist/XML-Filter-BufferText/")
+    (synopsis "Filter to put all characters() in one event")
+    (description "This is a very simple filter.  One common cause of
+grief (and programmer error) is that XML parsers aren't required to provide
+character events in one chunk.  They can, but are not forced to, and most
+don't.  This filter does the trivial but oft-repeated task of putting all
+characters into a single event.")
+    (license license:perl-license)))
