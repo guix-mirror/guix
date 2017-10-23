@@ -1292,3 +1292,24 @@ much of the XPath features can be used.  A module implementing all of the DOM
 should be able to use this module very easily (you might need to add the
 @code{cmp} method on nodes in order to get ordered result sets).")
     (license license:perl-license)))
+
+(define-public perl-tree-xpathengine
+  (package
+    (name "perl-tree-xpathengine")
+    (version "0.05")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MI/MIROD/"
+                                  "Tree-XPathEngine-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vbbw8wxm79r3xbra8narw1dqvm34510q67wbmg2zmj6zd1k06r9"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Tree-XPathEngine/")
+    (synopsis "Re-usable XPath engine")
+    (description
+     "This module provides an XPath engine, that can be re-used by other
+module/classes that implement trees.  It is designed to be compatible with
+@code{Class::XPath}, ie it passes its tests if you replace @code{Class::XPath}
+by @code{Tree::XPathEngine}.")
+    (license license:perl-license)))
