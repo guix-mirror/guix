@@ -1362,3 +1362,24 @@ characters into a single event.")
      "This is an XML writer that understands SAX2.  It is based on
 @code{XML::Handler::YAWriter}.")
     (license license:perl-license)))
+
+(define-public perl-xml-handler-yawriter
+  (package
+    (name "perl-xml-handler-yawriter")
+    (version "0.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KR/KRAEHE/"
+                           "XML-Handler-YAWriter-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11d45a1sz862va9rry3p2m77pwvq3kpsvgwhc5ramh9mbszbnk77"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libxml" ,perl-libxml)))
+    (home-page "http://search.cpan.org/dist/XML-Handler-YAWriter/")
+    (synopsis "Yet another Perl SAX XML Writer")
+    (description "YAWriter implements Yet Another @code{XML::Handler::Writer}.
+It provides a flexible escaping technique and pretty printing.")
+    (license license:perl-license)))
