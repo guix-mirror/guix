@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2890,6 +2891,35 @@ and functions that allow you to write WWW clients.  The library also
 contains modules that are of more general use and even classes that
 help you implement simple HTTP servers.")
     (home-page "http://search.cpan.org/dist/libwww-perl/")))
+
+(define-public perl-lwp-online
+  (package
+    (name "perl-lwp-online")
+    (version "1.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AD/ADAMK/LWP-Online-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "176f6vbk1018i0y7xj9d406ndbjgwzan2j9nihxnsahzg2vr2vz2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)
+       ("perl-uri" ,perl-uri)))
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
+    (home-page "http://search.cpan.org/dist/LWP-Online/")
+    (synopsis "Checks whether your process has access to the web")
+    (description "This module attempts to answer, as accurately as it can, one
+of the nastiest technical questions there is: am I on the internet?
+
+A host of networking and security issues make this problem very difficult.
+There are firewalls, proxies (both well behaved and badly behaved).  We might
+not have DNS.  We might not have a network card at all!")
+    (license l:perl-license)))
 
 (define-public perl-lwp-mediatypes
   (package
