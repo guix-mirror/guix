@@ -5931,3 +5931,29 @@ container.")))
        ("http-test" ,java-eclipse-jetty-http-test-classes-9.2)
        ("server" ,java-eclipse-jetty-server-9.2)
        ,@(package-inputs java-eclipse-jetty-util-9.2)))))
+
+(define-public tidyp
+  (package
+    (name "tidyp")
+    (version "1.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/downloads/petdance/tidyp/tidyp-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0f5ky0ih4vap9c6j312jn73vn8m2bj69pl2yd3a5nmv35k9zmc10"))))
+    (build-system gnu-build-system)
+    ;; ./test-thing.sh tries to run ./testall.sh, which is not included.
+    (arguments `(#:tests? #f))
+    (home-page "http://www.tidyp.com/")
+    (synopsis "Validate HTML")
+    (description "Tidyp is a program that can validate your HTML, as well as
+modify it to be more clean and standard.  tidyp does not validate HTML 5.
+
+libtidyp is the library on which the program is based.  It can be used by any
+other program that can interface to it.  The Perl module @code{HTML::Tidy} is
+based on this library, allowing Perl programmers to easily validate HTML.")
+    ;; See htmldoc/license.html
+    (license l:bsd-3)))
