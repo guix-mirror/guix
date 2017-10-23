@@ -5957,3 +5957,41 @@ other program that can interface to it.  The Perl module @code{HTML::Tidy} is
 based on this library, allowing Perl programmers to easily validate HTML.")
     ;; See htmldoc/license.html
     (license l:bsd-3)))
+
+(define-public perl-html-tidy
+  (package
+    (name "perl-html-tidy")
+    (version "1.60")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/HTML-Tidy-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1iyp2fd6j75cn1xvcwl2lxr8qpjxssy2360cyqn6g3kzd1fzdyxw"))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tidyp-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.PL"
+               (("^my \\$inc = \"" line)
+                (string-append line
+                               "-I" (assoc-ref inputs "tidyp") "/include/tidyp "))
+               (("-L/usr/lib")
+                (string-append
+                 "-L" (assoc-ref inputs "tidyp") "/lib")))
+             #t)))))
+    (inputs
+     `(("perl-libwww" ,perl-libwww)
+       ("tidyp" ,tidyp)))
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (home-page "http://search.cpan.org/dist/HTML-Tidy/")
+    (synopsis "(X)HTML validation in a Perl object")
+    (description "@code{HTML::Tidy} is an HTML checker in a handy dandy
+object.  It's meant as a replacement for @code{HTML::Lint}, which is written
+in Perl but is not nearly as capable as @code{HTML::Tidy}.")
+    (license l:artistic2.0)))
