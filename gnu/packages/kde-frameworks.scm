@@ -2979,6 +2979,20 @@ typed.")
      `(#:tests? #f ; FIXME: 6/10 tests fail.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           ;; Adopted from NixOS' patches "qdiriterator-follow-symlinks" and
+           ;; "no-canonicalize-path".
+           (lambda _
+             (substitute* "src/sycoca/kbuildsycoca.cpp"
+               ;; make QDirIterator follow symlinks
+               (("^\\s*(QDirIterator it\\(.*, QDirIterator::Subdirectories)(\\);)" _ a b)
+                (string-append a " | QDirIterator::FollowSymlinks" b)))
+             (substitute* "src/sycoca/vfolder_menu.cpp"
+               ;; Normalize path, but don't resolve symlinks (taken from
+               ;; NixOS)
+               (("^\\s*QString resolved = QDir\\(dir\\)\\.canonicalPath\\(\\);")
+                "QString resolved = QDir::cleanPath(dir);"))
+             #t))
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
