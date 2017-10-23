@@ -463,13 +463,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
               (sha256
                (base32
-                "0vwyg0b4kxb0rspqwhvgi5c78dzimgkydf03wif27a40qhh1235l"))
+                "0iik5lq349cl87imlwra2pp0j36wjhpn8r1d3778azvvqpyjq2d5"))
               (modules '((guix build utils)))
               (snippet
                '(for-each
