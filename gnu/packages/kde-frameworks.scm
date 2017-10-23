@@ -1825,7 +1825,10 @@ covers feedback and persistent events.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1xbfjwxb4gff8gg0hs5m9s0jcnzqk27rs2jr71g5ckhvs5psnkcd"))))
+                "1xbfjwxb4gff8gg0hs5m9s0jcnzqk27rs2jr71g5ckhvs5psnkcd"))
+              ;; Default to: external paths/symlinks can be followed by a
+              ;; package
+              (patches (search-patches "kpackage-allow-external-paths.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1840,6 +1843,16 @@ covers feedback and persistent events.")
      `(#:tests? #f ; FIXME: 3/9 tests fail.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             ;; Make QDirIterator follow symlinks
+             (substitute* '("src/kpackage/packageloader.cpp"
+                            "src/kpackage/private/packagejobthread.cpp")
+               (("^\\s*(const QDirIterator::IteratorFlags flags = QDirIterator::Subdirectories)(;)" _ a b)
+                (string-append a " | QDirIterator::FollowSymlinks" b))
+               (("^\\s*(QDirIterator it\\(.*, QDirIterator::Subdirectories)(\\);)" _ a b)
+                (string-append a " | QDirIterator::FollowSymlinks" b)))
+             #t))
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
