@@ -2152,6 +2152,13 @@ KCModules can be created with the KConfigWidgets framework.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "src/khelpclient.cpp"
+               ;; make QDirIterator follow symlinks
+               (("^\\s*(QDirIterator it\\(.*, QDirIterator::Subdirectories)(\\);)" _ a b)
+                (string-append a " | QDirIterator::FollowSymlinks" b)))
+             #t))
          (add-before 'check 'check-setup
            (lambda _
              ;; make Qt render "offscreen", required for tests
