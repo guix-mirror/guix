@@ -1337,3 +1337,28 @@ character events in one chunk.  They can, but are not forced to, and most
 don't.  This filter does the trivial but oft-repeated task of putting all
 characters into a single event.")
     (license license:perl-license)))
+
+(define-public perl-xml-sax-writer
+  (package
+    (name "perl-xml-sax-writer")
+    (version "0.57")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/P/PE/PERIGRIN/"
+                    "XML-SAX-Writer-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w1cd1ybxdvhmnxdlkywi3x5ka3g4md42kyynksjc09vyizd0q9x"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libxml" ,perl-libxml)
+       ("perl-xml-filter-buffertext" ,perl-xml-filter-buffertext)
+       ("perl-xml-namespacesupport", perl-xml-namespacesupport)
+       ("perl-xml-sax-base" ,perl-xml-sax-base)))
+    (home-page "http://search.cpan.org/dist/XML-SAX-Writer/")
+    (synopsis "SAX2 XML Writer")
+    (description
+     "This is an XML writer that understands SAX2.  It is based on
+@code{XML::Handler::YAWriter}.")
+    (license license:perl-license)))
