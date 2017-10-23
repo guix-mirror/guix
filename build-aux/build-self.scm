@@ -245,6 +245,7 @@ Please upgrade to an intermediate version first, for instance with:
     (gexp->derivation "guix-latest" builder
                       #:modules '((guix build pull)
                                   (guix build utils)
+                                  (guix build compile)
 
                                   ;; Closure of (guix modules).
                                   (guix modules)
