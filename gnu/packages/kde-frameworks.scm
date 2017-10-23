@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016,2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016,2017,2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -2088,6 +2088,16 @@ using the XBEL format.")
        ("kservice" ,kservice)))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "src/kpluginselector.cpp"
+               ;; make QDirIterator follow symlinks
+               (("^\\s*(QDirIterator it\\(.*, QDirIterator::Subdirectories)(\\);)" _ a b)
+                (string-append a " | QDirIterator::FollowSymlinks" b)))
+             #t)))))
     (inputs
      `(("kauth" ,kauth)
        ("kcodecs" ,kcodecs)
