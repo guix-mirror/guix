@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
-;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -415,9 +415,9 @@ Grammars (PEGs).")
     (inputs `(("lua", lua-5.2)))))
 
 ;; Lua 5.3 is not supported.
-(define-public lua5.2-bitop
+(define (make-lua-bitop name lua)
   (package
-    (name "lua5.2-bitop")
+    (name name)
     (version "1.0.2")
     (source (origin
               (method url-fetch)
@@ -434,15 +434,21 @@ Grammars (PEGs).")
              (string-append "INSTALLPATH=printf "
                             (assoc-ref %outputs "out")
                             "/lib/lua/"
-                            ,(version-major+minor (package-version lua-5.2))
+                            ,(version-major+minor (package-version lua))
                             "/bit/bit.so"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (inputs `(("lua", lua-5.2)))
+    (inputs `(("lua", lua)))
     (home-page "http://bitop.luajit.org/index.html")
     (synopsis "Bitwise operations on numbers for Lua")
     (description
      "Lua BitOp is a C extension module for Lua which adds bitwise operations
 on numbers.")
     (license license:expat)))
+
+(define-public lua5.2-bitop
+  (make-lua-bitop "lua5.2-bitop" lua-5.2))
+
+(define-public lua5.1-bitop
+  (make-lua-bitop "lua5.1-bitop" lua-5.1))
