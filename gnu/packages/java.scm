@@ -6621,3 +6621,35 @@ written using Java syntax.
 In addition to the expression language, MVEL serves as a templating language for
 configuration and string construction.")
     (license license:asl2.0)))
+
+(define-public java-lz4
+  (package
+    (name "java-lz4")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/lz4/lz4-java/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "096dm57p2lzqk28n0j2p52x2j3cvnsd2dfqn43n7vbwrkjsy7y54"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "lz4.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/java:src/java-unsafe"
+       #:tests? #f; FIXME: requires more dependencies
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-source
+           (lambda _
+             (with-directory-excursion "src/build/source_templates"
+               (zero? (system* "mvel2" "../gen_sources.mvel" "../../java"))))))))
+    (native-inputs
+     `(("mvel" ,java-mvel2)))
+    (home-page "https://jpountz.github.io/lz4-java")
+    (synopsis "Compression algorithm")
+    (description "LZ4 - Java is a Java port of the popular lz4 compression
+algorithms and xxHash hashing algorithm.")
+    (license license:asl2.0)))
