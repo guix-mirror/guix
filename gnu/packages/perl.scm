@@ -6320,6 +6320,27 @@ compact.")
 arrays by one or multiple calculated keys.")
     (license (package-license perl))))
 
+(define-public perl-sort-naturally
+  (package
+    (name "perl-sort-naturally")
+    (version "1.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/Sort-Naturally-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0ip7q5g8d3lr7ri3ffcbrpk1hzzsiwgsn14k10k7hnjphxf1raza"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Sort-Naturally/")
+    (synopsis "Sort lexically, but sort numeral parts numerically")
+    (description "This module exports two functions, @code{nsort} and
+@code{ncmp}; they are used in implementing a \"natural sorting\" algorithm.
+Under natural sorting, numeric substrings are compared numerically, and other
+word-characters are compared lexically.")
+    (license (package-license perl))))
+
 (define-public perl-specio
   (package
     (name "perl-specio")
