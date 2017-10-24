@@ -3296,3 +3296,41 @@ based around a MIDI sequencer that features a rich understanding of music
 notation and includes basic support for digital audio.")
     (home-page "http://www.rosegardenmusic.com/")
     (license license:gpl2)))
+
+(define-public sorcer
+  (package
+    (name "sorcer")
+    (version "1.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/openAVproductions/"
+                                  "openAV-Sorcer/archive/release-"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07iyqj28wm0xc4arrq893bm12xjpz65db7ynrlmf6w8krg8wjmd0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'build-faust-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "faust"
+               (delete-file "main.cpp")
+               (zero? (system* "faust" "-i"
+                               "-a" "lv2synth.cpp"
+                               "-o" "main.cpp" "main.dsp"))))))))
+    (inputs
+     `(("boost" ,boost)
+       ("lv2" ,lv2)
+       ("ntk" ,ntk)))
+    (native-inputs
+     `(("faust" ,faust)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://openavproductions.com/sorcer/")
+    (synopsis "Wavetable LV2 plugin synth")
+    (description "Sorcer is a wavetable LV2 plugin synthesizer, targeted at
+the electronic or dubstep genre.")
+    (license license:gpl3+)))

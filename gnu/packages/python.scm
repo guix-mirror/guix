@@ -3191,14 +3191,14 @@ logging and tracing of the execution.")
 (define-public python-docutils
   (package
     (name "python-docutils")
-    (version "0.13.1")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docutils" version))
        (sha256
         (base32
-         "1gkma47i609jfs7dssxn4y9vsz06qi0l5q41nws0zgkpnrghz33i"))))
+         "0x22fs3pdmr42kvz6c654756wja305qv6cx1zbhwlagvxgr4xrji"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no setup.py test command
@@ -8624,10 +8624,7 @@ simulation, statistical modeling, machine learning and much more.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/c/chardet/chardet-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "chardet" version))
        (sha256
         (base32
          "1bpalpia6r5x1kknbk11p1fzph56fmmnp405ds8icksd3knr5aw4"))))
@@ -13172,18 +13169,14 @@ from Facebook.")
          (base32
           "09zhac7igh9ixdz0ay6csy35b40l1jwbf2wrbxmgxwfhy51iy06q"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-django-filter" ,python-django-filter)
-       ("python-mock" ,python-mock)
-       ("python-psycopg2" ,python-psycopg2)
-       ("python-pytest-django" ,python-pytest-django)
-       ("python-sqlalchemy-utils" ,python-sqlalchemy-utils)))
     (propagated-inputs
      `(("python-graphql-core" ,python-graphql-core)
        ("python-graphql-relay" ,python-graphql-relay)
        ("python-iso8601" ,python-iso8601)
        ("python-promise" ,python-promise)
        ("python-six" ,python-six)))
+    (arguments
+     `(#:tests? #f))                    ; no tests/ in the PyPI tarball
     (home-page "http://graphene-python.org/")
     (synopsis "GraphQL Framework for Python")
     (description

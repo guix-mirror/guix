@@ -449,13 +449,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
               (sha256
                (base32
-                "0vwyg0b4kxb0rspqwhvgi5c78dzimgkydf03wif27a40qhh1235l"))
+                "0iik5lq349cl87imlwra2pp0j36wjhpn8r1d3778azvvqpyjq2d5"))
               (modules '((guix build utils)))
               (snippet
                '(for-each
@@ -505,7 +505,7 @@ detection, and lossless compression.")
                             "and not test_fuse "
                             "and not test_fuse_allow_damaged_files"))))))
          (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (man (string-append out "/share/man/man1"))
                     (misc (string-append out "/share/borg/misc")))
@@ -513,11 +513,11 @@ detection, and lossless compression.")
                          '("docs/misc/create_chunker-params.txt"
                            "docs/misc/internals-picture.txt"
                            "docs/misc/prune-example.txt"))
+               (add-installed-pythonpath inputs outputs)
                (and
-                 (zero? (system* "python3" "setup.py" "build_ext" "--inplace"))
-                 (zero? (system* "make" "-C" "docs" "man"))
+                 (zero? (system* "python3" "setup.py" "build_man"))
                  (begin
-                   (install-file "docs/_build/man/borg.1" man)
+                   (copy-recursively "docs/man" man)
                    #t))))))))
     (native-inputs
      `(("python-cython" ,python-cython)

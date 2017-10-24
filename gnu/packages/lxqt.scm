@@ -90,62 +90,6 @@ in Qt.")
 components of the LXQt desktop environment.")
     (license lgpl2.1+)))
 
-
-(define-public lxqt-common
-  (package
-    (name "lxqt-common")
-    (version "0.9.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-         (string-append "https://github.com/lxde/" name
-                        "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1vd3zarvl44l3y6wn7kgxcd2f1bygsmk5bcfqwa3568cq3b57aw0"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f ; no check target
-       #:phases
-        (modify-phases %standard-phases
-          (add-before 'configure 'fix-installation-paths
-           (lambda _
-             ;; The variable LXQT_ETC_XDG_DIR is set in
-             ;; liblxqt-0.9.0/share/cmake/lxqt/lxqt-config.cmake
-             ;; to the Qt5 installation directory, followed by "/etc/xdg".
-             ;; We need to have it point to the current installation
-             ;; directory instead.
-             (substitute* '("config/CMakeLists.txt"
-                            "menu/CMakeLists.txt")
-               (("\\$\\{LXQT_ETC_XDG_DIR\\}")
-                "${CMAKE_INSTALL_PREFIX}/etc/xdg")
-               ;; In the same file, LXQT_SHARE_DIR is set to the installation
-               ;; directory of liblxqt, followed by "/share/lxqt".
-               (("\\$\\{LXQT_SHARE_DIR\\}")
-                "${CMAKE_INSTALL_PREFIX}/share/lxqt"))
-             ;; Replace absolute directories.
-             (substitute* "autostart/CMakeLists.txt"
-               (("/etc/xdg")
-                "${CMAKE_INSTALL_PREFIX}/etc/xdg"))
-             (substitute* "xsession/CMakeLists.txt"
-               (("/usr/share")
-                "${CMAKE_INSTALL_PREFIX}/share")))))))
-    (inputs
-     `(("kwindowsystem" ,kwindowsystem)
-       ("liblxqt" ,liblxqt)
-       ("libqtxdg" ,libqtxdg)
-       ("qtbase" ,qtbase)
-       ("qttools" ,qttools)
-       ("qtx11extras" ,qtx11extras)))
-    (home-page "http://lxqt.org/")
-    (synopsis "Common files for LXQt")
-    (description "lxqt-common provides the desktop integration files
-(themes, icons, configuration files etc.) for the LXQt
-desktop environment.")
-    (license lgpl2.1+)))
-
 (define-public lxqt-session
   (package
     (name "lxqt-session")

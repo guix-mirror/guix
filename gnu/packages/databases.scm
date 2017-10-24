@@ -1582,14 +1582,14 @@ on another machine, accessed via TCP/IP.")
 (define-public python-peewee
   (package
     (name "python-peewee")
-    (version "2.8.3")
+    (version "2.10.2")
       (source
         (origin
         (method url-fetch)
         (uri (pypi-uri "peewee" version))
         (sha256
          (base32
-          "1605bk11s7aap2q4qyba93rx7yfh8b11kk0cqi08z8klx2iar8yd"))))
+          "10f2mrd5hw6rjklrzaix2lsxlgc8vx3xak54arcy6yd791zhchi3"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; Fails to import test data
@@ -1728,13 +1728,13 @@ etc., and an SQL engine for performing simple SQL queries.")
 (define-public python-lmdb
   (package
     (name "python-lmdb")
-    (version "0.92")
+    (version "0.93")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lmdb" version))
               (sha256
                (base32
-                "01nw6r08jkipx6v92kw49z34wmwikrpvc5j9xawdiyg1n2526wrx"))
+                "0xdpb298fyl68acadbwv5801wcwfpnhc7sm4bnrq1x4bd5dhhsql"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled lmdb source files.

@@ -662,6 +662,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt1.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt2.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt3.patch		\
+  %D%/packages/patches/glibc-CVE-2017-15670-15671.patch		\
   %D%/packages/patches/glibc-bootstrap-system.patch		\
   %D%/packages/patches/glibc-ldd-x86_64.patch			\
   %D%/packages/patches/glibc-locales.patch			\
@@ -729,6 +730,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icu4c-CVE-2017-7867-CVE-2017-7868.patch	\
+  %D%/packages/patches/icu4c-CVE-2017-14952.patch		\
   %D%/packages/patches/icu4c-reset-keyword-list-iterator.patch	\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
@@ -866,6 +868,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-version-detection.patch		\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-openjpeg-2.1.patch	\
+  %D%/packages/patches/mupdf-CVE-2017-14685.patch		\
+  %D%/packages/patches/mupdf-CVE-2017-14686.patch		\
+  %D%/packages/patches/mupdf-CVE-2017-14687.patch		\
   %D%/packages/patches/mupdf-CVE-2017-15587.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mutt-store-references.patch		\

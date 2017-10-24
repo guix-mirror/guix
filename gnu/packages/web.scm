@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (guix build-system r)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system ant)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages check)
@@ -2890,6 +2892,35 @@ contains modules that are of more general use and even classes that
 help you implement simple HTTP servers.")
     (home-page "http://search.cpan.org/dist/libwww-perl/")))
 
+(define-public perl-lwp-online
+  (package
+    (name "perl-lwp-online")
+    (version "1.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AD/ADAMK/LWP-Online-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "176f6vbk1018i0y7xj9d406ndbjgwzan2j9nihxnsahzg2vr2vz2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)
+       ("perl-uri" ,perl-uri)))
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)))
+    (home-page "http://search.cpan.org/dist/LWP-Online/")
+    (synopsis "Checks whether your process has access to the web")
+    (description "This module attempts to answer, as accurately as it can, one
+of the nastiest technical questions there is: am I on the internet?
+
+A host of networking and security issues make this problem very difficult.
+There are firewalls, proxies (both well behaved and badly behaved).  We might
+not have DNS.  We might not have a network card at all!")
+    (license l:perl-license)))
+
 (define-public perl-lwp-mediatypes
   (package
     (name "perl-lwp-mediatypes")
@@ -5384,3 +5415,583 @@ collection creation and deletion, and locking operations.")
      "Py-ubjson is a Python module providing an Universal Binary JSON
 encoder/decoder based on the draft-12 specification for UBJSON.")
     (license l:asl2.0)))
+
+(define-public java-tomcat
+  (package
+    (name "java-tomcat")
+    (version "8.5.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/tomcat/tomcat-8/v"
+                                  version "/src/apache-tomcat-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1m6b1dikib46kbgz9gf0p6svi00nsw62b9kgjzn6sda151skbbza"))))
+    (build-system ant-build-system)
+    (inputs
+     `(("java-eclipse-jdt-core" ,java-eclipse-jdt-core)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (arguments
+     `(#:build-target "package"
+       #:tests? #f; requires downloading some files.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prevent-download
+           (lambda _
+             ;; This directory must exist
+             (mkdir "downloads")
+             ;; We patch build.xml so it doesn't download any dependency, because
+             ;; we already have all of them.
+             (substitute* "build.xml"
+               (("download-compile,") "")
+               (("depends=\"validate\"") "depends=\"build-prepare\"")
+               ((",download-validate") ""))
+             #t))
+         (add-after 'unpack 'generate-properties
+           (lambda _
+             ;; This could have been passed to make-flags, but getcwd returns
+             ;; a different directory then.
+             (with-output-to-file "build.properties"
+               (lambda _
+                 (display
+                   (string-append "base.path=" (getcwd) "/downloads\n"))))
+             #t))
+         (replace 'install
+           (install-jars "output/build/lib")))))
+    (home-page "https://tomcat.apache.org")
+    (synopsis "Java Servlet, JavaServer Pages, Java Expression Language and Java
+WebSocket")
+    (description "Apache Tomcat is a free implementation of the Java
+Servlet, JavaServer Pages, Java Expression Language and Java WebSocket
+technologies.")
+    (license l:asl2.0)))
+
+(define-public java-eclipse-jetty-test-helper
+  (package
+    (name "java-eclipse-jetty-test-helper")
+    (version "4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/eclipse/jetty.toolchain/"
+                                  "archive/jetty-test-helper-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jd6r9wc26fa11si4rn2gvy8ml8q4zw1nr6v04mjp8wvwpgvzwx5"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "eclipse-jetty-test-helper.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-test-helper")))
+         (add-before 'build 'fix-paths
+           (lambda _
+             ;; TODO:
+             ;; This file assumes that the build directory is named "target"
+             ;; but it is not the case with our ant-build-system. Once we have
+             ;; maven though, we will have to rebuild this package because this
+             ;; assumption is correct with maven-build-system.
+             (substitute*
+               "src/main/java/org/eclipse/jetty/toolchain/test/MavenTestingUtils.java"
+               (("\"target\"") "\"build\"")
+               (("\"tests\"") "\"test-classes\""))
+             ;; Tests assume we are building with maven, so that the build
+             ;; directory is named "target", and not "build".
+             (with-directory-excursion "src/test/java/org/eclipse/jetty/toolchain/test"
+               (substitute* '("FSTest.java" "OSTest.java" "TestingDirTest.java"
+                              "MavenTestingUtilsTest.java")
+                 (("target/tests") "build/test-classes")
+                 (("\"target") "\"build")))
+             #t)))))
+    (inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-all)))
+    (home-page "https://www.eclipse.org/jetty/")
+    (synopsis "Helper classes for jetty tests")
+    (description "This packages contains helper classes for testing the Jetty
+Web Server.")
+    ;; This program is licensed under both epl and asl.
+    (license (list l:epl1.0 l:asl2.0))))
+
+(define-public java-eclipse-jetty-perf-helper
+  (package
+    (inherit java-eclipse-jetty-test-helper)
+    (name "java-eclipse-jetty-perf-helper")
+    (arguments
+     `(#:jar-name "eclipse-jetty-perf-helper.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f; no tests
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-perf-helper")
+             #t)))))
+    (inputs
+     `(("hdrhistogram" ,java-hdrhistogram)))))
+
+(define-public java-eclipse-jetty-util
+  (package
+    (name "java-eclipse-jetty-util")
+    (version "9.4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/eclipse/jetty.project/"
+                                  "archive/jetty-" version ".v20170531.tar.gz"))
+              (sha256
+               (base32
+                "0x7kbdvkmgr6kbsmbwiiyv3bb0d6wk25frgvld9cf8540136z9p1"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "eclipse-jetty-util.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list "**/Abstract*.java"
+             ;; requires network
+             "**/InetAddressSetTest.java"
+             ;; Assumes we are using maven
+             "**/TypeUtilTest.java"
+             ;; Error on the style of log
+             "**/StdErrLogTest.java")
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-util")
+             #t)))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-all)
+       ("perf-helper" ,java-eclipse-jetty-perf-helper)
+       ("test-helper" ,java-eclipse-jetty-test-helper)))
+    (home-page "https://www.eclipse.org/jetty/")
+    (synopsis "Utility classes for Jetty")
+    (description "The Jetty Web Server provides an HTTP server and Servlet
+container capable of serving static and dynamic content either from a standalone
+or embedded instantiation.  This package provides utility classes.")
+    (license (list l:epl1.0 l:asl2.0))))
+
+;; This version is required by maven-wagon
+(define-public java-eclipse-jetty-util-9.2
+  (package
+    (inherit java-eclipse-jetty-util)
+    (version "9.2.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/eclipse/jetty.project/"
+                                  "archive/jetty-" version ".v20170606.tar.gz"))
+              (sha256
+               (base32
+                "1i51qlsd7h06d35kx5rqpzbfadbcszycx1iwr6vz7qc9gf9f29la"))))
+    (arguments
+     `(#:jar-name "eclipse-jetty-util.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-exclude
+       (list "**/Abstract*.java"
+             ;; requires network
+             "**/InetAddressSetTest.java"
+             ;; Assumes we are using maven
+             "**/TypeUtilTest.java"
+             ;; We don't have an implementation for slf4j
+             "**/LogTest.java"
+             ;; Error on the style of log
+             "**/StdErrLogTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-util")
+             #t))
+         (add-before 'build 'fix-test-sources
+           (lambda _
+             ;; We need to fix issues caused by changes in newer versions of
+             ;; jetty-test-helper
+             (let ((src "src/test/java/org/eclipse/jetty/util/resource"))
+               (substitute* (string-append src "/AbstractFSResourceTest.java")
+                 (("testdir.getDir\\(\\)") "testdir.getPath().toFile()")
+                 (("testdir.getFile\\(\"foo\"\\)")
+                  "testdir.getPathFile(\"foo\").toFile()")
+                 (("testdir.getFile\\(name\\)")
+                  "testdir.getPathFile(name).toFile()")))
+             #t)))))))
+
+(define-public java-eclipse-jetty-io
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-io")
+    (arguments
+     `(#:jar-name "eclipse-jetty-io.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-exclude (list "**/Abstract*.java"
+                            ;; Abstract class
+                            "**/EndPointTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-io")
+             #t)))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)
+       ("util" ,java-eclipse-jetty-util)))
+    (synopsis "Jetty :: IO Utility")
+    (description "The Jetty Web Server provides an HTTP server and Servlet
+container capable of serving static and dynamic content either from a standalone
+or embedded instantiation.  This package provides IO-related utility classes.")))
+
+(define-public java-eclipse-jetty-io-9.2
+  (package
+    (inherit java-eclipse-jetty-io)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (inputs
+     `(("util" ,java-eclipse-jetty-util-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))
+    (native-inputs
+     `(("mockito" ,java-mockito-1)
+       ("cglib" ,java-cglib)
+       ("objenesis" ,java-objenesis)
+       ("asm" ,java-asm)
+       ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
+
+(define-public java-eclipse-jetty-http
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-http")
+    (arguments
+     `(#:jar-name "eclipse-jetty-http.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-http")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes")
+             (copy-recursively "src/main/resources/" "build/classes/")
+             #t)))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)
+       ("io" ,java-eclipse-jetty-io)
+       ("util" ,java-eclipse-jetty-util)))
+    (synopsis "Jetty :: Http Utility")
+    (description "The Jetty Web Server provides an HTTP server and Servlet
+container capable of serving static and dynamic content either from a standalone
+or embedded instantiation.  This package provides HTTP-related utility classes.")))
+
+(define-public java-eclipse-jetty-http-9.2
+  (package
+    (inherit java-eclipse-jetty-http)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (inputs
+     `(("util" ,java-eclipse-jetty-util-9.2)
+       ("io" ,java-eclipse-jetty-io-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))))
+
+(define-public java-eclipse-jetty-jmx
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-jmx")
+    (arguments
+     `(#:jar-name "eclipse-jetty-jmx.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; FIXME: requires com.openpojo.validation
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-jmx")
+             #t)))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)
+       ("util" ,java-eclipse-jetty-util)))
+    (synopsis "Jetty :: JMX Management")
+    (description "The Jetty Web Server provides an HTTP server and Servlet
+container capable of serving static and dynamic content either from a standalone
+or embedded instantiation.  This package provides the JMX management.")))
+
+(define-public java-eclipse-jetty-jmx-9.2
+  (package
+    (inherit java-eclipse-jetty-jmx)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (inputs
+     `(("util" ,java-eclipse-jetty-util-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))))
+
+(define java-eclipse-jetty-http-test-classes
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-http-test-classes")
+    (arguments
+     `(#:jar-name "eclipse-jetty-http.jar"
+       #:source-dir "src/test"
+       #:tests? #f
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-http"))))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)
+       ("http" ,java-eclipse-jetty-http)
+       ("io" ,java-eclipse-jetty-io)
+       ("util" ,java-eclipse-jetty-util)))))
+
+(define java-eclipse-jetty-http-test-classes-9.2
+  (package
+    (inherit java-eclipse-jetty-http-test-classes)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (inputs
+     `(("http" ,java-eclipse-jetty-http-9.2)
+       ,@(package-inputs java-eclipse-jetty-http-9.2)))))
+
+(define-public java-eclipse-jetty-server
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-server")
+    (arguments
+     `(#:jar-name "eclipse-jetty-server.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; requires a mockito version we don't have
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-server")
+             #t))
+         (add-before 'build 'fix-source
+           (lambda _
+             ;; Explicit casts to prevent build failures
+             (substitute* "src/main/java/org/eclipse/jetty/server/Request.java"
+               (("append\\(LazyList")
+                "append((CharSequence)LazyList"))
+             (substitute*
+               "src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java"
+               (((string-append
+                   "Class<\\? extends EventListener> clazz = _classLoader==null"
+                   "\\?Loader.loadClass\\(ContextHandler.class,className\\):"
+                   "_classLoader.loadClass\\(className\\);"))
+                (string-append "Class<? extends EventListener> clazz = "
+                               "(Class<? extends EventListener>) "
+                               "(_classLoader==null?Loader.loadClass("
+                               "ContextHandler.class,className):"
+                               "_classLoader.loadClass(className));")))
+             #t)))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)
+       ("http" ,java-eclipse-jetty-http)
+       ("io" ,java-eclipse-jetty-io)
+       ("jmx" ,java-eclipse-jetty-jmx)
+       ("util" ,java-eclipse-jetty-util)))
+    (native-inputs
+     `(("test-classes" ,java-eclipse-jetty-http-test-classes)
+       ,@(package-native-inputs java-eclipse-jetty-util)))
+    (synopsis "Core jetty server artifact")
+    (description "The Jetty Web Server provides an HTTP server and Servlet
+container capable of serving static and dynamic content either from a standalone
+or embedded instantiation.  This package provides the core jetty server
+artifact.")))
+
+(define-public java-eclipse-jetty-server-9.2
+  (package
+    (inherit java-eclipse-jetty-server)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (inputs
+     `(("util" ,java-eclipse-jetty-util-9.2)
+       ("jmx" ,java-eclipse-jetty-jmx-9.2)
+       ("io" ,java-eclipse-jetty-io-9.2)
+       ("http" ,java-eclipse-jetty-http-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))
+    (native-inputs
+     `(("test-classes" ,java-eclipse-jetty-http-test-classes-9.2)
+       ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
+
+(define-public java-eclipse-jetty-security
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-security")
+    (arguments
+     `(#:jar-name "eclipse-jetty-security.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-security")
+             #t)))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)
+       ("http" ,java-eclipse-jetty-http)
+       ("server" ,java-eclipse-jetty-server)
+       ("util" ,java-eclipse-jetty-util)))
+    (native-inputs
+     `(("io" ,java-eclipse-jetty-io)
+       ,@(package-native-inputs java-eclipse-jetty-util)))
+    (synopsis "Jetty security infrastructure")
+    (description "The Jetty Web Server provides an HTTP server and Servlet
+container capable of serving static and dynamic content either from a standalone
+or embedded instantiation.  This package provides the core jetty security
+infrastructure")))
+
+(define-public java-eclipse-jetty-security-9.2
+  (package
+    (inherit java-eclipse-jetty-security)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (inputs
+     `(("util" ,java-eclipse-jetty-util-9.2)
+       ("http" ,java-eclipse-jetty-http-9.2)
+       ("server" ,java-eclipse-jetty-server-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))
+    (native-inputs
+     `(("io" ,java-eclipse-jetty-io-9.2)
+       ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
+
+(define-public java-eclipse-jetty-servlet
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-servlet")
+    (arguments
+     `(#:jar-name "eclipse-jetty-servlet.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-servlet")
+             #t)))))
+    (inputs
+     `(("slf4j" ,java-slf4j-api)
+       ("servlet" ,java-tomcat)
+       ("http" ,java-eclipse-jetty-http)
+       ("http-test" ,java-eclipse-jetty-http-test-classes)
+       ("io" ,java-eclipse-jetty-io)
+       ("jmx" ,java-eclipse-jetty-jmx)
+       ("security" ,java-eclipse-jetty-security)
+       ("server" ,java-eclipse-jetty-server)
+       ("util" ,java-eclipse-jetty-util)))
+    (synopsis "Jetty Servlet Container")
+    (description "The Jetty Web Server provides an HTTP server and Servlet
+container capable of serving static and dynamic content either from a standalone
+or embedded instantiation.  This package provides the core jetty servlet
+container.")))
+
+(define-public java-eclipse-jetty-servlet-9.2
+  (package
+    (inherit java-eclipse-jetty-servlet)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (arguments
+     `(#:jar-name "eclipse-jetty-servlet.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; doesn't work
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-servlet")
+             #t)))))
+    (inputs
+     `(("util" ,java-eclipse-jetty-util-9.2)
+       ("jmx" ,java-eclipse-jetty-jmx-9.2)
+       ("io" ,java-eclipse-jetty-io-9.2)
+       ("http" ,java-eclipse-jetty-http-9.2)
+       ("security" ,java-eclipse-jetty-security-9.2)
+       ("http-test" ,java-eclipse-jetty-http-test-classes-9.2)
+       ("server" ,java-eclipse-jetty-server-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))))
+
+(define-public tidyp
+  (package
+    (name "tidyp")
+    (version "1.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/downloads/petdance/tidyp/tidyp-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0f5ky0ih4vap9c6j312jn73vn8m2bj69pl2yd3a5nmv35k9zmc10"))))
+    (build-system gnu-build-system)
+    ;; ./test-thing.sh tries to run ./testall.sh, which is not included.
+    (arguments `(#:tests? #f))
+    (home-page "http://www.tidyp.com/")
+    (synopsis "Validate HTML")
+    (description "Tidyp is a program that can validate your HTML, as well as
+modify it to be more clean and standard.  tidyp does not validate HTML 5.
+
+libtidyp is the library on which the program is based.  It can be used by any
+other program that can interface to it.  The Perl module @code{HTML::Tidy} is
+based on this library, allowing Perl programmers to easily validate HTML.")
+    ;; See htmldoc/license.html
+    (license l:bsd-3)))
+
+(define-public perl-html-tidy
+  (package
+    (name "perl-html-tidy")
+    (version "1.60")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/HTML-Tidy-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1iyp2fd6j75cn1xvcwl2lxr8qpjxssy2360cyqn6g3kzd1fzdyxw"))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tidyp-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.PL"
+               (("^my \\$inc = \"" line)
+                (string-append line
+                               "-I" (assoc-ref inputs "tidyp") "/include/tidyp "))
+               (("-L/usr/lib")
+                (string-append
+                 "-L" (assoc-ref inputs "tidyp") "/lib")))
+             #t)))))
+    (inputs
+     `(("perl-libwww" ,perl-libwww)
+       ("tidyp" ,tidyp)))
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (home-page "http://search.cpan.org/dist/HTML-Tidy/")
+    (synopsis "(X)HTML validation in a Perl object")
+    (description "@code{HTML::Tidy} is an HTML checker in a handy dandy
+object.  It's meant as a replacement for @code{HTML::Lint}, which is written
+in Perl but is not nearly as capable as @code{HTML::Tidy}.")
+    (license l:artistic2.0)))

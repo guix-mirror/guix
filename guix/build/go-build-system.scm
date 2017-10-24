@@ -126,13 +126,14 @@ unset.  When SOURCE is a directory, copy it instead of unpacking."
         (zero? (system* "unzip" "-d" dest source))
         (zero? (system* "tar" "-C" dest "-xvf" source))))))
 
-(define* (install-source #:key outputs #:allow-other-keys)
+(define* (install-source #:key install-source? outputs #:allow-other-keys)
   "Install the source code to the output directory."
   (let* ((out (assoc-ref outputs "out"))
          (source "src")
          (dest (string-append out "/" source)))
-    (copy-recursively source dest #:keep-mtime? #t)
-    #t))
+    (if install-source?
+      (copy-recursively source dest #:keep-mtime? #t)
+      #t)))
 
 (define (go-package? name)
   (string-prefix? "go-" name))
@@ -179,6 +180,9 @@ respectively."
     (zero? (system* "go" "install"
                     "-v" ; print the name of packages as they are compiled
                     "-x" ; print each command as it is invoked
+                    ;; Respectively, strip the symbol table and debug
+                    ;; information, and the DWARF symbol table.
+                    "-ldflags=-s -w"
                     import-path))
     (begin
       (display (string-append "Building '" import-path "' failed.\n"

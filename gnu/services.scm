@@ -95,10 +95,7 @@
 
             %boot-service
             %activation-service
-            etc-service
-
-            file-union                        ;XXX: for lack of a better place
-            directory-union))
+            etc-service))
 
 ;;; Comment:
 ;;;
@@ -387,38 +384,6 @@ boot."
                 (extensions
                  (list (service-extension boot-service-type
                                           cleanup-gexp)))))
-
-(define* (file-union name files)                  ;FIXME: Factorize.
-  "Return a <computed-file> that builds a directory containing all of FILES.
-Each item in FILES must be a list where the first element is the file name to
-use in the new directory, and the second element is a gexp denoting the target
-file."
-  (computed-file name
-                 #~(begin
-                     (mkdir #$output)
-                     (chdir #$output)
-                     #$@(map (match-lambda
-                               ((target source)
-                                #~(begin
-                                    ;; Stat the source to abort early if it
-                                    ;; does not exist.
-                                    (stat #$source)
-
-                                    (symlink #$source #$target))))
-                             files))))
-
-(define (directory-union name things)
-  "Return a directory that is the union of THINGS."
-  (match things
-    ((one)
-     ;; Only one thing; return it.
-     one)
-    (_
-     (computed-file name
-                    (with-imported-modules '((guix build union))
-                      #~(begin
-                          (use-modules (guix build union))
-                          (union-build #$output '#$things)))))))
 
 (define* (activation-service->script service)
   "Return as a monadic value the activation script for SERVICE, a service of

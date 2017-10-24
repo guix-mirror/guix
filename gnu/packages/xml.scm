@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1235,3 +1236,160 @@ This framework aids the development of XML systems with minimal effort and
 reduced errors.  It offers full object serialization and deserialization,
 maintaining each reference encountered.")
     (license license:asl2.0)))
+
+(define-public perl-xml-xpathengine
+  (package
+    (name "perl-xml-xpathengine")
+    (version "0.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MI/MIROD/"
+                                  "XML-XPathEngine-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0r72na14bmsxfd16s9nlza155amqww0k8wsa9x2a3sqbpp5ppznj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/XML-XPathEngine/")
+    (synopsis "Re-usable XPath engine for DOM-like trees")
+    (description
+     "This module provides an XPath engine, that can be re-used by other
+modules/classes that implement trees.
+
+In order to use the XPath engine, nodes in the user module need to mimick DOM
+nodes.  The degree of similitude between the user tree and a DOM dictates how
+much of the XPath features can be used.  A module implementing all of the DOM
+should be able to use this module very easily (you might need to add the
+@code{cmp} method on nodes in order to get ordered result sets).")
+    (license license:perl-license)))
+
+(define-public perl-tree-xpathengine
+  (package
+    (name "perl-tree-xpathengine")
+    (version "0.05")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MI/MIROD/"
+                                  "Tree-XPathEngine-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vbbw8wxm79r3xbra8narw1dqvm34510q67wbmg2zmj6zd1k06r9"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Tree-XPathEngine/")
+    (synopsis "Re-usable XPath engine")
+    (description
+     "This module provides an XPath engine, that can be re-used by other
+module/classes that implement trees.  It is designed to be compatible with
+@code{Class::XPath}, ie it passes its tests if you replace @code{Class::XPath}
+by @code{Tree::XPathEngine}.")
+    (license license:perl-license)))
+
+(define-public perl-xml-filter-buffertext
+  (package
+    (name "perl-xml-filter-buffertext")
+    (version "1.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RB/RBERJON/"
+                           "XML-Filter-BufferText-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p5785c1dsk6kdp505vapb5h54k8krrz8699hpgm9igf7dni5llg"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-xml-sax-base" ,perl-xml-sax-base)))
+    (home-page "http://search.cpan.org/dist/XML-Filter-BufferText/")
+    (synopsis "Filter to put all characters() in one event")
+    (description "This is a very simple filter.  One common cause of
+grief (and programmer error) is that XML parsers aren't required to provide
+character events in one chunk.  They can, but are not forced to, and most
+don't.  This filter does the trivial but oft-repeated task of putting all
+characters into a single event.")
+    (license license:perl-license)))
+
+(define-public perl-xml-sax-writer
+  (package
+    (name "perl-xml-sax-writer")
+    (version "0.57")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/P/PE/PERIGRIN/"
+                    "XML-SAX-Writer-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w1cd1ybxdvhmnxdlkywi3x5ka3g4md42kyynksjc09vyizd0q9x"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libxml" ,perl-libxml)
+       ("perl-xml-filter-buffertext" ,perl-xml-filter-buffertext)
+       ("perl-xml-namespacesupport", perl-xml-namespacesupport)
+       ("perl-xml-sax-base" ,perl-xml-sax-base)))
+    (home-page "http://search.cpan.org/dist/XML-SAX-Writer/")
+    (synopsis "SAX2 XML Writer")
+    (description
+     "This is an XML writer that understands SAX2.  It is based on
+@code{XML::Handler::YAWriter}.")
+    (license license:perl-license)))
+
+(define-public perl-xml-handler-yawriter
+  (package
+    (name "perl-xml-handler-yawriter")
+    (version "0.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KR/KRAEHE/"
+                           "XML-Handler-YAWriter-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11d45a1sz862va9rry3p2m77pwvq3kpsvgwhc5ramh9mbszbnk77"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libxml" ,perl-libxml)))
+    (home-page "http://search.cpan.org/dist/XML-Handler-YAWriter/")
+    (synopsis "Yet another Perl SAX XML Writer")
+    (description "YAWriter implements Yet Another @code{XML::Handler::Writer}.
+It provides a flexible escaping technique and pretty printing.")
+    (license license:perl-license)))
+
+(define-public perl-xml-twig
+  (package
+    (name "perl-xml-twig")
+    (version "3.52")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MI/MIROD/"
+                                  "XML-Twig-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bc0hrz4jp6199hi29sdxmb9gyy45whla9hd19yqfasgq8k5ixzy"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("expat" ,expat)))
+    (propagated-inputs
+     `(("perl-html-tidy" ,perl-html-tidy)
+       ("perl-html-tree" ,perl-html-tree)
+       ("perl-io-captureoutput" ,perl-io-captureoutput)
+       ("perl-io-string" ,perl-io-string)
+       ("perl-io-stringy" ,perl-io-stringy)
+       ("perl-libxml" ,perl-libxml)
+       ("perl-xml-filter-buffertext" ,perl-xml-filter-buffertext)
+       ("perl-xml-handler-yawriter" ,perl-xml-handler-yawriter)
+       ("perl-xml-parser" ,perl-xml-parser)
+       ("perl-xml-sax-writer" ,perl-xml-sax-writer)
+       ("perl-xml-simple" ,perl-xml-simple)
+       ("perl-xml-xpathengine" ,perl-xml-xpathengine)
+       ("perl-test-pod", perl-test-pod)
+       ("perl-tree-xpathengine" ,perl-tree-xpathengine)))
+    (home-page "http://search.cpan.org/dist/XML-Twig/")
+    (synopsis "Perl module for processing huge XML documents in tree mode")
+    (description "@code{XML::Twig} is an XML transformation module.  Its
+strong points: can be used to process huge documents while still being in tree
+mode; not bound by DOM or SAX, so it is very perlish and offers a very
+comprehensive set of methods; simple to use; DWIMs as much as possible.
+
+What it doesn't offer: full SAX support (it can export SAX, but only reads
+XML), full XPath support (unless you use @code{XML::Twig::XPath}), nor DOM
+support.")
+    (license license:perl-license)))

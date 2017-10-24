@@ -71,6 +71,7 @@
             udev-service-type
             udev-service
             udev-rule
+            file->udev-rule
 
             login-configuration
             login-configuration?
@@ -1629,6 +1630,22 @@ item of @var{packages}."
                            (string-append rules.d "/" #$file-name)
                          (lambda (port)
                            (display #$contents port)))))))
+
+(define (file->udev-rule file-name file)
+  "Return a directory with a udev rule file FILE-NAME which is a copy of FILE."
+  (computed-file file-name
+                 (with-imported-modules '((guix build utils))
+                   #~(begin
+                       (use-modules (guix build utils))
+
+                       (define rules.d
+                         (string-append #$output "/lib/udev/rules.d"))
+
+                       (define file-copy-dest
+                         (string-append rules.d "/" #$file-name))
+
+                       (mkdir-p rules.d)
+                       (copy-file #$file file-copy-dest)))))
 
 (define kvm-udev-rule
   ;; Return a directory with a udev rule that changes the group of /dev/kvm to

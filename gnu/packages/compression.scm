@@ -18,6 +18,7 @@
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1612,3 +1613,24 @@ extract files to standard out).  As @command{atool} invokes external programs
 to handle the archives, not all commands may be supported for a certain type
 of archives.")
     (license license:gpl2+)))
+
+(define-public perl-archive-extract
+  (package
+    (name "perl-archive-extract")
+    (version "0.80")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/Archive-Extract-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1x15j1q6w6z8hqyqgap0lz4qbq2174wfhksy1fdd653ccbaw5jr5"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Archive-Extract/")
+    (synopsis "Generic archive extracting mechanism")
+    (description "It allows you to extract any archive file of the type .tar,
+.tar.gz, .gz, .Z, tar.bz2, .tbz, .bz2, .zip, .xz,, .txz, .tar.xz or .lzma
+without having to worry how it does so, or use different interfaces for each
+type by using either Perl modules, or command-line tools on your system.")
+    (license license:perl-license)))

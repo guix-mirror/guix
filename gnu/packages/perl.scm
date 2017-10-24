@@ -2378,6 +2378,29 @@ based memory management, circular references will cause memory leaks.")
 equivalent of \"$@{^GLOBAL_PHASE@} eq 'DESTRUCT'\" for older perls.")
     (license (package-license perl))))
 
+(define-public perl-devel-hide
+  (package
+    (name "perl-devel-hide")
+    (version "0.0009")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FE/FERREIRA/Devel-Hide-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1phnzbw58v6551nhv6sg86m72nx9w5j4msh1hg4jvkakkq5w9pki"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "http://search.cpan.org/dist/Devel-Hide/")
+    (synopsis "Forces the unavailability of specified Perl modules (for testing)")
+    (description "Given a list of Perl modules/filenames, this module makes
+@code{require} and @code{use} statements fail (no matter whether the specified
+files/modules are installed or not).")
+    (license (package-license perl))))
+
 (define-public perl-devel-lexalias
   (package
     (name "perl-devel-lexalias")
@@ -6059,6 +6082,32 @@ Module::Build project, but has been externalized here for general use.")
                               "Probe-Perl-" version))
     (license (package-license perl))))
 
+(define-public perl-proc-invokeeditor
+  (package
+    (name "perl-proc-invokeeditor")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSTEVENS/Proc-InvokeEditor-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0xc1416kvhq904ribpwh2lbxryh41dzl2glzpgr32b68s4fbwbaa"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-EDITOR
+           (lambda _ (setenv "EDITOR" "echo") #t)))))
+    (propagated-inputs
+     `(("perl-carp-assert" ,perl-carp-assert)))
+    (home-page "http://search.cpan.org/dist/Proc-InvokeEditor/")
+    (synopsis "Interface to external editor from Perl")
+    (description "This module provides the ability to supply some text to an
+external text editor, have it edited by the user, and retrieve the results.")
+    (license (package-license perl))))
+
 (define-public perl-readonly
   (package
     (name "perl-readonly")
@@ -6292,6 +6341,27 @@ compact.")
     (synopsis "Sort arrays by one or multiple calculated keys")
     (description "This Perl module provides various functions to quickly sort
 arrays by one or multiple calculated keys.")
+    (license (package-license perl))))
+
+(define-public perl-sort-naturally
+  (package
+    (name "perl-sort-naturally")
+    (version "1.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/Sort-Naturally-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0ip7q5g8d3lr7ri3ffcbrpk1hzzsiwgsn14k10k7hnjphxf1raza"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Sort-Naturally/")
+    (synopsis "Sort lexically, but sort numeral parts numerically")
+    (description "This module exports two functions, @code{nsort} and
+@code{ncmp}; they are used in implementing a \"natural sorting\" algorithm.
+Under natural sorting, numeric substrings are compared numerically, and other
+word-characters are compared lexically.")
     (license (package-license perl))))
 
 (define-public perl-specio
@@ -6886,6 +6956,50 @@ so the input modes can be changed (thus allowing reads of a single character
 at a time), and also provides non-blocking reads of stdin, as well as several
 other terminal related features, including retrieval/modification of the
 screen size, and retrieval/modification of the control characters.")
+    (license (package-license perl))))
+
+(define-public perl-term-size-any
+  (package
+    (name "perl-term-size-any")
+    (version "0.002")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FE/FERREIRA/"
+                           "Term-Size-Any-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lnynd8pwjp3g85bl4nav6yigg2lag3sx5da989j7a733bdmzyk4"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-devel-hide" ,perl-devel-hide)))
+    (propagated-inputs
+     `(("perl-term-size-perl" ,perl-term-size-perl)))
+    (home-page "http://search.cpan.org/dist/Term-Size-Any/")
+    (synopsis "Retrieve terminal size")
+    (description "This is a unified interface to retrieve terminal size.  It
+loads one module of a list of known alternatives, each implementing some way
+to get the desired terminal information.  This loaded module will actually do
+the job on behalf of @code{Term::Size::Any}.")
+    (license (package-license perl))))
+
+(define-public perl-term-size-perl
+  (package
+    (name "perl-term-size-perl")
+    (version "0.029")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FE/FERREIRA/"
+                           "Term-Size-Perl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rvm91bhdlxfwx5zka023p7szf2s7gm16wl27qiivvj66svsl6lc"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Term-Size-Perl/")
+    (synopsis "Perl extension for retrieving terminal size (Perl version)")
+    (description "This is yet another implementation of @code{Term::Size}.
+Now in pure Perl, with the exception of a C probe run at build time.")
     (license (package-license perl))))
 
 (define-public perl-term-table
@@ -7782,6 +7896,32 @@ makes fork(2) safe to use in test cases.")
                               "Test-Simple-" version))
     (license (package-license perl))))
 
+(define-public perl-test-taint
+  (package
+    (name "perl-test-taint")
+    (version "1.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/Test-Taint-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "01rip5d7gdr1c7lq6yczzkqfd0500nfa977ryigylj6jj75526vj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-Taint/")
+    (synopsis "Checks for taintedness of variables")
+    (description "Tainted data is data that comes from an unsafe source, such
+as the command line, or, in the case of web apps, any @code{GET} or
+@code{POST} transactions.  Read the @code{perlsec} man page for details on why
+tainted data is bad, and how to untaint the data.
+
+When you're writing unit tests for code that deals with tainted data, you'll
+want to have a way to provide tainted data for your routines to handle, and
+easy ways to check and report on the taintedness of your data, in standard
+@code{Test::More} style.")
+    (license (package-license perl))))
+
 (define-public perl-test-tester
   (package
     (name "perl-test-tester")
@@ -8574,6 +8714,53 @@ non-core dependency (and even that is simply a module that was previously
 distributed as part of @code{Type::Tiny} but has since been spun off), and can
 be used with Moose, Mouse and Moo (or none of the above).")
     (license (package-license perl))))
+
+(define-public perl-type-tiny-xs
+  (package
+    (name "perl-type-tiny-xs")
+    (version "0.012")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/Type-Tiny-XS-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "05nbr898cvjjh1wsy55l84zasx65gijdxc6dnn558ihns8zx6gm9"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Type-Tiny-XS/")
+    (synopsis "Provides an XS boost for some of Type::Tiny's built-in type constraints")
+    (description "This module is optionally used by @code{Type::Tiny} to
+provide faster, C-based implementations of some type constraints.  This
+package has only core dependencies, and does not depend on @code{Type::Tiny},
+so other data validation frameworks might also consider using it.")
+    (license perl-license)))
+
+(define-public perl-types-path-tiny
+  (package
+    (name "perl-types-path-tiny")
+    (version "0.005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "Types-Path-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09nf167ssi4rgj8hhzylwp3zdx61njdpyfri43arcmk9aqn7f0pp"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-pushd" ,perl-file-pushd)
+       ("perl-path-tiny" ,perl-path-tiny)
+       ("perl-type-tiny" ,perl-type-tiny)
+       ("perl-exporter-tiny" ,perl-exporter-tiny)))
+    (home-page "http://search.cpan.org/dist/Types-Path-Tiny/")
+    (synopsis "Types and coercions for Moose and Moo")
+    (description "This module provides @code{Path::Tiny} types for Moose, Moo,
+etc.  It handles two important types of coercion: coercing objects with
+overloaded stringification, and coercing to absolute paths.  It also can check
+to ensure that files or directories exist.")
+    (license artistic2.0)))
 
 (define-public perl-types-serialiser
   (package

@@ -20,11 +20,10 @@
 (define-module (guix build pull)
   #:use-module (guix modules)
   #:use-module (guix build utils)
-  #:use-module (system base compile)
+  #:use-module (guix build compile)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:use-module (ice-9 threads)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -62,34 +61,6 @@ available, false otherwise."
             (or (and (string-prefix? guix a)
                      (string-prefix? gnu  b))
                 (string<? a b))))))
-
-(cond-expand
-  (guile-2.2 (use-modules (language tree-il optimize)
-                          (language cps optimize)))
-  (else #f))
-
-(define %default-optimizations
-  ;; Default optimization options (equivalent to -O2 on Guile 2.2).
-  (cond-expand
-    (guile-2.2 (append (tree-il-default-optimization-options)
-                       (cps-default-optimization-options)))
-    (else '())))
-
-(define %lightweight-optimizations
-  ;; Lightweight optimizations (like -O0, but with partial evaluation).
-  (let loop ((opts %default-optimizations)
-             (result '()))
-    (match opts
-      (() (reverse result))
-      ((#:partial-eval? _ rest ...)
-       (loop rest `(#t #:partial-eval? ,@result)))
-      ((kw _ rest ...)
-       (loop rest `(#f ,kw ,@result))))))
-
-(define (optimization-options file)
-  (if (string-contains file "gnu/packages/")
-      %lightweight-optimizations                  ;build faster
-      '()))
 
 
 (define* (build-guix out source
@@ -148,53 +119,43 @@ containing the source code.  Write any debugging output to DEBUG-PORT."
     (set! %load-path (cons out %load-path))
     (set! %load-compiled-path (cons out %load-compiled-path))
 
-    ;; Compile the .scm files.  Load all the files before compiling them to
-    ;; work around <http://bugs.gnu.org/15602> (FIXME).
-    ;; Filter out files depending on Guile-SSH when Guile-SSH is missing.
-    (let* ((files (filter has-all-its-dependencies?
-                          (all-scheme-files out)))
-           (total (length files)))
-      (let loop ((files files)
-                 (completed 0))
-        (match files
-          (() *unspecified*)
-          ((file . files)
-           (display #\cr log-port)
-           (format log-port "loading...\t~5,1f% of ~d files" ;FIXME: i18n
-                   (* 100. (/ completed total)) total)
-           (force-output log-port)
-           (format debug-port "~%loading '~a'...~%" file)
-           ;; Turn "<out>/foo/bar.scm" into (foo bar).
-           (let* ((relative-file (string-drop file (+ (string-length out) 1)))
-                  (module-path (string-drop-right relative-file 4))
-                  (module-name (map string->symbol
-                                    (string-split module-path #\/))))
-             (parameterize ((current-warning-port debug-port))
-               (resolve-interface module-name)))
-           (loop files (+ 1 completed)))))
-      (newline)
-      (let ((mutex (make-mutex))
-            (completed 0))
-        ;; Make sure compilation related modules are loaded before starting to
-        ;; compile files in parallel.
-        (compile #f)
-        (n-par-for-each
-         (parallel-job-count)
-         (lambda (file)
-           (with-mutex mutex
-             (display #\cr log-port)
-             (format log-port "compiling...\t~5,1f% of ~d files" ;FIXME: i18n
-                     (* 100. (/ completed total)) total)
-             (force-output log-port)
-             (format debug-port "~%compiling '~a'...~%" file))
-           (let ((go (string-append (string-drop-right file 4) ".go")))
-             (parameterize ((current-warning-port (%make-void-port "w")))
-               (compile-file file
-                             #:output-file go
-                             #:opts (optimization-options file))))
-           (with-mutex mutex
-             (set! completed (+ 1 completed))))
-         files))))
+    ;; Compile the .scm files.  Hide warnings.
+    (parameterize ((current-warning-port (%make-void-port "w")))
+      (with-directory-excursion out
+        ;; Filter out files depending on Guile-SSH when Guile-SSH is missing.
+        (let ((files (filter has-all-its-dependencies?
+                             (all-scheme-files "."))))
+          (compile-files out out
+
+                         ;; XXX: 'compile-files' except ready-to-use relative
+                         ;; file names.
+                         (map (lambda (file)
+                                (if (string-prefix? "./" file)
+                                    (string-drop file 2)
+                                    file))
+                              files)
+
+                         #:workers (parallel-job-count)
+
+                         ;; Disable warnings.
+                         #:warning-options '()
+
+                         #:report-load
+                         (lambda (file total completed)
+                           (display #\cr log-port)
+                           (format log-port
+                                   "loading...\t~5,1f% of ~d files" ;FIXME: i18n
+                                   (* 100. (/ completed total)) total)
+                           (force-output log-port)
+                           (format debug-port "~%loading '~a'...~%" file))
+
+                         #:report-compilation
+                         (lambda (file total completed)
+                           (display #\cr log-port)
+                           (format log-port "compiling...\t~5,1f% of ~d files" ;FIXME: i18n
+                                   (* 100. (/ completed total)) total)
+                           (force-output log-port)
+                           (format debug-port "~%compiling '~a'...~%" file)))))))
 
   (newline)
   #t)

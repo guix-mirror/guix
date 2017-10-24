@@ -78,6 +78,7 @@
                                %standard-phases))
                    (outputs '("out"))
                    (search-paths '())
+                   (install-source? #t)
                    (import-path "")
                    (unpack-path "")
                    (tests? #t)
@@ -102,6 +103,7 @@
                 #:outputs %outputs
                 #:search-paths ',(map search-path-specification->sexp
                                       search-paths)
+                #:install-source? ,install-source?
                 #:import-path ,import-path
                 #:unpack-path ,unpack-path
                 #:tests? ,tests?

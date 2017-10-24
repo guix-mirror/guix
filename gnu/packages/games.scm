@@ -267,7 +267,8 @@ the others like yourself, that want what you have.")
            (lambda* (#:key outputs #:allow-other-keys)
              (zero? (system* "sh" "install.sh"
                              (assoc-ref outputs "out")))))
-         (replace 'check
+         (delete 'check)
+         (add-after 'install 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (zero? (system* (string-append (assoc-ref outputs "out")
                                             "/bin/cowsay")

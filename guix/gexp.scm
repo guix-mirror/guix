@@ -78,6 +78,8 @@
             gexp->script
             text-file*
             mixed-text-file
+            file-union
+            directory-union
             imported-files
             imported-modules
             compiled-modules
@@ -1170,6 +1172,56 @@ This is the declarative counterpart of 'text-file*'."
               (display (string-append (ungexp-splicing text)) port)))))
 
   (computed-file name build))
+
+(define (file-union name files)
+  "Return a <computed-file> that builds a directory containing all of FILES.
+Each item in FILES must be a two-element list where the first element is the
+file name to use in the new directory, and the second element is a gexp
+denoting the target file.  Here's an example:
+
+  (file-union \"etc\"
+              `((\"hosts\" ,(plain-file \"hosts\"
+                                        \"127.0.0.1 localhost\"))
+                (\"bashrc\" ,(plain-file \"bashrc\"
+                                         \"alias ls='ls --color'\"))))
+
+This yields an 'etc' directory containing these two files."
+  (computed-file name
+                 (gexp
+                  (begin
+                    (mkdir (ungexp output))
+                    (chdir (ungexp output))
+                    (ungexp-splicing
+                     (map (match-lambda
+                            ((target source)
+                             (gexp
+                              (begin
+                                ;; Stat the source to abort early if it does
+                                ;; not exist.
+                                (stat (ungexp source))
+
+                                (symlink (ungexp source)
+                                         (ungexp target))))))
+                          files))))))
+
+(define (directory-union name things)
+  "Return a directory that is the union of THINGS, where THINGS is a list of
+file-like objects denoting directories.  For example:
+
+  (directory-union \"guile+emacs\" (list guile emacs))
+
+yields a directory that is the union of the 'guile' and 'emacs' packages."
+  (match things
+    ((one)
+     ;; Only one thing; return it.
+     one)
+    (_
+     (computed-file name
+                    (with-imported-modules '((guix build union))
+                      (gexp (begin
+                              (use-modules (guix build union))
+                              (union-build (ungexp output)
+                                           '(ungexp things)))))))))
 
 
 ;;;

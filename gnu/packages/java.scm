@@ -54,6 +54,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux) ;alsa
+  #:use-module (gnu packages web)
   #:use-module (gnu packages wget)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
@@ -6020,3 +6021,213 @@ provides low-level abstractions (@code{JsonParser}, @code{JsonGenerator},
 @code{JsonFactory}) as well as small number of higher level overrides needed to
 make data-binding work.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-hdrhistogram
+  (package
+    (name "java-hdrhistogram")
+    (version "2.1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/HdrHistogram/HdrHistogram/"
+                                  "archive/HdrHistogram-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sicbmc3sr42nw93qbkb26q9rn33ag33k6k77phjc3j5h5gjffqv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-hdrhistogram.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-version
+           (lambda _
+             (let* ((version-java "src/main/java/org/HdrHistogram/Version.java")
+                    (template (string-append version-java ".template")))
+               (copy-file template version-java)
+               (substitute* version-java
+                 (("\\$VERSION\\$") ,version)
+                 (("\\$BUILD_TIME\\$") "0"))
+               #t))))))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://hdrhistogram.github.io/HdrHistogram")
+    (synopsis "High dynamic range histogram")
+    (description "Hdrhistogram allows to create histograms that support
+recording and analyzing sampled data value counts across a configurable integer
+value range with configurable value precision within the range.  Value precision
+is expressed as the number of significant digits in the value recording, and
+provides control over value quantization behavior across the value range and
+the subsequent value resolution at any given level.")
+    (license license:public-domain)))
+
+(define-public java-aopalliance
+  (package
+    (name "java-aopalliance")
+    (version "1.0")
+    (source (origin
+              (method git-fetch)
+              ;; Note: this git repository is not official, but contains the
+              ;; source code that is in the CVS repository.  Downloading the
+              ;; tarball from sourceforge is undeterministic, and the cvs download
+              ;; fails.
+              (uri (git-reference
+                     (url "https://github.com/hoverruan/aopalliance")
+                     (commit "0d7757ae204e5876f69431421fe9bc2a4f01e8a0")))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "0rsg2b0v3hxlq2yk1i3m2gw3xwq689j3cwx9wbxvqfpdcjbca0qr"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-aopalliance.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f; no tests
+       #:source-dir "aopalliance/src/main"))
+    (home-page "http://aopalliance.sourceforge.net")
+    (synopsis "Aspect-Oriented Programming")
+    (description "The AOP Alliance project is a joint project between several
+software engineering people who are interested in Aspect-Oriented Programming
+(AOP) and Java.")
+    (license license:public-domain)))
+
+(define-public java-javax-inject
+  (package
+    (name "java-javax-inject")
+    (version "tck-1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/javax-inject/javax-inject/"
+                                  "archive/javax.inject-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ydrlvh2r7vr1g7lhjwy3w2dggpj9h6pix1lakkkgdywb365n6g0"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-javax-inject.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f)); no tests
+    (home-page "http://github.com/javax-inject/javax-inject")
+    (synopsis "JSR-330: Dependency Injection for Java")
+    (description "This package specifies a means for obtaining objects in such
+a way as to maximize reusability, testability and maintainability compared to
+traditional approaches such as constructors, factories, and service locators
+(e.g., JNDI).  This process, known as dependency injection, is beneficial to
+most nontrivial applications.
+
+Many types depend on other types.  For example, a @var{Stopwatch} might depend
+on a @var{TimeSource}.  The types on which a type depends are known as its
+dependencies.  The process of finding an instance of a dependency to use at run
+time is known as resolving the dependency.  If no such instance can be found,
+the dependency is said to be unsatisfied, and the application is broken.")
+    (license license:asl2.0)))
+
+(define-public java-guice
+  (package
+    (name "java-guice")
+    (version "4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/guice/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dwmqjzlavb144ywqqglj3h68hqszkff8ai0a42hyb5il0qh4rbp"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-guice.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f; FIXME: tests are not in a java sub directory
+       #:source-dir "core/src"))
+    (inputs
+     `(("guava" ,java-guava)
+       ("java-cglib" ,java-cglib)
+       ("java-aopalliance" ,java-aopalliance)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-asm" ,java-asm)))
+    (home-page "https://github.com/google/guice")
+    (synopsis "Lightweight dependency injection framework")
+    (description "Guice is a lightweight dependency injection framework fo
+Java 6 and above.")
+    (license license:asl2.0)))
+
+(define-public java-guice-servlet
+  (package
+    (inherit java-guice)
+    (name "java-guice-servlet")
+    (arguments
+     `(#:jar-name "guice-servlet.jar"
+       #:source-dir "extensions/servlet/src/"
+       #:jdk ,icedtea-8
+       #:tests? #f)); FIXME: not in a java subdir
+    (inputs
+     `(("guice" ,java-guice)
+       ("servlet" ,java-tomcat)
+       ,@(package-inputs java-guice)))))
+
+(define-public java-assertj
+  (package
+    (name "java-assertj")
+    (version "3.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/joel-costigliola/"
+                                  "assertj-core/archive/"
+                                  "assertj-core-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kf124fxskf548rklkg86294w2x6ajqrff94rrhyqns31danqkfz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-assertj.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main/java"
+       #:tests? #f)); depends on tng-junit which depends on assertj
+    (inputs
+     `(("cglib" ,java-cglib)
+       ("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (native-inputs
+     `(("mockito" ,java-mockito-1)))
+    (home-page "https://joel-costigliola.github.io/assertj/index.html")
+    (synopsis "Fluent assertions for java")
+    (description "AssertJ core is a Java library that provides a fluent
+interface for writing assertions.  Its main goal is to improve test code
+readability and make maintenance of tests easier.")
+    (license license:asl2.0)))
+
+(define-public java-jboss-javassist
+  (package
+    (name "java-jboss-javassist")
+    (version "3.21.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jboss-javassist/javassist/"
+                                  "archive/rel_"
+                                  (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
+                                  "_ga.tar.gz"))
+              (sha256
+               (base32
+                "10lpcr3sbf7y6fq6fc2h2ik7rqrivwcy4747bg0kxhwszil3cfmf"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jboss-javassist.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main"
+       #:tests? #f; FIXME: requires junit-awtui and junit-swingui from junit3
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'remove-binary
+           (lambda _
+             (delete-file "javassist.jar")
+             #t)))))
+    (native-inputs
+     `(("junit" ,java-junit)))
+    (home-page "https://github.com/jboss-javassist/javassist")
+    (synopsis "Java bytecode engineering toolkit")
+    (description "Javassist (JAVA programming ASSISTant) makes Java bytecode
+manipulation simple.  It is a class library for editing bytecodes in Java; it
+enables Java programs to define a new class at runtime and to modify a class
+file when the JVM loads it.")
+    (license (list license:gpl2 license:cddl1.0)))); either gpl2 only or cddl.

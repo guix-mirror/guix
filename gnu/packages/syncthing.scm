@@ -38,9 +38,15 @@
                (base32
                 "07mrvd3vq0p4f550dpq73xg1vpa2h7xxz7vq07sjw0whapknkw9f"))))
     (build-system go-build-system)
+    ;; The primary Syncthing executable goes to "out", while the auxiliary
+    ;; server programs and utility tools go to "utils".  This reduces the size
+    ;; of "out" by ~80 MiB.
+    (outputs '("out" "utils"))
     (arguments
      `(#:import-path "github.com/syncthing/syncthing"
        #:unpack-path "github.com/syncthing"
+       ;; We don't need to install the source code for end-user applications.
+       #:install-source? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-bundled-source-code
@@ -54,9 +60,6 @@
              (rename-file "cznic"
                           "src/github.com/syncthing/syncthing/vendor/github.com/cznic")
              #t))
-
-         ;; We don't need to install the source code for end-user applications.
-         (delete 'install-source)
 
          (add-before 'build 'increase-test-timeout
            (lambda _
@@ -75,21 +78,39 @@
                (zero? (system* "go" "run" "build.go" "test")))))
 
          (replace 'install
-           (lambda _
-             (copy-recursively "src/github.com/syncthing/syncthing/bin/"
-                               (string-append (assoc-ref %outputs "out") "/bin"))
-             #t))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (utils (assoc-ref outputs "utils"))
+                   (src "src/github.com/syncthing/syncthing/bin/"))
+               (install-file (string-append src "/syncthing")
+                             (string-append out "/bin"))
+               (delete-file (string-append src "/syncthing"))
+               (copy-recursively "src/github.com/syncthing/syncthing/bin/"
+                                 (string-append utils "/bin"))
+               #t)))
 
          (add-after 'install 'install-docs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (man (string-append out "/share/man/man"))
+                    (utils (assoc-ref outputs "utils"))
+                    (man "/share/man")
+                    (man-section (string-append man "/man"))
                     (src "src/github.com/syncthing/syncthing/man/"))
+               ;; Install all the man pages to "out".
                (for-each
                  (lambda (file)
                    (install-file file
-                                 (string-append man (string-take-right file 1))))
+                                 (string-append out man-section
+                                                (string-take-right file 1))))
                  (find-files src "\\.[1-9]"))
+               ;; Copy all the man pages to "utils"
+               (copy-recursively (string-append out man)
+                                 (string-append utils man))
+               ;; Delete extraneous man pages from "out" and "utils",
+               ;; respectively.
+               (delete-file (string-append out man "/man1/stdiscosrv.1"))
+               (delete-file (string-append out man "/man1/strelaysrv.1"))
+               (delete-file (string-append utils man "/man1/syncthing.1"))
              #t))))))
     ;; When updating Syncthing, check 'vendor/manifest' in the source
     ;; distribution to ensure we are using the correct versions of these

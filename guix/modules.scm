@@ -26,6 +26,9 @@
   #:export (missing-dependency-error?
             missing-dependency-module
 
+            file-name->module-name
+            module-name->file-name
+
             source-module-closure
             live-module-closure
             guix-module-name?))
@@ -92,6 +95,13 @@ depends on."
           ;; XXX: R6RS 'library' form is ignored.
           (_
            '()))))))
+
+(define file-name->module-name
+  (let ((not-slash (char-set-complement (char-set #\/))))
+    (lambda (file)
+      "Return the module name (a list of symbols) corresponding to FILE."
+      (map string->symbol
+           (string-tokenize (string-drop-right file 4) not-slash)))))
 
 (define (module-name->file-name module)
   "Return the file name for MODULE."

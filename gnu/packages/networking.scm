@@ -48,6 +48,7 @@
   #:use-module (gnu packages adns)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -1494,3 +1496,42 @@ interface and a programmable text output for scripting.")
     ;; Update the license field when upstream responds.
     (license (list license:bsd-2
                    license:expat))))
+
+(define-public libnet
+  (package
+    (name "libnet")
+    (version "1.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/sam-github/libnet/"
+                                  "archive/libnet-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0l4gbzzvr199fzczzricjz7b825i7dlk6sgl5p5alnkcagmq0xys"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "libnet") #t))
+         (add-after 'chdir 'bootstrap
+           (lambda _ (zero? (system* "autoreconf" "-vif"))))
+         (add-before 'build 'build-doc
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* "make" "-C" "doc" "doc"
+                           make-flags)))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("doxygen" ,doxygen)))
+    (home-page "https://sourceforge.net/projects/libnet-dev/")
+    (synopsis "Framework for low-level network packet construction")
+    (description
+     "Libnet provides a fairly portable framework for network packet
+construction and injection.  It features portable packet creation interfaces
+at the IP layer and link layer, as well as a host of supplementary
+functionality.  Using libnet, quick and simple packet assembly applications
+can be whipped up with little effort.")
+    (license license:bsd-2)))

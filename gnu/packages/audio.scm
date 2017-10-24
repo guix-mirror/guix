@@ -1065,20 +1065,35 @@ PS, and DAB+.")
 (define-public faust-2
   (package
     (inherit faust)
-    (version "2.0.a51")
+    (version "2.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/faudiostream/faust-" version ".tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/grame-cncm/faust.git")
+                    (commit (string-append "v"
+                                           (string-map (lambda (c)
+                                                         (if (char=? c #\.) #\- c))
+                                                       version)))))
               (sha256
                (base32
-                "1yryjqfqmxs7lxy95hjgmrncvl9kig3rcsmg0v49ghzz7vs7haxf"))))
+                "06km0ygwxxwgw1lqldccqidxhmjfz8ck0wnbd95qk5sg8sbpc068"))))
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments faust)
        ((#:make-flags flags)
         `(list (string-append "prefix=" (assoc-ref %outputs "out"))
-               "world"))))
+               "world"))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; Files appear under $out/share/faust that are read-only.  The
+           ;; install phase tries to overwrite them and fails, so we change
+           ;; the permissions first.
+           (add-before 'install 'fix-permissions
+             (lambda* (#:key outputs #:allow-other-keys)
+               (for-each (lambda (file)
+                           (chmod file #o644))
+                         (find-files "architecture/max-msp" ".*"))
+               #t))))))
     (native-inputs
      `(("llvm" ,llvm-with-rtti)
        ("which" ,which)

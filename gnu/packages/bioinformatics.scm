@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Raoul Bonnal <ilpuccio.febo@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3615,7 +3616,7 @@ assembled metagenomic sequence.")
 (define-public miso
   (package
     (name "miso")
-    (version "0.5.3")
+    (version "0.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3623,7 +3624,7 @@ assembled metagenomic sequence.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0x446867az8ir0z8c1vjqffkp0ma37wm4sylixnkhgawllzx8v5w"))
+                "1z3x0vd8ma7pdrnywj7i3kgwl89sdkwrrn62zl7r5calqaq2hyip"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "setup.py"
