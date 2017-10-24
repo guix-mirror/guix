@@ -5218,6 +5218,16 @@ libxml2.")
      '(#:configure-flags
        `("--without-plymouth"
          "--disable-systemd-journal"
+
+         ;; Using --with-initial-vt=7 allows GDM to run alongside TTY 1,
+         ;; instead of having to replace it (i.e., stopping the mingetty
+         ;; service for TTY 1 before starting GDM).
+         "--with-initial-vt=7"
+
+         ;; By default, GDM expects distributions to install a custom Xsession
+         ;; script. It provides a generic one if --enable-gdm-xsession is set.
+         "--enable-gdm-xsession"
+
          "--localstatedir=/var"
          ,(string-append "--with-default-path="
                          (string-join '("/run/setuid-programs"
