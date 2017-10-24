@@ -3577,7 +3577,7 @@ single-letter approach, is provided but not enabled by default.")
 (define-public perl-getopt-long-descriptive
   (package
     (name "perl-getopt-long-descriptive")
-    (version "0.098")
+    (version "0.100")
     (source
      (origin
        (method url-fetch)
@@ -3585,10 +3585,11 @@ single-letter approach, is provided but not enabled by default.")
                            "Getopt-Long-Descriptive-" version ".tar.gz"))
        (sha256
         (base32
-         "08lphvqshcajvvd6z4rvcda6rx5kz8pysrsip4nfv2mbks95p9ma"))))
+         "1dpz5nhg5glmrpq46nkc90dg19cfqfjspqwhfvihsqyi229yfl8l"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
+     `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
+       ("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-warnings" ,perl-test-warnings)))
     (propagated-inputs
      `(("perl-params-validate" ,perl-params-validate)
