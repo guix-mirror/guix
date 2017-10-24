@@ -4378,6 +4378,30 @@ intersections, unions, unique elements, complements and many more.")
 functionality on lists which is not going to go into List::Util.")
     (license (package-license perl))))
 
+(define-public perl-list-moreutils-xs
+  (package
+    (name "perl-list-moreutils-xs")
+    (version "0.426")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/List-MoreUtils-XS-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0ss0a0f9yqs7gd9qamhaxq27mvn573ljg28ry1gy2pxbz56byzbc"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-config-autoconf" ,perl-config-autoconf)
+       ("perl-inc-latest" ,perl-inc-latest)
+       ("perl-test-leaktrace" ,perl-test-leaktrace)))
+    (home-page "http://search.cpan.org/dist/List-MoreUtils-XS")
+    (synopsis "Provide the stuff missing in List::Util in XS")
+    (description "@code{List::MoreUtils::XS} provides some trivial but
+commonly needed functionality on lists which is not going to go into
+@code{List::Util}.")
+    (license asl2.0)))
+
 (define-public perl-list-someutils
   (package
     (name "perl-list-someutils")
