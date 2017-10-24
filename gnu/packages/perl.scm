@@ -8715,6 +8715,27 @@ distributed as part of @code{Type::Tiny} but has since been spun off), and can
 be used with Moose, Mouse and Moo (or none of the above).")
     (license (package-license perl))))
 
+(define-public perl-type-tiny-xs
+  (package
+    (name "perl-type-tiny-xs")
+    (version "0.012")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/Type-Tiny-XS-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "05nbr898cvjjh1wsy55l84zasx65gijdxc6dnn558ihns8zx6gm9"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Type-Tiny-XS/")
+    (synopsis "Provides an XS boost for some of Type::Tiny's built-in type constraints")
+    (description "This module is optionally used by @code{Type::Tiny} to
+provide faster, C-based implementations of some type constraints.  This
+package has only core dependencies, and does not depend on @code{Type::Tiny},
+so other data validation frameworks might also consider using it.")
+    (license perl-license)))
+
 (define-public perl-types-serialiser
   (package
     (name "perl-types-serialiser")
