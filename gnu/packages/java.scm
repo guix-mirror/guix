@@ -2564,6 +2564,21 @@ The jMock library
        #:source-dir "jmock/src/main/java"
        #:test-dir "jmock/src/test"))))
 
+(define-public java-jmock-junit4
+  (package
+    (inherit java-jmock)
+    (name "java-jmock-junit4")
+    (arguments
+     `(#:jar-name "java-jmock-junit4.jar"
+       #:source-dir "jmock-junit4/src/main/java"
+       #:test-dir "jmock-junit4/src/test"))
+    (inputs
+     `(("java-hamcrest-all" ,java-hamcrest-all)
+       ("java-asm" ,java-asm)
+       ("java-bsh" ,java-bsh)
+       ("java-jmock" ,java-jmock)
+       ("java-jumit" ,java-junit)))))
+
 (define-public java-hamcrest-all
   (package (inherit java-hamcrest-core)
     (name "java-hamcrest-all")
