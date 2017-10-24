@@ -1738,6 +1738,33 @@ The maths behind this is unfortunately fiddly, hence this module.")
 formatted (to be inspected by a human).")
     (license (package-license perl))))
 
+(define-public perl-data-record
+  (package
+    (name "perl-data-record")
+    (version "0.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/O/OV/OVID/"
+                           "Data-Record-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gwyhjwg4lrnfsn8wb6r8msb4yh0y4wca4mz3z120xbnl9nycshx"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)
+       ("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-sub-uplevel" ,perl-sub-uplevel)))
+    (home-page "http://search.cpan.org/dist/Data-Record/")
+    (synopsis "Conditionally split data into records")
+    (description "This Perl module allows you to split data into records by
+not only specifying what you wish to split the data on, but also by specifying
+an \"unless\" regular expression.  If the text in question matches the
+\"unless\" regex, it will not be split there.  This allows us to do things
+like split on newlines unless newlines are embedded in quotes.")
+    (license (package-license perl))))
+
 (define-public perl-data-stag
   (package
     (name "perl-data-stag")
