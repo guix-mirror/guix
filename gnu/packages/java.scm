@@ -6420,3 +6420,40 @@ those in Perl and JavaScript.")
     (synopsis "Common FEST testing infrastructure")
     (description "Fest-test contains the common FEST testing infrastructure.")
     (license license:asl2.0)))
+
+(define-public java-fest-assert
+  (package
+    (name "java-fest-assert")
+    (version "2.0M10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alexruiz/fest-assert-2.x/"
+                                  "archive/fest-assert-core-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bi0iqavikzww6rxvz5jyg7y6bflv95s6ibryxx0xfcxrrw6i5lw"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-fest-assert.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list
+         "**/Abstract*.java"
+         "**/*BaseTest.java"
+         ;; Unable to set MockitoNamingPolicy on cglib generator which creates FastClasses
+         "**/MessageFormatter_format_Test.java"
+         "**/internal/*/*_assert*_Test.java")))
+    (inputs
+     `(("java-fest-util" ,java-fest-util)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-fest-test" ,java-fest-test)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-mockito" ,java-mockito-1)
+       ("java-cglib" ,java-cglib)
+       ("java-objenesis" ,java-objenesis)
+       ("java-asm" ,java-asm)))
+    (home-page "https://github.com/alexruiz/fest-assert-2.x")
+    (synopsis "FEST fluent assertions")
+    (description "FEST-Assert provides a fluent interface for assertions.")
+    (license license:asl2.0)))
