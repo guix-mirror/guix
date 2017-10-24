@@ -3408,28 +3408,6 @@ structured and unstructured grid problems.")))
 supports compressed MAT files, as well as newer (version 7.3) MAT files.")
     (license license:bsd-2)))
 
-(define-public libhilbert
-  (package
-    (name "libhilbert")
-    (version "0.2-1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://web.cs.dal.ca/~chamilto/hilbert/"
-                           "libhilbert-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0v48x8405dj95gjn2saja4bzhw86d6zl6d3dg8h7dzac2qr97s34"))))
-    (build-system gnu-build-system)
-    (home-page "http://web.cs.dal.ca/~chamilto/hilbert")
-    (synopsis "Hilbert indices for multidimensional data")
-    (description "The libhilbert library can efficiently calculate Hilbert
-curves and order-preserving representations of Hilbert curve indices that use
-the same amount of space as the original point representation.  This is useful
-when using the Gilbert curve as a space filling curve through a
-high-dimensional space where not all demensions have the same cardinality.")
-    (license license:lgpl2.1+)))
-
 (define-public vc
   (package
     (name "vc")
