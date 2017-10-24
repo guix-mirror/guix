@@ -7896,6 +7896,32 @@ makes fork(2) safe to use in test cases.")
                               "Test-Simple-" version))
     (license (package-license perl))))
 
+(define-public perl-test-taint
+  (package
+    (name "perl-test-taint")
+    (version "1.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/Test-Taint-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "01rip5d7gdr1c7lq6yczzkqfd0500nfa977ryigylj6jj75526vj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-Taint/")
+    (synopsis "Checks for taintedness of variables")
+    (description "Tainted data is data that comes from an unsafe source, such
+as the command line, or, in the case of web apps, any @code{GET} or
+@code{POST} transactions.  Read the @code{perlsec} man page for details on why
+tainted data is bad, and how to untaint the data.
+
+When you're writing unit tests for code that deals with tainted data, you'll
+want to have a way to provide tainted data for your routines to handle, and
+easy ways to check and report on the taintedness of your data, in standard
+@code{Test::More} style.")
+    (license (package-license perl))))
+
 (define-public perl-test-tester
   (package
     (name "perl-test-tester")
