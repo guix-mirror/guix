@@ -6374,3 +6374,26 @@ BeanShell dynamically executes standard Java syntax and extends it with common
 scripting conveniences such as loose types, commands, and method closures like
 those in Perl and JavaScript.")
     (license license:asl2.0)))
+
+(define-public java-fest-util
+  (package
+    (name "java-fest-util")
+    (version "1.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alexruiz/fest-util/"
+                                  "archive/fest-util-" version ".tar.gz"))
+              (sha256
+               (base32
+                "05g6hljz5mdaakk8d7g32klbhz9bdwp3qlj6rdaggdidxs3x1sb8"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-fest-util.jar"
+       #:source-dir "src/main/java"))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://github.com/alexruiz/fest-util")
+    (synopsis "FEST common utilities")
+    (description "Common utilities used in all FEST module.")
+    (license license:asl2.0)))
