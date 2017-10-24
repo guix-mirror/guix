@@ -6958,6 +6958,31 @@ other terminal related features, including retrieval/modification of the
 screen size, and retrieval/modification of the control characters.")
     (license (package-license perl))))
 
+(define-public perl-term-size-any
+  (package
+    (name "perl-term-size-any")
+    (version "0.002")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FE/FERREIRA/"
+                           "Term-Size-Any-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lnynd8pwjp3g85bl4nav6yigg2lag3sx5da989j7a733bdmzyk4"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-devel-hide" ,perl-devel-hide)))
+    (propagated-inputs
+     `(("perl-term-size-perl" ,perl-term-size-perl)))
+    (home-page "http://search.cpan.org/dist/Term-Size-Any/")
+    (synopsis "Retrieve terminal size")
+    (description "This is a unified interface to retrieve terminal size.  It
+loads one module of a list of known alternatives, each implementing some way
+to get the desired terminal information.  This loaded module will actually do
+the job on behalf of @code{Term::Size::Any}.")
+    (license (package-license perl))))
+
 (define-public perl-term-size-perl
   (package
     (name "perl-term-size-perl")
