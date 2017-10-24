@@ -1714,6 +1714,30 @@ The maths behind this is unfortunately fiddly, hence this module.")
 @end itemize")
     (license perl-license)))
 
+(define-public perl-data-printer
+  (package
+    (name "perl-data-printer")
+    (version "0.40")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GARU/Data-Printer-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0njjh8zp5afc4602jrnmg89icj7gfsil6i955ypcqxc2gl830sb0"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-clone-pp" ,perl-clone-pp)
+       ("perl-file-homedir" ,perl-file-homedir)
+       ("perl-package-stash" ,perl-package-stash)
+       ("perl-sort-naturally" ,perl-sort-naturally)))
+    (home-page "http://search.cpan.org/dist/Data-Printer/")
+    (synopsis "Colored pretty-print of Perl data structures and objects")
+    (description "Display Perl variables and objects on screen, properly
+formatted (to be inspected by a human).")
+    (license (package-license perl))))
+
 (define-public perl-data-stag
   (package
     (name "perl-data-stag")
