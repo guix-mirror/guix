@@ -1285,24 +1285,6 @@ or junctions, and always follows hard links.")
  archives from InstallShield installers.")
     (license license:expat)))
 
-(define-public unrar
-  (package
-    (name "unrar")
-    (version "0.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://download.gna.org/unrar/unrar-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1fgmjaxffj3shyxgy765jhxwz1cq88hk0fih1bsdzyvymyyz6mz7"))))
-    (build-system gnu-build-system)
-    (home-page "http://download.gna.org/unrar")
-    (synopsis "RAR archive extraction tool")
-    (description "Unrar is a simple command-line program to list and extract
-RAR archives.")
-    (license license:gpl2+)))
-
 (define-public zstd
   (package
     (name "zstd")
