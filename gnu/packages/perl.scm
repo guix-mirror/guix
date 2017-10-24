@@ -6958,6 +6958,25 @@ other terminal related features, including retrieval/modification of the
 screen size, and retrieval/modification of the control characters.")
     (license (package-license perl))))
 
+(define-public perl-term-size-perl
+  (package
+    (name "perl-term-size-perl")
+    (version "0.029")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FE/FERREIRA/"
+                           "Term-Size-Perl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rvm91bhdlxfwx5zka023p7szf2s7gm16wl27qiivvj66svsl6lc"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Term-Size-Perl/")
+    (synopsis "Perl extension for retrieving terminal size (Perl version)")
+    (description "This is yet another implementation of @code{Term::Size}.
+Now in pure Perl, with the exception of a C probe run at build time.")
+    (license (package-license perl))))
+
 (define-public perl-term-table
   (package
     (name "perl-term-table")
