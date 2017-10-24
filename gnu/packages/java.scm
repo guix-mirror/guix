@@ -6684,3 +6684,36 @@ algorithms and xxHash hashing algorithm.")
     (description "Bouncy Castle Provider (bcprov) is a cryptographic library
 for the Java programming language.")
     (license license:expat)))
+
+(define-public java-bouncycastle-bcpkix
+  (package
+    (name "java-bouncycastle-bcpkix")
+    (version "1.58")
+    (source (origin
+              (method url-fetch)
+              (uri "https://bouncycastle.org/download/bcpkix-jdk15on-158.tar.gz")
+              (sha256
+               (base32
+                "0is7qay02803s9f7lhnfcjlz61ni3hq5d7apg0iil7nbqkbfbcq2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "bouncycastle-bcpkix.jar"
+       #:tests? #f; no tests
+       #:source-dir "src"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'unzip-src
+           (lambda _
+             (mkdir-p "src")
+             (with-directory-excursion "src"
+               (zero? (system* "unzip" "../src.zip"))))))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("junit" ,java-junit)))
+    (inputs
+     `(("bcprov" ,java-bouncycastle-bcprov)))
+    (home-page "https://www.bouncycastle.org")
+    (synopsis "Cryptographic library")
+    (description "Bouncy Castle Java API for PKIX, CMS, EAC, TSP, PKCS, OCSP,
+CMP, and CRMF.")
+    (license license:expat)))
