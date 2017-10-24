@@ -8736,6 +8736,32 @@ package has only core dependencies, and does not depend on @code{Type::Tiny},
 so other data validation frameworks might also consider using it.")
     (license perl-license)))
 
+(define-public perl-types-path-tiny
+  (package
+    (name "perl-types-path-tiny")
+    (version "0.005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "Types-Path-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09nf167ssi4rgj8hhzylwp3zdx61njdpyfri43arcmk9aqn7f0pp"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-pushd" ,perl-file-pushd)
+       ("perl-path-tiny" ,perl-path-tiny)
+       ("perl-type-tiny" ,perl-type-tiny)
+       ("perl-exporter-tiny" ,perl-exporter-tiny)))
+    (home-page "http://search.cpan.org/dist/Types-Path-Tiny/")
+    (synopsis "Types and coercions for Moose and Moo")
+    (description "This module provides @code{Path::Tiny} types for Moose, Moo,
+etc.  It handles two important types of coercion: coercing objects with
+overloaded stringification, and coercing to absolute paths.  It also can check
+to ensure that files or directories exist.")
+    (license artistic2.0)))
+
 (define-public perl-types-serialiser
   (package
     (name "perl-types-serialiser")
