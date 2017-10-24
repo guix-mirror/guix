@@ -6457,3 +6457,63 @@ those in Perl and JavaScript.")
     (synopsis "FEST fluent assertions")
     (description "FEST-Assert provides a fluent interface for assertions.")
     (license license:asl2.0)))
+
+(define-public java-testng
+  (package
+    (name "java-testng")
+    (version "6.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cbeust/testng/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01j2x47wkj7n5w6gpcjfbwgc88ai5654b23lb87w7nsrj63m3by6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jdk ,icedtea-8; java.util.function
+       #:jar-name "java-testng.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "src/test/resources" "build/test-classes")
+             #t))
+         (replace 'check
+           (lambda _
+             (system* "ant" "compile-tests")
+             ;; we don't have groovy
+             (substitute* "src/test/resources/testng.xml"
+               (("<class name=\"test.groovy.GroovyTest\" />") ""))
+             (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                         ":build/classes"
+                                                         ":build/test-classes")
+                             "-Dtest.resources.dir=src/test/resources"
+                             "org.testng.TestNG" "src/test/resources/testng.xml")))))))
+    (propagated-inputs
+     `(("junit" ,java-junit)
+       ("java-jsr305" ,java-jsr305)
+       ("java-bsh" ,java-bsh)
+       ("java-jcommander" ,java-jcommander)
+       ("java-guice" ,java-guice)
+       ("snakeyaml" ,java-snakeyaml)))
+    (native-inputs
+     `(("guava" ,java-guava)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-hamcrest" ,java-hamcrest-all)
+       ("java-assertj" ,java-assertj)
+       ("cglib" ,java-cglib)
+       ("asm" ,java-asm)
+       ("aopalliance" ,java-aopalliance)))
+    (home-page "http://testng.org")
+    (synopsis "Testing framework")
+    (description "TestNG is a testing framework inspired from JUnit and NUnit
+but introducing some new functionalities that make it more powerful and easier
+to use.")
+    (license license:asl2.0)))
