@@ -5282,9 +5282,9 @@ libxml2.")
                 "    \"/run/current-system/profile/etc/xdg\");\n"
                 )))
             ;; Look for custom GDM conf in /run/current-system.
-            (substitute* '("common/gdm-settings-backend.c")
+            (substitute* '("common/gdm-settings-desktop-backend.c")
               (("GDM_CUSTOM_CONF")
-               "/run/current-system/etc/gdm/custom.conf"))
+               "\"/run/current-system/etc/gdm/custom.conf\""))
             ;; Use service-supplied path to X.
             (substitute* '("daemon/gdm-server.c")
               (("\\(X_SERVER X_SERVER_ARG_FORMAT")
