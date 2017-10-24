@@ -4356,7 +4356,7 @@ intersections, unions, unique elements, complements and many more.")
 (define-public perl-list-moreutils
   (package
     (name "perl-list-moreutils")
-    (version "0.402")
+    (version "0.426")
     (source
      (origin
        (method url-fetch)
@@ -4364,14 +4364,24 @@ intersections, unions, unique elements, complements and many more.")
                            "List-MoreUtils-" version ".tar.gz"))
        (sha256
         (base32
-         "1i0k7kqg1m9nf2xvq9l4lyf38fxvi9952vmmvhcdaf3qa95pxb24"))))
+         "1dj77b42cp5ziq9y38fff458avjwzm88kn076svcvl660h6n21cf"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) ":"
+                                    (getenv "PERL5LIB")))
+             #t)))))
     (native-inputs
      `(("perl-config-autoconf" ,perl-config-autoconf)
-       ("perl-inc-latest" ,perl-inc-latest)
-       ("perl-test-writevariants" ,perl-test-writevariants)))
+       ("perl-test-leaktrace" ,perl-test-leaktrace)))
     (propagated-inputs
-     `(("perl-exporter-tiny" ,perl-exporter-tiny)))
+     `(("perl-exporter-tiny" ,perl-exporter-tiny)
+       ("perl-list-moreutils-xs" ,perl-list-moreutils-xs)))
     (home-page "http://search.cpan.org/dist/List-MoreUtils/")
     (synopsis "Provide the stuff missing in List::Util")
     (description "List::MoreUtils provides some trivial but commonly needed
