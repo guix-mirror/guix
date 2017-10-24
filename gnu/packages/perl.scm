@@ -5485,6 +5485,38 @@ constraint with coercion to load the class.")
     (description "Contains the MooX and MooX::Role packages.")
     (license perl-license)))
 
+(define-public perl-moox-cmd
+  (package
+    (name "perl-moox-cmd")
+    (version "0.015")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/MooX-Cmd-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0145ha8vnc6sbg82ps96wj716bznq2qamm657bia9ji2yxhbnsam"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-list-moreutils" ,perl-list-moreutils)))
+    (propagated-inputs
+     `(("perl-module-pluggable" ,perl-module-pluggable)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moo" ,perl-moo)
+       ("perl-package-stash" ,perl-package-stash)
+       ("perl-params-util" ,perl-params-util)
+       ("perl-regexp-common" ,perl-regexp-common)))
+    (home-page "http://search.cpan.org/dist/MooX-Cmd")
+    (synopsis "Giving an easy Moo style way to make command organized CLI apps")
+    (description "This package eases the writing of command line utilities,
+accepting commands and subcommands and so on.  These commands can form a tree,
+which is mirrored in the package structure.  On invocation, each command along
+the path through the tree (starting from the top-level command through to the
+most specific one) is instantiated.")
+    (license (package-license perl))))
+
 (define-public perl-moox-handlesvia
   (package
     (name "perl-moox-handlesvia")
