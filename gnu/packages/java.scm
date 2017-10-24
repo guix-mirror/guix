@@ -6273,3 +6273,36 @@ file when the JVM loads it.")
 trivial to parse command line parameters.  Parameters are declared with
 annotations.")
     (license license:asl2.0)))
+
+(define-public java-bsh
+  (package
+    (name "java-bsh")
+    (version "2.0b6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/beanshell/beanshell/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bawkxk6jyc75hxvzkpz689h73cn3f222m0ar3nvb0dal2b85kfv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "jarall"
+       #:test-target "junit-tests-all"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out") "/share/java")))
+               (mkdir-p share)
+               (copy-file "dist/bsh-2.0b6.jar" (string-append share "/bsh-2.0b6.jar"))
+               #t))))))
+    (home-page "http://beanshell.org/")
+    (synopsis "Lightweight Scripting for Java")
+    (description "BeanShell is a small, free, embeddable Java source
+interpreter with object scripting language features, written in Java.
+BeanShell dynamically executes standard Java syntax and extends it with common
+scripting conveniences such as loose types, commands, and method closures like
+those in Perl and JavaScript.")
+    (license license:asl2.0)))
