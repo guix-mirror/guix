@@ -41,6 +41,8 @@
     (arguments
      `(#:import-path "github.com/syncthing/syncthing"
        #:unpack-path "github.com/syncthing"
+       ;; We don't need to install the source code for end-user applications.
+       #:install-source? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-bundled-source-code
@@ -54,9 +56,6 @@
              (rename-file "cznic"
                           "src/github.com/syncthing/syncthing/vendor/github.com/cznic")
              #t))
-
-         ;; We don't need to install the source code for end-user applications.
-         (delete 'install-source)
 
          (add-before 'build 'increase-test-timeout
            (lambda _
