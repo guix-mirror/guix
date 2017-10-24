@@ -5517,6 +5517,30 @@ the path through the tree (starting from the top-level command through to the
 most specific one) is instantiated.")
     (license (package-license perl))))
 
+(define-public perl-moox-file-configdir
+  (package
+    (name "perl-moox-file-configdir")
+    (version "0.006")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/RESHACK/"
+                           "MooX-File-ConfigDir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0f808sq3627ymgf63zwgh705vv0nhwclxp89clhx8yl6hybcv7kx"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-configdir" ,perl-file-configdir)
+       ("perl-moo" ,perl-moo)
+       ("perl-namespace-clean" ,perl-namespace-clean)))
+    (home-page "http://search.cpan.org/dist/MooX-File-ConfigDir/")
+    (synopsis "Moo eXtension for @code{File::ConfigDir}")
+    (description "This module is a helper for easily finding configuration
+file locations.  This information can be used to find a suitable place for
+installing configuration files or for finding any piece of settings.")
+    (license (package-license perl))))
+
 (define-public perl-moox-handlesvia
   (package
     (name "perl-moox-handlesvia")
