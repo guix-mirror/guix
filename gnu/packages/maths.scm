@@ -1460,7 +1460,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.7.6")
+    (version "3.8.0")
     (source
      (origin
       (method url-fetch)
@@ -1468,11 +1468,10 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "1y3f5jjq0v5b62i3sabp4kp5mgfyp3vnk0dxhwkrhpypax77nzxh"))))
+       (base32 "1lajbk3c29hnh83v6cbmm3a8wv6bdykh0p70kwrr4vrnizalk88s"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python-2)
-       ("perl" ,perl)))
+     `(("python" ,python-2)))
     (inputs
      `(("gfortran" ,gfortran)
        ("lapack" ,lapack)
