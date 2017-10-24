@@ -1181,6 +1181,27 @@ objects.")
                               "Clone-" version "/"))
     (license (package-license perl))))
 
+(define-public perl-clone-pp
+  (package
+    (name "perl-clone-pp")
+    (version "1.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/Clone-PP-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "15dkhqvih6rx9dnngfwwljcm9s8afb0nbyl2vdvhd8frnw4y31dz"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Clone-PP/")
+    (synopsis "Recursively copy Perl datatypes")
+    (description "This module provides a general-purpose @code{clone} function
+to make deep copies of Perl data structures.  It calls itself recursively to
+copy nested hash, array, scalar and reference types, including tied variables
+and objects.")
+    (license (package-license perl))))
+
 (define-public perl-common-sense
   (package
     (name "perl-common-sense")
