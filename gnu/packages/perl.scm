@@ -5652,6 +5652,57 @@ MooX::HandlesVia.
 @end enumerate")
     (license perl-license)))
 
+(define-public perl-moox-options
+  (package
+    (name "perl-moox-options")
+    (version "4.023")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CE/CELOGEEK/"
+                           "MooX-Options-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14kz51hybxx8vcm4wg36f0qa64aainw7i2sqmqxg20c3qvczyvj2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-import-into" ,perl-import-into)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-moo" ,perl-moo)
+       ("perl-moose" ,perl-moose)
+       ("perl-moox-cmd" ,perl-moox-cmd)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-role-tiny" ,perl-role-tiny)
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-test-trap" ,perl-test-trap)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (propagated-inputs
+     `(("perl-config-any" ,perl-config-any)
+       ("perl-moox-configfromfile" ,perl-moox-configfromfile)
+       ("perl-data-record" ,perl-data-record)
+       ("perl-file-configdir" ,perl-file-configdir)
+       ("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-getopt-long-descriptive" ,perl-getopt-long-descriptive)
+       ("perl-json-maybexs" ,perl-json-maybexs)
+       ("perl-libintl-perl" ,perl-libintl-perl)
+       ("perl-moox-configfromfile" ,perl-moox-configfromfile)
+       ("perl-moox-file-configdir" ,perl-moox-file-configdir)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-regexp-common" ,perl-regexp-common)
+       ("perl-term-size-any" ,perl-term-size-any)
+       ("perl-unicode-linebreak" ,perl-unicode-linebreak)))
+    (home-page "http://search.cpan.org/dist/MooX-Options/")
+    (synopsis "Explicit Options eXtension for Object Class")
+    (description "Create a command line tool with your Mo, Moo, Moose objects.
+You have an @code{option} keyword to replace the usual @code{has} to
+explicitly use your attribute on the command line.  The @code{option} keyword
+takes additional parameters and uses @code{Getopt::Long::Descriptive} to
+generate a command line tool.")
+    (license (package-license perl))))
+
 (define-public perl-moox-types-mooselike
   (package
     (name "perl-moox-types-mooselike")
