@@ -126,13 +126,14 @@ unset.  When SOURCE is a directory, copy it instead of unpacking."
         (zero? (system* "unzip" "-d" dest source))
         (zero? (system* "tar" "-C" dest "-xvf" source))))))
 
-(define* (install-source #:key outputs #:allow-other-keys)
+(define* (install-source #:key install-source? outputs #:allow-other-keys)
   "Install the source code to the output directory."
   (let* ((out (assoc-ref outputs "out"))
          (source "src")
          (dest (string-append out "/" source)))
-    (copy-recursively source dest #:keep-mtime? #t)
-    #t))
+    (if install-source?
+      (copy-recursively source dest #:keep-mtime? #t)
+      #t)))
 
 (define (go-package? name)
   (string-prefix? "go-" name))
