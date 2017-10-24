@@ -6059,6 +6059,32 @@ Module::Build project, but has been externalized here for general use.")
                               "Probe-Perl-" version))
     (license (package-license perl))))
 
+(define-public perl-proc-invokeeditor
+  (package
+    (name "perl-proc-invokeeditor")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSTEVENS/Proc-InvokeEditor-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0xc1416kvhq904ribpwh2lbxryh41dzl2glzpgr32b68s4fbwbaa"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-EDITOR
+           (lambda _ (setenv "EDITOR" "echo") #t)))))
+    (propagated-inputs
+     `(("perl-carp-assert" ,perl-carp-assert)))
+    (home-page "http://search.cpan.org/dist/Proc-InvokeEditor/")
+    (synopsis "Interface to external editor from Perl")
+    (description "This module provides the ability to supply some text to an
+external text editor, have it edited by the user, and retrieve the results.")
+    (license (package-license perl))))
+
 (define-public perl-readonly
   (package
     (name "perl-readonly")
