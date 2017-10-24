@@ -509,7 +509,6 @@ store.")
   (package
    (name "glibc")
    (version "2.25")
-   (replacement glibc/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
@@ -530,6 +529,7 @@ store.")
                                      "glibc-o-largefile.patch"
                                      "glibc-memchr-overflow-i686.patch"
                                      "glibc-vectorized-strcspn-guards.patch"
+                                     "glibc-CVE-2017-15670-15671.patch"
                                      "glibc-CVE-2017-1000366-pt1.patch"
                                      "glibc-CVE-2017-1000366-pt2.patch"
                                      "glibc-CVE-2017-1000366-pt3.patch"))))
@@ -812,15 +812,6 @@ GLIBC/HURD for a Hurd host"
 
 (define-syntax glibc
   (identifier-syntax (glibc-for-target)))
-
-(define glibc/fixed
-  (package
-    (inherit glibc)
-    (source (origin
-              (inherit (package-source glibc))
-              (patches (append
-                        (origin-patches (package-source glibc))
-                        (search-patches "glibc-CVE-2017-15670-15671.patch")))))))
 
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
