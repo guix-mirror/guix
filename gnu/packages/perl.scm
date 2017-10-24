@@ -1489,6 +1489,38 @@ functions and data structures for processing and analysing genomic and
 bioinformatics data.")
     (license gpl3+)))
 
+(define-public perl-data
+  (package
+    (name "perl-data")
+    (version "0.002009")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MATTP/"
+                           "Data-Perl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12vgqdjbfqf2qfg21x22wg88xnwxfbw2ki3qzcb3nb0chwjj4axn"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-output" ,perl-test-output)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (inputs
+     `(("perl-class-method-modifiers" ,perl-class-method-modifiers)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-role-tiny" ,perl-role-tiny)
+       ("perl-strictures" ,perl-strictures)))
+    (home-page "http://search.cpan.org/dist/Data-Perl/")
+    (synopsis "Base classes wrapping fundamental Perl data types")
+    (description "Collection of classes that wrap fundamental data types that
+exist in Perl.  These classes and methods as they exist today are an attempt
+to mirror functionality provided by Moose's Native Traits.  One important
+thing to note is all classes currently do no validation on constructor
+input.")
+    (license (package-license perl))))
+
 (define-public perl-data-compare
   (package
     (name "perl-data-compare")
