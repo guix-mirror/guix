@@ -6517,3 +6517,53 @@ those in Perl and JavaScript.")
 but introducing some new functionalities that make it more powerful and easier
 to use.")
     (license license:asl2.0)))
+
+(define-public java-jnacl
+  (package
+    (name "java-jnacl")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/neilalexander/jnacl")
+                     (commit "40c322e0a42637ab17cdf941138eeaf2494055f8")))
+              (sha256
+               (base32
+                "1pspnmp44q61a2q4bpslpxw86rfn8s5l0xgvyrikqgdvg7ypx597"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jnacl.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-tests
+           (lambda _
+             (substitute* "src/test/java/com/neilalexander/jnacl/NaClTest.java"
+               (("assertions.Assertions") "assertions.api.Assertions"))
+             (substitute* "src/test/java/com/neilalexander/jnacl/NaclSecretBoxTest.java"
+               (("assertions.Assertions") "assertions.api.Assertions"))
+             #t))
+         (replace 'check
+           (lambda _
+             (system* "ant" "compile-tests")
+             (and
+               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                           ":build/classes"
+                                                           ":build/test-classes")
+                               "org.testng.TestNG" "-testclass"
+                               "build/test-classes/com/neilalexander/jnacl/NaclSecretBoxTest.class"))
+               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                           ":build/classes"
+                                                           ":build/test-classes")
+                               "org.testng.TestNG" "-testclass"
+                               "build/test-classes/com/neilalexander/jnacl/NaClTest.class"))))))))
+    (native-inputs
+     `(("java-testng" ,java-testng)
+       ("java-fest-util" ,java-fest-util)
+       ("java-fest-assert" ,java-fest-assert)))
+    (home-page "https://github.com/neilalexander/jnacl")
+    (synopsis "Java implementation of NaCl")
+    (description "Pure Java implementation of the NaCl: Networking and
+Cryptography library.")
+    (license license:mpl2.0)))
