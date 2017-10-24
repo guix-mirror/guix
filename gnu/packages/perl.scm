@@ -3116,6 +3116,30 @@ It is really just boilerplate code that you would have written yourself.")
 changes made to any file.")
     (license artistic2.0)))
 
+(define-public perl-file-configdir
+  (package
+    (name "perl-file-configdir")
+    (version "0.018")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+                           "File-ConfigDir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xpzrlya0gskk7lm6gppyfwbk0swv0n6ssgp629575dk5l49z2rf"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-homedir" ,perl-file-homedir)
+       ("perl-list-moreutils" ,perl-list-moreutils)))
+    (home-page "http://search.cpan.org/dist/File-ConfigDir/")
+    (synopsis "Get directories of configuration files")
+    (description "This module is a helper for installing, reading and finding
+configuration file locations.  @code{File::ConfigDir} is a module to help out
+when Perl modules (especially applications) need to read and store
+configuration files from more than one location.")
+    (license (package-license perl))))
+
 (define-public perl-file-copy-recursive
   (package
     (name "perl-file-copy-recursive")
