@@ -1318,8 +1318,9 @@ splice junctions between exons.")
     (version "0.7.15")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/bio-bwa/bwa-"
-                                  version ".tar.bz2"))
+              (uri (string-append
+                    "https://github.com/lh3/bwa/releases/download/v"
+                    version "/bwa-" version ".tar.bz2"))
               (sha256
                (base32
                 "0585ikg0gv0mpyw9iq0bq9n0hr95867bbv8jbzs9pk4slkpsymig"))))
