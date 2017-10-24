@@ -2378,6 +2378,29 @@ based memory management, circular references will cause memory leaks.")
 equivalent of \"$@{^GLOBAL_PHASE@} eq 'DESTRUCT'\" for older perls.")
     (license (package-license perl))))
 
+(define-public perl-devel-hide
+  (package
+    (name "perl-devel-hide")
+    (version "0.0009")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FE/FERREIRA/Devel-Hide-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1phnzbw58v6551nhv6sg86m72nx9w5j4msh1hg4jvkakkq5w9pki"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "http://search.cpan.org/dist/Devel-Hide/")
+    (synopsis "Forces the unavailability of specified Perl modules (for testing)")
+    (description "Given a list of Perl modules/filenames, this module makes
+@code{require} and @code{use} statements fail (no matter whether the specified
+files/modules are installed or not).")
+    (license (package-license perl))))
+
 (define-public perl-devel-lexalias
   (package
     (name "perl-devel-lexalias")
