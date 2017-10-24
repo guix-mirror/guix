@@ -6397,3 +6397,26 @@ those in Perl and JavaScript.")
     (synopsis "FEST common utilities")
     (description "Common utilities used in all FEST module.")
     (license license:asl2.0)))
+
+(define-public java-fest-test
+  (package
+    (name "java-fest-test")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alexruiz/fest-test/"
+                                  "archive/fest-test-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rxfbw6l9vc65iy1x3fb617qc6y4w2k430pgf1mfbxfdlxbm0f7g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-fest-test.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("junit" ,java-junit)))
+    (home-page "https://github.com/alexruiz/fest-test")
+    (synopsis "Common FEST testing infrastructure")
+    (description "Fest-test contains the common FEST testing infrastructure.")
+    (license license:asl2.0)))
