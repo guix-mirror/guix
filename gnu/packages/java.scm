@@ -2539,6 +2539,31 @@ The jMock library
 @end itemize\n")
     (license license:bsd-3)))
 
+(define-public java-jmock
+  (package
+    (inherit java-jmock-1)
+    (name "java-jmock")
+    (version "2.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jmock-developers/"
+                                  "jmock-library/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "18650a9g8xffcsdb6w91pbswa7f40fp2sh6s3nclkclz5dbzq8f0"))))
+    (inputs
+     `(("java-hamcrest-all" ,java-hamcrest-all)
+       ("java-asm" ,java-asm)
+       ("java-bsh" ,java-bsh)
+       ("java-junit" ,java-junit)))
+    (native-inputs
+     `(("cglib" ,java-cglib)))
+    (arguments
+     `(#:jar-name "java-jmock.jar"
+       #:source-dir "jmock/src/main/java"
+       #:test-dir "jmock/src/test"))))
+
 (define-public java-hamcrest-all
   (package (inherit java-hamcrest-core)
     (name "java-hamcrest-all")
