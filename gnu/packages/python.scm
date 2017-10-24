@@ -3191,14 +3191,14 @@ logging and tracing of the execution.")
 (define-public python-docutils
   (package
     (name "python-docutils")
-    (version "0.13.1")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docutils" version))
        (sha256
         (base32
-         "1gkma47i609jfs7dssxn4y9vsz06qi0l5q41nws0zgkpnrghz33i"))))
+         "0x22fs3pdmr42kvz6c654756wja305qv6cx1zbhwlagvxgr4xrji"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no setup.py test command
