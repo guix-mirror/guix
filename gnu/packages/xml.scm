@@ -1383,3 +1383,44 @@ characters into a single event.")
     (description "YAWriter implements Yet Another @code{XML::Handler::Writer}.
 It provides a flexible escaping technique and pretty printing.")
     (license license:perl-license)))
+
+(define-public perl-xml-twig
+  (package
+    (name "perl-xml-twig")
+    (version "3.52")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MI/MIROD/"
+                                  "XML-Twig-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bc0hrz4jp6199hi29sdxmb9gyy45whla9hd19yqfasgq8k5ixzy"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("expat" ,expat)))
+    (propagated-inputs
+     `(("perl-html-tidy" ,perl-html-tidy)
+       ("perl-html-tree" ,perl-html-tree)
+       ("perl-io-captureoutput" ,perl-io-captureoutput)
+       ("perl-io-string" ,perl-io-string)
+       ("perl-io-stringy" ,perl-io-stringy)
+       ("perl-libxml" ,perl-libxml)
+       ("perl-xml-filter-buffertext" ,perl-xml-filter-buffertext)
+       ("perl-xml-handler-yawriter" ,perl-xml-handler-yawriter)
+       ("perl-xml-parser" ,perl-xml-parser)
+       ("perl-xml-sax-writer" ,perl-xml-sax-writer)
+       ("perl-xml-simple" ,perl-xml-simple)
+       ("perl-xml-xpathengine" ,perl-xml-xpathengine)
+       ("perl-test-pod", perl-test-pod)
+       ("perl-tree-xpathengine" ,perl-tree-xpathengine)))
+    (home-page "http://search.cpan.org/dist/XML-Twig/")
+    (synopsis "Perl module for processing huge XML documents in tree mode")
+    (description "@code{XML::Twig} is an XML transformation module.  Its
+strong points: can be used to process huge documents while still being in tree
+mode; not bound by DOM or SAX, so it is very perlish and offers a very
+comprehensive set of methods; simple to use; DWIMs as much as possible.
+
+What it doesn't offer: full SAX support (it can export SAX, but only reads
+XML), full XPath support (unless you use @code{XML::Twig::XPath}), nor DOM
+support.")
+    (license license:perl-license)))
