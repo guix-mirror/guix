@@ -5517,6 +5517,39 @@ the path through the tree (starting from the top-level command through to the
 most specific one) is instantiated.")
     (license (package-license perl))))
 
+(define-public perl-moox-configfromfile
+  (package
+    (name "perl-moox-configfromfile")
+    (version "0.008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+                           "MooX-ConfigFromFile-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zrpz4mzngnhaap6988is0w0aarilfj4kb1yc8hvfqna69lywac0"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-hash-merge" ,perl-hash-merge)
+       ("perl-json" ,perl-json)
+       ("perl-moox-cmd" ,perl-moox-cmd)))
+    (propagated-inputs
+     `(("perl-config-any" ,perl-config-any)
+       ("perl-file-configdir" ,perl-file-configdir)
+       ("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-hash-merge" ,perl-hash-merge)
+       ("perl-moo", perl-moo)
+       ("perl-moox-file-configdir" ,perl-moox-file-configdir)
+       ("perl-namespace-clean" ,perl-namespace-clean)))
+    (home-page "http://search.cpan.org/dist/MooX-ConfigFromFile/")
+    (synopsis "Moo eXtension for initializing objects from config file")
+    (description "This module is intended to easily load initialization values
+for attributes on object construction from an appropriate config file.  The
+building is done in @code{MooX::ConfigFromFile::Role}---using
+@code{MooX::ConfigFromFile} ensures that the role is applied.")
+    (license (package-license perl))))
+
 (define-public perl-moox-file-configdir
   (package
     (name "perl-moox-file-configdir")
