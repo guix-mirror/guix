@@ -4254,6 +4254,37 @@ version.")
 one: logging, exceptions, and translations.")
     (license (package-license perl))))
 
+(define-public perl-libintl-perl
+  (package
+    (name "perl-libintl-perl")
+    (version "1.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GU/GUIDO/"
+                           "libintl-perl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gafrfvicjclqlz6i62jx2iqbq878yn3ws86waz2sqbd3gxz5svv"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB" (string-append (getcwd) ":"
+                                               (getenv "PERL5LIB")))
+             #t)))))
+    (propagated-inputs
+     `(("perl-file-sharedir" ,perl-file-sharedir)))
+    (home-page "http://search.cpan.org/dist/libintl-perl/")
+    (synopsis "High-level interface to Uniforum message translation")
+    (description "This package is an internationalization library for Perl
+that aims to be compatible with the Uniforum message translations system as
+implemented for example in GNU gettext.")
+    (license gpl3+)))
+
 (define-public perl-lingua-translit
   (package
     (name "perl-lingua-translit")
