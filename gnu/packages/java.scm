@@ -2579,6 +2579,34 @@ The jMock library
        ("java-jmock" ,java-jmock)
        ("java-jumit" ,java-junit)))))
 
+(define-public java-jmock-legacy
+  (package
+    (inherit java-jmock)
+    (name "java-jmock-legacy")
+    (arguments
+     `(#:jar-name "java-jmock-legacy.jar"
+       #:source-dir "jmock-legacy/src/main/java"
+       #:test-dir "jmock-legacy/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'copy-tests
+           (lambda _
+             ;; This file is a dependancy of some tests
+             (let ((file "org/jmock/test/acceptance/PackageProtectedType.java"))
+               (copy-file (string-append "jmock/src/test/java/" file)
+                          (string-append "jmock-legacy/src/test/java/" file))
+               #t))))))
+    (inputs
+     `(("java-hamcrest-all" ,java-hamcrest-all)
+       ("java-objenesis" ,java-objenesis)
+       ("java-cglib" ,java-cglib)
+       ("java-jmock" ,java-jmock)
+       ("java-asm" ,java-asm)
+       ("java-bsh" ,java-bsh)
+       ("java-junit" ,java-junit)))
+    (native-inputs
+     `(("java-jmock-junit4" ,java-jmock-junit4)))))
+
 (define-public java-hamcrest-all
   (package (inherit java-hamcrest-core)
     (name "java-hamcrest-all")
