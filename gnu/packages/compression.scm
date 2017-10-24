@@ -380,7 +380,7 @@ than gzip and 15 % smaller output than bzip2.")
 (define-public lzo
   (package
     (name "lzo")
-    (version "2.09")
+    (version "2.10")
     (source
      (origin
       (method url-fetch)
@@ -388,7 +388,7 @@ than gzip and 15 % smaller output than bzip2.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0k5kpj3jnsjfxqqkblpfpx0mqcy86zs5fhjhgh2kq1hksg7ag57j"))))
+        "0wm04519pd3g8hqpjqhfr72q8qmbiwqaxcs3cndny9h86aa95y60"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--enable-shared")))
     (home-page "http://www.oberhumer.com/opensource/lzo")
