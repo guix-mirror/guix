@@ -6248,3 +6248,28 @@ manipulation simple.  It is a class library for editing bytecodes in Java; it
 enables Java programs to define a new class at runtime and to modify a class
 file when the JVM loads it.")
     (license (list license:gpl2 license:cddl1.0)))); either gpl2 only or cddl.
+
+(define-public java-jcommander
+  (package
+    (name "java-jcommander")
+    (version "1.71")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cbeust/jcommander/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1f5k2ckay6qjc3d3w3d7bc0p3cx3c7n6p6zxvw1kibqdr0q98wlx"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jcommander.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f; requires testng which depends on jcommander
+       #:source-dir "src/main/java"))
+    (home-page "http://jcommander.org")
+    (synopsis "Command line parameters parser")
+    (description "JCommander is a very small Java framework that makes it
+trivial to parse command line parameters.  Parameters are declared with
+annotations.")
+    (license license:asl2.0)))
