@@ -382,6 +382,27 @@ fields pragma, consider this module discouraged in favor of the lighter-weight
 parent.")
     (license (package-license perl))))  ;See README
 
+(define-public perl-browser-open
+  (package
+    (name "perl-browser-open")
+    (version "0.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CF/CFRANKS/Browser-Open-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0rv80n5ihy9vnrzsc3l7wlk8880cwabiljrydrdnxq1gg0lk3sxc"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Browser-Open/")
+    (synopsis "Open a browser in a given URL")
+    (description "The functions exported by this module allow you to open URLs
+in the user's browser.  A set of known commands per OS-name is tested for
+presence, and the first one found is executed.  With an optional parameter,
+all known commands are checked.")
+    (license (package-license perl))))
+
 (define-public perl-b-hooks-endofscope
   (package
     (name "perl-b-hooks-endofscope")
