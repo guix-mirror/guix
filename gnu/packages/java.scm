@@ -6857,3 +6857,20 @@ done to the IDE or continuous integration servers which simplifies adoption.")
     (inputs
      `(("core" ,java-powermock-core)
        ("reflect" ,java-powermock-reflect)))))
+
+(define-public java-powermock-modules-junit4-common
+  (package
+    (inherit java-powermock-reflect)
+    (name "java-powermock-modules-junit4-common")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-powermock-modules-junit4-common.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "powermock-modules/powermock-module-junit4-common/src/main/java"
+       #:test-dir "powermock-modules/powermock-module-junit4-common/src/test"))
+    (inputs
+     `(("core" ,java-powermock-core)
+       ("easymock" ,java-easymock)
+       ("reflect" ,java-powermock-reflect)
+       ("hamcrest" ,java-hamcrest-core)
+       ("cglib" ,java-cglib)))))
