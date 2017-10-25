@@ -410,6 +410,8 @@ any subsequent lookup as it keeps the hash table in memory.")
      "This package provides data structures that are stored on disk but
 behave (almost) as if they were in RAM by transparently mapping only a section
 in main memory.")
+    ;; error Architecture not supported.
+    (supported-systems (delete "aarch64-linux" %supported-systems))
     (license license:gpl2)))
 
 (define-public r-ffbase
