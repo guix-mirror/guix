@@ -406,6 +406,28 @@ parent.")
 compiling the surrounding scope.")
     (license (package-license perl))))
 
+(define-public perl-b-keywords
+  (package
+    (name "perl-b-keywords")
+    (version "1.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/B-Keywords-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1nhdplmd0y69lnwyajg3anhk6pm13nm6qzm05nzpz8zl7j7fzlk5"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/B-Keywords/")
+    (synopsis "Lists of reserved barewords and symbol names")
+    (description "@code{B::Keywords} supplies several arrays of exportable
+keywords: @code{@@Scalars, @@Arrays, @@Hashes, @@Filehandles, @@Symbols,
+@@Functions, @@Barewords, @@TieIOMethods, @@UNIVERSALMethods and
+@@ExporterSymbols}.")
+    ;; GPLv2 only
+    (license gpl2)))
+
 (define-public perl-benchmark-timer
   (package
     (name "perl-benchmark-timer")
