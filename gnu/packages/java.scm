@@ -6717,3 +6717,38 @@ for the Java programming language.")
     (description "Bouncy Castle Java API for PKIX, CMS, EAC, TSP, PKCS, OCSP,
 CMP, and CRMF.")
     (license license:expat)))
+
+(define-public java-lmax-disruptor
+  (package
+    (name "java-lmax-disruptor")
+    (version "3.3.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/LMAX-Exchange/disruptor/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17da2gwj5abnlsfgn2xqjk5lgzbg4vkb0hdv2dvc8r2fx4bi7w3g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-lmax-disruptor.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f)); tests hang
+    (inputs
+     `(("junit" ,java-junit)
+       ("java-hdrhistogram" ,java-hdrhistogram)
+       ("java-jmock" ,java-jmock)
+       ("java-jmock-legacy" ,java-jmock-legacy)
+       ("java-jmock-junit4" ,java-jmock-junit4)
+       ("java-hamcrest-all" ,java-hamcrest-all)))
+    (native-inputs
+     `(("cglib" ,java-cglib)
+       ("objenesis" ,java-objenesis)
+       ("asm" ,java-asm)))
+    (home-page "https://www.lmax.com/disruptor")
+    (synopsis "High performance inter-thread communication")
+    (description "LMAX Disruptor is a software pattern and software component
+for high performance inter-thread communication that avoids the need for
+message queues or resource locking.")
+    (license license:asl2.0)))
