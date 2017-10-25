@@ -649,6 +649,28 @@ is captured while being passed through to the original file handles.")
 to test the installed perl for compatibility with his modules.")
     (license (package-license perl))))
 
+(define-public perl-carp-always
+  (package
+    (name "perl-carp-always")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FE/FERREIRA/Carp-Always-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0i2rifkr7ybfcdsqana52487z7vxp2l5qdra0f6ik0ddhn6rzii1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-base" ,perl-test-base)))
+    (home-page "http://search.cpan.org/dist/Carp-Always")
+    (synopsis "Warns and dies noisily with stack backtraces/")
+    (description "This module is meant as a debugging aid.  It can be used to
+make a script complain loudly with stack backtraces when @code{warn()}-ing or
+@code{die()}ing.")
+    (license (package-license perl))))
+
 (define-public perl-carp-assert
   (package
     (name "perl-carp-assert")
