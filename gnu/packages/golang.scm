@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
@@ -198,6 +198,7 @@ programming language.  Designed primarily for systems programming, it is a
 compiled, statically typed language in the tradition of C and C++, with
 garbage collection, various safety features and in the style of communicating
 sequential processes (CSP) concurrent programming features added.")
+    (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
     (license license:bsd-3)))
 
 (define-public go-1.9
@@ -372,6 +373,7 @@ sequential processes (CSP) concurrent programming features added.")
                  (copy-recursively "../" output))))))))
     (native-inputs
      `(("go" ,go-1.4)
-       ,@(package-native-inputs go-1.4)))))
+       ,@(package-native-inputs go-1.4)))
+    (supported-systems %supported-systems)))
 
 (define-public go go-1.9)

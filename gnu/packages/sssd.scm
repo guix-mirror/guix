@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,14 +52,14 @@
 (define-public ding-libs
   (package
     (name "ding-libs")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/SSSD/ding-libs/"
                                   "ding-libs-" version ".tar.gz"))
               (sha256
                (base32
-                "1bczkvq7cblp75kqn6r2d7j5x7brfw6wxirzc6d2rkyb80gj2jkn"))))
+                "1h97mx2jdv4caiz4r7y8rxfsq78fx0k4jjnfp7x2s7xqvqks66d3"))))
     (build-system gnu-build-system)
     (home-page "https://pagure.io/SSSD/ding-libs/")
     (synopsis "Libraries for SSSD")
@@ -80,14 +81,14 @@ fundamental object types for C.")
 (define-public sssd
   (package
     (name "sssd")
-    (version "1.15.3")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://releases.pagure.org/SSSD/sssd/"
                                   "sssd-" version ".tar.gz"))
               (sha256
                (base32
-                "0d36dmzqdjfpspm9fw4zx0kh0qcx60p9vchxvcajn4qf3k3qsl3f"))))
+                "03wllgbxxz2zv14dcqr8d2xssppi7ibckh0rlky8gvsw6vjsd0f5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -168,7 +169,7 @@ fundamental object types for C.")
     (description "SSSD is a system daemon.  Its primary function is to provide
 access to identity and authentication remote resource through a common
 framework that can provide caching and offline support to the system.  It
-provides PAM and NSS modules, and in the future will D-BUS based interfaces
-for extended user information.  It also provides a better database to store
-local users as well as extended user data.")
+provides PAM and NSS modules, and in the future will support D-BUS based
+interfaces for extended user information.  It also provides a better database
+to store local users as well as extended user data.")
     (license license:gpl3+)))

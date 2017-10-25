@@ -1315,14 +1315,15 @@ splice junctions between exons.")
 (define-public bwa
   (package
     (name "bwa")
-    (version "0.7.15")
+    (version "0.7.17")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/bio-bwa/bwa-"
-                                  version ".tar.bz2"))
+              (uri (string-append
+                    "https://github.com/lh3/bwa/releases/download/v"
+                    version "/bwa-" version ".tar.bz2"))
               (sha256
                (base32
-                "0585ikg0gv0mpyw9iq0bq9n0hr95867bbv8jbzs9pk4slkpsymig"))))
+                "1zfhv2zg9v1icdlq4p9ssc8k01mca5d1bd87w71py2swfi74s6yy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target

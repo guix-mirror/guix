@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3334,3 +3335,30 @@ notation and includes basic support for digital audio.")
     (description "Sorcer is a wavetable LV2 plugin synthesizer, targeted at
 the electronic or dubstep genre.")
     (license license:gpl3+)))
+
+(define-public libechonest
+  (package
+    (name "libechonest")
+    (version "2.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://anongit.kde.org/libechonest.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0xbavf9f355dl1d3qv59x4ryypqrdanh9xdvw2d0q66l008crdkq"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ; Tests require Internet access
+       #:configure-flags '("-DBUILD_WITH_QT4=OFF")))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qjson" ,qjson)))
+    (home-page "https://projects.kde.org/projects/playground/libs/libechonest")
+    (synopsis "C++/Qt classes to interface with The Echo Nest API")
+    (description "@code{libechonest} is a collection of C++/Qt classes
+designed to make a developer's life easy when trying to use the APIs provided
+by The Echo Nest.")
+    (license license:gpl2+)))

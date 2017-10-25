@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
+;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5442,3 +5443,27 @@ the least concave majorant (LCM), for the half-normal and correlation
 distributions, and for computing empirical higher criticism (HC) scores and
 the corresponding decision threshold.")
     (license license:gpl3+)))
+
+(define-public r-forcats
+  (package
+    (name "r-forcats")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "forcats" version))
+       (sha256
+        (base32
+         "1mvwkynvvgz2vi8dyz11x7xrp53kadjawjcja34hwk1d89qf7g5m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-magrittr" ,r-magrittr)
+       ("r-tibble" ,r-tibble)))
+    (home-page "http://forcats.tidyverse.org")
+    (synopsis "Tools for working with factors")
+    (description "This package provides helpers for reordering factor
+levels (including moving specified levels to front, ordering by first
+appearance, reversing, and randomly shuffling), and tools for modifying factor
+levels (including collapsing rare levels into other, \"anonymizing\", and
+manually \"recoding\").")
+    (license license:gpl3)))

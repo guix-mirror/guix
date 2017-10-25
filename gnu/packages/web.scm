@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
@@ -509,6 +511,46 @@ data.")
 easily construct JSON objects in C, output them as JSON formatted strings and
 parse JSON formatted strings back into the C representation of JSON objects.")
     (license l:x11)))
+
+(define-public qjson
+  (package
+    (name "qjson")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/flavio/qjson/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1m0h4rajj99hv9w4i381a8x81lxiv167lxk10ncvphpkfxs624p8"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; The tests require a X server
+     `(#:configure-flags '("-DQJSON_BUILD_TESTS=ON"
+                           "-DCMAKE_CXX_FLAGS=-std=gnu++11 -fPIC")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-broken-test
+           (lambda _
+             ;; FIXME: One test fails.  See
+             ;; https://github.com/flavio/qjson/issues/105
+             (substitute* "tests/scanner/testscanner.cpp"
+               (("QTest::newRow\\(\"too large exponential\"\\)" line)
+                (string-append "//" line)))
+             #t))
+         (add-before 'check 'render-offscreen
+           (lambda _ (setenv "QT_QPA_PLATFORM" "offscreen") #t)))))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "http://qjson.sourceforge.net")
+    (synopsis "Library that maps JSON data to QVariant objects")
+    (description "QJson is a Qt-based library that maps JSON data to
+@code{QVariant} objects.  JSON arrays will be mapped to @code{QVariantList}
+instances, while JSON's objects will be mapped to @code{QVariantMap}.")
+    ;; Only version 2.1 of the license
+    (license l:lgpl2.1)))
 
 (define-public krona-tools
   (package

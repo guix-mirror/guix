@@ -1460,7 +1460,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.7.6")
+    (version "3.8.0")
     (source
      (origin
       (method url-fetch)
@@ -1468,11 +1468,10 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "1y3f5jjq0v5b62i3sabp4kp5mgfyp3vnk0dxhwkrhpypax77nzxh"))))
+       (base32 "1lajbk3c29hnh83v6cbmm3a8wv6bdykh0p70kwrr4vrnizalk88s"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python-2)
-       ("perl" ,perl)))
+     `(("python" ,python-2)))
     (inputs
      `(("gfortran" ,gfortran)
        ("lapack" ,lapack)
@@ -1594,7 +1593,7 @@ scientific applications modeled by partial differential equations.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.7.4")
+    (version "3.8.0")
     (source
      (origin
        (method url-fetch)
@@ -1602,7 +1601,7 @@ scientific applications modeled by partial differential equations.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "12pbl8yd6r8k9xjlr1qw25rs0k1acgic7hw1s6l6bhiv9s285drg"))))
+         "0qyrsdndfdw2g0jmj9iskxj3j20zlkplhv26288s079dhm7cr365"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -2308,7 +2307,7 @@ schemes.")
 (define-public p4est
   (package
     (name "p4est")
-    (version "1.1")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
@@ -2316,7 +2315,7 @@ schemes.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0faina2h5qsx3m2izbzaj9bbakma1krbbjmq43wrp1hcbyijflqb"))))
+         "16h267z256kxcxfjs390qqzv19hr58vrj4x8lndb7alnk2vca8n5"))))
     (build-system gnu-build-system)
     (inputs
      `(("fortran" ,gfortran)
@@ -3093,7 +3092,7 @@ revised simplex and the branch-and-bound methods.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "8.5.0")
+    (version "8.5.1")
     (source
      (origin
        (method url-fetch)
@@ -3101,7 +3100,7 @@ revised simplex and the branch-and-bound methods.")
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
         (base32
-         "0yfpy4zh8j7hmqakw17zdlmvfdcmhwgs66wcb716plc4y7v3z4g6"))
+         "1bh9rsmkrg0zi70n27b11djmac9lximghsiy7mg7w7x544n82gnk"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
@@ -3408,28 +3407,6 @@ structured and unstructured grid problems.")))
     (description "Matio is a library for reading and writing MAT files.  It
 supports compressed MAT files, as well as newer (version 7.3) MAT files.")
     (license license:bsd-2)))
-
-(define-public libhilbert
-  (package
-    (name "libhilbert")
-    (version "0.2-1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://web.cs.dal.ca/~chamilto/hilbert/"
-                           "libhilbert-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0v48x8405dj95gjn2saja4bzhw86d6zl6d3dg8h7dzac2qr97s34"))))
-    (build-system gnu-build-system)
-    (home-page "http://web.cs.dal.ca/~chamilto/hilbert")
-    (synopsis "Hilbert indices for multidimensional data")
-    (description "The libhilbert library can efficiently calculate Hilbert
-curves and order-preserving representations of Hilbert curve indices that use
-the same amount of space as the original point representation.  This is useful
-when using the Gilbert curve as a space filling curve through a
-high-dimensional space where not all demensions have the same cardinality.")
-    (license license:lgpl2.1+)))
 
 (define-public vc
   (package

@@ -382,6 +382,27 @@ fields pragma, consider this module discouraged in favor of the lighter-weight
 parent.")
     (license (package-license perl))))  ;See README
 
+(define-public perl-browser-open
+  (package
+    (name "perl-browser-open")
+    (version "0.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CF/CFRANKS/Browser-Open-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0rv80n5ihy9vnrzsc3l7wlk8880cwabiljrydrdnxq1gg0lk3sxc"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Browser-Open/")
+    (synopsis "Open a browser in a given URL")
+    (description "The functions exported by this module allow you to open URLs
+in the user's browser.  A set of known commands per OS-name is tested for
+presence, and the first one found is executed.  With an optional parameter,
+all known commands are checked.")
+    (license (package-license perl))))
+
 (define-public perl-b-hooks-endofscope
   (package
     (name "perl-b-hooks-endofscope")
@@ -405,6 +426,28 @@ parent.")
     (description "This module allows you to execute code when perl finished
 compiling the surrounding scope.")
     (license (package-license perl))))
+
+(define-public perl-b-keywords
+  (package
+    (name "perl-b-keywords")
+    (version "1.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/B-Keywords-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1nhdplmd0y69lnwyajg3anhk6pm13nm6qzm05nzpz8zl7j7fzlk5"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/B-Keywords/")
+    (synopsis "Lists of reserved barewords and symbol names")
+    (description "@code{B::Keywords} supplies several arrays of exportable
+keywords: @code{@@Scalars, @@Arrays, @@Hashes, @@Filehandles, @@Symbols,
+@@Functions, @@Barewords, @@TieIOMethods, @@UNIVERSALMethods and
+@@ExporterSymbols}.")
+    ;; GPLv2 only
+    (license gpl2)))
 
 (define-public perl-benchmark-timer
   (package
@@ -647,6 +690,28 @@ is captured while being passed through to the original file handles.")
     (description
      "This module is used by Schmorp's modules during configuration stage
 to test the installed perl for compatibility with his modules.")
+    (license (package-license perl))))
+
+(define-public perl-carp-always
+  (package
+    (name "perl-carp-always")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FE/FERREIRA/Carp-Always-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0i2rifkr7ybfcdsqana52487z7vxp2l5qdra0f6ik0ddhn6rzii1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-base" ,perl-test-base)))
+    (home-page "http://search.cpan.org/dist/Carp-Always")
+    (synopsis "Warns and dies noisily with stack backtraces/")
+    (description "This module is meant as a debugging aid.  It can be used to
+make a script complain loudly with stack backtraces when @code{warn()}-ing or
+@code{die()}ing.")
     (license (package-license perl))))
 
 (define-public perl-carp-assert
@@ -1181,6 +1246,27 @@ objects.")
                               "Clone-" version "/"))
     (license (package-license perl))))
 
+(define-public perl-clone-pp
+  (package
+    (name "perl-clone-pp")
+    (version "1.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/Clone-PP-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "15dkhqvih6rx9dnngfwwljcm9s8afb0nbyl2vdvhd8frnw4y31dz"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Clone-PP/")
+    (synopsis "Recursively copy Perl datatypes")
+    (description "This module provides a general-purpose @code{clone} function
+to make deep copies of Perl data structures.  It calls itself recursively to
+copy nested hash, array, scalar and reference types, including tied variables
+and objects.")
+    (license (package-license perl))))
+
 (define-public perl-common-sense
   (package
     (name "perl-common-sense")
@@ -1489,6 +1575,38 @@ functions and data structures for processing and analysing genomic and
 bioinformatics data.")
     (license gpl3+)))
 
+(define-public perl-data
+  (package
+    (name "perl-data")
+    (version "0.002009")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MATTP/"
+                           "Data-Perl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12vgqdjbfqf2qfg21x22wg88xnwxfbw2ki3qzcb3nb0chwjj4axn"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-output" ,perl-test-output)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (inputs
+     `(("perl-class-method-modifiers" ,perl-class-method-modifiers)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-role-tiny" ,perl-role-tiny)
+       ("perl-strictures" ,perl-strictures)))
+    (home-page "http://search.cpan.org/dist/Data-Perl/")
+    (synopsis "Base classes wrapping fundamental Perl data types")
+    (description "Collection of classes that wrap fundamental data types that
+exist in Perl.  These classes and methods as they exist today are an attempt
+to mirror functionality provided by Moose's Native Traits.  One important
+thing to note is all classes currently do no validation on constructor
+input.")
+    (license (package-license perl))))
+
 (define-public perl-data-compare
   (package
     (name "perl-data-compare")
@@ -1660,6 +1778,57 @@ The maths behind this is unfortunately fiddly, hence this module.")
 @item @code{Data::Perl::Code}
 @end itemize")
     (license perl-license)))
+
+(define-public perl-data-printer
+  (package
+    (name "perl-data-printer")
+    (version "0.40")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GARU/Data-Printer-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0njjh8zp5afc4602jrnmg89icj7gfsil6i955ypcqxc2gl830sb0"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-clone-pp" ,perl-clone-pp)
+       ("perl-file-homedir" ,perl-file-homedir)
+       ("perl-package-stash" ,perl-package-stash)
+       ("perl-sort-naturally" ,perl-sort-naturally)))
+    (home-page "http://search.cpan.org/dist/Data-Printer/")
+    (synopsis "Colored pretty-print of Perl data structures and objects")
+    (description "Display Perl variables and objects on screen, properly
+formatted (to be inspected by a human).")
+    (license (package-license perl))))
+
+(define-public perl-data-record
+  (package
+    (name "perl-data-record")
+    (version "0.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/O/OV/OVID/"
+                           "Data-Record-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gwyhjwg4lrnfsn8wb6r8msb4yh0y4wca4mz3z120xbnl9nycshx"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)
+       ("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-sub-uplevel" ,perl-sub-uplevel)))
+    (home-page "http://search.cpan.org/dist/Data-Record/")
+    (synopsis "Conditionally split data into records")
+    (description "This Perl module allows you to split data into records by
+not only specifying what you wish to split the data on, but also by specifying
+an \"unless\" regular expression.  If the text in question matches the
+\"unless\" regex, it will not be split there.  This allows us to do things
+like split on newlines unless newlines are embedded in quotes.")
+    (license (package-license perl))))
 
 (define-public perl-data-stag
   (package
@@ -3012,6 +3181,30 @@ It is really just boilerplate code that you would have written yourself.")
 changes made to any file.")
     (license artistic2.0)))
 
+(define-public perl-file-configdir
+  (package
+    (name "perl-file-configdir")
+    (version "0.018")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+                           "File-ConfigDir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xpzrlya0gskk7lm6gppyfwbk0swv0n6ssgp629575dk5l49z2rf"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-homedir" ,perl-file-homedir)
+       ("perl-list-moreutils" ,perl-list-moreutils)))
+    (home-page "http://search.cpan.org/dist/File-ConfigDir/")
+    (synopsis "Get directories of configuration files")
+    (description "This module is a helper for installing, reading and finding
+configuration file locations.  @code{File::ConfigDir} is a module to help out
+when Perl modules (especially applications) need to read and store
+configuration files from more than one location.")
+    (license (package-license perl))))
+
 (define-public perl-file-copy-recursive
   (package
     (name "perl-file-copy-recursive")
@@ -3449,7 +3642,7 @@ single-letter approach, is provided but not enabled by default.")
 (define-public perl-getopt-long-descriptive
   (package
     (name "perl-getopt-long-descriptive")
-    (version "0.098")
+    (version "0.100")
     (source
      (origin
        (method url-fetch)
@@ -3457,10 +3650,11 @@ single-letter approach, is provided but not enabled by default.")
                            "Getopt-Long-Descriptive-" version ".tar.gz"))
        (sha256
         (base32
-         "08lphvqshcajvvd6z4rvcda6rx5kz8pysrsip4nfv2mbks95p9ma"))))
+         "1dpz5nhg5glmrpq46nkc90dg19cfqfjspqwhfvihsqyi229yfl8l"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
+     `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
+       ("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-warnings" ,perl-test-warnings)))
     (propagated-inputs
      `(("perl-params-validate" ,perl-params-validate)
@@ -4126,6 +4320,37 @@ version.")
 one: logging, exceptions, and translations.")
     (license (package-license perl))))
 
+(define-public perl-libintl-perl
+  (package
+    (name "perl-libintl-perl")
+    (version "1.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GU/GUIDO/"
+                           "libintl-perl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gafrfvicjclqlz6i62jx2iqbq878yn3ws86waz2sqbd3gxz5svv"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB" (string-append (getcwd) ":"
+                                               (getenv "PERL5LIB")))
+             #t)))))
+    (propagated-inputs
+     `(("perl-file-sharedir" ,perl-file-sharedir)))
+    (home-page "http://search.cpan.org/dist/libintl-perl/")
+    (synopsis "High-level interface to Uniforum message translation")
+    (description "This package is an internationalization library for Perl
+that aims to be compatible with the Uniforum message translations system as
+implemented for example in GNU gettext.")
+    (license gpl3+)))
+
 (define-public perl-lingua-translit
   (package
     (name "perl-lingua-translit")
@@ -4197,7 +4422,7 @@ intersections, unions, unique elements, complements and many more.")
 (define-public perl-list-moreutils
   (package
     (name "perl-list-moreutils")
-    (version "0.402")
+    (version "0.426")
     (source
      (origin
        (method url-fetch)
@@ -4205,19 +4430,53 @@ intersections, unions, unique elements, complements and many more.")
                            "List-MoreUtils-" version ".tar.gz"))
        (sha256
         (base32
-         "1i0k7kqg1m9nf2xvq9l4lyf38fxvi9952vmmvhcdaf3qa95pxb24"))))
+         "1dj77b42cp5ziq9y38fff458avjwzm88kn076svcvl660h6n21cf"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Work around "dotless @INC" build failure.
+             (setenv "PERL5LIB"
+                     (string-append (getcwd) ":"
+                                    (getenv "PERL5LIB")))
+             #t)))))
     (native-inputs
      `(("perl-config-autoconf" ,perl-config-autoconf)
-       ("perl-inc-latest" ,perl-inc-latest)
-       ("perl-test-writevariants" ,perl-test-writevariants)))
+       ("perl-test-leaktrace" ,perl-test-leaktrace)))
     (propagated-inputs
-     `(("perl-exporter-tiny" ,perl-exporter-tiny)))
+     `(("perl-exporter-tiny" ,perl-exporter-tiny)
+       ("perl-list-moreutils-xs" ,perl-list-moreutils-xs)))
     (home-page "http://search.cpan.org/dist/List-MoreUtils/")
     (synopsis "Provide the stuff missing in List::Util")
     (description "List::MoreUtils provides some trivial but commonly needed
 functionality on lists which is not going to go into List::Util.")
     (license (package-license perl))))
+
+(define-public perl-list-moreutils-xs
+  (package
+    (name "perl-list-moreutils-xs")
+    (version "0.426")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/List-MoreUtils-XS-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0ss0a0f9yqs7gd9qamhaxq27mvn573ljg28ry1gy2pxbz56byzbc"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-config-autoconf" ,perl-config-autoconf)
+       ("perl-inc-latest" ,perl-inc-latest)
+       ("perl-test-leaktrace" ,perl-test-leaktrace)))
+    (home-page "http://search.cpan.org/dist/List-MoreUtils-XS")
+    (synopsis "Provide the stuff missing in List::Util in XS")
+    (description "@code{List::MoreUtils::XS} provides some trivial but
+commonly needed functionality on lists which is not going to go into
+@code{List::Util}.")
+    (license asl2.0)))
 
 (define-public perl-list-someutils
   (package
@@ -5292,6 +5551,95 @@ constraint with coercion to load the class.")
     (description "Contains the MooX and MooX::Role packages.")
     (license perl-license)))
 
+(define-public perl-moox-cmd
+  (package
+    (name "perl-moox-cmd")
+    (version "0.015")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/MooX-Cmd-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0145ha8vnc6sbg82ps96wj716bznq2qamm657bia9ji2yxhbnsam"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-list-moreutils" ,perl-list-moreutils)))
+    (propagated-inputs
+     `(("perl-module-pluggable" ,perl-module-pluggable)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moo" ,perl-moo)
+       ("perl-package-stash" ,perl-package-stash)
+       ("perl-params-util" ,perl-params-util)
+       ("perl-regexp-common" ,perl-regexp-common)))
+    (home-page "http://search.cpan.org/dist/MooX-Cmd")
+    (synopsis "Giving an easy Moo style way to make command organized CLI apps")
+    (description "This package eases the writing of command line utilities,
+accepting commands and subcommands and so on.  These commands can form a tree,
+which is mirrored in the package structure.  On invocation, each command along
+the path through the tree (starting from the top-level command through to the
+most specific one) is instantiated.")
+    (license (package-license perl))))
+
+(define-public perl-moox-configfromfile
+  (package
+    (name "perl-moox-configfromfile")
+    (version "0.008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+                           "MooX-ConfigFromFile-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zrpz4mzngnhaap6988is0w0aarilfj4kb1yc8hvfqna69lywac0"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-hash-merge" ,perl-hash-merge)
+       ("perl-json" ,perl-json)
+       ("perl-moox-cmd" ,perl-moox-cmd)))
+    (propagated-inputs
+     `(("perl-config-any" ,perl-config-any)
+       ("perl-file-configdir" ,perl-file-configdir)
+       ("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-hash-merge" ,perl-hash-merge)
+       ("perl-moo", perl-moo)
+       ("perl-moox-file-configdir" ,perl-moox-file-configdir)
+       ("perl-namespace-clean" ,perl-namespace-clean)))
+    (home-page "http://search.cpan.org/dist/MooX-ConfigFromFile/")
+    (synopsis "Moo eXtension for initializing objects from config file")
+    (description "This module is intended to easily load initialization values
+for attributes on object construction from an appropriate config file.  The
+building is done in @code{MooX::ConfigFromFile::Role}---using
+@code{MooX::ConfigFromFile} ensures that the role is applied.")
+    (license (package-license perl))))
+
+(define-public perl-moox-file-configdir
+  (package
+    (name "perl-moox-file-configdir")
+    (version "0.006")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+                           "MooX-File-ConfigDir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0f808sq3627ymgf63zwgh705vv0nhwclxp89clhx8yl6hybcv7kx"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-configdir" ,perl-file-configdir)
+       ("perl-moo" ,perl-moo)
+       ("perl-namespace-clean" ,perl-namespace-clean)))
+    (home-page "http://search.cpan.org/dist/MooX-File-ConfigDir/")
+    (synopsis "Moo eXtension for @code{File::ConfigDir}")
+    (description "This module is a helper for easily finding configuration
+file locations.  This information can be used to find a suitable place for
+installing configuration files or for finding any piece of settings.")
+    (license (package-license perl))))
+
 (define-public perl-moox-handlesvia
   (package
     (name "perl-moox-handlesvia")
@@ -5368,6 +5716,57 @@ Currently Hash, Array and Code are supported.  This feature requires
 MooX::HandlesVia.
 @end enumerate")
     (license perl-license)))
+
+(define-public perl-moox-options
+  (package
+    (name "perl-moox-options")
+    (version "4.023")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CE/CELOGEEK/"
+                           "MooX-Options-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14kz51hybxx8vcm4wg36f0qa64aainw7i2sqmqxg20c3qvczyvj2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-import-into" ,perl-import-into)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-moo" ,perl-moo)
+       ("perl-moose" ,perl-moose)
+       ("perl-moox-cmd" ,perl-moox-cmd)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-role-tiny" ,perl-role-tiny)
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-test-trap" ,perl-test-trap)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (propagated-inputs
+     `(("perl-config-any" ,perl-config-any)
+       ("perl-moox-configfromfile" ,perl-moox-configfromfile)
+       ("perl-data-record" ,perl-data-record)
+       ("perl-file-configdir" ,perl-file-configdir)
+       ("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-getopt-long-descriptive" ,perl-getopt-long-descriptive)
+       ("perl-json-maybexs" ,perl-json-maybexs)
+       ("perl-libintl-perl" ,perl-libintl-perl)
+       ("perl-moox-configfromfile" ,perl-moox-configfromfile)
+       ("perl-moox-file-configdir" ,perl-moox-file-configdir)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-regexp-common" ,perl-regexp-common)
+       ("perl-term-size-any" ,perl-term-size-any)
+       ("perl-unicode-linebreak" ,perl-unicode-linebreak)))
+    (home-page "http://search.cpan.org/dist/MooX-Options/")
+    (synopsis "Explicit Options eXtension for Object Class")
+    (description "Create a command line tool with your Mo, Moo, Moose objects.
+You have an @code{option} keyword to replace the usual @code{has} to
+explicitly use your attribute on the command line.  The @code{option} keyword
+takes additional parameters and uses @code{Getopt::Long::Descriptive} to
+generate a command line tool.")
+    (license (package-license perl))))
 
 (define-public perl-moox-types-mooselike
   (package

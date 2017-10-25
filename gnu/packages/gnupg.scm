@@ -53,6 +53,9 @@
   #:use-module (gnu packages security-token)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages tor)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -875,3 +878,90 @@ designed to provide an object-oriented method for interacting with GnuPG,
 being able to perform functions such as but not limited to encrypting,
 signing, decryption, verification, and key-listing parsing.")
     (license license:perl-license)))
+
+(define-public parcimonie
+  (package
+    (name "parcimonie")
+    (version "0.10.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gaffer.ptitcanardnoir.org/"
+                                  "intrigeri/files/parcimonie/App-Parcimonie-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1kf891117s1f3k6lxvbjdb21va9gxh29vlp9bd664ssgw266rcyb"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("gnupg" ,gnupg-1)    ; This is the version used by perl-gnupg-interface
+       ("perl-config-general" ,perl-config-general)
+       ("perl-clone" ,perl-clone)
+       ("perl-data" ,perl-data)
+       ("perl-exporter-tiny" ,perl-exporter-tiny)
+       ("perl-file-homedir" ,perl-file-homedir)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-file-which" ,perl-file-which)
+       ("perl-getopt-long-descriptive" ,perl-getopt-long-descriptive)
+       ("perl-gnupg-interface" ,perl-gnupg-interface)
+       ("perl-ipc-system-simple" ,perl-ipc-system-simple)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-libintl-perl" ,perl-libintl-perl) ; Locale::TextDomain
+       ("perl-lwp-online" ,perl-lwp-online)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-module-pluggable-object" ,perl-module-pluggable)
+       ("perl-moo" ,perl-moo)
+       ("perl-moox-handlesvia" ,perl-moox-handlesvia)
+       ("perl-moox-late" ,perl-moox-late)
+       ("perl-moox-options" ,perl-moox-options)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-net-dbus" ,perl-net-dbus)
+       ("perl-net-dbus-glib" ,perl-net-dbus-glib)
+       ("perl-path-tiny" ,perl-path-tiny)
+       ("perl-test-most" ,perl-test-most)
+       ("perl-test-trap" ,perl-test-trap)
+       ("perl-time-duration" ,perl-time-duration)
+       ("perl-time-duration-parse" ,perl-time-duration-parse)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-type-tiny" ,perl-type-tiny)
+       ("perl-types-path-tiny" ,perl-types-path-tiny)
+       ("perl-unicode-linebreak" ,perl-unicode-linebreak)
+       ("perl-xml-parser" ,perl-xml-parser)
+       ("perl-xml-twig" ,perl-xml-twig)
+       ("torsocks" ,torsocks)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Needed for using gpg-connect-agent during tests.
+         (add-before 'check 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp") #t))
+         (add-before 'install 'fix-references
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "lib/App/Parcimonie/GnuPG/Interface.pm"
+               (("gpg2") "gpg")
+               ;; Skip check whether dependencies are in the PATH
+               (("defined which.*") "")
+               (("call\\('parcimonie-torified-gpg'\\)")
+                (string-append "call('" (assoc-ref outputs "out")
+                               "/bin/parcimonie-torified-gpg')")))
+             (substitute* "bin/parcimonie-torified-gpg"
+               (("torsocks") (string-append (assoc-ref inputs "torsocks")
+                                            "/bin/torsocks")))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (perllib (string-append out "/lib/perl5/site_perl/"
+                                            ,(package-version perl))))
+               (wrap-program (string-append out "/bin/parcimonie")
+                 `("PERL5LIB" ":"
+                   prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))
+               #t))))))
+    (home-page "https://gaffer.ptitcanardnoir.org/intrigeri/code/parcimonie/")
+    (synopsis "Incrementally refreshes a GnuPG keyring")
+    (description "Parcimonie incrementaly refreshes a GnuPG keyring in a way
+that makes it hard to correlate the keyring content to an individual, and
+makes it hard to locate an individual based on an identifying subset of her
+keyring content.  Parcimonie is a daemon that fetches one key at a time using
+the Tor network, waits a bit, changes the Tor circuit being used, and starts
+over.")
+    (license license:gpl1+)))
