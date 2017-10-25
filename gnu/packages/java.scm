@@ -6825,3 +6825,21 @@ constructors, final classes and methods, private methods, removal of static
 initializers and more.  By using a custom classloader no changes need to be
 done to the IDE or continuous integration servers which simplifies adoption.")
     (license license:asl2.0)))
+
+(define-public java-powermock-core
+  (package
+    (inherit java-powermock-reflect)
+    (name "java-powermock-core")
+    (arguments
+     `(#:jar-name "java-powermock-core.jar"
+       #:source-dir "powermock-core/src/main/java"
+       #:test-dir "powermock-core/src/test"
+       #:tests? #f; requires powermock-api
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("reflect" ,java-powermock-reflect)
+       ("javassist" ,java-jboss-javassist)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("assertj" ,java-assertj)
+       ("mockito" ,java-mockito-1)))))
