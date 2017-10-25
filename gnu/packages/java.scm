@@ -6752,3 +6752,38 @@ CMP, and CRMF.")
 for high performance inter-thread communication that avoids the need for
 message queues or resource locking.")
     (license license:asl2.0)))
+
+(define-public java-xerial-core
+  (package
+    (name "java-xerial-core")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xerial/xerial-java/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0d3g863i41bgalpa4xr3vm1h140l091n8iwgq5qvby5yivns9y8d"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "xerial-core.jar"
+       #:source-dir "xerial-core/src/main/java"
+       #:test-dir "xerial-core/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "xerial-core/src/main/resources"
+                               "build/classes")
+             #t)))))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://github.com/xerial/xerial-java")
+    (synopsis "Data managment libraries for Java")
+    (description "Xerial is a set of data management libraries for the Java
+programming language.  The ulitimate goal of the Xerial project is to manage
+everything as database, including class objects, text format data, data
+streams, etc.")
+    (license license:asl2.0)))
