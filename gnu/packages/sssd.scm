@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,14 +52,14 @@
 (define-public ding-libs
   (package
     (name "ding-libs")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/SSSD/ding-libs/"
                                   "ding-libs-" version ".tar.gz"))
               (sha256
                (base32
-                "1bczkvq7cblp75kqn6r2d7j5x7brfw6wxirzc6d2rkyb80gj2jkn"))))
+                "1h97mx2jdv4caiz4r7y8rxfsq78fx0k4jjnfp7x2s7xqvqks66d3"))))
     (build-system gnu-build-system)
     (home-page "https://pagure.io/SSSD/ding-libs/")
     (synopsis "Libraries for SSSD")
