@@ -6843,3 +6843,17 @@ done to the IDE or continuous integration servers which simplifies adoption.")
      `(("junit" ,java-junit)
        ("assertj" ,java-assertj)
        ("mockito" ,java-mockito-1)))))
+
+(define-public java-powermock-api-support
+  (package
+    (inherit java-powermock-reflect)
+    (name "java-powermock-api-support")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-powermock-api-support.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "powermock-api/powermock-api-support/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("core" ,java-powermock-core)
+       ("reflect" ,java-powermock-reflect)))))
