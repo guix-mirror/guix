@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
@@ -58,7 +58,7 @@
   (package
     (name "expat")
     (version "2.2.1")
-    (replacement expat-2.2.2)
+    (replacement expat-2.2.4)
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/expat/expat/"
@@ -75,17 +75,17 @@ stream-oriented parser in which an application registers handlers for
 things the parser might find in the XML document (like start tags).")
     (license license:expat)))
 
-(define expat-2.2.2  ; Fixes CVE-2017-9233, CVE-2016-9063 and other issues.
+(define expat-2.2.4  ; Fix CVE-{2016-9063,2017-9233,2017-11742} & other issues.
   (package
     (inherit expat)
-    (version "2.2.2")
+    (version "2.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/expat/expat/"
                                  version "/expat-" version ".tar.bz2"))
              (sha256
               (base32
-               "0ik0r39ala9c6hj4kxrk933klgwkzlkbrfhvhaykx8l1rwgr2xj3"))))))
+               "17h1fb9zvqvf0sr78j211bngc6jpql5wzar8fg9b52jzjvdqbb83"))))))
 
 (define-public libebml
   (package
