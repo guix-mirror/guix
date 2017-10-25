@@ -2307,7 +2307,7 @@ schemes.")
 (define-public p4est
   (package
     (name "p4est")
-    (version "1.1")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
@@ -2315,7 +2315,7 @@ schemes.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0faina2h5qsx3m2izbzaj9bbakma1krbbjmq43wrp1hcbyijflqb"))))
+         "16h267z256kxcxfjs390qqzv19hr58vrj4x8lndb7alnk2vca8n5"))))
     (build-system gnu-build-system)
     (inputs
      `(("fortran" ,gfortran)
