@@ -66,7 +66,8 @@
             libsigc++
             glibmm
             telepathy-glib
-            perl-net-dbus))
+            perl-net-dbus
+            perl-net-dbus-glib))
 
 (define dbus
   (package
@@ -781,3 +782,29 @@ metadata.")
 inter-application messaging system.  The Perl API covers the core base level
 of the DBus APIs, not concerning itself yet with the GLib or QT wrappers.")
     (license license:perl-license)))
+
+(define perl-net-dbus-glib
+  (package
+    (name "perl-net-dbus-glib")
+    (version "0.33.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DANBERR/"
+                           "Net-DBus-GLib-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z4mbv8z0rad604xahijpg5szzi8qak07hbahh230z4jf96fkxvj"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus-glib" ,dbus-glib)))
+    (home-page "http://search.cpan.org/~danberr/Net-DBus-GLib-0.33.0/")
+    (synopsis "Perl extension for the DBus GLib bindings")
+    (description "This package provides an extension to the @code{Net::DBus}
+module allowing integration with the GLib mainloop.  To integrate with the
+main loop, simply get a connection to the bus via the methods in
+@code{Net::DBus::GLib} rather than the usual @code{Net::DBus} module.  Every
+other API remains the same.")
+    (license license:gpl2+)))
