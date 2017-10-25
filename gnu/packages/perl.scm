@@ -5623,7 +5623,7 @@ building is done in @code{MooX::ConfigFromFile::Role}---using
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/R/RE/RESHACK/"
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
                            "MooX-File-ConfigDir-" version ".tar.gz"))
        (sha256
         (base32
