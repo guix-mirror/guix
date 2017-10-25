@@ -6896,3 +6896,30 @@ done to the IDE or continuous integration servers which simplifies adoption.")
        ("objenesis" ,java-objenesis)
        ("asm" ,java-asm)
        ("junit" ,java-junit)))))
+
+(define-public java-powermock-api-easymock
+  (package
+    (inherit java-powermock-reflect)
+    (name "java-powermock-api-easymock")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-powermock-api-easymock.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "powermock-api/powermock-api-easymock/src/main/java"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-file
+           (lambda _
+             ;; FIXME: This looks wrong, but it fixes a build error.
+             (with-directory-excursion "powermock-api/powermock-api-easymock"
+               (substitute* "src/main/java/org/powermock/api/easymock/PowerMock.java"
+                 (("classLoader instanceof MockClassLoader") "false")
+                 (("\\(\\(MockClassLoader\\) classLoader\\).*;") ";")))
+             #t)))))
+    (inputs
+     `(("core" ,java-powermock-core)
+       ("easymock" ,java-easymock)
+       ("reflect" ,java-powermock-reflect)
+       ("support" ,java-powermock-api-support)
+       ("cglib" ,java-cglib)))))
