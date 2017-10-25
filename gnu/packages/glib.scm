@@ -5,6 +5,8 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +29,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -62,7 +65,8 @@
             itstool
             libsigc++
             glibmm
-            telepathy-glib))
+            telepathy-glib
+            perl-net-dbus))
 
 (define dbus
   (package
@@ -749,3 +753,31 @@ programming langauage.  It also contains the utility
 reading and writing @uref{https://www.freedesktop.org/wiki/Distributions/AppStream,AppStream}
 metadata.")
     (license license:lgpl2.1+)))
+
+(define perl-net-dbus
+  (package
+    (name "perl-net-dbus")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DANBERR/Net-DBus-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0sg2w147b9r9ykfzjs7y9qxry73xkjnhnk4qf95kfv79p5nnk4c3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (inputs
+     `(("dbus" ,dbus)))
+    (propagated-inputs
+     `(("perl-xml-twig" ,perl-xml-twig)))
+    (home-page "http://search.cpan.org/dist/Net-DBus/")
+    (synopsis "Extension for the DBus bindings")
+    (description "@code{Net::DBus} provides a Perl XS API to the DBus
+inter-application messaging system.  The Perl API covers the core base level
+of the DBus APIs, not concerning itself yet with the GLib or QT wrappers.")
+    (license license:perl-license)))
