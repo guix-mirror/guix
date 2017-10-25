@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
