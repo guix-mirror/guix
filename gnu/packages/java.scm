@@ -2336,6 +2336,32 @@ package within @code{plexus-utils}, but has been separated in order to allow
 these two libraries to vary independently of one another.")
     (license license:asl2.0)))
 
+(define-public java-plexus-classworlds
+  (package
+    (name "java-plexus-classworlds")
+    (version "2.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/"
+                                  "plexus-classworlds/archive/plexus-classworlds-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1qm4p0rl8d82lzhsiwnviw11jnq44s0gflg78zq152xyyr2xmh8g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-classworlds.jar"
+       #:source-dir "src/main"
+       #:tests? #f));; FIXME: we need to generate some resources as in pom.xml
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://codehaus-plexus.github.io/plexus-classworlds/")
+    (synopsis "Java class loader framework")
+    (description "Plexus classworlds replaces the native ClassLoader mechanism
+of Java.  It is especially usefull for dynamic loading of application
+components.")
+    (license license:asl2.0)))
+
 (define-public java-asm
   (package
     (name "java-asm")
