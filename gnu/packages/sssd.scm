@@ -81,14 +81,14 @@ fundamental object types for C.")
 (define-public sssd
   (package
     (name "sssd")
-    (version "1.15.3")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://releases.pagure.org/SSSD/sssd/"
                                   "sssd-" version ".tar.gz"))
               (sha256
                (base32
-                "0d36dmzqdjfpspm9fw4zx0kh0qcx60p9vchxvcajn4qf3k3qsl3f"))))
+                "03wllgbxxz2zv14dcqr8d2xssppi7ibckh0rlky8gvsw6vjsd0f5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
