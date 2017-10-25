@@ -56,8 +56,11 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
@@ -75,12 +78,14 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux) ; for alsa-utils
   #:use-module (gnu packages lirc)
   #:use-module (gnu packages llvm)
@@ -93,6 +98,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio) ;libsndfile
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -178,6 +184,114 @@
 and play MIDI files with a few clicks in a user-friendly interface offering
 score, keyboard, guitar, drum and controller views.")
     (license license:gpl3+)))
+
+;; We don't use the latest release because it depends on Qt4.  Instead we
+;; download the sources from the tip of the "qt5" branch.
+(define-public clementine
+  (let ((commit "0a59257dc334b8df60a4d7d90b04f1766747efcf")
+        (revision "1"))
+    (package
+      (name "clementine")
+      (version (string-append "1.3.1-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/clementine-player/Clementine.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                   "0cdcj7di7j9jgzc1ihjna1a5df64f9hnmx7b9kh8rlg76hc0l0hi"))
+                (modules '((guix build utils)))
+                (snippet
+                  '(for-each
+                     (lambda (dir)
+                       (delete-file-recursively
+                         (string-append "3rdparty/" dir)))
+                     (list
+                       ;; TODO: The following dependencies are still bundled:
+                       ;; - "qxt": Appears to be unmaintained upstream.
+                       ;; - "qsqlite"
+                       ;; - "qtsingleapplication"
+                       ;; - "qocoa"
+                       ;; - "qtiocompressor"
+                       ;; - "gmock": The tests crash when using our googletest
+                       ;;   package instead of the bundled gmock.
+                       "SPMediaKeyTap"
+                       "fancytabwidget"
+                       "google-breakpad"
+                       "libmygpo-qt"
+                       "libmygpo-qt5"
+                       "libprojectm"
+                       "qtwin"
+                       "sha2" ;; Replaced by openssl.
+                       "taglib"
+                       "tinysvcmdns")))
+                (patches (search-patches "clementine-use-openssl.patch"))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:test-target "clementine_test"
+         #:configure-flags
+         (let ((crypto (assoc-ref %build-inputs "crypto++")))
+           (list "-DENABLE_VISUALISATIONS=OFF" ; requires unpackaged "projectm"
+                 "-DCRYPTOPP_FOUND=TRUE"
+                 (string-append "-DCRYPTOPP_INCLUDE_DIRS=" crypto "/include")
+                 (string-append "-DCRYPTOPP_LIBRARY_DIRS=" crypto "/lib")
+                 (string-append "-DCRYPTOPP_LIBRARIES=" crypto "/lib/libcryptopp.a")
+                 "-DUSE_SYSTEM_SHA2=TRUE"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out             (assoc-ref outputs "out"))
+                     (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+                 (wrap-program (string-append out "/bin/clementine")
+                   `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))
+                 #t))))))
+      (native-inputs
+       `(("gettext" ,gettext-minimal)
+         ("pkg-config" ,pkg-config)
+         ("qtlinguist" ,qttools)))
+      (inputs
+       `(("boost" ,boost)
+         ("chromaprint" ,chromaprint)
+         ("crypto++" ,crypto++)
+         ("fftw" ,fftw)
+         ("glib" ,glib)
+         ("glu" ,glu)
+         ("gstreamer" ,gstreamer)
+         ("gst-plugins-base" ,gst-plugins-base)
+         ("libcdio" ,libcdio)
+         ("libmygpo-qt" ,libmygpo-qt)
+         ("libechonest" ,libechonest)
+         ;; TODO: Package libgpod.
+         ("libmtp" ,libmtp)
+         ("libxml2" ,libxml2)
+         ("openssl" ,openssl)
+         ("protobuf" ,protobuf)
+         ("pulseaudio" ,pulseaudio)
+         ("qtbase" ,qtbase)
+         ("qtx11extras" ,qtx11extras)
+         ("qtwebkit" ,qtwebkit)
+         ("sqlite" ,sqlite-with-fts3)
+         ("sparsehash" ,sparsehash)
+         ("taglib" ,taglib)))
+      (home-page "http://clementine-player.org")
+      (synopsis "Music player and library organizer")
+      (description "Clementine is a multiplatform music player.  It is inspired
+by Amarok 1.4, focusing on a fast and easy-to-use interface for searching and
+playing your music.")
+      (license (list
+                 ;; clementine and qtiocompressor are under GPLv3.
+                 license:gpl3+
+                 ;; gmock is under BSD-3.
+                 license:bsd-3
+                 ;; qxt is under CPL1.0.
+                 license:cpl1.0
+                 ;; qsqlite and qtsingleapplication are under LGPL2.1+.
+                 license:lgpl2.1+
+                 ;; qocoa is under MIT and CC by-sa for the icons.
+                 license:cc-by-sa3.0)))))
 
 (define-public cmus
   (package
