@@ -6787,3 +6787,41 @@ programming language.  The ulitimate goal of the Xerial project is to manage
 everything as database, including class objects, text format data, data
 streams, etc.")
     (license license:asl2.0)))
+
+(define-public java-powermock-reflect
+  (package
+    (name "java-powermock-reflect")
+    (version "1.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/powermock/powermock/"
+                                  "archive/powermock-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sbgi5vqq7k72wzcdjb20s370vyd4hsbnx71pzb8ishml3gy7fwy"))
+              (patches
+                (search-patches "java-powermock-fix-java-files.patch"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-powermock-reflect.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "powermock-reflect/src/main/java"
+       #:test-dir "powermock-reflect/src/test"))
+    (inputs
+     `(("java-objenesis" ,java-objenesis)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("cglib" ,java-cglib)
+       ("asm" ,java-asm)
+       ("hamcrest" ,java-hamcrest-core)
+       ("assertj" ,java-assertj)))
+    (home-page "https://github.com/powermock/powermock")
+    (synopsis "Mock library extension framework")
+    (description "PowerMock is a framework that extends other mock libraries
+such as EasyMock with more powerful capabilities.  PowerMock uses a custom
+classloader and bytecode manipulation to enable mocking of static methods,
+constructors, final classes and methods, private methods, removal of static
+initializers and more.  By using a custom classloader no changes need to be
+done to the IDE or continuous integration servers which simplifies adoption.")
+    (license license:asl2.0)))
