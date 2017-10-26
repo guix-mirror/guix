@@ -1814,7 +1814,7 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
              #t)))))
     (native-inputs
      `(("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytest" ,python-pytest-3.0)
+       ("python-pytest" ,python-pytest)
        ("python-flexmock" ,python-flexmock)))
     (propagated-inputs
      `(("python-backpack" ,python-backpack)

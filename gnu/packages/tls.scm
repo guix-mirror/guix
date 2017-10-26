@@ -515,7 +515,7 @@ netcat implementation that supports TLS.")
                #t))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
-     `(("python-mock" ,python-mock-2)
+     `(("python-mock" ,python-mock)
        ;; For documentation
        ("python-sphinx" ,python-sphinx)
        ("python-sphinxcontrib-programoutput" ,python-sphinxcontrib-programoutput)
@@ -564,7 +564,7 @@ netcat implementation that supports TLS.")
     ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python-nose" ,python-nose)
-       ("python-mock" ,python-mock-2)
+       ("python-mock" ,python-mock)
        ;; For documentation
        ("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)

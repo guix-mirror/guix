@@ -5154,7 +5154,7 @@ command-line arguments or read from stdin.")
        ("python-schema" ,python-schema-0.5)
        ("python-backports-csv" ,python-backports-csv)))
     (native-inputs
-     `(("python-pytest-3.0" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("python-pytest-capturelog" ,python-pytest-capturelog)
        ("python-responses" ,python-responses)))
     (home-page "https://github.com/jjjake/internetarchive")

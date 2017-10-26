@@ -522,9 +522,7 @@ detection, and lossless compression.")
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-setuptools-scm" ,python-setuptools-scm)
-       ;; Borg 1.0.8's test suite uses 'tmpdir_factory', which was introduced in
-       ;; pytest 2.8.
-       ("python-pytest" ,python-pytest-3.0)
+       ("python-pytest" ,python-pytest)
        ;; For generating the documentation.
        ("python-sphinx" ,python-sphinx)
        ("python-guzzle-sphinx-theme" ,python-guzzle-sphinx-theme)))

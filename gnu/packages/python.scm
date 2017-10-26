@@ -132,7 +132,7 @@
 (define-public python-2.7
   (package
     (name "python")
-    (version "2.7.13")
+    (version "2.7.14")
     (source
      (origin
       (method url-fetch)
@@ -140,12 +140,12 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "0cgpk3zk0fgpji59pb4zy9nzljr70qzgv1vpz5hq5xw2d2c47m9m"))
+        "0rka541ys16jwzcnnvjp2v12m4cwgd2jp6wj4kj511p715pb5zvi"))
       (patches (search-patches "python-2.7-search-paths.patch"
                                "python-2-deterministic-build-info.patch"
                                "python-2.7-site-prefixes.patch"
                                "python-2.7-source-date-epoch.patch"
-                               "python-2.7-getentropy-on-old-kernels.patch"))
+                               "python-2.7-adjust-tests.patch"))
       (modules '((guix build utils)))
       ;; suboptimal to delete failing tests here, but if we delete them in the
       ;; arguments then we need to make sure to strip out that phase when it
@@ -203,6 +203,7 @@
                                   '("Lib/subprocess.py"
                                     "Lib/popen2.py"
                                     "Lib/distutils/tests/test_spawn.py"
+                                    "Lib/test/support/__init__.py"
                                     "Lib/test/test_subprocess.py"))
                (("/bin/sh") (which "sh")))
 
@@ -328,28 +329,28 @@ data types.")
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
 
-(define-public python-3.5
+(define-public python-3.6
   (package (inherit python-2)
-    (version "3.5.3")
+    (version "3.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
                         "python-fix-tests.patch"
-                        "python-3.5-fix-tests.patch"
-                        "python-3.5-getentropy-on-old-kernels.patch"
+                        "python-3-fix-tests.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "1c6v1n9nz4mlx9mw1125fxpmbrgniqdbbx9hnqx44maqazb2mzpf"))
+                "1nl1raaagr4car787a2hmjv2dw6gqny53xfd6wisbgx4r5kxk9yd"))
               (snippet
                '(begin
                   (for-each delete-file
-                            '("Lib/ctypes/test/test_win32.py" ; fails on aarch64
-                              "Lib/test/test_fcntl.py"))
+                            '("Lib/ctypes/test/test_structures.py" ; fails on aarch64
+                              "Lib/ctypes/test/test_win32.py" ; fails on aarch64
+                              "Lib/test/test_fcntl.py")) ; fails on aarch64
                   #t))))
     (arguments (substitute-keyword-arguments (package-arguments python-2)
                  ((#:tests? _) #t)))
@@ -361,7 +362,7 @@ data types.")
                                         "/site-packages"))))))))
 
 ;; Current 3.x version.
-(define-public python-3 python-3.5)
+(define-public python-3 python-3.6)
 
 ;; Current major version.
 (define-public python python-3)
@@ -933,45 +934,43 @@ API for locking files.")
 (define-public python-mock
   (package
     (name "python-mock")
-    (version "1.0.1")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mock" version))
        (sha256
         (base32
-         "0kzlsbki6q0awf89rc287f3aj8x431lrajf160a70z0ikhnxsfdq"))))
+         "1flbpksir5sqrvq2z0dp8sl4bzbadg21sj4d42w3klpdfvgvcn5i"))))
+    (propagated-inputs
+     `(("python-pbr" ,python-pbr-minimal)
+       ("python-six" ,python-six)))
     (build-system python-build-system)
-    (arguments '(#:test-target "check"))
+    (native-inputs
+     `(("python-unittest2" ,python-unittest2)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "unit2")))))))
     (home-page "https://github.com/testing-cabal/mock")
     (synopsis "Python mocking and patching library for testing")
     (description
      "Mock is a library for testing in Python.  It allows you to replace parts
 of your system under test with mock objects and make assertions about how they
 have been used.")
+    (properties `((python2-variant . ,(delay python2-mock))))
     (license license:expat)))
 
 (define-public python2-mock
-  (package-with-python2 python-mock))
-
-;;; Some packages (notably, certbot and python-acme) rely on this newer version
-;;; of python-mock. However, a large number of packages fail to build with
-;;; mock@2, so we add a new variable for now. Also, there may be a dependency
-;;; cycle between mock and six, so we avoid creating python2-mock@2 for now.
-(define-public python-mock-2
-  (package
-    (inherit python-mock)
-    (version "2.0.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "mock" version))
-        (sha256
-         (base32
-          "1flbpksir5sqrvq2z0dp8sl4bzbadg21sj4d42w3klpdfvgvcn5i"))))
-    (propagated-inputs
-     `(("python-pbr" ,python-pbr-minimal)
-       ,@(package-propagated-inputs python-mock)))))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-mock))))
+    (package (inherit base)
+      (propagated-inputs
+       `(("python2-functools32" ,python2-functools32)
+         ("python2-funcsigs" ,python2-funcsigs)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-setuptools
   (package
@@ -1169,18 +1168,24 @@ password storage.")
 (define-public python-six
   (package
     (name "python-six")
-    (version "1.10.0")
+    (version "1.11.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "six" version))
       (sha256
        (base32
-        "0snmb8xffb3vsma0z67i0h0w2g2dy0p3gsgh9gi4i0kgc5l8spqh"))))
+        "1scqzwc51c875z23phj48gircqjgnn3af8zy2izjwmnlxrxsgs3h"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "py.test" "-v")))))))
     (native-inputs
      `(("python-py" ,python-py)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest-bootstrap)))
     (home-page "http://pypi.python.org/pypi/six/")
     (synopsis "Python 2 and 3 compatibility utilities")
     (description
@@ -1566,6 +1571,28 @@ bug tracker.")
     (home-page "http://www.liquidx.net/pybugz/")
     (license license:gpl2)))
 
+(define-public python2-enum
+  (package
+    (name "python2-enum")
+    (version "0.4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "enum" version))
+              (sha256
+               (base32
+                "13lk3yrwj42vl30kw3c194f739nrfrdg64s6i0v2p636n4k8brsl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "http://pypi.python.org/pypi/enum/")
+    (synopsis "Robust enumerated type support in Python")
+    (description
+     "This provides a module for robust enumerations in Python.  It has
+been superseded by the Python standard library and is provided only for
+compatibility.")
+    ;; Choice of either license.
+    (license (list license:gpl3+ license:psfl))))
+
 (define-public python-enum34
   (package
     (name "python-enum34")
@@ -1816,20 +1843,51 @@ interfaces and processes.")
 (define-public python2-nose2
   (package-with-python2 python-nose2))
 
+(define-public python2-funcsigs
+  (package
+    (name "python2-funcsigs")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "funcsigs" version))
+              (sha256
+               (base32
+                "0l4g5818ffyfmfs1a924811azhjj8ax9xd1cffr1mzd3ycn0zfx7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     `(("python2-unittest2" ,python2-unittest2)))
+    (home-page "http://funcsigs.readthedocs.org")
+    (synopsis "Python function signatures from PEP362")
+    (description
+     "Backport of @code{funcsigs} which was introduced in Python 3.3.")
+    (license license:asl2.0)))
+
 (define-public python-unittest2
   (package
     (name "python-unittest2")
-    (version "0.5.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/u/unittest2py3k/unittest2py3k-"
-             version ".tar.gz"))
+       (uri (pypi-uri "unittest2" version))
+       (patches
+        (search-patches "python-unittest2-python3-compat.patch"
+                        "python-unittest2-remove-argparse.patch"))
        (sha256
         (base32
-         "00yl6lskygcrddx5zspkhr0ibgvpknl4678kkm6s626539grq93q"))))
+         "0y855kmx7a8rnf81d3lh5lyxai1908xjp0laf4glwa4c8472m212"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "python" "-m" "unittest2" "discover" "--verbose")))))))
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-traceback2" ,python-traceback2)))
     (home-page "http://pypi.python.org/pypi/unittest2")
     (synopsis "Python unit testing library")
     (description
@@ -1838,26 +1896,7 @@ standard library.")
     (license license:psfl)))
 
 (define-public python2-unittest2
-  (package (inherit python-unittest2)
-    (name "python2-unittest2")
-    (version "1.1.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/u/unittest2/unittest2-"
-             version ".tar.gz"))
-       (sha256
-        (base32
-         "0y855kmx7a8rnf81d3lh5lyxai1908xjp0laf4glwa4c8472m212"))
-       (patches
-        (search-patches "python2-unittest2-remove-argparse.patch"))))
-    (propagated-inputs
-     `(("python2-six" ,python2-six)
-       ("python2-traceback2" ,python2-traceback2)))
-    (arguments
-     `(#:python ,python-2
-       #:tests? #f)))) ; no setup.py test command
+  (package-with-python2 python-unittest2))
 
 (define-public python-pafy
   (package
@@ -1886,14 +1925,14 @@ standard library.")
 (define-public python-py
   (package
     (name "python-py")
-    (version "1.4.32")
+    (version "1.4.34")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py" version))
        (sha256
         (base32
-         "19s1pql9pq85h1qzsdwgyb8a3k1qgkvh33b02m8kfqhizz8rzf64"))))
+         "1qyd5z0hv8ymxy84v5vig3vps2fvhcf4bdlksb3r03h549fmhb8g"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: "ImportError: 'test' module incorrectly imported from
@@ -1914,30 +1953,39 @@ code introspection, and logging.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "2.7.3")
+    (version "3.2.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/pytest/pytest-"
-             version ".tar.gz"))
+       (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "1z4yi986f9n0p8qmzmn21m21m8j1x78hk3505f89baqm6pdw7afm"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; One of the tests involves the /usr directory, so it fails.
-        '(substitute* "testing/test_argcomplete.py"
-           (("def test_remove_dir_prefix\\(self\\):")
-            "@pytest.mark.xfail\n    def test_remove_dir_prefix(self):")))))
+         "0g6w86ks73fnrnsyib9ii2rbyx830vn7aglsjqz9v1n2xwbndyi7"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-invalid-tests
+           (lambda _
+             ;; Some tests involves the /usr directory, and fails.
+             (substitute* "testing/test_argcomplete.py"
+               (("def test_remove_dir_prefix\\(self\\):")
+                "@pytest.mark.xfail\n    def test_remove_dir_prefix(self):"))
+             (substitute* "testing/test_argcomplete.py"
+               (("def test_remove_dir_prefix" line)
+                (string-append "@pytest.mark.skip"
+                               "(reason=\"Assumes that /usr exists.\")\n    "
+                               line)))
+             #t)))))
     (propagated-inputs
      `(("python-py" ,python-py)))
     (native-inputs
      `(;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
        ("bash" ,bash)
+       ("python-hypothesis" ,python-hypothesis)
        ("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)))
+       ("python-mock" ,python-mock)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "http://pytest.org")
     (synopsis "Python testing library")
     (description
@@ -1949,41 +1997,15 @@ and many external plugins.")
 (define-public python2-pytest
   (package-with-python2 python-pytest))
 
-;; Some packages require a newer pytest.
-(define-public python-pytest-3.0
+(define-public python-pytest-bootstrap
   (package
     (inherit python-pytest)
-    (name "python-pytest")
-    (version "3.0.7")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "pytest" version))
-              (sha256
-               (base32
-                "1asc4b2nd2a4f0g3r12y97rslq5wliji7b73wwkvdrm5s7mrc1mp"))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'disable-invalid-test
-           (lambda _
-             (substitute* "testing/test_argcomplete.py"
-               (("def test_remove_dir_prefix" line)
-                (string-append "@pytest.mark.skip"
-                               "(reason=\"Assumes that /usr exists.\")\n    "
-                               line)))
-             #t)))))
-    (native-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ,@(package-native-inputs python-pytest)))
-    (properties `((python2-variant . ,(delay python2-pytest-3.0))))))
+    (name "python-pytest-bootstrap")
+    (native-inputs `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (arguments `(#:tests? #f))))
 
-(define-public python2-pytest-3.0
-  (let ((base (package-with-python2
-                (strip-python2-variant python-pytest-3.0))))
-    (package (inherit base)
-      (native-inputs
-        `(("python2-enum34" ,python2-enum34)
-          ,@(package-native-inputs base))))))
+(define-public python2-pytest-bootstrap
+  (package-with-python2 python-pytest-bootstrap))
 
 (define-public python-pytest-cov
   (package
@@ -2045,7 +2067,7 @@ supports coverage of subprocesses.")
                (string-append "version = \"" ,version "\"")))
             #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-pytest" ,python-pytest-bootstrap)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/pytest-dev/pytest-runner")
     (synopsis "Invoke py.test as a distutils command")
@@ -2433,14 +2455,14 @@ have failed since the last commit or what tests are currently failing.")
 (define-public python-coverage
   (package
     (name "python-coverage")
-    (version "4.1")
+    (version "4.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "coverage" version))
        (sha256
         (base32
-         "01rbr4br4lsk0lwn8fb96zwd2xr4f0mg1w7iq3j11i8f5ig2nqs1"))))
+         "097l4s3ssxm1vncsn0nw3a1pbzah28773q36c1ab9wz01r04973s"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: 95 tests failed, 539 passed, 6 skipped, 2 errors.
@@ -2882,7 +2904,7 @@ somewhat intelligible.")
            #t))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/progrium/pyjwt")
@@ -3076,18 +3098,6 @@ for Python.")
         (base32
          "1zzrkywhziqffrzks14kzixz7nd4yh2vc0fb04a68vfd2ai03anx"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; These files cannot be built with Python < 3.6.  See
-         ;; https://github.com/pallets/jinja/issues/655
-         ;; FIXME: Remove this when the "python" package is upgraded.
-         (add-after 'unpack 'delete-incompatible-files
-           (lambda _
-             (for-each delete-file
-                       '("jinja2/asyncsupport.py"
-                         "jinja2/asyncfilters.py"))
-             #t)))))
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (home-page "http://jinja.pocoo.org/")
@@ -3338,7 +3348,7 @@ sources.")
      `(("python-sphinxcontrib-websupport" ,python-sphinxcontrib-websupport)
        ,@(package-propagated-inputs python-sphinx)))
     (native-inputs
-     `(("python-pytest" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("imagemagick" ,imagemagick) ; for "convert"
        ,@(package-native-inputs python-sphinx)))
     (properties '())))
@@ -3356,7 +3366,7 @@ sources.")
         (base32
          "0kw1axswbvaavr8ggyf4qr6hnisnrzlbkkcdada69vk1x9xjassg"))))
     (native-inputs
-     `(("python-pytest" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ,@(package-native-inputs python-sphinx)))))
 
 (define-public python2-sphinx
@@ -5307,7 +5317,7 @@ Python language binding specification.")
     (arguments '(#:tests? #f)) ; Test file 'grako.ebnf' is missing from archive.
     (native-inputs
      `(("unzip" ,unzip)
-       ("python-pytest" ,python-pytest-3.0)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://bitbucket.org/neogeny/grako")
     (synopsis "EBNF parser generator")
@@ -5365,7 +5375,7 @@ cluster without needing to write any wrapper code yourself.")
         (base32 "0zizn61n5z5hq421hkypk9pw8s6fpxw30f4hsg7k4ivwzy3gjw9j"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("python-mock" ,python-mock)
        ("python-tox" ,python-tox)
        ("which" ,which))) ;for tests
@@ -5428,7 +5438,7 @@ displayed.")
          (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
     (native-inputs
      `(("python-nose" ,python-nose)
-       ("python-pytest" ,python-pytest-3.0)
+       ("python-pytest" ,python-pytest)
        ("man-db" ,man-db)
        ("which" ,which)
        ("bash-full" ,bash)))                 ;full Bash for 'test_replwrap.py'
@@ -5449,13 +5459,13 @@ child application and control it as if a human were typing commands.")
 (define-public python-setuptools-scm
   (package
     (name "python-setuptools-scm")
-    (version "1.15.0")
+    (version "1.15.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "setuptools_scm" version))
               (sha256
                (base32
-                "0bwyc5markib0i7i2qlyhdzxhiywzxbkfiapldma8m91m82jvwfs"))))
+                "0pzvfmx8s20yrgkgwfbxaspz2x1g38qv61jpm0ns91lrb22ldas9"))))
     (build-system python-build-system)
     (home-page "https://github.com/pypa/setuptools_scm/")
     (synopsis "Manage Python package versions in SCM metadata")
@@ -6990,14 +7000,14 @@ PEP 8.")
 (define-public python-pyflakes
   (package
     (name "python-pyflakes")
-    (version "1.0.0")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pyflakes" version))
         (sha256
           (base32
-            "0qs2sgqszq7wcplis8509wk2ygqcrwzbs1ghfj3svvivq2j377pk"))))
+            "1x1pcca4a24k4pw8x1c77sgi58cg1wl2k38mp8a25k608pzls3da"))))
     (build-system python-build-system)
     (home-page
       "https://github.com/pyflakes/pyflakes")
@@ -7012,17 +7022,17 @@ PEP 8.")
 (define-public python-mccabe
   (package
     (name "python-mccabe")
-    (version "0.4.0")
+    (version "0.6.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mccabe" version))
         (sha256
           (base32
-            "0yr08a36h8lqlif10l4xcikbbig7q8f41gqywir7rrvnv3mi4aws"))))
+            "07w3p1qm44hgxf3vvwz84kswpsx6s7kvaibzrsx5dzm0hli1i3fx"))))
     (build-system python-build-system)
     (native-inputs
-      `(("python-pytest" ,python-pytest)
+      `(("python-pytest" ,python-pytest-bootstrap)
         ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/flintwork/mccabe")
     (synopsis "McCabe checker, plugin for flake8")
@@ -7095,39 +7105,48 @@ complexity of Python source code.")
 (define-public python-flake8
   (package
     (name "python-flake8")
-    (version "2.5.4")
+    (version "3.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "flake8" version))
         (sha256
           (base32
-            "0bs9cz4fr99r2rwig1b8jwaadl1nan7kgpdzqwj0bwbckwbmh7nc"))
-        (modules '((guix build utils)))
-        (snippet
-         '(begin
-            ;; Remove pre-compiled .pyc files from source.
-            (for-each delete-file-recursively
-                      (find-files "." "__pycache__" #:directories? #t))
-            (for-each delete-file (find-files "." "\\.pyc$"))
-            #t))))
+            "1n0i38592vy3q0x2a9bf8z6rhhn04i30wsn5i5zzcj7qkxvl8062"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (add-installed-pythonpath inputs outputs)
+            (zero? (system* "pytest" "-v")))))))
     (propagated-inputs
-      `(("python-pep8" ,python-pep8)
+      `(("python-pycodestyle" ,python-pycodestyle)
         ("python-pyflakes" ,python-pyflakes)
+        ;; flake8 depends on a newer setuptools than provided by python.
+        ("python-setuptools" ,python-setuptools)
         ("python-mccabe" ,python-mccabe)))
     (native-inputs
       `(("python-mock" ,python-mock) ; TODO: only required for < 3.3
-        ("python-nose" ,python-nose)))
+        ("python-pytest" ,python-pytest-bootstrap)
+        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://gitlab.com/pycqa/flake8")
     (synopsis
       "The modular source code checker: pep8, pyflakes and co")
     (description
       "Flake8 is a wrapper around PyFlakes, pep8 and python-mccabe.")
+    (properties `((python2-variant . ,(delay python2-flake8))))
     (license license:expat)))
 
 (define-public python2-flake8
-  (package-with-python2 python-flake8))
+  (let ((base (package-with-python2 (strip-python2-variant python-flake8))))
+    (package (inherit base)
+      (propagated-inputs
+       `(("python2-configparser" ,python2-configparser)
+         ("python2-enum" ,python2-enum)
+          ,@(package-propagated-inputs base))))))
 
 (define-public python-flake8-polyfill
   (package
@@ -8008,7 +8027,7 @@ responses, rather than doing any computation.")
        ("python-hypothesis" ,python-hypothesis)
        ("python-pretend" ,python-pretend)
        ("python-pytz" ,python-pytz)
-       ("python-pytest" ,python-pytest-3.0)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Cryptographic recipes and primitives for Python")
     (description
@@ -8068,7 +8087,7 @@ message digests and key derivation functions.")
     (native-inputs
      `(("python-flaky" ,python-flaky)
        ("python-pretend" ,python-pretend)
-       ("python-pytest" ,python-pytest-3.0)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pyca/pyopenssl")
     (synopsis "Python wrapper module around the OpenSSL library")
     (description
@@ -10138,7 +10157,7 @@ Amazon Web Services (AWS) API.")
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest-bootstrap)))
     (synopsis "Library for property based testing")
     (description "Hypothesis is a library for testing your Python code against a
 much larger range of examples than you would ever want to write by hand.  It’s
@@ -15035,7 +15054,7 @@ for Flask.")
          "0gf2dpahpl5igb7jh1sr9acj3z3gp7zahqdqb69nk6wx01c8kc1g"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("pytest" ,python-pytest-3.0)))
+     `(("pytest" ,python-pytest)))
     (home-page "https://github.com/fschulze/pytest-warnings")
     (synopsis "Pytest plugin to list Python warnings in pytest report")
     (description
@@ -15059,7 +15078,7 @@ pytest report.")
          "038049nyjl7di59ycnxvc9nydivc5m8np3hqq84j2iirkccdbs5n"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("pytest" ,python-pytest-3.0)))
+     `(("pytest" ,python-pytest)))
     (home-page "http://bitbucket.org/memedough/pytest-capturelog/overview")
     (synopsis "Pytest plugin to catch log messages")
     (description
@@ -15084,7 +15103,7 @@ pytest report.")
     (native-inputs
      `(("unzip" ,unzip)))
     (propagated-inputs
-     `(("pytest" ,python-pytest-3.0)))
+     `(("pytest" ,python-pytest)))
     (home-page "https://github.com/eisensheng/pytest-catchlog")
     (synopsis "Pytest plugin to catch log messages")
     (description
@@ -16075,7 +16094,7 @@ address is valid and really exists.")
      `(("python-dateutil" ,python-dateutil)
        ("python-simplejson" ,python-simplejson)))
     (native-inputs
-     `(("python-pytest-3.0" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("python-pytz" ,python-pytz)))
     (home-page "https://github.com/marshmallow-code/marshmallow")
     (synopsis "Convert complex datatypes to and from native
@@ -16122,7 +16141,7 @@ complex datatypes to and from native Python datatypes.")
     (propagated-inputs
      `(("python-pyyaml" ,python-pyyaml)))
     (native-inputs
-     `(("python-pytest-3.0" ,python-pytest-3.0)
+     `(("python-pytest" ,python-pytest)
        ("python-flask" ,python-flask)
        ("python-marshmallow" ,python-marshmallow)
        ("python-tornado" ,python-tornado)
@@ -16175,7 +16194,7 @@ Swagger 2.0).")
        ("python-flake8" ,python-flake8)
        ("python-flask-restful" ,python-flask-restful)
        ("python-flex" ,python-flex)
-       ("python-pytest-3.0" ,python-pytest-3.0)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-marshmallow" ,python-marshmallow)
        ("python-apispec" ,python-apispec)))
@@ -16678,7 +16697,7 @@ their files and supports any packaging format (including wheels).")
      `(;; The tests depend on unittest2, and our version is a bit too old.
        #:tests? #f))
     (native-inputs
-     `(("python-pbr" ,python-pbr)))
+     `(("python-pbr" ,python-pbr-minimal)))
     (home-page
       "https://github.com/testing-cabal/linecache2")
     (synopsis "Backports of the linecache module")
@@ -16707,7 +16726,7 @@ lines are read from a single file.")
      `(;; python-traceback2 and python-unittest2 depend on one another.
        #:tests? #f))
     (native-inputs
-     `(("python-pbr" ,python-pbr)))
+     `(("python-pbr" ,python-pbr-minimal)))
     (propagated-inputs
       `(("python-linecache2" ,python-linecache2)))
     (home-page
