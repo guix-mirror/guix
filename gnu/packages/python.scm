@@ -6626,13 +6626,13 @@ of the structure, dynamics, and functions of complex networks.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "3.13.3")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "1nixb944r4hlskwkzc4wjs34b40xpxpw9gmhhm5p09gvmm22ap5d"))))
+        (base32 "0mgl44q152ws40zj2vicqark5szyd73vqy9pf26g6hk6dk0y0c79"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
@@ -6651,7 +6651,11 @@ of the structure, dynamics, and functions of complex networks.")
              #t)))))
     (propagated-inputs
      `(("python-wrapt" ,python-wrapt)
-       ("python-requests" ,python-requests)))
+       ("python-requests" ,python-requests)
+       ("python-appdirs" ,python-appdirs)
+       ("python-configargparse" ,python-configargparse)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-ratelimiter" ,python-ratelimiter)))
     (home-page "https://bitbucket.org/snakemake/snakemake/wiki/Home")
     (synopsis "Python-based execution environment for make-like workflows")
     (description
