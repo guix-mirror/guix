@@ -15,7 +15,7 @@
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015, 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -9279,20 +9279,30 @@ config files.")
 (define-public python-configargparse
   (package
     (name "python-configargparse")
-    (version "0.10.0")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://pypi.python.org/packages/source/C/ConfigArgParse/"
+                    "https://pypi.io/packages/source/C/ConfigArgParse/"
                     "ConfigArgParse-" version ".tar.gz"))
               (sha256
                (base32
-                "19wh919gbdbzxzpagg52q3lm62yicm95ddlcx77dyjc1slyshl1v"))))
+                "0fgkiqh6r3rbkdq3k8c48m85g52k96686rw3a6jg4lcncrkpvk98"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-pyyaml" ,python-pyyaml)))
     (arguments
-     ;; FIXME: Bug in test suite filed upstream:
-     ;; https://github.com/bw2/ConfigArgParse/issues/32
-     '(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Bypass setuptools-shim because one test relies on "setup.py"
+             ;; being the first argument passed to the python call.
+             ;;
+             ;; NOTE: Many tests do not run because they rely on Python's
+             ;; built-in test.test_argparse, but we remove the unit tests from
+             ;; our Python installation.
+             (zero? (system* "python" "setup.py" "test")))))))
     (synopsis "Replacement for argparse")
     (description "A drop-in replacement for argparse that allows options to also
 be set via config files and/or environment variables.")
