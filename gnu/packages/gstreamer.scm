@@ -409,7 +409,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
        ("python" ,python)))
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.3)
        ("orc" ,orc)
        ("zlib" ,zlib)))
     (home-page "http://gstreamer.freedesktop.org/")
