@@ -5071,7 +5071,7 @@ expected shortfall risk are also included.")
        (uri (cran-uri "nloptr" version))
        (sha256
         (base32
-         "1cypz91z28vhvwq2rzqjrbdc6a2lvfr2g16vid2sax618q6ai089"))))
+         "1sz1xj3785x4vsm4nd6in298bk32hs2jk5nsxma7ivxi7jcmn8l4"))))
     (build-system r-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
