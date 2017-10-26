@@ -21,6 +21,7 @@
 (define-module (gnu packages wget)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl)
@@ -34,18 +35,15 @@
 (define-public wget
   (package
     (name "wget")
-    (version "1.19.1")
+    (version "1.19.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/wget/wget-"
-                          version ".tar.xz"))
-      (patches (search-patches "wget-CVE-2017-6508.patch"
-                               "wget-fix-504-test-timeout.patch"
-                               "wget-perl-5.26.patch"))
+                          version ".tar.lz"))
       (sha256
        (base32
-        "1ljcfhbkdsd0zjfm520rbl1ai62fc34i7c45sfj244l8f6b0p58c"))))
+        "01yzal7xm85543x02bij3capnigr063d6c5vc039f8n5s9d796nm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -65,7 +63,8 @@
     (inputs
      `(("gnutls" ,gnutls)
        ("libidn2" ,libidn2)
-       ("libpsl" ,libpsl)))
+       ("libpsl" ,libpsl)
+       ("lzip" ,lzip)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)
