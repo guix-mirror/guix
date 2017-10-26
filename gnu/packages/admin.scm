@@ -1382,14 +1382,14 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.3.1.0")
+    (version "2.4.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "1xdr82fy8gahxh3586wm5k1bxksys7yl1f2n24shrk8gf99qyjyd"))
+         "0spv0kjaicwss4q52s727b6grdizcxpa0bbsfg26pgf5kjrayqfs"))
        (patches (search-patches "ansible-wrap-program-hack.patch"))))
     (build-system python-build-system)
     (native-inputs
