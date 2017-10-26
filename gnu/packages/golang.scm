@@ -205,7 +205,7 @@ sequential processes (CSP) concurrent programming features added.")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.9.1")
+    (version "1.9.2")
     (source
      (origin
        (method url-fetch)
@@ -213,7 +213,7 @@ sequential processes (CSP) concurrent programming features added.")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "03jmrgqq852wqyphvd8p46i32f72xki3bmylhkxf0kynqyfzqjm8"))))
+         "1p23n4xzbknl3bbhlckbvxbhpxknd5rn0i2szmn9i2dcz15ihpv6"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
