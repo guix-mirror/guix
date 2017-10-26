@@ -738,7 +738,8 @@ processed, #f otherwise."
               (available (fold-packages
                           (lambda (p r)
                             (let ((n (package-name p)))
-                              (if (supported-package? p)
+                              (if (and (supported-package? p)
+                                       (not (package-superseded p)))
                                   (if regexp
                                       (if (regexp-exec regexp n)
                                           (cons p r)
