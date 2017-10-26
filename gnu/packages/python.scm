@@ -16843,3 +16843,27 @@ interpreter when it prints a stack trace.")
 
 (define-public python2-traceback2
   (package-with-python2 python-traceback2))
+
+(define-public python-ratelimiter
+  (package
+    (name "python-ratelimiter")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ratelimiter" version))
+       (sha256
+        (base32
+         "1dhz85mj5bqd2mij84ncs6pz32hgidr79hay4aqfmzaa4rbb497p"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f))          ; There are no tests in the pypi archive.
+    (home-page "https://github.com/RazerM/ratelimiter")
+    (synopsis "Simple rate limiting object")
+    (description
+     "The @code{ratelimiter} module ensures that an operation will not be
+executed more than a given number of times during a given period.")
+    (license license:asl2.0)))
+
+(define-public python2-ratelimiter
+  (package-with-python2 python-ratelimiter))
