@@ -436,6 +436,14 @@ by the GuixSD Prosody Service.  See @url{http://prosody.im/doc/logging}."
      "File to write pid in.  See @url{http://prosody.im/doc/modules/mod_posix}."
      global)
 
+    (http-external-url
+     (maybe-string 'disabled)
+     "Some modules expose their own URL in various ways.  This URL is built
+from the protocol, host and port used.  If Prosody sits behind a proxy, the
+public URL will be @code{http-external-url} instead.  See
+@url{https://prosody.im/doc/http#external_url}."
+     common)
+
     (virtualhosts
      (virtualhost-configuration-list
       (list (virtualhost-configuration
