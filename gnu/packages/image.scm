@@ -866,6 +866,8 @@ channels.")
                                        version ".tar.gz")
                         (string-append "https://fossies.org/linux/misc/exiv2-"
                                        version ".tar.gz")))
+             (patches (search-patches "exiv2-CVE-2017-14860.patch"
+                                      "exiv2-CVE-2017-14859-14862-14864.patch"))
              (sha256
               (base32
                "1yza317qxd8yshvqnay164imm0ks7cvij8y8j86p1gqi1153qpn7"))))

@@ -605,6 +605,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
   %D%/packages/patches/exim-CVE-2017-1000369.patch		\
+  %D%/packages/patches/exiv2-CVE-2017-14860.patch		\
+  %D%/packages/patches/exiv2-CVE-2017-14859-14862-14864.patch	\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\
   %D%/packages/patches/fasthenry-spAllocate.patch		\
