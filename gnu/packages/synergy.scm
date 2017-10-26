@@ -38,12 +38,12 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://github.com/symless/synergy/archive/"
+      (uri (string-append "https://github.com/symless/synergy-core/archive/"
                           "v" version "-stable.tar.gz"))
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "16vxbly4a33c63da3kmj7j47cam583l7bip33jc43mw173wqihw5"))
+        "052z1yiwck9hlshf8in2dgz6p7jxmq9yfj32mfzjaygpz6mmmr4y"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove ~14MB of unnecessary bundled source and binaries
