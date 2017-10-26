@@ -3557,6 +3557,40 @@ library is currently designed for Unicode Standard 3.2.")
     ;; with an exception for linked libraries to use a different license
     (license license:lgpl2.0+)))
 
+(define-public ocaml-jbuilder
+  (package
+    (name "ocaml-jbuilder")
+    (version "1.0+beta14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/janestreet/jbuilder/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "06jdcb4jmmp4wqyf9cm59jzgj0mxkpdzd9q3728gdxc1sz3v1sz0"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "PREFIX" out))
+             #t)))))
+    (native-inputs
+     `(("menhir" ,ocaml-menhir)))
+    (propagated-inputs
+     `(("opam" ,opam)))
+    (home-page "https://github.com/janestreet/jbuilder")
+    (synopsis "Composable build system for OCaml")
+    (description "Jbuilder is a build system designed for OCaml/Reason projects
+only.  It focuses on providing the user with a consistent experience and takes
+care of most of the low-level details of OCaml compilation.  All you have to do
+is provide a description of your project and Jbuilder will do the rest.")
+    (license license:asl2.0)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
