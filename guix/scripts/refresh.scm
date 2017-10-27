@@ -338,12 +338,8 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
 (define (guix-refresh . args)
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (G_ "~A: unrecognized option~%") name))
-                (lambda (arg result)
-                  (alist-cons 'argument arg result))
-                %default-options))
+    (parse-command-line args %options (list %default-options)
+                        #:build-options? #f))
 
   (define (options->updaters opts)
     ;; Return the list of updaters to use.

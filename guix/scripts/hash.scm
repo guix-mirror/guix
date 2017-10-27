@@ -104,13 +104,8 @@ and 'hexadecimal' can be used as well).\n"))
 (define (guix-hash . args)
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (G_ "unrecognized option: ~a~%")
-                         name))
-                (lambda (arg result)
-                  (alist-cons 'argument arg result))
-                %default-options))
+    (parse-command-line args %options (list %default-options)
+                        #:build-options? #f))
 
   (define (vcs-file? file stat)
     (case (stat:type stat)

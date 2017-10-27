@@ -1123,12 +1123,8 @@ run the checkers on all packages.\n"))
 (define (guix-lint . args)
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (G_ "~A: unrecognized option~%") name))
-                (lambda (arg result)
-                  (alist-cons 'argument arg result))
-                %default-options))
+    (parse-command-line args %options (list %default-options)
+                        #:build-options? #f))
 
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda

@@ -278,12 +278,8 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
 
 (define (guix-challenge . args)
   (with-error-handling
-    (let* ((opts     (args-fold* args %options
-                                 (lambda (opt name arg . rest)
-                                   (leave (G_ "~A: unrecognized option~%") name))
-                                 (lambda (arg result)
-                                   (alist-cons 'argument arg result))
-                                 %default-options))
+    (let* ((opts     (parse-command-line args %options (list %default-options)
+                                         #:build-options? #f))
            (files    (filter-map (match-lambda
                                    (('argument . file) file)
                                    (_ #f))

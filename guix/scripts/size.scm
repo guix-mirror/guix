@@ -291,12 +291,8 @@ Report the size of PACKAGE and its dependencies.\n"))
 
 (define (guix-size . args)
   (with-error-handling
-    (let* ((opts     (args-fold* args %options
-                                 (lambda (opt name arg . rest)
-                                   (leave (G_ "~A: unrecognized option~%") name))
-                                 (lambda (arg result)
-                                   (alist-cons 'argument arg result))
-                                 %default-options))
+    (let* ((opts     (parse-command-line args %options (list %default-options)
+                                         #:build-options? #f))
            (files    (filter-map (match-lambda
                                    (('argument . file) file)
                                    (_ #f))
