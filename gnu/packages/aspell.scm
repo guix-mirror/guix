@@ -28,8 +28,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages base))
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages perl))
 
 (define-public aspell
   (package
@@ -210,3 +211,104 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "1y09lx9zf2rnp55r16b2vgj953l3538z1vaqgflg9mdvm555bz3p")))
+
+
+;;;
+;;; Hunspell packages made from the Aspell word lists.
+;;;
+
+(define* (aspell-word-list language synopsis
+                           #:optional
+                           (nick (string-map (lambda (chr)
+                                               (if (char=? #\_ chr)
+                                                   #\-
+                                                   chr))
+                                             (string-downcase language))))
+  (package
+    (name (string-append "hunspell-dict-" nick))
+    (version "2017.08.24")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.sourceforge.net/wordlist/scowl-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1kdhydzg5z5x20ad2j1x5hbdhvy08ljkfdi2v3gbyvghbagxm15s"))))
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)
+       ("perl" ,perl)
+       ("aspell" ,aspell)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (replace 'build
+           (lambda _
+             (substitute* "speller/make-hunspell-dict"
+               (("zip -9 .*$")
+                "return\n"))
+             (mkdir "speller/hunspell")
+
+             ;; XXX: This actually builds all the dictionary variants.
+             (zero? (system* "make" "-C" "speller" "hunspell"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out      (assoc-ref %outputs "out"))
+                    (hunspell (string-append out "/share/hunspell"))
+                    (myspell  (string-append out "/share/myspell"))
+                    (doc      (string-append out "/share/doc/"
+                                             ,name)))
+               (mkdir-p myspell)
+               (install-file ,(string-append "speller/" language ".aff")
+                             hunspell)
+               (symlink hunspell (string-append myspell "/dicts"))
+               (for-each (lambda (file)
+                           (install-file file doc))
+                         (find-files "."
+                                     "^(Copyright|.*\\.(txt|org|md))$"))
+               #t))))))
+    (synopsis synopsis)
+    (description
+     "This package provides a dictionary for the Hunspell spell-checking
+library.")
+    (home-page "http://wordlist.aspell.net/")
+    (license (non-copyleft "file://Copyright"
+                           "Word lists come from several sources, all
+under permissive licensing terms.  See the 'Copyright' file."))))
+
+(define-syntax define-word-list-dictionary
+  (syntax-rules (synopsis)
+    ((_ name language (synopsis text))
+     (define-public name
+       (aspell-word-list language text)))
+    ((_ name language nick (synopsis text))
+     (define-public name
+       (aspell-word-list language text nick)))))
+
+(define-word-list-dictionary hunspell-dict-en
+  "en"
+  (synopsis "Hunspell dictionary for English"))
+
+(define-word-list-dictionary hunspell-dict-en-au
+  "en_AU"
+  (synopsis "Hunspell dictionary for Australian English"))
+
+(define-word-list-dictionary hunspell-dict-en-ca
+  "en_CA"
+  (synopsis "Hunspell dictionary for Canadian English"))
+
+(define-word-list-dictionary hunspell-dict-en-gb
+  "en_GB-ise" "en-gb"
+  (synopsis "Hunspell dictionary for British English, with -ise endings"))
+
+(define-word-list-dictionary hunspell-dict-en-gb-ize
+  "en_GB-ize"
+  (synopsis "Hunspell dictionary for British English, with -ize endings"))
+
+(define-word-list-dictionary hunspell-dict-en-us
+  "en_US"
+  (synopsis "Hunspell dictionary for United States English"))
