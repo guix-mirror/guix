@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system emacs)
-  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+ asl2.0 bsd-3))
+  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ agpl3+ lgpl2.1+ asl2.0
+                                          bsd-3 silofl1.1))
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages file)
@@ -40,6 +42,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
@@ -736,3 +739,34 @@ is the package manager used by Anaconda installations, but it may be used for
 other systems as well.  Conda makes environments first-class citizens, making
 it easy to create independent environments even for C libraries.  Conda is
 written entirely in Python.")))
+
+(define-public gwl
+  (package
+    (name "gwl")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.guixwl.org/releases/gwl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1x4swwp7kmhd57j3scii5c4h8swkcvab2r6mz7wxwwbx300wcqpy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("guix" ,guix)
+       ("guile-commonmark" ,guile-commonmark)))
+    (home-page "https://www.guixwl.org")
+    (synopsis "Workflow management extension for GNU Guix")
+    (description "This project provides two subcommands to GNU Guix and
+introduces two record types that provide a workflow management extension built
+on top of GNU Guix.")
+    ;; The Scheme modules in guix/ and gnu/ are licensed GPL3+,
+    ;; the web interface modules in gwl/ are licensed AGPL3+,
+    ;; and the fonts included in this package are licensed OFL1.1.
+    (license (list gpl3+ agpl3+ silofl1.1))))
