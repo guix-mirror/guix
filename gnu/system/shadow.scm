@@ -163,6 +163,9 @@ then
     # is an SSH session (as in \"ssh host command\"), source
     # /etc/profile so we get PATH and other essential variables.
     [[ -n \"$SSH_CLIENT\" ]] && source /etc/profile
+
+    # Don't do anything else.
+    return
 fi
 
 # Adjust the prompt depending on whether we're in 'guix environment'.
