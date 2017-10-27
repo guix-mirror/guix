@@ -664,6 +664,7 @@ language.")
                               (assoc-ref %build-inputs "wxpython")
                               "/include/wx-3.0")
                "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
+               "-DKICAD_SPICE=TRUE"
                ;; TODO: Enable this when CA certs are working with curl.
                "-DBUILD_GITHUB_PLUGIN=OFF")
          #:phases
@@ -704,6 +705,7 @@ language.")
          ("glew" ,glew)
          ("glm" ,glm)
          ("hicolor-icon-theme" ,hicolor-icon-theme)
+         ("libngspice" ,libngspice)
          ("libsm" ,libsm)
          ("mesa" ,mesa)
          ("openssl" ,openssl)
