@@ -3591,6 +3591,43 @@ care of most of the low-level details of OCaml compilation.  All you have to do
 is provide a description of your project and Jbuilder will do the rest.")
     (license license:asl2.0)))
 
+(define-public ocaml-zed
+  (package
+    (name "ocaml-zed")
+    (version "1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/diml/zed/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1q281slzwgdrrxalayll75bxgghadswlh2zcvzy08nrywqnlq5y8"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key #:allow-other-keys)
+             (zero? (system* "jbuilder" "build"))))
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "jbuilder" "install" "--prefix" out))))))))
+    (native-inputs
+     `(("jbuilder" ,ocaml-jbuilder)))
+    (propagated-inputs
+     `(("camomile" ,ocaml-camomile)
+       ("react" ,ocaml-react)))
+    (home-page "https://github.com/diml/zed")
+    (synopsis "Abstract engine for text editing in OCaml")
+    (description "Zed is an abstract engine for text edition.  It can be used
+to write text editors, edition widgets, readlines, etc.  You just have to
+connect an engine to your inputs and rendering functions to get an editor.")
+    (license license:bsd-3)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
