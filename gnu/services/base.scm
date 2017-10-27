@@ -1441,7 +1441,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   (match config
     (($ <guix-configuration> guix build-group build-accounts authorize-key? keys)
      ;; Assume that the store has BUILD-GROUP as its group.  We could
-     ;; otherwise call 'chown' here, but the problem is that on a COW unionfs,
+     ;; otherwise call 'chown' here, but the problem is that on a COW overlayfs,
      ;; chown leads to an entire copy of the tree, which is a bad idea.
 
      ;; Optionally authorize hydra.gnu.org's key.
