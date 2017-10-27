@@ -42,6 +42,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages commencement)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages flex)
@@ -1441,25 +1442,62 @@ parallel computing platforms.  It also supports serial execution.")
                 (string-append (assoc-ref inputs "coreutils")
                                "/bin/cat")))
              #t))
+         (add-after 'patch-pkg-config 'setenv
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CXX" (string-append (assoc-ref inputs "gcc")
+                                          "/bin/g++"))
+             (setenv "SYSTEM_LIBTOOL" (string-append (assoc-ref inputs "libtool")
+                                                     "/bin/libtool"))
+             #t))
+         (add-after 'setenv 'patch-gvhdl
+           (lambda _
+             (substitute* "v2cc/gvhdl.in"
+               (("--mode=link") "--mode=link --tag=CXX")
+               (("-lm") "-lm FREEHDL/lib/freehdl/libieee.la"))
+             #t))
+         (add-after 'patch-gvhdl 'patch-freehdl-gennodes
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "freehdl/freehdl-gennodes.in"
+               (("guile")
+                (string-append (assoc-ref inputs "guile") "/bin/guile"))
+               (("\\(debug") ";(debug")
+               (("\\(@ ") "(apply-emit")
+               (("\\(@@ ") "(apply-mini-format"))
+             #t))
          (add-after 'configure 'patch-freehdl-pc
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "freehdl.pc"
                (("=g\\+\\+")
-                (string-append "=" (assoc-ref inputs "gcc")
+                (string-append "=" (assoc-ref inputs "gcc-toolchain")
                                "/bin/g++"))
                (("=libtool")
                 (string-append "=" (assoc-ref inputs "libtool")
                                "/bin/libtool")))
              #t))
          (add-after 'install-scripts 'make-wrapper
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
+               ;; 'gvhdl' invokes the C compiler directly, so hard-code its
+               ;; file name.
+               (wrap-program (string-append out "/bin/gvhdl")
+                 `("CPLUS_INCLUDE_PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                    "/include")))
+                 `("LIBRARY_PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                    "/lib")))
+                 `("PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                    "/bin")
+                    ,(string-append (assoc-ref inputs "coreutils")
+                                    "/bin"))))
                (wrap-program (string-append out "/bin/freehdl-config")
                  `("PKG_CONFIG_PATH" ":" prefix (,(string-append out "/lib/pkgconfig")))))
              #t)))))
     (inputs
      `(("coreutils" ,coreutils)
-       ("gcc" ,gcc)
+       ("gcc-toolchain" ,gcc-toolchain-5)
+       ("guile" ,guile-2.2)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("libtool" ,libtool)))
