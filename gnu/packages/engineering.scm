@@ -711,7 +711,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
       (license license:gpl3+))))
 
 (define-public kicad-library
-  (let ((version "4.0.4"))
+  (let ((version "4.0.6"))
     (package
       (name "kicad-library")
       (version version)
@@ -722,7 +722,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
                       version ".tar.gz"))
                 (sha256
                  (base32
-                  "1wyda58y39lhxml0xv1ngvddi0nqihx9bnlza46ajzms38ajvh12"))))
+                  "16f47pd6f0ddsdxdrp327nr9v05gl8c24d0qypq2aqx5hdjmkp7f"))))
       (build-system cmake-build-system)
       (arguments
        `(#:out-of-source? #t
@@ -765,7 +765,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0ya4gg6clz3vp2wrb67xwg0bhwh5q8ag39jjmpcp4zjcqs1f48rb"))))))
+               "0vmgqhdw05k5fdnqv42grnvlz7v75g9md82jp2d3dvw2zw050lfb"))))))
       (home-page "http://kicad-pcb.org/")
       (synopsis "Libraries for kicad")
       (description "This package provides Kicad component, footprint and 3D
