@@ -204,8 +204,12 @@ Report the availability of substitutes.\n"))
 
 (define (guix-weather . args)
   (with-error-handling
-    (let* ((opts     (parse-command-line args %options
-                                         (list %default-options)))
+    (let* ((opts     (args-fold* args %options
+                                 (lambda (opt name arg . rest)
+                                   (leave (G_ "~A: unrecognized option~%") name))
+                                 (lambda (arg result)
+                                   (alist-cons 'argument arg result))
+                                 %default-options))
            (urls     (assoc-ref opts 'substitute-urls))
            (systems  (match (filter-map (match-lambda
                                           (('system . system) system)
