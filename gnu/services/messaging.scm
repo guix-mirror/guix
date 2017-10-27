@@ -436,6 +436,11 @@ by the GuixSD Prosody Service.  See @url{http://prosody.im/doc/logging}."
      "File to write pid in.  See @url{http://prosody.im/doc/modules/mod_posix}."
      global)
 
+    (http-max-content-size
+     (maybe-non-negative-integer 'disabled)
+     "Maximum allowed size of the HTTP body (in bytes)."
+     common)
+
     (http-external-url
      (maybe-string 'disabled)
      "Some modules expose their own URL in various ways.  This URL is built
