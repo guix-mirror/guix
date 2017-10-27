@@ -14170,7 +14170,7 @@ See @url{http://prosody.im/doc/configure#virtual_host_settings}.
 
 Available @code{virtualhost-configuration} fields are:
 
-all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, @code{http-max-content-size}, @code{http-external-url}, plus:
+all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, @code{http-max-content-size}, @code{http-external-url}, @code{raw-content}, plus:
 @deftypevr {@code{virtualhost-configuration} parameter} string domain
 Domain you wish Prosody to serve.
 @end deftypevr
@@ -14192,7 +14192,7 @@ Defaults to @samp{()}.
 
 Available @code{int-component-configuration} fields are:
 
-all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, @code{http-max-content-size}, @code{http-external-url}, plus:
+all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, @code{http-max-content-size}, @code{http-external-url}, @code{raw-content}, plus:
 @deftypevr {@code{int-component-configuration} parameter} string hostname
 Hostname of the component.
 @end deftypevr
@@ -14245,7 +14245,7 @@ Defaults to @samp{()}.
 
 Available @code{ext-component-configuration} fields are:
 
-all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, @code{http-max-content-size}, @code{http-external-url}, plus:
+all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, @code{http-max-content-size}, @code{http-external-url}, @code{raw-content}, plus:
 @deftypevr {@code{ext-component-configuration} parameter} string component-secret
 Password which the component will use to log in.
 @end deftypevr
@@ -14263,6 +14263,10 @@ Port(s) Prosody listens on for component connections.
 @deftypevr {@code{prosody-configuration} parameter} string component-interface
 Interface Prosody listens on for component connections.
 Defaults to @samp{"127.0.0.1"}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} maybe-raw-content raw-content
+Raw content that will be added to the configuration file.
 @end deftypevr
 
 It could be that you just want to get a @code{prosody.cfg.lua}

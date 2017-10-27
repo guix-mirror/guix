@@ -176,6 +176,12 @@
   (serialize-string-list field-name val))
 (define-maybe file-name)
 
+(define (raw-content? val)
+  (not (eq? val 'disabled)))
+(define (serialize-raw-content field-name val)
+  (format #t "~a" val))
+(define-maybe raw-content)
+
 (define-configuration mod-muc-configuration
   (name
    (string "Prosody Chatrooms")
@@ -533,7 +539,12 @@ See also @url{http://prosody.im/doc/modules/mod_muc}."
     (hostname
      (string (configuration-missing-field 'ext-component 'hostname))
      "Hostname of the component."
-     ext-component)))
+     ext-component)
+
+    (raw-content
+     (maybe-raw-content 'disabled)
+     "Raw content that will be added to the configuration file."
+     common)))
 
 ;; Serialize Virtualhost line first.
 (define (serialize-virtualhost-configuration config)
