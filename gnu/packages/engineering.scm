@@ -629,8 +629,8 @@ language.")
 ;; We use kicad from a git commit, because support for boost 1.61.0 has been
 ;; recently added.
 (define-public kicad
-  (let ((commit "4ee344e150bfaf3a6f3f7bf935fb96ae07c423fa")
-        (revision "1"))
+  (let ((commit "5f4599fb56da4dd748845ab10abec02961d477f3")
+        (revision "2"))
     (package
       (name "kicad")
       (version (string-append "4.0-" revision "."
@@ -642,7 +642,7 @@ language.")
                (url "https://git.launchpad.net/kicad")
                (commit commit)))
          (sha256
-          (base32 "0kf6r92nps0658i9n3p9vp5dzbssmc22lvjv5flyvnlf83l63s4n"))
+          (base32 "1833pln2975gmc5s18xf7s8m9vg834lmxxdjk0wlk3lq7bvjjnff"))
          (file-name (string-append name "-" version "-checkout"))))
       (build-system cmake-build-system)
       (arguments
@@ -682,6 +682,14 @@ language.")
                    `("PYTHONPATH" ":" prefix (,path))
                    `("PATH" ":" prefix
                      (,(string-append python "/bin:")))))
+               #t))
+           (add-after 'wrap-program 'install-lib-3d
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (for-each
+                (lambda (file)
+                  (install-file file (string-append (assoc-ref outputs "out")
+                                                    "/lib")))
+                (find-files "." "^libkicad_3dsg.*"))
                #t)))))
       (native-inputs
        `(("boost" ,boost)
