@@ -3692,6 +3692,50 @@ manipulation than, for example, ncurses, by providing a native OCaml interface
 instead of bindings to a C library.")
     (license license:bsd-3)))
 
+(define-public ocaml-utop
+  (package
+    (name "ocaml-utop")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/diml/utop/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1v22bzw1vgwbbmpvi7lkyp2r59w5mag85rmqplb4fwik78x7k4ss"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libdir (string-append out "/lib/ocaml/site-lib")))
+               (mkdir-p libdir)
+               (zero? (system* "jbuilder" "install"
+                               "--prefix" out
+                               "--libdir" libdir))))))))
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("cppo" ,ocaml-cppo)
+       ("jbuilder" ,ocaml-jbuilder)))
+    (propagated-inputs
+     `(("findlib" ,ocaml-findlib-1.7.3)
+       ("lambda-term" ,ocaml-lambda-term)
+       ("lwt" ,ocaml-lwt)
+       ("react" ,ocaml-react)
+       ("camomile" ,ocaml-camomile)
+       ("zed" ,ocaml-zed)))
+    (home-page "https://github.com/diml/utop")
+    (synopsis "Improved interface to the OCaml toplevel")
+    (description "UTop is an improved toplevel for OCaml.  It can run in a
+terminal or in Emacs.  It supports line editing, history, real-time and context
+sensitive completion, colors, and more.")
+    (license license:bsd-3)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
