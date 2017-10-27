@@ -869,7 +869,11 @@ the NIST server non-fatal."
 
 (define (check-for-updates package)
   "Check if there is an update available for PACKAGE."
-  (match (package-latest-release* package (force %updaters))
+  (match (with-networking-fail-safe
+          (format #f (G_ "while retrieving upstream info for '~a'")
+                  (package-name package))
+          #f
+          (package-latest-release* package (force %updaters)))
     ((? upstream-source? source)
      (when (version>? (upstream-source-version source)
                       (package-version package))
