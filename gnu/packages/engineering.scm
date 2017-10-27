@@ -1496,7 +1496,7 @@ parallel computing platforms.  It also supports serial execution.")
              #t)))))
     (inputs
      `(("coreutils" ,coreutils)
-       ("gcc-toolchain" ,gcc-toolchain-5)
+       ("gcc-toolchain" ,gcc-toolchain)
        ("guile" ,guile-2.2)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
