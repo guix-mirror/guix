@@ -417,7 +417,7 @@ substitutes."
   ;; TRANSLATORS: Here 'dot' is the name of a program; it must not be
   ;; translated.
   (display (G_ "Usage: guix graph PACKAGE...
-Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
+Emit a representation of the dependency graph of PACKAGE...\n"))
   (display (G_ "
   -b, --backend=TYPE     produce a graph with the given backend TYPE"))
   (display (G_ "
