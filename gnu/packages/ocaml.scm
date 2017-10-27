@@ -897,6 +897,28 @@ compilation and linkage, there are new frontends of the various OCaml
 compilers that can directly deal with packages.")
     (license license:x11)))
 
+(define-public ocaml-findlib-1.7.3
+  (package
+    (inherit ocaml-findlib)
+    (version "1.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.camlcity.org/download/"
+                                  "findlib" "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12xx8si1qv3xz90qsrpazjjk4lc1989fzm97rsmc4diwla7n15ni"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ocaml-findlib)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (zero? (system* "make" "install"
+                                 (string-append "OCAML_CORE_STDLIB="
+                                                out))))))))))))
+
 (define-public ocaml4.01-findlib
   (package
     (inherit ocaml-findlib)
