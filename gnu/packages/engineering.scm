@@ -1649,3 +1649,133 @@ aims to support all kinds of circuit simulation types---e.g. DC, AC,
 S-parameter, transient, noise and harmonic balance analysis.  Pure digital
 simulations are also supported.")
     (license license:gpl2+)))
+
+(define-public qucs-s
+  (package
+    (name "qucs-s")
+    (version "0.0.19S")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ra3xdh/qucs/releases/download/"
+                                  version "/qucs-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bhahvdqmayaw0306fxz1ghmjhd4fq05yk3rk7zi0z703w5imgjv"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-scripts
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("qucs/qucsdigi"
+                            "qucs/qucsdigilib"
+                            "qucs/qucsveri")
+               (("\\$BINDIR")
+                (string-append (assoc-ref inputs "qucs") "/bin"))
+               (("freehdl-config")
+                (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-config"))
+               (("freehdl-v2cc")
+                (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-v2cc"))
+               (("cp ")
+                (string-append (assoc-ref inputs "coreutils") "/bin/cp "))
+               (("glibtool")
+                (string-append (assoc-ref inputs "libtool") "/bin/libtool"))
+               (("sed")
+                (string-append (assoc-ref inputs "sed") "/bin/sed"))
+               (("iverilog")
+                (string-append (assoc-ref inputs "iverilog") "/bin/iverilog"))
+               (("vvp")
+                (string-append (assoc-ref inputs "iverilog") "/bin/vvp")))
+             #t))
+         (add-after 'patch-scripts 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "qucs/main.cpp"
+               (((string-append "QucsSettings\\.Qucsator = QucsSettings\\.BinDir "
+                                "\\+ \"qucsator\" \\+ executableSuffix"))
+                (string-append "}{ QucsSettings.Qucsator = \""
+                               (assoc-ref inputs "qucs") "/bin/qucsator\""))
+               (((string-append "else QucsSettings\\.XyceExecutable = "
+                                "\"/usr/local/Xyce-Release-6.2.0-OPENSOURCE/bin/runxyce"))
+                (string-append "QucsSettings.XyceExecutable = \""
+                               (assoc-ref inputs "xyce-serial") "/bin/Xyce"))
+               (((string-append "else QucsSettings\\.XyceParExecutable = \"/usr/local"
+                                "/Xyce-Release-6.2.0-OPENMPI-OPENSOURCE/bin/xmpirun"))
+                (string-append "QucsSettings.XyceParExecutable = \""
+                               (assoc-ref inputs "mpi") "/bin/mpirun"))
+               (("%p")
+                (string-append "%p "(assoc-ref inputs "xyce-parallel") "/bin/Xyce"))
+               (("else QucsSettings\\.NgspiceExecutable = \"ngspice\"")
+                (string-append "QucsSettings.NgspiceExecutable = " "\""
+                               (assoc-ref inputs "ngspice") "/bin/ngspice\"")))
+             (substitute* "qucs/qucs_actions.cpp"
+               (("qucstrans")
+                (string-append (assoc-ref inputs "qucs") "/bin/qucstrans"))
+               (("qucsattenuator")
+                (string-append (assoc-ref inputs "qucs") "/bin/qucsattenuator"))
+               (("qucsrescodes")
+                (string-append (assoc-ref inputs "qucs") "/bin/qucsrescodes")))
+             #t))
+         (add-after 'install 'install-scripts
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (for-each
+              (lambda (script)
+                (let ((file (string-append "../qucs-" ,version
+                                           "/qucs/" script))
+                      (out (assoc-ref outputs "out")))
+                  (install-file file (string-append out "/bin"))
+                  (chmod (string-append out "/bin/" script) #o555)))
+              '("qucsdigi" "qucsdigilib" "qucsveri"))
+             #t))
+         (add-after 'install-scripts 'make-wrapper
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (file (string-append out "/bin/qucs-s"))
+                    (qucs (assoc-ref inputs "qucs"))
+                    (qucsator (string-append qucs "/bin/qucsator")))
+               (wrap-program file
+                 `("CPLUS_INCLUDE_PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                    "/include")))
+                 `("PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                    "/bin")))
+                 `("LIBRARY_PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                    "/lib")))
+                 `("QUCSATOR" ":" prefix (,qucsator))
+                 `("QUCSCONV" ":" prefix (,(string-append qucsator "/bin/qucsconv")))
+                 `("ADMSXMLBINDIR" ":" prefix (,(string-append (assoc-ref inputs "adms")
+                                                               "/bin")))
+                 `("ASCOBINDIR" ":" prefix (,(string-append (assoc-ref inputs "asco")
+                                                            "/bin")))
+                 `("QUCS_OCTAVE" ":" prefix (,(string-append (assoc-ref inputs "octave")
+                                                             "/bin/octave"))))
+               (symlink qucsator (string-append out "/bin/qucsator"))
+               #t))))))
+    (native-inputs
+     `(("libtool-native" ,libtool)))
+    (inputs
+     `(("adms" ,adms)
+       ("asco" ,asco)
+       ("coreutils" ,coreutils)
+       ("freehdl" ,freehdl)
+       ("gcc-toolchain" ,gcc-toolchain)
+       ("iverilog" ,iverilog)
+       ("libtool" ,libtool)
+       ("mpi" ,openmpi)
+       ("ngspice" ,ngspice)
+       ("octave" ,octave)
+       ("qt4" ,qt-4)
+       ("qucs" ,qucs)
+       ("sed" ,sed)
+       ("xyce-serial" ,xyce-serial)
+       ("xyce-parallel" ,xyce-parallel)))
+    (home-page "https://ra3xdh.github.io/")
+    (synopsis "Circuit simulator with graphical user interface")
+    (description
+     "Qucs-S is a spin-off of the Qucs cross-platform circuit simulator.
+The S letter indicates SPICE.  The purpose of the Qucs-S subproject is to use
+free SPICE circuit simulation kernels with the Qucs GUI.  It provides the
+simulator backends @code{Qucsator}, @code{ngspice} and @code{Xyce}.")
+    (license license:gpl2+)))
