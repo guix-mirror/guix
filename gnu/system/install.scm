@@ -71,19 +71,6 @@ manual."
   "Return a gexp that makes the store copy-on-write, using TARGET as the
 backing store.  This is useful when TARGET is on a hard disk, whereas the
 current store is on a RAM disk."
-  (define (unionfs read-only read-write mount-point)
-    ;; Make MOUNT-POINT the union of READ-ONLY and READ-WRITE.
-
-    ;; Note: in the command below, READ-WRITE appears before READ-ONLY so that
-    ;; it is considered a "higher-level branch", as per unionfs-fuse(8),
-    ;; thereby allowing files existing on READ-ONLY to be copied over to
-    ;; READ-WRITE.
-    #~(fork+exec-command
-       (list (string-append #$unionfs-fuse "/bin/unionfs")
-             "-o"
-             "cow,allow_other,use_ino,max_files=65536,nonempty"
-             (string-append #$read-write "=RW:" #$read-only "=RO")
-             #$mount-point)))
 
   (define (set-store-permissions directory)
     ;; Set the right perms on DIRECTORY to use it as the store.
@@ -97,23 +84,21 @@ current store is on a RAM disk."
         (mkdir-p tmpdir)
         (mount tmpdir "/tmp" "none" MS_BIND))
 
-      (unless (file-exists? "/.ro-store")
-        (mkdir "/.ro-store")
-        (mount #$(%store-prefix) "/.ro-store" "none"
-               (logior MS_BIND MS_RDONLY)))
-
-      (let ((rw-dir (string-append target #$%backing-directory)))
+      (let* ((rw-dir (string-append target #$%backing-directory))
+             (work-dir (string-append rw-dir "/../.overlayfs-workdir")))
         (mkdir-p rw-dir)
+        (mkdir-p work-dir)
         (mkdir-p "/.rw-store")
         #$(set-store-permissions #~rw-dir)
         #$(set-store-permissions "/.rw-store")
 
-        ;; Mount the union, then atomically make it the store.
-        (and #$(unionfs "/.ro-store" #~rw-dir "/.rw-store")
-             (begin
-               (sleep 1) ;XXX: wait for unionfs to be ready
-               (mount "/.rw-store" #$(%store-prefix) "" MS_MOVE)
-               (rmdir "/.rw-store"))))))
+        ;; Mount the overlay, then atomically make it the store.
+        (mount "none" "/.rw-store" "overlay" 0
+               (string-append "lowerdir=" #$(%store-prefix) ","
+                              "upperdir=" rw-dir ","
+                              "workdir=" work-dir))
+        (mount "/.rw-store" #$(%store-prefix) "" MS_MOVE)
+        (rmdir "/.rw-store"))))
 
 (define cow-store-service-type
   (shepherd-service-type
@@ -278,7 +263,7 @@ You have been warned.  Thanks for being so brave.
                     (allow-empty-passwords? #f)
                     (password-authentication? #t)))
 
-          ;; Since this is running on a USB stick with a unionfs as the root
+          ;; Since this is running on a USB stick with a overlayfs as the root
           ;; file system, use an appropriate cache configuration.
           (nscd-service (nscd-configuration
                          (caches %nscd-minimal-caches)))
@@ -317,10 +302,12 @@ Use Alt-F2 for documentation.
               (title 'label)
               (type "ext4"))
 
-            ;; Make /tmp a tmpfs instead of keeping the unionfs.  This is
-            ;; because FUSE creates '.fuse_hiddenXYZ' files for each open file,
-            ;; and this confuses Guix's test suite, for instance.  See
-            ;; <http://bugs.gnu.org/23056>.
+            ;; Make /tmp a tmpfs instead of keeping the overlayfs.  This
+            ;; originally was used for unionfs because FUSE creates
+            ;; '.fuse_hiddenXYZ' files for each open file, and this confuses
+            ;; Guix's test suite, for instance (see
+            ;; <http://bugs.gnu.org/23056>).  We keep this for overlayfs to be
+            ;; on the save side.
             (file-system
               (mount-point "/tmp")
               (device "none")
