@@ -116,6 +116,13 @@ dictionaries, including personal ones.")
     (home-page "http://aspell.net/")))
 
 
+(define-public aspell-dict-ca
+  (aspell-dictionary "ca" "Catalan"
+                     #:version "2.1.5-1"
+                     #:sha256
+                     (base32
+                      "1fb5y5kgvk25nlsfvc8cai978hg66x3pbp9py56pldc7vxzf9npb")))
+
 (define-public aspell-dict-de
   (aspell-dictionary "de" "German"
                      #:version "20030222-1"
