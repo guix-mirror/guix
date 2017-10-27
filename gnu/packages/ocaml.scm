@@ -3628,6 +3628,48 @@ to write text editors, edition widgets, readlines, etc.  You just have to
 connect an engine to your inputs and rendering functions to get an editor.")
     (license license:bsd-3)))
 
+(define-public ocaml-lambda-term
+  (package
+    (name "ocaml-lambda-term")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/diml/lambda-term/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10lx1jqgmmfwwlv64di4a8nia9l53v7179z70n9fx6aq5l7r8nba"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; currently, ocaml-lwt is an old version of lwt from before lwt.react
+         ;; was split into a separate module called lwt_react
+         (add-before 'build 'use-old-lwt-react-name
+           (lambda _
+             (substitute* "src/jbuild" (("lwt_react") "lwt.react"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "jbuilder" "install" "--prefix" out))))))))
+    (native-inputs
+     `(("jbuilder" ,ocaml-jbuilder)))
+    (propagated-inputs
+     `(("lwt" ,ocaml-lwt)
+       ("zed" ,ocaml-zed)))
+    (home-page "https://github.com/diml/lambda-term")
+    (synopsis "Terminal manipulation library for OCaml")
+    (description "Lambda-Term is a cross-platform library for manipulating the
+terminal.  It provides an abstraction for keys, mouse events, colors, as well as
+a set of widgets to write curses-like applications.  The main objective of
+Lambda-Term is to provide a higher level functional interface to terminal
+manipulation than, for example, ncurses, by providing a native OCaml interface
+instead of bindings to a C library.")
+    (license license:bsd-3)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
