@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 (define-module (guix import github)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (json)
   #:use-module (guix utils)
@@ -182,7 +184,14 @@ https://github.com/settings/tokens"))
 
 (define (latest-release pkg)
   "Return an <upstream-source> for the latest release of PKG."
-  (let* ((source-uri (origin-uri (package-source pkg)))
+  (define (origin-github-uri origin)
+    (match (origin-uri origin)
+      ((? string? url)
+       url)                                       ;surely a github.com URL
+      ((urls ...)
+       (find (cut string-contains <> "github.com") urls))))
+
+  (let* ((source-uri (origin-github-uri (package-source pkg)))
          (name (package-name pkg))
          (newest-version (latest-released-version source-uri name)))
     (if newest-version
