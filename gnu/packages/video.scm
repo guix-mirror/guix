@@ -2529,6 +2529,8 @@ tools for styling them, including a built-in real-time video preview.")
         (base32
          "1kikkn971a14zzm7svi7190ldc14fjai0xyhpbcmp48s750sraji"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("LIBS=-lm")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("doxygen" ,doxygen)))
