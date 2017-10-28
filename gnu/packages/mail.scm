@@ -1430,7 +1430,7 @@ header.")
 (define-public perl-email-sender
   (package
     (name "perl-email-sender")
-    (version "1.300028")
+    (version "1.300031")
     (source
      (origin
        (method url-fetch)
@@ -1438,7 +1438,7 @@ header.")
                            "Email-Sender-" version ".tar.gz"))
        (sha256
         (base32
-         "0c5dv1x9856nryj5mcbgb67a4irmadz80g0qnf4van3bd8wbj72a"))))
+         "052g0slw3h2lzn93j71fi47nfawww2aph4jhr3c860ji70lkf4n4"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
