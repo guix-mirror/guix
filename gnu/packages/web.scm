@@ -3399,7 +3399,7 @@ testing of Catalyst applications without needing to start up a web server.")
 (define-public perl-test-www-mechanize-psgi
   (package
     (name "perl-test-www-mechanize-psgi")
-    (version "0.35")
+    (version "0.37")
     (source
      (origin
        (method url-fetch)
@@ -3407,7 +3407,7 @@ testing of Catalyst applications without needing to start up a web server.")
                            "Test-WWW-Mechanize-PSGI-" version ".tar.gz"))
        (sha256
         (base32
-         "1hih8s49zf38bisvhnhzrrj0zwyiivkrbs7nmmdqm1qqy27wv7pc"))))
+         "0c9a9w0d2whadnrich7f09w37fgq5hws4gq04zgz4jsdjcvr3qv2"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-pod" ,perl-test-pod)))
