@@ -3447,7 +3447,7 @@ the installation.")
 (define-public perl-file-sharedir-dist
   (package
     (name "perl-file-sharedir-dist")
-    (version "0.04")
+    (version "0.05")
     (source
      (origin
        (method url-fetch)
@@ -3455,7 +3455,7 @@ the installation.")
                            "File-ShareDir-Dist-" version ".tar.gz"))
        (sha256
         (base32
-         "028vnjw3fdmwk540w3b07cmr93ap0s13ni2b4c7iv56mgyy6gfc1"))))
+         "1xkmrckp1qfi9ik098n2vz0r8g7wfwp2y05zjd100w6wcqwfzcpn"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/File-ShareDir-Dist/")
     (synopsis "Locate per-dist shared files")
