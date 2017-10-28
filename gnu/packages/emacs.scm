@@ -1698,7 +1698,7 @@ Stack Overflow, Super User, and other StackExchange sites.")
 (define-public emacs-f
   (package
     (name "emacs-f")
-    (version "0.18.2")
+    (version "0.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1707,7 +1707,7 @@ Stack Overflow, Super User, and other StackExchange sites.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1926shh2ymdsgz05c6q181mzzz1rci99ch568j151xi865jinyg5"))))
+                "05195n80ywa68qykxn7dza6qd59rhakvlzhaa9l6mcpmjf9l9grs"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
