@@ -546,7 +546,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
     ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
      `(("xapian" ,xapian)
-       ("guile" ,guile-2.0)
+       ("guile" ,guile-2.2)
        ("glib" ,glib)
        ("gmime" ,gmime)
        ("tzdata" ,tzdata)))             ;for mu/test/test-mu-query.c
@@ -565,7 +565,12 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
            ;; the lispdir anyway, so we have to modify "configure.ac".
            (lambda _
              (substitute* "configure"
-               (("^ +lispdir=\"\\$\\{lispdir\\}/mu4e/\".*") ""))
+               (("^ +lispdir=\"\\$\\{lispdir\\}/mu4e/\".*") "")
+               ;; Use latest Guile
+               (("guile-2.0") "guile-2.2"))
+             (substitute* '("guile/Makefile.in"
+                            "guile/mu/Makefile.in")
+               (("share/guile/site/2.0/") "share/guile/site/2.2/"))
              #t))
          (add-before 'check 'check-tz-setup
            (lambda* (#:key inputs #:allow-other-keys)
