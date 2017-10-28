@@ -94,7 +94,7 @@
                                ('base32
                                 (? string? hash)))))
                    ('build-system 'perl-build-system)
-                   ('inputs
+                   ('propagated-inputs
                     ('quasiquote
                      (("perl-test-script" ('unquote 'perl-test-script)))))
                    ('home-page "http://search.cpan.org/dist/Foo-Bar")

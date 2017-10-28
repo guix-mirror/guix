@@ -242,7 +242,7 @@ META."
                        ;; have not yet had a need for cross-compiled perl
                        ;; modules, however, so we leave it out.
                        (convert-inputs '("configure" "build" "test")))
-       ,@(maybe-inputs 'inputs
+       ,@(maybe-inputs 'propagated-inputs
                        (convert-inputs '("runtime")))
        (home-page ,(string-append "http://search.cpan.org/dist/" name))
        (synopsis ,(assoc-ref meta "abstract"))
