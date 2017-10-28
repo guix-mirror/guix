@@ -572,6 +572,13 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                             "guile/mu/Makefile.in")
                (("share/guile/site/2.0/") "share/guile/site/2.2/"))
              #t))
+         (add-before 'install 'fix-ffi
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "guile/mu.scm"
+               (("\"libguile-mu\"")
+                (format #f "\"~a/lib/libguile-mu\""
+                        (assoc-ref outputs "out"))))
+             #t))
          (add-before 'check 'check-tz-setup
            (lambda* (#:key inputs #:allow-other-keys)
              ;; For mu/test/test-mu-query.c
