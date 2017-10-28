@@ -1462,7 +1462,7 @@ Email::Send library.")
 (define-public perl-email-simple
   (package
     (name "perl-email-simple")
-    (version "2.213")
+    (version "2.214")
     (source
      (origin
        (method url-fetch)
@@ -1470,7 +1470,7 @@ Email::Send library.")
                            "Email-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "1ibwsng63gvqqc6r2135mjwfdzazxkb1x8q7f87wqcbjcjfpmffd"))))
+         "14kb86hi0m0bqc7kxpm4x5kvfsyj2x86gggbvpxhx9hy8hvjpw5j"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-date-format" ,perl-email-date-format)))
