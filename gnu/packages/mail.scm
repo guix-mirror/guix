@@ -323,7 +323,6 @@ operating systems.")
              "--without-ssl"
              "--with-sasl"
 
-             "--with-regex"
              "--enable-smime"
              "--enable-notmuch"
              "--with-idn"
@@ -332,8 +331,6 @@ operating systems.")
              ;; whether the path exists, which it does not
              ;; in the chroot. The workaround is this.
              "--with-mailpath=/var/mail"
-
-             "--with-external-dotlock"
 
              (string-append "--with-curses="
                             (assoc-ref %build-inputs "ncurses")))
