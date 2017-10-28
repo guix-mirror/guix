@@ -244,7 +244,7 @@ META."
                        (convert-inputs '("configure" "build" "test")))
        ,@(maybe-inputs 'propagated-inputs
                        (convert-inputs '("runtime")))
-       (home-page ,(string-append "http://search.cpan.org/dist/" name))
+       (home-page ,(string-append "http://search.cpan.org/dist/" name "/"))
        (synopsis ,(assoc-ref meta "abstract"))
        (description fill-in-yourself!)
        (license ,(string->license (assoc-ref meta "license"))))))
