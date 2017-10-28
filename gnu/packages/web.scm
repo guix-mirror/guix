@@ -3331,7 +3331,7 @@ either mocked HTTP or a locally spawned server.")
 (define-public perl-test-www-mechanize
   (package
     (name "perl-test-www-mechanize")
-    (version "1.44")
+    (version "1.48")
     (source
      (origin
        (method url-fetch)
@@ -3339,7 +3339,7 @@ either mocked HTTP or a locally spawned server.")
                            "Test-WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "062pj242vsc73bw11jqpap92ax9wzc9f2m4xhyp1wzrwkfchpl2q"))))
+         "1d11fx9155d5v17d5w7q3kj37b01l8yj2yb0g6b0z1vh938rrlcr"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
