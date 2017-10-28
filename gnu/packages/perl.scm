@@ -8726,7 +8726,7 @@ algorism to indicate multiplication by 1000.")
 (define-public perl-text-table
   (package
     (name "perl-text-table")
-    (version "1.130")
+    (version "1.133")
     (source
      (origin
        (method url-fetch)
@@ -8734,7 +8734,7 @@ algorism to indicate multiplication by 1000.")
                            "Text-Table-" version ".tar.gz"))
        (sha256
         (base32
-         "02c8v38k639r23dgxwgvsy4myjjzvgdb238kpiffsiz25ab3xp5j"))))
+         "04kh5x5inq183rdg221wlqaaqi1ipyj588mxsslik6nhc14f17nd"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
