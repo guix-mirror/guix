@@ -1630,7 +1630,7 @@ allows easily move between them.")
 (define-public emacs-s
   (package
     (name "emacs-s")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1639,7 +1639,7 @@ allows easily move between them.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0krq5nz3llfx0vwdqn18pmq777ja0fac185w0h9qymppb1j1hvc2"))))
+                "0xbl75863pcm806zg0x1lw7qznzjq2c8320k8js7apyag8q4srvh"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
