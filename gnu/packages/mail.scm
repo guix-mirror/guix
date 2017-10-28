@@ -1389,7 +1389,7 @@ message.  Headers are decoded from MIME encoding.")
 (define-public perl-email-mime-contenttype
   (package
     (name "perl-email-mime-contenttype")
-    (version "1.018")
+    (version "1.022")
     (source
      (origin
        (method url-fetch)
@@ -1397,7 +1397,7 @@ message.  Headers are decoded from MIME encoding.")
                            "Email-MIME-ContentType-" version ".tar.gz"))
        (sha256
         (base32
-         "1y8hpwm7p5a9y2azy0cgvlv2i2d0nj66ajfa0fj51wdq4w9cs23m"))))
+         "042kxhs3bp1ab9z0mbr1wy21ld4lxd6v2a2mmrashqnsn2075fws"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
