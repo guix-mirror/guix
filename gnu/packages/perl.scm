@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
@@ -7134,7 +7134,36 @@ statements: @code{switch} and @code{case}.")
                                   "Sys-CPU-" version ".tar.gz"))
               (sha256
                (base32
-                "1r6976bs86j7zp51m5vh42xlyah951jgdlkimv202413kjvqc2i5"))))
+                "1r6976bs86j7zp51m5vh42xlyah951jgdlkimv202413kjvqc2i5"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; The contents of /proc/cpuinfo can differ and confuse the
+                  ;; cpu_clock and cpu_type methods, so we replace the test
+                  ;; with one that marks cpu_clock and cpu_type as TODO.
+                  ;; Borrowed from Debian.
+                  (call-with-output-file "t/Sys-CPU.t"
+                    (lambda (port)
+                      (format port "#!/usr/bin/perl
+
+use Test::More tests => 4;
+
+BEGIN { use_ok('Sys::CPU'); }
+
+$number = &Sys::CPU::cpu_count();
+ok( defined($number), \"CPU Count: $number\" );
+
+TODO: {
+    local $TODO = \"/proc/cpuinfo doesn't always report 'cpu MHz' or 'clock' or 'bogomips' ...\";
+    $speed = &Sys::CPU::cpu_clock();
+    ok( defined($speed), \"CPU Speed: $speed\" );
+}
+
+TODO: {
+    local $TODO = \"/proc/cpuinfo doesn't always report 'model name' or 'machine' ...\";
+    $type = &Sys::CPU::cpu_type();
+    ok( defined($type), \"CPU Type:  $type\" );
+}~%")))))))
     (build-system perl-build-system)
     (synopsis "Perl extension for getting CPU information")
     (description
