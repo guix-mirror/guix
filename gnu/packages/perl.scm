@@ -584,7 +584,7 @@ Standard Serial Numbers.")
 (define-public perl-business-ismn
   (package
     (name "perl-business-ismn")
-    (version "1.13")
+    (version "1.131")
     (source
      (origin
        (method url-fetch)
@@ -592,7 +592,7 @@ Standard Serial Numbers.")
                            "Business-ISMN-" version ".tar.gz"))
        (sha256
         (base32
-         "0cm1v75axg4gp6cnbyavmnqqjscsxh7nc60vcbw34rqivvf9idc9"))))
+         "1xyc7x4c4xl930rz7grs1l52f1vg4rbiv0c6xlxdsim8qsh7k94g"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-tie-cycle" ,perl-tie-cycle)))
