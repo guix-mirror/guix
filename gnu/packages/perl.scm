@@ -4252,7 +4252,7 @@ logging mechanism.")
 (define-public perl-log-log4perl
   (package
     (name "perl-log-log4perl")
-    (version "1.47")
+    (version "1.49")
     (source
      (origin
        (method url-fetch)
@@ -4262,7 +4262,7 @@ logging mechanism.")
              ".tar.gz"))
        (sha256
         (base32
-         "0vxraq9navx5mgf8y8g6l5rbl3dv2ml8bishka5m69hj07nxs0ch"))))
+         "05ifhx1lmv91dbs9ck2zbjrkhh8z9g32gi6gxdmwnilia5zihfdp"))))
     (build-system perl-build-system)
     (home-page
      "http://search.cpan.org/dist/Log-Log4perl/")
