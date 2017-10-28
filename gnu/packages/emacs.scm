@@ -3568,7 +3568,7 @@ If you want to mark a folder manually as a project just create an empty
 (define-public emacs-elfeed
   (package
     (name "emacs-elfeed")
-    (version "2.1.1")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/skeeto/elfeed/archive/"
@@ -3576,7 +3576,7 @@ If you want to mark a folder manually as a project just create an empty
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1wlwc8fbkg6w1c8p856ikc20xm72f51clnzz419p0g8cavy27npw"))))
+                "0d7i93l3b0ck3iad9ddqp7sqa8w16hnamrby8bwvl316rqk4lzlf"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
