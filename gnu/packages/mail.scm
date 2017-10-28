@@ -1361,7 +1361,7 @@ identify a message uniquely.")
 (define-public perl-email-mime
   (package
     (name "perl-email-mime")
-    (version "1.940")
+    (version "1.946")
     (source
      (origin
        (method url-fetch)
@@ -1369,7 +1369,7 @@ identify a message uniquely.")
                            "Email-MIME-" version ".tar.gz"))
        (sha256
         (base32
-         "0pnxbr16cn5qy96xqhp9zmd94ashc9ivqh10qbgbc3f637a0mfir"))))
+         "0z1k3i0lzp2k421gc8f3wq0jbqflkbw2xqd2k7n7pmv56417kvk8"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-address" ,perl-email-address)
@@ -1377,7 +1377,8 @@ identify a message uniquely.")
        ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
        ("perl-email-mime-encodings" ,perl-email-mime-encodings)
        ("perl-email-simple" ,perl-email-simple)
-       ("perl-mime-types" ,perl-mime-types)))
+       ("perl-mime-types" ,perl-mime-types)
+       ("perl-module-runtime" ,perl-module-runtime)))
     (home-page "http://search.cpan.org/dist/Email-MIME")
     (synopsis "MIME message handling")
     (description "Email::MIME is an extension of the Email::Simple module, to
