@@ -275,7 +275,6 @@ operating systems.")
 
 (define-public neomutt
   (package
-    (inherit mutt)
     (name "neomutt")
     (version "20171027")
     (source
@@ -286,6 +285,7 @@ operating systems.")
        (sha256
         (base32
          "10z523cy3s6syh0mwpsncl87wrvyzsk99y7nzicwvx6y3hmdw01d"))))
+    (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
@@ -346,7 +346,8 @@ operating systems.")
     (synopsis "Command-line mail reader based on Mutt")
     (description
      "NeoMutt is a command-line mail reader which is based on mutt.
-It adds a large amount of new and improved features to mutt.")))
+It adds a large amount of new and improved features to mutt.")
+    (license gpl2+)))
 
 (define-public gmime
   (package
