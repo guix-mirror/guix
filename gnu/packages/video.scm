@@ -599,6 +599,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("frei0r-plugins" ,frei0r-plugins)
        ("gnutls" ,gnutls)
        ("opus" ,opus)
        ("ladspa" ,ladspa)
@@ -638,7 +639,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ;; possible additional inputs:
        ;;   --enable-avisynth        enable reading of AviSynth script
        ;;                            files [no]
-       ;;   --enable-frei0r          enable frei0r video filtering
        ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
        ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
        ;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
@@ -686,6 +686,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        '("--enable-avresample"
          "--enable-gpl" ; enable optional gpl licensed parts
          "--enable-shared"
+         "--enable-frei0r"
          "--enable-fontconfig"
          "--enable-gnutls"
          "--enable-ladspa"
