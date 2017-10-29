@@ -7622,6 +7622,28 @@ namespace::autoclean or namespace::clean and are therefore available to be
 called as methods, which usually isn't want you want.")
     (license (package-license perl))))
 
+(define-public perl-test-command
+  (package
+    (name "perl-test-command")
+    (version "0.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/D/DA/DANBOO/Test-Command-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0cwm3c4d49mdrbm6vgh78b3x8mk730l0zg8i7xb9z8bkx9pzr8r8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page "https://github.com/danboo/perl-test-command")
+    (synopsis "Test routines for external commands")
+    (description
+     "This module provides routines for testing the exit status, standard
+output and standard error of external commands.")
+    (license perl-license)))
+
 (define-public perl-test-cpan-meta
   (package
     (name "perl-test-cpan-meta")
