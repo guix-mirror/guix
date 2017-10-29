@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -168,6 +169,33 @@ root with an empty password."
                                                (cut display "hello" <>))
                  (call-with-remote-input-file sftp-session witness
                                               read)))))
+
+          ;; Connect to the guest over SSH.  Make sure we can run commands
+          ;; from the system profile.
+          (test-equal "run executables from system profile"
+            #t
+            (call-with-connected-session/auth
+             (lambda (session)
+               (let ((channel (make-channel session)))
+                 (channel-open-session channel)
+                 (channel-request-exec
+                  channel
+                  (string-append
+                   "mkdir -p /root/.guix-profile/bin && "
+                   "touch /root/.guix-profile/bin/path-witness && "
+                   "chmod 755 /root/.guix-profile/bin/path-witness"))
+                 (zero? (channel-get-exit-status channel))))))
+
+          ;; Connect to the guest over SSH.  Make sure we can run commands
+          ;; from the user profile.
+          (test-equal "run executable from user profile"
+            #t
+            (call-with-connected-session/auth
+             (lambda (session)
+               (let ((channel (make-channel session)))
+                 (channel-open-session channel)
+                 (channel-request-exec channel "path-witness")
+                 (zero? (channel-get-exit-status channel))))))
 
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
