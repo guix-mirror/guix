@@ -44,6 +44,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -66,9 +67,12 @@
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
-       #:tests? #f ;FIXME: Requires 'perl-test-command'.
+       #:test-target "test"
        #:make-flags
        (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("perl-test-command" ,perl-test-command)))
     (inputs `(("imlib2" ,imlib2)
               ("curl" ,curl)
               ("libpng" ,libpng)
