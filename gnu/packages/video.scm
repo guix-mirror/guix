@@ -2548,3 +2548,52 @@ In addition, it handles the sometimes ugly task of converting between all
 these formats and provides some elementary operations (copying, scaling,
 alpha blending etc).")
     (license license:gpl3)))
+
+(define-public frei0r-plugins
+  (package
+    (name "frei0r-plugins")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://files.dyne.org/frei0r/"
+                           "frei0r-plugins-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pji26fpd0dqrx1akyhqi6729s394irl73dacnyxk58ijqq4dhp0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autotools
+           (lambda _
+             (zero? (system* "sh" "autogen.sh")))))))
+    ;; TODO: opencv for additional face detection filters
+    (inputs
+     `(("gavl" ,gavl)
+       ("cairo" ,cairo)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)))
+    (home-page "https://www.dyne.org/software/frei0r/")
+    (synopsis "Minimalistic plugin API for video effects")
+    (description
+     "Frei0r is a minimalistic plugin API for video effects.
+The main emphasis is on simplicity for an API that will round up
+the most common video effects into simple filters, sources and
+mixers that can be controlled by parameters.  Frei0r wants to
+provide a way to share these simple effects between many
+applications, avoiding their reimplementation by different projects.
+It counts more than 100 plugins.")
+    (license (list license:gpl2+
+                   ;; The following files are licensed as LGPL2.1+:
+                   ;; src/generator/ising0r/ising0r.c
+                   ;; src/generator/onecol0r/onecol0r.cpp
+                   ;; src/generator/nois0r/nois0r.cpp
+                   ;; src/generator/lissajous0r/lissajous0r.cpp
+                   ;; src/filter/ndvi/gradientlut.hpp
+                   ;; src/filter/ndvi/ndvi.cpp
+                   ;; src/filter/facedetect/facedetect.cpp
+                   license:lgpl2.1+))))
