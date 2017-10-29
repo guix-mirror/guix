@@ -219,7 +219,7 @@ packages defined in installation-os."
                        (image  (system-disk-image
                                 (operating-system-with-gc-roots
                                  os (list target))
-                                #:disk-image-size (* 1500 MiB)
+                                #:disk-image-size 'guess
                                 #:file-system-type
                                 installation-disk-image-file-system-type)))
     (define install
