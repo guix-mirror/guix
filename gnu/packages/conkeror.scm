@@ -29,7 +29,7 @@
 (define-public conkeror
   (package
     (name "conkeror")
-    (version "1.0.3")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -38,7 +38,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ybmincxw3msnrfpby9gnckbq2x94c7fra2m66zham54cjc7mav3"))))
+                "0jz216mjwis7f03j98s4wkcrrq2j3f41fb2y47a5qszc340zhdzv"))))
     (build-system gnu-build-system)
     (inputs `(("icecat" ,icecat)))
     (arguments
