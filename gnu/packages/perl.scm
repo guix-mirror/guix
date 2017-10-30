@@ -3130,14 +3130,14 @@ self-contained C libraries.  This module main goal is to help in that task.")
 (define-public perl-extutils-pkgconfig
   (package
     (name "perl-extutils-pkgconfig")
-    (version "1.15")
+    (version "1.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/"
                                   "ExtUtils-PkgConfig-" version ".tar.gz"))
               (sha256
                (base32
-                "1cxh6w8vmyqmhl6afys2q6z6jkp1m6zvacpk70196zmk48p1kcv9"))))
+                "0vhwh0731rhh1sswmvagq0myn754dnkab8sizh6d3n6pjpcwxsmv"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("pkg-config" ,pkg-config)))
