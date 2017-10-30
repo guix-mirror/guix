@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,7 +82,17 @@ the underlying security implementation.")
             (uri (string-append "mirror://gnu/gsasl/gsasl-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1rci64cxvcfr8xcjpqc4inpfq7aw4snnsbf5xz7d30nhvv8n40ii"))))
+                     "1rci64cxvcfr8xcjpqc4inpfq7aw4snnsbf5xz7d30nhvv8n40ii"))
+            (modules '((guix build utils)))
+            (snippet
+             '(begin
+                ;; The gnulib test-lock test is prone to writer starvation
+                ;; with our glibc@2.25, which prefers readers, so disable it.
+                ;; The gnulib commit b20e8afb0b2 should fix this once
+                ;; incorporated here.
+                (substitute* "tests/Makefile.in"
+                  (("test-lock\\$\\(EXEEXT\\) ") ""))
+                #t))))
    (build-system gnu-build-system)
    (inputs `(("libidn" ,libidn)
              ("libntlm" ,libntlm)

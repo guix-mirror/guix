@@ -615,7 +615,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/fcgi-2.4.0-poll.patch			\
   %D%/packages/patches/file-CVE-2017-1000249.patch		\
   %D%/packages/patches/findutils-localstatedir.patch		\
-  %D%/packages/patches/findutils-gnulib-multi-core.patch	\
   %D%/packages/patches/findutils-test-xargs.patch		\
   %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/fltk-shared-lib-defines.patch		\
@@ -647,8 +646,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/gemma-intel-compat.patch			\
   %D%/packages/patches/geoclue-config.patch			\
-  %D%/packages/patches/gettext-multi-core.patch          	\
-  %D%/packages/patches/gettext-gnulib-multi-core.patch          \
   %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
@@ -811,7 +808,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtirpc-CVE-2017-8779.patch		\
   %D%/packages/patches/libtorrent-rasterbar-boost-compat.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
-  %D%/packages/patches/libunistring-gnulib-multi-core.patch	\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libusb-for-axoloti.patch			\
   %D%/packages/patches/libvirt-CVE-2017-1000256.patch		\

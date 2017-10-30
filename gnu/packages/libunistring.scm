@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,10 +41,16 @@
             (sha256
              (base32
               "15z76qrmrvkc3c6hfq2lzzqysgd21s682f2smycfab5g598n8drf"))
-             ;; test-lock has performance issues on multi-core machines,
-             ;; it hangs or takes a long time to complete.
-             ;; This is a commit from gnulib to fix this issue.
-            (patches (search-patches "libunistring-gnulib-multi-core.patch"))))
+            (modules '((guix build utils)))
+            (snippet
+             '(begin
+                ;; The gnulib test-lock test is prone to writer starvation
+                ;; with our glibc@2.25, which prefers readers, so disable it.
+                ;; The gnulib commit b20e8afb0b2 should fix this once
+                ;; incorporated here.
+                (substitute* "tests/Makefile.in"
+                  (("test-lock\\$\\(EXEEXT\\) ") ""))
+                #t))))
    (propagated-inputs (libiconv-if-needed))
    (build-system gnu-build-system)
    (arguments

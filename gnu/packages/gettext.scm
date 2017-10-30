@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,12 +48,18 @@
              (sha256
               (base32
                "0hsw28f9q9xaggjlsdp2qmbp2rbd1mp0njzan2ld9kiqwkq2m57z"))
-             ;; test-lock has performance issues on multi-core machines,
-             ;; it hangs or takes a long time to complete.
-             ;; There is one commit in gettext and one commit
-             ;; in gettext's embedded gnulib to fix this issue.
-             (patches (search-patches "gettext-multi-core.patch"
-                                      "gettext-gnulib-multi-core.patch"))))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                ;; The gnulib test-lock test is prone to writer starvation
+                ;; with our glibc@2.25, which prefers readers, so disable it.
+                ;; The gnulib commit b20e8afb0b2 should fix this once
+                ;; incorporated here.
+                 (substitute* "gettext-runtime/tests/Makefile.in"
+                   (("TESTS = test-lock\\$\\(EXEEXT\\)") "TESTS ="))
+                 (substitute* "gettext-tools/gnulib-tests/Makefile.in"
+                  (("test-lock\\$\\(EXEEXT\\) ") ""))
+                 #t))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of HTML

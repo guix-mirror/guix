@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -262,11 +263,17 @@ interactive means to merge two files.")
               "178nn4dl7wbcw499czikirnkniwnx36argdnqgz4ik9i6zvwkm6y"))
             (patches (search-patches
                       "findutils-localstatedir.patch"
-                      "findutils-test-xargs.patch"
-                      ;; test-lock has performance issues on multi-core
-                      ;; machines, it hangs or takes a long time to complete.
-                      ;; This is a commit from gnulib to fix this issue.
-                      "findutils-gnulib-multi-core.patch"))))
+                      "findutils-test-xargs.patch"))
+            (modules '((guix build utils)))
+            (snippet
+             '(begin
+                ;; The gnulib test-lock test is prone to writer starvation
+                ;; with our glibc@2.25, which prefers readers, so disable it.
+                ;; The gnulib commit b20e8afb0b2 should fix this once
+                ;; incorporated here.
+                (substitute* "tests/Makefile.in"
+                  (("test-lock\\$\\(EXEEXT\\) ") ""))
+                #t))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags (list

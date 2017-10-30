@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,17 @@
                                 ".tar.gz"))
             (sha256
              (base32
-              "068fjg2arlppjqqpzd714n1lf6gxkpac9v5yyvp1qwmv6nvam9s4"))))
+              "068fjg2arlppjqqpzd714n1lf6gxkpac9v5yyvp1qwmv6nvam9s4"))
+            (modules '((guix build utils)))
+            (snippet
+             '(begin
+                ;; The gnulib test-lock test is prone to writer starvation
+                ;; with our glibc@2.25, which prefers readers, so disable it.
+                ;; The gnulib commit b20e8afb0b2 should fix this once
+                ;; incorporated here.
+                (substitute* "lib/gltests/Makefile.in"
+                  (("test-lock\\$\\(EXEEXT\\) ") ""))
+                #t))))
    (build-system gnu-build-system)
 ;; FIXME: No Java and C# libraries are currently built.
    (synopsis "Internationalized string processing library")

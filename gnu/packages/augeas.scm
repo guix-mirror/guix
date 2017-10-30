@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,17 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1yf93fqwav1zsl8dpyfkf0g11w05mmfckqy6qsjy5zkklnspbkv5"))))
+                "1yf93fqwav1zsl8dpyfkf0g11w05mmfckqy6qsjy5zkklnspbkv5"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; The gnulib test-lock test is prone to writer starvation
+                  ;; with our glibc@2.25, which prefers readers, so disable it.
+                  ;; The gnulib commit b20e8afb0b2 should fix this once
+                  ;; incorporated here.
+                  (substitute* "gnulib/tests/Makefile.in"
+                    (("test-lock\\$\\(EXEEXT\\) ") ""))
+                  #t))))
     (build-system gnu-build-system)
     ;; Marked as "required" in augeas.pc
     (propagated-inputs
