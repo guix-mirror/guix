@@ -1,0 +1,49 @@
+Add missing dependencies, see <https://phabricator.kde.org/D8577>.
+
+diff -r -U5 ktexteditor-5.39.0.orig/autotests/CMakeLists.txt ktexteditor-5.39.0/autotests/CMakeLists.txt
+--- ktexteditor-5.39.0.orig/autotests/CMakeLists.txt	2017-10-31 16:28:45.018163060 +0100
++++ ktexteditor-5.39.0/autotests/CMakeLists.txt	2017-10-31 16:28:16.439559888 +0100
+@@ -37,10 +37,11 @@
+ set (KTEXTEDITOR_TEST_LINK_LIBS KF5TextEditor
+   KF5::I18n
+   KF5::IconThemes
+   KF5::GuiAddons
+   Qt5::Qml
++  Qt5::Script
+ )
+ 
+ include(ECMMarkAsTest)
+ 
+ # test executable for encoding
+diff -r -U5 ktexteditor-5.39.0.orig/CMakeLists.txt ktexteditor-5.39.0/CMakeLists.txt
+--- ktexteditor-5.39.0.orig/CMakeLists.txt	2017-10-31 16:28:38.578252490 +0100
++++ ktexteditor-5.39.0/CMakeLists.txt	2017-10-31 16:30:24.656778737 +0100
+@@ -38,11 +38,12 @@
+ 
+ # Dependencies
+ set(REQUIRED_QT_VERSION 5.7.0)
+ 
+ # Required Qt5 components to build this framework
+-find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED Core Widgets Qml PrintSupport Xml XmlPatterns)
++find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED Core Widgets Qml
++  Script PrintSupport Xml XmlPatterns)
+ 
+ find_package(KF5Archive ${KF5_DEP_VERSION} REQUIRED)
+ find_package(KF5Config ${KF5_DEP_VERSION} REQUIRED)
+ find_package(KF5GuiAddons ${KF5_DEP_VERSION} REQUIRED)
+ find_package(KF5I18n ${KF5_DEP_VERSION} REQUIRED)
+diff -r -U5 ktexteditor-5.39.0/autotests/src/vimode/CMakeLists.txt ktexteditor-5.39.0.new/autotests/src/vimode/CMakeLists.txt
+--- ktexteditor-5.39.0/autotests/src/vimode/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
++++ ktexteditor-5.39.0.new/autotests/src/vimode/CMakeLists.txt	2017-10-31 16:58:29.909003953 +0100
+@@ -4,10 +4,11 @@
+   ${CMAKE_SOURCE_DIR}/src/vimode
+ )
+ 
+ set (VIMODE_TEST_LINK_LIBS KF5TextEditor
+   KF5::I18n
++  Qt5::Qml
+   Qt5::Test
+ )
+ 
+ macro(vimode_unit_test)
+   ecm_add_test(${ARGN} TEST_NAME "vimode_${ARGV0}"
