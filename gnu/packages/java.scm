@@ -6567,3 +6567,57 @@ to use.")
     (description "Pure Java implementation of the NaCl: Networking and
 Cryptography library.")
     (license license:mpl2.0)))
+
+(define-public java-mvel2
+  (package
+    (name "java-mvel2")
+    (version "2.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mvel/mvel/archive/mvel2-"
+                                  version ".Final.tar.gz"))
+              (sha256
+               (base32
+                "01ph5s9gm16l2qz58lg21w6fna7xmmrj7f9bzqr1jim7h9557d3z"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "mvel2.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list "**/Abstract*.java"
+             ;; Base class with no tests
+             "**/MVELThreadTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/mvel2")
+                 (lambda _
+                   (display
+                     (string-append
+                       "#!" (which "bash") "\n"
+                       "if [ \"$#\" -ne \"2\" ]; then\n"
+                       "echo 'Usage: mvel2 <script> <out.dir>'\n"
+                       "exit\n"
+                       "fi\n"
+                       "java -Dout.dir=$2 -cp " (getenv "CLASSPATH")
+                       ":" (assoc-ref outputs "out") "/share/java/mvel2.jar"
+                       " org.mvel2.sh.Main $1"))))
+               (chmod (string-append bin "/mvel2") #o755))
+             #t)))))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://github.com/mvel/mvel")
+    (synopsis "MVFLEX Expression Language")
+    (description "MVEL has largely been inspired by Java syntax, but has some
+fundamental differences aimed at making it more efficient as an expression
+language, such as operators that directly support collection, array and string
+matching, as well as regular expressions.  MVEL is used to evaluate expressions
+written using Java syntax.
+
+In addition to the expression language, MVEL serves as a templating language for
+configuration and string construction.")
+    (license license:asl2.0)))
