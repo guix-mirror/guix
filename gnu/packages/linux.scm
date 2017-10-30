@@ -140,7 +140,7 @@ defconfig.  Return the appropiate make target if applicable, otherwise return
 (define (linux-libre-urls version)
   "Return a list of URLs for Linux-Libre VERSION."
   (list (string-append
-         "http://linux-libre.fsfla.org/pub/linux-libre/releases/"
+         "https://linux-libre.fsfla.org/pub/linux-libre/releases/"
          version "-gnu/linux-libre-" version "-gnu.tar.xz")
 
         ;; XXX: Work around <http://bugs.gnu.org/14851>.
