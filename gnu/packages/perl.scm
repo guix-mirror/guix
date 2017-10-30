@@ -6957,7 +6957,7 @@ custom-built routines.")
 (define-public perl-sub-exporter-progressive
   (package
     (name "perl-sub-exporter-progressive")
-    (version "0.001011")
+    (version "0.001013")
     (source
      (origin
        (method url-fetch)
@@ -6965,7 +6965,7 @@ custom-built routines.")
                            "Sub-Exporter-Progressive-" version ".tar.gz"))
        (sha256
         (base32
-         "01kwzbqwdhvadpphnczid03nlyj0h4cxaq3m3v2401bckkkcc606"))))
+         "0mn0x8mkh36rrsr58s1pk4srwxh2hbwss7sv630imnk49navfdfm"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-sub-exporter" ,perl-sub-exporter)))
     (home-page "http://search.cpan.org/dist/Sub-Exporter-Progressive/")
