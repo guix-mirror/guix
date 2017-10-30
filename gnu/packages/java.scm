@@ -6653,3 +6653,34 @@ configuration and string construction.")
     (description "LZ4 - Java is a Java port of the popular lz4 compression
 algorithms and xxHash hashing algorithm.")
     (license license:asl2.0)))
+
+(define-public java-bouncycastle-bcprov
+  (package
+    (name "java-bouncycastle-bcprov")
+    (version "1.58")
+    (source (origin
+              (method url-fetch)
+              (uri "https://bouncycastle.org/download/bcprov-jdk15on-158.tar.gz")
+              (sha256
+               (base32
+                "1hgkg96llbvgs8i0krwz2n0j7wlg6jfnq8w8kg0cc899j0wfmf3n"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "bouncycastle-bcprov.jar"
+       #:tests? #f; no tests
+       #:source-dir "src"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'unzip-src
+           (lambda _
+             (mkdir-p "src")
+             (with-directory-excursion "src"
+               (zero? (system* "unzip" "../src.zip"))))))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("junit" ,java-junit)))
+    (home-page "https://www.bouncycastle.org")
+    (synopsis "Cryptographic library")
+    (description "Bouncy Castle Provider (bcprov) is a cryptographic library
+for the Java programming language.")
+    (license license:expat)))
