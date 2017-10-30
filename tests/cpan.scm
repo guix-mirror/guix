@@ -1,7 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,7 +97,7 @@
                    ('propagated-inputs
                     ('quasiquote
                      (("perl-test-script" ('unquote 'perl-test-script)))))
-                   ('home-page "https://search.cpan.org/dist/Foo-Bar/")
+                   ('home-page "http://search.cpan.org/dist/Foo-Bar/")
                    ('synopsis "Fizzle Fuzz")
                    ('description 'fill-in-yourself!)
                    ('license 'perl-license))

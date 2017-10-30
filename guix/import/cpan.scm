@@ -116,7 +116,7 @@ or #f on failure.  MODULE should be e.g. \"Test::Script\""
   (json-fetch (string-append "https://fastapi.metacpan.org/v1/release/" name)))
 
 (define (cpan-home name)
-  (string-append "https://search.cpan.org/dist/" name "/"))
+  (string-append "http://search.cpan.org/dist/" name "/"))
 
 (define (cpan-source-url meta)
   "Return the download URL for a module's source tarball."
