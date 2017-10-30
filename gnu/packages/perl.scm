@@ -4120,7 +4120,7 @@ versa using either JSON::XS or JSON::PP.")
 (define-public perl-json-any
   (package
     (name "perl-json-any")
-    (version "1.38")
+    (version "1.39")
     (source
      (origin
        (method url-fetch)
@@ -4128,7 +4128,7 @@ versa using either JSON::XS or JSON::PP.")
                            "JSON-Any-" version ".tar.gz"))
        (sha256
         (base32
-         "0mk6shg82i7y852bvj5d0qqma1d9k0jh10k4mg62hbgr800gb2m4"))))
+         "1hspg6khjb38syn59cysnapc1q77qgavfym3fqr6l2kiydf7ajdf"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
