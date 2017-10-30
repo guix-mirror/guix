@@ -2590,7 +2590,7 @@ jar in conformance with RFC 6265 <http://tools.ietf.org/html/rfc6265>.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Cookies-"
+                   "mirror://cpan/authors/id/O/OA/OALDERS/HTTP-Cookies-"
                    version ".tar.gz"))
              (sha256
               (base32
