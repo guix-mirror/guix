@@ -2391,7 +2391,7 @@ composed of HTML::Element style components.")
 (define-public perl-html-lint
   (package
     (name "perl-html-lint")
-    (version "2.20")
+    (version "2.26")
     (source
      (origin
        (method url-fetch)
@@ -2399,7 +2399,7 @@ composed of HTML::Element style components.")
                            "HTML-Lint-" version ".tar.gz"))
        (sha256
         (base32
-         "15vrqjnlb0f8rib1kqdf4islqy6i33h08wy7b1bkgd550p7lfjwk"))))
+         "02vi1s4sw3hjnndxd6s91cp54iw5pg8n5kl9v0109dfxzn1n9bnl"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-html-parser" ,perl-html-parser)
