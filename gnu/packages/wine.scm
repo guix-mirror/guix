@@ -157,7 +157,7 @@ integrate Windows applications into your desktop.")
        ,@(strip-keyword-arguments '(#:configure-flags #:system)
                                   (package-arguments wine))))
     (synopsis "Implementation of the Windows API (64-bit version)")
-    (supported-systems '("x86_64-linux"))))
+    (supported-systems '("x86_64-linux" "aarch64-linux"))))
 
 ;; TODO: This is wine development version, provided for historical reasons.
 ;; We can remove it as soon as a new stable release is out.
