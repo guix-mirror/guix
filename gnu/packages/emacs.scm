@@ -3896,6 +3896,33 @@ for search-based navigation of buffers.")
      "This Emacs library provides a Helm interface for Projectile.")
     (license license:gpl3+)))
 
+(define-public emacs-helm-make
+  (let ((commit "786104ac0c3cf4fe5b53f841eb9fe10bda2e4031")
+        (revision "1"))
+    (package
+      (name "emacs-helm-make")
+      (version (string-append "0.1.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/abo-abo/helm-make.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0qdfk0p2j8jah7m0ngy2mm7775cn779m3a84yll86wqc74g331qs"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-projectile" ,emacs-projectile)))
+      (home-page "https://github.com/abo-abo/helm-make")
+      (synopsis "Select a Makefile target with helm")
+      (description "@code{helm-make} or @code{helm-make-projectile} will give
+you a @code{helm} selection of directory Makefile's targets.  Selecting a
+target will call @code{compile} on it.")
+      (license license:gpl3+))))
+
 (define-public emacs-cider
   (package
     (name "emacs-cider")
