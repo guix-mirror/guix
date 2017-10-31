@@ -1392,14 +1392,14 @@ does not use SSH and requires a pre-shared symmetric key.")
 (define-public quagga
   (package
     (name "quagga")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/quagga/quagga-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1kgvcr9cfgys5asvb5lh5h95silkr624apqm5x68xva19xfvmpda"))
+                "0c99rjjc62xl5kwvx2pwyvs0709vbwax1qydqbqf6r7fpvr24bjj"))
               (patches
                (search-patches "quagga-reproducible-build.patch"))))
     (build-system gnu-build-system)
