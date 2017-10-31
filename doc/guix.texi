@@ -10392,9 +10392,12 @@ This is the type for statically-configured network interfaces.
 
 @deffn {Scheme Procedure} static-networking-service @var{interface} @var{ip} @
        [#:netmask #f] [#:gateway #f] [#:name-servers @code{'()}]
+       [#:requirement @code{'(udev)}]
 Return a service that starts @var{interface} with address @var{ip}.  If
 @var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
-it must be a string specifying the default network gateway.
+it must be a string specifying the default network gateway.  @var{requirement}
+can be used to declare a dependency on another service before configuring the
+interface.
 
 This procedure can be called several times, one for each network
 interface of interest.  Behind the scenes what it does is extend

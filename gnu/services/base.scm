@@ -1986,6 +1986,7 @@ This service is not part of @var{%base-services}."
         (service static-networking-service-type
                  (list (static-networking (interface "lo")
                                           (ip "127.0.0.1")
+                                          (requirement '())
                                           (provision '(loopback)))))
         (syslog-service)
         (service urandom-seed-service-type)
