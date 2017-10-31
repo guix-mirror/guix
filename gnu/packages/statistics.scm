@@ -5530,3 +5530,27 @@ tools.")
        "The goal of tgconfig is to provide infrastructure for managing package
 parameters.")
       (license license:gpl3))))
+
+(define-public r-directlabels
+  (package
+    (name "r-directlabels")
+    (version "2017.03.31")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "directlabels" version))
+       (sha256
+        (base32
+         "01ahw0c56mnzwl611s8hnghicww4c4dgf5v2wv6bl1s1pramw9pr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quadprog" ,r-quadprog)))
+    (home-page "http://directlabels.r-forge.r-project.org/")
+    (synopsis "Direct labels for multicolor plots")
+    (description
+     "This package provides an extensible framework for automatically placing
+direct labels onto multicolor plots.  Label positions are described using
+positioning methods that can be re-used across several different plots.  There
+are heuristics for examining @code{trellis} and @code{ggplot} objects and
+inferring an appropriate positioning method.")
+    (license license:gpl3)))
