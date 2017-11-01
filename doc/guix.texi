@@ -6686,7 +6686,7 @@ dependencies.
 @item bag-with-origins
 Similar to @code{bag}, but also showing origins and their dependencies.
 
-@item derivations
+@item derivation
 This is the most detailed representation: It shows the DAG of
 derivations (@pxref{Derivations}) and plain store items.  Compared to
 the above representation, many additional nodes are visible, including
