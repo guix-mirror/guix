@@ -4169,16 +4169,16 @@ passive voice.")
 (define-public emacs-neotree
   (package
     (name "emacs-neotree")
-    (version "0.2.1")
+    (version "0.5.2")
     (home-page "https://github.com/jaypei/emacs-neotree")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/jaypei/" name
-                    "/archive/v" version ".tar.gz"))
+                    "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "0cr37pdkwjgfijfws5bjskfh1rq9rfngxblcj6v5383vpmn83q7s"))
+                "1zd6dchwyijnf7kgchfcp51gs938l204dk9z6mljrfqf2zy0gp12"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (synopsis "Folder tree view for Emacs")
