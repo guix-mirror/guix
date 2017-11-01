@@ -1573,7 +1573,9 @@ by applications to write metadata.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; This test fails regularly, delete offending portion
+         ;; This test fails regularly (also at KDE CI, see
+         ;; https://build.kde.org/job/Frameworks%20kimageformats%20kf5-qt5%20XenialQt5.7/6/testReport/)
+         ;; delete offending portion
          (add-after 'unpack 'neuter-read-xcf-test
            (lambda _
              (delete-file "autotests/read/xcf/simple-rgba-gimp-2.8.10.png")
