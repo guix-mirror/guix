@@ -1414,7 +1414,7 @@ treat it as part of their software base when porting.")
 (define-public libxres
   (package
     (name "libxres")
-    (version "1.0.7")
+    (version "1.2.0")
     (source
       (origin
         (method url-fetch)
@@ -1424,7 +1424,7 @@ treat it as part of their software base when porting.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1rd0bzn67cpb2qkc946gch2183r4bdjfhs6cpqbipy47m9a91296"))))
+            "1m0jr0lbz9ixpp9ihk68349q0i7ry2379lnfzdy4mrl86ijc2xgz"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
