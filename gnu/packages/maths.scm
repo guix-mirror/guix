@@ -201,7 +201,8 @@ programming languages.")
                      "11hnp3gcmcc5kci2caxw4hs6m08h2mhqs3xzqq7iafx1ha2ggwyw"))))
    (build-system gnu-build-system)
    (inputs
-    `(("python" ,python-wrapper)        ;for 'units_cur' script
+    `(("readline" ,readline)
+      ("python" ,python-wrapper)        ;for 'units_cur' script
       ("python-requests" ,python-requests)))
    (arguments
     `(#:phases (modify-phases %standard-phases
