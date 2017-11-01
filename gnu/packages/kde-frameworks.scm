@@ -3343,8 +3343,11 @@ workspace.")
              ;; enable debug output
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             ;; TODO: Make this tests pass (also see
-             ;; https://bugs.kde.org/381098)
+             ;; Make kstandarddirstest pass (see https://bugs.kde.org/381098)
+             (mkdir-p ".kde-unit-test/xdg/config")
+             (with-output-to-file ".kde-unit-test/xdg/config/foorc"
+               (lambda () #t))  ;; simply touch the file
+             ;; kuniqueapptest hangs. TODO: Make this test pass.
              (zero? (system* "dbus-launch" "ctest" "."
                              "-E" "kstandarddirstest|kuniqueapptest")))))))
     (home-page "https://community.kde.org/Frameworks")
