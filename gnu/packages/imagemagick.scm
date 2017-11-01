@@ -46,14 +46,14 @@
     ;; The 7 release series has an incompatible API, while the 6 series is still
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
-    (version "6.9.9-18")
+    (version "6.9.9-21")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1d70dvrgcasa3cla4c1dag4mw7vq4jk1nzbd604fk20l0l6xa78j"))))
+               "0241g3c207rawn61bz8rc5gz55k5mi2b0n3zlwa0jv9xczlkd6a9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch")
@@ -105,7 +105,7 @@
     (native-inputs `(("pkg-config" ,pkg-config)))
     (outputs '("out"
                "doc"))                          ; 26 MiB of HTML documentation
-    (home-page "http://www.imagemagick.org/")
+    (home-page "https://www.imagemagick.org/")
     (synopsis "Create, edit, compose, or convert bitmap images")
     (description
      "ImageMagick is a software suite to create, edit, compose, or convert
