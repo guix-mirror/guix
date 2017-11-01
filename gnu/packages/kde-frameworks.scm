@@ -1197,6 +1197,31 @@ which are used in DBus communication.")
     (license license:lgpl3+)
     (properties '((upstream-name . "oxygen-icons5")))))
 
+(define-public prison
+  (package
+    (name "prison")
+    (version "5.39.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1b0ji341xcamrd19z54r2nkm8cglbr4qfxyxmqzn8yc6icfl61nv"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("libdmtx", libdmtx)
+       ("qrencode" ,qrencode)
+       ("qtbase" ,qtbase))) ;; TODO: rethink: nix propagates this
+    (home-page "https://api.kde.org/frameworks/prison/html/index.html")
+    (synopsis "Barcode generation abstraction layer")
+    (description "Prison is a Qt-based barcode abstraction layer/library and
+provides uniform access to generation of barcodes with data.")
+    (license license:lgpl2.1+)))
+
 (define-public solid
   (package
     (name "solid")
@@ -1234,31 +1259,6 @@ which are used in DBus communication.")
     (description "Solid is a device integration framework.  It provides a way of
 querying and interacting with hardware independently of the underlying operating
 system.")
-    (license license:lgpl2.1+)))
-
-(define-public prison
-  (package
-    (name "prison")
-    (version "5.39.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://kde/stable/frameworks/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32 "1b0ji341xcamrd19z54r2nkm8cglbr4qfxyxmqzn8yc6icfl61nv"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
-    (inputs
-     `(("libdmtx", libdmtx)
-       ("qrencode" ,qrencode)
-       ("qtbase" ,qtbase))) ;; TODO: rethink: nix propagates this
-    (home-page "https://api.kde.org/frameworks/prison/html/index.html")
-    (synopsis "Barcode generation abstraction layer")
-    (description "Prison is a Qt-based barcode abstraction layer/library and
-provides uniform access to generation of barcodes with data.")
     (license license:lgpl2.1+)))
 
 (define-public sonnet
