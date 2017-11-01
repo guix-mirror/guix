@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -32,7 +32,7 @@
 (define-public icu4c
   (package
    (name "icu4c")
-   (version "58.2")
+   (version "60.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -41,12 +41,8 @@
                   "/icu4c-"
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
-            (patches
-             (search-patches "icu4c-CVE-2017-7867-CVE-2017-7868.patch"
-                             "icu4c-CVE-2017-14952.patch"
-                             "icu4c-reset-keyword-list-iterator.patch"))
             (sha256
-             (base32 "036shcb3f8bm1lynhlsb4kpjm9s9c2vdiir01vg216rs2l8482ib"))))
+             (base32 "09g2bvmmww8qs9p8p47avzazbibx8yqvswkr8rd02b7kzg4adxgq"))))
    (build-system gnu-build-system)
    (inputs
     `(("perl" ,perl)))
