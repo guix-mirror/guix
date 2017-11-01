@@ -1106,7 +1106,7 @@ themselves.")
 (define-public libpciaccess
   (package
     (name "libpciaccess")
-    (version "0.13.5")
+    (version "0.14")
     (source
       (origin
         (method url-fetch)
@@ -1116,7 +1116,7 @@ themselves.")
                ".tar.bz2"))
         (sha256
           (base32
-            "16dr80rdw5bzdyhahvilfjrflj7scs2yl2mmghsb84f3nglm8b3m"))))
+            "197jbcpvp4z4x6j705mq2y4fsnnypy6f85y8xalgwhgx5bhl7x9x"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Make sure libpciaccess can read compressed 'pci.ids' files as
