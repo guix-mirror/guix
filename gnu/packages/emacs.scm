@@ -2644,11 +2644,11 @@ in @code{html-mode}.")
     (synopsis "Superior Lisp Interaction Mode for Emacs")
     (description
      "SLIME extends Emacs with support for interactive programming in
-Common Lisp.  The features are centered around @{slime-mode}, an Emacs
-minor mode that complements the standard @{lisp-mode}.  While lisp-mode
-supports editing Lisp source files, @{slime-mode} adds support for
-interacting with a running Common Lisp process for compilation,
-debugging, documentation lookup, and so on.")
+Common Lisp.  The features are centered around @command{slime-mode},
+an Emacs minor mode that complements the standard @command{lisp-mode}.
+While lisp-mode supports editing Lisp source files, @command{slime-mode}
+adds support for interacting with a running Common Lisp process
+for compilation, debugging, documentation lookup, and so on.")
     (license license:gpl2+)))
 
 (define-public emacs-popup
