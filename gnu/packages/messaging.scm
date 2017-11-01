@@ -822,7 +822,7 @@ instant messenger with audio and video chat capabilities.")
                (("TIMESTAMP") "\"\""))
              #t)))))
     (inputs
-     `(("ffmpeg" ,ffmpeg)
+     `(("ffmpeg" ,ffmpeg-3.3)
        ("glib" ,glib)
        ("gtk+" ,gtk+-2)
        ("libsodium" ,libsodium)

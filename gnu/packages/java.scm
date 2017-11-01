@@ -1405,6 +1405,23 @@ bootstrapping purposes.")
                  (copy-recursively "openjdk.build/j2re-image" jre)
                  (copy-recursively "openjdk.build/j2sdk-image" jdk))
                #t))
+           ;; Some of the libraries in the lib/amd64 folder link to libjvm.so.
+           ;; But that shared object is located in the server/ folder, so it
+           ;; cannot be found.  This phase creates a symbolic link in the
+           ;; lib/amd64 folder so that the other libraries can find it.
+           ;;
+           ;; See:
+           ;; https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00169.html
+           ;;
+           ;; FIXME: Find the bug in the build system, so that this symlink is
+           ;; not needed.
+           (add-after 'install 'install-libjvm
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((lib-path (string-append (assoc-ref outputs "out")
+                                               "/lib/amd64")))
+                 (symlink (string-append lib-path "/server/libjvm.so")
+                          (string-append lib-path "/libjvm.so")))
+               #t))
            ;; By default IcedTea only generates an empty keystore.  In order to
            ;; be able to use certificates in Java programs we need to generate a
            ;; keystore from a set of certificates.  For convenience we use the

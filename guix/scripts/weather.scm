@@ -205,7 +205,8 @@ Report the availability of substitutes.\n"))
 (define (guix-weather . args)
   (with-error-handling
     (let* ((opts     (parse-command-line args %options
-                                         (list %default-options)))
+                                         (list %default-options)
+                                         #:build-options? #f))
            (urls     (assoc-ref opts 'substitute-urls))
            (systems  (match (filter-map (match-lambda
                                           (('system . system) system)

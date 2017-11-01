@@ -3316,6 +3316,11 @@ notation and includes basic support for digital audio.")
      `(#:tests? #f                      ; no tests included
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'remove-architecture-specific-flags
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("-msse2 -mfpmath=sse") ""))
+             #t))
          (add-after 'unpack 'build-faust-sources
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "faust"

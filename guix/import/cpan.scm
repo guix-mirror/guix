@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -115,7 +116,7 @@ or #f on failure.  MODULE should be e.g. \"Test::Script\""
   (json-fetch (string-append "https://fastapi.metacpan.org/v1/release/" name)))
 
 (define (cpan-home name)
-  (string-append "http://search.cpan.org/dist/" name))
+  (string-append "http://search.cpan.org/dist/" name "/"))
 
 (define (cpan-source-url meta)
   "Return the download URL for a module's source tarball."
@@ -242,9 +243,9 @@ META."
                        ;; have not yet had a need for cross-compiled perl
                        ;; modules, however, so we leave it out.
                        (convert-inputs '("configure" "build" "test")))
-       ,@(maybe-inputs 'inputs
+       ,@(maybe-inputs 'propagated-inputs
                        (convert-inputs '("runtime")))
-       (home-page ,(string-append "http://search.cpan.org/dist/" name))
+       (home-page ,(cpan-home name))
        (synopsis ,(assoc-ref meta "abstract"))
        (description fill-in-yourself!)
        (license ,(string->license (assoc-ref meta "license"))))))

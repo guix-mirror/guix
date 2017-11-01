@@ -533,6 +533,20 @@ indicates that PATH is unavailable at CACHE-URL."
         (headers '((User-Agent . "GNU Guile"))))
     (build-request (string->uri url) #:method 'GET #:headers headers)))
 
+(define (at-most max-length lst)
+  "If LST is shorter than MAX-LENGTH, return it; otherwise return its
+MAX-LENGTH first elements."
+  (let loop ((len 0)
+             (lst lst)
+             (result '()))
+    (match lst
+      (()
+       (reverse result))
+      ((head . tail)
+       (if (>= len max-length)
+           (reverse result)
+           (loop (+ 1 len) tail (cons head result)))))))
+
 (define* (http-multiple-get base-uri proc seed requests
                             #:key port (verify-certificate? #t))
   "Send all of REQUESTS to the server at BASE-URI.  Call PROC for each
@@ -553,7 +567,7 @@ initial connection on which HTTP requests are sent."
       (when (file-port? p)
         (setvbuf p _IOFBF (expt 2 16)))
 
-      ;; Send all of REQUESTS in a row.
+      ;; Send REQUESTS, up to a certain number, in a row.
       ;; XXX: Do our own caching to work around inefficiencies when
       ;; communicating over TLS: <http://bugs.gnu.org/22966>.
       (let-values (((buffer get) (open-bytevector-output-port)))
@@ -562,7 +576,8 @@ initial connection on which HTTP requests are sent."
                                'http-proxy-port?)
           (set-http-proxy-port?! buffer (http-proxy-port? p)))
 
-        (for-each (cut write-request <> buffer) requests)
+        (for-each (cut write-request <> buffer)
+                  (at-most 1000 requests))
         (put-bytevector p (get))
         (force-output p))
 

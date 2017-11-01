@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,8 +25,11 @@
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build utils)
+  #:use-module (guix utils)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
@@ -33,6 +37,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages xiph))
 
 (define-public libcanberra
@@ -126,3 +131,26 @@ sounds for various system events.")
     (license (list cc-by-sa4.0 cc-by3.0 gpl2 gpl2+))
 
     (home-page "http://www.freedesktop.org/wiki/Specifications/sound-theme-spec/")))
+
+(define-public python-pycanberra
+  (package
+    (name "python-pycanberra")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dist.ng0.infotropique.org/releases/"
+                           "pycanberra/pycanberra-" version ".tar.xz"))
+       (sha256
+        (base32
+         "16jjf8fcgaprmz6jacsxrh17l1ad891fns38bxv49lg3s3mn1nj2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;No tests included.
+    (propagated-inputs
+     `(("libcanberra" ,libcanberra)))
+    (synopsis "Ctypes wrapper for the libcanberra API")
+    (description
+     "Pycanberra is a basic Python wrapper for libcanberra.")
+    (home-page "https://git.ng0.infotropique.org/pycanberra/")
+    (license lgpl2.1+)))

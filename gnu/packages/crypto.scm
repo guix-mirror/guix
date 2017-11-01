@@ -664,3 +664,41 @@ of improving usability, security and speed.")
     ;; The compilation is distributed under the Boost license; the individual
     ;; files in the compilation are in the public domain.
     (license (list license:boost1.0 license:public-domain))))
+
+(define-public python2-roca-detect
+  (package
+    (name "python2-roca-detect")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "roca-detect" version))
+       (sha256
+        (base32
+         "1di4akyw2lf5r8zfwvyhkilz8jv8g4b66rgaqwfabmjwma6gnw27"))))
+    (build-system python-build-system)
+    (native-inputs
+     ;; TODO: apk_parse_ph4, pyjks
+     `(("python2-dateutil" ,python2-dateutil)
+       ("python2-six" ,python2-six)
+       ("python2-cryptography" ,python2-cryptography)
+       ("python2-future" ,python2-future)
+       ("python2-coloredlogs" ,python2-coloredlogs)
+       ("python2-pgpdump" ,python2-pgpdump)))
+    (arguments
+     `(;; Basic testing routine is quite simple and works with Py3
+       ;; but the rest of the code that processes the different
+       ;; key formats and extracts the modulus for inspection is
+       ;; not yet fully py3 ready.
+       #:python ,python-2))
+    (home-page "https://github.com/crocs-muni/roca")
+    (synopsis "ROCA detection tool")
+    (description
+     "This tool is related to the paper entitled @i{Return of the
+Coppersmith’s Attack: Practical Factorization of Widely Used RSA Moduli}.  It
+enables you to test public RSA keys for a presence of the described
+vulnerability.  Currently the tool supports the following key formats: X.509
+Certificate (DER encoded, PEM encoded), RSA PEM (encoded private key, public
+key), SSH public key, ASC-encoded OpenPGP key, APK Android application, LDIFF
+file, and more.")
+    (license license:gpl3)))

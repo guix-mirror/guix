@@ -1216,6 +1216,51 @@ Using emacs-direnv means that programs started from Emacs will use the
 environment set through Direnv.")
     (license license:gpl3+)))
 
+(define-public emacs-ggtags
+  (package
+    (name "emacs-ggtags")
+    (version "0.8.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://elpa.gnu.org/packages/ggtags-"
+                           version ".el"))
+       (sha256
+        (base32
+         "0ny3llk021g6r0s75xdm4hzpbxv393ddm2r6f2xdk8kqnq4gnirp"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/leoliu/ggtags")
+    (synopsis "Frontend to the GNU Global source code tagging system")
+    (description "@code{ggtags} provides a frontend to the GNU Global source
+code tagging system.
+
+Features:
+
+@itemize
+@item Build on @code{compile.el} for asynchronicity and its large feature-set.
+@item Automatically update Global's tag files when needed with tuning for
+large source trees.
+@item Intuitive navigation among multiple matches with mode-line display of
+current match, total matches and exit status.
+@item Read tag with completion.
+@item Show definition at point.
+@item Jump to #include files.
+@item Support search history and saving a search to register/bookmark.
+@item Query replace.
+@item Manage Global's environment variables on a per-project basis.
+@item Highlight (definition) tag at point.
+@item Abbreviated display of file names.
+@item Support all Global search backends: @code{grep}, @code{idutils}, etc.
+@item Support exuberant ctags @url{http://ctags.sourceforge.net/} and
+@code{pygments} backend.
+@item Support all Global's output formats: @code{grep}, @code{ctags-x},
+@code{cscope} etc.
+@item Support projects on remote hosts (e.g. via @code{tramp}).
+@item Support eldoc.
+@item Search @code{GTAGSLIBPATH} for references and symbols.
+@end itemize\n")
+    (license license:gpl3+)))
+
 (define-public emacs-go-mode
   (package
     (name "emacs-go-mode")
@@ -1630,7 +1675,7 @@ allows easily move between them.")
 (define-public emacs-s
   (package
     (name "emacs-s")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1639,7 +1684,7 @@ allows easily move between them.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0krq5nz3llfx0vwdqn18pmq777ja0fac185w0h9qymppb1j1hvc2"))))
+                "0xbl75863pcm806zg0x1lw7qznzjq2c8320k8js7apyag8q4srvh"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -1698,7 +1743,7 @@ Stack Overflow, Super User, and other StackExchange sites.")
 (define-public emacs-f
   (package
     (name "emacs-f")
-    (version "0.18.2")
+    (version "0.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1707,7 +1752,7 @@ Stack Overflow, Super User, and other StackExchange sites.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1926shh2ymdsgz05c6q181mzzz1rci99ch568j151xi865jinyg5"))))
+                "05195n80ywa68qykxn7dza6qd59rhakvlzhaa9l6mcpmjf9l9grs"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
@@ -2360,6 +2405,30 @@ build jobs.")
 completion candidates are called back-ends, modules for displaying them are
 front-ends.  Company comes with many back-ends, e.g. @code{company-elisp}.
 These are distributed in separate files and can be used individually.")
+    (license license:gpl3+)))
+
+(define-public emacs-company-quickhelp
+  (package
+    (name "emacs-company-quickhelp")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/expez/company-quickhelp/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xrn2z1dgk5gmkmp2jkn9g83ckk39lqp5pyyv8rl7f6gqvib3qh0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-pos-tip" ,emacs-pos-tip)
+       ("emacs-company" ,emacs-company)))
+    (home-page "https://github.com/expez/company-quickhelp")
+    (synopsis "Popup documentation for completion candidates")
+    (description "@code{company-quickhelp} shows documentation for the
+completion candidate when using the Company text completion framework.")
     (license license:gpl3+)))
 
 (define-public emacs-multiple-cursors
@@ -3039,7 +3108,7 @@ fully-functional one.")
 (define-public emacs-hydra
   (package
     (name "emacs-hydra")
-    (version "0.13.6")
+    (version "0.14.0")
     (source
      (origin
        (method url-fetch)
@@ -3048,7 +3117,7 @@ fully-functional one.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0575vh858gm35p57s49dy6pc2ij46dmj9zaa4z0cp98sqra3j3l0"))))
+         "0884k3ffwzhh6krbd8l7vvm184dkagb2jf4q8xzg72plln34qrm8"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abo-abo/hydra")
     (synopsis "Make Emacs bindings that stick around")
@@ -3568,7 +3637,7 @@ If you want to mark a folder manually as a project just create an empty
 (define-public emacs-elfeed
   (package
     (name "emacs-elfeed")
-    (version "2.1.1")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/skeeto/elfeed/archive/"
@@ -3576,7 +3645,7 @@ If you want to mark a folder manually as a project just create an empty
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1wlwc8fbkg6w1c8p856ikc20xm72f51clnzz419p0g8cavy27npw"))))
+                "0d7i93l3b0ck3iad9ddqp7sqa8w16hnamrby8bwvl316rqk4lzlf"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -3895,6 +3964,33 @@ for search-based navigation of buffers.")
     (description
      "This Emacs library provides a Helm interface for Projectile.")
     (license license:gpl3+)))
+
+(define-public emacs-helm-make
+  (let ((commit "786104ac0c3cf4fe5b53f841eb9fe10bda2e4031")
+        (revision "1"))
+    (package
+      (name "emacs-helm-make")
+      (version (string-append "0.1.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/abo-abo/helm-make.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0qdfk0p2j8jah7m0ngy2mm7775cn779m3a84yll86wqc74g331qs"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-projectile" ,emacs-projectile)))
+      (home-page "https://github.com/abo-abo/helm-make")
+      (synopsis "Select a Makefile target with helm")
+      (description "@code{helm-make} or @code{helm-make-projectile} will give
+you a @code{helm} selection of directory Makefile's targets.  Selecting a
+target will call @code{compile} on it.")
+      (license license:gpl3+))))
 
 (define-public emacs-cider
   (package
@@ -4564,7 +4660,7 @@ mode-line.")
 (define-public emacs-yasnippet
   (package
     (name "emacs-yasnippet")
-    (version "0.12.0")
+    (version "0.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/joaotavora/yasnippet/"
@@ -4572,7 +4668,7 @@ mode-line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1yqiprighgqz1hsslph50cy09xxqabc06jffrnjcsdf6nj70xlkc"))
+                "01jabaz0g67bsziayrxgv74px55fx4nlrcl0csl8f1by2102pwc5"))
               (modules '((guix build utils)))
               (snippet
                '(begin

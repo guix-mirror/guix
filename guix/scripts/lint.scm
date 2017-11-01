@@ -792,34 +792,43 @@ be determined."
     ((? origin?)
      (and=> (origin-actual-file-name patch) basename))))
 
-(define (current-vulnerabilities*)
-  "Like 'current-vulnerabilities', but return the empty list upon networking
-or HTTP errors.  This allows network-less operation and makes problems with
-the NIST server non-fatal.."
+(define (call-with-networking-fail-safe message error-value proc)
+  "Call PROC catching any network-related errors.  Upon a networking error,
+display a message including MESSAGE and return ERROR-VALUE."
   (guard (c ((http-get-error? c)
-             (warning (G_ "failed to retrieve CVE vulnerabilities \
-from ~s: ~a (~s)~%")
+             (warning (G_ "~a: HTTP GET error for ~a: ~a (~s)~%")
+                      message
                       (uri->string (http-get-error-uri c))
                       (http-get-error-code c)
                       (http-get-error-reason c))
-             (warning (G_ "assuming no CVE vulnerabilities~%"))
-             '()))
+             error-value))
     (catch #t
-      (lambda ()
-        (current-vulnerabilities))
+      proc
       (match-lambda*
         (('getaddrinfo-error errcode)
-         (warning (G_ "failed to lookup NIST host: ~a~%")
+         (warning (G_ "~a: host lookup failure: ~a~%")
+                  message
                   (gai-strerror errcode))
-         (warning (G_ "assuming no CVE vulnerabilities~%"))
-         '())
+         error-value)
         (('tls-certificate-error args ...)
-         (warning (G_ "TLS certificate error: ~a")
+         (warning (G_ "~a: TLS certificate error: ~a")
+                  message
                   (tls-certificate-error-string args))
-         (warning (G_ "assuming no CVE vulnerabilities~%"))
-         '())
+         error-value)
         (args
          (apply throw args))))))
+
+(define-syntax-rule (with-networking-fail-safe message error-value exp ...)
+  (call-with-networking-fail-safe message error-value
+                                  (lambda () exp ...)))
+
+(define (current-vulnerabilities*)
+  "Like 'current-vulnerabilities', but return the empty list upon networking
+or HTTP errors.  This allows network-less operation and makes problems with
+the NIST server non-fatal."
+  (with-networking-fail-safe (G_ "while retrieving CVE vulnerabilities")
+                             '()
+                             (current-vulnerabilities)))
 
 (define package-vulnerabilities
   (let ((lookup (delay (vulnerabilities->lookup-proc
@@ -860,7 +869,11 @@ from ~s: ~a (~s)~%")
 
 (define (check-for-updates package)
   "Check if there is an update available for PACKAGE."
-  (match (package-latest-release* package (force %updaters))
+  (match (with-networking-fail-safe
+          (format #f (G_ "while retrieving upstream info for '~a'")
+                  (package-name package))
+          #f
+          (package-latest-release* package (force %updaters)))
     ((? upstream-source? source)
      (when (version>? (upstream-source-version source)
                       (package-version package))
@@ -1123,12 +1136,8 @@ run the checkers on all packages.\n"))
 (define (guix-lint . args)
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (G_ "~A: unrecognized option~%") name))
-                (lambda (arg result)
-                  (alist-cons 'argument arg result))
-                %default-options))
+    (parse-command-line args %options (list %default-options)
+                        #:build-options? #f))
 
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda

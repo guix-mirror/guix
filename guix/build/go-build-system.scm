@@ -171,7 +171,7 @@ respectively."
       (setenv "GOPATH" (string-append (getcwd) ":" (getenv "GOPATH")))
       (setenv "GOPATH" (getcwd)))
     ;; Where to install compiled executable files ('commands' in Go parlance').
-    (setenv "GOBIN" out)
+    (setenv "GOBIN" (string-append out "/bin"))
     #t))
 
 (define* (build #:key import-path #:allow-other-keys)

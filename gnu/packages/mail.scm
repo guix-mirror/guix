@@ -275,9 +275,8 @@ operating systems.")
 
 (define-public neomutt
   (package
-    (inherit mutt)
     (name "neomutt")
-    (version "20171013")
+    (version "20171027")
     (source
      (origin
        (method url-fetch)
@@ -285,7 +284,8 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0mcs5rhlajyxl0bw2hpwcwx14rzrgk6sf8yr0gdj1di3sq166z2s"))))
+         "10z523cy3s6syh0mwpsncl87wrvyzsk99y7nzicwvx6y3hmdw01d"))))
+    (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("gdbm" ,gdbm)
@@ -323,7 +323,6 @@ operating systems.")
              "--without-ssl"
              "--with-sasl"
 
-             "--with-regex"
              "--enable-smime"
              "--enable-notmuch"
              "--with-idn"
@@ -332,8 +331,6 @@ operating systems.")
              ;; whether the path exists, which it does not
              ;; in the chroot. The workaround is this.
              "--with-mailpath=/var/mail"
-
-             "--with-external-dotlock"
 
              (string-append "--with-curses="
                             (assoc-ref %build-inputs "ncurses")))
@@ -346,7 +343,8 @@ operating systems.")
     (synopsis "Command-line mail reader based on Mutt")
     (description
      "NeoMutt is a command-line mail reader which is based on mutt.
-It adds a large amount of new and improved features to mutt.")))
+It adds a large amount of new and improved features to mutt.")
+    (license gpl2+)))
 
 (define-public gmime
   (package
@@ -428,7 +426,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.1.3")
+    (version "7.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -436,7 +434,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0iaznh8q3fmia43r0600vrd3w8njis1x65ry9fv3zsyx0ili1z02"))))
+                "0m34iks3l9p6shqkgfhfpiccglm6gk5nj98x20pvahl58nclmzn6"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -548,7 +546,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
     ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
      `(("xapian" ,xapian)
-       ("guile" ,guile-2.0)
+       ("guile" ,guile-2.2)
        ("glib" ,glib)
        ("gmime" ,gmime)
        ("tzdata" ,tzdata)))             ;for mu/test/test-mu-query.c
@@ -567,7 +565,19 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
            ;; the lispdir anyway, so we have to modify "configure.ac".
            (lambda _
              (substitute* "configure"
-               (("^ +lispdir=\"\\$\\{lispdir\\}/mu4e/\".*") ""))
+               (("^ +lispdir=\"\\$\\{lispdir\\}/mu4e/\".*") "")
+               ;; Use latest Guile
+               (("guile-2.0") "guile-2.2"))
+             (substitute* '("guile/Makefile.in"
+                            "guile/mu/Makefile.in")
+               (("share/guile/site/2.0/") "share/guile/site/2.2/"))
+             #t))
+         (add-before 'install 'fix-ffi
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "guile/mu.scm"
+               (("\"libguile-mu\"")
+                (format #f "\"~a/lib/libguile-mu\""
+                        (assoc-ref outputs "out"))))
              #t))
          (add-before 'check 'check-tz-setup
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1363,7 +1373,7 @@ identify a message uniquely.")
 (define-public perl-email-mime
   (package
     (name "perl-email-mime")
-    (version "1.940")
+    (version "1.946")
     (source
      (origin
        (method url-fetch)
@@ -1371,7 +1381,7 @@ identify a message uniquely.")
                            "Email-MIME-" version ".tar.gz"))
        (sha256
         (base32
-         "0pnxbr16cn5qy96xqhp9zmd94ashc9ivqh10qbgbc3f637a0mfir"))))
+         "0z1k3i0lzp2k421gc8f3wq0jbqflkbw2xqd2k7n7pmv56417kvk8"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-address" ,perl-email-address)
@@ -1379,7 +1389,8 @@ identify a message uniquely.")
        ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
        ("perl-email-mime-encodings" ,perl-email-mime-encodings)
        ("perl-email-simple" ,perl-email-simple)
-       ("perl-mime-types" ,perl-mime-types)))
+       ("perl-mime-types" ,perl-mime-types)
+       ("perl-module-runtime" ,perl-module-runtime)))
     (home-page "http://search.cpan.org/dist/Email-MIME")
     (synopsis "MIME message handling")
     (description "Email::MIME is an extension of the Email::Simple module, to
@@ -1391,7 +1402,7 @@ message.  Headers are decoded from MIME encoding.")
 (define-public perl-email-mime-contenttype
   (package
     (name "perl-email-mime-contenttype")
-    (version "1.018")
+    (version "1.022")
     (source
      (origin
        (method url-fetch)
@@ -1399,7 +1410,7 @@ message.  Headers are decoded from MIME encoding.")
                            "Email-MIME-ContentType-" version ".tar.gz"))
        (sha256
         (base32
-         "1y8hpwm7p5a9y2azy0cgvlv2i2d0nj66ajfa0fj51wdq4w9cs23m"))))
+         "042kxhs3bp1ab9z0mbr1wy21ld4lxd6v2a2mmrashqnsn2075fws"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
@@ -1432,7 +1443,7 @@ header.")
 (define-public perl-email-sender
   (package
     (name "perl-email-sender")
-    (version "1.300028")
+    (version "1.300031")
     (source
      (origin
        (method url-fetch)
@@ -1440,7 +1451,7 @@ header.")
                            "Email-Sender-" version ".tar.gz"))
        (sha256
         (base32
-         "0c5dv1x9856nryj5mcbgb67a4irmadz80g0qnf4van3bd8wbj72a"))))
+         "052g0slw3h2lzn93j71fi47nfawww2aph4jhr3c860ji70lkf4n4"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
@@ -1464,7 +1475,7 @@ Email::Send library.")
 (define-public perl-email-simple
   (package
     (name "perl-email-simple")
-    (version "2.213")
+    (version "2.214")
     (source
      (origin
        (method url-fetch)
@@ -1472,7 +1483,7 @@ Email::Send library.")
                            "Email-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "1ibwsng63gvqqc6r2135mjwfdzazxkb1x8q7f87wqcbjcjfpmffd"))))
+         "14kb86hi0m0bqc7kxpm4x5kvfsyj2x86gggbvpxhx9hy8hvjpw5j"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-date-format" ,perl-email-date-format)))

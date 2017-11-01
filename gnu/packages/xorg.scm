@@ -5170,6 +5170,12 @@ over Xlib, including:
              ;; It's not used anyway, so set it to empty.
              "--with-default-font-path="
 
+             ;; The default is to use "uname -srm", which captures the kernel
+             ;; version and makes builds non-reproducible.
+             "--with-os-name=GNU"
+
+             "--with-os-vendor=GuixSD"    ;not strictly needed, but looks nice
+
 
              ;; For the log file, etc.
              "--localstatedir=/var"
@@ -5179,17 +5185,25 @@ over Xlib, including:
 
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'pre-configure
-          (lambda _
-            (substitute* (find-files "." "\\.c$")
-              (("/bin/sh") (which "sh")))
+         (add-before 'configure 'pre-configure
+           (lambda _
+             (substitute* (find-files "." "\\.c$")
+               (("/bin/sh") (which "sh")))
 
-            ;; Don't try to 'mkdir /var'.
-            (substitute* "hw/xfree86/Makefile.in"
-              (("\\$\\(MKDIR_P\\).*logdir.*")
-               "true\n"))
-            #t)))))
+             ;; Don't try to 'mkdir /var'.
+             (substitute* "hw/xfree86/Makefile.in"
+               (("\\$\\(MKDIR_P\\).*logdir.*")
+                "true\n"))
+
+             ;; Strip timestamps that would otherwise end up in the 'Xorg'
+             ;; binary.
+             (substitute* "configure"
+               (("^BUILD_DATE=.*$")
+                "BUILD_DATE=19700101\n")
+               (("^BUILD_TIME=.*$")
+                "BUILD_TIME=000001\n"))
+
+             #t)))))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description
@@ -5909,7 +5923,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.1.2")
+    (version "2.1.3")
     (source
      (origin
        (method url-fetch)
@@ -5917,7 +5931,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0a5ffs6gm7j7vzqdbhfmjn9z8qxm9m9as7a1vjmjx63yxv9jqihn"))))
+         "0r0l3p59q05fmvkp3jv8vmny2v8m1vyhqkg6b9r2qgxn1kcxx7rm"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg", ffmpeg)
               ("flac", flac)

@@ -291,7 +291,8 @@ Report the size of PACKAGE and its dependencies.\n"))
 
 (define (guix-size . args)
   (with-error-handling
-    (let* ((opts     (parse-command-line args %options (list %default-options)))
+    (let* ((opts     (parse-command-line args %options (list %default-options)
+                                         #:build-options? #f))
            (files    (filter-map (match-lambda
                                    (('argument . file) file)
                                    (_ #f))

@@ -897,6 +897,28 @@ compilation and linkage, there are new frontends of the various OCaml
 compilers that can directly deal with packages.")
     (license license:x11)))
 
+(define-public ocaml-findlib-1.7.3
+  (package
+    (inherit ocaml-findlib)
+    (version "1.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.camlcity.org/download/"
+                                  "findlib" "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12xx8si1qv3xz90qsrpazjjk4lc1989fzm97rsmc4diwla7n15ni"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ocaml-findlib)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (zero? (system* "make" "install"
+                                 (string-append "OCAML_CORE_STDLIB="
+                                                out))))))))))))
+
 (define-public ocaml4.01-findlib
   (package
     (inherit ocaml-findlib)
@@ -3556,6 +3578,163 @@ Unicode character type, UTF-8, UTF-16, UTF-32 strings, conversion to/from about
 library is currently designed for Unicode Standard 3.2.")
     ;; with an exception for linked libraries to use a different license
     (license license:lgpl2.0+)))
+
+(define-public ocaml-jbuilder
+  (package
+    (name "ocaml-jbuilder")
+    (version "1.0+beta14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/janestreet/jbuilder/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "06jdcb4jmmp4wqyf9cm59jzgj0mxkpdzd9q3728gdxc1sz3v1sz0"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "PREFIX" out))
+             #t)))))
+    (native-inputs
+     `(("menhir" ,ocaml-menhir)))
+    (propagated-inputs
+     `(("opam" ,opam)))
+    (home-page "https://github.com/janestreet/jbuilder")
+    (synopsis "Composable build system for OCaml")
+    (description "Jbuilder is a build system designed for OCaml/Reason projects
+only.  It focuses on providing the user with a consistent experience and takes
+care of most of the low-level details of OCaml compilation.  All you have to do
+is provide a description of your project and Jbuilder will do the rest.")
+    (license license:asl2.0)))
+
+(define-public ocaml-zed
+  (package
+    (name "ocaml-zed")
+    (version "1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/diml/zed/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1q281slzwgdrrxalayll75bxgghadswlh2zcvzy08nrywqnlq5y8"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key #:allow-other-keys)
+             (zero? (system* "jbuilder" "build"))))
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "jbuilder" "install" "--prefix" out))))))))
+    (native-inputs
+     `(("jbuilder" ,ocaml-jbuilder)))
+    (propagated-inputs
+     `(("camomile" ,ocaml-camomile)
+       ("react" ,ocaml-react)))
+    (home-page "https://github.com/diml/zed")
+    (synopsis "Abstract engine for text editing in OCaml")
+    (description "Zed is an abstract engine for text edition.  It can be used
+to write text editors, edition widgets, readlines, etc.  You just have to
+connect an engine to your inputs and rendering functions to get an editor.")
+    (license license:bsd-3)))
+
+(define-public ocaml-lambda-term
+  (package
+    (name "ocaml-lambda-term")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/diml/lambda-term/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10lx1jqgmmfwwlv64di4a8nia9l53v7179z70n9fx6aq5l7r8nba"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; currently, ocaml-lwt is an old version of lwt from before lwt.react
+         ;; was split into a separate module called lwt_react
+         (add-before 'build 'use-old-lwt-react-name
+           (lambda _
+             (substitute* "src/jbuild" (("lwt_react") "lwt.react"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "jbuilder" "install" "--prefix" out))))))))
+    (native-inputs
+     `(("jbuilder" ,ocaml-jbuilder)))
+    (propagated-inputs
+     `(("lwt" ,ocaml-lwt)
+       ("zed" ,ocaml-zed)))
+    (home-page "https://github.com/diml/lambda-term")
+    (synopsis "Terminal manipulation library for OCaml")
+    (description "Lambda-Term is a cross-platform library for manipulating the
+terminal.  It provides an abstraction for keys, mouse events, colors, as well as
+a set of widgets to write curses-like applications.  The main objective of
+Lambda-Term is to provide a higher level functional interface to terminal
+manipulation than, for example, ncurses, by providing a native OCaml interface
+instead of bindings to a C library.")
+    (license license:bsd-3)))
+
+(define-public ocaml-utop
+  (package
+    (name "ocaml-utop")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/diml/utop/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1v22bzw1vgwbbmpvi7lkyp2r59w5mag85rmqplb4fwik78x7k4ss"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libdir (string-append out "/lib/ocaml/site-lib")))
+               (mkdir-p libdir)
+               (zero? (system* "jbuilder" "install"
+                               "--prefix" out
+                               "--libdir" libdir))))))))
+    (native-inputs
+     `(("ocaml" ,ocaml)
+       ("cppo" ,ocaml-cppo)
+       ("jbuilder" ,ocaml-jbuilder)))
+    (propagated-inputs
+     `(("findlib" ,ocaml-findlib-1.7.3)
+       ("lambda-term" ,ocaml-lambda-term)
+       ("lwt" ,ocaml-lwt)
+       ("react" ,ocaml-react)
+       ("camomile" ,ocaml-camomile)
+       ("zed" ,ocaml-zed)))
+    (home-page "https://github.com/diml/utop")
+    (synopsis "Improved interface to the OCaml toplevel")
+    (description "UTop is an improved toplevel for OCaml.  It can run in a
+terminal or in Emacs.  It supports line editing, history, real-time and context
+sensitive completion, colors, and more.")
+    (license license:bsd-3)))
 
 (define-public coq-flocq
   (package

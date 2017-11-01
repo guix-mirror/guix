@@ -80,8 +80,11 @@ NAMES (strings)."
                     (cut string-append <> "/archive-contents"))))
     (if url
         ;; Use a relatively small TTL for the archive itself.
-        (parameterize ((%http-cache-ttl (* 6 3600)))
-          (call-with-downloaded-file url read))
+        (let* ((port (http-fetch/cached (string->uri url)
+                                        #:ttl (* 6 3600)))
+               (data (read port)))
+          (close-port port)
+          data)
         (leave (G_ "~A: currently not supported~%") repo))))
 
 (define* (call-with-downloaded-file url proc #:optional (error-thunk #f))

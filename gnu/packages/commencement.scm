@@ -967,7 +967,7 @@ COREUTILS-FINAL vs. COREUTILS, etc."
 ;;; GCC toolchain.
 ;;;
 
-(define (gcc-toolchain gcc)
+(define (make-gcc-toolchain gcc)
   "Return a complete toolchain for GCC."
   (package
     (name "gcc-toolchain")
@@ -1013,18 +1013,21 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
               ("libc-debug" ,glibc-final "debug")))))
 
 (define-public gcc-toolchain-4.8
-  (gcc-toolchain gcc-4.8))
+  (make-gcc-toolchain gcc-4.8))
 
 (define-public gcc-toolchain-4.9
-  (gcc-toolchain gcc-4.9))
+  (make-gcc-toolchain gcc-4.9))
+
+(define-public gcc-toolchain
+  (make-gcc-toolchain gcc-final))
 
 (define-public gcc-toolchain-5
-  (gcc-toolchain gcc-final))
+  gcc-toolchain)
 
 (define-public gcc-toolchain-6
-  (gcc-toolchain gcc-6))
+  (make-gcc-toolchain gcc-6))
 
 (define-public gcc-toolchain-7
-  (gcc-toolchain gcc-7))
+  (make-gcc-toolchain gcc-7))
 
 ;;; commencement.scm ends here

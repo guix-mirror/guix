@@ -1328,15 +1328,15 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.2")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://jonas.nitro.dk/tig/releases/tig-"
-                    version ".tar.gz"))
+                    "https://github.com/jonas/tig/releases/download/tig-"
+                    version "/tig-" version ".tar.gz"))
               (sha256
                (base32
-                "0k3m894vfkgkj7xbr0j6ph91351dl6id5f0hk2ksjp5lmg9i6llg"))))
+                "1vf02snz8qiiqiyqss1z63rzzmwbrc9agcgh21jdq13rja306vv8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -1351,8 +1351,8 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
            (lambda _
              (zero? (system* "make" "install-doc")))))
        #:tests? #f)) ; tests require access to /dev/tty
-     ;;`(#:test-target "test"))
-    (home-page "http://jonas.nitro.dk/tig/")
+    ;; #:test-target "test"))
+    (home-page "https://jonas.github.io/tig/")
     (synopsis "Ncurses-based text user interface for Git")
     (description
      "Tig is an ncurses text user interface for Git, primarily intended as

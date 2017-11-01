@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
@@ -584,7 +584,7 @@ Standard Serial Numbers.")
 (define-public perl-business-ismn
   (package
     (name "perl-business-ismn")
-    (version "1.13")
+    (version "1.131")
     (source
      (origin
        (method url-fetch)
@@ -592,7 +592,7 @@ Standard Serial Numbers.")
                            "Business-ISMN-" version ".tar.gz"))
        (sha256
         (base32
-         "0cm1v75axg4gp6cnbyavmnqqjscsxh7nc60vcbw34rqivvf9idc9"))))
+         "1xyc7x4c4xl930rz7grs1l52f1vg4rbiv0c6xlxdsim8qsh7k94g"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-tie-cycle" ,perl-tie-cycle)))
@@ -1165,7 +1165,7 @@ little other than manage the instantiation of a single object.")
 (define-public perl-class-tiny
   (package
     (name "perl-class-tiny")
-    (version "1.000")
+    (version "1.006")
     (source
      (origin
        (method url-fetch)
@@ -1173,7 +1173,7 @@ little other than manage the instantiation of a single object.")
                            "Class-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "0jll90byj0nl16hwpf28k54i4n53jidjsj1bnlbx72v0n56qfpb2"))))
+         "0knbi1agcfc9d7fca0szvxr6335pb22pc5n648q1vrcba8qvvz1f"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Class-Tiny/")
     (synopsis "Minimalist class construction")
@@ -3130,14 +3130,14 @@ self-contained C libraries.  This module main goal is to help in that task.")
 (define-public perl-extutils-pkgconfig
   (package
     (name "perl-extutils-pkgconfig")
-    (version "1.15")
+    (version "1.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/"
                                   "ExtUtils-PkgConfig-" version ".tar.gz"))
               (sha256
                (base32
-                "1cxh6w8vmyqmhl6afys2q6z6jkp1m6zvacpk70196zmk48p1kcv9"))))
+                "0vhwh0731rhh1sswmvagq0myn754dnkab8sizh6d3n6pjpcwxsmv"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("pkg-config" ,pkg-config)))
@@ -3447,7 +3447,7 @@ the installation.")
 (define-public perl-file-sharedir-dist
   (package
     (name "perl-file-sharedir-dist")
-    (version "0.04")
+    (version "0.05")
     (source
      (origin
        (method url-fetch)
@@ -3455,7 +3455,7 @@ the installation.")
                            "File-ShareDir-Dist-" version ".tar.gz"))
        (sha256
         (base32
-         "028vnjw3fdmwk540w3b07cmr93ap0s13ni2b4c7iv56mgyy6gfc1"))))
+         "1xkmrckp1qfi9ik098n2vz0r8g7wfwp2y05zjd100w6wcqwfzcpn"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/File-ShareDir-Dist/")
     (synopsis "Locate per-dist shared files")
@@ -4120,7 +4120,7 @@ versa using either JSON::XS or JSON::PP.")
 (define-public perl-json-any
   (package
     (name "perl-json-any")
-    (version "1.38")
+    (version "1.39")
     (source
      (origin
        (method url-fetch)
@@ -4128,7 +4128,7 @@ versa using either JSON::XS or JSON::PP.")
                            "JSON-Any-" version ".tar.gz"))
        (sha256
         (base32
-         "0mk6shg82i7y852bvj5d0qqma1d9k0jh10k4mg62hbgr800gb2m4"))))
+         "1hspg6khjb38syn59cysnapc1q77qgavfym3fqr6l2kiydf7ajdf"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -4252,7 +4252,7 @@ logging mechanism.")
 (define-public perl-log-log4perl
   (package
     (name "perl-log-log4perl")
-    (version "1.47")
+    (version "1.49")
     (source
      (origin
        (method url-fetch)
@@ -4262,7 +4262,7 @@ logging mechanism.")
              ".tar.gz"))
        (sha256
         (base32
-         "0vxraq9navx5mgf8y8g6l5rbl3dv2ml8bishka5m69hj07nxs0ch"))))
+         "05ifhx1lmv91dbs9ck2zbjrkhh8z9g32gi6gxdmwnilia5zihfdp"))))
     (build-system perl-build-system)
     (home-page
      "http://search.cpan.org/dist/Log-Log4perl/")
@@ -6622,7 +6622,7 @@ and @code{deserialize_regexp}.")
 (define-public perl-safe-isa
   (package
     (name "perl-safe-isa")
-    (version "1.000005")
+    (version "1.000008")
     (source
      (origin
        (method url-fetch)
@@ -6630,7 +6630,7 @@ and @code{deserialize_regexp}.")
                            "Safe-Isa-" version ".tar.gz"))
        (sha256
         (base32
-         "1vib54cp64dy3ic4n73skadp1pl4gn8s9qpxmzvi078dm3mpnbcw"))))
+         "08r74hwxq5b3bibnbwjr9anybg15l3zqdgcirpw1xm2qpvcxgdkx"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Safe-Isa/")
     (synopsis "Call isa, can, does, and DOES safely")
@@ -6957,7 +6957,7 @@ custom-built routines.")
 (define-public perl-sub-exporter-progressive
   (package
     (name "perl-sub-exporter-progressive")
-    (version "0.001011")
+    (version "0.001013")
     (source
      (origin
        (method url-fetch)
@@ -6965,7 +6965,7 @@ custom-built routines.")
                            "Sub-Exporter-Progressive-" version ".tar.gz"))
        (sha256
         (base32
-         "01kwzbqwdhvadpphnczid03nlyj0h4cxaq3m3v2401bckkkcc606"))))
+         "0mn0x8mkh36rrsr58s1pk4srwxh2hbwss7sv630imnk49navfdfm"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-sub-exporter" ,perl-sub-exporter)))
     (home-page "http://search.cpan.org/dist/Sub-Exporter-Progressive/")
@@ -7134,7 +7134,36 @@ statements: @code{switch} and @code{case}.")
                                   "Sys-CPU-" version ".tar.gz"))
               (sha256
                (base32
-                "1r6976bs86j7zp51m5vh42xlyah951jgdlkimv202413kjvqc2i5"))))
+                "1r6976bs86j7zp51m5vh42xlyah951jgdlkimv202413kjvqc2i5"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; The contents of /proc/cpuinfo can differ and confuse the
+                  ;; cpu_clock and cpu_type methods, so we replace the test
+                  ;; with one that marks cpu_clock and cpu_type as TODO.
+                  ;; Borrowed from Debian.
+                  (call-with-output-file "t/Sys-CPU.t"
+                    (lambda (port)
+                      (format port "#!/usr/bin/perl
+
+use Test::More tests => 4;
+
+BEGIN { use_ok('Sys::CPU'); }
+
+$number = &Sys::CPU::cpu_count();
+ok( defined($number), \"CPU Count: $number\" );
+
+TODO: {
+    local $TODO = \"/proc/cpuinfo doesn't always report 'cpu MHz' or 'clock' or 'bogomips' ...\";
+    $speed = &Sys::CPU::cpu_clock();
+    ok( defined($speed), \"CPU Speed: $speed\" );
+}
+
+TODO: {
+    local $TODO = \"/proc/cpuinfo doesn't always report 'model name' or 'machine' ...\";
+    $type = &Sys::CPU::cpu_type();
+    ok( defined($type), \"CPU Type:  $type\" );
+}~%")))))))
     (build-system perl-build-system)
     (synopsis "Perl extension for getting CPU information")
     (description
@@ -8697,7 +8726,7 @@ algorism to indicate multiplication by 1000.")
 (define-public perl-text-table
   (package
     (name "perl-text-table")
-    (version "1.130")
+    (version "1.133")
     (source
      (origin
        (method url-fetch)
@@ -8705,7 +8734,7 @@ algorism to indicate multiplication by 1000.")
                            "Text-Table-" version ".tar.gz"))
        (sha256
         (base32
-         "02c8v38k639r23dgxwgvsy4myjjzvgdb238kpiffsiz25ab3xp5j"))))
+         "04kh5x5inq183rdg221wlqaaqi1ipyj588mxsslik6nhc14f17nd"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -8813,7 +8842,7 @@ approximately follow the suggestions in the Perl Style Guide.")
 (define-public perl-tie-cycle
   (package
     (name "perl-tie-cycle")
-    (version "1.221")
+    (version "1.225")
     (source
      (origin
        (method url-fetch)
@@ -8821,7 +8850,7 @@ approximately follow the suggestions in the Perl Style Guide.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "10g6kirf6jfaldckg98y4pl87vrm7grqlg6ymb7a9vhrznyn7qn6"))))
+         "0i9xq2qm50p2ih24265jndp2x8hfq7ap0d88nrlv5yaad4hxhc7k"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Tie-Cycle/")
     (synopsis "Cycle through a list of values")

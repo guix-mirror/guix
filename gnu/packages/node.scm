@@ -40,14 +40,14 @@
 (define-public node
   (package
     (name "node")
-    (version "8.4.0")
+    (version "8.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "1vrpc4lspm33hmb8c2q4w1fzg3iaip2gx4wpr4nyy417hbx1a6k4"))))
+                "1a0ginagx3pav6v7adyp76jisia4qgbsq6pz3als4kshwlk4a667"))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO: Purge the bundled copies from the source.
@@ -76,10 +76,6 @@
                (("'/usr/bin/env'")
                 (string-append "'" (which "env") "'")))
 
-             ;; Linting is no longer supported in the release tarball
-             (substitute* '("Makefile")
-               (("	\\$\\(MAKE\\) lint") ""))
-
              ;; FIXME: This test seems to depends on files that are not
              ;; available in the bundled v8. See
              ;; https://github.com/nodejs/node/issues/13344
@@ -92,6 +88,8 @@
                          "test/parallel/test-util-inspect.js"
                          "test/parallel/test-v8-serdes.js"
                          "test/parallel/test-dgram-membership.js"
+                         "test/parallel/test-dgram-multicast-set-interface-lo.js"
+                         "test/parallel/test-dns-cancel-reverse-lookup.js"
                          "test/parallel/test-dns-resolveany.js"
                          "test/parallel/test-cluster-master-error.js"
                          "test/parallel/test-cluster-master-kill.js"

@@ -210,6 +210,20 @@ inconclusive reports."
        (report (G_ "~a contents match:~%") item)
        (report-hashes item local narinfos)))))
 
+(define (summarize-report-list reports)
+  "Display the overall summary of REPORTS."
+  (let ((total         (length reports))
+        (inconclusive  (count comparison-report-inconclusive? reports))
+        (matches       (count comparison-report-match? reports))
+        (discrepancies (count comparison-report-mismatch? reports)))
+    (report (G_ "~h store items were analyzed:~%") total)
+    (report (G_ "  - ~h (~,1f%) were identical~%")
+            matches (* 100. (/ matches total)))
+    (report (G_ "  - ~h (~,1f%) differed~%")
+            discrepancies (* 100. (/ discrepancies total)))
+    (report (G_ "  - ~h (~,1f%) were inconclusive~%")
+            inconclusive (* 100. (/ inconclusive total)))))
+
 
 ;;;
 ;;; Command-line options.
@@ -264,7 +278,8 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
 
 (define (guix-challenge . args)
   (with-error-handling
-    (let* ((opts     (parse-command-line args %options (list %default-options)))
+    (let* ((opts     (parse-command-line args %options (list %default-options)
+                                         #:build-options? #f))
            (files    (filter-map (match-lambda
                                    (('argument . file) file)
                                    (_ #f))
@@ -292,6 +307,8 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                                     (reports (compare-contents items urls)))
                  (for-each (cut summarize-report <> #:verbose? verbose?)
                            reports)
+                 (report "\n")
+                 (summarize-report-list reports)
 
                  (exit (cond ((any comparison-report-mismatch? reports) 2)
                              ((every comparison-report-match? reports) 0)

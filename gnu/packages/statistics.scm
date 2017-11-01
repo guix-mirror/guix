@@ -28,6 +28,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
@@ -5071,7 +5072,7 @@ expected shortfall risk are also included.")
        (uri (cran-uri "nloptr" version))
        (sha256
         (base32
-         "1cypz91z28vhvwq2rzqjrbdc6a2lvfr2g16vid2sax618q6ai089"))))
+         "1sz1xj3785x4vsm4nd6in298bk32hs2jk5nsxma7ivxi7jcmn8l4"))))
     (build-system r-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -5467,3 +5468,62 @@ appearance, reversing, and randomly shuffling), and tools for modifying factor
 levels (including collapsing rare levels into other, \"anonymizing\", and
 manually \"recoding\").")
     (license license:gpl3)))
+
+(define-public r-tgstat
+  (let ((changeset "4f8e60c03598f49aff6f5beeab40f2b995377e9f")
+        (revision "1"))
+    (package
+      (name "r-tgstat")
+      (version (string-append "1.0.2-" revision "." (string-take changeset 7)))
+      (source
+       (origin
+         (method hg-fetch)
+         (uri (hg-reference
+               (url "https://bitbucket.org/tanaylab/tgstat")
+               (changeset changeset)))
+         (sha256
+          (base32
+           "0ilkkyximy77zbncm91kdfqbxf0qyndg16pd3q3p6a3xc9qcmxvn"))))
+      (build-system r-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-isnan
+             (lambda _
+               (substitute* "src/tgstat.h"
+                 (("#define isnan ::isnan")
+                  "#define isnan std::isnan"))
+               #t)))))
+      (propagated-inputs
+       `(("r-rcpp" ,r-rcpp)))
+      (home-page "https://bitbucket.org/tanaylab/tgstat/")
+      (synopsis "Tanay's group statistical utilities")
+      (description
+       "The goal of tgstat is to provide fast and efficient statistical
+tools.")
+      (license license:gpl2))))
+
+(define-public r-tgconfig
+  (let ((changeset "1e02c7614713bd0866c46f0c679a058f8c6d627e")
+        (revision "1"))
+    (package
+      (name "r-tgconfig")
+      (version (string-append "0.0.0.9000-" revision "." (string-take changeset 7)))
+      (source
+       (origin
+         (method hg-fetch)
+         (uri (hg-reference
+               (url "https://bitbucket.org/tanaylab/tgconfig")
+               (changeset changeset)))
+         (sha256
+          (base32
+           "0xy6c7s7mn1yx191154bwbv1bl424bnvc80syqpl1vdl28ba46rj"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-yaml" ,r-yaml)))
+      (home-page "https://bitbucket.org/tanaylab/tgconfig/")
+      (synopsis "Infrastructure for managing package parameters")
+      (description
+       "The goal of tgconfig is to provide infrastructure for managing package
+parameters.")
+      (license license:gpl3))))

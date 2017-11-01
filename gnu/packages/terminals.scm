@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;;
@@ -27,6 +28,7 @@
 (define-module (gnu packages terminals)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
@@ -51,6 +53,7 @@
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-26))
 
 (define-public tilda
@@ -537,3 +540,33 @@ eye-candy, customizable, and reasonably lightweight.")
                 license:silofl1.1
                 license:x11
                 license:bsd-3)))))
+
+(define-public sakura
+  (package
+    (name "sakura")
+    (version "3.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://launchpad.net/" name "/trunk/"
+                                  version "/+download/" name "-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "0fhcn3540iw22l5zg3njh5z8cj0g2n9p6fvagjqa5zc323jfsc7b"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; no check phase
+     '(#:tests? #f))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("perl" ,perl)               ; for pod2man
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxft" ,libxft)
+       ("vte" ,vte)))
+    (home-page "https://launchpad.net/sakura")
+    (synopsis "A simple but powerful libvte-based terminal emulator")
+    (description "@code{Sakura} is a terminal emulator based on GTK+ and VTE.
+It's a terminal emulator with few dependencies, so you don't need a full GNOME
+desktop installed to have a decent terminal emulator.")
+    (license license:gpl2)))

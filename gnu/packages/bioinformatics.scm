@@ -1836,64 +1836,6 @@ files between different genome assemblies.  It supports most commonly used
 file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
     (license license:gpl2+)))
 
-(define-public cufflinks
-  (package
-    (name "cufflinks")
-    (version "2.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://cole-trapnell-lab.github.io/"
-                                  "cufflinks/assets/downloads/cufflinks-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1bnm10p8m7zq4qiipjhjqb24csiqdm1pwc8c795z253r2xk6ncg8"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:make-flags
-       (list
-        ;; The includes for "eigen" are located in a subdirectory.
-        (string-append "EIGEN_CPPFLAGS="
-                       "-I" (assoc-ref %build-inputs "eigen")
-                       "/include/eigen3/")
-        ;; Cufflinks must be linked with various boost libraries.
-        (string-append "LDFLAGS="
-                       (string-join '("-lboost_system"
-                                      "-lboost_serialization"
-                                      "-lboost_thread"))))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-search-for-bam
-          (lambda _
-            (substitute* '("ax_bam.m4"
-                           "configure"
-                           "src/hits.h")
-              (("<bam/sam\\.h>") "<samtools/sam.h>")
-              (("<bam/bam\\.h>") "<samtools/bam.h>")
-              (("<bam/version\\.hpp>") "<samtools/version.h>"))
-            #t)))
-       #:configure-flags
-       (list (string-append "--with-bam="
-                            (assoc-ref %build-inputs "samtools")))))
-    (inputs
-     `(("eigen" ,eigen)
-       ("samtools" ,samtools-0.1)
-       ("htslib" ,htslib)
-       ("boost" ,boost)
-       ("python" ,python-2)
-       ("zlib" ,zlib)))
-    (home-page "http://cole-trapnell-lab.github.io/cufflinks/")
-    (synopsis "Transcriptome assembly and RNA-Seq expression analysis")
-    (description
-     "Cufflinks assembles RNA transcripts, estimates their abundances,
-and tests for differential expression and regulation in RNA-Seq
-samples.  It accepts aligned RNA-Seq reads and assembles the
-alignments into a parsimonious set of transcripts.  Cufflinks then
-estimates the relative abundances of these transcripts based on how
-many reads support each one, taking into account biases in library
-preparation protocols.")
-    (license license:boost1.0)))
-
 (define-public cutadapt
   (package
     (name "cutadapt")
@@ -2117,7 +2059,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.10")
+    (version "0.9.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2126,7 +2068,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "13qqzwg54n5dqh8pm5n3v8x6gqbczzakphwwjix63qv60hcd5bqd"))))
+                "1yqil5531p35xkqa44x75vvq8s7w8kqjqn1p5hf1nh0d91j9ihby"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -6199,7 +6141,7 @@ SELECT or UPDATE queries to an end-point.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.5.0")
+    (version "2.5.2")
     (source
      (origin
        (method url-fetch)
@@ -6209,7 +6151,7 @@ SELECT or UPDATE queries to an end-point.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1k8wf3qns4mqrsizywbkqcasqjw000m4drxsag3qd7390pwvf9kz"))
+         "1z10psrwhflchwzw1fvzwnsn59xglf94qrn7msj93fpnjgafvmks"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin

@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
@@ -49,6 +49,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
@@ -68,6 +69,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -585,18 +587,19 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.3.4")
+    (version "3.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0mx9dvad3lkyhvsrblf280x2bz6dxajya1ylnspbdzldj0dpxfcq"))))
+               "1vzvpx8ixy8m44f8qwp833hv253hpghybgzbc4n8b3div3j0dvmf"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("frei0r-plugins" ,frei0r-plugins)
        ("gnutls" ,gnutls)
        ("opus" ,opus)
        ("ladspa" ,ladspa)
@@ -636,7 +639,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ;; possible additional inputs:
        ;;   --enable-avisynth        enable reading of AviSynth script
        ;;                            files [no]
-       ;;   --enable-frei0r          enable frei0r video filtering
        ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
        ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
        ;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
@@ -684,6 +686,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        '("--enable-avresample"
          "--enable-gpl" ; enable optional gpl licensed parts
          "--enable-shared"
+         "--enable-frei0r"
          "--enable-fontconfig"
          "--enable-gnutls"
          "--enable-ladspa"
@@ -750,6 +753,19 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license license:gpl2+)))
+
+;; XXX: Remove this when gst-libav and qtox supports 3.4.
+(define-public ffmpeg-3.3
+  (package
+    (inherit ffmpeg)
+    (version "3.3.5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "00nq8ng2p16yb48acargaz1hlp9kq24vfwvkqjlslz4a7864k4x8"))))))
 
 (define-public ffmpeg-2.8
   (package
@@ -1050,7 +1066,7 @@ projects while introducing many more.")
 (define-public gnome-mpv
   (package
     (name "gnome-mpv")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
@@ -1059,7 +1075,7 @@ projects while introducing many more.")
                            ".tar.xz"))
        (sha256
         (base32
-         "0dcnz9vlf791v8d15j7hpymv87h6nb15alww6xjq0zpal5hi44kc"))))
+         "1w944ymyssgfcjiczrq4saig90crw9b9hhdsnchfbjsw173qi8n5"))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -1116,7 +1132,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.10.20")
+    (version "2017.10.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1124,7 +1140,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0npr8b1xg1dylz717kfllw433h1y16251npzch48lchq69bhm4iy"))))
+                "1yajwi2cr8j05j1rn61gs7yrr93nri4cq8n4zkb3w4a8413h7q4g"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1233,7 +1249,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.915")
+    (version "0.4.939")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1242,7 +1258,7 @@ other site that youtube-dl supports.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "147qf8kdxjv9003fgx50ws0rmjjq98sv11q6c3sdwd29zylaj1ql"))))
+                "1amkdfnjn2j4k7jlr7qw9mg5whd7dy6z1flh5cd0n9v3d4m7k0c5"))))
     (build-system python-build-system)
     (arguments
      ;; no tests
@@ -2472,3 +2488,113 @@ tools for styling them, including a built-in real-time video preview.")
    ; by upstream). See https://github.com/Aegisub/Aegisub/blob/master/LICENCE
    ; src/MatroskaParser.(c|h) is under bsd-3 with permission from the author
 
+(define-public gst-transcoder
+  (package
+    (name "gst-transcoder")
+    (version "1.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/pitivi/gst-transcoder/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cnwmrsd321s02ff91m3j27ydj7f8wks0jvmp5admlhka6z7zxm9"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("glib" ,glib)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (native-inputs
+     `(("python" ,python)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/pitivi/gst-transcoder/")
+    (synopsis "GStreamer Transcoding API")
+    (description "GStreamer Transcoding API")
+    (license license:lgpl2.1)))
+
+(define-public gavl
+  (package
+    (name "gavl")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/gmerlin/"
+                           name "/" version "/"
+                           name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kikkn971a14zzm7svi7190ldc14fjai0xyhpbcmp48s750sraji"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("LIBS=-lm")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("doxygen" ,doxygen)))
+    (home-page "http://gmerlin.sourceforge.net")
+    (synopsis "Low level library for multimedia API building")
+    (description
+     "Gavl is short for Gmerlin Audio Video Library.  It is a low level
+library, upon which multimedia APIs can be built.  Gavl handles all the
+details of audio and video formats like colorspaces, sample rates,
+multichannel configurations, etc.  It provides standardized definitions for
+those formats as well as container structures for carrying audio samples or
+video images inside an application.
+
+In addition, it handles the sometimes ugly task of converting between all
+these formats and provides some elementary operations (copying, scaling,
+alpha blending etc).")
+    (license license:gpl3)))
+
+(define-public frei0r-plugins
+  (package
+    (name "frei0r-plugins")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://files.dyne.org/frei0r/"
+                           "frei0r-plugins-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pji26fpd0dqrx1akyhqi6729s394irl73dacnyxk58ijqq4dhp0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autotools
+           (lambda _
+             (zero? (system* "sh" "autogen.sh")))))))
+    ;; TODO: opencv for additional face detection filters
+    (inputs
+     `(("gavl" ,gavl)
+       ("cairo" ,cairo)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)))
+    (home-page "https://www.dyne.org/software/frei0r/")
+    (synopsis "Minimalistic plugin API for video effects")
+    (description
+     "Frei0r is a minimalistic plugin API for video effects.
+The main emphasis is on simplicity for an API that will round up
+the most common video effects into simple filters, sources and
+mixers that can be controlled by parameters.  Frei0r wants to
+provide a way to share these simple effects between many
+applications, avoiding their reimplementation by different projects.
+It counts more than 100 plugins.")
+    (license (list license:gpl2+
+                   ;; The following files are licensed as LGPL2.1+:
+                   ;; src/generator/ising0r/ising0r.c
+                   ;; src/generator/onecol0r/onecol0r.cpp
+                   ;; src/generator/nois0r/nois0r.cpp
+                   ;; src/generator/lissajous0r/lissajous0r.cpp
+                   ;; src/filter/ndvi/gradientlut.hpp
+                   ;; src/filter/ndvi/ndvi.cpp
+                   ;; src/filter/facedetect/facedetect.cpp
+                   license:lgpl2.1+))))

@@ -417,7 +417,7 @@ substitutes."
   ;; TRANSLATORS: Here 'dot' is the name of a program; it must not be
   ;; translated.
   (display (G_ "Usage: guix graph PACKAGE...
-Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
+Emit a representation of the dependency graph of PACKAGE...\n"))
   (display (G_ "
   -b, --backend=TYPE     produce a graph with the given backend TYPE"))
   (display (G_ "
@@ -447,12 +447,9 @@ Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
 
 (define (guix-graph . args)
   (with-error-handling
-    (let* ((opts     (args-fold* args %options
-                                 (lambda (opt name arg . rest)
-                                   (leave (G_ "~A: unrecognized option~%") name))
-                                 (lambda (arg result)
-                                   (alist-cons 'argument arg result))
-                                 %default-options))
+    (let* ((opts     (parse-command-line args %options
+                                         (list %default-options)
+                                         #:build-options? #f))
            (backend  (assoc-ref opts 'backend))
            (type     (assoc-ref opts 'node-type))
            (items    (filter-map (match-lambda

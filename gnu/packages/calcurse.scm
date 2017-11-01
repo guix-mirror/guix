@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,13 +39,17 @@
        (base32
         "0il0y06akdqgy0f9p40m4x6arn66nh7sr1w1i41bszycs7div266"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)
-              ("tzdata" ,tzdata)))
+    (inputs `(("ncurses" ,ncurses)))
+    (native-inputs `(("tzdata" ,tzdata-2017a)))
     (arguments
      ;; The ical tests all want to create a ".calcurse" directory, and may
      ;; fail with "cannot create directory '.calcurse': File exists" if run
      ;; concurently.
-     '(#:parallel-tests? #f
+     `(#:parallel-tests? #f
+       ;; Since this tzdata is only used for tests and not referenced by the
+       ;; built package, used the "fixed" obsolete version of tzdata and ensure
+       ;; it does not sneak in to the closure.
+       #:disallowed-references (,tzdata-2017a)
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'check-setup
                     (lambda* (#:key inputs #:allow-other-keys)

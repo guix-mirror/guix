@@ -275,7 +275,7 @@ all common programming languages.  Vala bindings are also provided.")
 (define-public lxc
   (package
     (name "lxc")
-    (version "2.0.8")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -283,7 +283,7 @@ all common programming languages.  Vala bindings are also provided.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "15449r56rqg3487kzsnfvz0w4p5ajrq0krcsdh6c9r6g0ark93hd"))))
+                "1xpghrinxhm2072fwmn42pxhjwh7qx6cbsipw4s6g38a8mkklrk8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -509,9 +509,12 @@ virtualization library.")
        ;; Some of the tests seem to require network access to install virtual
        ;; machines.
        #:tests? #f
+       #:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%python-build-system-modules)
        #:modules ((ice-9 match)
                   (srfi srfi-26)
                   (guix build python-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
                   (guix build utils))
        #:phases
        (modify-phases %standard-phases
@@ -545,9 +548,14 @@ virtualization library.")
                              `("GI_TYPELIB_PATH" ":" prefix
                                ,(filter identity paths))))
                          bin-files))
-             #t)))))
+             #t))
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (inputs
-     `(("gtk+" ,gtk+)
+     `(("dconf" ,dconf)
+       ("gtk+" ,gtk+)
        ("gtk-vnc" ,gtk-vnc)
        ("libvirt" ,libvirt)
        ("libvirt-glib" ,libvirt-glib)

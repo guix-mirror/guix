@@ -3592,6 +3592,11 @@ package source code's remote URI and filesystem hierarchy structure.  In
 some cases, you will need to unpack the package's source code to a
 different directory structure than the one indicated by the import path,
 and @code{#:unpack-path} should be used in such cases.
+
+Packages that provide Go libraries should be installed along with their
+source code.  The key @code{#:install-source?}, which defaults to
+@code{#t}, controls whether or not the source code is installed.  It can
+be set to @code{#f} for packages that only provide executable files.
 @end defvr
 
 @defvr {Scheme Variable} glib-or-gtk-build-system
@@ -7276,6 +7281,13 @@ updating list of substitutes from 'https://guix.example.org'... 100.0%
   local hash: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
   https://hydra.gnu.org/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
   https://guix.example.org/nar/@dots{}-pius-2.1.1: 1cy25x1a4fzq5rk0pmvc8xhwyffnqz95h2bpvqsz2mpvlbccy0gs
+
+@dots{}
+
+6,406 store items were analyzed:
+  - 4,749 (74.1%) were identical
+  - 525 (8.2%) differed
+  - 1,132 (17.7%) were inconclusive
 @end smallexample
 
 @noindent

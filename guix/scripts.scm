@@ -67,11 +67,13 @@ reporting."
 
 (define* (parse-command-line args options seeds
                              #:key
+                             (build-options? #t)
                              (argument-handler %default-argument-handler))
-  "Parse the command-line arguments ARGS as well as arguments passed via the
-'GUIX_BUILD_OPTIONS' environment variable according to OPTIONS (a list of
-SRFI-37 options) and return the result, seeded by SEEDS.
-Command-line options take precedence those passed via 'GUIX_BUILD_OPTIONS'.
+  "Parse the command-line arguments ARGS according to OPTIONS (a list of
+SRFI-37 options) and return the result, seeded by SEEDS.  When BUILD-OPTIONS?
+is true, also pass arguments passed via the 'GUIX_BUILD_OPTIONS' environment
+variable.  Command-line options take precedence those passed via
+'GUIX_BUILD_OPTIONS'.
 
 ARGUMENT-HANDLER is called for non-option arguments, like the 'operand-proc'
 parameter of 'args-fold'."
@@ -85,7 +87,9 @@ parameter of 'args-fold'."
 
   (call-with-values
       (lambda ()
-        (parse-options-from (environment-build-options) seeds))
+        (if build-options?
+            (parse-options-from (environment-build-options) seeds)
+            (apply values seeds)))
     (lambda seeds
       ;; ARGS take precedence over what the environment variable specifies.
       (parse-options-from args seeds))))

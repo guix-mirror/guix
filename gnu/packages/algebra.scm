@@ -207,7 +207,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.2.3-57")
+    (version "1.4.9-17")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -219,7 +219,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "0a7c1r2rgsin671qy98yvwgkg6a81d0pp0p4p7sydhrfi1k9xpr1"))))
+                "0fabw706hixp4da4pgkbjrlf9gk4xrmv404f884jb24bnmb5hbax"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -229,13 +229,6 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
              ;; Some Makefiles contain hard-coded "/bin/cp".
              (substitute* (find-files "doc" "^Makefile")
                (("/bin/cp") (which "cp")))
-             #t))
-         (add-after 'unpack 'disable-broken-test
-           (lambda _
-             ;; Disable failing test.  Actually, the results are correct but
-             ;; a sorting discrepancy prevents the test from being validated.
-             (substitute* "check/Makefile.in"
-               (("chk_fhan16") ""))
              #t)))))
     (inputs
      `(("fltk" ,fltk)

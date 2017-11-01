@@ -368,8 +368,8 @@ It has been modified to remove all non-free binary blobs.")
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 
-(define %linux-libre-version "4.13.9")
-(define %linux-libre-hash "1ymsdvm4djh7hg2wmn2v11w380i0ss9nkp4slfrgihdvn6yp5gbv")
+(define %linux-libre-version "4.13.10")
+(define %linux-libre-hash "0y1p5b1rxpbr3apvqqv589qwzfyzjpdrzysfj4h17s0k4gy6c5p8")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -378,14 +378,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.58"
-                    "0f1yxdvzdr1zfkh86i9z0p7ywdlz0blxnd11wbnw763qyk3qydyk"
+  (make-linux-libre "4.9.59"
+                    "0z8hq8a6ic38xh33idzl0k0yi4isgd7ncl2g1d6mzf9ixw5krhvc"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.94"
-                    "0g63is8d2k1mf1kaljkll79n7gzh4qn0fmrm2r9sab2sq41hch1m"
+  (make-linux-libre "4.4.95"
+                    "1k2lp1jgbm5xkl3qf0cqmp07hlv03jaws68l3irid95j99prsw0b"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 

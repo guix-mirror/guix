@@ -15,7 +15,7 @@
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015, 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -1097,6 +1097,119 @@ etc.).  The package is structured to make adding new modules easy.")
          ,@(alist-delete
             "python"
             (package-inputs pycrypto)))))))
+
+(define-public python-humanfriendly
+  (package
+    (name "python-humanfriendly")
+    (version "4.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "humanfriendly" version))
+       (sha256
+        (base32
+         "0pisgizjql86785jchfjv217g0lsgk114g2lja5j4y3lsc3b9szi"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; XXX: Tests depend on coloredlogs, which in turn depends on humanfriendly.
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-monotonic" ,python-monotonic)))
+    (home-page "https://humanfriendly.readthedocs.io")
+    (synopsis "Human-friendly input and output in Python")
+    (description
+     "The functions and classes in @code{humanfriendly} can be used to make
+text interfaces more user-friendly.  It includes tools to parse and format
+numbers, file sizes, and timespans, timers for long-running operations, menus
+to allow the user to choose from a list of options, and terminal interaction
+helpers.")
+    (license license:expat)))
+
+(define-public python2-humanfriendly
+  (package-with-python2 python-humanfriendly))
+
+(define-public python-capturer
+  (package
+    (name "python-capturer")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "capturer" version))
+       (sha256
+        (base32
+         "05d6ji4j8ipiq0br7bwam38qc6hd9l1djmfxlzrxx19ziyjl4089"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-humanfriendly" ,python-humanfriendly)))
+    (home-page "https://capturer.readthedocs.io")
+    (synopsis "Capture stdout and stderr streams of the current process")
+    (description
+     "The capturer package makes it easy to capture the stdout and stderr
+streams of the current process and subprocesses.  Output can be relayed
+to the terminal in real time but is also available to the Python program
+for additional processing.")
+    (license license:expat)))
+
+(define-public python2-capturer
+  (package-with-python2 python-capturer))
+
+(define-public python-verboselogs
+  (package
+    (name "python-verboselogs")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "verboselogs" version))
+       (sha256
+        (base32
+         "09z4d1jiasn7k1hs5af2ckmnrd0i1d1m04bhfjhv7z6svzfdwgg3"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-astroid" ,python-astroid)
+       ("python-pylint" ,python-pylint)))
+    (home-page "https://verboselogs.readthedocs.io")
+    (synopsis "Verbose logging level for Python's logging module")
+    (description
+     "The @code{verboselogs} package extends Python's @code{logging} module to
+add the log levels NOTICE, SPAM, SUCCESS and VERBOSE.")
+    (license license:expat)))
+
+(define-public python2-verboselogs
+  (package-with-python2 python-verboselogs))
+
+(define-public python-coloredlogs
+  (package
+    (name "python-coloredlogs")
+    (version "7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "coloredlogs" version))
+       (sha256
+        (base32
+         "1blcann6dyg5dhps9pg12rn0q0rjrlajpmmil0gy0j4cbvnl2il9"))))
+    (build-system python-build-system)
+    (arguments
+     `(;Tests require some updated modules
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-capturer" ,python-capturer)))
+    (home-page "https://coloredlogs.readthedocs.io")
+    (synopsis "Colored stream handler for Python's logging module")
+    (description
+     "The @code{coloredlogs} package enables colored terminal output for
+Python's logging module.  The @code{ColoredFormatter} class inherits from
+@code{logging.Formatter} and uses ANSI escape sequences to render your logging
+messages in color.")
+    (license license:expat)))
+
+(define-public python2-coloredlogs
+  (package-with-python2 python-coloredlogs))
 
 (define-public python-eventlet
   (package
@@ -6524,13 +6637,13 @@ of the structure, dynamics, and functions of complex networks.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "3.13.3")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "1nixb944r4hlskwkzc4wjs34b40xpxpw9gmhhm5p09gvmm22ap5d"))))
+        (base32 "0mgl44q152ws40zj2vicqark5szyd73vqy9pf26g6hk6dk0y0c79"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
@@ -6549,7 +6662,11 @@ of the structure, dynamics, and functions of complex networks.")
              #t)))))
     (propagated-inputs
      `(("python-wrapt" ,python-wrapt)
-       ("python-requests" ,python-requests)))
+       ("python-requests" ,python-requests)
+       ("python-appdirs" ,python-appdirs)
+       ("python-configargparse" ,python-configargparse)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-ratelimiter" ,python-ratelimiter)))
     (home-page "https://bitbucket.org/snakemake/snakemake/wiki/Home")
     (synopsis "Python-based execution environment for make-like workflows")
     (description
@@ -9186,20 +9303,30 @@ config files.")
 (define-public python-configargparse
   (package
     (name "python-configargparse")
-    (version "0.10.0")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://pypi.python.org/packages/source/C/ConfigArgParse/"
+                    "https://pypi.io/packages/source/C/ConfigArgParse/"
                     "ConfigArgParse-" version ".tar.gz"))
               (sha256
                (base32
-                "19wh919gbdbzxzpagg52q3lm62yicm95ddlcx77dyjc1slyshl1v"))))
+                "0fgkiqh6r3rbkdq3k8c48m85g52k96686rw3a6jg4lcncrkpvk98"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-pyyaml" ,python-pyyaml)))
     (arguments
-     ;; FIXME: Bug in test suite filed upstream:
-     ;; https://github.com/bw2/ConfigArgParse/issues/32
-     '(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Bypass setuptools-shim because one test relies on "setup.py"
+             ;; being the first argument passed to the python call.
+             ;;
+             ;; NOTE: Many tests do not run because they rely on Python's
+             ;; built-in test.test_argparse, but we remove the unit tests from
+             ;; our Python installation.
+             (zero? (system* "python" "setup.py" "test")))))))
     (synopsis "Replacement for argparse")
     (description "A drop-in replacement for argparse that allows options to also
 be set via config files and/or environment variables.")
@@ -16740,3 +16867,27 @@ interpreter when it prints a stack trace.")
 
 (define-public python2-traceback2
   (package-with-python2 python-traceback2))
+
+(define-public python-ratelimiter
+  (package
+    (name "python-ratelimiter")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ratelimiter" version))
+       (sha256
+        (base32
+         "1dhz85mj5bqd2mij84ncs6pz32hgidr79hay4aqfmzaa4rbb497p"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f))          ; There are no tests in the pypi archive.
+    (home-page "https://github.com/RazerM/ratelimiter")
+    (synopsis "Simple rate limiting object")
+    (description
+     "The @code{ratelimiter} module ensures that an operation will not be
+executed more than a given number of times during a given period.")
+    (license license:asl2.0)))
+
+(define-public python2-ratelimiter
+  (package-with-python2 python-ratelimiter))
