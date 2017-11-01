@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,11 +26,13 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
@@ -426,3 +429,60 @@ plug-in system.")
                    license:public-domain          ;cpluff/examples
                    license:bsd-3                  ;misc, gtest
                    license:bsd-2)))))             ;xbmc/freebsd
+
+(define-public kodi-cli
+  (let ((commit "104dc23b2a993c8e6db8c46f4f8bec24b146549b") ; Add support for
+        (revision "1"))                                     ; `$HOME/.kodirc'.
+    (package
+      (name "kodi-cli")
+      (version (string-append "1.1-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url "https://github.com/nawar/kodi-cli")
+                                    (commit commit)))
+                (sha256
+                 (base32
+                  "1xjhasc5gngfxpr1dlzy6q24w0wpdfjx12p43fanjppxw4i49n5p"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system trivial-build-system)
+      (inputs
+       `(("bash"        ,bash)
+         ("curl"        ,curl)
+         ("mps-youtube" ,mps-youtube)))
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (copy-recursively (assoc-ref %build-inputs "source") ".")
+           (substitute* "kodi-cli"
+             (("/bin/bash") (string-append (assoc-ref %build-inputs "bash")
+                                           "/bin/bash"))
+             (("output=\\$\\((curl)" all curl)
+              (string-append "output=$("
+                             (assoc-ref %build-inputs "curl")
+                             "/bin/" curl))
+             (("play_youtube `(mpsyt)" all mpsyt)
+              (string-append "play_youtube `"
+                             (assoc-ref %build-inputs "mps-youtube")
+                             "/bin/" mpsyt)))
+           (install-file "kodi-cli" (string-append %output "/bin"))
+           #t)))
+      (home-page "https://github.com/nawar/kodi-cli")
+      (synopsis "Control Kodi from the command line")
+      (description "@code{kodi-cli} is a tool for sending commands to a Kodi
+server using JSON RPC.
+
+Features:
+
+@itemize
+@item Play, pause, stop the currently playing item.
+@item Skip forward or backward in the currently playing item.
+@item Play or queue to the currently list of YouTube videos.
+@item Interactive and noninteractive volume control.
+@item Interactive navigation.
+@item Send text to the Kodi keyboard.
+@item Toggle fullscreen.
+@item Update or clean Kodi libraries.
+@end itemize\n")
+      (license license:gpl2+))))
