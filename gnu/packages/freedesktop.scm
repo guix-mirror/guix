@@ -393,28 +393,17 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.13.0")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0lgywr1m0d79vr4s8aimj8a307nss29hhy68gjpqj7m667055c39"))))
+                "1f3sla6h0bw15fz8pjc67jhwj7pwmfdc7qlj42j5k9v116ycm07d"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         ;; Remove record shapes to workaround graphviz 2.40.1 problems.
-         ;; http://www.graphviz.org/content/i-havent-been-able-render-these-files-graphviz-226
-         ;; This will likely be fixed upstream in the next release.
-         ;; https://lists.freedesktop.org/archives/wayland-devel/2017-June/034218.html
-         (add-before 'build 'fix-graphviz
-           (lambda _
-             (substitute* "doc/doxygen/dot/x-architecture.gv"
-               (("Mrecord") "none"))
-             #t)))))
+     `(#:parallel-tests? #f))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("graphviz" ,graphviz)
