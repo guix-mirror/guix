@@ -211,8 +211,8 @@ backups (called chunks) to allow easy burning to CD/DVD.")
          (add-before 'build 'patch-pwd
            (lambda _
              (substitute* "Makefile"
-               (("/bin/pwd") (which "pwd"))
-               #t)))
+               (("/bin/pwd") (which "pwd")))
+             #t))
          (replace 'check
            (lambda _
              ;; XXX: The test_owner_parse, test_read_disk, and
