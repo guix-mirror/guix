@@ -405,7 +405,7 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
 (define-public libass
   (package
     (name "libass")
-    (version "0.13.7")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -413,11 +413,11 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
                     version "/libass-" version ".tar.xz"))
               (sha256
                (base32
-                "17byv926w1mxn56n896sxvdq4m0yv1l7qbm688h6zr3nzgsyarbh"))))
+                "18iqznl4mabhj9ywfsz4kwvbsplcv1jjxq50nxssvbj8my1267w8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("yasm" ,yasm)))
+       ("nasm" ,nasm)))
     (propagated-inputs
      `(("freetype" ,freetype)
        ("fribidi" ,fribidi)
