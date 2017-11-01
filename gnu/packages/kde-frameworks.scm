@@ -1320,6 +1320,51 @@ uses a job-based interface to queue tasks and execute them in an efficient way."
 ;; Tier 2 frameworks additionally depend on tier 1 frameworks, but still have
 ;; easily manageable dependencies.
 
+(define-public kactivities
+  (package
+    (name "kactivities")
+    (version "5.39.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0nkc1p7n6yvybcib6aqmnz08hwn3ryj1f9wbkiimgs0svr00sslq"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("boost" ,boost)
+       ("kauth" ,kauth)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("solid" ,solid)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Core components for the KDE Activity concept")
+    (description "KActivities provides the infrastructure needed to manage a
+user's activities, allowing them to switch between tasks, and for applications
+to update their state to match the user's current activity.  This includes a
+daemon, a library for interacting with that daemon, and plugins for integration
+with other frameworks.")
+    ;; triple licensed
+    (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
+
 (define-public kauth
   (package
     (name "kauth")
@@ -1862,53 +1907,6 @@ maintaining an index of the contents of your files.")
     ;; dual licensed
     (license (list license:gpl2+ license:lgpl2.1+))))
 
-(define-public kactivities
-  (package
-    (name "kactivities")
-    (version "5.39.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://kde/stable/frameworks/"
-                    (version-major+minor version) "/"
-                    name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0nkc1p7n6yvybcib6aqmnz08hwn3ryj1f9wbkiimgs0svr00sslq"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
-    (inputs
-     `(("boost" ,boost)
-       ("kauth" ,kauth)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)
-       ("solid" ,solid)))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Core components for the KDE Activity concept")
-    (description "KActivities provides the infrastructure needed to manage a
-user's activities, allowing them to switch between tasks, and for applications
-to update their state to match the user's current activity.  This includes a
-daemon, a library for interacting with that daemon, and plugins for integration
-with other frameworks.")
-    ;; triple licensed
-    (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
-
-;; NOTE: This package is listed as a tier 2 package even though it requires
-;;       kactivities - a tier 3 package.
 (define-public kactivities-stats
   (package
     (name "kactivities-stats")
