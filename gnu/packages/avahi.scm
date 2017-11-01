@@ -33,7 +33,7 @@
 (define-public avahi
   (package
     (name "avahi")
-    (version "0.6.31")
+    (version "0.7")
     (home-page "http://avahi.org")
     (source (origin
              (method url-fetch)
@@ -41,7 +41,7 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0j5b5ld6bjyh3qhd2nw0jb84znq0wqai7fsrdzg7bpg24jdp2wl3"))
+               "0128n7jlshw4bpx0vg8lwj8qwdisjxi7mvniwfafgnkzzrfrpaap"))
              (patches (search-patches "avahi-localstatedir.patch"))))
     (build-system gnu-build-system)
     (arguments
