@@ -5856,7 +5856,7 @@ displays results pretty-printed in XML or JSON with @code{restclient-mode}")
 (define-public emacs-which-key
   (package
     (name "emacs-which-key")
-    (version "3.0.1")
+    (version "3.0.2")
     (source
      (origin
        (method url-fetch)
@@ -5865,7 +5865,7 @@ displays results pretty-printed in XML or JSON with @code{restclient-mode}")
              version ".tar.gz"))
        (sha256
         (base32
-         "0zc9yivdkbxmcllhlbbcvsbj8g8nzzgs0xib488s08p4s0l7xs8m"))
+         "1xvd70cwq9n31f28viyjxmr3nn8l153gsy6scpszvgvjxkiikv24"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (arguments
