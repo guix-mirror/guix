@@ -1292,6 +1292,39 @@ which are used in DBus communication.")
 provides uniform access to generation of barcodes with data.")
     (license license:lgpl2.1+)))
 
+(define-public qqc2-desktop-style
+  (package
+    (name "qqc2-desktop-style")
+    (version "5.42.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1arlfhcshfs11pgf87jzjgln1p711zlx0v0q014740mbzb9g5wnk"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kconfigwidgets" ,kconfigwidgets) ; optional
+       ("kcoreaddons" ,kcoreaddons)
+       ("kiconthemes" ,kiconthemes) ; optional
+       ("kirigami" ,kirigami)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "QtQuickControls2 style that integrates with the desktop")
+    (description "This is a style for QtQuickControls2 which is using
+QWidget's QStyle to paint the controls in order to give it a native look and
+feel.")
+    ;; Mostly LGPL 2+, but many files are dual-licensed
+    (license (list license:lgpl2.1+ license:gpl3+))))
+
 (define-public solid
   (package
     (name "solid")
