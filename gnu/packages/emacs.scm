@@ -4077,21 +4077,21 @@ news items, openrc and runscripts.")
 (define-public emacs-evil
   (package
     (name "emacs-evil")
-    (version "1.2.12")
+    (version "1.2.13")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://bitbucket.org/lyro/evil/get/"
-                           version ".tar.bz2"))
-       (file-name (string-append name "-" version ".tar.bz2"))
+       (uri (string-append "https://github.com/emacs-evil/evil/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "17cda9fnbq3gmjcxs3lyq64gxswrf37y864bm53rldwsk3khq2yi"))))
+         "1z63zsxmsc6mh74wv6065carwqmgs7b7lz5044s12xvgsjfbwi8h"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-undo-tree" ,emacs-undo-tree)
        ("emacs-goto-chg" ,emacs-goto-chg)))
-    (home-page "https://bitbucket.com/lyro/evil")
+    (home-page "https://github.com/emacs-evil/evil")
     (synopsis "Extensible Vi layer for Emacs")
     (description
      "Evil is an extensible vi layer for Emacs.  It emulates the
