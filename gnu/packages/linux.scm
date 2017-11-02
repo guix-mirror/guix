@@ -527,6 +527,8 @@ providing the system administrator with some help in common tasks.")
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
                                "--enable-fs-paths-default=/run/current-system/profile/sbin"
+                               ;; Don't try to chown root:root mount and umount
+                               "--disable-makeinstall-chown"
                                ;; Install completions where our
                                ;; bash-completion package expects them.
                                (string-append "--with-bashcompletiondir="
