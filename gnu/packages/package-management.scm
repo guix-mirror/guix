@@ -732,7 +732,17 @@ This package provides Conda as a library.")
                  ;; And it aborts if the directory doesn't exist.
                  (mkdir-p target)
                  (zero? (system* "python" "utils/setup-testing.py" "install"
-                                 (string-append "--prefix=" out))))))))))
+                                 (string-append "--prefix=" out))))))
+           ;; The "activate" and "deactivate" scripts don't need wrapping.
+           ;; They also break when they are renamed.
+           (add-after 'wrap 'undo-wrap
+             (lambda* (#:key outputs #:allow-other-keys)
+               (with-directory-excursion (string-append (assoc-ref outputs "out") "/bin/")
+                 (delete-file "deactivate")
+                 (rename-file ".deactivate-real" "deactivate")
+                 (delete-file "activate")
+                 (rename-file ".activate-real" "activate")
+                 #t)))))))
     (description
      "Conda is a cross-platform, Python-agnostic binary package manager.  It
 is the package manager used by Anaconda installations, but it may be used for
