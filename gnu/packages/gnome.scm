@@ -2934,7 +2934,7 @@ service via the system message bus.")
 (define-public libgweather
   (package
     (name "libgweather")
-    (version "3.24.1")
+    (version "3.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2942,7 +2942,7 @@ service via the system message bus.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0g35xfcw9vh3sfff42blk9ksrlmkrjmj46h3ad0sqgdn6xh329qj"))))
+                "0vkbc8rvmrlfiws844izxfl01r6l9p6agf8vvgszzkry1gfbm12v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2957,12 +2957,6 @@ service via the system message bus.")
                (("/usr/share/zoneinfo/zone.tab")
                 (string-append (assoc-ref inputs "tzdata")
                                "/share/zoneinfo/zone.tab")))
-
-             ;; 'Asia/Rangoon' was renamed in tzdata-2016:
-             ;; <https://github.com/eggert/tz/commit/4368251ebf11310a4aadccd1910daeac9080c501>.
-             (substitute* "data/Locations.xml"
-               (("Asia/Rangoon")
-                "Asia/Yangon"))
              #t))
          (replace 'install
            (lambda _
