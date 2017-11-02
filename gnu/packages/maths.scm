@@ -192,14 +192,28 @@ programming languages.")
 (define-public units
   (package
    (name "units")
-   (version "2.14")
+   (version "2.16")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/units/units-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1s421bxm36akjsy3qzg6da1d1g20gh094ac2slqxipgkh8yqjcwx"))))
+                     "11hnp3gcmcc5kci2caxw4hs6m08h2mhqs3xzqq7iafx1ha2ggwyw"))))
    (build-system gnu-build-system)
+   (inputs
+    `(("readline" ,readline)
+      ("python" ,python-wrapper)        ;for 'units_cur' script
+      ("python-requests" ,python-requests)))
+   (arguments
+    `(#:phases (modify-phases %standard-phases
+                 (add-after 'install 'wrap-units_cur
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let* ((out (assoc-ref outputs "out"))
+                            (bin (string-append out "/bin")))
+                       (wrap-program (string-append bin "/units_cur")
+                         `("PYTHONPATH" ":" prefix
+                           ,(search-path-as-string->list (getenv "PYTHONPATH"))))
+                       #t))))))
    (synopsis "Conversion between thousands of scales")
    (description
     "GNU Units converts numeric quantities between units of measure.  It

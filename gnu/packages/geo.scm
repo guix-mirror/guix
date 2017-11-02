@@ -75,7 +75,7 @@ topology functions.")
 (define-public gnome-maps
   (package
     (name "gnome-maps")
-    (version "3.24.3")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -83,30 +83,34 @@ topology functions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1mnhcrawdp6fyqylh0m8l259xdd7pqwibrjyl54rmsvnm8vfrwsy"))))
+                "0l40l7m9dyphvasiq1jxrn6ivavs1xwzn0bzz2x1z7x73955q783"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:configure-flags ; Ensure that geoclue is referred to by output.
+     `(#:configure-flags ;; Ensure that geoclue is referred to by output.
        (list (string-append "LDFLAGS=-L"
                             (assoc-ref %build-inputs "geoclue") "/lib")
              (string-append "CFLAGS=-I"
                             (assoc-ref %build-inputs "geoclue") "/include"))
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'install 'wrap
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out"))
-                  (gi-typelib-path (getenv "GI_TYPELIB_PATH"))
-                  (goa-path (string-append
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gi-typelib-path (getenv "GI_TYPELIB_PATH"))
+                   (goa-path (string-append
                               (assoc-ref inputs "gnome-online-accounts")
-                              "/lib")))
-              (wrap-program (string-append out "/bin/gnome-maps")
-               `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                              "/lib"))
+                   (webkitgtk-path (string-append
+                                    (assoc-ref inputs "webkitgtk")
+                                    "/lib")))
+               (wrap-program (string-append out "/bin/gnome-maps")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
 
-               ;; There seems to be no way to embed the path of libgoa-1.0.so.0.
-               `("LD_LIBRARY_PATH" ":" prefix (,goa-path)))
-              #t))))))
+                 ;; There seems to be no way to embed the path of
+                 ;; libgoa-1.0.so.0, libwebkit2gtk-4.0.so.37 and
+                 ;; libjavascriptcoregtk-4.0.so.18.
+                 `("LD_LIBRARY_PATH" ":" prefix (,goa-path ,webkitgtk-path)))
+               #t))))))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)

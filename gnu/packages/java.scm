@@ -2336,6 +2336,32 @@ package within @code{plexus-utils}, but has been separated in order to allow
 these two libraries to vary independently of one another.")
     (license license:asl2.0)))
 
+(define-public java-plexus-classworlds
+  (package
+    (name "java-plexus-classworlds")
+    (version "2.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/"
+                                  "plexus-classworlds/archive/plexus-classworlds-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1qm4p0rl8d82lzhsiwnviw11jnq44s0gflg78zq152xyyr2xmh8g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-classworlds.jar"
+       #:source-dir "src/main"
+       #:tests? #f));; FIXME: we need to generate some resources as in pom.xml
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://codehaus-plexus.github.io/plexus-classworlds/")
+    (synopsis "Java class loader framework")
+    (description "Plexus classworlds replaces the native ClassLoader mechanism
+of Java.  It is especially usefull for dynamic loading of application
+components.")
+    (license license:asl2.0)))
+
 (define-public java-asm
   (package
     (name "java-asm")
@@ -2538,6 +2564,74 @@ The jMock library
 @item is easy to extend.
 @end itemize\n")
     (license license:bsd-3)))
+
+(define-public java-jmock
+  (package
+    (inherit java-jmock-1)
+    (name "java-jmock")
+    (version "2.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jmock-developers/"
+                                  "jmock-library/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "18650a9g8xffcsdb6w91pbswa7f40fp2sh6s3nclkclz5dbzq8f0"))))
+    (inputs
+     `(("java-hamcrest-all" ,java-hamcrest-all)
+       ("java-asm" ,java-asm)
+       ("java-bsh" ,java-bsh)
+       ("java-junit" ,java-junit)))
+    (native-inputs
+     `(("cglib" ,java-cglib)))
+    (arguments
+     `(#:jar-name "java-jmock.jar"
+       #:source-dir "jmock/src/main/java"
+       #:test-dir "jmock/src/test"))))
+
+(define-public java-jmock-junit4
+  (package
+    (inherit java-jmock)
+    (name "java-jmock-junit4")
+    (arguments
+     `(#:jar-name "java-jmock-junit4.jar"
+       #:source-dir "jmock-junit4/src/main/java"
+       #:test-dir "jmock-junit4/src/test"))
+    (inputs
+     `(("java-hamcrest-all" ,java-hamcrest-all)
+       ("java-asm" ,java-asm)
+       ("java-bsh" ,java-bsh)
+       ("java-jmock" ,java-jmock)
+       ("java-jumit" ,java-junit)))))
+
+(define-public java-jmock-legacy
+  (package
+    (inherit java-jmock)
+    (name "java-jmock-legacy")
+    (arguments
+     `(#:jar-name "java-jmock-legacy.jar"
+       #:source-dir "jmock-legacy/src/main/java"
+       #:test-dir "jmock-legacy/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'copy-tests
+           (lambda _
+             ;; This file is a dependancy of some tests
+             (let ((file "org/jmock/test/acceptance/PackageProtectedType.java"))
+               (copy-file (string-append "jmock/src/test/java/" file)
+                          (string-append "jmock-legacy/src/test/java/" file))
+               #t))))))
+    (inputs
+     `(("java-hamcrest-all" ,java-hamcrest-all)
+       ("java-objenesis" ,java-objenesis)
+       ("java-cglib" ,java-cglib)
+       ("java-jmock" ,java-jmock)
+       ("java-asm" ,java-asm)
+       ("java-bsh" ,java-bsh)
+       ("java-junit" ,java-junit)))
+    (native-inputs
+     `(("java-jmock-junit4" ,java-jmock-junit4)))))
 
 (define-public java-hamcrest-all
   (package (inherit java-hamcrest-core)
@@ -6248,3 +6342,610 @@ manipulation simple.  It is a class library for editing bytecodes in Java; it
 enables Java programs to define a new class at runtime and to modify a class
 file when the JVM loads it.")
     (license (list license:gpl2 license:cddl1.0)))); either gpl2 only or cddl.
+
+(define-public java-jcommander
+  (package
+    (name "java-jcommander")
+    (version "1.71")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cbeust/jcommander/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1f5k2ckay6qjc3d3w3d7bc0p3cx3c7n6p6zxvw1kibqdr0q98wlx"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jcommander.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f; requires testng which depends on jcommander
+       #:source-dir "src/main/java"))
+    (home-page "http://jcommander.org")
+    (synopsis "Command line parameters parser")
+    (description "JCommander is a very small Java framework that makes it
+trivial to parse command line parameters.  Parameters are declared with
+annotations.")
+    (license license:asl2.0)))
+
+(define-public java-bsh
+  (package
+    (name "java-bsh")
+    (version "2.0b6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/beanshell/beanshell/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bawkxk6jyc75hxvzkpz689h73cn3f222m0ar3nvb0dal2b85kfv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "jarall"
+       #:test-target "junit-tests-all"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out") "/share/java")))
+               (mkdir-p share)
+               (copy-file "dist/bsh-2.0b6.jar" (string-append share "/bsh-2.0b6.jar"))
+               #t))))))
+    (home-page "http://beanshell.org/")
+    (synopsis "Lightweight Scripting for Java")
+    (description "BeanShell is a small, free, embeddable Java source
+interpreter with object scripting language features, written in Java.
+BeanShell dynamically executes standard Java syntax and extends it with common
+scripting conveniences such as loose types, commands, and method closures like
+those in Perl and JavaScript.")
+    (license license:asl2.0)))
+
+(define-public java-fest-util
+  (package
+    (name "java-fest-util")
+    (version "1.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alexruiz/fest-util/"
+                                  "archive/fest-util-" version ".tar.gz"))
+              (sha256
+               (base32
+                "05g6hljz5mdaakk8d7g32klbhz9bdwp3qlj6rdaggdidxs3x1sb8"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-fest-util.jar"
+       #:source-dir "src/main/java"))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://github.com/alexruiz/fest-util")
+    (synopsis "FEST common utilities")
+    (description "Common utilities used in all FEST module.")
+    (license license:asl2.0)))
+
+(define-public java-fest-test
+  (package
+    (name "java-fest-test")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alexruiz/fest-test/"
+                                  "archive/fest-test-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rxfbw6l9vc65iy1x3fb617qc6y4w2k430pgf1mfbxfdlxbm0f7g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-fest-test.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("junit" ,java-junit)))
+    (home-page "https://github.com/alexruiz/fest-test")
+    (synopsis "Common FEST testing infrastructure")
+    (description "Fest-test contains the common FEST testing infrastructure.")
+    (license license:asl2.0)))
+
+(define-public java-fest-assert
+  (package
+    (name "java-fest-assert")
+    (version "2.0M10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alexruiz/fest-assert-2.x/"
+                                  "archive/fest-assert-core-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bi0iqavikzww6rxvz5jyg7y6bflv95s6ibryxx0xfcxrrw6i5lw"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-fest-assert.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list
+         "**/Abstract*.java"
+         "**/*BaseTest.java"
+         ;; Unable to set MockitoNamingPolicy on cglib generator which creates FastClasses
+         "**/MessageFormatter_format_Test.java"
+         "**/internal/*/*_assert*_Test.java")))
+    (inputs
+     `(("java-fest-util" ,java-fest-util)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-fest-test" ,java-fest-test)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-mockito" ,java-mockito-1)
+       ("java-cglib" ,java-cglib)
+       ("java-objenesis" ,java-objenesis)
+       ("java-asm" ,java-asm)))
+    (home-page "https://github.com/alexruiz/fest-assert-2.x")
+    (synopsis "FEST fluent assertions")
+    (description "FEST-Assert provides a fluent interface for assertions.")
+    (license license:asl2.0)))
+
+(define-public java-testng
+  (package
+    (name "java-testng")
+    (version "6.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cbeust/testng/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01j2x47wkj7n5w6gpcjfbwgc88ai5654b23lb87w7nsrj63m3by6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jdk ,icedtea-8; java.util.function
+       #:jar-name "java-testng.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "src/test/resources" "build/test-classes")
+             #t))
+         (replace 'check
+           (lambda _
+             (system* "ant" "compile-tests")
+             ;; we don't have groovy
+             (substitute* "src/test/resources/testng.xml"
+               (("<class name=\"test.groovy.GroovyTest\" />") ""))
+             (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                         ":build/classes"
+                                                         ":build/test-classes")
+                             "-Dtest.resources.dir=src/test/resources"
+                             "org.testng.TestNG" "src/test/resources/testng.xml")))))))
+    (propagated-inputs
+     `(("junit" ,java-junit)
+       ("java-jsr305" ,java-jsr305)
+       ("java-bsh" ,java-bsh)
+       ("java-jcommander" ,java-jcommander)
+       ("java-guice" ,java-guice)
+       ("snakeyaml" ,java-snakeyaml)))
+    (native-inputs
+     `(("guava" ,java-guava)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-hamcrest" ,java-hamcrest-all)
+       ("java-assertj" ,java-assertj)
+       ("cglib" ,java-cglib)
+       ("asm" ,java-asm)
+       ("aopalliance" ,java-aopalliance)))
+    (home-page "http://testng.org")
+    (synopsis "Testing framework")
+    (description "TestNG is a testing framework inspired from JUnit and NUnit
+but introducing some new functionalities that make it more powerful and easier
+to use.")
+    (license license:asl2.0)))
+
+(define-public java-jnacl
+  (package
+    (name "java-jnacl")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/neilalexander/jnacl")
+                     (commit "40c322e0a42637ab17cdf941138eeaf2494055f8")))
+              (sha256
+               (base32
+                "1pspnmp44q61a2q4bpslpxw86rfn8s5l0xgvyrikqgdvg7ypx597"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jnacl.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-tests
+           (lambda _
+             (substitute* "src/test/java/com/neilalexander/jnacl/NaClTest.java"
+               (("assertions.Assertions") "assertions.api.Assertions"))
+             (substitute* "src/test/java/com/neilalexander/jnacl/NaclSecretBoxTest.java"
+               (("assertions.Assertions") "assertions.api.Assertions"))
+             #t))
+         (replace 'check
+           (lambda _
+             (system* "ant" "compile-tests")
+             (and
+               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                           ":build/classes"
+                                                           ":build/test-classes")
+                               "org.testng.TestNG" "-testclass"
+                               "build/test-classes/com/neilalexander/jnacl/NaclSecretBoxTest.class"))
+               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                           ":build/classes"
+                                                           ":build/test-classes")
+                               "org.testng.TestNG" "-testclass"
+                               "build/test-classes/com/neilalexander/jnacl/NaClTest.class"))))))))
+    (native-inputs
+     `(("java-testng" ,java-testng)
+       ("java-fest-util" ,java-fest-util)
+       ("java-fest-assert" ,java-fest-assert)))
+    (home-page "https://github.com/neilalexander/jnacl")
+    (synopsis "Java implementation of NaCl")
+    (description "Pure Java implementation of the NaCl: Networking and
+Cryptography library.")
+    (license license:mpl2.0)))
+
+(define-public java-mvel2
+  (package
+    (name "java-mvel2")
+    (version "2.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mvel/mvel/archive/mvel2-"
+                                  version ".Final.tar.gz"))
+              (sha256
+               (base32
+                "01ph5s9gm16l2qz58lg21w6fna7xmmrj7f9bzqr1jim7h9557d3z"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "mvel2.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list "**/Abstract*.java"
+             ;; Base class with no tests
+             "**/MVELThreadTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/mvel2")
+                 (lambda _
+                   (display
+                     (string-append
+                       "#!" (which "bash") "\n"
+                       "if [ \"$#\" -ne \"2\" ]; then\n"
+                       "echo 'Usage: mvel2 <script> <out.dir>'\n"
+                       "exit\n"
+                       "fi\n"
+                       "java -Dout.dir=$2 -cp " (getenv "CLASSPATH")
+                       ":" (assoc-ref outputs "out") "/share/java/mvel2.jar"
+                       " org.mvel2.sh.Main $1"))))
+               (chmod (string-append bin "/mvel2") #o755))
+             #t)))))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://github.com/mvel/mvel")
+    (synopsis "MVFLEX Expression Language")
+    (description "MVEL has largely been inspired by Java syntax, but has some
+fundamental differences aimed at making it more efficient as an expression
+language, such as operators that directly support collection, array and string
+matching, as well as regular expressions.  MVEL is used to evaluate expressions
+written using Java syntax.
+
+In addition to the expression language, MVEL serves as a templating language for
+configuration and string construction.")
+    (license license:asl2.0)))
+
+(define-public java-lz4
+  (package
+    (name "java-lz4")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/lz4/lz4-java/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "096dm57p2lzqk28n0j2p52x2j3cvnsd2dfqn43n7vbwrkjsy7y54"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "lz4.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/java:src/java-unsafe"
+       #:tests? #f; FIXME: requires more dependencies
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-source
+           (lambda _
+             (with-directory-excursion "src/build/source_templates"
+               (zero? (system* "mvel2" "../gen_sources.mvel" "../../java"))))))))
+    (native-inputs
+     `(("mvel" ,java-mvel2)))
+    (home-page "https://jpountz.github.io/lz4-java")
+    (synopsis "Compression algorithm")
+    (description "LZ4 - Java is a Java port of the popular lz4 compression
+algorithms and xxHash hashing algorithm.")
+    (license license:asl2.0)))
+
+(define-public java-bouncycastle-bcprov
+  (package
+    (name "java-bouncycastle-bcprov")
+    (version "1.58")
+    (source (origin
+              (method url-fetch)
+              (uri "https://bouncycastle.org/download/bcprov-jdk15on-158.tar.gz")
+              (sha256
+               (base32
+                "1hgkg96llbvgs8i0krwz2n0j7wlg6jfnq8w8kg0cc899j0wfmf3n"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "bouncycastle-bcprov.jar"
+       #:tests? #f; no tests
+       #:source-dir "src"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'unzip-src
+           (lambda _
+             (mkdir-p "src")
+             (with-directory-excursion "src"
+               (zero? (system* "unzip" "../src.zip"))))))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("junit" ,java-junit)))
+    (home-page "https://www.bouncycastle.org")
+    (synopsis "Cryptographic library")
+    (description "Bouncy Castle Provider (bcprov) is a cryptographic library
+for the Java programming language.")
+    (license license:expat)))
+
+(define-public java-bouncycastle-bcpkix
+  (package
+    (name "java-bouncycastle-bcpkix")
+    (version "1.58")
+    (source (origin
+              (method url-fetch)
+              (uri "https://bouncycastle.org/download/bcpkix-jdk15on-158.tar.gz")
+              (sha256
+               (base32
+                "0is7qay02803s9f7lhnfcjlz61ni3hq5d7apg0iil7nbqkbfbcq2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "bouncycastle-bcpkix.jar"
+       #:tests? #f; no tests
+       #:source-dir "src"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'unzip-src
+           (lambda _
+             (mkdir-p "src")
+             (with-directory-excursion "src"
+               (zero? (system* "unzip" "../src.zip"))))))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("junit" ,java-junit)))
+    (inputs
+     `(("bcprov" ,java-bouncycastle-bcprov)))
+    (home-page "https://www.bouncycastle.org")
+    (synopsis "Cryptographic library")
+    (description "Bouncy Castle Java API for PKIX, CMS, EAC, TSP, PKCS, OCSP,
+CMP, and CRMF.")
+    (license license:expat)))
+
+(define-public java-lmax-disruptor
+  (package
+    (name "java-lmax-disruptor")
+    (version "3.3.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/LMAX-Exchange/disruptor/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17da2gwj5abnlsfgn2xqjk5lgzbg4vkb0hdv2dvc8r2fx4bi7w3g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-lmax-disruptor.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f)); tests hang
+    (inputs
+     `(("junit" ,java-junit)
+       ("java-hdrhistogram" ,java-hdrhistogram)
+       ("java-jmock" ,java-jmock)
+       ("java-jmock-legacy" ,java-jmock-legacy)
+       ("java-jmock-junit4" ,java-jmock-junit4)
+       ("java-hamcrest-all" ,java-hamcrest-all)))
+    (native-inputs
+     `(("cglib" ,java-cglib)
+       ("objenesis" ,java-objenesis)
+       ("asm" ,java-asm)))
+    (home-page "https://www.lmax.com/disruptor")
+    (synopsis "High performance inter-thread communication")
+    (description "LMAX Disruptor is a software pattern and software component
+for high performance inter-thread communication that avoids the need for
+message queues or resource locking.")
+    (license license:asl2.0)))
+
+(define-public java-xerial-core
+  (package
+    (name "java-xerial-core")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xerial/xerial-java/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0d3g863i41bgalpa4xr3vm1h140l091n8iwgq5qvby5yivns9y8d"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "xerial-core.jar"
+       #:source-dir "xerial-core/src/main/java"
+       #:test-dir "xerial-core/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "xerial-core/src/main/resources"
+                               "build/classes")
+             #t)))))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://github.com/xerial/xerial-java")
+    (synopsis "Data managment libraries for Java")
+    (description "Xerial is a set of data management libraries for the Java
+programming language.  The ulitimate goal of the Xerial project is to manage
+everything as database, including class objects, text format data, data
+streams, etc.")
+    (license license:asl2.0)))
+
+(define-public java-powermock-reflect
+  (package
+    (name "java-powermock-reflect")
+    (version "1.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/powermock/powermock/"
+                                  "archive/powermock-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sbgi5vqq7k72wzcdjb20s370vyd4hsbnx71pzb8ishml3gy7fwy"))
+              (patches
+                (search-patches "java-powermock-fix-java-files.patch"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-powermock-reflect.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "powermock-reflect/src/main/java"
+       #:test-dir "powermock-reflect/src/test"))
+    (inputs
+     `(("java-objenesis" ,java-objenesis)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("cglib" ,java-cglib)
+       ("asm" ,java-asm)
+       ("hamcrest" ,java-hamcrest-core)
+       ("assertj" ,java-assertj)))
+    (home-page "https://github.com/powermock/powermock")
+    (synopsis "Mock library extension framework")
+    (description "PowerMock is a framework that extends other mock libraries
+such as EasyMock with more powerful capabilities.  PowerMock uses a custom
+classloader and bytecode manipulation to enable mocking of static methods,
+constructors, final classes and methods, private methods, removal of static
+initializers and more.  By using a custom classloader no changes need to be
+done to the IDE or continuous integration servers which simplifies adoption.")
+    (license license:asl2.0)))
+
+(define-public java-powermock-core
+  (package
+    (inherit java-powermock-reflect)
+    (name "java-powermock-core")
+    (arguments
+     `(#:jar-name "java-powermock-core.jar"
+       #:source-dir "powermock-core/src/main/java"
+       #:test-dir "powermock-core/src/test"
+       #:tests? #f; requires powermock-api
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("reflect" ,java-powermock-reflect)
+       ("javassist" ,java-jboss-javassist)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("assertj" ,java-assertj)
+       ("mockito" ,java-mockito-1)))))
+
+(define-public java-powermock-api-support
+  (package
+    (inherit java-powermock-reflect)
+    (name "java-powermock-api-support")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-powermock-api-support.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "powermock-api/powermock-api-support/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("core" ,java-powermock-core)
+       ("reflect" ,java-powermock-reflect)))))
+
+(define-public java-powermock-modules-junit4-common
+  (package
+    (inherit java-powermock-reflect)
+    (name "java-powermock-modules-junit4-common")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-powermock-modules-junit4-common.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "powermock-modules/powermock-module-junit4-common/src/main/java"
+       #:test-dir "powermock-modules/powermock-module-junit4-common/src/test"))
+    (inputs
+     `(("core" ,java-powermock-core)
+       ("easymock" ,java-easymock)
+       ("reflect" ,java-powermock-reflect)
+       ("hamcrest" ,java-hamcrest-core)
+       ("cglib" ,java-cglib)))))
+
+(define-public java-powermock-modules-junit4
+  (package
+    (inherit java-powermock-reflect)
+    (name "java-powermock-modules-junit4")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-powermock-modules-junit4.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "powermock-modules/powermock-module-junit4/src/main/java"
+       #:test-dir "powermock-modules/powermock-module-junit4/src/test"))
+    (inputs
+     `(("core" ,java-powermock-core)
+       ("reflect" ,java-powermock-reflect)
+       ("common" ,java-powermock-modules-junit4-common)
+       ("cglib" ,java-cglib)))
+    (native-inputs
+     `(("easymock" ,java-easymock)
+       ("hamcrest" ,java-hamcrest-core)
+       ("objenesis" ,java-objenesis)
+       ("asm" ,java-asm)
+       ("junit" ,java-junit)))))
+
+(define-public java-powermock-api-easymock
+  (package
+    (inherit java-powermock-reflect)
+    (name "java-powermock-api-easymock")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-powermock-api-easymock.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "powermock-api/powermock-api-easymock/src/main/java"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-file
+           (lambda _
+             ;; FIXME: This looks wrong, but it fixes a build error.
+             (with-directory-excursion "powermock-api/powermock-api-easymock"
+               (substitute* "src/main/java/org/powermock/api/easymock/PowerMock.java"
+                 (("classLoader instanceof MockClassLoader") "false")
+                 (("\\(\\(MockClassLoader\\) classLoader\\).*;") ";")))
+             #t)))))
+    (inputs
+     `(("core" ,java-powermock-core)
+       ("easymock" ,java-easymock)
+       ("reflect" ,java-powermock-reflect)
+       ("support" ,java-powermock-api-support)
+       ("cglib" ,java-cglib)))))

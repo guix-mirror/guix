@@ -2051,7 +2051,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.50.1.a")
+    (version "0.50.2.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
@@ -2066,7 +2066,7 @@ editors, IDEs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1r70jysdrc7r1vyn3mikpc8hh7rm4lpr0psakj8yssy11p451pja"))))
+                "0sv666ilid916ja6gw2d376nyyy66gvhsds8ans02x4b7gagj5sx"))))
     (arguments
       `(#:configure-flags '("CXXFLAGS=-Wformat=0")
         #:phases (modify-phases %standard-phases
@@ -2578,7 +2578,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public five-or-more
   (package
     (name "five-or-more")
-    (version "3.22.2")
+    (version "3.26.0")
     (source
      (origin
        (method url-fetch)
@@ -2587,7 +2587,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1b26afyjr26wqy5j008gzsi3hpblbmabh0192lx6414lml1qxkxs"))))
+         "0wkp08xsqr9p9cgdfghi424diajs016b2h4bsfcr5y9xc3rgf93w"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2609,7 +2609,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public gnome-mines
   (package
     (name "gnome-mines")
-    (version "3.24.0")
+    (version "3.26.0")
     (source
      (origin
        (method url-fetch)
@@ -2618,7 +2618,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1xh2as2xmh7gx45gpnl0fh9xjpvyyn3m84qgv41kyp2s4clsyqz6"))))
+         "1sfxdvns8nppdagnhpd9vd7n77sk5rdji3kdqnc78c2p1npiw11b"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -2934,7 +2934,7 @@ service via the system message bus.")
 (define-public libgweather
   (package
     (name "libgweather")
-    (version "3.24.1")
+    (version "3.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2942,7 +2942,7 @@ service via the system message bus.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0g35xfcw9vh3sfff42blk9ksrlmkrjmj46h3ad0sqgdn6xh329qj"))))
+                "0vkbc8rvmrlfiws844izxfl01r6l9p6agf8vvgszzkry1gfbm12v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2957,12 +2957,6 @@ service via the system message bus.")
                (("/usr/share/zoneinfo/zone.tab")
                 (string-append (assoc-ref inputs "tzdata")
                                "/share/zoneinfo/zone.tab")))
-
-             ;; 'Asia/Rangoon' was renamed in tzdata-2016:
-             ;; <https://github.com/eggert/tz/commit/4368251ebf11310a4aadccd1910daeac9080c501>.
-             (substitute* "data/Locations.xml"
-               (("Asia/Rangoon")
-                "Asia/Yangon"))
              #t))
          (replace 'install
            (lambda _
@@ -3089,7 +3083,7 @@ playlists in a variety of formats.")
 (define-public aisleriot
   (package
     (name "aisleriot")
-    (version "3.22.3")
+    (version "3.22.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3097,7 +3091,7 @@ playlists in a variety of formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12bqbyiqn2dwknz7ndgwgqqqz993s1ynh8qb82sshr7fy4zw8qph"))))
+                "1yrldsf73rd5p51dsxgbx1hmrakq0x0jc2kl6y6pgaviswxfx3gy"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -4427,7 +4421,7 @@ share them with others via social networking and more.")
 (define-public file-roller
   (package
     (name "file-roller")
-    (version "3.26.1")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4435,7 +4429,7 @@ share them with others via social networking and more.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bliwib59jrlfpdbpqc4rc3kzv4ns7pfyn8c28ananj3p34y9mgc"))))
+                "19d8pc5z2xzhnicgaysxmwx3ghwzl4cw8kygd6nsw69g3j77nrry"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -5807,7 +5801,7 @@ beautifying border effects.")
 (define-public dconf-editor
   (package
     (name "dconf-editor")
-    (version "3.26.1")
+    (version "3.26.2")
     (source
      (origin
        (method url-fetch)
@@ -5816,7 +5810,7 @@ beautifying border effects.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0agay5zbhjbfznlwk7n3gg5cn0c7ih4vnmah6kb6m969li120cs9"))))
+         "1lcarg8igsqpq4iv5834mf9kz4cmfhfw11bwy3x7v7f497z57d18"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -6046,7 +6040,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
 (define-public gnome-clocks
   (package
     (name "gnome-clocks")
-    (version "3.26.0")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6054,7 +6048,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "00a5bqi1hbyb9kbl4p393l1g6rddl2y6ljxjby9c5j3k1qka0c0g"))))
+                "1xqirnf7xkiv5vj3ng4slpyh50ihn625vhdgskfzx83a3pgxin1b"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t))
@@ -6118,7 +6112,7 @@ desktop.  It supports multiple calendars, month, week and year view.")
 (define-public gnome-todo
   (package
     (name "gnome-todo")
-    (version "3.26.1")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6126,7 +6120,7 @@ desktop.  It supports multiple calendars, month, week and year view.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "13if2lg4r65v3z7h5y57qv4iqz9ihjaml8bzvvihha7dffyr1lz4"))))
+                "106xx1w18pxjmj5k0k2qjzi6b3c3kaz7b5kyrpknykibnr401ff9"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t

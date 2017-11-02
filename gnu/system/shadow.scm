@@ -157,13 +157,15 @@ if [ -f ~/.bashrc ]; then . ~/.bashrc; fi\n"))
 # honor it and otherwise use /bin/sh.
 export SHELL
 
-if [ -n \"$SSH_CLIENT\" -a -z \"`type -P cat`\" ]
+if [[ $- != *i* ]]
 then
-    # We are being invoked from a non-interactive SSH session
-    # (as in \"ssh host command\") but 'cat' cannot be found
-    # in $PATH.  Source /etc/profile so we get $PATH and other
-    # essential variables.
-    source /etc/profile
+    # We are being invoked from a non-interactive shell.  If this
+    # is an SSH session (as in \"ssh host command\"), source
+    # /etc/profile so we get PATH and other essential variables.
+    [[ -n \"$SSH_CLIENT\" ]] && source /etc/profile
+
+    # Don't do anything else.
+    return
 fi
 
 # Adjust the prompt depending on whether we're in 'guix environment'.

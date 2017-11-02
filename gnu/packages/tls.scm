@@ -238,6 +238,7 @@ required structures.")
   (package
    (name "openssl")
    (version "1.0.2l")
+   (replacement openssl-1.0.2m)
    (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -380,14 +381,35 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
+;; Fixes CVE-2017-3735 and CVE-2017-3736.
+;; See <https://www.openssl.org/news/cl102.txt>.
+(define-public openssl-1.0.2m
+  (package
+    (inherit openssl)
+    (version "1.0.2m")
+    (source (origin
+              (inherit (package-source openssl))
+              (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/old/"
+                                        (string-trim-right version char-set:letter)
+                                        "/openssl-" version ".tar.gz")))
+              (sha256
+               (base32
+                "03vvlfnxx4lhxc83ikfdl6jqph4h52y7lb7li03va6dkqrgg2vwc"))))))
+
 (define-public openssl-next
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.1.0f")
+    (version "1.1.0g")
     (source (origin
              (method url-fetch)
-             (uri (list (string-append "ftp://ftp.openssl.org/source/"
+             (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                       version ".tar.gz")
+                        (string-append "ftp://ftp.openssl.org/source/"
                                        name "-" version ".tar.gz")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
@@ -395,7 +417,7 @@ required structures.")
               (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
               (sha256
                (base32
-                "0r97n4n552ns571diz54qsgarihrxvbn7kvyv8wjyfs9ybrldxqj"))))
+                "1bvka2wf33w2vxv7yw578nnjqyhz2b3chvfb0l4k2ffscw950kfy"))))
     (outputs '("out"
                "doc"        ;1.3MiB of man3 pages
                "static"))   ; 5.5MiB of .a files

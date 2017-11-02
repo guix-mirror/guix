@@ -3966,7 +3966,7 @@ for search-based navigation of buffers.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-make
-  (let ((commit "786104ac0c3cf4fe5b53f841eb9fe10bda2e4031")
+  (let ((commit "21c1bfa01b16b0d656f2b8a0dbb5bc8d47a7641b")
         (revision "1"))
     (package
       (name "emacs-helm-make")
@@ -3980,7 +3980,7 @@ for search-based navigation of buffers.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0qdfk0p2j8jah7m0ngy2mm7775cn779m3a84yll86wqc74g331qs"))))
+           "11vzrp63zdc67fg4d0y1alk8z9019sqslh2bd7ispk37s86dlbfw"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)

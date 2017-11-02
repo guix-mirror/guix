@@ -1,0 +1,178 @@
+This patch fixes build issues caused by the java compiler not finding the
+correct types on some statements.
+
+From 1ac84b58b4383fa118d98c35956d722d11cf449e Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Tue, 22 Aug 2017 20:40:27 +0200
+Subject: [PATCH] Fix java files.
+
+---
+ .../internal/impl/DelegatingPowerMockRunner.java   | 13 +++++++---
+ .../java/org/powermock/reflect/WhiteBoxTest.java   | 30 +++++++++++-----------
+ .../reflect/internal/proxy/ClassFactory.java       |  6 ++---
+ 3 files changed, 27 insertions(+), 22 deletions(-)
+
+diff --git a/powermock-modules/powermock-module-junit4/src/main/java/org/powermock/modules/junit4/internal/impl/DelegatingPowerMockRunner.java b/powermock-modules/powermock-module-junit4/src/main/java/org/powermock/modules/junit4/internal/impl/DelegatingPowerMockRunner.java
+index 301f854..caecbbd 100644
+--- a/powermock-modules/powermock-module-junit4/src/main/java/org/powermock/modules/junit4/internal/impl/DelegatingPowerMockRunner.java
++++ b/powermock-modules/powermock-module-junit4/src/main/java/org/powermock/modules/junit4/internal/impl/DelegatingPowerMockRunner.java
+@@ -98,12 +98,17 @@ implements PowerMockJUnitRunnerDelegate, Filterable {
+             @Override
+             public Runner call() throws Exception {
+                 try {
+-                    return Whitebox.invokeConstructor(
+-                            testClass.isAnnotationPresent(PowerMockRunnerDelegate.class)
+-                            ? testClass.getAnnotation(PowerMockRunnerDelegate.class).value()
+-                            : PowerMockRunnerDelegate.DefaultJUnitRunner.class,
++                    if(testClass.isAnnotationPresent(PowerMockRunnerDelegate.class)) {
++                        return Whitebox.invokeConstructor(
++                            testClass.getAnnotation(PowerMockRunnerDelegate.class).value(),
+                             new Class[] {Class.class},
+                             new Object[] {testClass});
++                    } else {
++                        return Whitebox.invokeConstructor(
++                            PowerMockRunnerDelegate.DefaultJUnitRunner.class,
++                            new Class[] {Class.class},
++                            new Object[] {testClass});
++                    }
+                 } catch (ConstructorNotFoundException rootProblem) {
+                     if (testClass.isAnnotationPresent(PowerMockRunnerDelegate.class)
+                             && JUnitVersion.isGreaterThanOrEqualTo("4.5")) {
+diff --git a/powermock-reflect/src/test/java/org/powermock/reflect/WhiteBoxTest.java b/powermock-reflect/src/test/java/org/powermock/reflect/WhiteBoxTest.java
+index bf1e2e3..0d60487 100644
+--- a/powermock-reflect/src/test/java/org/powermock/reflect/WhiteBoxTest.java
++++ b/powermock-reflect/src/test/java/org/powermock/reflect/WhiteBoxTest.java
+@@ -248,7 +248,7 @@ public class WhiteBoxTest {
+ 
+     @Test
+     public void testMethodWithPrimitiveAndWrappedInt_primtive_wrapped() throws Exception {
+-        assertEquals(17, Whitebox.invokeMethod(new ClassWithPrivateMethods(), "methodWithPrimitiveAndWrappedInt",
++        assertEquals((Integer)17, Whitebox.invokeMethod(new ClassWithPrivateMethods(), "methodWithPrimitiveAndWrappedInt",
+                                                new Class[]{int.class, Integer.class}, 9, Integer.valueOf(8)));
+     }
+ 
+@@ -257,7 +257,7 @@ public class WhiteBoxTest {
+         int expected = 123;
+         Whitebox.setInternalState(ClassWithInternalState.class, "staticState", expected);
+         assertEquals(expected, ClassWithInternalState.getStaticState());
+-        assertEquals(expected, Whitebox.getInternalState(ClassWithInternalState.class, "staticState"));
++        assertEquals(expected, (int)Whitebox.getInternalState(ClassWithInternalState.class, "staticState"));
+     }
+ 
+ 	@Test
+@@ -334,25 +334,25 @@ public class WhiteBoxTest {
+     @Test
+     public void testInvokeVarArgsMethod_multipleValues() throws Exception {
+         ClassWithPrivateMethods tested = new ClassWithPrivateMethods();
+-        assertEquals(6, Whitebox.invokeMethod(tested, "varArgsMethod", 1, 2, 3));
++        assertEquals(6, (int)Whitebox.invokeMethod(tested, "varArgsMethod", 1, 2, 3));
+     }
+ 
+     @Test
+     public void testInvokeVarArgsMethod_noArguments() throws Exception {
+         ClassWithPrivateMethods tested = new ClassWithPrivateMethods();
+-        assertEquals(0, Whitebox.invokeMethod(tested, "varArgsMethod"));
++        assertEquals(0, (int)Whitebox.invokeMethod(tested, "varArgsMethod"));
+     }
+ 
+     @Test
+     public void testInvokeVarArgsMethod_oneArgument() throws Exception {
+         ClassWithPrivateMethods tested = new ClassWithPrivateMethods();
+-        assertEquals(4, Whitebox.invokeMethod(tested, "varArgsMethod", 2));
++        assertEquals(4, (int)Whitebox.invokeMethod(tested, "varArgsMethod", 2));
+     }
+ 
+     @Test
+     public void testInvokeVarArgsMethod_invokeVarArgsWithOneArgument() throws Exception {
+         ClassWithPrivateMethods tested = new ClassWithPrivateMethods();
+-        assertEquals(1, Whitebox.invokeMethod(tested, "varArgsMethod", new Class<?>[]{int[].class}, 1));
++        assertEquals(1, (int)Whitebox.invokeMethod(tested, "varArgsMethod", new Class<?>[]{int[].class}, 1));
+     }
+ 
+     @Test
+@@ -376,7 +376,7 @@ public class WhiteBoxTest {
+         ClassWithChildThatHasInternalState tested = new ClassWithChildThatHasInternalState() {
+         };
+         Whitebox.setInternalState(tested, fieldName, value);
+-        assertEquals(value, Whitebox.getInternalState(tested, fieldName));
++        assertEquals(value, (int)Whitebox.getInternalState(tested, fieldName));
+     }
+ 
+     @Test
+@@ -387,8 +387,8 @@ public class WhiteBoxTest {
+         ClassWithChildThatHasInternalState tested = new ClassWithChildThatHasInternalState() {
+         };
+         Whitebox.setInternalState(tested, fieldName, value);
+-        assertEquals(value, Whitebox.getInternalState(tested, fieldName));
+-        assertEquals(-1, Whitebox.getInternalState(tested, fieldName, ClassWithInternalState.class));
++        assertEquals(value, (int)Whitebox.getInternalState(tested, fieldName));
++        assertEquals(-1, (int)Whitebox.getInternalState(tested, fieldName, ClassWithInternalState.class));
+     }
+ 
+     @Test(expected = IllegalArgumentException.class)
+@@ -398,7 +398,7 @@ public class WhiteBoxTest {
+         ClassWithChildThatHasInternalState tested = new ClassWithChildThatHasInternalState() {
+         };
+         Whitebox.setInternalState(tested, fieldName, new Object());
+-        assertEquals(value, Whitebox.getInternalState(tested, fieldName));
++        assertEquals(value, (int)Whitebox.getInternalState(tested, fieldName));
+     }
+ 
+     @Test(expected = IllegalArgumentException.class)
+@@ -408,7 +408,7 @@ public class WhiteBoxTest {
+         ClassWithChildThatHasInternalState tested = new ClassWithChildThatHasInternalState() {
+         };
+         Whitebox.setInternalState(tested, fieldName, (Object) null);
+-        assertEquals(value, Whitebox.getInternalState(tested, fieldName));
++        assertEquals(value, (int)Whitebox.getInternalState(tested, fieldName));
+     }
+ 
+     @Test
+@@ -417,8 +417,8 @@ public class WhiteBoxTest {
+         ClassWithChildThatHasInternalState tested = new ClassWithChildThatHasInternalState();
+         Whitebox.setInternalState(tested, int.class, value);
+         assertEquals(value, (int) Whitebox.getInternalState(tested, int.class));
+-        assertEquals(value, Whitebox.getInternalState(tested, "anotherInternalState"));
+-        assertEquals(value, Whitebox.getInternalState(tested, "anotherInternalState",
++        assertEquals(value, (int)Whitebox.getInternalState(tested, "anotherInternalState"));
++        assertEquals(value, (int)Whitebox.getInternalState(tested, "anotherInternalState",
+                                                       ClassWithChildThatHasInternalState.class));
+     }
+ 
+@@ -429,7 +429,7 @@ public class WhiteBoxTest {
+         Whitebox.setInternalState(tested, int.class, value, ClassWithInternalState.class);
+         assertEquals(42, (int) Whitebox.getInternalState(tested, int.class));
+         assertEquals(value, (int) Whitebox.getInternalState(tested, int.class, ClassWithInternalState.class));
+-        assertEquals(value, Whitebox.getInternalState(tested, "staticState", ClassWithInternalState.class));
++        assertEquals(value, (int)Whitebox.getInternalState(tested, "staticState", ClassWithInternalState.class));
+     }
+ 
+     @Test
+@@ -619,7 +619,7 @@ public class WhiteBoxTest {
+     @Test
+     public void testInvokeMethodWithBothNormalAndVarArgsParameter() throws Exception {
+         ClassWithPrivateMethods tested = new ClassWithPrivateMethods();
+-        assertEquals(4, Whitebox.invokeMethod(tested, "varArgsMethod2", 1, 2, 3));
++        assertEquals(4, (int)Whitebox.invokeMethod(tested, "varArgsMethod2", 1, 2, 3));
+     }
+ 
+     @Test
+diff --git a/powermock-reflect/src/test/java/org/powermock/reflect/internal/proxy/ClassFactory.java b/powermock-reflect/src/test/java/org/powermock/reflect/internal/proxy/ClassFactory.java
+index a5e5fda..14b8bbe 100644
+--- a/powermock-reflect/src/test/java/org/powermock/reflect/internal/proxy/ClassFactory.java
++++ b/powermock-reflect/src/test/java/org/powermock/reflect/internal/proxy/ClassFactory.java
+@@ -1,8 +1,8 @@
+ package org.powermock.reflect.internal.proxy;
+ 
+-import net.sf.cglib.asm.ClassWriter;
+-import net.sf.cglib.asm.MethodVisitor;
+-import net.sf.cglib.asm.Opcodes;
++import org.objectweb.asm.ClassWriter;
++import org.objectweb.asm.MethodVisitor;
++import org.objectweb.asm.Opcodes;
+ 
+ class ClassFactory implements Opcodes {
+     
+-- 
+2.14.1
+

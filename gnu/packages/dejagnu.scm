@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flasher.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flasher.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +27,7 @@
 (define-public dejagnu
   (package
     (name "dejagnu")
-    (version "1.6")
+    (version "1.6.1")
     (source
      (origin
       (method url-fetch)
@@ -35,7 +35,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0qypaakd2065jgpcv84zcsibl8gph3p334gb2qdmhsrbirhlmdh0"))))
+        "14hnq1mh91vqprc43xdy4f15sycw6fbajrh7zi6cw2kyg6xjhnxz"))))
     (build-system gnu-build-system)
     (inputs `(("expect" ,expect)))
     (arguments
