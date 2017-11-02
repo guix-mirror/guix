@@ -3083,7 +3083,7 @@ playlists in a variety of formats.")
 (define-public aisleriot
   (package
     (name "aisleriot")
-    (version "3.22.3")
+    (version "3.22.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3091,7 +3091,7 @@ playlists in a variety of formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12bqbyiqn2dwknz7ndgwgqqqz993s1ynh8qb82sshr7fy4zw8qph"))))
+                "1yrldsf73rd5p51dsxgbx1hmrakq0x0jc2kl6y6pgaviswxfx3gy"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
