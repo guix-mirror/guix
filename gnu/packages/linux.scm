@@ -2643,7 +2643,9 @@ Command Translation} (SAT) are also supported.")
 which is used to enable and disable wireless networking devices, typically
 WLAN, Bluetooth and mobile broadband.")
     (license (license:non-copyleft "file://COPYING"
-                                   "See COPYING in the distribution."))))
+                                   "See COPYING in the distribution."))
+    ;; rfkill is part of util-linux as of 2.31.
+    (properties `((superseded . ,util-linux)))))
 
 (define-public acpi
   (package

@@ -516,7 +516,7 @@ explicitly appear in OS."
 
          ;; wireless-tools is deprecated in favor of iw, but it's still what
          ;; many people are familiar with, so keep it around.
-         iw wireless-tools rfkill
+         iw wireless-tools
 
          iproute
          net-tools                        ; XXX: remove when Inetutils suffices
