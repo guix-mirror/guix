@@ -36,6 +36,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
@@ -380,6 +381,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1kq422vb2zaic099pgzwk7c0qzgc3xap6qahw5vklrq0mgivvrk9"))
+             ;; Use TZDIR to avoid depending on package "tzdata".
+             (patches (search-patches "qtbase-use-TZDIR.patch"))
              (modules '((guix build utils)))
              (snippet
                ;; corelib uses bundled harfbuzz, md4, md5, sha3
@@ -541,7 +544,38 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                           "qt_config.prf" "winrt/package_manifest.prf"))
                  (("\\$\\$\\[QT_HOST_DATA/get\\]") archdata)
                  (("\\$\\$\\[QT_HOST_DATA/src\\]") archdata))
-               #t))))))
+               #t)))
+         (add-after 'unpack 'patch-paths
+           ;; Use the absolute paths for dynamically loaded libs, otherwise
+           ;; the lib will be searched in LD_LIBRARY_PATH which typically is
+           ;; not set in guix.
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; libresolve
+             (let ((glibc (assoc-ref inputs ,(if (%current-target-system)
+                                                 "cross-libc" "libc"))))
+               (substitute* '("src/network/kernel/qdnslookup_unix.cpp"
+                              "src/network/kernel/qhostinfo_unix.cpp")
+                 (("^\\s*(lib.setFileName\\(QLatin1String\\(\")(resolv\"\\)\\);)" _ a b)
+                (string-append a glibc "/lib/lib" b))))
+             ;; X11/locale (compose path)
+             (substitute* "src/plugins/platforminputcontexts/compose/generator/qtablegenerator.cpp"
+               ;; Don't search in /usr/…/X11/locale, …
+               (("^\\s*m_possibleLocations.append\\(QStringLiteral\\(\"/usr/.*/X11/locale\"\\)\\);" line)
+                (string-append "// " line))
+               ;; … but use libx11's path
+               (("^\\s*(m_possibleLocations.append\\(QStringLiteral\\()X11_PREFIX \"(/.*/X11/locale\"\\)\\);)" _ a b)
+                (string-append a "\"" (assoc-ref inputs "libx11") b)))
+             ;; libGL
+             (substitute* "src/plugins/platforms/xcb/gl_integrations/xcb_glx/qglxintegration.cpp"
+               (("^\\s*(QLibrary lib\\(QLatin1String\\(\")(GL\"\\)\\);)" _ a b)
+                (string-append a (assoc-ref inputs "mesa") "/lib/lib" b)))
+             ;; libXcursor
+             (substitute* "src/plugins/platforms/xcb/qxcbcursor.cpp"
+               (("^\\s*(QLibrary xcursorLib\\(QLatin1String\\(\")(Xcursor\"\\), 1\\);)" _ a b)
+                (string-append a (assoc-ref inputs "libxcursor") "/lib/lib" b))
+               (("^\\s*(xcursorLib.setFileName\\(QLatin1String\\(\")(Xcursor\"\\)\\);)" _ a b)
+                (string-append a (assoc-ref inputs "libxcursor") "/lib/lib" b)))
+             #t)))))
     (native-search-paths
      (list (search-path-specification
             (variable "QMAKEPATH")

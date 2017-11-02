@@ -1047,6 +1047,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2017-15038.patch		\
   %D%/packages/patches/qemu-CVE-2017-15289.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
+  %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quassel-fix-tls-check.patch              \
