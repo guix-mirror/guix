@@ -6112,7 +6112,7 @@ desktop.  It supports multiple calendars, month, week and year view.")
 (define-public gnome-todo
   (package
     (name "gnome-todo")
-    (version "3.26.1")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6120,7 +6120,7 @@ desktop.  It supports multiple calendars, month, week and year view.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "13if2lg4r65v3z7h5y57qv4iqz9ihjaml8bzvvihha7dffyr1lz4"))))
+                "106xx1w18pxjmj5k0k2qjzi6b3c3kaz7b5kyrpknykibnr401ff9"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
