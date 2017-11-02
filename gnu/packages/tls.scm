@@ -237,18 +237,19 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.2l")
-   (replacement openssl-1.0.2m)
+   (version "1.0.2m")
    (source (origin
              (method url-fetch)
-             (uri (list (string-append "ftp://ftp.openssl.org/source/"
+             (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                       version ".tar.gz")
+                        (string-append "ftp://ftp.openssl.org/source/"
                                        name "-" version ".tar.gz")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "037kvpisc6qh5dkppcwbm5bg2q800xh2hma3vghz8xcycmdij1yf"))
+               "03vvlfnxx4lhxc83ikfdl6jqph4h52y7lb7li03va6dkqrgg2vwc"))
              (snippet
               '(begin
                  ;; Remove ELF files.  'substitute*' can't read them.
@@ -380,25 +381,6 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
-
-;; Fixes CVE-2017-3735 and CVE-2017-3736.
-;; See <https://www.openssl.org/news/cl102.txt>.
-(define-public openssl-1.0.2m
-  (package
-    (inherit openssl)
-    (version "1.0.2m")
-    (source (origin
-              (inherit (package-source openssl))
-              (uri (list (string-append "https://www.openssl.org/source/openssl-"
-                                        version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/openssl-"
-                                        version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/old/"
-                                        (string-trim-right version char-set:letter)
-                                        "/openssl-" version ".tar.gz")))
-              (sha256
-               (base32
-                "03vvlfnxx4lhxc83ikfdl6jqph4h52y7lb7li03va6dkqrgg2vwc"))))))
 
 (define-public openssl-next
   (package
