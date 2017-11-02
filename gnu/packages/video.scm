@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1006,7 +1007,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
      `(("perl" ,perl) ; for zsh completion file
        ("pkg-config" ,pkg-config)
        ("python-docutils" ,python-docutils)))
-    ;; Missing features: libguess, Wayland, V4L2
+    ;; Missing features: libguess, V4L2
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("enca" ,enca)
@@ -1038,6 +1039,8 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("pulseaudio" ,pulseaudio)
        ("rsound" ,rsound)
        ("waf" ,python-waf)
+       ("wayland" ,wayland)
+       ("libxkbcommon", libxkbcommon)
        ("youtube-dl" ,youtube-dl)
        ("zlib" ,zlib)))
     (arguments
