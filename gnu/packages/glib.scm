@@ -395,29 +395,28 @@ The intltool collection can be used to do these things:
 (define itstool
   (package
     (name "itstool")
-    (version "2.0.2")
+    (version "2.0.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.itstool.org/itstool/itstool-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0fh34wi52i0qikgvlmrcpf1vx6gc1xqdad4539l4d9hikfsrz45z"))))
+               "0q7b4qrc758zfx3adsgvz0r93swdbxjr42w37rahngm33nshihlp"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxml2" ,libxml2)
-       ("python2-libxml2" ,python2-libxml2)
-       ("python-2" ,python-2)))
+       ("python-libxml2" ,python-libxml2)
+       ("python" ,python)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after
-          'install 'wrap-program
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((prog (string-append (assoc-ref outputs "out")
-                                       "/bin/itstool")))
-              (wrap-program prog
-                `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))))))))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/itstool")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))))))))
     (home-page "http://www.itstool.org")
     (synopsis "Tool to translate XML documents with PO files")
     (description
