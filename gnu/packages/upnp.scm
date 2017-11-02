@@ -28,14 +28,14 @@
 (define-public miniupnpc
   (package
     (name "miniupnpc")
-    (version "2.0.20170509")
+    (version "2.0.20171102")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://miniupnp.tuxfamily.org/files/"
                            name "-" version ".tar.gz"))
        (sha256
-        (base32 "0spi75q6nafxp3ndnrhrlqagzmjlp8wwlr5x7rnvdpswgxi6ihyk"))))
+        (base32 "1m1552kkdxkyyb5gyykp0j8falxwf1424cm55y50q9l10l11g18l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
