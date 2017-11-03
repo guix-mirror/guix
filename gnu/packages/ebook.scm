@@ -72,7 +72,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "3.6.0")
+    (version "3.11.1")
     (source
       (origin
         (method url-fetch)
@@ -81,7 +81,7 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "0vp2nds4b5xbchsh1rpc1q7093gd26dnw7mgbnax97dcchvlc4sc"))
+          "0kwza7iyyyfhq476z5fk9962iyd0qpgmzm1k36nqcy8sfjbk8mrl"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
