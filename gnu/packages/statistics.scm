@@ -2044,14 +2044,14 @@ R version.")
 (define-public r-checkmate
   (package
     (name "r-checkmate")
-    (version "1.8.4")
+    (version "1.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "checkmate" version))
        (sha256
         (base32
-         "1xpq73myr39i33mwihvy494sam77hb3z15yr172a31d8wn1qi53g"))))
+         "1q6igk50lq4fp5d3imgcn1j063h3gsp214ra4nlf534hf4wjlkg9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)))
