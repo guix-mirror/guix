@@ -1243,3 +1243,27 @@ X, and likewise for Y.  Pdist strictly computes distances across the two
 matrices, not within the same matrix, making computations significantly faster
 for certain use cases.")
     (license license:gpl3+)))
+
+(define-public r-ggrepel
+  (package
+    (name "r-ggrepel")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggrepel" version))
+       (sha256
+        (base32
+         "0g0qfm6g71rv27423c1x846ipilnj213knyzrcr09vrpxc87l618"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-rcpp" ,r-rcpp)
+       ("r-scales" ,r-scales)))
+    (home-page "http://github.com/slowkow/ggrepel")
+    (synopsis "Repulsive text and label geometries for ggplot2")
+    (description
+     "This package provides text and label geometries for ggplot2 that help to
+avoid overlapping text labels.  Labels repel away from each other and away
+from the data points.")
+    (license license:gpl3)))
