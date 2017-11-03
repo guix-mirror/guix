@@ -5212,6 +5212,58 @@ internetarchive python module for programatic access to archive.org.")
   (package-with-python2
    (strip-python2-variant python-internetarchive)))
 
+(define-public python-clf
+  (let ((commit-test-clf "d01d25923c599d3261910f79fb948825b4270d07")) ; 0.5.7
+    (package
+      (name "python-clf")
+      (version "0.5.7")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "clf" version))
+         (sha256
+          (base32
+           "0zlkzqnpz7a4iavsq5vaz0nf5nr7qm5znpg1vlpz6rwnx6hikjdb"))))
+      (build-system python-build-system)
+      (propagated-inputs
+       `(("python-docopt" ,python-docopt)
+         ("python-pygments" ,python-pygments)
+         ("python-requests" ,python-requests)
+         ("python-nose" ,python-nose)
+         ("python-lxml" ,python-lxml)
+         ("python-pyaml" ,python-pyaml)))
+      (inputs
+       `(("test-clf"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append "https://raw.githubusercontent.com"
+                                 "/ncrocfer/clf/" commit-test-clf
+                                 "/test_clf.py"))
+             (sha256
+              (base32
+               "19lr5zdzsmxgkg7wrjq1yzkiahd03wi4k3dskssyhmjls8c10nqd"))))))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'get-tests
+             (lambda _
+               (copy-file (assoc-ref %build-inputs "test-clf") "test_clf.py")))
+           (replace 'check
+             (lambda _
+               (zero? (system* "nosetests"
+                               ;; These tests require internet connection
+                               "--exclude=test_browse"
+                               "--exclude=test_command"
+                               "--exclude=test_search")))))))
+      (home-page "https://github.com/ncrocfer/clf")
+      (synopsis "Search code snippets on @url{https://commandlinefu.com}")
+      (description "@code{clf} is a command line tool for searching code
+snippets on @url{https://commandlinefu.com}.")
+      (license l:expat))))
+
+(define-public python2-clf
+  (package-with-python2 python-clf))
+
 (define-public r-shiny
   (package
     (name "r-shiny")
