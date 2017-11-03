@@ -1122,13 +1122,14 @@ reflect changes made by political bodies to time zone boundaries, UTC offsets,
 and daylight-saving rules.")
     (license public-domain)))
 
-;;; A "fixed" version of tzdata, which is used in the test suites of
-;;; glib and R. We can update this whenever we are able to rebuild
-;;; thousands of packages (for example, in a core-updates rebuild).
+;;; A "fixed" version of tzdata, which is used in the test suites of glib and R
+;;; and a few other places. We can update this whenever we are able to rebuild
+;;; thousands of packages (for example, in a core-updates rebuild). This package
+;;; will typically be obsolete and should never be referred to by a built
+;;; package.
 (define-public tzdata-for-tests
-  (package
-    (inherit tzdata)
-    (version "2017a")
+  (hidden-package (package (inherit tzdata)
+    (version "2017c")
     (source
       (origin
         (method url-fetch)
@@ -1136,7 +1137,7 @@ and daylight-saving rules.")
                             "/releases/tzdata" version ".tar.gz"))
         (sha256
          (base32
-          "1mmv4rvcs12lrvgghw4fidczvb69yv69cmzknghcvw1c196mqfnz"))))
+          "02yrrfj0p7ar885ja41ylijzbr8wc6kz6kzlw8c670i9m693ym6n"))))
     (inputs `(("tzcode" ,(origin
                           (method url-fetch)
                           (uri (string-append
@@ -1144,7 +1145,7 @@ and daylight-saving rules.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1b1q7gnlsh5hjgs5065pvajd37rmbc3k9b8cgzad1vcrifswdwh2"))))))))
+                            "1dvrq0b2hz7cjqdyd7x21wpy4qcng3rvysr61ij0c2g64fyb9s41")))))))))
 
 
 (define-public libiconv
