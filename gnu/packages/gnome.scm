@@ -6353,6 +6353,10 @@ Moka")
               (sha256
                (base32
                 "04axinv79qnngsxkwqzi5j9lc3hn24rjqps5ai8d42pdnfaf0x37"))))
+    (propagated-inputs
+     ;; Moka is based on Faba by using it as a fallback icon set instead of
+     ;; bundling it, so we need to add it as a propagated input.
+     `(("faba-icon-theme" ,faba-icon-theme)))
     (synopsis "Moka icon theme")
     (description "Moka is a stylized desktop icon set, designed to be clear,
 simple and consistent.")
