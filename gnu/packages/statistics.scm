@@ -119,7 +119,7 @@ be output in text, PostScript, PDF or HTML.")
                 "0r0cv2kc3x5z9xycpnxx6fbvv22psw2m342jhpslbxkc8g1307lp"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:disallowed-references (,tzdata-2017a)
+     `(#:disallowed-references (,tzdata-for-tests)
        #:make-flags
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out")
@@ -244,7 +244,7 @@ be output in text, PostScript, PDF or HTML.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo) ; for building HTML manuals
-       ("tzdata" ,tzdata-2017a)
+       ("tzdata" ,tzdata-for-tests)
        ("xz" ,xz)))
     (inputs
      `(;; We need not only cairo here, but pango to ensure that tests for the

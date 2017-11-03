@@ -171,9 +171,9 @@ shared NFS home directories.")
       ("python" ,python-wrapper)
       ("perl" ,perl)                              ; needed by GIO tests
       ("bash" ,bash)
-      ("tzdata" ,tzdata-2017a)))                  ; for tests/gdatetime.c
+      ("tzdata" ,tzdata-for-tests)))                  ; for tests/gdatetime.c
    (arguments
-    `(#:disallowed-references (,tzdata-2017a)
+    `(#:disallowed-references (,tzdata-for-tests)
       #:phases
       (modify-phases %standard-phases
         (add-before 'build 'pre-build

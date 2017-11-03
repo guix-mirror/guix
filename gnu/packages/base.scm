@@ -1125,7 +1125,7 @@ and daylight-saving rules.")
 ;;; A "fixed" version of tzdata, which is used in the test suites of
 ;;; glib and R. We can update this whenever we are able to rebuild
 ;;; thousands of packages (for example, in a core-updates rebuild).
-(define-public tzdata-2017a
+(define-public tzdata-for-tests
   (package
     (inherit tzdata)
     (version "2017a")

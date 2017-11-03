@@ -9841,7 +9841,8 @@ in Perl source files.")
         (base32 "1lgfr87j4qwqnln0hyyzgik5ixqslzdaksn9m8y824gqbcihc6ic"))))
     (build-system perl-build-system)
     (arguments
-     `(#:phases
+     `(#:disallowed-references (,tzdata-for-tests)
+       #:phases
        (modify-phases %standard-phases
          ;; This is needed for tests
          (add-after 'unpack 'set-TZDIR
@@ -9851,7 +9852,7 @@ in Perl source files.")
              #t)))))
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
-       ("tzdata" ,tzdata-2017a)))
+       ("tzdata" ,tzdata-for-tests)))
     (home-page "https://metacpan.org/release/Time-ParseDate")
     (synopsis "Collection of Perl modules for time/date manipulation")
     (description "Provides several perl modules for date/time manipulation:
