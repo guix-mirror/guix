@@ -44,6 +44,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
+;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16871,3 +16872,28 @@ executed more than a given number of times during a given period.")
 
 (define-public python2-ratelimiter
   (package-with-python2 python-ratelimiter))
+
+(define-public python-dukpy
+  (package
+    (name "python-dukpy")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/kovidgoyal/dukpy/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0pj39rfwlzivqm5hkrsza7gssg6ggpxlq5ivc8f3h7x5pfgc6y6c"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/kovidgoyal/dukpy")
+    (synopsis "Run JavaScript in python")
+    (description
+     "dukpy is a JavaScript runtime environment for Python using the duktape
+embeddable JavaScript engine.")
+    ;; Dukpy is licensed under MIT like the embedded duktape library,
+    ;; with 'errors.c' as GPL3.
+    (license (list license:expat license:gpl3))))
+
+(define-public python2-dukpy
+  (package-with-python2 python-dukpy))
