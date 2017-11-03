@@ -1409,13 +1409,13 @@ the execution time of R expressions.")
 (define-public r-pryr
   (package
     (name "r-pryr")
-    (version "0.1.2")
+    (version "0.1.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "pryr" version))
               (sha256
                (base32
-                "1in350a8hxwf580afavasvn3jc7x2p1b7nlwmj1scakfz74vghk5"))))
+                "1b1rcywq9sqzgjsnh3ynnx16gp41n94kkzfalm3y4kyy3ls8ikba"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-stringr" ,r-stringr)
