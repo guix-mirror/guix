@@ -4853,7 +4853,7 @@ an X Window System display.")
 (define-public libxfont
   (package
     (name "libxfont")
-    (version "1.5.2")
+    (version "1.5.3")
     (source
       (origin
         (method url-fetch)
@@ -4861,11 +4861,9 @@ an X Window System display.")
                "mirror://xorg/individual/lib/libXfont-"
                version
                ".tar.bz2"))
-        (patches (search-patches "libxfont-CVE-2017-13720.patch"
-                                 "libxfont-CVE-2017-13722.patch"))
         (sha256
           (base32
-            "0w8d07bkmjiarkx09579bl8zsq903mn8javc7qpi0ix4ink5x502"))))
+            "1l4k3i3xzqdmaszykh6bb2ah78p6c3z7fak7xzgq2d38s87w31db"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fontsproto" ,fontsproto)
