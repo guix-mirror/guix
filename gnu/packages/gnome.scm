@@ -27,6 +27,7 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
+;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6300,6 +6301,43 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
     (home-page "https://github.com/horst3180/arc-theme")
     ;; No "or later" language found.
     (license license:gpl3)))
+
+(define-public faba-icon-theme
+  (package
+    (name "faba-icon-theme")
+    (version "4.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/moka-project/"
+                           name "/archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hi2dl627ayfnihn3v6x9xzid668m4hp098hb7hrkxvahh4h9by7"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefile.am
+           (lambda _
+             (substitute* '("Makefile.am")
+               (("\\$\\(DESTDIR\\)/usr/share")
+                "$(datadir)"))
+             #t))
+         (add-after 'patch-makefile.am 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (synopsis "Faba icon theme")
+    (description
+     "Faba is a minimal icon set used as a basis for other themes such as
+Moka")
+    (home-page "https://snwh.org/moka")
+    (license (list license:lgpl3+
+                   license:cc-by-sa4.0))))
 
 (define-public moka-icon-theme
   (package
