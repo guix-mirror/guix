@@ -1267,3 +1267,25 @@ for certain use cases.")
 avoid overlapping text labels.  Labels repel away from each other and away
 from the data points.")
     (license license:gpl3)))
+
+(define-public r-corrplot
+  (package
+    (name "r-corrplot")
+    (version "0.84")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "corrplot" version))
+       (sha256
+        (base32
+         "1k03qd8db7pwg1v318xapx5mpiypiz2n07qr19c4b45diri5xkhd"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/taiyun/corrplot")
+    (synopsis "Visualization of a correlation matrix")
+    (description
+     "This package provides a graphical display of a correlation matrix or
+general matrix.  It also contains some algorithms to do matrix reordering.  In
+addition, corrplot is good at details, including choosing color, text labels,
+color labels, layout, etc.")
+    ;; Any version of the GPL
+    (license license:gpl2+)))
