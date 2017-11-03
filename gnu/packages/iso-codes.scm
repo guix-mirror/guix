@@ -29,7 +29,7 @@
 (define-public iso-codes
   (package
     (name "iso-codes")
-    (version "3.67")
+    (version "3.76")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -37,7 +37,7 @@
                    version ".tar.xz"))
              (sha256
               (base32
-               "037hmfs5pk3g36psm378vap1mbrkk86vv8wsdnv65mzbnph52gv0"))))
+               "1i40shd6v4nh4lkv1c1a5qm9jmf17316bv03jr65nzf0wwfqrsiq"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
