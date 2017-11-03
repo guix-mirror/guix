@@ -6860,7 +6860,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "0.9.244")
+    (version "0.9.304")
     (source
      (origin
        (method url-fetch)
@@ -6869,7 +6869,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0y9nmwrplz4mlvc2badfbyjj97ksn6qqis3rgm8lvp5llsk1583w"))))
+         "070y6wf1180hbl1ix8al7fmc6y06jb5m14h73g509g4xbwlk62g8"))))
     ;; TODO: Use meson-build-system
     (build-system glib-or-gtk-build-system)
     (arguments
