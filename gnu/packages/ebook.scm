@@ -116,6 +116,7 @@
        ("libusb" ,libusb)
        ("libxrender" ,libxrender)
        ("openssl" ,openssl)
+       ("optipng" ,optipng)
        ("podofo" ,podofo)
        ("poppler" ,poppler)
        ("python" ,python-2)
