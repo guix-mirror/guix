@@ -8589,17 +8589,18 @@ replacement for strverscmp.")
 (define-public multiqc
   (package
     (name "multiqc")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "multiqc" version))
        (sha256
         (base32
-         "032svgym67k2ds7wp0cxzv79gi30yrdl45zbqn74lni3dk04qm33"))))
+         "0fx1sx53znbgzfhbbiyd8j6cg5llpcsl5q5c45jy2c81d12piqfd"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-jinja2" ,python-jinja2)
+     `(("python-enum34" ,python-enum34)
+       ("python-jinja2" ,python-jinja2)
        ("python-simplejson" ,python-simplejson)
        ("python-pyyaml" ,python-pyyaml)
        ("python-click" ,python-click)
@@ -8617,7 +8618,7 @@ replacement for strverscmp.")
      "MultiQC is a tool to aggregate bioinformatics results across many
 samples into a single report.  It contains modules for a large number of
 common bioinformatics tools.")
-    (license license:gpl3)))
+    (license license:gpl3+)))
 
 (define-public r-chipseq
   (package
