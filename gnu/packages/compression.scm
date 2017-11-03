@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1025,6 +1027,37 @@ even LZMA can provide, or a higher speed than gzip while compressing as
 well as bzip2.")
     (license (list license:gpl3+
                    license:public-domain)))) ; most files in lzma/
+
+(define-public bitshuffle
+  (package
+    (name "bitshuffle")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "bitshuffle" version))
+              (sha256
+               (base32
+                "01vcjrvsxjvv47y5hf9rps69zwv0vwd4ydhhms2jfs4rpcnlak6v"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'make-required-dir
+           (lambda _
+             (mkdir-p "bitshuffle/plugin"))))))
+    (inputs
+     `(("numpy" ,python-numpy)
+       ("h5py" ,python-h5py)
+       ("hdf5" ,hdf5)))
+    (native-inputs
+     `(("cython" ,python-cython)))
+    (home-page "https://github.com/kiyo-masui/bitshuffle")
+    (synopsis "Filter for improving compression of typed binary data")
+    (description "Bitshuffle is an algorithm that rearranges typed, binary data
+for improving compression, as well as a python/C package that implements this
+algorithm within the Numpy framework.")
+    (license license:expat)))
 
 (define-public snappy
   (package
