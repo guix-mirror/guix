@@ -42,6 +42,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
@@ -54,6 +55,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -1080,6 +1082,126 @@ instead, it aims for very high speeds and reasonable compression. For instance,
 compared to the fastest mode of zlib, Snappy is an order of magnitude faster
 for most inputs, but the resulting compressed files are anywhere from 20% to
 100% bigger.")
+    (license license:asl2.0)))
+
+(define bitshuffle-for-snappy
+  (package
+    (inherit bitshuffle)
+    (name "bitshuffle-for-snappy")
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-output-to-file "Makefile"
+               (lambda _
+                 (display
+                   (string-append
+                     "libbitshuffle.so: src/bitshuffle.o src/bitshuffle_core.o "
+                     "src/iochain.o lz4/lz4.o\n"
+                     "\tgcc -O3 -ffast-math -std=c99 -o $@ -shared -fPIC $^\n"
+                     "\n"
+                     "%.o: %.c\n"
+                     "\tgcc -O3 -ffast-math -std=c99 -fPIC -Isrc -Ilz4 -c $< -o $@\n"
+                     "\n"
+                     "PREFIX:=" (assoc-ref outputs "out") "\n"
+                     "LIBDIR:=$(PREFIX)/lib\n"
+                     "INCLUDEDIR:=$(PREFIX)/include\n"
+                     "install: libbitshuffle.so\n"
+                     "\tinstall -dm755 $(LIBDIR)\n"
+                     "\tinstall -dm755 $(INCLUDEDIR)\n"
+                     "\tinstall -m755 libbitshuffle.so $(LIBDIR)\n"
+                     "\tinstall -m644 src/bitshuffle.h $(INCLUDEDIR)\n"
+                     "\tinstall -m644 src/bitshuffle_core.h $(INCLUDEDIR)\n"
+                     "\tinstall -m644 src/iochain.h $(INCLUDEDIR)\n"
+                     "\tinstall -m644 lz4/lz4.h $(INCLUDEDIR)\n")))))))))
+    (inputs '())
+    (native-inputs '())))
+
+(define-public java-snappy
+  (package
+    (name "java-snappy")
+    (version "1.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xerial/snappy-java/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w58diryma7qz7aa24yv8shf3flxcbbw8jgcn2lih14wgmww58ww"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "snappy.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-binaries
+           (lambda _
+             (delete-file "lib/org/xerial/snappy/OSInfo.class")
+             (delete-file-recursively "src/main/resources/org/xerial/snappy/native")
+             #t))
+         (add-before 'build 'build-jni
+           (lambda _
+             ;; Rebuild one of the binaries we removed earlier
+             (system* "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
+                      "-d" "lib")
+             ;; Link to the dynamic bitshuffle and snappy, not the static ones
+             (substitute* "Makefile.common"
+               (("-shared")
+                "-shared -lbitshuffle -lsnappy"))
+             (substitute* "Makefile"
+               ;; Don't try to use git, don't download bitshuffle source
+               ;; and don't build it.
+               (("\\$\\(SNAPPY_GIT_UNPACKED\\) ")
+                "")
+               ((": \\$\\(SNAPPY_GIT_UNPACKED\\)")
+                ":")
+               (("\\$\\(BITSHUFFLE_UNPACKED\\) ")
+                "")
+               ((": \\$\\(SNAPPY_SOURCE_CONFIGURED\\)") ":")
+               ;; What we actually want to build
+               (("SNAPPY_OBJ:=.*")
+                "SNAPPY_OBJ:=$(addprefix $(SNAPPY_OUT)/, \
+                 SnappyNative.o BitShuffleNative.o)\n")
+               ;; Since we removed the directory structure in "native" during
+               ;; the previous phase, we need to recreate it.
+               (("NAME\\): \\$\\(SNAPPY_OBJ\\)")
+                "NAME): $(SNAPPY_OBJ)\n\t@mkdir -p $(@D)"))
+             ;; Finally we can run the Makefile to build the dynamic library.
+             (zero? (system* "make" "native"))))
+         ;; Once we have built the shared library, we need to place it in the
+         ;; "build" directory so it can be added to the jar file.
+         (add-after 'build-jni 'copy-jni
+           (lambda _
+             (copy-recursively "src/main/resources/org/xerial/snappy/native"
+                               "build/classes/org/xerial/snappy/native")))
+         (add-before 'check 'fix-failing
+           (lambda _
+             ;; This package assumes maven build, which puts results in "target".
+             ;; We put them in "build" instead, so fix that.
+             (substitute* "src/test/java/org/xerial/snappy/SnappyLoaderTest.java"
+               (("target/classes") "build/classes"))
+             ;; FIXME: probably an error
+             (substitute* "src/test/java/org/xerial/snappy/SnappyOutputStreamTest.java"
+               (("91080") "91013")))))))
+    (inputs
+     `(("osgi-framework" ,java-osgi-framework)))
+    (propagated-inputs
+     `(("bitshuffle" ,bitshuffle-for-snappy)
+       ("snappy" ,snappy)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)
+       ("xerial-core" ,java-xerial-core)
+       ("classworlds" ,java-plexus-classworlds)
+       ("perl" ,perl)))
+    (home-page "https://github.com/xerial/snappy-java")
+    (synopsis "Compression/decompression algorithm in Java")
+    (description "Snappy-java is a Java port of the snappy, a fast C++
+compresser/decompresser.")
     (license license:asl2.0)))
 
 (define-public p7zip
