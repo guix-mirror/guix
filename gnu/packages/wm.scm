@@ -541,7 +541,7 @@ experience.")
 (define-public awesome
   (package
     (name "awesome")
-    (version "4.0")
+    (version "4.2")
     (source
      (origin (method url-fetch)
              (uri (string-append
@@ -549,7 +549,7 @@ experience.")
                    "master/awesome-" version ".tar.xz"))
              (sha256
               (base32
-               "0czkcz67sab63gf5m2p2pgg05yinjx60hfb9rfyzdkkg28q9f02w"))
+               "0kwpbls9h1alxcmvxh5g9qb995fds5b2ngcr44w0ibazkyls2pdc"))
              (modules '((guix build utils)
                         (srfi srfi-19)))
              (snippet
@@ -598,6 +598,9 @@ experience.")
      `(;; Let compression happen in our 'compress-documentation' phase so that
        ;; '--no-name' is used, which removes timestamps from gzip output.
        #:configure-flags '("-DCOMPRESS_MANPAGES=off")
+
+       ;; Building awesome in its source dir is no longer supported.
+       #:out-of-source? #t
 
        #:phases
        (modify-phases %standard-phases
