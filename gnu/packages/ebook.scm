@@ -183,6 +183,12 @@
                        (find-files (string-append
                                     (assoc-ref inputs "font-liberation")
                                     "/share/fonts/truetype")))
+             #t))
+         (add-after 'install-font-liberation 'install-mimetypes
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "resources/calibre-mimetypes.xml"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/mime/packages"))
              #t)))))
     (home-page "http://calibre-ebook.com/")
     (synopsis "E-book library management software")
