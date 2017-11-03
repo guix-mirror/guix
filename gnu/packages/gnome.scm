@@ -6341,6 +6341,7 @@ Moka")
 
 (define-public moka-icon-theme
   (package
+    (inherit faba-icon-theme)
     (name "moka-icon-theme")
     (version "5.3.6")
     (source (origin
@@ -6352,26 +6353,9 @@ Moka")
               (sha256
                (base32
                 "04axinv79qnngsxkwqzi5j9lc3hn24rjqps5ai8d42pdnfaf0x37"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-makefile.am
-           (lambda _
-             (substitute* '("Makefile.am")
-               (("\\$\\(DESTDIR\\)/usr/share")
-                "$(datadir)"))
-             #t))
-         (add-after 'patch-makefile.am 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
     (synopsis "Moka icon theme")
     (description "Moka is a stylized desktop icon set, designed to be clear,
 simple and consistent.")
-    (home-page "http://snwh.org/moka")
     (license license:gpl3+)))
 
 (define-public arc-icon-theme
