@@ -6360,7 +6360,8 @@ Moka")
     (synopsis "Moka icon theme")
     (description "Moka is a stylized desktop icon set, designed to be clear,
 simple and consistent.")
-    (license license:gpl3+)))
+    (license (list license:gpl3+
+                   license:cc-by-sa4.0))))
 
 (define-public arc-icon-theme
   (package
