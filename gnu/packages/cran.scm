@@ -717,14 +717,14 @@ and S4 methods with inlined C, C++ or Fortran code supporting @code{.C} and
 (define-public r-bbmle
   (package
     (name "r-bbmle")
-    (version "1.0.19")
+    (version "1.0.20")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bbmle" version))
        (sha256
         (base32
-         "014h6mw16gv4acs2p78dy7lla7s428n633aybsb1mbi6250dg0p8"))))
+         "1xzij7swrrzl5ly8l3lw6awh486zcm00251dwqws1y23fbgyh3vc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
