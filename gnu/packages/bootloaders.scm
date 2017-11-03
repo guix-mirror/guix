@@ -381,7 +381,9 @@ also initializes the boards (RAM etc).")
              (lambda* (#:key outputs make-flags #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (libexec (string-append out "/libexec"))
-                      (uboot-files (find-files "." ".*\\.(bin|efi|spl)$")))
+                      (uboot-files (append
+                                    (find-files "." ".*\\.(bin|efi|img|spl)$")
+                                    '("MLO"))))
                  (mkdir-p libexec)
                  (for-each
                   (lambda (file)
