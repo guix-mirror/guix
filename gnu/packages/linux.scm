@@ -402,6 +402,13 @@ It has been modified to remove all non-free binary blobs.")
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
+(define-public linux-libre-arm-omap2plus
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
+                    '("armhf-linux")
+                    #:defconfig "omap2plus_defconfig"
+                    #:extra-version "arm-omap2plus"))
+
 
 ;;;
 ;;; Pluggable authentication modules (PAM).
