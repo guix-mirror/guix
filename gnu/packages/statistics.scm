@@ -3675,14 +3675,14 @@ It uses and relies on grid graphics and formal (S4) classes and methods.")
 (define-public r-purrr
   (package
     (name "r-purrr")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "purrr" version))
        (sha256
         (base32
-         "0j1y0nbvljcis9hgic4wbbzslcsidhpw0wzs7d2hx7a2ygi6mkma"))))
+         "0wgbnbrqncjpggg8f9bdpcd1gy351s5f0az5k8lc55cvs9lhz3gd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-tibble" ,r-tibble)
