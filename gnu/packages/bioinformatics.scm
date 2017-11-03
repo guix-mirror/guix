@@ -107,18 +107,19 @@
 (define-public r-ape
   (package
     (name "r-ape")
-    (version "4.1")
+    (version "5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ape" version))
        (sha256
         (base32
-         "0959fiiy11rzfzrzaknmgrx64bhszj02l0ycz79k5a6bmpfzanlk"))))
+         "0q59pmxawz498cb9mv5m49lhiwxib8ak94yyydz7qg8b6lpd4bn3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
-       ("r-nlme" ,r-nlme)))
+       ("r-nlme" ,r-nlme)
+       ("r-rcpp" ,r-rcpp)))
     (home-page "http://ape-package.ird.fr/")
     (synopsis "Analyses of phylogenetics and evolution")
     (description
