@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,12 +39,12 @@
 (define-public ncurses
   (package
     (name "ncurses")
-    (version "6.0")
+    (version "6.0-20170930")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/ncurses/ncurses-"
-                                  version ".tar.gz"))
-              (patches (search-patches "ncurses-CVE-2017-10684-10685.patch"))
+                                  (car (string-split version #\-))
+                                  ".tar.gz"))
               (sha256
                (base32
                 "0q3jck7lna77z5r42f13c4xglc7azd19pxfrjrpgp2yf615w4lgm"))))
@@ -71,6 +72,12 @@
                                    (cons (string-append "--host=" target)
                                          configure-flags)
                                    configure-flags))))))
+           (apply-rollup-patch-phase
+            '(lambda* (#:key inputs #:allow-other-keys)
+               (copy-file (assoc-ref inputs "rollup-patch")
+                          (string-append (getcwd) "/rollup-patch.sh.bz2"))
+               (and (zero? (system* "bzip2" "-d" "rollup-patch.sh.bz2"))
+                    (zero? (system* "sh" "rollup-patch.sh")))))
            (remove-shebang-phase
             '(lambda _
                ;; To avoid retaining a reference to the bootstrap Bash via the
@@ -166,6 +173,8 @@
               ,@(if (target-mingw?) '("--enable-term-driver") '()))))
          #:tests? #f                  ; no "check" target
          #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'apply-rollup-patch
+                      ,apply-rollup-patch-phase)
                     (replace 'configure ,configure-phase)
                     (add-after 'install 'post-install
                       ,post-install-phase)
@@ -174,8 +183,23 @@
                     (add-after 'unpack 'remove-unneeded-shebang
                       ,remove-shebang-phase)))))
     (self-native-input? #t)           ; for `tic'
-     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; Ncurses distributes "stable" patchsets to be applied on top
+       ;; of the release tarball.  These are only available as shell
+       ;; scripts(!) so we decompress and apply them in a phase.
+       ;; See <https://invisible-mirror.net/archives/ncurses/6.0/README>.
+       ("rollup-patch"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://invisible-mirror.net/archives/ncurses/"
+                 (car (string-split version #\-))
+                 "/ncurses-" version "-patch.sh.bz2"))
+           (sha256
+            (base32
+             "08a1pp8wnj1fwpa1pz3fgrmd6xwp21idniswqz8lx3w3z2nb4ydi"))))))
     (native-search-paths
      (list (search-path-specification
             (variable "TERMINFO_DIRS")

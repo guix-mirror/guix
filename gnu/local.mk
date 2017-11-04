@@ -879,7 +879,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupdf-CVE-2017-15587.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mutt-store-references.patch		\
-  %D%/packages/patches/ncurses-CVE-2017-10684-10685.patch	\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
   %D%/packages/patches/netcdf-tst_h_par.patch			\
