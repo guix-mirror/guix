@@ -44,8 +44,7 @@
       (patches (search-patches "acl-hurd-path-max.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f   ; FIXME: Investigate test suite failures
-       #:test-target "tests"
+     `(#:test-target "tests"
        #:phases
        (modify-phases %standard-phases
          (add-after 'build 'patch-exec-bin-sh
@@ -53,6 +52,16 @@
              (substitute* "test/run"
                (("/bin/sh") (which "sh")))
              #t))
+         (add-before 'check 'patch-tests
+            ;; The coreutils do not have an ACL bit to remove from their
+            ;; output, so the sed expression that removes the bit is disabled.
+            (substitute* "test/sbits-restore.test"
+              (("\\| sed.*'") ""))
+            ;; These tests require the existence of a user named "bin", but
+            ;; this user does not exist within Guix's build environment.
+            (for-each (lambda (file)
+                        (delete-file (string-append "test/" file)))
+                      '("setfacl-X.test" "cp.test" "misc.test")))
          (replace 'install
            (lambda _
              (zero? (system* "make" "install" "install-lib" "install-dev")))))))
