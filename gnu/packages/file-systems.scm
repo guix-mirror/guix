@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,8 +21,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages attr)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages linux)
@@ -86,3 +89,40 @@ ISO images when you only need to inspect their contents or extract specific
 files.  Since the HTTP protocol itself has no notion of directories, only a
 single file can be mounted.")
     (license license:gpl2+)))
+
+(define-public disorderfs
+  (package
+    (name "disorderfs")
+    (version "0.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ReproducibleBuilds/disorderfs.git")
+             (commit "0.5.2")))
+       (sha256
+        (base32
+         "1j028dq3d4m64mn9xmfamcnnc7i2drmra4pdmxdmqdsi8p7yj4sv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fuse" ,fuse)
+       ("attr" ,attr)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "PREFIX=" out)))
+       #:test-target "test"
+       ;; FIXME: Tests require 'run-parts' which is not in Guix yet.
+       #:tests? #f))
+    (home-page "https://github.com/ReproducibleBuilds/disorderfs")
+    (synopsis "FUSE filesystem that introduces non-determinism")
+    (description
+     "An overlay FUSE filesystem that introduces non-determinism
+into filesystem metadata.  For example, it can randomize the order
+in which directory entries are read.  This is useful for detecting
+non-determinism in the build process.")
+    (license license:gpl3+)))
+
