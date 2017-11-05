@@ -1204,6 +1204,56 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
 compresser/decompresser.")
     (license license:asl2.0)))
 
+(define-public java-iq80-snappy
+  (package
+    (name "java-iq80-snappy")
+    (version "0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dain/snappy/archive/snappy-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0rb3zhci7w9wzd65lfnk7p3ip0n6gb58a9qpx8n7r0231gahyamf"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "iq80-snappy.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (define (test class)
+               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                           ":build/classes"
+                                                           ":build/test-classes")
+                               "-Dtest.resources.dir=src/test/resources"
+                               "org.testng.TestNG" "-testclass"
+                               class)))
+             (system* "ant" "compile-tests")
+             (and
+               (test "org.iq80.snappy.SnappyFramedStreamTest")
+               (test "org.iq80.snappy.SnappyStreamTest"))))
+         (add-before 'build 'remove-hadoop-dependency
+           (lambda _
+             ;; We don't have hadoop
+             (delete-file "src/main/java/org/iq80/snappy/HadoopSnappyCodec.java")
+             (delete-file "src/test/java/org/iq80/snappy/TestHadoopSnappyCodec.java")
+             #t)))))
+    (home-page "https://github.com/dain/snappy")
+    (native-inputs
+     `(("guava" ,java-guava)
+       ("java-snappy" ,java-snappy)
+       ("hamcrest" ,java-hamcrest-core)
+       ("testng" ,java-testng)))
+    (synopsis "Java port of snappy")
+    (description "Iq80-snappy is a rewrite (port) of Snappy writen in pure
+Java.  This compression code produces a byte-for-byte exact copy of the output
+created by the original C++ code, and extremely fast.")
+    (license license:asl2.0)))
+
 (define-public p7zip
   (package
     (name "p7zip")
