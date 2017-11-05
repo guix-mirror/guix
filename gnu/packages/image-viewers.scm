@@ -55,7 +55,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "2.21")
+    (version "2.22")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -63,7 +63,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0azgpr4al2pi4858z4xh4lfz84cvzxw3n426fn7rz6cdj34q212j"))))
+                "0yqcczb9c126zgfvjq2fpzqz0rg16yad8mfr3gryxwlbymy2cmxj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -79,6 +79,14 @@
               ("libxt" ,libxt)
               ("libx11" ,libx11)
               ("libxinerama" ,libxinerama)))
+    (native-search-paths
+     ;; Feh allows overriding the libcurl builtin CA path (unset in Guix)
+     ;; with the same variable as the `curl` command line HTTP tool.
+     (list (search-path-specification
+            (variable "CURL_CA_BUNDLE")
+            (file-type 'regular)
+            (separator #f)                         ;single entry
+            (files '("etc/ssl/certs/ca-certificates.crt")))))
     (synopsis "Fast and light imlib2-based image viewer")
     (description
       "feh is an X11 image viewer aimed mostly at console users.
