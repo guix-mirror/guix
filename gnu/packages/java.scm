@@ -4212,6 +4212,50 @@ JavaMail API.")
 Java.")
     (license license:asl2.0)))
 
+(define-public java-log4j-core
+  (package
+    (inherit java-log4j-api)
+    (name "java-log4j-core")
+    (inputs
+     `(("java-osgi-core" ,java-osgi-core)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-log4j-api" ,java-log4j-api)
+       ("java-mail" ,java-mail)
+       ("java-jboss-jms-api-spec" ,java-jboss-jms-api-spec)
+       ("java-lmax-disruptor" ,java-lmax-disruptor)
+       ("java-kafka" ,java-kafka-clients)
+       ("java-datanucleus-javax-persistence" ,java-datanucleus-javax-persistence)
+       ("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
+       ("java-fasterxml-jackson-databind" ,java-fasterxml-jackson-databind)
+       ("java-fasterxml-jackson-dataformat-xml" ,java-fasterxml-jackson-dataformat-xml)
+       ("java-fasterxml-jackson-dataformat-yaml" ,java-fasterxml-jackson-dataformat-yaml)
+       ("java-commons-compress" ,java-commons-compress)
+       ("java-commons-csv" ,java-commons-csv)
+       ("java-jeromq" ,java-jeromq)
+       ("java-junit" ,java-junit)))
+    (native-inputs
+     `(("hamcrest" ,java-hamcrest-all)
+       ("java-commons-io" ,java-commons-io)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("slf4j" ,java-slf4j-api)))
+    (arguments
+     `(#:tests? #f ; tests require more dependencies
+       #:test-dir "src/test"
+       #:source-dir "src/main/java"
+       #:jar-name "log4j-core.jar"
+       #:jdk ,icedtea-8
+       #:make-flags
+       (list (string-append "-Ddist.dir=" (assoc-ref %outputs "out")
+                            "/share/java"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-dir
+           (lambda _ (chdir "log4j-core") #t)))))
+    (synopsis "Core component of the Log4j framework")
+    (description "This package provides the core component of the Log4j
+logging framework for Java.")))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
