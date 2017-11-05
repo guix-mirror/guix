@@ -29,6 +29,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (rnrs io ports)
   #:export (%standard-phases
+            %license-file-regexp
             gnu-build))
 
 ;; Commentary:
@@ -641,6 +642,31 @@ which cannot be found~%"
             outputs)
   #t)
 
+(define %license-file-regexp
+  ;; Regexp matching license files.
+  "^(COPYING.*|LICEN[CS]E.*|[Ll]icen[cs]e.*|Copy[Rr]ight(\\.(txt|md))?)$")
+
+(define* (install-license-files #:key outputs
+                                (license-file-regexp %license-file-regexp)
+                                #:allow-other-keys)
+  "Install license files matching LICENSE-FILE-REGEXP to 'share/doc'."
+  (let* ((regexp    (make-regexp license-file-regexp))
+         (out       (or (assoc-ref outputs "out")
+                        (match outputs
+                          (((_ . output) _ ...)
+                           output))))
+         (package   (strip-store-file-name out))
+         (directory (string-append out "/share/doc/" package))
+         (files     (scandir "." (lambda (file)
+                                   (regexp-exec regexp file)))))
+    (format #t "installing ~a license files~%" (length files))
+    (for-each (lambda (file)
+                (if (file-is-directory? file)
+                    (copy-recursively file directory)
+                    (install-file file directory)))
+              files)
+    #t))
+
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
@@ -654,6 +680,7 @@ which cannot be found~%"
             validate-documentation-location
             delete-info-dir-file
             patch-dot-desktop-files
+            install-license-files
             reset-gzip-timestamps
             compress-documentation)))
 

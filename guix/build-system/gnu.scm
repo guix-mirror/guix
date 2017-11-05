@@ -273,6 +273,10 @@ standard packages used as implicit inputs of the GNU build system."
     (build (if target gnu-cross-build gnu-build))
     (arguments (strip-keyword-arguments private-keywords arguments))))
 
+(define %license-file-regexp
+  ;; Regexp matching license files.
+  "^(COPYING.*|LICEN[CS]E.*|[Ll]icen[cs]e.*|Copy[Rr]ight(\\.(txt|md))?)$")
+
 (define* (gnu-build store name input-drvs
                     #:key (guile #f)
                     (outputs '("out"))
@@ -291,6 +295,7 @@ standard packages used as implicit inputs of the GNU build system."
                     (strip-directories ''("lib" "lib64" "libexec"
                                           "bin" "sbin"))
                     (validate-runpath? #t)
+                    (license-file-regexp %license-file-regexp)
                     (phases '%standard-phases)
                     (locale "en_US.utf8")
                     (system (%current-system))
@@ -358,6 +363,7 @@ packages that must not be referenced."
                   #:patch-shebangs? ,patch-shebangs?
                   #:strip-binaries? ,strip-binaries?
                   #:validate-runpath? ,validate-runpath?
+                  #:license-file-regexp ,license-file-regexp
                   #:strip-flags ,strip-flags
                   #:strip-directories ,strip-directories)))
 
@@ -432,6 +438,7 @@ is one of `host' or `target'."
                           (strip-directories ''("lib" "lib64" "libexec"
                                                 "bin" "sbin"))
                           (validate-runpath? #t)
+                          (license-file-regexp %license-file-regexp)
                           (phases '%standard-phases)
                           (locale "en_US.utf8")
                           (system (%current-system))
@@ -509,6 +516,7 @@ platform."
                     #:patch-shebangs? ,patch-shebangs?
                     #:strip-binaries? ,strip-binaries?
                     #:validate-runpath? ,validate-runpath?
+                    #:license-file-regexp ,license-file-regexp
                     #:strip-flags ,strip-flags
                     #:strip-directories ,strip-directories))))
 
