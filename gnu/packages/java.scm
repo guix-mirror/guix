@@ -7108,3 +7108,60 @@ protocol-independent framework to build mail and messaging applications.")
     (synopsis "Java binding for 0MQ")
     (description "Jeromq provides the java bindings for 0MQ.")
     (license license:mpl2.0)))
+
+(define-public java-kafka-clients
+  (package
+    (name "java-kafka-clients")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/kafka/" version "/kafka-"
+                                  version "-src.tgz"))
+              (sha256
+               (base32
+                "1yxmnsmliwm7671q5yy9bl4jdqyyn00n26cggz9brwczx80w1vfq"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-kafka-clients.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "clients/src/main/java"
+       #:test-dir "clients/src/test"
+       #:test-exclude
+       (list
+         ;; This file does not contain a class
+         "**/IntegrationTest.java"
+         ;; Requires network
+         "**/ClientUtilsTest.java"
+         ;; End with errors that seem related to our powermock
+         "**/KafkaProducerTest.java"
+         "**/BufferPoolTest.java")))
+    (inputs
+     `(("java-slf4j-api" ,java-slf4j-api)
+       ("java-lz4" ,java-lz4)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-all)
+       ("objenesis" ,java-objenesis)
+       ("asm" ,java-asm)
+       ("cglib" ,java-cglib)
+       ("javassist" ,java-jboss-javassist)
+       ("snappy" ,java-snappy)
+       ("easymock" ,java-easymock)
+       ("powermock" ,java-powermock-core)
+       ("powermock-easymock" ,java-powermock-api-easymock)
+       ("powermock-junit4-common" ,java-powermock-modules-junit4-common)
+       ("powermock-junit4" ,java-powermock-modules-junit4)
+       ("powermock-support" ,java-powermock-api-support)
+       ("bouncycastle" ,java-bouncycastle-bcprov)
+       ("bouncycastle-bcpkix" ,java-bouncycastle-bcpkix)))
+    (home-page "https://kafka.apache.org")
+    (synopsis "Distributed streaming platform")
+    (description "Kafka is a distributed streaming platform, which means:
+@itemize
+@item it can publish and subscribe to streams of records;
+@item it can store streams of records in a fault-tolerant way;
+@item it can process streams of records as they occur.
+@end itemize")
+    ;; Either cddl or gpl2 only.
+    (license (list license:cddl1.1; actually cddl1.1
+                   license:gpl2)))); with classpath exception
