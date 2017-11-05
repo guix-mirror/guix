@@ -6909,3 +6909,54 @@ messages between two or more clients.  It is a messaging standard that allows
 application components to create, send, receive, and read messages.")
     ; either gpl2 only with GPL Classpath Exception, or cddl.
     (license (list license:gpl2 license:cddl1.0))))
+
+(define-public java-mail
+  (package
+    (name "java-mail")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/javaee/javamail/archive/"
+                                  "JAVAMAIL-1_6_0.tar.gz"))
+              (sha256
+               (base32
+                "1b4rg7fpj50ld90a71iz2m4gm3f5cnw18p3q3rbrrryjip46kx92"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-mail.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "mail/src/main/java"
+       #:test-dir "mail/src/test"
+       #:test-exclude
+       (list "**/CollectorFormatterTest.java"
+             "**/CompactFormatterTest.java"
+             "**/DurationFilterTest.java"
+             "**/MailHandlerTest.java"
+             "**/GetLocalAddressTest.java"
+             ;; FIXME: both end with:
+             ;; java.lang.ClassNotFoundException:
+             ;; javax.mail.internet.MimeMultipartParseTest
+             "**/MimeMultipartParseTest.java"
+             "**/SearchTermSerializationTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'move-version.java
+           (lambda _
+             (copy-file "mail/src/main/resources/javax/mail/Version.java"
+                        "mail/src/main/java/javax/mail/Version.java")))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "mail/src/main/resources/META-INF"
+                               "build/classes/META-INF")
+             #t)))))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://javaee.github.io/javamail/")
+    (synopsis "Mail-related functionnalities in Java")
+    (description "The JavaMail API provides a platform-independent and
+protocol-independent framework to build mail and messaging applications.")
+    ;; General Public License Version 2 only ("GPL") or the Common Development
+    ;; and Distribution License("CDDL")
+    (license (list license:cddl1.1
+                   license:gpl2)))); with classpath exception
