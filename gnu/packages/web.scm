@@ -4314,7 +4314,7 @@ commenting.")
 (define-public libwapcaplet
   (package
     (name "libwapcaplet")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
@@ -4322,7 +4322,7 @@ commenting.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0cs1dd2afjgc3wf5gqg434hv6jdabrp9qvlpl4dp53nhkyfywna3"))))
+         "15yr0pl6qa6biy36qkmd949ydbjzpqiaccpx3sprh4jknabsk1vv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
