@@ -3412,6 +3412,45 @@ working with compressed files such as ar, cpio, Unix dump, tar, zip, gzip, XZ,
 Pack200, bzip2, 7z, arj, lzma, snappy, DEFLATE, lz4 and Z files.")
     (license license:asl2.0)))
 
+(define-public java-commons-csv
+  (package
+    (name "java-commons-csv")
+    (version "1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/csv/source/"
+                                  "commons-csv-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1l89m0fm2s3xx3v3iynvangymfg2vlyngaj6fgsi457nmsw7m7ij"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "commons-csv.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f)); FIXME: requires java-h2
+    (inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-commons-io" ,java-commons-io)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("junit" ,java-junit)))
+    (home-page "https://commons.apache.org/proper/commons-csv/")
+    (synopsis "Read and write CSV documents")
+    (description "Commons CSV reads and writes files in variations of the Comma
+Separated Value (CSV) format.  The most common CSV formats are predefined in the
+CSVFormat class:
+
+@itemize
+@item Microsoft Excel
+@item Informix UNLOAD
+@item Informix UNLOAD CSV
+@item MySQL
+@item RFC 4180
+@item TDF
+@end itemize
+
+Custom formats can be created using a fluent style API.")
+    (license license:asl2.0)))
+
 (define-public java-osgi-annotation
   (package
     (name "java-osgi-annotation")
