@@ -4256,6 +4256,24 @@ Java.")
     (description "This package provides the core component of the Log4j
 logging framework for Java.")))
 
+(define-public java-log4j-1.2-api
+  (package
+    (inherit java-log4j-api)
+    (name "java-log4j-1.2-api")
+    (arguments
+     `(#:jar-name "java-log4j-1.2-api.jar"
+       #:source-dir "log4j-1.2-api/src/main/java"
+       #:jdk ,icedtea-8
+       ;; Tests require maven-model (and other maven subprojects), which is a
+       ;; cyclic dependency.
+       #:tests? #f))
+    (inputs
+     `(("log4j-api" ,java-log4j-api)
+       ("log4j-core" ,java-log4j-core)
+       ("osgi-core" ,java-osgi-core)
+       ("eclipse-osgi" ,java-eclipse-osgi)
+       ("java-lmax-disruptor" ,java-lmax-disruptor)))))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
