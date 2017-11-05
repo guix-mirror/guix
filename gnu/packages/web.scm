@@ -4340,7 +4340,7 @@ developed as part of the Netsurf project.")
 (define-public libcss
   (package
     (name "libcss")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
@@ -4348,7 +4348,7 @@ developed as part of the Netsurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0qp4p1q1dwgdra4pkrzd081zjzisxkgwx650ijx323j8bj725daf"))))
+         "16mns3h8vj7iw8myvgnw58q84irvbjlvfkxh8mdw6fbkjvaa7cnz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4527,7 +4527,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
 (define-public nsgenbind
   (package
     (name "nsgenbind")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method url-fetch)
@@ -4535,7 +4535,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "078gpbfcs96bgcba0ygha0ph9jzqr6ry5s3a8p6sl61px2908s66"))))
+         "1iwjpdaan0njlhb9ir6a2q5vpxfmkqfldkvnqszqdz50b44vd1jv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4555,7 +4555,7 @@ w3c webidl files and a binding configuration file.")
 (define-public netsurf
   (package
     (name "netsurf")
-    (version "3.6")
+    (version "3.7")
     (source
      (origin
        (method url-fetch)
@@ -4563,7 +4563,7 @@ w3c webidl files and a binding configuration file.")
                            "releases/source/netsurf-" version "-src.tar.gz"))
        (sha256
         (base32
-         "174sjx0566agckwmlj4w2cip5qbxdiafyhlp185a1qprxx84pbjr"))
+         "05kynfzzwd4fc03vbqdjpghh5xnk2yrh43w7vikak89vla30mhpg"))
        (patches (search-patches "netsurf-system-utf8proc.patch"
                                 "netsurf-y2038-tests.patch"
                                 "netsurf-longer-test-timeout.patch"))))
@@ -4652,10 +4652,10 @@ w3c webidl files and a binding configuration file.")
                (copy-file "frontends/gtk/res/netsurf-gtk.desktop"
                           desktop)
                (substitute* desktop
-                 (("netsurf-gtk") (string-append out "/bin/netsurf"))
+                 (("netsurf-gtk") (string-append out "/bin/netsurf-gtk"))
                  (("netsurf.png") (string-append out "/share/netsurf/"
                                                  "netsurf.xpm")))
-               (install-file "Docs/netsurf-gtk.1"
+               (install-file "docs/netsurf-gtk.1"
                              (string-append out "/share/man/man1/"))
                #t))))))
     (home-page "http://www.netsurf-browser.org")
