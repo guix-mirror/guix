@@ -4151,7 +4151,7 @@ tools they trust (e.g. wget).")
 (define netsurf-buildsystem
   (package
     (name "netsurf-buildsystem")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
@@ -4159,7 +4159,7 @@ tools they trust (e.g. wget).")
                            "buildsystem-" version ".tar.gz"))
        (sha256
         (base32
-         "0wdgvasrjik1dgvvpqbppbpyfzkqd1v45x3g9rq7p67n773azinv"))))
+         "0p5k708lcq8dip9xxck6hml32bjrbyipprm22bbsvdnsc0pqm71x"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
