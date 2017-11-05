@@ -338,7 +338,8 @@ also initializes the boards (RAM etc).")
 
 (define (make-u-boot-package board triplet)
   "Returns a u-boot package for BOARD cross-compiled for TRIPLET."
-  (let ((same-arch? (if (string-prefix? (%current-system) triplet)
+  (let ((same-arch? (if (string-prefix? (%current-system)
+                                        (gnu-triplet->nix-system triplet))
                       `#t
                       `#f)))
     (package
