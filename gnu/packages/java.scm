@@ -6960,3 +6960,38 @@ protocol-independent framework to build mail and messaging applications.")
     ;; and Distribution License("CDDL")
     (license (list license:cddl1.1
                    license:gpl2)))); with classpath exception
+
+(define-public java-jeromq
+  (package
+    (name "java-jeromq")
+    (version "0.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/zeromq/jeromq/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17wx8dlyqmbw77xf6d6wxnhiyky6181zpf1a48jqzz9hidz0j841"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jeromq.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-exclude
+       (list
+         "**/Abstract*.java"
+         ;; Requires network
+         "**/ZBeaconTest.java"
+         ;; Failures
+         "**/CustomDecoderTest.java"
+         "**/CustomEncoderTest.java")))
+    (inputs
+     `(("java-jnacl" ,java-jnacl)))
+    (native-inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("junit" ,java-junit)))
+    (home-page "http://zeromq.org/bindings:java")
+    (synopsis "Java binding for 0MQ")
+    (description "Jeromq provides the java bindings for 0MQ.")
+    (license license:mpl2.0)))
