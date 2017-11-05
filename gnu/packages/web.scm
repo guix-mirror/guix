@@ -4215,7 +4215,7 @@ C.  It is developed as part of the NetSurf project.")
 (define-public hubbub
   (package
     (name "hubbub")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
@@ -4223,7 +4223,7 @@ C.  It is developed as part of the NetSurf project.")
                            "lib" name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "101781iw32p47386fxqr01nrkywi12w17ajh02k2vlga4z8zyv86"))
+         "1shi4hv8drn9zy8f2f6yhnz2dqnpg5jkybvqhzggfjx1q35fbxz3"))
        (patches (search-patches "hubbub-sort-entities.patch"))))
     (build-system gnu-build-system)
     (native-inputs
