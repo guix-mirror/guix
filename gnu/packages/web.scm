@@ -4504,7 +4504,7 @@ developed as part of the NetSurf project.")
 (define-public libnspsl
   (package
     (name "libnspsl")
-    (version "0.1.0")
+    (version "0.1.2")
     (source
      (origin
        (method url-fetch)
@@ -4512,7 +4512,7 @@ developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0x3frscrp9bzxlm9ama5laxjr3zi8cg20r8lhsamw4x4zyyk145y"))))
+         "0wim5hwzwrfrvvap096whf79m2mnfivbqhqlh03ci9d89xb1w0y9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
