@@ -2875,6 +2875,54 @@ are many features, including:
             (replace 'install
               (install-jars "build"))))))))
 
+(define java-commons-collections-test-classes
+  (package
+    (inherit java-commons-collections)
+    (arguments
+     `(#:jar-name "commons-collections-test-classes.jar"
+       #:source-dir "src/test"
+       #:tests? #f))
+    (inputs
+     `(("collection" ,java-commons-collections)))))
+
+(define-public java-commons-beanutils
+  (package
+    (name "java-commons-beanutils")
+    (version "1.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/beanutils/source/"
+                                  "commons-beanutils-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "03cs0bq3sl1sdc7py9g3qnf8n9h473nrkvd3d251kaqv6a2ab7qk"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (rename-file (string-append "dist/commons-beanutils-" ,version
+                                         "-SNAPSHOT.jar")
+                          "commons-beanutils.jar")
+             (install-file "commons-beanutils.jar"
+               (string-append (assoc-ref outputs "out") "/share/java/"))
+             #t)))))
+    (inputs
+     `(("logging" ,java-commons-logging-minimal)
+       ("collections" ,java-commons-collections)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("collections-test" ,java-commons-collections-test-classes)))
+    (home-page "http://commons.apache.org/beanutils/")
+    (synopsis "Dynamically set or get properties in Java")
+    (description "BeanUtils provides a simplified interface to reflection and
+introspection to set or get dynamically determined properties through their
+setter and getter method.")
+    (license license:asl2.0)))
+
 (define-public java-commons-io
   (package
     (name "java-commons-io")
