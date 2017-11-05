@@ -7227,3 +7227,28 @@ protocol-independent framework to build mail and messaging applications.")
     ;; Either cddl or gpl2 only.
     (license (list license:cddl1.1; actually cddl1.1
                    license:gpl2)))); with classpath exception
+
+(define-public java-jdom
+  (package
+    (name "java-jdom")
+    (version "1.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://jdom.org/dist/binary/archive/jdom-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "07wdpm3jwwc9q38kmdw40fvbmv6jzjrkrf8m0zqs58f79a672wfl"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "package"
+       #:tests? #f; tests are run as part of the build process
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-jars "build")))))
+    (home-page "http://jdom.org/")
+    (synopsis "Access, manipulate, and output XML data")
+    (description "Java-based solution for accessing, manipulating, and
+outputting XML data from Java code.")
+    (license license:bsd-4)))
