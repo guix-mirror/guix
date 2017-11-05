@@ -4404,7 +4404,7 @@ developed as part of the NetSurf project.")
 (define-public libsvgtiny
   (package
     (name "libsvgtiny")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -4412,7 +4412,7 @@ developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0w5hab9x1saz4lq2s9w47x1r64fbzcsl5bvdjph9c9dq68qv3f8a"))))
+         "12ppy2r7m21ykrjgbf067cgi6dn48fkj7i4b7m64xl4dc13y0ah6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
