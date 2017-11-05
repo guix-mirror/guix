@@ -183,6 +183,9 @@ for ROTATION."
 (define rottlog-service-type
   (service-type
    (name 'rottlog)
+   (description
+    "Periodically rotate log files using GNU@tie{}Rottlog and GNU@tie{}mcron.
+Old log files are removed or compressed according to the configuration.")
    (extensions (list (service-extension etc-service-type rottlog-etc)
                      (service-extension mcron-service-type
                                         rottlog-jobs-or-default)
@@ -323,6 +326,9 @@ for ROTATION."
 (define tailon-service-type
   (service-type
    (name 'tailon)
+   (description
+    "Run Tailon, a Web application for monitoring, viewing, and searching log
+files.")
    (extensions
     (list (service-extension shepherd-root-service-type
                              tailon-shepherd-service)

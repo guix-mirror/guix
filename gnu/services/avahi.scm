@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,6 +117,11 @@
 (define avahi-service-type
   (let ((avahi-package (compose list avahi-configuration-avahi)))
     (service-type (name 'avahi)
+                  (description
+                   "Run @command{avahi-daemon}, a host and service discovery
+daemon that implements the multicast DNS (mDNS) and DNS service
+discovery (DNS-SD) protocols.  Additionally, extend the C library's name
+service switch (NSS) with support for @code{.local} host name resolution.")
                   (extensions
                    (list (service-extension shepherd-root-service-type
                                             avahi-shepherd-service)

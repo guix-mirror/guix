@@ -97,6 +97,7 @@
 (define mpd-service-type
   (service-type
    (name 'mpd)
+   (description "Run the Music Player Daemon (MPD).")
    (extensions
     (list (service-extension shepherd-root-service-type
                              (compose list mpd-shepherd-service))
