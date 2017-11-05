@@ -2849,6 +2849,32 @@ are many features, including:
 @end itemize\n")
     (license license:asl2.0)))
 
+(define-public java-commons-collections
+  (package
+    (inherit java-commons-collections4)
+    (name "java-commons-collections")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/collections/source/"
+                                  "commons-collections-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "055r51a5lfc3z7rkxnxmnn1npvkvda7636hjpm4qk7cnfzz98387"))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments java-commons-collections4)
+        ((#:phases phases)
+          `(modify-phases ,phases
+            ;; The manifest is required by the build procedure
+            (add-before 'build 'add-manifest
+              (lambda _
+                (mkdir-p "build/conf")
+                (call-with-output-file "build/conf/MANIFEST.MF"
+                  (lambda (file)
+                    (format file "Manifest-Version: 1.0\n")))))
+            (replace 'install
+              (install-jars "build"))))))))
+
 (define-public java-commons-io
   (package
     (name "java-commons-io")
