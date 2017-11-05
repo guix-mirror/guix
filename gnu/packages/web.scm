@@ -4458,7 +4458,7 @@ written in C.  It is developed as part of the NetSurf project.")
 (define-public libnsgif
   (package
     (name "libnsgif")
-    (version "0.1.4")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
@@ -4466,7 +4466,7 @@ written in C.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1ldsyscsgqwc8g5481h9nqmwirpp1pp57hmss450hr0mqra26g0k"))))
+         "1phwf0m24m6nd7096fw14hanl4f8gr9bcppi834lbik04agxk38a"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
