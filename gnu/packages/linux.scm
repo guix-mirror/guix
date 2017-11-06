@@ -1185,11 +1185,12 @@ primary network configuration tools, but ifconfig is known to behave
 inadequately in modern network environments, and both should be deprecated.")
     (license license:gpl2+)))
 
-;; There are two packages for net-tools. The first, net-tools, is more recent
-;; and probably safer to use with untrusted inputs (i.e. the internet).  The
-;; second, net-tools-for-tests, is relatively old and buggy. It can be used in
-;; package test suites and should never be referred to by a built package. Use
-;; #:disallowed-references to enforce this.
+;; There are two packages for net-tools. The first, net-tools, can be used
+;; directly on the command-line or when it will be referenced by a built
+;; package. The second, net-tools-for-tests, can be used in package test suites
+;; if it is not referred to by the built package. Net-tools-for-tests may be
+;; relatively old and buggy. It should never be referred to by a built package.
+;; Use #:disallowed-references to enforce this.
 ;;
 ;; When we are able to rebuild many packages (i.e. core-updates), we can update
 ;; net-tools-for-tests if appropriate.
@@ -1271,106 +1272,7 @@ configuration (iptunnel, ipmaddr).")
       (license license:gpl2+))))
 
 (define-public net-tools-for-tests
-  (hidden-package (package (inherit net-tools)
-    (version "1.60")
-    ;; Git depends on net-tools-for-tests via GnuTLS, so we can't use git-fetch
-    ;; here.  We should find a better workaround for this problem so that we can
-    ;; use the latest upstream source.
-    (source (origin
-             (method url-fetch)
-             (uri (list (string-append
-                         "mirror://sourceforge/net-tools/net-tools-"
-                         version ".tar.bz2")
-                        (string-append
-                         "http://distro.ibiblio.org/rootlinux/rootlinux-ports"
-                         "/base/net-tools/net-tools-1.60.tar.bz2")))
-             (sha256
-              (base32
-               "0yvxrzk0mzmspr7sa34hm1anw6sif39gyn85w4c5ywfn8inxvr3s"))
-             (patches (search-patches "net-tools-bitrot.patch"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:phases (alist-cons-after
-                 'unpack 'patch
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (define (apply-patch file)
-                     (zero? (system* "patch" "-p1" "--force"
-                                     "--input" file)))
-
-                   (let ((patch.gz (assoc-ref inputs "patch")))
-                     (format #t "applying Debian patch set '~a'...~%"
-                             patch.gz)
-                     (system (string-append "gunzip < " patch.gz " > the-patch"))
-                     (and (apply-patch "the-patch")
-                          (for-each apply-patch
-                                    (find-files "debian/patches"
-                                                "\\.patch")))))
-                 (alist-replace
-                  'configure
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (mkdir-p (string-append out "/bin"))
-                      (mkdir-p (string-append out "/sbin"))
-
-                      ;; Pretend we have everything...
-                      (system "yes | make config")
-
-                      ;; ... except for the things we don't have.
-                      ;; HAVE_AFDECnet requires libdnet, which we don't have.
-                      ;; HAVE_HWSTRIP and HAVE_HWTR require kernel headers
-                      ;; that have been removed.
-                      (substitute* '("config.make" "config.h")
-                        (("^.*HAVE_(AFDECnet|HWSTRIP|HWTR)[ =]1.*$") ""))))
-                  (alist-cons-after
-                   'install 'remove-redundant-commands
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     ;; Remove commands and man pages redundant with
-                     ;; Inetutils.
-                     (let* ((out (assoc-ref outputs "out"))
-                            (dup (append-map (cut find-files out <>)
-                                             '("^hostname"
-                                               "^(yp|nis|dns)?domainname"))))
-                       (for-each delete-file dup)
-                       #t))
-                   %standard-phases)))
-
-       ;; Binaries that depend on libnet-tools.a don't declare that
-       ;; dependency, making it parallel-unsafe.
-       #:parallel-build? #f
-
-       #:tests? #f                                ; no test suite
-       #:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list "CC=gcc"
-                            (string-append "BASEDIR=" out)
-                            (string-append "INSTALLNLSDIR=" out "/share/locale")
-                            (string-append "mandir=/share/man")))))
-
-    ;; We added unzip to the net-tools package's native-inputs when
-    ;; switching its source from a Git checkout to a zip archive.  We
-    ;; need to specify the native-inputs here to keep unzip out of the
-    ;; build of net-tools-for-tests, so that we don't have to rebuild
-    ;; many packages on the master branch.  We can make
-    ;; net-tools-for-tests inherit directly from net-tools in the next
-    ;; core-updates cycle.
-    (native-inputs `(("gettext" ,gettext-minimal)))
-
-    ;; Use the big Debian patch set (the thing does not even compile out of
-    ;; the box.)
-    ;; XXX The patch is not actually applied, due to a bug in the 'patch' phase
-    ;; above. However, this package variant is only used in GnuTLS's tests. It
-    ;; will be adjusted when convenient for the build farm.
-    ;; See <https://bugs.gnu.org/27811> for more information.
-    (inputs `(("patch" ,(origin
-                         (method url-fetch)
-                         (uri
-                          "http://ftp.de.debian.org/debian/pool/main/n/net-tools/net-tools_1.60-24.2.diff.gz")
-                         (sha256
-                          (base32
-                           "0p93lsqx23v5fv4hpbrydmfvw1ha2rgqpn2zqbs2jhxkzhjc030p")))))))))
+  (hidden-package (package (inherit net-tools))))
 
 (define-public libcap
   (package
