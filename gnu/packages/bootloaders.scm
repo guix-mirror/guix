@@ -43,6 +43,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages virtualization)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -292,12 +293,15 @@ menu to select one of the installed operating systems.")
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("flex" ,flex)))
+       ("flex" ,flex)
+       ("swig" ,swig)))
+    (inputs
+     `(("python-2" ,python-2)))
     (arguments
      `(#:make-flags
        (list "CC=gcc"
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             "NO_PYTHON=1"
+             (string-append "SETUP_PREFIX=" (assoc-ref %outputs "out"))
              "INSTALL=install")
        #:phases
        (modify-phases %standard-phases
