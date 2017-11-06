@@ -142,13 +142,13 @@ for system '~a'")
 
 (define* (fold-packages proc init
                         #:optional
-                        (modules (all-modules (%package-module-path))))
+                        (modules (all-modules (%package-module-path)))
+                        #:key (select? (negate hidden-package?)))
   "Call (PROC PACKAGE RESULT) for each available package defined in one of
-MODULES, using INIT as the initial value of RESULT.  It is guaranteed to never
-traverse the same package twice."
+MODULES that matches SELECT?, using INIT as the initial value of RESULT.  It
+is guaranteed to never traverse the same package twice."
   (fold-module-public-variables (lambda (object result)
-                                  (if (and (package? object)
-                                           (not (hidden-package? object)))
+                                  (if (and (package? object) (select? object))
                                       (proc object result)
                                       result))
                                 init
