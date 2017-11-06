@@ -8892,18 +8892,18 @@ proteomics packages.")
 (define-public r-mzr
   (package
     (name "r-mzr")
-    (version "2.10.0")
+    (version "2.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mzR" version))
        (sha256
         (base32
-         "1zir46h320n2vbrky6q3m8l221f3wdjlfsnx4ak9xca5min24xm7"))))
+         "1x3gp30sfxz2v3k3swih9kff9b2rvk7hzhnlkp6ywlnn2wgb0q8c"))))
     (properties `((upstream-name . "mzR")))
     (build-system r-build-system)
     (inputs
-     `(("boost" ,boost)
+     `(("boost" ,boost) ; use this instead of the bundled boost sources
        ("netcdf" ,netcdf)))
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
