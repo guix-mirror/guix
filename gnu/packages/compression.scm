@@ -1812,3 +1812,38 @@ of archives.")
 without having to worry how it does so, or use different interfaces for each
 type by using either Perl modules, or command-line tools on your system.")
     (license license:perl-license)))
+
+(define-public java-tukaani-xz
+  (package
+    (name "java-tukaani-xz")
+    (version "1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://tukaani.org/xz/xz-java-" version ".zip"))
+              (sha256
+               (base32
+                "1z3p1ri1gvl07inxn0agx44ck8n7wrzfmvkz8nbq3njn8r9wba8x"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             ;; Our build system enters the first directory in the archive, but
+             ;; the package is not contained in a subdirectory
+             (chdir "..")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Do we want to install *Demo.jar?
+             (install-file "build/jar/xz.jar"
+                           (string-append
+                             (assoc-ref outputs "out")
+                             "/share/java/xz.jar")))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://tukaani.org")
+    (synopsis "XZ in Java")
+    (description "Tukaani-xz is an implementation of xz compression/decompression
+algorithms in Java.")
+    (license license:public-domain)))
