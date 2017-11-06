@@ -6467,13 +6467,13 @@ authoring books and technical documents with R Markdown.")
 (define-public r-biocstyle
   (package
    (name "r-biocstyle")
-   (version "2.4.1")
+   (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocStyle" version))
               (sha256
                (base32
-                "0bmgmsfll923v573g0kyzlmjd7gly5jwgd8vkrcwvbam1gz75f2c"))))
+                "05f2j9fx8s5gh4f8qkl6wcz32ghz04wxhqb3xxcn1bj24qd7x1x8"))))
     (properties
      `((upstream-name . "BiocStyle")))
     (build-system r-build-system)
