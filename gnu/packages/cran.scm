@@ -1289,3 +1289,27 @@ addition, corrplot is good at details, including choosing color, text labels,
 color labels, layout, etc.")
     ;; Any version of the GPL
     (license license:gpl2+)))
+
+(define-public r-stringdist
+  (package
+    (name "r-stringdist")
+    (version "0.9.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "stringdist" version))
+       (sha256
+        (base32
+         "0j5b7hr53nr9xq44famkpwzi4khix93ffani5pwldqkf8bpdvhci"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/markvanderloo/stringdist")
+    (synopsis "Approximate string matching and string distance functions")
+    (description
+     "This package implements an approximate string matching version of R's
+native @code{match} function.  It can calculate various string distances based
+on edits (Damerau-Levenshtein, Hamming, Levenshtein, optimal sting alignment),
+qgrams (q- gram, cosine, jaccard distance) or heuristic metrics (Jaro,
+Jaro-Winkler).  An implementation of soundex is provided as well.  Distances
+can be computed between character vectors while taking proper care of encoding
+or between integer vectors representing generic sequences.")
+    (license license:gpl3+)))
