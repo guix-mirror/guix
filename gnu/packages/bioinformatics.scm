@@ -7089,13 +7089,13 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
-    (version "1.6.3")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "SummarizedExperiment" version))
               (sha256
                (base32
-                "0j7xn7pk52d383fb1wplcggacl2586c4zi0alkgfc3wz7qq9w13s"))))
+                "1011r8l0k8420j31bmh4xdcp6ka5bzf4bqhip84v5b6alpkcbvmf"))))
     (properties
      `((upstream-name . "SummarizedExperiment")))
     (build-system r-build-system)
