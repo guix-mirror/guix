@@ -8918,14 +8918,14 @@ previously been used in XCMS.")
 (define-public r-affyio
   (package
     (name "r-affyio")
-    (version "1.46.0")
+    (version "1.48.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "affyio" version))
        (sha256
         (base32
-         "13w6al9296q916w0w6ngbsk25b21ahla1b6n40fcqhbvhyfii6sj"))))
+         "1pzzp3d3dbmyf34gvivfiprkpscn36rgvhrq853a1d3avcwr5ak9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-zlibbioc" ,r-zlibbioc)))
