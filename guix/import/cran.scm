@@ -130,9 +130,6 @@ package definition."
 
 ;; The latest Bioconductor release is 3.6.  Bioconductor packages should be
 ;; updated together.
-(define (bioconductor-mirror-url name)
-  (string-append "https://raw.githubusercontent.com/Bioconductor-mirror/"
-                 name "/release-3.5"))
 (define %bioconductor-version "3.6")
 
 (define %bioconductor-packages-list-url
@@ -168,20 +165,35 @@ bioconductor package NAME, or #F if the package is unknown."
   "Return an alist of the contents of the DESCRIPTION file for the R package
 NAME in the given REPOSITORY, or #f in case of failure.  NAME is
 case-sensitive."
-  ;; This API always returns the latest release of the module.
-  (let ((url (string-append (case repository
-                              ((cran)         (string-append %cran-url name))
-                              ((bioconductor) (bioconductor-mirror-url name)))
-                            "/DESCRIPTION")))
-    (guard (c ((http-get-error? c)
-               (format (current-error-port)
-                       "error: failed to retrieve package information \
+  (case repository
+    ((cran)
+     (let ((url (string-append %cran-url name "/DESCRIPTION")))
+       (guard (c ((http-get-error? c)
+                  (format (current-error-port)
+                          "error: failed to retrieve package information \
 from ~s: ~a (~s)~%"
-                       (uri->string (http-get-error-uri c))
-                       (http-get-error-code c)
-                       (http-get-error-reason c))
-               #f))
-      (description->alist (read-string (http-fetch url))))))
+                          (uri->string (http-get-error-uri c))
+                          (http-get-error-code c)
+                          (http-get-error-reason c))
+                  #f))
+         (description->alist (read-string (http-fetch url))))))
+    ((bioconductor)
+     ;; Currently, the bioconductor project does not offer a way to access a
+     ;; package's DESCRIPTION file over HTTP, so we determine the version,
+     ;; download the source tarball, and then extract the DESCRIPTION file.
+     (let* ((version (latest-bioconductor-package-version name))
+            (url     (bioconductor-uri name version))
+            (tarball (with-store store (download-to-store store url))))
+       (call-with-temporary-directory
+        (lambda (dir)
+          (parameterize ((current-error-port (%make-void-port "rw+"))
+                         (current-output-port (%make-void-port "rw+")))
+            (and (zero? (system* "tar" "--wildcards" "-x"
+                                 "--strip-components=1"
+                                 "-C" dir
+                                 "-f" tarball "*/DESCRIPTION"))
+                 (description->alist (with-input-from-file
+                                         (string-append dir "/DESCRIPTION") read-string))))))))))
 
 (define (listify meta field)
   "Look up FIELD in the alist META.  If FIELD contains a comma-separated
@@ -449,16 +461,15 @@ dependencies."
   (define upstream-name
     (package->upstream-name package))
 
-  (define meta
-    (fetch-description 'bioconductor upstream-name))
+  (define version
+    (latest-bioconductor-package-version upstream-name))
 
-  (and meta
-       (let ((version (assoc-ref meta "Version")))
-         ;; Bioconductor does not provide signatures.
-         (upstream-source
-          (package (package-name package))
-          (version version)
-          (urls (list (bioconductor-uri upstream-name version)))))))
+  (and version
+       ;; Bioconductor does not provide signatures.
+       (upstream-source
+        (package (package-name package))
+        (version version)
+        (urls (list (bioconductor-uri upstream-name version))))))
 
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."
