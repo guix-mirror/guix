@@ -5942,14 +5942,14 @@ analysis.")
 (define-public r-gostats
   (package
     (name "r-gostats")
-    (version "2.42.0")
+    (version "2.44.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GOstats" version))
        (sha256
         (base32
-         "0qvqjgfnd9ap4rikvyxa9p4dhcnccvkw8phzv88vghh6pq463d62"))))
+         "04gqfdlx9fxf97qf0l28x4aaqvl10n6v58qiz5fiaw05sbj1pf1i"))))
     (properties `((upstream-name . "GOstats")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5960,6 +5960,7 @@ analysis.")
        ("r-category" ,r-category)
        ("r-go-db" ,r-go-db)
        ("r-graph" ,r-graph)
+       ("r-rgraphviz" ,r-rgraphviz)
        ("r-rbgl" ,r-rbgl)))
     (home-page "https://bioconductor.org/packages/GOstats")
     (synopsis "Tools for manipulating GO and microarrays")
