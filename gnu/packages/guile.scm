@@ -1869,8 +1869,8 @@ is not available for Guile 2.0.")
     (license license:lgpl3+)))
 
 (define-public guile-git
-  (let ((revision "3")
-        (commit "e156a1054cc1d9e58d9be82e36e8acf5c9f9ee8d"))
+  (let ((revision "4")
+        (commit "951a32c56cc4d80f8836e3c7394783e69c1fcbad"))
     (package
       (name "guile-git")
       (version (string-append "0.0-" revision "." (string-take commit 7)))
@@ -1880,7 +1880,7 @@ is not available for Guile 2.0.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "1vhr2bqkljy1zzdy02dky2nk1w9bd46afj5wd4gp4kr333pz4ch6"))
+                  "0qri9x73ij6g40ijs4hyhj8knxw39ydgghiafq74dp99bc8hh0qc"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
