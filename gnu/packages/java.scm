@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module (guix hg-download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
@@ -7252,3 +7253,49 @@ protocol-independent framework to build mail and messaging applications.")
     (description "Java-based solution for accessing, manipulating, and
 outputting XML data from Java code.")
     (license license:bsd-4)))
+
+(define-public java-geronimo-xbean-reflect
+  (package
+    (name "java-geronimo-xbean-reflect")
+    (version "4.5")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                     (url "https://svn.apache.org/repos/asf/geronimo/xbean/tags/xbean-4.5/")
+                     (revision 1807396)))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "18q3i6jgm6rkw8aysfgihgywrdc5nvijrwnslmi3ww497jvri6ja"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "geronimo-xbean-reflect.jar"
+       #:source-dir "xbean-reflect/src/main/java"
+       #:test-dir "xbean-reflect/src/test"
+       #:jdk ,icedtea-8
+       #:test-exclude
+       (list "**/Abstract*.java" "**/AsmParameterNameLoaderTest.java"
+             "**/ObjectRecipeTest.java" "**/ParameterNameLoaderTest.java"
+             "**/RecipeHelperTest.java" "**/XbeanAsmParameterNameLoaderTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-source
+           (lambda _
+             (let ((dir "xbean-reflect/src/main/java/org/apache/xbean/recipe/"))
+               ;; org.apache.xbean.asm6 is actually repackaged java-asm
+               (substitute* (string-append dir "XbeanAsmParameterNameLoader.java")
+                 (("org.apache.xbean.asm5") "org.objectweb.asm"))
+               #t))))))
+    (inputs
+     `(("asm" ,java-asm)
+       ("log4j" ,java-log4j-api)
+       ("log4j-1.2" ,java-log4j-1.2-api)
+       ("log4j-core" ,java-log4j-core)
+       ("logging" ,java-commons-logging-minimal)))
+    (native-inputs
+     `(("junit" ,java-junit)))
+    (home-page "https://geronimo.apache.org/maven/xbean/3.6/xbean-reflect/")
+    (synopsis "Dependency injection helper")
+    (description "Xbean-reflect provides very flexible ways to create objects
+and graphs of objects for dependency injection frameworks")
+    (license license:asl2.0)))
