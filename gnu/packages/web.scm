@@ -22,6 +22,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +87,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openstack)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -870,6 +872,35 @@ unavailable.")
 server).  It was primarily designed to be used by one person or a small group
 of people.")
     (license l:expat)))
+
+(define-public websockify
+  (package
+    (name "websockify")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/novnc/websockify/archive/v"
+                                  version "/archive.tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kjq6gibsvbb6zx5gi8hgh7110x62pbwcqkwapf3k7s27w5y907h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; FIXME: 2 out of 6 tests fail with "ImportError: No module
+     ; named 'stubout'". The tests can be run by replacing the check phase with
+     ; the command "python setup.py nosetests --verbosity=3".
+    (native-inputs `(; Required for tests:
+                     ("python-mox3", python-mox3)
+                     ("python-nose", python-nose)))
+    (propagated-inputs `(("python-numpy", python-numpy)))
+    (home-page "https://github.com/novnc/websockify")
+    (synopsis "WebSockets support for any application/server")
+    (description "Websockify translates WebSockets traffic to normal socket
+traffic.  Websockify accepts the WebSockets handshake, parses it, and then
+begins forwarding traffic between the client and the target in both
+directions.")
+    (license l:lgpl3)))
 
 (define-public wwwoffle
   (package
