@@ -305,6 +305,10 @@ also known as DXTn or DXTC) for Mesa.")
                 "--enable-llvm"))         ; default is x86/x86_64 only
              (_
               '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
+       #:modules ((ice-9 match)
+                  (srfi srfi-1)
+                  (guix build utils)
+                  (guix build gnu-build-system))
        #:phases
        (modify-phases %standard-phases
          (add-after
@@ -339,6 +343,41 @@ also known as DXTn or DXTC) for Mesa.")
                  ;; egl_gallium support.
                  (("\"gbm_dri\\.so")
                   (string-append "\"" out "/lib/dri/gbm_dri.so")))
+               #t)))
+         (add-after 'install 'symlinks-instead-of-hard-links
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; All the drivers and gallium targets create hard links upon
+             ;; installation (search for "hardlink each megadriver instance"
+             ;; in the makefiles).  This is no good for us since we'd produce
+             ;; nars that contain several copies of these files.  Thus, turn
+             ;; them into symlinks, which saves ~124 MiB.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (lib    (string-append out "/lib"))
+                    (files  (find-files lib
+                                        (lambda (file stat)
+                                          (and (string-contains file ".so")
+                                               (eq? 'regular
+                                                    (stat:type stat))))))
+                    (inodes (map (compose stat:ino stat) files)))
+               (for-each (lambda (inode)
+                           (match (filter-map (match-lambda
+                                                ((file ino)
+                                                 (and (= ino inode) file)))
+                                              (zip files inodes))
+                             ((_)
+                              #f)
+                             ((reference others ..1)
+                              (format #t "creating ~a symlinks to '~a'~%"
+                                      (length others) reference)
+                              (for-each delete-file others)
+                              (for-each (lambda (file)
+                                          (if (string=? (dirname file)
+                                                        (dirname reference))
+                                              (symlink (basename reference)
+                                                       file)
+                                              (symlink reference file)))
+                                        others))))
+                         (delete-duplicates inodes))
                #t))))))
     (home-page "https://mesa3d.org/")
     (synopsis "OpenGL implementation")
