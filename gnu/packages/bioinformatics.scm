@@ -8624,19 +8624,20 @@ common bioinformatics tools.")
 (define-public r-chipseq
   (package
     (name "r-chipseq")
-    (version "1.26.0")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "chipseq" version))
        (sha256
         (base32
-         "1hahyqiwb2ch8214xqpw0c3jpiwkmyf3dwz0xc87jx6cdnzipj3i"))))
+         "1ymcq77krwjzrkzzcw7i9909cmkqa7c0675z9wzvrrk81hgdssfq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
        ("r-s4vectors" ,r-s4vectors)
        ("r-shortread" ,r-shortread)))
     (home-page "https://bioconductor.org/packages/chipseq")
