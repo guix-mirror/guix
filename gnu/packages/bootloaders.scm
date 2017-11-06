@@ -383,7 +383,7 @@ also initializes the boards (RAM etc).")
                       (libexec (string-append out "/libexec"))
                       (uboot-files (append
                                     (find-files "." ".*\\.(bin|efi|img|spl)$")
-                                    '("MLO"))))
+                                    (find-files "." "^MLO$"))))
                  (mkdir-p libexec)
                  (for-each
                   (lambda (file)
