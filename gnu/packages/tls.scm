@@ -133,9 +133,6 @@ coordinating the use of PKCS#11 by different components or libraries
 living in the same process.")
     (license license:bsd-3)))
 
-
-;; TODO Add net-tools-for-tests to #:disallowed-references when we can afford
-;; rebuild GnuTLS (i.e. core-updates).
 (define-public gnutls
   (package
     (name "gnutls")
@@ -156,7 +153,8 @@ living in the same process.")
                "15ihq6p0hnnhs8cnjrkj40dmlcaa1jjg8xg0g2ydbnlqs454ixbr"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
+     '(#:disallowed-references ,(net-tools-for-tests)
+       #:configure-flags
        (list
              ;; GnuTLS doesn't consult any environment variables to specify
              ;; the location of the system-wide trust store.  Instead it has a
