@@ -124,7 +124,7 @@
              #t)))
 
        #:test-target "test"))
-    (home-page "http://expect.nist.gov/")
+    (home-page "http://expect.sourceforge.net/")
     (synopsis "Tool for automating interactive applications")
     (description
      "Expect is a tool for automating interactive applications such as
