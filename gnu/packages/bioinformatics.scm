@@ -9033,14 +9033,14 @@ specific parser.")
 (define-public r-pcamethods
   (package
     (name "r-pcamethods")
-    (version "1.68.0")
+    (version "1.70.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "pcaMethods" version))
        (sha256
         (base32
-         "0c4lphqyzj577ws4s172391cgv00s5nhy152zp18k2k4diyhq6n0"))))
+         "0ii235g0x0492kh8cfrf28ni0b6vd6fh7kizkqmczzqggd6b1bk8"))))
     (properties `((upstream-name . "pcaMethods")))
     (build-system r-build-system)
     (propagated-inputs
