@@ -73,6 +73,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages statistics)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
@@ -85,6 +86,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system r)
   #:use-module (guix utils)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
@@ -1865,4 +1867,33 @@ relational, graph, and document data management with web application server
 and web services platform functionality.")
     ;; configure: error: ... can only be build on 64bit platforms
     (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))
+    (license license:gpl2)))
+
+(define-public r-rmysql
+  (package
+    (name "r-rmysql")
+    (version "0.10.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RMySQL" version))
+       (sha256
+        (base32
+         "1j0vr2l4s02cg2hzgr3pla96pjj4h85sxw28lidy58rg5awnsf82"))))
+    (properties `((upstream-name . "RMySQL")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("mariadb" ,mariadb)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-dbi" ,r-dbi)))
+    (home-page "https://github.com/r-dbi/RMySQL")
+    (synopsis "Database interface and MySQL driver for R")
+    (description
+     "This package provides a DBI interface to MySQL / MariaDB.  The RMySQL
+package contains an old implementation based on legacy code from S-PLUS which
+is being phased out.  A modern MySQL client based on Rcpp is available from
+the RMariaDB package.")
     (license license:gpl2)))
