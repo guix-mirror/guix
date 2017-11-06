@@ -2445,6 +2445,58 @@ for use in I/O operations.  This implementation using plexus components allows
 reusing it in maven.")
     (license license:asl2.0)))
 
+(define-public java-plexus-archiver
+  (package
+    (name "java-plexus-archiver")
+    (version "3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/plexus-archiver"
+                                  "/archive/plexus-archiver-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0iv1j7khra6icqh3jndng3iipfmkc7l5jq2y802cm8r575v75pyv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-archiver.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-dir "src/test"
+       #:test-exclude (list "**/Abstract*.java" "**/Base*.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-failing
+           (lambda _
+             ;; Requires an older version of plexus container
+             (delete-file
+               "src/test/java/org/codehaus/plexus/archiver/DuplicateFilesTest.java")))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             (copy-file "src/main/resources/META-INF/plexus/components.xml"
+                        "build/classes/META-INF/plexus/components.xml")
+             #t)))))
+    (inputs
+     `(("utils" ,java-plexus-utils)
+       ("commons-io" ,java-commons-io)
+       ("snappy" ,java-iq80-snappy)
+       ("io" ,java-plexus-io)
+       ("compress" ,java-commons-compress)
+       ("container-default" ,java-plexus-container-default-bootstrap)
+       ("snappy" ,java-snappy)
+       ("java-jsr305" ,java-jsr305)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("classworld" ,java-plexus-classworlds)
+       ("xbean" ,java-geronimo-xbean-reflect)
+       ("xz" ,java-tukaani-xz)
+       ("guava" ,java-guava)))
+    (home-page "https://github.com/codehaus-plexus/plexus-archiver")
+    (synopsis "Archiver component of the Plexus project")
+    (description "Plexus-archiver contains a component to deal with project
+archives (jar).")
+    (license license:asl2.0)))
+
 (define-public java-asm
   (package
     (name "java-asm")
