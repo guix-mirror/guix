@@ -8096,14 +8096,14 @@ library implementing most of the pipeline's features.")
 (define-public r-mutationalpatterns
   (package
     (name "r-mutationalpatterns")
-    (version "1.2.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MutationalPatterns" version))
        (sha256
         (base32
-         "1s50diwh1j6vg3mgahh6bczvq74mfdbmwjrad4d5lh723gnc5pjg"))))
+         "0sqbrswg8ylkjb9q3vqcb5ggwixynwj6hyv2n4sk7snyk61z3fq9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -8119,6 +8119,9 @@ library implementing most of the pipeline's features.")
        ("r-plyr" ,r-plyr)
        ("r-pracma" ,r-pracma)
        ("r-reshape2" ,r-reshape2)
+       ("r-cowplot" ,r-cowplot)
+       ("r-ggdendro" ,r-ggdendro)
+       ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-variantannotation" ,r-variantannotation)))
     (home-page "https://bioconductor.org/packages/MutationalPatterns/")
