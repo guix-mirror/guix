@@ -34,6 +34,8 @@
   #:use-module (guix download)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 receive)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -56,7 +58,10 @@
             snake-case
             beautify-description
 
-            alist->package))
+            alist->package
+
+            read-lines
+            chunk-lines))
 
 (define (factorize-uri uri version)
   "Factorize URI, a package tarball URI as a string, such that any occurrences
@@ -329,3 +334,24 @@ the expected fields of an <origin> object."
        (or (module-ref (resolve-interface '(guix licenses) #:prefix 'license:)
                        (spdx-string->license l))
            (license:fsdg-compatible l))))))
+
+(define* (read-lines #:optional (port (current-input-port)))
+  "Read lines from PORT and return them as a list."
+  (let loop ((line (read-line port))
+             (lines '()))
+    (if (eof-object? line)
+        (reverse lines)
+        (loop (read-line port)
+              (cons line lines)))))
+
+(define* (chunk-lines lines #:optional (pred string-null?))
+  "Return a list of chunks, each of which is a list of lines.  The chunks are
+separated by PRED."
+  (let loop ((rest lines)
+             (parts '()))
+    (receive (before after)
+        (break pred rest)
+      (let ((res (cons before parts)))
+        (if (null? after)
+            (reverse res)
+            (loop (cdr after) res))))))
