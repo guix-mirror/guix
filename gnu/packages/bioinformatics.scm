@@ -6418,13 +6418,13 @@ Bioconductor, CRAN, and Github.")
 (define-public r-biocviews
   (package
     (name "r-biocviews")
-    (version "1.44.0")
+    (version "1.46.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biocViews" version))
               (sha256
                (base32
-                "17hi8w0w63f5yc43kid5pbld3ca78sj6n8x9dmkbl8h48818xbga"))))
+                "09zyqj1kqc089lmh9sliy0acanx9zimcasvp71dsrg2bqm08r1md"))))
     (properties
      `((upstream-name . "biocViews")))
     (build-system r-build-system)
@@ -6434,7 +6434,6 @@ Bioconductor, CRAN, and Github.")
        ("r-rbgl" ,r-rbgl)
        ("r-rcurl" ,r-rcurl)
        ("r-xml" ,r-xml)
-       ("r-knitr" ,r-knitr)
        ("r-runit" ,r-runit)))
     (home-page "https://bioconductor.org/packages/biocViews")
     (synopsis "Bioconductor package categorization helper")
