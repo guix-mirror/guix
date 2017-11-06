@@ -3403,7 +3403,7 @@ testing of Catalyst applications without needing to start up a web server.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/L/LB/LBROCARD/"
+       (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                            "Test-WWW-Mechanize-PSGI-" version ".tar.gz"))
        (sha256
         (base32
