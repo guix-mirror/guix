@@ -2402,6 +2402,49 @@ components.")
 implementation.")
     (license license:asl2.0)))
 
+(define-public java-plexus-io
+  (package
+    (name "java-plexus-io")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/plexus-io"
+                                  "/archive/plexus-io-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0f2j41kihaymxkpbm55smpxjja235vad8cgz94frfy3ppcp021dw"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-io.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             (copy-file "src/main/resources/META-INF/plexus/components.xml"
+                        "build/classes/META-INF/plexus/components.xml")
+             #t)))))
+    (inputs
+     `(("utils" ,java-plexus-utils)
+       ("commons-io" ,java-commons-io)
+       ("java-jsr305" ,java-jsr305)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)
+       ("guava" ,java-guava)
+       ("classworlds" ,java-plexus-classworlds)
+       ("xbean" ,java-geronimo-xbean-reflect)
+       ("container-default" ,java-plexus-container-default-bootstrap)))
+    (home-page "https://github.com/codehaus-plexus/plexus-io")
+    (synopsis "I/O plexus components")
+    (description "Plexus IO is a set of plexus components, which are designed
+for use in I/O operations.  This implementation using plexus components allows
+reusing it in maven.")
+    (license license:asl2.0)))
+
 (define-public java-asm
   (package
     (name "java-asm")
