@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages python)
   #:use-module ((guix licenses) #:prefix license:))
 
 (define-public graphviz
@@ -211,3 +213,29 @@ visualization tool suite.")
 an intermediate format,and @code{gtk} and @code{cairo} for rendering.  Xdot can
 be used either as a standalone application, or as a python library.")
     (license license:lgpl3+)))
+
+(define-public python-pydot
+  (package
+    (name "python-pydot")
+    (version "1.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pydot" version))
+       (sha256
+        (base32
+         "00imlz0033dygb9gdag1xr0cybn33gk5jsdi9ffbszzr97rd7dgd"))))
+    (build-system python-build-system)
+    ;; FIXME: No tests in PyPi release tarball.
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-pyparsing" ,python-pyparsing)))
+    (home-page "https://github.com/erocarrera/pydot")
+    (synopsis "Python interface to Graphviz's DOT language")
+    (description
+     "Pydot provides an interface to create, handle, modify and process
+graphs in Graphviz's DOT language, written in pure Python.")
+    (license license:expat)))
+
+(define-public python2-pydot
+  (package-with-python2 python-pydot))
