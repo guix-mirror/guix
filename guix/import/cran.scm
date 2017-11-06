@@ -128,11 +128,41 @@ package definition."
 (define %cran-url "http://cran.r-project.org/web/packages/")
 (define %bioconductor-url "https://bioconductor.org/packages/")
 
-;; The latest Bioconductor release is 3.5.  Bioconductor packages should be
+;; The latest Bioconductor release is 3.6.  Bioconductor packages should be
 ;; updated together.
 (define (bioconductor-mirror-url name)
   (string-append "https://raw.githubusercontent.com/Bioconductor-mirror/"
                  name "/release-3.5"))
+(define %bioconductor-version "3.6")
+
+(define %bioconductor-packages-list-url
+  (string-append "https://bioconductor.org/packages/"
+                 %bioconductor-version "/bioc/src/contrib/PACKAGES"))
+
+(define (bioconductor-packages-list)
+  "Return the latest version of package NAME for the current bioconductor
+release."
+  (let ((url (string->uri %bioconductor-packages-list-url)))
+    (guard (c ((http-get-error? c)
+               (format (current-error-port)
+                       "error: failed to retrieve list of packages from ~s: ~a (~s)~%"
+                       (uri->string (http-get-error-uri c))
+                       (http-get-error-code c)
+                       (http-get-error-reason c))
+               #f))
+      ;; Split the big list on empty lines, then turn each chunk into an
+      ;; alist of attributes.
+      (map (lambda (chunk)
+             (description->alist (string-join chunk "\n")))
+           (chunk-lines (read-lines (http-fetch/cached url)))))))
+
+(define (latest-bioconductor-package-version name)
+  "Return the version string corresponding to the latest release of the
+bioconductor package NAME, or #F if the package is unknown."
+  (and=> (find (lambda (meta)
+                 (string=? (assoc-ref meta "Package") name))
+               (bioconductor-packages-list))
+         (cut assoc-ref <> "Version")))
 
 (define (fetch-description repository name)
   "Return an alist of the contents of the DESCRIPTION file for the R package
