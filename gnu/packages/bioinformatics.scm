@@ -8899,9 +8899,26 @@ proteomics packages.")
        (uri (bioconductor-uri "mzR" version))
        (sha256
         (base32
-         "1x3gp30sfxz2v3k3swih9kff9b2rvk7hzhnlkp6ywlnn2wgb0q8c"))))
+         "1x3gp30sfxz2v3k3swih9kff9b2rvk7hzhnlkp6ywlnn2wgb0q8c"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "src/boost")
+           #t))))
     (properties `((upstream-name . "mzR")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-boost
+           (lambda _
+             (substitute* "src/Makevars"
+               (("\\./boost/libs.*") "")
+               (("ARCH_OBJS=" line)
+                (string-append line
+                               "\nARCH_LIBS=-lboost_system -lboost_regex \
+-lboost_iostreams -lboost_thread -lboost_filesystem -lboost_chrono\n")))
+             #t)))))
     (inputs
      `(("boost" ,boost) ; use this instead of the bundled boost sources
        ("netcdf" ,netcdf)))
