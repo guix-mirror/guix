@@ -5396,17 +5396,18 @@ is supported.")
 (define-public r-lubridate
   (package
     (name "r-lubridate")
-    (version "1.6.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lubridate" version))
        (sha256
         (base32
-         "0ci6rwij9i1inn840m0mlh1nqgh6vm2lada9kdnjpcjp5kyfv1qs"))))
+         "0pzvazzybzvln3y676yims7whsc74g8i7kgf2nsfbxdq5943z349"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-stringr" ,r-stringr)))
+     `(("r-rcpp" ,r-rcpp)
+       ("r-stringr" ,r-stringr)))
     (home-page
      "http://cran.r-project.org/web/packages/lubridate")
     (synopsis "Make dealing with dates a little easier")
