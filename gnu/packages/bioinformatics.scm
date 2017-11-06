@@ -7860,7 +7860,7 @@ Biostrings objects.")
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
        ("r-bsgenome" ,r-bsgenome)
-       ("r-bsgenome.hsapiens.ucsc.hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
+       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
        ("r-iranges" ,r-iranges)
        ("r-seqlogo" ,r-seqlogo)
        ("r-xvector" ,r-xvector)))
