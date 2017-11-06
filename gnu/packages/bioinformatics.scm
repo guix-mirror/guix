@@ -7015,13 +7015,13 @@ biological sequences or sets of sequences.")
 (define-public r-rsamtools
   (package
     (name "r-rsamtools")
-    (version "1.28.0")
+    (version "1.30.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Rsamtools" version))
               (sha256
                (base32
-                "1zx6vhdz3lksbfy98jj3qzl7cxgspigm2pbsd5835b12r6mc5w6d"))))
+                "0pjny5fjvbnfdyhl3bwxin678sha2drvs00sivxh3l772cn6yams"))))
     (properties
      `((upstream-name . "Rsamtools")))
     (build-system r-build-system)
