@@ -16897,3 +16897,27 @@ embeddable JavaScript engine.")
 
 (define-public python2-dukpy
   (package-with-python2 python-dukpy))
+
+(define-public python-jsonrpclib-pelix
+  (package
+    (name "python-jsonrpclib-pelix")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jsonrpclib-pelix" version))
+       (sha256
+        (base32
+         "1qs95vxplxwspbrqy8bvc195s58iy43qkf75yrjfql2sim8b25sl"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/tcalmant/jsonrpclib/")
+    (synopsis "JSON-RPC 2.0 client library for Python")
+    (description
+     "This library implements the JSON-RPC v2.0
+specification (backwards-compatible) as a client library for Python.  This
+version is a fork of jsonrpclib by Josh Marshall, usable with Pelix remote
+services.")
+    (license license:asl2.0)))
+
+(define-public python2-jsonrpclib-pelix
+  (package-with-python2 python-jsonrpclib-pelix))
