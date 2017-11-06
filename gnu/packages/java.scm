@@ -2363,6 +2363,45 @@ of Java.  It is especially usefull for dynamic loading of application
 components.")
     (license license:asl2.0)))
 
+(define-public java-plexus-container-default-bootstrap
+  (package
+    (name "java-plexus-container-default-bootstrap")
+    (version "1.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/plexus-containers"
+                                  "/archive/plexus-containers-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xw5g30qf4a83608rw9v2hv8pfsz7d69dkdhk6r0wia4q78hh1pc"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "container-default.jar"
+       #:source-dir "plexus-container-default/src/main/java"
+       #:test-dir "plexus-container-default/src/test"
+       #:jdk ,icedtea-8
+       #:tests? #f; requires plexus-archiver, which depends on this package
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively
+               "plexus-container-default/src/main/resources/"
+               "build/classes")
+             #t)))))
+    (inputs
+     `(("worldclass" ,java-plexus-classworlds)
+       ("xbean" ,java-geronimo-xbean-reflect)
+       ("utils" ,java-plexus-utils)
+       ("junit" ,java-junit)
+       ("guava" ,java-guava)))
+    (home-page "https://github.com/codehaus-plexus/plexus-containers")
+    (synopsis "Inversion of controll container")
+    (description "Plexus-default-container is Plexus' inversion-of-control
+(IoC) container.  It is composed of its public API and its default
+implementation.")
+    (license license:asl2.0)))
+
 (define-public java-asm
   (package
     (name "java-asm")
