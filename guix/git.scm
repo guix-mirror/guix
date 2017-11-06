@@ -21,7 +21,7 @@
   #:use-module (git object)
   #:use-module (guix base32)
   #:use-module (guix hash)
-  #:use-module (guix build utils)
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (rnrs bytevectors)

@@ -65,7 +65,7 @@
   #:use-module (guix packages)
   #:use-module (guix svn-download)
   #:use-module (guix utils)
-  #:use-module (srfi srfi-1))
+  #:use-module ((srfi srfi-1) #:hide (zip)))
 
 ;; A shortcut for files from ocaml forge. Downloaded files are computed from
 ;; their number, not their name.
