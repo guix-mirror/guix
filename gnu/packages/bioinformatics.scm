@@ -6493,13 +6493,13 @@ functionality.")
 (define-public r-bioccheck
   (package
     (name "r-bioccheck")
-    (version "1.12.0")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocCheck" version))
               (sha256
                (base32
-                "01zkw5hggzvn0wj4msac71k1mknq4h2inn1c2hwqgw4cy1675wl0"))))
+                "1nzp8kgw13z9pgf885rplj6k37jcldfhbz0adqclxr2gq0yalmyx"))))
     (properties
      `((upstream-name . "BiocCheck")))
     (build-system r-build-system)
@@ -6522,15 +6522,14 @@ functionality.")
                (symlink (string-append script-dir "/BiocCheck")
                         (string-append dest-dir "/BiocCheck")))
              #t)))))
-    (native-inputs
-     `(("which" ,which)))
     (propagated-inputs
      `(("r-codetools" ,r-codetools)
        ("r-graph" ,r-graph)
        ("r-httr" ,r-httr)
        ("r-optparse" ,r-optparse)
        ("r-biocinstaller" ,r-biocinstaller)
-       ("r-biocviews" ,r-biocviews)))
+       ("r-biocviews" ,r-biocviews)
+       ("r-stringdist" ,r-stringdist)))
     (home-page "https://bioconductor.org/packages/BiocCheck")
     (synopsis "Executes Bioconductor-specific package checks")
     (description "This package contains tools to perform additional quality
