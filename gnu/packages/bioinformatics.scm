@@ -6969,19 +6969,20 @@ powerful online queries from gene annotation to database mining.")
 (define-public r-biocparallel
   (package
     (name "r-biocparallel")
-    (version "1.10.1")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocParallel" version))
               (sha256
                (base32
-                "08mdfxyk9nwz77v0xhlvs19p2wj0phgm5c5b25vm0xh3749njsp0"))))
+                "13ng3n2wsgl3fh0v6jnz3vg51k5c1sh44pqdvblcrcd1qyjmmqhd"))))
     (properties
      `((upstream-name . "BiocParallel")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-futile-logger" ,r-futile-logger)
-       ("r-snow" ,r-snow)))
+       ("r-snow" ,r-snow)
+       ("r-bh" ,r-bh)))
     (home-page "https://bioconductor.org/packages/BiocParallel")
     (synopsis "Bioconductor facilities for parallel evaluation")
     (description
