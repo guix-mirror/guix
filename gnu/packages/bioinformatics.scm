@@ -9089,14 +9089,14 @@ structure (pcaRes) to provide a common interface to the PCA results.")
 (define-public r-msnbase
   (package
     (name "r-msnbase")
-    (version "2.2.0")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MSnbase" version))
        (sha256
         (base32
-         "1n9bbdlp8d8bx2mqby0c4yylz1yil42scbkxqgyrfr9s5sn6dqff"))))
+         "0dqfimljhrx3gac8d1k72gppx27lz8yckyb12v4604nbviw7xd3r"))))
     (properties `((upstream-name . "MSnbase")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9108,6 +9108,7 @@ structure (pcaRes) to provide a common interface to the PCA results.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-impute" ,r-impute)
        ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
        ("r-maldiquant" ,r-maldiquant)
        ("r-mzid" ,r-mzid)
        ("r-mzr" ,r-mzr)
@@ -9116,7 +9117,6 @@ structure (pcaRes) to provide a common interface to the PCA results.")
        ("r-preprocesscore" ,r-preprocesscore)
        ("r-protgenerics" ,r-protgenerics)
        ("r-rcpp" ,r-rcpp)
-       ("r-reshape2" ,r-reshape2)
        ("r-s4vectors" ,r-s4vectors)
        ("r-vsn" ,r-vsn)
        ("r-xml" ,r-xml)))
