@@ -9406,14 +9406,14 @@ microarrays or GRanges for sequencing data.")
 (define-public r-qvalue
   (package
     (name "r-qvalue")
-    (version "2.8.0")
+    (version "2.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "qvalue" version))
        (sha256
         (base32
-         "1dxdwa767a9r8n61r272ypi09qblcdfpzzwkmri74y5mbp1r3y4i"))))
+         "1rd9rnf16kh8wc076kahd9hsb9rfwsbzmz3kjmp0pj6rbiq0051i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
