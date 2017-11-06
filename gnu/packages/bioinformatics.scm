@@ -5911,14 +5911,14 @@ Enrichment Analysis} (GSEA).")
 (define-public r-category
   (package
     (name "r-category")
-    (version "2.42.1")
+    (version "2.44.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Category" version))
        (sha256
         (base32
-         "1w186nhc85bglcgmbcrsdbb8l6rph21pl5kdwjqwkp0jnr9z0ifn"))))
+         "0mkav04vbla0xfa0dssxdd0rjs589sxi83xklf5iq5hj3dm8y0i8"))))
     (properties `((upstream-name . "Category")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5931,7 +5931,7 @@ Enrichment Analysis} (GSEA).")
        ("r-gseabase" ,r-gseabase)
        ("r-matrix" ,r-matrix)
        ("r-rbgl" ,r-rbgl)
-       ("r-rsqlite" ,r-rsqlite)))
+       ("r-dbi" ,r-dbi)))
     (home-page "https://bioconductor.org/packages/Category")
     (synopsis "Category analysis")
     (description
