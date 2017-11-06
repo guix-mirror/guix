@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,8 +50,11 @@ available via the first URI, the second URI points to the archived version."
 (define (bioconductor-uri name version)
   "Return a URI string for the R package archive on Bioconductor for the
 release corresponding to NAME and VERSION."
-  (string-append "https://bioconductor.org/packages/release/bioc/src/contrib/"
-                 name "_" version ".tar.gz"))
+  (list (string-append "https://bioconductor.org/packages/release/bioc/src/contrib/"
+                       name "_" version ".tar.gz")
+        ;; TODO: use %bioconductor-version from (guix import cran)
+        (string-append "https://bioconductor.org/packages/3.6/bioc/src/contrib/Archive/"
+                       name "_" version ".tar.gz")))
 
 (define %r-build-system-modules
   ;; Build-side modules imported by default.

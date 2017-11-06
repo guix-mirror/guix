@@ -182,7 +182,7 @@ from ~s: ~a (~s)~%"
      ;; package's DESCRIPTION file over HTTP, so we determine the version,
      ;; download the source tarball, and then extract the DESCRIPTION file.
      (let* ((version (latest-bioconductor-package-version name))
-            (url     (bioconductor-uri name version))
+            (url     (car (bioconductor-uri name version)))
             (tarball (with-store store (download-to-store store url))))
        (call-with-temporary-directory
         (lambda (dir)
@@ -469,7 +469,7 @@ dependencies."
        (upstream-source
         (package (package-name package))
         (version version)
-        (urls (list (bioconductor-uri upstream-name version))))))
+        (urls (bioconductor-uri upstream-name version)))))
 
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."
