@@ -263,7 +263,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "2.9.3")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
@@ -272,7 +272,7 @@ do so.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0d0fzb653g7b8ka3x90nl21md4g3n1fv11czdxpdq3s9yr6js6f2"))
+         "184cmpfqcznnm0wfjiarb6dps2vs0s2aykmy2ji7p77x20fbisfi"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -281,19 +281,19 @@ do so.")
            #t))))
     (build-system python-build-system)
     (inputs
-     `(("python-pyaes" ,python2-pyaes)
-       ("python-pysocks" ,python2-pysocks)
-       ("python-sip" ,python2-sip)
-       ("python-pyqt" ,python2-pyqt-4)
-       ("python-ecdsa" ,python2-ecdsa)
-       ("python-pbkdf2" ,python2-pbkdf2)
-       ("python-requests" ,python2-requests)
-       ("python-qrcode" ,python2-qrcode)
-       ("python-protobuf" ,python2-protobuf)
-       ("python-dnspython" ,python2-dnspython)
-       ("python-jsonrpclib" ,python2-jsonrpclib)))
+     `(("python-pyaes" ,python-pyaes)
+       ("python-pysocks" ,python-pysocks)
+       ("python-sip" ,python-sip)
+       ("python-pyqt" ,python-pyqt)
+       ("python-ecdsa" ,python-ecdsa)
+       ("python-pbkdf2" ,python-pbkdf2)
+       ("python-requests" ,python-requests)
+       ("python-qrcode" ,python-qrcode)
+       ("python-protobuf" ,python-protobuf)
+       ("python-dnspython" ,python-dnspython)
+       ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)))
     (arguments
-     `(#:python ,python-2
+     `(#:tests? #f ;; package doesn't have any tests
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-home
