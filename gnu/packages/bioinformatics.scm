@@ -5726,14 +5726,14 @@ microarrays.")
 (define-public r-genefilter
   (package
     (name "r-genefilter")
-    (version "1.58.0")
+    (version "1.60.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "genefilter" version))
        (sha256
         (base32
-         "0sf2hdi9nv6r83vn1y65m4jiba8pffddpj46d6yjn5rlsixplmqg"))))
+         "173swlg6gj4kdllbqvyiw5dggbcxiwlwpqmllsv4dxzn7h25i3g7"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
