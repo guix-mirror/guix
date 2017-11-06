@@ -280,7 +280,7 @@ menu to select one of the installed operating systems.")
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.4.4")
+    (version "1.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -288,7 +288,7 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "1yygyvnnpdh241hl90n9p3kxcdvk3jxmsr4ndb961c8mq3ak21s7"))))
+                "08gnl39i4xy3dm8iqwlz2ygx0ml1bgc5kpiys5ll1wvah1j72b04"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -297,6 +297,7 @@ menu to select one of the installed operating systems.")
      `(#:make-flags
        (list "CC=gcc"
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "NO_PYTHON=1"
              "INSTALL=install")
        #:phases
        (modify-phases %standard-phases
