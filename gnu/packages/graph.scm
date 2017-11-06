@@ -122,14 +122,14 @@ more.")
 (define-public r-rgraphviz
   (package
     (name "r-rgraphviz")
-    (version "2.20.0")
+    (version "2.22.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rgraphviz" version))
        (sha256
         (base32
-         "0mwdqsmmhpk8szp3pf3bw66nv2sazpjiflpwdvqwjamvxyynmp67"))))
+         "1y9nyjffa9644jch0p2i3w302fmnyc2kb0c3z1f3d5zp1p4qmyqv"))))
     (properties `((upstream-name . "Rgraphviz")))
     (build-system r-build-system)
     ;; FIXME: Rgraphviz bundles the sources of an older variant of
