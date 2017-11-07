@@ -9546,6 +9546,35 @@ provides a highly flexible way to arrange multiple heatmaps and supports
 self-defined annotation graphics.")
     (license license:gpl2+)))
 
+(define-public r-dirichletmultinomial
+  (package
+    (name "r-dirichletmultinomial")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DirichletMultinomial" version))
+       (sha256
+        (base32
+         "1c4s6x0qm20556grcd1xys9kkpnlzpasaai474malwcg6qvgi4x1"))))
+    (properties
+     `((upstream-name . "DirichletMultinomial")))
+    (build-system r-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/DirichletMultinomial")
+    (synopsis "Dirichlet-Multinomial mixture models for microbiome data")
+    (description
+     "Dirichlet-multinomial mixture models can be used to describe variability
+in microbial metagenomic data.  This package is an interface to code
+originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
+1-15.")
+    (license license:lgpl3)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
