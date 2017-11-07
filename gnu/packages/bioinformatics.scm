@@ -9913,6 +9913,42 @@ on mapping using Entrez Gene identifiers.")
 several related annotation packages.")
     (license license:artistic2.0)))
 
+(define-public r-erma
+  (package
+    (name "r-erma")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "erma" version))
+       (sha256
+        (base32
+         "0gcfs9g8vvdv5vmq9b21kd8sq5mizjj49nfzd4in9zvp4b9v7x1g"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-foreach" ,r-foreach)
+       ("r-genomicfiles" ,r-genomicfiles)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-homo-sapiens" ,r-homo-sapiens)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-shiny" ,r-shiny)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/erma")
+    (synopsis "Epigenomic road map adventures")
+    (description
+     "The epigenomics road map describes locations of epigenetic marks in DNA
+from a variety of cell types.  Of interest are locations of histone
+modifications, sites of DNA methylation, and regions of accessible chromatin.
+This package presents a selection of elements of the road map including
+metadata and outputs of the ChromImpute procedure applied to ENCODE cell lines
+by Ernst and Kellis.")
+    (license license:artistic2.0)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
