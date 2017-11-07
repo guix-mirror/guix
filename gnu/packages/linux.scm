@@ -4451,4 +4451,6 @@ libraries, which are often integrated directly into libfabric.")
 communications interface for the True Scale family of products.  PSM users are
 enabled with mechanisms necessary to implement higher level communications
 interfaces in parallel environments.")
+    ;; Only Intel-compatable processors are supported.
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (license (list license:bsd-2 license:gpl2)))) ;dual
