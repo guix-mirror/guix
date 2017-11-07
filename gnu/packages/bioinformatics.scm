@@ -9949,6 +9949,37 @@ metadata and outputs of the ChromImpute procedure applied to ENCODE cell lines
 by Ernst and Kellis.")
     (license license:artistic2.0)))
 
+(define-public r-ldblock
+  (package
+    (name "r-ldblock")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ldblock" version))
+       (sha256
+        (base32
+         "18nfsixh6d2wfrb9laqsgly5w1frzihhak683k0p8fdf51h4aqba"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-erma" ,r-erma)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfiles" ,r-genomicfiles)
+       ("r-go-db" ,r-go-db)
+       ("r-homo-sapiens" ,r-homo-sapiens)
+       ("r-matrix" ,r-matrix)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-snpstats" ,r-snpstats)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://bioconductor.org/packages/ldblock")
+    (synopsis "Data structures for linkage disequilibrium measures in populations")
+    (description
+     "This package defines data structures for @dfn{linkage
+disequilibrium} (LD) measures in populations.  Its purpose is to simplify
+handling of existing population-level data for the purpose of flexibly
+defining LD blocks.")
+    (license license:artistic2.0)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
