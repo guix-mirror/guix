@@ -277,6 +277,7 @@ editor (without an X toolkit)" )
               (uri (git-reference
                     (url "git://git.hcoop.net/git/bpt/emacs.git")
                     (commit "41120e0f595b16387eebfbf731fff70481de1b4b")))
+              (patches (search-patches "guile-emacs-fix-configure.patch"))
               (sha256
                (base32
                 "0lvcvsz0f4mawj04db35p1dvkffdqkz8pkhc0jzh9j9x2i63kcz6"))))
@@ -295,7 +296,11 @@ editor (without an X toolkit)" )
         `(modify-phases ,phases
            (add-after 'unpack 'autogen
                       (lambda _
-                        (zero? (system* "sh" "autogen.sh"))))))))))
+                        (zero? (system* "sh" "autogen.sh"))))
+           ;; Build sometimes fails: deps/dispnew.d: No such file or directory
+           (add-before 'build 'make-deps-dir
+             (lambda _
+               (zero? (system* "mkdir" "-p" "src/deps"))))))))))
 
 
 ;;;
