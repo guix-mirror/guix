@@ -272,7 +272,8 @@ valid."
                           result)                 ;don't build it
                          (else
                           (cons package result))))
-                 '()))
+                 '()
+                 #:select? (const #t)))           ;include hidden packages
 
 
 ;;;
