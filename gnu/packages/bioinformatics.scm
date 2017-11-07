@@ -9430,6 +9430,30 @@ formats can be used as input to fastseg like expression set objects for
 microarrays or GRanges for sequencing data.")
     (license license:lgpl2.0+)))
 
+(define-public r-keggrest
+  (package
+    (name "r-keggrest")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "KEGGREST" version))
+       (sha256
+        (base32
+         "1i3i88lj57wvpgjf75a23msgfsjv8pr2b4j1faga276p4fsblkhj"))))
+    (properties `((upstream-name . "KEGGREST")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-httr" ,r-httr)
+       ("r-png" ,r-png)))
+    (home-page "https://bioconductor.org/packages/KEGGREST")
+    (synopsis "Client-side REST access to KEGG")
+    (description
+     "This package provides a package that provides a client interface to the
+@dfn{Kyoto Encyclopedia of Genes and Genomes} (KEGG) REST server.")
+    (license license:artistic2.0)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
