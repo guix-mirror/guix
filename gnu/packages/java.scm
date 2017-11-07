@@ -4655,55 +4655,60 @@ tree walking, and translation.")
                 "0qgg5vgsm4l1d6dj9pfbaa25dpv2ry2gny8ajy4vvgvfklw97b3m"))))
     (arguments
      `(#:jar-name (string-append ,name "-" ,version ".jar")
-       #:source-dir (string-append "tool/src/main/java:runtime/Java/src/main/java:"
-                                "tool/src/main/antlr2:tool/src/main/antlr3")
-       #:tests? #f
+       #:source-dir (string-join '("tool/src/main/java"
+                                   "runtime/Java/src/main/java"
+                                   "tool/src/main/antlr2"
+                                   "tool/src/main/antlr3")
+                                 ":")
+       #:tests? #f  ; FIXME: tests seem to require maven plugin
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'bin-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((jar (string-append (assoc-ref outputs "out") "/share/java"))
-                   (bin (string-append (assoc-ref outputs "out") "/bin")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (jar (string-append out "/share/java"))
+                    (bin (string-append out "/bin")))
                (mkdir-p bin)
                (with-output-to-file (string-append bin "/antlr3")
                  (lambda _
                    (display
-                     (string-append "#!" (which "sh") "\n"
-                                    "java -cp " jar "/antlr3-3.3.jar:"
-                                    (string-concatenate
-                                      (find-files (assoc-ref inputs "java-stringtemplate")
-                                                  ".*\\.jar"))
-                                    ":"
-                                    (string-concatenate
-                                      (find-files (string-append
-                                                    (assoc-ref inputs "antlr")
-                                                    "/lib")
-                                                  ".*\\.jar"))
-                                    " org.antlr.Tool $*"))))
-               (chmod (string-append bin "/antlr3") #o755))))
+                    (string-append
+                     "#!" (which "sh") "\n"
+                     "java -cp " jar "/antlr3-3.3.jar:"
+                     (string-join
+                      (append (find-files (assoc-ref inputs "java-stringtemplate")
+                                          ".*\\.jar$")
+                              (find-files (string-append (assoc-ref inputs "antlr")
+                                                         "/lib")
+                                          ".*\\.jar$"))
+                      ":")
+                     " org.antlr.Tool $*"))))
+               (chmod (string-append bin "/antlr3") #o755)
+               #t)))
          (add-before 'build 'generate-grammar
            (lambda _
-             (let ((dir "tool/src/main/antlr2/org/antlr/grammar/v2/"))
-               (for-each (lambda (file)
-                           (display file)
-                           (newline)
-                           (system* "antlr" "-o" dir (string-append dir file)))
-                         '("antlr.g" "antlr.print.g" "assign.types.g"
-                           "buildnfa.g" "codegen.g" "define.g")))
-             (chdir "tool/src/main/antlr3/org/antlr/grammar/v3/")
-             (for-each (lambda (file)
-                         (display file)
-                         (newline)
-                         (system* "antlr3" file))
-                       '("ActionAnalysis.g" "ActionTranslator.g" "ANTLRv3.g"
-                         "ANTLRv3Tree.g"))
-             (chdir "../../../../../../../..")
              (substitute* "tool/src/main/java/org/antlr/tool/Grammar.java"
                (("import org.antlr.grammar.v2.\\*;")
                 "import org.antlr.grammar.v2.*;\n
 import org.antlr.grammar.v2.TreeToNFAConverter;\n
 import org.antlr.grammar.v2.DefineGrammarItemsWalker;\n
-import org.antlr.grammar.v2.ANTLRTreePrinter;"))))
+import org.antlr.grammar.v2.ANTLRTreePrinter;"))
+             (and
+              (with-directory-excursion "tool/src/main/antlr2/org/antlr/grammar/v2/"
+                (every (lambda (file)
+                         (format #t "~a\n" file)
+                         (zero? (system* "antlr" file)))
+                       '("antlr.g" "antlr.print.g" "assign.types.g"
+                         "buildnfa.g" "codegen.g" "define.g")))
+              (with-directory-excursion "tool/src/main/antlr3/org/antlr/grammar/v3/"
+                (every (lambda (file)
+                         (format #t "~a\n" file)
+                         (zero? (system* "antlr3" file)))
+                       '("ActionAnalysis.g" "ActionTranslator.g" "ANTLRv3.g"
+                         "ANTLRv3Tree.g"))))))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
@@ -4714,7 +4719,8 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))))
 <include name=\"**/*.sti\"/>
 <include name=\"**/STLexer.tokens\"/>
 </fileset>
-</copy><exec")))))))
+</copy><exec"))
+             #t)))))
     (native-inputs
      `(("antlr" ,antlr2)
        ("antlr3" ,antlr3-3.1)))
