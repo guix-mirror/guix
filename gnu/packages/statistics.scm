@@ -5435,17 +5435,17 @@ easy and fun.")
     (home-page "http://strimmerlab.org/software/fdrtool/")
     (synopsis "Estimation of false discovery rates and higher criticism")
     (description
-     "This package provides tools to estimate both tail area-based false
-discovery rates (Fdr) as well as local false discovery rates (fdr) for a
-variety of null models (p-values, z-scores, correlation coefficients,
-t-scores).  The proportion of null values and the parameters of the null
-distribution are adaptively estimated from the data.  In addition, the package
-contains functions for non-parametric density estimation (Grenander
-estimator), for monotone regression (isotonic regression and antitonic
-regression with weights), for computing the greatest convex minorant (GCM) and
-the least concave majorant (LCM), for the half-normal and correlation
-distributions, and for computing empirical higher criticism (HC) scores and
-the corresponding decision threshold.")
+     "This package provides tools to estimate tail area-based false discovery
+rates as well as local false discovery rates for a variety of null
+models (p-values, z-scores, correlation coefficients, t-scores).  The
+proportion of null values and the parameters of the null distribution are
+adaptively estimated from the data.  In addition, the package contains
+functions for non-parametric density estimation (Grenander estimator), for
+monotone regression (isotonic regression and antitonic regression with
+weights), for computing the @dfn{greatest convex minorant} (GCM) and the
+@dfn{least concave majorant} (LCM), for the half-normal and correlation
+distributions, and for computing empirical @dfn{higher criticism} (HC) scores
+and the corresponding decision threshold.")
     (license license:gpl3+)))
 
 (define-public r-forcats
