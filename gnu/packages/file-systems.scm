@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,12 +24,23 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages acl)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
@@ -126,3 +138,69 @@ in which directory entries are read.  This is useful for detecting
 non-determinism in the build process.")
     (license license:gpl3+)))
 
+(define-public glusterfs
+  (package
+    (name "glusterfs")
+    (version "3.10.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.gluster.org/pub/gluster/glusterfs/"
+                           (version-major+minor version) "/" version
+                           "/glusterfs-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02sn9s3jjva2i1l47y3in326n8jgp57rbykz5s8m87y4bzpw0ym1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "--with-initdir=" out "/etc/init.d")
+               (string-append "--with-mountutildir=" out "/sbin")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'replace-config.sub
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The distributed config.sub is intentionally left empty and
+             ;; must be replaced.
+             (install-file (string-append (assoc-ref inputs "automake")
+                                          "/share/automake-"
+                                          ,(package-version automake) "/config.sub")
+                           ".")
+             #t))
+         ;; Fix flex error.  This has already been fixed with upstream commit
+         ;; db3fe245a9e8812829eae7d143e49d0bfdfef9a7.
+         (add-before 'configure 'fix-lex
+           (lambda _
+             (substitute* "libglusterfs/src/Makefile.in"
+               (("libglusterfs_la_LIBADD = @LEXLIB@")
+                "libglusterfs_la_LIBADD ="))
+             #t)))))
+    (native-inputs
+     `(("cmocka" ,cmocka)
+       ("pkg-config" ,pkg-config)
+       ("python-2" ,python-2) ; must be version 2
+       ("flex" ,flex)
+       ("bison" ,bison)
+       ("automake" ,automake)))
+    (inputs
+     `(("acl" ,acl)
+       ;; GlusterFS fails to build with libressl because HMAC_CTX_new and
+       ;; HMAC_CTX_free are undefined.
+       ("openssl" ,openssl)
+       ("liburcu" ,liburcu)
+       ("libuuid" ,util-linux)
+       ("libxml2" ,libxml2)
+       ("lvm2" ,lvm2)
+       ("readline" ,readline)
+       ("sqlite" ,sqlite) ; for tiering
+       ("zlib" ,zlib)))
+    (home-page "https://www.gluster.org")
+    (synopsis "Distributed file system")
+    (description "GlusterFS is a distributed scalable network filesystem
+suitable for data-intensive tasks such as cloud storage and media streaming.
+It allows rapid provisioning of additional storage based on your storage
+consumption needs.  It incorporates automatic failover as a primary feature.
+All of this is accomplished without a centralized metadata server.")
+    ;; The user may choose either LGPLv3+ or GPLv2 only.
+    (license (list license:lgpl3+ license:gpl2+))))
