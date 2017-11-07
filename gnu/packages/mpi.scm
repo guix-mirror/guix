@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages valgrind))
+  #:use-module (gnu packages valgrind)
+  #:use-module (ice-9 match))
 
 (define-public hwloc
   (package
@@ -126,7 +128,10 @@ bind processes, and much more.")
      `(("hwloc" ,hwloc "lib")
        ("gfortran" ,gfortran)
        ("libfabric" ,libfabric)
-       ("psm" ,psm)
+       ,@(match (%current-system)
+                ((member (package-supported-systems psm))
+                 `(("psm" ,psm)))
+                (_ `()))
        ("rdma-core" ,rdma-core)
        ("valgrind" ,valgrind)))
     (native-inputs
