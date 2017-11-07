@@ -4410,3 +4410,45 @@ exports the user-space API of OFI, and is typically the only software that
 applications deal with directly.  It works in conjunction with provider
 libraries, which are often integrated directly into libfabric.")
     (license (list license:bsd-2 license:gpl2)))) ;dual
+
+(define-public psm
+  (package
+    (name "psm")
+    (version "3.3.20170428")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url "http://github.com/01org/psm")
+                           (commit "604758e76dc31e68d1de736ccf5ddf16cb22355b")))
+       (file-name (string-append "psm-" version ".tar.gz"))
+       (sha256
+        (base32 "0nsb325dmhn5ia3d2cnksqr0gdvrrx2hmvlylfgvmaqdpq76zm85"))
+       (patches (search-patches
+                 "psm-arch.patch"     ; uname -p returns "unknown" on Debian 9
+                 "psm-ldflags.patch"  ; build shared lib with LDFLAGS
+                 "psm-repro.patch"))))  ; reproducibility
+    (build-system gnu-build-system)
+    (inputs `(("libuuid" ,util-linux)))
+    (arguments
+     '(#:make-flags `("PSM_USE_SYS_UUID=1" "CC=gcc" "WERROR="
+                      ,(string-append "INSTALL_PREFIX=" %output)
+                      ,(string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'unpack 'patch-/usr/include
+                    (lambda _
+                      (substitute* "Makefile"
+                        (("\\$\\{DESTDIR}/usr/include")
+                         (string-append %output "/include")))
+                      (substitute* "Makefile"
+                        (("/lib64") "/lib"))
+                      #t)))))
+    (home-page "https://github.com/01org/psm")
+    (synopsis "Intel Performance Scaled Messaging (PSM) Libraries")
+    (description
+     "The PSM Messaging API, or PSM API, is Intel's low-level user-level
+communications interface for the True Scale family of products.  PSM users are
+enabled with mechanisms necessary to implement higher level communications
+interfaces in parallel environments.")
+    (license (list license:bsd-2 license:gpl2)))) ;dual

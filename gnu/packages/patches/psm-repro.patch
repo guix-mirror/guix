@@ -1,0 +1,14 @@
+Remove timestamp to support reproducible builds.
+
+--- psm-3.3/Makefile~	1970-01-01 01:00:00.000000000 +0100
++++ psm-3.3/Makefile	2017-10-22 15:32:11.736949002 +0100
+@@ -326,7 +326,7 @@
+ # file around.  Generate it such that the ident command can find it
+ # and strings -a | grep InfiniPath does a reasonable job as well.
+ ${TARGLIB}.so.${MAJOR}.${MINOR}: ${${TARGLIB}-objs}
+-	date +'char psmi_infinipath_revision[] ="$$""Date: %F %R ${rpm_extra_description}InfiniPath $$";' > ${lib_build_dir}/_revision.c
++	echo 'char psmi_infinipath_revision[] ="$$""Date: 1970-01-01 00:00 ${rpm_extra_description}InfiniPath $$";' > ${lib_build_dir}/_revision.c
+ 	$(CC) -c $(BASECFLAGS) $(INCLUDES) _revision.c -o _revision.o
+ 	$(CC) $(LDFLAGS) -o $@ -Wl,-soname=${TARGLIB}.so.${MAJOR} -shared -Wl,--unique='*fastpath*' \
+ 		${${TARGLIB}-objs} _revision.o -L$(build_dir)/ipath $(LDLIBS)
+
