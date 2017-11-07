@@ -261,6 +261,19 @@ valid."
             (else
              #f)))))
 
+(define (all-packages)
+  "Return the list of packages to build."
+  (fold-packages (lambda (package result)
+                   (cond ((package-replacement package)
+                          (cons* package          ;build both
+                                 (package-replacement package)
+                                 result))
+                         ((package-superseded package)
+                          result)                 ;don't build it
+                         (else
+                          (cons package result))))
+                 '()))
+
 
 ;;;
 ;;; Hydra entry point.
@@ -317,17 +330,7 @@ valid."
                   (case subset
                     ((all)
                      ;; Build everything, including replacements.
-                     (let ((all (fold-packages
-                                 (lambda (package result)
-                                   (cond ((package-replacement package)
-                                          (cons* package
-                                                 (package-replacement package)
-                                                 result))
-                                         ((package-superseded package)
-                                          result) ;don't build it
-                                         (else
-                                          (cons package result))))
-                                 '()))
+                     (let ((all (all-packages))
                            (job (lambda (package)
                                   (package->job store package
                                                 system))))
