@@ -9454,6 +9454,35 @@ microarrays or GRanges for sequencing data.")
 @dfn{Kyoto Encyclopedia of Genes and Genomes} (KEGG) REST server.")
     (license license:artistic2.0)))
 
+(define-public r-gage
+  (package
+    (name "r-gage")
+    (version "2.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gage" version))
+       (sha256
+        (base32
+         "1r14p88q3y736pkqm4pdimf1izy1xy3xgivmj3cr4dv65kjny1zk"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-graph" ,r-graph)
+       ("r-keggrest" ,r-keggrest)))
+    (home-page "http://www.biomedcentral.com/1471-2105/10/161")
+    (synopsis "Generally applicable gene-set enrichment for pathway analysis")
+    (description
+     "GAGE is a published method for gene set (enrichment or GSEA) or pathway
+analysis.  GAGE is generally applicable independent of microarray or RNA-Seq
+data attributes including sample sizes, experimental designs, assay platforms,
+and other types of heterogeneity.  The gage package provides functions for
+basic GAGE analysis, result processing and presentation.  In addition, it
+provides demo microarray data and commonly used gene set data based on KEGG
+pathways and GO terms.  These funtions and data are also useful for gene set
+analysis using other methods.")
+    (license license:gpl2+)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
