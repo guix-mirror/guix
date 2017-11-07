@@ -9675,6 +9675,47 @@ annotation packages each of which has its own schema by taking advantage of
 the fact that each of these packages implements a select methods.")
     (license license:artistic2.0)))
 
+(define-public r-biovizbase
+  (package
+    (name "r-biovizbase")
+    (version "1.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biovizBase" version))
+       (sha256
+        (base32
+         "14l4vhj0a4ssr9m9zdzz3qpd4qw1mhgq5bmxq7jhrq3j9kmd6i2f"))))
+    (properties `((upstream-name . "biovizBase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-annotationfilter" ,r-annotationfilter)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-dichromat" ,r-dichromat)
+       ("r-ensembldb" ,r-ensembldb)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-hmisc" ,r-hmisc)
+       ("r-iranges" ,r-iranges)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scales" ,r-scales)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://bioconductor.org/packages/biovizBase")
+    (synopsis "Basic graphic utilities for visualization of genomic data")
+    (description
+     "The biovizBase package is designed to provide a set of utilities, color
+schemes and conventions for genomic data.  It serves as the base for various
+high-level packages for biological data visualization.  This saves development
+effort and encourages consistency.")
+    (license license:artistic2.0)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
