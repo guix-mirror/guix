@@ -1349,3 +1349,34 @@ Various diagnostic plots are available to inspect the quality of the
 imputations.")
     ;; Any of these two versions.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-hardyweinberg
+  (package
+    (name "r-hardyweinberg")
+    (version "1.5.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "HardyWeinberg" version))
+       (sha256
+        (base32
+         "0xbcchmzii0jv0ygr91n72r39j1axraxd2i607b56v4yd5d8sy4k"))))
+    (properties `((upstream-name . "HardyWeinberg")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mice" ,r-mice)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/package=HardyWeinberg")
+    (synopsis "Statistical tests and graphics for Hardy-Weinberg equilibrium")
+    (description
+     "This package contains tools for exploring Hardy-Weinberg equilibrium for
+diallelic genetic marker data.  All classical tests (chi-square, exact,
+likelihood-ratio and permutation tests) for Hardy-Weinberg equilibrium are
+included in the package, as well as functions for power computation and for
+the simulation of marker data under equilibrium and disequilibrium.  Routines
+for dealing with markers on the X-chromosome are included.  Functions for
+testing equilibrium in the presence of missing data by using multiple
+imputation are also provided.  Implements several graphics for exploring the
+equilibrium status of a large set of diallelic markers: ternary plots with
+acceptance regions, log-ratio plots and Q-Q plots.")
+    (license license:gpl2+)))
