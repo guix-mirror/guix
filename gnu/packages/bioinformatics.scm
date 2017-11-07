@@ -9643,6 +9643,38 @@ chromosome region or transcript models of lincRNA genes.")
     ;; No version specified
     (license license:lgpl3+)))
 
+(define-public r-organismdbi
+  (package
+    (name "r-organismdbi")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "OrganismDbi" version))
+       (sha256
+        (base32
+         "0yxvhwn0m53wfwp0zi81x96argdf7cf1lpymc2as51apvfcnjdl8"))))
+    (properties `((upstream-name . "OrganismDbi")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocinstaller" ,r-biocinstaller)
+       ("r-dbi" ,r-dbi)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-graph" ,r-graph)
+       ("r-iranges" ,r-iranges)
+       ("r-rbgl" ,r-rbgl)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/OrganismDbi")
+    (synopsis "Software to enable the smooth interfacing of database packages")
+    (description "The package enables a simple unified interface to several
+annotation packages each of which has its own schema by taking advantage of
+the fact that each of these packages implements a select methods.")
+    (license license:artistic2.0)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
