@@ -319,7 +319,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
              (setenv "EXTRA_VERSION" ,extra-version)
 
              (let ((build  (assoc-ref %standard-phases 'build))
-                   (config (assoc-ref inputs "kconfig")))
+                   (config (assoc-ref (or native-inputs inputs) "kconfig")))
 
                ;; Use a custom kernel configuration file or a default
                ;; configuration file.
