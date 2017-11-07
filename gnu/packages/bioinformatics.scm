@@ -9827,6 +9827,33 @@ of @dfn{quantitative trait loci} (QTL) archives, such as eQTL, mQTL, dsQTL,
 and more.")
     (license license:artistic2.0)))
 
+(define-public r-snpstats
+  (package
+    (name "r-snpstats")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "snpStats" version))
+       (sha256
+        (base32
+         "1x9qwynh2hwl24vq02naf4mchpch7xi2pkdrlgw896k28kx0lvir"))))
+    (properties `((upstream-name . "snpStats")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-matrix" ,r-matrix)
+       ("r-survival" ,r-survival)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (home-page "https://bioconductor.org/packages/snpStats")
+    (synopsis "Methods for SNP association studies")
+    (description
+     "This package provides classes and statistical methods for large
+@dfn{single-nucleotide polymorphism} (SNP) association studies.  This extends
+the earlier snpMatrix package, allowing for uncertainty in genotypes.")
+    (license license:gpl3)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
