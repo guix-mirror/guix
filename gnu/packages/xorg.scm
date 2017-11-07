@@ -176,7 +176,7 @@ directory tree.")
 (define-public bdftopcf
   (package
     (name "bdftopcf")
-    (version "1.0.5")
+    (version "1.1")
     (source
       (origin
         (method url-fetch)
@@ -186,10 +186,10 @@ directory tree.")
                ".tar.bz2"))
         (sha256
           (base32
-            "09i03sk878cmx2i40lkpsysn7zqcvlczb30j7x3lryb11jz4gx1q"))))
+            "18hiscgljrz10zjcws25bis32nyrg3hzgmiq6scrh7izqmgz0kab"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxfont" ,libxfont)))
+      `(("libxfont" ,libxfont2)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
