@@ -9716,6 +9716,58 @@ high-level packages for biological data visualization.  This saves development
 effort and encourages consistency.")
     (license license:artistic2.0)))
 
+(define-public r-ggbio
+  (package
+    (name "r-ggbio")
+    (version "1.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ggbio" version))
+       (sha256
+        (base32
+         "1bqxfqy0hff87ax92z4lfbjz01ndrz7x8pzm6dlkdmi52p30krm9"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-annotationfilter" ,r-annotationfilter)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-biovizbase" ,r-biovizbase)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-ensembldb" ,r-ensembldb)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggally" ,r-ggally)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-gtable" ,r-gtable)
+       ("r-hmisc" ,r-hmisc)
+       ("r-iranges" ,r-iranges)
+       ("r-organismdbi" ,r-organismdbi)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scales" ,r-scales)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "http://www.tengfei.name/ggbio/")
+    (synopsis "Visualization tools for genomic data")
+    (description
+     "The ggbio package extends and specializes the grammar of graphics for
+biological data.  The graphics are designed to answer common scientific
+questions, in particular those often asked of high throughput genomics data.
+All core Bioconductor data structures are supported, where appropriate.  The
+package supports detailed views of particular genomic regions, as well as
+genome-wide overviews.  Supported overviews include ideograms and grand linear
+views.  High-level plots include sequence fragment length, edge-linked
+interval to data view, mismatch pileup, and several splicing summaries.")
+    (license license:artistic2.0)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
