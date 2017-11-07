@@ -9575,6 +9575,30 @@ originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
 1-15.")
     (license license:lgpl3)))
 
+(define-public r-annotationfilter
+  (package
+    (name "r-annotationfilter")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "AnnotationFilter" version))
+              (sha256
+               (base32
+                "04zf864c1fvdlaay2r5cn30fc1n5i3czh31fs62qlrvs61wjiscs"))))
+    (properties
+     `((upstream-name . "AnnotationFilter")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicranges" ,r-genomicranges)
+       ("r-lazyeval" ,r-lazyeval)))
+    (home-page "https://github.com/Bioconductor/AnnotationFilter")
+    (synopsis "Facilities for filtering Bioconductor annotation resources")
+    (description
+     "This package provides classes and other infrastructure to implement
+filters for manipulating Bioconductor annotation resources.  The filters are
+used by @code{ensembldb}, @code{Organism.dplyr}, and other packages.")
+    (license license:artistic2.0)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
