@@ -4666,10 +4666,10 @@ and resampling-based inference.")
     (home-page "https://cran.r-project.org/web/packages/prabclus")
     (synopsis "Parametric bootstrap tests for spatial neighborhood clustering")
     (description
-     "This package provides a distance-based parametric bootstrap tests
-for clustering with spatial neighborhood information.  Some distance measures,
-clustering of presence-absence, abundance and multilocus genetical data for
-species delimitation, nearest neighbor based noise detection.")
+     "This package provides distance-based parametric bootstrap tests for
+clustering with spatial neighborhood information.  It implements some distance
+measures, clustering of presence-absence, abundance and multilocus genetical
+data for species delimitation, nearest neighbor based noise detection.")
     (license license:gpl2+)))
 
 (define-public r-deoptimr
