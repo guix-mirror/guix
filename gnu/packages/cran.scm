@@ -1380,3 +1380,25 @@ imputation are also provided.  Implements several graphics for exploring the
 equilibrium status of a large set of diallelic markers: ternary plots with
 acceptance regions, log-ratio plots and Q-Q plots.")
     (license license:gpl2+)))
+
+(define-public r-sm
+  (package
+    (name "r-sm")
+    (version "2.2-5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sm" version))
+       (sha256
+        (base32
+         "0hnq5s2fv94gaj0nyqc1vjdjd64vsp9z23nqa8hxvjcaf996rwj9"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://www.stats.gla.ac.uk/~adrian/sm/")
+    (synopsis "Smoothing methods for nonparametric regression and density estimation")
+    (description
+     "This is software accompanying the book 'Applied Smoothing Techniques for
+Data Analysis---The Kernel Approach with S-Plus Illustrations', Oxford
+University Press.  It provides smoothing methods for nonparametric regression
+and density estimation")
+    (license license:gpl2+)))
