@@ -9516,6 +9516,36 @@ distributed by file or by range.  User defined mapper and reducer functions
 provide added flexibility for data combination and manipulation.")
     (license license:artistic2.0)))
 
+(define-public r-complexheatmap
+  (package
+    (name "r-complexheatmap")
+    (version "1.17.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ComplexHeatmap" version))
+       (sha256
+        (base32
+         "1x6kp55iqqsd8bhdl3qch95nfiy2y46ldbbsx1sj1v8f0b0ywwcy"))))
+    (properties
+     `((upstream-name . "ComplexHeatmap")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-circlize" ,r-circlize)
+       ("r-colorspace" ,r-colorspace)
+       ("r-getoptlong" ,r-getoptlong)
+       ("r-globaloptions" ,r-globaloptions)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page
+     "https://github.com/jokergoo/ComplexHeatmap")
+    (synopsis "Making Complex Heatmaps")
+    (description
+     "Complex heatmaps are efficient to visualize associations between
+different sources of data sets and reveal potential structures.  This package
+provides a highly flexible way to arrange multiple heatmaps and supports
+self-defined annotation graphics.")
+    (license license:gpl2+)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
