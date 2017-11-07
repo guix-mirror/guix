@@ -9483,6 +9483,39 @@ pathways and GO terms.  These funtions and data are also useful for gene set
 analysis using other methods.")
     (license license:gpl2+)))
 
+(define-public r-genomicfiles
+  (package
+    (name "r-genomicfiles")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GenomicFiles" version))
+       (sha256
+        (base32
+         "0r0wmrs5jycf1kckhnc2sgjmp336srlcjdkpbb1ymm7kazdd0s9n"))))
+    (properties `((upstream-name . "GenomicFiles")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://bioconductor.org/packages/GenomicFiles")
+    (synopsis "Distributed computing by file or by range")
+    (description
+     "This package provides infrastructure for parallel computations
+distributed by file or by range.  User defined mapper and reducer functions
+provide added flexibility for data combination and manipulation.")
+    (license license:artistic2.0)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
