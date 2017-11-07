@@ -1313,3 +1313,39 @@ Jaro-Winkler).  An implementation of soundex is provided as well.  Distances
 can be computed between character vectors while taking proper care of encoding
 or between integer vectors representing generic sequences.")
     (license license:gpl3+)))
+
+(define-public r-mice
+  (package
+    (name "r-mice")
+    (version "2.46.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mice" version))
+       (sha256
+        (base32
+         "1gjvlk67zvgipfczsca8zqk97vg3sivv82hblsdwp14s7smhjcax"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-nnet" ,r-nnet)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rpart" ,r-rpart)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/mice/")
+    (synopsis "Multivariate imputation by chained equations")
+    (description
+     "Multiple imputation using @dfn{Fully Conditional Specification} (FCS)
+implemented by the MICE algorithm as described in @url{Van Buuren and
+Groothuis-Oudshoorn (2011), http://doi.org/10.18637/jss.v045.i03}.  Each
+variable has its own imputation model.  Built-in imputation models are
+provided for continuous data (predictive mean matching, normal), binary
+data (logistic regression), unordered categorical data (polytomous logistic
+regression) and ordered categorical data (proportional odds).  MICE can also
+impute continuous two-level data (normal model, pan, second-level variables).
+Passive imputation can be used to maintain consistency between variables.
+Various diagnostic plots are available to inspect the quality of the
+imputations.")
+    ;; Any of these two versions.
+    (license (list license:gpl2 license:gpl3))))
