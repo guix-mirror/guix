@@ -10142,6 +10142,30 @@ EMBL-EBI GWAS catalog.")
 visualizations for publication-quality multi-panel figures.")
     (license license:gpl2+)))
 
+(define-public r-fithic
+  (package
+    (name "r-fithic")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "FitHiC" version))
+              (sha256
+               (base32
+                "12ylhrppi051m7nqsgq95kzd9g9wmp34i0zzfi55cjqawlpx7c6n"))))
+    (properties `((upstream-name . "FitHiC")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-fdrtool" ,r-fdrtool)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://bioconductor.org/packages/FitHiC")
+    (synopsis "Confidence estimation for intra-chromosomal contact maps")
+    (description
+     "Fit-Hi-C is a tool for assigning statistical confidence estimates to
+intra-chromosomal contact maps produced by genome-wide genome architecture
+assays such as Hi-C.")
+    (license license:gpl2+)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
