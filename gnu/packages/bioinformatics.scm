@@ -9792,6 +9792,41 @@ gene identifier conversion and mapping homologous genes across related
 organisms via the @code{g:Profiler} toolkit.")
     (license license:gpl2+)))
 
+(define-public r-gqtlbase
+  (package
+    (name "r-gqtlbase")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gQTLBase" version))
+       (sha256
+        (base32
+         "1756vfcj2dkkgcmfkkg7qdaig36dv9gfvpypn9rbrky56wm1p035"))))
+    (properties `((upstream-name . "gQTLBase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-batchjobs" ,r-batchjobs)
+       ("r-bbmisc" ,r-bbmisc)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-bit" ,r-bit)
+       ("r-doparallel" ,r-doparallel)
+       ("r-ff" ,r-ff)
+       ("r-ffbase" ,r-ffbase)
+       ("r-foreach" ,r-foreach)
+       ("r-genomicfiles" ,r-genomicfiles)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/gQTLBase")
+    (synopsis "Infrastructure for eQTL, mQTL and similar studies")
+    (description
+     "The purpose of this package is to simplify the storage and interrogation
+of @dfn{quantitative trait loci} (QTL) archives, such as eQTL, mQTL, dsQTL,
+and more.")
+    (license license:artistic2.0)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
