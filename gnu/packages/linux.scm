@@ -4394,7 +4394,7 @@ comparing system environments.")
         (base32 "19l2m1frna1l765z4j7wl8hp4rb9wrh0hy5496685hd183hmy5pv"))))
     (build-system gnu-build-system)
     (inputs `(("rdma-core" ,rdma-core)
-              ;; TODO: add psm, psm(2).
+              ("psm" ,psm)
               ("libnl" ,libnl)))
     (home-page "https://ofiwg.github.io/libfabric/")
     (synopsis "Open Fabric Interfaces")
