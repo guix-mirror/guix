@@ -2359,11 +2359,23 @@ Intel DRM Driver.")
          "13r0b0hllgf8j9rh6x1knmbgvingbdmx046aazv6vck2ll120mw1"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))             ; Python 2 only
+     `(#:python ,python-2               ; Python 2 only
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke
+              "nosetests" "-v" "tests/"
+              ;; This test hangs indefinitely when run on a single core VM
+              ;; (see GNU bug #26647 and Debian bug #850230).
+              "--exclude=test_nested_execution_with_explicit_ports"
+              ;; This test randomly fails in certain environments causing too
+              ;; much noise to be useful (see Debian bug #854686).
+              "--exclude=test_should_use_sentinel_for_tasks_that_errored"))))))
     (native-inputs
-     `(("python2-fudge" ,python2-fudge)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-nose" ,python2-nose)
+     `(("python2-fudge" ,python2-fudge) ; Requires < 1.0
+       ("python2-jinja2" ,python2-jinja2) ; Requires < 3.0
+       ("python2-nose" ,python2-nose) ; Requires < 2.0
        ("python2-pynacl" ,python2-pynacl)
        ("python2-bcrypt" ,python2-bcrypt)))
     (propagated-inputs
