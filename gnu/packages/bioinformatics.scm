@@ -10080,6 +10080,46 @@ grid graphics package.  This results in genomic information plotted together
 with your data.")
     (license license:artistic2.0)))
 
+(define-public r-gwascat
+  (package
+    (name "r-gwascat")
+    (version "2.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gwascat" version))
+       (sha256
+        (base32
+         "0n5x5i5v6a8wpn5mxmlpkl34b4kyypmymiwww6g61zch7xqrgywi"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-annotationhub" ,r-annotationhub)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggbio" ,r-ggbio)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gqtlstats" ,r-gqtlstats)
+       ("r-graph" ,r-graph)
+       ("r-gviz" ,r-gviz)
+       ("r-homo-sapiens" ,r-homo-sapiens)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-snpstats" ,r-snpstats)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://bioconductor.org/packages/gwascat")
+    (synopsis "Tools for data in the EMBL-EBI GWAS catalog")
+    (description
+     "This package provides tools for representing and modeling data in the
+EMBL-EBI GWAS catalog.")
+    (license license:artistic2.0)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
