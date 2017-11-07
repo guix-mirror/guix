@@ -10120,6 +10120,28 @@ with your data.")
 EMBL-EBI GWAS catalog.")
     (license license:artistic2.0)))
 
+(define-public r-sushi
+  (package
+    (name "r-sushi")
+    (version "1.16.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "Sushi" version))
+              (sha256
+               (base32
+                "0axaqm480z8d0b2ldgxwm0swava1p4irc62bpl17p2k8k78g687g"))))
+    (properties `((upstream-name . "Sushi")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biomart" ,r-biomart)
+       ("r-zoo" ,r-zoo)))
+    (home-page "https://bioconductor.org/packages/Sushi")
+    (synopsis "Tools for visualizing genomics data")
+    (description
+     "This package provides flexible, quantitative, and integrative genomic
+visualizations for publication-quality multi-panel figures.")
+    (license license:gpl2+)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
