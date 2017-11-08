@@ -185,14 +185,14 @@ utilities.")
 (define-public pcb
   (package
     (name "pcb")
-    (version "4.0.0")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcb/pcb/pcb-" version
                                   "/pcb-" version ".tar.gz"))
               (sha256
                (base32
-                "1i6sk8g8h9avms142wl07yv20m1cm4c3fq3v6hybrhdxs2n17plf"))))
+                "1a7rilp75faidny0r4fdwdxkflyrqp6svxv9lbg7h868293962iz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -201,6 +201,14 @@ utilities.")
            (lambda _
              (substitute* "configure"
                (("wish85") "wish8.6"))
+             #t))
+         ;; It checks for "xhost", which we don't have.  This shouldn't
+         ;; matter, because the test is supposed to be skipped, but it causes
+         ;; "run_tests.sh" (and thus the "check" phase) to fail.
+         (add-after 'unpack 'fix-check-for-display
+           (lambda _
+             (substitute* "tests/run_tests.sh"
+               (("have_display=no") "have_display=yes"))
              #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
