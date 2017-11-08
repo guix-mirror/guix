@@ -1867,3 +1867,29 @@ cipher used in the Chinese National Standard for Wireless LAN WAPI (Wired
 Authentication and Privacy Infrastructure).")
       (home-page "https://github.com/tjfoc/gmsm")
       (license asl2.0))))
+
+(define-public go-github-com-zillode-notify
+  (let ((commit "54e3093eb7377fd139c4605f475cc78e83610b9d")
+        (revision "0"))
+    (package
+      (name "go-github-com-zillode-notify")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/zillode/notify")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0xmj0bh15hqbzq5qsbi2nb2lihl1pqdh1vwalwmxywnda3w68xj6"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/zillode/notify"))
+      (propagated-inputs
+       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+      (synopsis "Filesystem event notification library")
+      (description "This package provides @code{notify}, a filesystem event
+notification library in Go.")
+      (home-page "https://github.com/zillode/notify")
+      (license expat))))
