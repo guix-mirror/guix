@@ -55,6 +55,7 @@
 
             %service-type-path
             fold-service-types
+            lookup-service-types
 
             service
             service?
@@ -191,6 +192,16 @@ is used as the initial value of RESULT."
                                       result))
                                 seed
                                 modules))
+
+(define lookup-service-types
+  (let ((table
+         (delay (fold-service-types (lambda (type result)
+                                      (vhash-consq (service-type-name type)
+                                                   type result))
+                                    vlist-null))))
+    (lambda (name)
+      "Return the list of services with the given NAME (a symbol)."
+      (vhash-foldq* cons '() name (force table)))))
 
 ;; Services of a given type.
 (define-record-type <service>
