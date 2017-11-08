@@ -1472,3 +1472,26 @@ likelihood models in R.  This package modifies and extends the @code{mle}
 classes in the @code{stats4} package.")
     ;; Any version of the GPL
     (license license:gpl2+)))
+
+(define-public r-xts
+  (package
+    (name "r-xts")
+    (version "0.10-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xts" version))
+       (sha256
+        (base32
+         "1w7lxy3hbf005fvpzbwiznj8jbxi07s4189vbgxisd35l9a4v6q4"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-zoo" ,r-zoo)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://github.com/joshuaulrich/xts")
+    (synopsis "Extensible time series")
+    (description
+     "This package provides for uniform handling of R's different time-based
+data classes by extending @code{zoo}, maximizing native format information
+preservation and allowing for user-level customization and extension, while
+simplifying cross-class interoperability.")
+    (license license:gpl2+)))
