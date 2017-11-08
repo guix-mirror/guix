@@ -309,6 +309,12 @@ please run through this check list:
 
 @enumerate
 @item
+If the authors of the packaged software provide a cryptographic
+signature for the release tarball, make an effort to verify the
+authenticity of the archive.  For a detached GPG signature file this
+would be done with the @code{gpg --verify} command.
+
+@item
 Take some time to provide an adequate synopsis and description for the
 package.  @xref{Synopses and Descriptions}, for some guidelines.
 
@@ -334,12 +340,6 @@ have in the distribution, if there is one.  This improves resource usage
 distribution to make transverse changes such as applying security
 updates for a given software package in a single place and have them
 affect the whole system---something that bundled copies prevent.
-
-@item
-If the authors of the packaged software provide a cryptographic
-signature for the release tarball, make an effort to verify the
-authenticity of the archive.  For a detached GPG signature file this
-would be done with the @code{gpg --verify} command.
 
 @item
 Take a look at the profile reported by @command{guix size}
