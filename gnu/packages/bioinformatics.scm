@@ -3563,9 +3563,7 @@ assembled metagenomic sequence.")
     (version "0.5.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/m/misopy/misopy-"
-                    version ".tar.gz"))
+              (uri (pypi-uri "misopy" version))
               (sha256
                (base32
                 "1z3x0vd8ma7pdrnywj7i3kgwl89sdkwrrn62zl7r5calqaq2hyip"))
