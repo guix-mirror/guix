@@ -1840,3 +1840,29 @@ Erasure Coding in Go.")
 processor feature detection used by the Go standard libary.")
       (home-page "https://github.com/templexxx/cpufeat")
       (license bsd-3))))
+
+(define-public go-github-com-tjfoc-gmsm-sm4
+  (let ((commit "0f4904804c0f24f1784e10195a4144fcffa86a85")
+        (revision "0"))
+    (package
+      (name "go-github-com-tjfoc-gmsm-sm4")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/tjfoc/gmsm")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1k56gx2ky0c5kf4icafd7zr809lliqzx2mn88lb6d52ljfpf77q5"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/tjfoc/gmsm/sm4"
+         #:unpack-path "github.com/tjfoc/gmsm"))
+      (synopsis "SM4 block cipher")
+      (description "This package provides a Go implementation of SM4, a block
+cipher used in the Chinese National Standard for Wireless LAN WAPI (Wired
+Authentication and Privacy Infrastructure).")
+      (home-page "https://github.com/tjfoc/gmsm")
+      (license asl2.0))))
