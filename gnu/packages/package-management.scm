@@ -434,7 +434,7 @@ symlinks to the files in a common directory such as /usr/local.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.13.0.1")
+    (version "4.13.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.rpm.org/releases/rpm-"
@@ -442,7 +442,7 @@ symlinks to the files in a common directory such as /usr/local.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "03cvbwbfrhm0fa02j7828k1qp05hf2m0fradwcf2nqhrsjkppz17"))))
+                "1521y4ghjns449kzpwkjn9cksh686383xnfx0linzlalqc3jqgig"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
