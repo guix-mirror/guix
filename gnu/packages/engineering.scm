@@ -314,7 +314,10 @@ featuring various improvements and bug fixes.")))
                                        "fastcap-mulGlobal.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("texlive" ,texlive)
+     ;; FIXME: with texlive-tiny citation references are rendered as question
+     ;; marks.  During the build warnings like these are printed:
+     ;; LaTeX Warning: Citation `nabors91' on page 2 undefined on input line 3.
+     `(("texlive" ,texlive-tiny)
        ("ghostscript" ,ghostscript)))
     (arguments
      `(#:make-flags '("CC=gcc" "RM=rm" "SHELL=sh" "all")
@@ -325,69 +328,70 @@ featuring various improvements and bug fixes.")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'build 'make-doc
-                    (lambda _
-                      (zero? (system* "make" "CC=gcc" "RM=rm" "SHELL=sh"
-                                      "manual"))))
+           (lambda _
+             (zero? (system* "make" "CC=gcc" "RM=rm" "SHELL=sh"
+                             "manual"))))
          (add-before 'make-doc 'fix-doc
-                     (lambda _
-                       (substitute* "doc/Makefile" (("/bin/rm") (which "rm")))
-                       (substitute* (find-files "doc" "\\.tex")
-                         (("\\\\special\\{psfile=([^,]*),.*scale=([#0-9.]*).*\\}"
-                           all file scale)
-                          (string-append "\\includegraphics[scale=" scale "]{"
-                                         file "}"))
-                         (("\\\\psfig\\{figure=([^,]*),.*width=([#0-9.]*in).*\\}"
-                           all file width)
-                          (string-append "\\includegraphics[width=" width "]{"
-                                         file "}"))
-                         (("\\\\psfig\\{figure=([^,]*),.*height=([#0-9.]*in).*\\}"
-                           all file height)
-                          (string-append "\\includegraphics[height=" height "]{"
-                                         file "}"))
-                         (("\\\\psfig\\{figure=([^,]*)\\}" all file)
-                          (string-append "\\includegraphics{" file "}")))
-                       (substitute* '("doc/mtt.tex" "doc/tcad.tex" "doc/ug.tex")
-                         (("^\\\\documentstyle\\[(.*)\\]\\{(.*)\\}"
-                           all options class)
-                          (string-append "\\documentclass[" options "]{"
-                                         class "}\n"
-                                         "\\usepackage{graphicx}\n"
-                                         "\\usepackage{robinspace}"))
-                         (("\\\\setlength\\{\\\\footheight\\}\\{.*\\}" all)
-                          (string-append "%" all))
-                         (("\\\\setstretch\\{.*\\}" all)
-                          (string-append "%" all)))
-                       #t))
+           (lambda _
+             (substitute* "doc/Makefile" (("/bin/rm") (which "rm")))
+             (substitute* (find-files "doc" "\\.tex")
+               (("\\\\special\\{psfile=([^,]*),.*scale=([#0-9.]*).*\\}"
+                 all file scale)
+                (string-append "\\includegraphics[scale=" scale "]{"
+                               file "}"))
+               (("\\\\psfig\\{figure=([^,]*),.*width=([#0-9.]*in).*\\}"
+                 all file width)
+                (string-append "\\includegraphics[width=" width "]{"
+                               file "}"))
+               (("\\\\psfig\\{figure=([^,]*),.*height=([#0-9.]*in).*\\}"
+                 all file height)
+                (string-append "\\includegraphics[height=" height "]{"
+                               file "}"))
+               (("\\\\psfig\\{figure=([^,]*)\\}" all file)
+                (string-append "\\includegraphics{" file "}")))
+             (substitute* '("doc/mtt.tex" "doc/tcad.tex" "doc/ug.tex")
+               (("^\\\\documentstyle\\[(.*)\\]\\{(.*)\\}"
+                 all options class)
+                (string-append "\\documentclass[" options "]{"
+                               class "}\n"
+                               "\\usepackage{graphicx}\n"
+                               "\\usepackage{robinspace}"))
+               (("\\\\setlength\\{\\\\footheight\\}\\{.*\\}" all)
+                (string-append "%" all))
+               (("\\\\setstretch\\{.*\\}" all)
+                (string-append "%" all)))
+             #t))
          (delete 'configure)
          (add-before 'install 'clean-bin
-                     (lambda _
-                       (delete-file (string-append (getcwd) "/bin/README"))
-                       #t))
+           (lambda _
+             (delete-file (string-append (getcwd) "/bin/README"))
+             #t))
          (add-before 'install 'make-pdf
-                     (lambda _
-                       (with-directory-excursion "doc"
-                         (and
-                          (every (lambda (file)
-                                   (zero? (system* "dvips" file "-o")))
-                                 (find-files "." "\\.dvi"))
-                          (every (lambda (file)
-                                   (zero? (system* "ps2pdf" file)))
-                                 '("mtt.ps" "ug.ps" "tcad.ps"))
-                          (zero? (system* "make" "clean"))))))
+           (lambda _
+             (setenv "HOME" "/tmp")     ; FIXME: for texlive font cache
+             (with-directory-excursion "doc"
+               (and
+                (every (lambda (file)
+                         (zero? (system* "dvips" file "-o")))
+                       (find-files "." "\\.dvi"))
+                (every (lambda (file)
+                         (zero? (system* "ps2pdf" file)))
+                       '("mtt.ps" "ug.ps" "tcad.ps"))
+                (zero? (system* "make" "clean"))))))
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (data (string-append out "/share"))
-                           (bin (string-append out "/bin"))
-                           (doc (string-append data "/doc/" ,name "-" ,version))
-                           (examples (string-append doc "/examples")))
-                      (with-directory-excursion "bin"
-                        (for-each (lambda (f)
-                                    (install-file f bin))
-                                  (find-files "." ".*")))
-                      (copy-recursively "doc" doc)
-                      (copy-recursively "examples" examples)
-                      #t))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (data (string-append out "/share"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (examples (string-append doc "/examples")))
+               (with-directory-excursion "bin"
+                 (for-each (lambda (f)
+                             (install-file f bin))
+                           (find-files "." ".*")))
+               (copy-recursively "doc" doc)
+               (copy-recursively "examples" examples)
+               #t))))))
     (home-page "http://www.rle.mit.edu/cpg/research_codes.htm")
     (synopsis "Multipole-accelerated capacitance extraction program")
     (description
