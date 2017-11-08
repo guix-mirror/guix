@@ -175,9 +175,14 @@
   (make-parameter `((,%distro-root-directory . "gnu/services")
                     (,%distro-root-directory . "gnu/system"))))
 
+(define (all-service-modules)
+  "Return the default set of service modules."
+  (cons (resolve-interface '(gnu services))
+        (all-modules (%service-type-path))))
+
 (define* (fold-service-types proc seed
                              #:optional
-                             (modules (all-modules (%service-type-path))))
+                             (modules (all-service-modules)))
   "For each service type exported by one of MODULES, call (PROC RESULT).  SEED
 is used as the initial value of RESULT."
   (fold-module-public-variables (lambda (object result)
