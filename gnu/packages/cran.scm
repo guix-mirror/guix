@@ -1495,3 +1495,33 @@ data classes by extending @code{zoo}, maximizing native format information
 preservation and allowing for user-level customization and extension, while
 simplifying cross-class interoperability.")
     (license license:gpl2+)))
+
+(define-public r-performanceanalytics
+  (package
+    (name "r-performanceanalytics")
+    (version "1.4.3541")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "PerformanceAnalytics" version))
+       (sha256
+        (base32
+         "1czchsccsbdfjw743j6rm101q2q01pggyl8zmlva213pwm86zb3v"))))
+    (properties
+     `((upstream-name . "PerformanceAnalytics")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-xts" ,r-xts)
+       ("r-zoo" ,r-zoo)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://r-forge.r-project.org/projects/returnanalytics/")
+    (synopsis "Econometric tools for performance and risk analysis")
+    (description "This is a collection of econometric functions for
+performance and risk analysis.  This package aims to aid practitioners and
+researchers in utilizing the latest research in analysis of non-normal return
+streams.  In general, it is most tested on return (rather than price) data on
+a regular scale, but most functions will work with irregular return data as
+well, and increasing numbers of functions will work with P&L or price data
+where possible.")
+    ;; Either version may be picked.
+    (license (list license:gpl2 license:gpl3))))
