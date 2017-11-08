@@ -29,7 +29,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
-;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -6771,7 +6771,7 @@ more advanced mathematics.")
 (define-public python-sympy
   (package
     (name "python-sympy")
-    (version "1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
@@ -6779,7 +6779,7 @@ more advanced mathematics.")
              "https://github.com/sympy/sympy/releases/download/sympy-"
              version "/sympy-" version ".tar.gz"))
        (sha256
-        (base32 "1bpzjwr9hrr7w88v4vgnj9lr6vxcldc94si13n8xpr1rv08d5b1y"))))
+        (base32 "190n29sppw7g8ihilc5451y7jlfcaw56crqiqbf1jff43dlmfnxc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-mpmath" ,python-mpmath)))
