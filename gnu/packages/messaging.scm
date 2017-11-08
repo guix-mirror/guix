@@ -567,7 +567,7 @@ end-to-end encryption support; XML console.")
 (define-public dino
   ;; The only release tarball is for version 0.0, but it is very old and fails
   ;; to build.
-  (let ((commit "54a25fd926070a977138cec94908c55806e22f4a")
+  (let ((commit "f6ac5bbd26638412a2289fd1d28ef12de1d7e8b5")
         (revision "1"))
     (package
       (name "dino")
@@ -576,19 +576,19 @@ end-to-end encryption support; XML console.")
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/dino/dino.git")
-                      (commit commit)))
+                      (commit commit)
+                      (recursive? #t))) ; Needed for the 'libsignal-protocol-c'
+                                        ; submodule.
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1m100wzr5xqaj3r4vprxj0961833wqk0p7z94nmjsf2f0s67v5r3"))))
+                  "14vk5jmvn8igjikrvg7pinrzahw8gryysb1v9y3vw47ncyic8b7p"))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f ; there are no tests
          #:parallel-build? #f ; not supported
-         #:configure-flags
-         ;; FIXME: we disable the omemo plugin because it needs
-         ;; libsignal-protocol, for which we don't have a package yet.
-         '("-DDISABLED_PLUGINS=omemo")
+         ; Use our libsignal-protocol-c instead of the git submodule.
+         #:configure-flags '("-DSHARED_SIGNAL_PROTOCOL=yes")
          #:modules ((guix build cmake-build-system)
                     ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
                     (guix build utils))
@@ -601,6 +601,8 @@ end-to-end encryption support; XML console.")
              (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
       (inputs
        `(("libgee" ,libgee)
+         ("libsignal-protocol-c", libsignal-protocol-c)
+         ("libgcrypt", libgcrypt)
          ("libsoup" ,libsoup)
          ("sqlite" ,sqlite)
          ("gpgme" ,gpgme)
