@@ -184,7 +184,7 @@ is used as the initial value of RESULT."
                                   (if (service-type? object)
                                       (proc object result)
                                       result))
-                                '()
+                                seed
                                 modules))
 
 ;; Services of a given type.
