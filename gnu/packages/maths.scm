@@ -3633,9 +3633,9 @@ theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
                (("\\\\n") "")))))))
     (home-page "http://cubicle.lri.fr/")
     (synopsis "Model checker for array-based systems")
-    (description "Cubicle is an open source model checker for verifying safety
-properties of array-based systems.  This is a syntactically restricted class of
-parametrized transition systems with states represented as arrays indexed by an
-arbitrary number of processes.  Cache coherence protocols and mutual exclusion
-algorithms are typical examples of such systems.")
+    (description "Cubicle is a model checker for verifying safety properties
+of array-based systems.  This is a syntactically restricted class of
+parametrized transition systems with states represented as arrays indexed by
+an arbitrary number of processes.  Cache coherence protocols and mutual
+exclusion algorithms are typical examples of such systems.")
     (license license:asl2.0)))

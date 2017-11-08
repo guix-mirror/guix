@@ -88,8 +88,7 @@ characters, and is highly robust.")
      `(("pkg-config" ,pkg-config)))
     (home-page "http://libdmtx.sourceforge.net/")
     (synopsis "Library for reading and writing Data Matrix 2D barcodes")
-    (description "libdmtx is open source software for reading and writing Data
-Matrix 2D barcodes on Linux and Unix.  At its core libdmtx is a shared
-library, allowing C/C++ programs to use its capabilities without restrictions
-or overhead.")
+    (description "libdmtx is software for reading and writing Data Matrix 2D
+barcodes on Linux and Unix.  At its core libdmtx is a shared library, allowing
+C/C++ programs to use its capabilities without restrictions or overhead.")
     (license license:bsd-3)))
