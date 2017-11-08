@@ -46,7 +46,7 @@
      "Time is a command that displays information about the resources that a
 program uses.  The display output of the program can be customized or saved
 to a file.")
-    (license gpl2+)))
+    (license gpl3+)))
 
 (define-public python-pytzdata
   (package
