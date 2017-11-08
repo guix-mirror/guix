@@ -1,5 +1,6 @@
 # List of source files which contain translatable strings.
 # This should be source files of the various tools, and not package modules.
+gnu.scm
 gnu/packages.scm
 gnu/services.scm
 gnu/system.scm
