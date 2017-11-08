@@ -26,6 +26,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix ui)
+  #:use-module (guix i18n)
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix store)
@@ -55,10 +56,8 @@
   #:use-module (texinfo)
   #:use-module (texinfo plain-text)
   #:use-module (texinfo string-utils)
-  #:export (G_
-            N_
-            P_
-            report-error
+  #:re-export (G_ N_ P_)                          ;backward compatibility
+  #:export (report-error
             leave
             make-user-module
             load*
@@ -110,26 +109,6 @@
 ;;; User interface facilities for command-line tools.
 ;;;
 ;;; Code:
-
-(define %gettext-domain
-  ;; Text domain for strings used in the tools.
-  "guix")
-
-(define %package-text-domain
-  ;; Text domain for package synopses and descriptions.
-  "guix-packages")
-
-(define G_ (cut gettext <> %gettext-domain))
-(define N_ (cut ngettext <> <> <> %gettext-domain))
-
-(define (P_ msgid)
-  "Return the translation of the package description or synopsis MSGID."
-  ;; Descriptions/synopses might occasionally be empty strings, even if that
-  ;; is something we try to avoid.  Since (gettext "") can return a non-empty
-  ;; string, explicitly check for that case.
-  (if (string-null? msgid)
-      msgid
-      (gettext msgid %package-text-domain)))
 
 (define-syntax-rule (define-diagnostic name prefix)
   "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all

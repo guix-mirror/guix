@@ -103,6 +103,7 @@ MODULES =					\
   guix/store.scm				\
   guix/cvs-download.scm				\
   guix/svn-download.scm				\
+  guix/i18n.scm					\
   guix/ui.scm					\
   guix/build/ant-build-system.scm		\
   guix/build/download.scm			\
