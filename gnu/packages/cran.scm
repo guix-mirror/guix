@@ -1547,3 +1547,29 @@ where possible.")
 on social exclusion and poverty, as well as an implementation of Pareto tail
 modeling for empirical income distributions.")
     (license license:gpl2+)))
+
+(define-public r-vcd
+  (package
+    (name "r-vcd")
+    (version "1.4-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "vcd" version))
+       (sha256
+        (base32
+         "05azric2w8mrsdk7y0484cjygcgcmbp96q2v500wvn91fj98kkhp"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-colorspace" ,r-colorspace)
+       ("r-lmtest" ,r-lmtest)
+       ("r-mass" ,r-mass)))
+    (home-page "http://cran.r-project.org/web/packages/vcd/")
+    (synopsis "Visualizing categorical data")
+    (description "This package provides visualization techniques, data sets,
+summary and inference procedures aimed particularly at categorical data.
+Special emphasis is given to highly extensible grid graphics.  The package was
+originally inspired by the book \"Visualizing Categorical Data\" by Michael
+Friendly and is now the main support package for a new book, \"Discrete Data
+Analysis with R\" by Michael Friendly and David Meyer (2015).")
+    (license license:gpl2)))
