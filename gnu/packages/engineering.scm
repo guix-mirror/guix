@@ -96,24 +96,38 @@
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-        (add-after 'unpack 'patch-paths
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out")))
-             (substitute* "librecad/src/lib/engine/rs_system.cpp"
-               (("/usr/share") (string-append out "/share"))))))
-        (replace 'configure
-         (lambda* (#:key inputs #:allow-other-keys)
-           (system* "qmake" (string-append "BOOST_DIR="
-                                           (assoc-ref inputs "boost")))))
-        (replace 'install
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let* ((out   (assoc-ref outputs "out"))
-                  (bin   (string-append out "/bin"))
-                  (share (string-append out "/share/librecad")))
-             (mkdir-p bin)
-             (install-file "unix/librecad" bin)
-             (mkdir-p share)
-             (copy-recursively "unix/resources" share)))))))
+         ;; Without this patch boost complains that "make_array" is not a
+         ;; member of "boost::serialization".
+         (add-after 'unpack 'patch-boost-error
+           (lambda _
+             (substitute* "librecad/src/lib/math/lc_quadratic.h"
+               (("#include \"rs_vector.h\"" line)
+                (string-append line
+                               "\n#include <boost/serialization/array_wrapper.hpp>")))
+             (substitute* "librecad/src/lib/math/rs_math.cpp"
+               (("#include <boost/numeric/ublas/matrix.hpp>" line)
+                (string-append "#include <boost/serialization/array_wrapper.hpp>\n"
+                               line)))
+             #t))
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "librecad/src/lib/engine/rs_system.cpp"
+                 (("/usr/share") (string-append out "/share"))))))
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (system* "qmake" (string-append "BOOST_DIR="
+                                             (assoc-ref inputs "boost")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (share (string-append out "/share/librecad")))
+               (mkdir-p bin)
+               (install-file "unix/librecad" bin)
+               (mkdir-p share)
+               (copy-recursively "unix/resources" share))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("muparser" ,muparser)
