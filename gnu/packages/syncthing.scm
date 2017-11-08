@@ -1581,8 +1581,8 @@ rolling hash.")
       (license expat))))
 
 (define-public go-github-com-audriusbutkevicius-kcp-go
-  (let ((commit "02298ef4d96d48912e016f5fb36dcc0cd93c257f")
-        (revision "0"))
+  (let ((commit "8ae5f528469c6ab76110f41eb7a51341b7efb946")
+        (revision "1"))
     (package
       (name "go-github-com-audriusbutkevicius-kcp-go")
       (version (git-version "0.0.0" revision commit))
@@ -1595,12 +1595,13 @@ rolling hash.")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "1xanidjz8rhk28ybxnfk55nsd3h0a707dsq7mmxpjmycdacbm0j0"))))
+            "1bhg7bfc0r4a7i516xasq3i5ln15lsalm7i53b4nchba6db7mq14"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-golang-org-x-net-ipv4" ,go-golang-org-x-net-ipv4)
          ("go-github-com-templexxx-reedsolomon"
           ,go-github-com-templexxx-reedsolomon)
+         ("go-github-com-tjfoc-gmsm-sm4" ,go-github-com-tjfoc-gmsm-sm4)
          ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
          ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
          ("go-github-com-templexxx-xor" ,go-github-com-templexxx-xor)))
