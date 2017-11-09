@@ -550,7 +550,8 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
     (native-inputs
      `(("intltool" ,intltool)))
     (inputs
-     `(("python2-nbxmpp" ,python2-nbxmpp)
+     `(("python2-axolotl" ,python2-axolotl)
+       ("python2-nbxmpp" ,python2-nbxmpp)
        ("python2-pyopenssl" ,python2-pyopenssl)
        ("python2-gnupg" ,python2-gnupg)
        ("python2-pygtk" ,python2-pygtk)
