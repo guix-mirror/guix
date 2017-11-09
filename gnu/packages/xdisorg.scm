@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1291,3 +1292,40 @@ drivers except the generic VESA driver.  Alter brightness, contrast, RGB, and
 invert colors on a specific display/screen.")
     (home-page "http://xcalib.sourceforge.net/")
     (license license:gpl2)))
+
+(define-public nxbelld
+  (package
+    (name "nxbelld")
+    (version "0.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dusxmt/nxbelld.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "04qwhmjs51irinz5mjlxdb3dc6vr79dqmc5fkj80x1ll3ylh5n3z"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags `("--enable-sound"
+                                     "--enable-wave"
+                                     "--enable-alsa")
+                 #:phases (modify-phases %standard-phases
+                           (add-before 'configure 'autoreconf
+                             (lambda _
+                               (zero? (system* "autoreconf" "-vfi")))))))
+   (native-inputs `(("autoconf" ,autoconf)
+                    ("automake" ,automake)
+                    ("pkg-config" ,pkg-config)
+                    ("perl" ,perl)))
+    (inputs `(("libx11" ,libx11)
+              ("alsa-lib" ,alsa-lib)))
+    (synopsis "Daemon that performs an action every time the X11 bell is rung")
+    (description "nxbelld is a tiny utility to aid people who either don't
+like the default PC speaker beep, or use a sound driver that doesn't have
+support for the PC speaker.  The utility performs a given action every time
+the X bell is rung.  The actions nxbelld can currently perform include running
+a specified program, emulating the PC speaker beep using the sound card (default),
+or playing a PCM encoded WAVE file.")
+    (home-page "https://github.com/dusxmt/nxbelld")
+    (license license:gpl3+)))
