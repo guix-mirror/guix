@@ -2326,7 +2326,7 @@ library.")
 (define-public glib-networking
   (package
     (name "glib-networking")
-    (version "2.50.0")
+    (version "2.54.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
@@ -2334,7 +2334,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1vkb53jxawy38y29635izlch64j9xmcwwcimk134jwra7hpl86iz"))
+                "0bq16m9nh3gcz9x2fvygr0iwxd2pxcbrm3lj3kihsnh1afv8g9za"))
               (patches
                (search-patches "glib-networking-ssl-cert-file.patch"))))
     (build-system gnu-build-system)
@@ -2344,18 +2344,19 @@ library.")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-giomoduledir
-                     ;; Install GIO modules into $out/lib/gio/modules.
-                     (lambda _
-                       (substitute* "configure"
-                         (("GIO_MODULE_DIR=.*")
-                          (string-append "GIO_MODULE_DIR=" %output
-                                         "/lib/gio/modules\n")))))
+           ;; Install GIO modules into $out/lib/gio/modules.
+           (lambda _
+             (substitute* "configure"
+               (("GIO_MODULE_DIR=.*")
+                (string-append "GIO_MODULE_DIR=" %output
+                               "/lib/gio/modules\n")))
+             #t))
          (add-before 'check 'use-empty-ssl-cert-file
-                     (lambda _
-                       ;; The ca-certificates.crt is not available in the build
-                       ;; environment.
-                       (setenv "SSL_CERT_FILE" "/dev/null")
-                       #t)))))
+           (lambda _
+             ;; The ca-certificates.crt is not available in the build
+             ;; environment.
+             (setenv "SSL_CERT_FILE" "/dev/null")
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
