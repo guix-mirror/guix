@@ -177,20 +177,21 @@ XML-RPC over SCGI.")
     (license l:gpl2+)))
 
 (define-public tremc
-  (let ((commit "401f2303c9b5a6e2e7b0808617d794576d4aa29e")
-        (revision "0"))
+  (let ((commit "9755b50e9444566cff02c977edafdbb3e9750cbb")
+        (revision "1"))
     (package
       (name "tremc")
-      (version (string-append "0.9.0-" revision "." (string-take commit 7)))
+      (version (git-version "0.9.0" revision commit))
       (source
         (origin
           (method git-fetch)
           (uri (git-reference
                  (url "https://github.com/louipc/tremc.git")
                  (commit commit)))
+          (file-name (git-file-name name version))
           (sha256
            (base32
-            "1h2720zn35iggmf9av65g119b0bhskwm1ng0zbkjryaf38nfzpin"))))
+            "05259qss5jka5ygwrh7cngyp6cgazbynji5pshgfzrd2d43pyfq5"))))
       (build-system python-build-system)
       (arguments
        `(#:tests? #f ; no test suite
