@@ -1732,14 +1732,15 @@ controls using the Bonobo component framework.")
 (define-public libwnck
   (package
     (name "libwnck")
-    (version "3.20.1")
+    (version "3.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "0wms3hli6y0b9l3cszq6maqi6fyy6kss9gryvzgmhw27phb3gc0w"))))
+               (base32
+                "010zk9zvydggxqnxfml3scml5yxmpjy90irpqcayrzw26lldr9mg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
