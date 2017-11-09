@@ -123,9 +123,9 @@ else
     then
 	# FIXME: With Guile 2.2.0 the error is reported on line 4.
 	# See <http://bugs.gnu.org/26107>.
-	grep "$tmpfile:[49]:.*[Uu]nbound variable.*GRUB-config" "$errorfile"
+	grep "$tmpfile:[49]:[0-9]: GRUB-config.*[Uu]nbound variable" "$errorfile"
     else
-	grep "$tmpfile:9:.*[Uu]nbound variable.*GRUB-config" "$errorfile"
+	grep "$tmpfile:9:[0-9]: GRUB-config.*[Uu]nbound variable" "$errorfile"
     fi
 fi
 
