@@ -149,6 +149,18 @@ messages."
     (report-error args ...)
     (exit 1)))
 
+(define (print-unbound-variable-error port key args default-printer)
+  ;; Print unbound variable errors more nicely, and in the right language.
+  (match args
+    ((proc message (variable) _ ...)
+     ;; We can always omit PROC because when it's useful (i.e., different from
+     ;; "module-lookup"), it gets displayed before.
+     (format port (G_ "~a: unbound variable") variable))
+    (_
+     (default-printer))))
+
+(set-exception-printer! 'unbound-variable print-unbound-variable-error)
+
 (define (make-user-module modules)
   "Return a new user module with the additional MODULES loaded."
   ;; Module in which the machine description file is loaded.
