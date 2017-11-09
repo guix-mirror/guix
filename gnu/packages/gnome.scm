@@ -3637,12 +3637,6 @@ for application developers.")
     (arguments
      `(#:glib-or-gtk? #t
 
-       ;; Disable parallel builds until
-       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=28813 is
-       ;; fixed.  Try enabling it when updating this package in case
-       ;; upstream has fixed it.
-       #:parallel-build? #f
-
        ;; Disable automatic GStreamer plugin installation via PackageKit and
        ;; all that.
        #:configure-flags '("-D" "enable-easy-codec-installation=no"
