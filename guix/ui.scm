@@ -229,6 +229,38 @@ messages."
              (else
               #t))))))
 
+(define (known-variable-definition variable)
+  "Search among the currently loaded modules one that defines a variable named
+VARIABLE and return it, or #f if none was found."
+  (define (module<? m1 m2)
+    (match (module-name m2)
+      (('gnu _ ...) #t)
+      (('guix _ ...)
+       (match (module-name m1)
+         (('gnu _ ...) #f)
+         (_ #t)))
+      (_ #f)))
+
+  (let loop ((modules (list (resolve-module '() #f #f #:ensure #f)))
+             (suggestions '()))
+    (match modules
+      (()
+       ;; Pick the "best" suggestion.
+       (match (sort suggestions module<?)
+         (() #f)
+         ((first _ ...) first)))
+      ((head tail ...)
+       (let ((next (append tail
+                           (hash-map->list (lambda (name module)
+                                             module)
+                                           (module-submodules head)))))
+         (match (module-local-variable head variable)
+           (#f (loop next suggestions))
+           (_
+            (match (module-name head)
+              (('gnu _ ...) head)                 ;must be that one
+              (_ (loop next (cons head suggestions)))))))))))
+
 (define* (display-hint message #:optional (port (current-error-port)))
   "Display MESSAGE, a l10n message possibly containing Texinfo markup, to
 PORT."
@@ -256,6 +288,16 @@ ARGS is the list of arguments received by the 'throw' handler."
      (let ((loc (source-properties->location properties)))
        (format (current-error-port) (G_ "~a: error: ~a~%")
                (location->string loc) message)))
+    (('unbound-variable proc message (variable) _ ...)
+     (match args
+       ((key . args)
+        (print-exception (current-error-port) frame key args)))
+     (match (known-variable-definition variable)
+       (#f
+        (display-hint (G_ "Did you forget a @code{use-modules} form?")))
+       (module
+        (display-hint (format #f (G_ "Try adding @code{(use-modules ~a)}.")
+                              (module-name module))))))
     (('srfi-34 obj)
      (if (message-condition? obj)
          (if (error-location? obj)
