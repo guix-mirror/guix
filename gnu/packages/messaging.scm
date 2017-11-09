@@ -635,14 +635,14 @@ a graphical desktop environment like GNOME.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.9.12")
+    (version "0.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "139yxqpinajl32ryrybvilh54ddb1q6s0ajjhlcs4a0rnwia6n8s"))))
+                "1644jy5dk46vahmh6nna36s79k8k668sbi3qamjb4q3c4m3y853l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -708,6 +708,8 @@ a graphical desktop environment like GNOME.")
     (inputs
      `(("libidn" ,libidn)
        ("openssl" ,openssl)
+       ;; Lua 5.1 is still recommended for production usage.
+       ;; See https://prosody.im/doc/packagers.
        ("lua" ,lua-5.1)
        ("lua5.1-expat" ,lua5.1-expat)
        ("lua5.1-socket" ,lua5.1-socket)
