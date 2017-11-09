@@ -609,14 +609,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.0")
+    (version "10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1lbzwpmdxmk5bh0ix0rn72qbd52dq5cb55nzajscb0bvwa95abvi"))))
+                "04z7lm4h94625vbncwv98svycqr942n3q47ailqaczkszqjlxjrw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-uuid=e2fs")
