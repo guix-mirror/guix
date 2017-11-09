@@ -270,6 +270,8 @@ dictionaries, including personal ones.")
                     (doc      (string-append out "/share/doc/"
                                              ,name)))
                (mkdir-p myspell)
+               (install-file ,(string-append "speller/" language ".dic")
+                             hunspell)
                (install-file ,(string-append "speller/" language ".aff")
                              hunspell)
                (symlink hunspell (string-append myspell "/dicts"))
