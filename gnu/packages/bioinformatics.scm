@@ -4127,7 +4127,7 @@ partial genes, and identifies translation initiation sites.")
 (define-public roary
   (package
     (name "roary")
-    (version "3.8.2")
+    (version "3.11.0")
     (source
      (origin
        (method url-fetch)
@@ -4136,7 +4136,7 @@ partial genes, and identifies translation initiation sites.")
              version ".tar.gz"))
        (sha256
         (base32
-         "03dfr2cd5fp80bcr65923zpdzrasvcxl7c2vgh8373v25a1yfap7"))))
+         "10lw78x1xzvn7xzvnmh4bm3cak3ah5cssapl0yidvhaj1f44h29i"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -4202,6 +4202,7 @@ partial genes, and identifies translation initiation sites.")
     (inputs
      `(("perl-array-utils" ,perl-array-utils)
        ("bioperl" ,bioperl-minimal)
+       ("perl-digest-md5-file" ,perl-digest-md5-file)
        ("perl-exception-class" ,perl-exception-class)
        ("perl-file-find-rule" ,perl-file-find-rule)
        ("perl-file-grep" ,perl-file-grep)
