@@ -2,6 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +42,8 @@
       (sha256
        (base32
         "08qd9s3wfhv0ajswsylnfwr5h0d7j9d4rgip855nrh400nxp940p"))
-      (patches (search-patches "acl-hurd-path-max.patch"))))
+      (patches (search-patches "acl-fix-perl-regex.patch"
+                               "acl-hurd-path-max.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tests"
