@@ -229,6 +229,13 @@ messages."
              (else
               #t))))))
 
+(define* (display-hint message #:optional (port (current-error-port)))
+  "Display MESSAGE, a l10n message possibly containing Texinfo markup, to
+PORT."
+  (format port (G_ "hint: ~a~%")
+          (fill-paragraph (texi->plain-text message)
+                          (terminal-columns) 8)))
+
 (define* (report-load-error file args #:optional frame)
   "Report the failure to load FILE, a user-provided Scheme file.
 ARGS is the list of arguments received by the 'throw' handler."
@@ -262,9 +269,7 @@ ARGS is the list of arguments received by the 'throw' handler."
                                     %gettext-domain)))
          (report-error (G_ "exception thrown: ~s~%") obj))
      (when (fix-hint? obj)
-       (format (current-error-port) (G_ "hint: ~a~%")
-               (fill-paragraph (texi->plain-text (condition-fix-hint obj))
-                               (terminal-columns) 8))))
+       (display-hint (condition-fix-hint obj))))
     ((error args ...)
      (report-error (G_ "failed to load '~a':~%") file)
      (apply display-error frame (current-error-port) args))))
