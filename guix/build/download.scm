@@ -513,6 +513,56 @@ port if PORT is a TLS session record port."
       (let ((declare-relative-uri-header! (variable-ref var)))
         (declare-relative-uri-header! "Location")))))
 
+;; XXX: Work around broken proxy handling on Guile 2.2 <= 2.2.2, fixed in
+;; Guile commit 7d0d9e2c25c1e872cfc7d14ab5139915f1813d56.  See bug report at
+;; <https://lists.gnu.org/archive/html/guix-devel/2017-11/msg00070.html>.
+(cond-expand
+  (guile-2.2
+   (when (<= (string->number (micro-version)) 2)
+     (let ()
+       (define put-symbol (@@ (web http) put-symbol))
+       (define put-non-negative-integer
+         (@@ (web http) put-non-negative-integer))
+       (define write-http-version
+         (@@ (web http) write-http-version))
+
+       (define (write-request-line method uri version port)
+         "Write the first line of an HTTP request to PORT."
+         (put-symbol port method)
+         (put-char port #\space)
+         (when (http-proxy-port? port)
+           (let ((scheme (uri-scheme uri))
+                 (host (uri-host uri))
+                 (host-port (uri-port uri)))
+             (when (and scheme host)
+               (put-symbol port scheme)
+               (put-string port "://")
+               (cond
+                ((string-index host #\:)          ;<---- The fix is here!
+                 (put-char #\[ port)
+                 (put-string port host
+                             (put-char port #\])))
+                (else
+                 (put-string port host)))
+               (unless ((@@ (web uri) default-port?) scheme host-port)
+                 (put-char port #\:)
+                 (put-non-negative-integer port host-port)))))
+         (let ((path (uri-path uri))
+               (query (uri-query uri)))
+           (if (string-null? path)
+               (put-string port "/")
+               (put-string port path))
+           (when query
+             (put-string port "?")
+             (put-string port query)))
+         (put-char port #\space)
+         (write-http-version version port)
+         (put-string port "\r\n"))
+
+       (module-set! (resolve-module '(web http)) 'write-request-line
+                    write-request-line))))
+  (else #t))
+
 (define (resolve-uri-reference ref base)
   "Resolve the URI reference REF, interpreted relative to the BASE URI, into a
 target URI, according to the algorithm specified in RFC 3986 section 5.2.2.
