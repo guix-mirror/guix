@@ -8748,7 +8748,7 @@ number detection tools.")
        ("r-zlibbioc" ,r-zlibbioc)))
     (inputs
      `(("zlib" ,zlib)))
-    (home-page "http://code.google.com/p/methylkit/")
+    (home-page "https://github.com/al2na/methylKit")
     (synopsis
      "DNA methylation analysis from high-throughput bisulfite sequencing results")
     (description
