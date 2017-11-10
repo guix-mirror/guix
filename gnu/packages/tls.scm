@@ -153,8 +153,7 @@ living in the same process.")
                "15ihq6p0hnnhs8cnjrkj40dmlcaa1jjg8xg0g2ydbnlqs454ixbr"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:disallowed-references ,(net-tools-for-tests)
-       #:configure-flags
+     '(#:configure-flags
        (list
              ;; GnuTLS doesn't consult any environment variables to specify
              ;; the location of the system-wide trust store.  Instead it has a
@@ -188,7 +187,7 @@ living in the same process.")
                "debug"
                "doc"))                            ;4.1 MiB of man pages
     (native-inputs
-     `(("net-tools" ,net-tools-for-tests)
+     `(("net-tools" ,net-tools)
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (inputs

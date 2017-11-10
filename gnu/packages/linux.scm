@@ -1185,17 +1185,6 @@ primary network configuration tools, but ifconfig is known to behave
 inadequately in modern network environments, and both should be deprecated.")
     (license license:gpl2+)))
 
-;; There are two packages for net-tools. The first, net-tools, can be used
-;; directly on the command-line or when it will be referenced by a built
-;; package. The second, net-tools-for-tests, can be used in package test suites
-;; if it is not referred to by the built package. Net-tools-for-tests may be
-;; relatively old and buggy. It should never be referred to by a built package.
-;; Use #:disallowed-references to enforce this.
-;;
-;; When we are able to rebuild many packages (i.e. core-updates), we can update
-;; net-tools-for-tests if appropriate.
-;;
-;; See <https://bugs.gnu.org/27811> for more information.
 (define-public net-tools
   ;; XXX: This package is basically unmaintained, but it provides a few
   ;; commands not yet provided by Inetutils, such as 'route', so we have to
@@ -1270,9 +1259,6 @@ route.  Additionally, this package contains utilities relating to particular
 network hardware types (plipconfig, slattach) and advanced aspects of IP
 configuration (iptunnel, ipmaddr).")
       (license license:gpl2+))))
-
-(define-public net-tools-for-tests
-  (hidden-package (package (inherit net-tools))))
 
 (define-public libcap
   (package
