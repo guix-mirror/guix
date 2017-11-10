@@ -153,7 +153,9 @@ living in the same process.")
                "15ihq6p0hnnhs8cnjrkj40dmlcaa1jjg8xg0g2ydbnlqs454ixbr"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
+     `(; Ensure we don't keep a reference to this buggy software.
+       #:disallowed-references (,net-tools)
+       #:configure-flags
        (list
              ;; GnuTLS doesn't consult any environment variables to specify
              ;; the location of the system-wide trust store.  Instead it has a
