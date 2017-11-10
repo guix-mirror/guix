@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -871,16 +872,16 @@ and to return information on pronunciations, meanings and synonyms.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "5.3.6.1")
+    (version "5.3.7.2")
     (source
      (origin
       (method url-fetch)
       (uri
         (string-append
-          "http://download.documentfoundation.org/libreoffice/src/"
+          "https://download.documentfoundation.org/libreoffice/src/"
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256 (base32
-               "023a7hr7v5cf0ipga4ijhyl58ncgbjrp500qq5fwf65j8g2c3apz"))))
+               "0z7fssp0jcj09wxad1wmhy69n71a2mwl933lxp9dz5sdvzncxmy3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; autoreconf is run by the LibreOffice build system, since after
@@ -907,7 +908,8 @@ and to return information on pronunciations, meanings and synonyms.")
        ("gperf" ,gperf)
        ("graphite2" ,graphite2)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
+       ("gtk+-2" ,gtk+-2)
        ("harfbuzz" ,harfbuzz)
        ("hunspell" ,hunspell)
        ("hyphen" ,hyphen)
@@ -1054,8 +1056,7 @@ and to return information on pronunciations, meanings and synonyms.")
           "--disable-coinmp"
           "--disable-firebird-sdbc" ; embedded firebird
           "--disable-gltf"
-          "--without-doxygen"
-          "--disable-gtk3")))
+          "--without-doxygen")))
     (home-page "https://www.libreoffice.org/")
     (synopsis "Office suite")
     (description "LibreOffice is a comprehensive office suite.  It contains
