@@ -1840,7 +1840,7 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
 (define-public cutadapt
   (package
     (name "cutadapt")
-    (version "1.12")
+    (version "1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1849,7 +1849,7 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "19smhh6444ikn4jlmyhvffw4m5aw7yg07rqsk7arg8dkwyga1i4v"))))
+                "16gbpiwy4m48vq2h5wqar3i8vr6vcj9gcl2qvqim19x6ya9dp8kd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
