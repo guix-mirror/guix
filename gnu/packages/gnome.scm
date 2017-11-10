@@ -1178,27 +1178,26 @@ dealing with different structured file formats.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-before
-        'configure 'pre-configure
-        (lambda* (#:key inputs #:allow-other-keys)
-          (substitute* "gdk-pixbuf-loader/Makefile.in"
-            ;; By default the gdk-pixbuf loader is installed under
-            ;; gdk-pixbuf's prefix.  Work around that.
-            (("gdk_pixbuf_moduledir = .*$")
-             (string-append "gdk_pixbuf_moduledir = "
-                            "$(prefix)/lib/gdk-pixbuf-2.0/2.10.0/"
-                             "loaders\n"))
-            ;; Drop the 'loaders.cache' file, it's in gdk-pixbuf+svg.
-            (("gdk_pixbuf_cache_file = .*$")
-             "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n")))
-        (alist-cons-after
-         'unpack 'remove-failing-test
-         ;; This test fails on aarch64.
-         (lambda _
-           (delete-file "tests/fixtures/reftests/bugs/777834-empty-text-children.svg")
-           (delete-file "tests/fixtures/reftests/bugs/777834-empty-text-children-ref.png")
-           #t)
-        %standard-phases))))
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gdk-pixbuf-loader/Makefile.in"
+               ;; By default the gdk-pixbuf loader is installed under
+               ;; gdk-pixbuf's prefix.  Work around that.
+               (("gdk_pixbuf_moduledir = .*$")
+                (string-append "gdk_pixbuf_moduledir = "
+                               "$(prefix)/lib/gdk-pixbuf-2.0/2.10.0/"
+                                "loaders\n"))
+               ;; Drop the 'loaders.cache' file, it's in gdk-pixbuf+svg.
+               (("gdk_pixbuf_cache_file = .*$")
+                "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))
+             #t))
+         (add-after 'unpack 'remove-failing-test
+           ;; This test fails on aarch64.
+           (lambda _
+             (delete-file "tests/fixtures/reftests/bugs/777834-empty-text-children.svg")
+             (delete-file "tests/fixtures/reftests/bugs/777834-empty-text-children-ref.png")
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
