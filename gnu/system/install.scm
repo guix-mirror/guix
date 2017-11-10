@@ -307,7 +307,7 @@ Use Alt-F2 for documentation.
             ;; '.fuse_hiddenXYZ' files for each open file, and this confuses
             ;; Guix's test suite, for instance (see
             ;; <http://bugs.gnu.org/23056>).  We keep this for overlayfs to be
-            ;; on the save side.
+            ;; on the safe side.
             (file-system
               (mount-point "/tmp")
               (device "none")
