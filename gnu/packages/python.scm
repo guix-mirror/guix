@@ -3838,14 +3838,14 @@ writing C extensions for Python as easy as Python itself.")
 (define-public python2-rpython
   (package
     (name "python2-rpython")
-    (version "0.1.4")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rpython" version))
        (sha256
         (base32
-         "07pps06fq4c4wmi5ii0sgh9zgwniz5y7frqhm28g3a154l163fxc"))))
+         "02z9cvxf0y41dcvwnvf2zn0albhhw1drvjjbq27m6i1piw1k6fc0"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2))
     (native-inputs
