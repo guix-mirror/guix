@@ -55,7 +55,10 @@ make sure no empty directory is left behind."
   (with-throw-handler #t
     (lambda ()
       (mkdir-p directory)
-      (clone url directory))
+
+      ;; Note: Explicitly pass options to work around the invalid default
+      ;; value in Guile-Git: <https://bugs.gnu.org/29238>.
+      (clone url directory (clone-init-options)))
     (lambda _
       (false-if-exception (rmdir directory)))))
 
