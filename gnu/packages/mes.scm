@@ -34,7 +34,7 @@
 (define-public nyacc
   (package
     (name "nyacc")
-    (version "0.82.0")
+    (version "0.82.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/nyacc/"
@@ -42,7 +42,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ll0mjivhxpj3r81w4a8p4bclr3byzp38ig1j11jvwnbl6lawgj7"))))
+                "0ykz64jlf1kpxz3qqr0nmci57r5yqwyd3s2g93vrmcnpy9d7y22p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("guile" ,guile-2.2)))
