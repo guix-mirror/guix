@@ -520,15 +520,14 @@ created by PageMaker version 6.x and 7.")
 (define-public libvisio
   (package
     (name "libvisio")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
-      (patches (search-patches "libvisio-fix-tests.patch"))
       (sha256 (base32
-               "132szijxm95ibzq5qqaylifbf6wa81g08jxggnwv22v60dwhc2j3"))))
+               "1yahpfl13qk6178irv8jn5ppxdn7isafqisyqsdw0lqxcz9h447y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
