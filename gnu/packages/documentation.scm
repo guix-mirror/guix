@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,7 +127,7 @@ markup) can be customized and extended by the user.")
     (build-system cmake-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("flex" ,flex)
+       ("flex" ,flex-2.6.1) ; sefaults with 2.6.4
        ("libxml2" ,libxml2) ; provides xmllint for the tests
        ("python" ,python-2))) ; for creating the documentation
     (inputs
