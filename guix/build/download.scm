@@ -514,7 +514,8 @@ port if PORT is a TLS session record port."
         (declare-relative-uri-header! "Location")))))
 
 ;; XXX: Work around broken proxy handling on Guile 2.2 <= 2.2.2, fixed in
-;; Guile commit 7d0d9e2c25c1e872cfc7d14ab5139915f1813d56.  See bug report at
+;; Guile commits 7d0d9e2c25c1e872cfc7d14ab5139915f1813d56 and
+;; 6ad28ae3bc6a6d9e95ab7d70510d12c97673a143.  See bug report at
 ;; <https://lists.gnu.org/archive/html/guix-devel/2017-11/msg00070.html>.
 (cond-expand
   (guile-2.2
@@ -539,9 +540,9 @@ port if PORT is a TLS session record port."
                (put-string port "://")
                (cond
                 ((string-index host #\:)          ;<---- The fix is here!
-                 (put-char #\[ port)
-                 (put-string port host
-                             (put-char port #\])))
+                 (put-char port #\[)              ;<---- And here!
+                 (put-string port host)
+                 (put-char port #\]))
                 (else
                  (put-string port host)))
                (unless ((@@ (web uri) default-port?) scheme host-port)
