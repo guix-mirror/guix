@@ -890,7 +890,6 @@ and to return information on pronunciations, meanings and synonyms.")
        ("graphite2" ,graphite2)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+)
-       ("gtk+-2" ,gtk+-2)
        ("harfbuzz" ,harfbuzz)
        ("hunspell" ,hunspell)
        ("hyphen" ,hyphen)
@@ -1037,6 +1036,7 @@ and to return information on pronunciations, meanings and synonyms.")
           "--disable-coinmp"
           "--disable-firebird-sdbc" ; embedded firebird
           "--disable-gltf"
+          "--disable-gtk" ; disable use of GTK+ 2
           "--without-doxygen")))
     (home-page "https://www.libreoffice.org/")
     (synopsis "Office suite")
