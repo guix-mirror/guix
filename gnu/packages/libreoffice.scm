@@ -357,33 +357,17 @@ CorelDRAW documents of all versions.")
 (define-public libetonyek
   (package
     (name "libetonyek")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0y60vi1plyq69fqbcjnc0v8mvcjqjsl1ry6rmb3bq3q7j8a2fm6z"))
-      (patches
-       (cons
-        (origin
-          (method url-fetch)
-          ;; Drop incorrect test that fails with latest liblangtag.
-          (uri (string-append "https://cgit.freedesktop.org/libreoffice"
-                              "/libetonyek/patch/?id="
-                              "1a20d8ece2ea3e8aa1d319cd88e8a6aa637982f2"))
-          (file-name "libetonyek-build-with-liblangtag-0.6.patch")
-          (sha256
-           (base32
-            "0zdyykg3cmq226m54yjhg1fj5200c371h2qgjfna62dxa1jd6m97")))
-        (search-patches "libetonyek-build-with-mdds-1.2.patch")))))
+               "1b1lqy6g7flximlv0bp8jbsivyhdp679yj0d0q4jzm968h6y3nv9"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-mdds=1.2")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoreconf
-                    (lambda _ (system* "autoreconf"))))))
+     `(#:configure-flags '("--with-mdds=1.2")))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
@@ -391,9 +375,7 @@ CorelDRAW documents of all versions.")
        ("gperf" ,gperf)
        ("liblangtag" ,liblangtag)
        ("mdds" ,mdds)
-       ("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf) ; due to patch
-       ("automake" ,automake)))
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
      `(("librevenge" ,librevenge)
        ("libxml2" ,libxml2)))
