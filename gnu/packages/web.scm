@@ -336,7 +336,7 @@ documentation.")
     (source
      (origin
        (method url-fetch)
-       ;; Upstream has disappeared
+       ;; Upstream has disappeared.
        (uri (string-append "https://sources.archlinux.org/other/packages/fcgi/"
                            "fcgi-" version ".tar.gz"))
        (sha256
@@ -347,7 +347,8 @@ documentation.")
     (build-system gnu-build-system)
     ;; Parallel building is not supported.
     (arguments `(#:parallel-build? #f))
-    (home-page "http://www.fastcgi.com")
+    ;; This is an archived fork of the original home page, www.fastcgi.com.
+    (home-page "https://fastcgi-archives.github.io/")
     (synopsis "Language-independent, high-performant extension to CGI")
     (description "FastCGI is a language independent, scalable extension to CGI
 that provides high performance without the limitations of server specific
