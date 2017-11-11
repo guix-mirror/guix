@@ -11773,7 +11773,7 @@ multiple processes (imagine multiprocessing, billiard, futures, celery etc).
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (zero? (system* "py.test")))))))
+           (lambda _ (zero? (system* "py.test")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/andialbrecht/sqlparse")
