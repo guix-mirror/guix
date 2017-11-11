@@ -179,7 +179,7 @@ system, as well as files on remote systems running http, gopher, ftp, wais,
 nntp, finger, or cso/ph/qi servers.  Lynx can be used to access information on
 the WWW, or to build information systems intended primarily for local
 access.")
-    (home-page "http://lynx.isc.org/")
+    (home-page "https://lynx.invisible-island.net/")
     (license license:gpl2)))
 
 (define-public qutebrowser
