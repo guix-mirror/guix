@@ -350,7 +350,7 @@ documentation.")
     ;; This is an archived fork of the original home page, www.fastcgi.com.
     (home-page "https://fastcgi-archives.github.io/")
     (synopsis "Language-independent, high-performant extension to CGI")
-    (description "FastCGI is a language independent, scalable extension to CGI
+    (description "FastCGI is a language-independent, scalable extension to CGI
 that provides high performance without the limitations of server specific
 APIs.")
     ;; This package is released under the Open Market License, a variant of
