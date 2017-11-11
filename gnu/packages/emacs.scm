@@ -814,14 +814,14 @@ provides an optional IDE-like error list.")
 (define-public emms
   (package
     (name "emacs-emms")
-    (version "4.3")
+    (version "4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dicgkl8l83n4cah5vk7c242abbwpyzlih451blgw37f3rijs480"))
+                "1b0kalhn81dir26jgsma30i5bbly7d3s1ngqpf01zjjpr7lw5v0h"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
