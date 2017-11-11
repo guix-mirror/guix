@@ -58,7 +58,10 @@ make sure no empty directory is left behind."
 
       ;; Note: Explicitly pass options to work around the invalid default
       ;; value in Guile-Git: <https://bugs.gnu.org/29238>.
-      (clone url directory (clone-init-options)))
+      (if (module-defined? (resolve-interface '(git))
+                           'clone-init-options)
+          (clone url directory (clone-init-options))
+          (clone url directory)))
     (lambda _
       (false-if-exception (rmdir directory)))))
 
