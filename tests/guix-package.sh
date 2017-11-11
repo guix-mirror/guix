@@ -337,6 +337,6 @@ if guix package --bootstrap -n -m "$module_dir/manifest.scm" \
 then false
 else
     cat "$module_dir/stderr"
-    grep "manifest.scm:[1-3]:.*[Uu]nbound variable.*wonderful-package" \
+    grep "manifest.scm:[1-3]:.*wonderful-package.*: unbound variable" \
 	 "$module_dir/stderr"
 fi
