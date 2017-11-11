@@ -713,6 +713,12 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 
          "--enable-runtime-cpudetect"
 
+         ;; The HTML pages take 7.2 MiB
+         "--disable-htmlpages"
+
+         ;; The static libraries are 23 MiB
+         "--disable-static"
+
          ;; Runtime cpu detection is not implemented on
          ;; MIPS, so we disable some features.
          "--disable-mips32r2"
