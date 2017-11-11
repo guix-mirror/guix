@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
-;;; Coypright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Coypright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Coypright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Coypright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Coypright © 2016 Julien Lepiller <julien@lepiller.eu>
@@ -624,8 +624,8 @@ but also provides support for other operations such as searching and
 listing the table of contents and hyperlinks.
 
 The library ships with a rudimentary X11 viewer, and a set of command
-line tools for batch rendering (pdfdraw), rewriting files (pdfclean),
-and examining the file structure (pdfshow).")
+line tools for batch rendering @command{pdfdraw}, rewriting files
+@command{pdfclean}, and examining the file structure @command{pdfshow}.")
     (license license:agpl3+)))
 
 (define-public qpdf
