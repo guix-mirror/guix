@@ -247,7 +247,7 @@
        ;; from http://www.imagemagick.org/script/download.php
        ;; (without mirrors that are unavailable or not up to date)
        ;; mirrors keeping old versions at the top level
-       "ftp://sunsite.icm.edu.pl/packages/ImageMagick/"
+       "https://sunsite.icm.edu.pl/packages/ImageMagick/"
        ;; mirrors moving old versions to "legacy"
        "http://mirrors-usa.go-parts.com/mirrors/ImageMagick/"
        "http://mirror.checkdomain.de/imagemagick/"
