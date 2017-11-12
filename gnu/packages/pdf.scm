@@ -58,6 +58,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages lesstif)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
@@ -581,19 +582,7 @@ extracting content or merging files.")
                                  "mupdf-CVE-2017-14687.patch"
                                  "mupdf-CVE-2017-15587.patch"))
         (modules '((guix build utils)))
-        (snippet
-            ;; Delete all the bundled libraries except for mujs, which is
-            ;; developed by the same team as mupdf and has no releases.
-            ;; TODO Package mujs and don't use the bundled copy.
-            '(for-each delete-file-recursively
-                       '("thirdparty/curl"
-                         "thirdparty/freetype"
-                         "thirdparty/glfw"
-                         "thirdparty/harfbuzz"
-                         "thirdparty/jbig2dec"
-                         "thirdparty/libjpeg"
-                         "thirdparty/openjpeg"
-                         "thirdparty/zlib")))))
+        (snippet '(delete-file-recursively "thirdparty"))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
@@ -603,6 +592,7 @@ extracting content or merging files.")
         ("libjpeg" ,libjpeg)
         ("libx11" ,libx11)
         ("libxext" ,libxext)
+        ("mujs" ,mujs)
         ("openjpeg" ,openjpeg)
         ("openssl" ,openssl)
         ("zlib" ,zlib)))
