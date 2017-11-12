@@ -1509,6 +1509,15 @@ to be plugged into a wide range of audio synthesis and recording packages.")
                (base32
                 "12z1vx3krrzsfccpah9xjs68900xvr7bw92wx8np5871i2yv47iw"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; lashd embeds an ancient version of sigsegv so we just skip it
+         (add-after 'unpack 'skip-lashd
+           (lambda _
+             (substitute* '("Makefile.am" "Makefile.in")
+               (("lashd ") ""))
+             #t)))))
     (inputs
      `(("bdb" ,bdb)
        ("gtk" ,gtk+-2)
