@@ -570,7 +570,7 @@ extracting content or merging files.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://mupdf.com/downloads/archive/"
+        (uri (string-append "https://mupdf.com/downloads/archive/"
                             name "-" version "-source.tar.gz"))
         (sha256
          (base32
@@ -615,7 +615,7 @@ extracting content or merging files.")
                            (string-append "prefix=" (assoc-ref %outputs "out")))
         #:phases (modify-phases %standard-phases
                   (delete 'configure))))
-    (home-page "http://mupdf.com")
+    (home-page "https://mupdf.com")
     (synopsis "Lightweight PDF viewer and toolkit")
     (description
       "MuPDF is a C library that implements a PDF and XPS parsing and
