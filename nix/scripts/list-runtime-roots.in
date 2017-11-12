@@ -26,7 +26,6 @@
 (use-modules (ice-9 ftw)
              (ice-9 regex)
              (ice-9 rdelim)
-             (ice-9 popen)
              (srfi srfi-1)
              (srfi srfi-26)
              (rnrs io ports))
@@ -59,7 +58,7 @@ or the empty list."
                     (and target
                          (string-prefix? "/" target)
                          target)))
-                (scandir dir string->number))))
+                (or (scandir dir string->number) '()))))
 
 (define (proc-maps-roots dir)
   "Return the list of store files referenced by DIR, which is a
@@ -107,61 +106,25 @@ or the empty list."
                (call-with-input-file environ
                  get-string-all))))
 
-(define (lsof-roots)
-  "Return the list of roots as found by calling `lsof'."
-  (define parent (getpid))
-
-  (catch 'system-error
-    (lambda ()
-      (let ((pipe (catch 'system-error
+(define (referenced-files)
+  "Return the list of referenced store items."
+  (append-map (lambda (pid)
+                (let ((proc (string-append %proc-directory "/" pid)))
+                  (catch 'system-error
                     (lambda ()
-                      (open-pipe* OPEN_READ "lsof" "-n" "-w" "-F" "n"))
+                      (append (proc-exe-roots proc)
+                              (proc-cwd-roots proc)
+                              (proc-fd-roots proc)
+                              (proc-maps-roots proc)
+                              (proc-environ-roots proc)))
                     (lambda args
-                      ;; In Guile 2.0.5, when (ice-9 popen) was still written
-                      ;; in Scheme, 'open-pipe*' would leave the child process
-                      ;; behind it when 'execlp' failed (that was mostly
-                      ;; harmless though, because the uncaught exception would
-                      ;; cause it to terminate after printing a backtrace.)
-                      ;; Make sure that doesn't happen.
-                      (if (= (getpid) parent)
-                          (apply throw args)
-                          (begin
-                            (format (current-error-port)
-                                    "failed to execute 'lsof': ~a~%"
-                                    (strerror (system-error-errno args)))
-                            (primitive-exit 1)))))))
-        (define %file-rx
-          (make-regexp "^n/(.*)$"))
+                      ;; There's a TOCTTOU race that we need to handle.
+                      (if (= ENOENT (system-error-errno args))
+                          '()
+                          (apply throw args))))))
+              (scandir %proc-directory string->number
+                       (lambda (a b)
+                         (< (string->number a) (string->number b))))))
 
-        ;; We're going to read it all.
-        (setvbuf pipe _IOFBF 16384)
-
-        (let loop ((line  (read-line pipe))
-                   (roots '()))
-          (cond ((eof-object? line)
-                 (begin
-                   (close-pipe pipe)
-                   roots))
-                ((regexp-exec %file-rx line)
-                 =>
-                 (lambda (match)
-                   (loop (read-line pipe)
-                         (cons (string-append "/"
-                                              (match:substring match 1))
-                               roots))))
-                (else
-                 (loop (read-line pipe) roots))))))
-    (lambda _
-      '())))
-
-(let ((proc (format #f "~a/~a" %proc-directory (getpid))))
-  (for-each (cut simple-format #t "~a~%" <>)
-            (delete-duplicates
-             (let ((proc-roots (if (file-exists? proc)
-                                   (append (proc-exe-roots proc)
-                                           (proc-cwd-roots proc)
-                                           (proc-fd-roots proc)
-                                           (proc-maps-roots proc)
-                                           (proc-environ-roots proc))
-                                   '())))
-               (append proc-roots (lsof-roots))))))
+(for-each (cut simple-format #t "~a~%" <>)
+          (delete-duplicates (referenced-files)))
