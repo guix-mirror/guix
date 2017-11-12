@@ -1236,9 +1236,12 @@ this optimization.
 Tell whether the garbage collector (GC) must keep outputs of live
 derivations.
 
+@cindex GC roots
+@cindex garbage collector roots
 When set to ``yes'', the GC will keep the outputs of any live derivation
 available in the store---the @code{.drv} files.  The default is ``no'',
 meaning that derivation outputs are kept only if they are GC roots.
+@xref{Invoking guix gc}, for more on GC roots.
 
 @item --gc-keep-derivations[=yes|no]
 Tell whether the garbage collector (GC) must keep derivations
@@ -2338,12 +2341,16 @@ collector to reclaim space from the @file{/gnu/store} directory.  It is
 the @emph{only} way to remove files from @file{/gnu/store}---removing
 files or directories manually may break it beyond repair!
 
+@cindex GC roots
+@cindex garbage collector roots
 The garbage collector has a set of known @dfn{roots}: any file under
 @file{/gnu/store} reachable from a root is considered @dfn{live} and
 cannot be deleted; any other file is considered @dfn{dead} and may be
-deleted.  The set of garbage collector roots includes default user
-profiles, and may be augmented with @command{guix build --root}, for
-example (@pxref{Invoking guix build}).
+deleted.  The set of garbage collector roots (``GC roots'' for short)
+includes default user profiles; by default, the symlinks under
+@file{/var/guix/gcroots} represent these GC roots.  New GC roots can be
+added with @command{guix build --root}, for example (@pxref{Invoking
+guix build}).
 
 Prior to running @code{guix gc --collect-garbage} to make space, it is
 often useful to remove old generations from user profiles; that way, old
@@ -5535,8 +5542,16 @@ packages.
 
 @item --root=@var{file}
 @itemx -r @var{file}
+@cindex GC roots, adding
+@cindex garbage collector roots, adding
 Make @var{file} a symlink to the result, and register it as a garbage
 collector root.
+
+Consequently, the results of this @command{guix build} invocation are
+protected from garbage collection until @var{file} is removed.  When
+that option is omitted, build results are eligible for garbage
+collection as soon as the build completes.  @xref{Invoking guix gc}, for
+more on GC roots.
 
 @item --log-file
 Return the build log file names or URLs for the given
@@ -6902,7 +6917,8 @@ collection, to make it ``persistent''.
 When this option is omitted, the environment is protected from garbage
 collection only for the duration of the @command{guix environment}
 session.  This means that next time you recreate the same environment,
-you could have to rebuild or re-download packages.
+you could have to rebuild or re-download packages.  @xref{Invoking guix
+gc}, for more on GC roots.
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}
