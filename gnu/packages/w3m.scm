@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -44,13 +44,15 @@
               (uri (git-reference
                     (url "https://anonscm.debian.org/cgit/collab-maint/w3m.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append "w3m-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0p8csd49b550q69bk45ncs2y2x48xij7jj11xapp0s8dn1j7kcgx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f  ; no check target
+       ;; Use $EDITOR instead of a hard-coded value.
+       #:configure-flags '("--with-editor=")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-perl
