@@ -26,6 +26,7 @@
 (use-modules (ice-9 ftw)
              (ice-9 regex)
              (ice-9 rdelim)
+             (ice-9 match)
              (srfi srfi-1)
              (srfi srfi-26)
              (rnrs io ports))
@@ -126,5 +127,18 @@ or the empty list."
                        (lambda (a b)
                          (< (string->number a) (string->number b))))))
 
+(define canonicalize-store-item
+  (let ((prefix (+ 1 (string-length %store-directory))))
+    (lambda (file)
+      "Return #f if FILE is not a store item; otherwise, return the store file
+name without any sub-directory components."
+      (and (string-prefix? %store-directory file)
+           (string-append %store-directory "/"
+                          (let ((base (string-drop file prefix)))
+                            (match (string-index base #\/)
+                              (#f    base)
+                              (slash (string-take base slash)))))))))
+
 (for-each (cut simple-format #t "~a~%" <>)
-          (delete-duplicates (referenced-files)))
+          (delete-duplicates
+           (filter-map canonicalize-store-item (referenced-files))))
