@@ -23,7 +23,7 @@ Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
-Copyright @copyright{} 2016 Chris Marusich@*
+Copyright @copyright{} 2016, 2017 Chris Marusich@*
 Copyright @copyright{} 2016, 2017 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016 ng0@*
@@ -40,7 +40,8 @@ Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017 Marius Bakke@*
 Copyright @copyright{} 2017 Hartmut Goebel@*
 Copyright @copyright{} 2017 Maxim Cournoyer@*
-Copyright @copyright{} 2017 Tobias Geerinckx-Rice
+Copyright @copyright{} 2017 Tobias Geerinckx-Rice@*
+Copyright @copyright{} 2017 George Clemmer
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -129,6 +130,15 @@ Package Management
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
+
+Substitutes
+
+* Official Substitute Server::      One particular source of substitutes.
+* Substitute Server Authorization:: How to enable or disable substitutes.
+* Substitute Authentication::       How Guix verifies substitutes.
+* Proxy Settings::                  How to get substitutes via proxy.
+* Substitution Failure::            What happens when substitution fails.
+* On Trusting Binaries::            How can you trust that binary blob?
 
 Programming Interface
 
@@ -1107,10 +1117,6 @@ the Daemon, build users}).
 Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries
 (@pxref{Substitutes}).
-
-By default substitutes are used, unless the client---such as the
-@command{guix package} command---is explicitly invoked with
-@code{--no-substitutes}.
 
 When the daemon runs with @code{--no-substitutes}, clients can still
 explicitly enable substitution @i{via} the @code{set-build-options}
@@ -2111,7 +2117,6 @@ preserve transformations across upgrades, you should define your own
 package variant in a Guile module and add it to @code{GUIX_PACKAGE_PATH}
 (@pxref{Defining Packages}).
 
-
 @node Substitutes
 @section Substitutes
 
@@ -2119,8 +2124,8 @@ package variant in a Guile module and add it to @code{GUIX_PACKAGE_PATH}
 @cindex pre-built binaries
 Guix supports transparent source/binary deployment, which means that it
 can either build things locally, or download pre-built items from a
-server.  We call these pre-built items @dfn{substitutes}---they are
-substitutes for local build results.  In many cases, downloading a
+server, or both.  We call these pre-built items @dfn{substitutes}---they
+are substitutes for local build results.  In many cases, downloading a
 substitute is much faster than building things locally.
 
 Substitutes can be anything resulting from a derivation build
@@ -2128,8 +2133,22 @@ Substitutes can be anything resulting from a derivation build
 pre-built package binaries, but source tarballs, for instance, which
 also result from derivation builds, can be available as substitutes.
 
-The @code{hydra.gnu.org} server is a front-end to a build farm that
-builds packages from the GNU distribution continuously for some
+@menu
+* Official Substitute Server::      One particular source of substitutes.
+* Substitute Server Authorization:: How to enable or disable substitutes.
+* Substitute Authentication::       How Guix verifies substitutes.
+* Proxy Settings::                  How to get substitutes via proxy.
+* Substitution Failure::            What happens when substitution fails.
+* On Trusting Binaries::            How can you trust that binary blob?
+@end menu
+
+@node Official Substitute Server
+@subsection Official Substitute Server
+
+@cindex hydra
+@cindex build farm
+The @code{hydra.gnu.org} server is a front-end to an official build farm
+that builds packages from the GNU distribution continuously for some
 architectures, and makes them available as substitutes.  This is the
 default source of substitutes; it can be overridden by passing the
 @option{--substitute-urls} option either to @command{guix-daemon}
@@ -2144,8 +2163,19 @@ using HTTP makes all communications visible to an eavesdropper, who
 could use the information gathered to determine, for instance, whether
 your system has unpatched security vulnerabilities.
 
+Substitutes from the official build farm are enabled by default when
+using the Guix System Distribution (@pxref{GNU Distribution}).  However,
+they are disabled by default when using Guix on a foreign distribution,
+unless you have explicitly enabled them via one of the recommended
+installation steps (@pxref{Installation}).  The following paragraphs
+describe how to enable or disable substitutes for the official build
+farm; the same procedure can also be used to enable substitutes for any
+other substitute server.
+
+@node Substitute Server Authorization
+@subsection Substitute Server Authorization
+
 @cindex security
-@cindex digital signatures
 @cindex substitutes, authorization thereof
 @cindex access control list (ACL), for substitutes
 @cindex ACL (access control list), for substitutes
@@ -2156,7 +2186,7 @@ imports, using the @command{guix archive} command (@pxref{Invoking guix
 archive}).  Doing so implies that you trust @code{hydra.gnu.org} to not
 be compromised and to serve genuine substitutes.
 
-This public key is installed along with Guix, in
+The public key for @code{hydra.gnu.org} is installed along with Guix, in
 @code{@var{prefix}/share/guix/hydra.gnu.org.pub}, where @var{prefix} is
 the installation prefix of Guix.  If you installed Guix from source,
 make sure you checked the GPG signature of
@@ -2197,6 +2227,17 @@ The following files would be downloaded:
 This indicates that substitutes from @code{hydra.gnu.org} are usable and
 will be downloaded, when possible, for future builds.
 
+@cindex substitutes, how to disable
+The substitute mechanism can be disabled globally by running
+@code{guix-daemon} with @code{--no-substitutes} (@pxref{Invoking
+guix-daemon}).  It can also be disabled temporarily by passing the
+@code{--no-substitutes} option to @command{guix package}, @command{guix
+build}, and other command-line tools.
+
+@node Substitute Authentication
+@subsection Substitute Authentication
+
+@cindex digital signatures
 Guix detects and raises an error when attempting to use a substitute
 that has been tampered with.  Likewise, it ignores substitutes that are
 not signed, or that are not signed by one of the keys listed in the ACL.
@@ -2221,6 +2262,16 @@ comes first in the list and can be considered a mirror of
 produce the same binaries, thanks to bit-reproducible builds (see
 below).
 
+When using HTTPS, the server's X.509 certificate is @emph{not} validated
+(in other words, the server is not authenticated), contrary to what
+HTTPS clients such as Web browsers usually do.  This is because Guix
+authenticates substitute information itself, as explained above, which
+is what we care about (whereas X.509 certificates are about
+authenticating bindings between domain names and public keys.)
+
+@node Proxy Settings
+@subsection Proxy Settings
+
 @vindex http_proxy
 Substitutes are downloaded over HTTP or HTTPS.
 The @code{http_proxy} environment
@@ -2230,25 +2281,38 @@ honored for downloads of substitutes.  Note that the value of
 @command{guix package}, and other client commands are run has
 @emph{absolutely no effect}.
 
-When using HTTPS, the server's X.509 certificate is @emph{not} validated
-(in other words, the server is not authenticated), contrary to what
-HTTPS clients such as Web browsers usually do.  This is because Guix
-authenticates substitute information itself, as explained above, which
-is what we care about (whereas X.509 certificates are about
-authenticating bindings between domain names and public keys.)
+@node Substitution Failure
+@subsection Substitution Failure
 
-You can get statistics on the substitutes provided by a server using the
-@command{guix weather} command (@pxref{Invoking guix weather}).
+Even when a substitute for a derivation is available, sometimes the
+substitution attempt will fail.  This can happen for a variety of
+reasons: the substitute server might be offline, the substitute may
+recently have been deleted, the connection might have been interrupted,
+etc.
 
-The substitute mechanism can be disabled globally by running
-@code{guix-daemon} with @code{--no-substitutes} (@pxref{Invoking
-guix-daemon}).  It can also be disabled temporarily by passing the
-@code{--no-substitutes} option to @command{guix package}, @command{guix
-build}, and other command-line tools.
+When substitutes are enabled and a substitute for a derivation is
+available, but the substitution attempt fails, Guix will attempt to
+build the derivation locally depending on whether or not
+@code{--fallback} was given (@pxref{fallback-option,, common build
+option @code{--fallback}}).  Specifically, if @code{--fallback} was
+omitted, then no local build will be performed, and the derivation is
+considered to have failed.  However, if @code{--fallback} was given,
+then Guix will attempt to build the derivation locally, and the success
+or failure of the derivation depends on the success or failure of the
+local build.  Note that when substitutes are disabled or no substitute
+is available for the derivation in question, a local build will
+@emph{always} be performed, regardless of whether or not
+@code{--fallback} was given.
 
+To get an idea of how many substitutes are available right now, you can
+try running the @command{guix weather} command (@pxref{Invoking guix
+weather}).  This command provides statistics on the substitutes provided
+by a server.
 
-@unnumberedsubsec On Trusting Binaries
+@node On Trusting Binaries
+@subsection On Trusting Binaries
 
+@cindex trust, of pre-built binaries
 Today, each individual's control over their own computing is at the
 mercy of institutions, corporations, and groups with enough power and
 determination to subvert the computing infrastructure and exploit its
@@ -2274,7 +2338,6 @@ are genuine by rebuilding them locally (@pxref{build-check,
 In the future, we want Guix to have support to publish and retrieve
 binaries to/from other users, in a peer-to-peer fashion.  If you would
 like to discuss this project, join us on @email{guix-devel@@gnu.org}.
-
 
 @node Packages with Multiple Outputs
 @section Packages with Multiple Outputs
@@ -5198,9 +5261,10 @@ derivations has failed.
 @itemx -n
 Do not build the derivations.
 
+@anchor{fallback-option}
 @item --fallback
 When substituting a pre-built binary fails, fall back to building
-packages locally.
+packages locally (@pxref{Substitution Failure}).
 
 @item --substitute-urls=@var{urls}
 @anchor{client-substitute-urls}
