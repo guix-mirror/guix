@@ -119,10 +119,11 @@ or the empty list."
                               (proc-maps-roots proc)
                               (proc-environ-roots proc)))
                     (lambda args
-                      ;; There's a TOCTTOU race that we need to handle.
-                      (if (= ENOENT (system-error-errno args))
-                          '()
-                          (apply throw args))))))
+                      (let ((err (system-error-errno args)))
+                        (if (or (= ENOENT err)    ;TOCTTOU race
+                                (= EACCES err))   ;not running as root
+                            '()
+                            (apply throw args)))))))
               (scandir %proc-directory string->number
                        (lambda (a b)
                          (< (string->number a) (string->number b))))))
