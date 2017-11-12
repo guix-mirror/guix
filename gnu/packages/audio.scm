@@ -1517,7 +1517,8 @@ to be plugged into a wide range of audio synthesis and recording packages.")
            (lambda _
              (substitute* '("Makefile.am" "Makefile.in")
                (("lashd ") ""))
-             #t)))))
+             #t)))
+       #:configure-flags '("--disable-static")))
     (inputs
      `(("bdb" ,bdb)
        ("gtk" ,gtk+-2)
