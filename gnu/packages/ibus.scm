@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,7 +55,8 @@
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:tests? #f  ; tests fail because there's no connection to dbus
-      #:configure-flags '("--disable-emoji-dict") ; cannot find emoji.json path
+      #:configure-flags '("--disable-emoji-dict" ; cannot find emoji.json path
+                          "--enable-wayland")
       #:make-flags
       (list "CC=gcc"
             (string-append "pyoverridesdir="
@@ -111,6 +113,7 @@
       ("libnotify" ,libnotify)
       ("libx11" ,libx11)
       ("setxkbmap" ,setxkbmap)
+      ("wayland" ,wayland)
       ("xmodmap" ,xmodmap)
       ("iso-codes" ,iso-codes)
       ("pygobject2" ,python2-pygobject)
