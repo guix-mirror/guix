@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system minify))
 
@@ -365,3 +367,35 @@ possible.  Many of these shams are intended only to allow code to be written
 to ES5 without causing run-time errors in older engines.  In many cases, this
 means that these shams cause many ES5 methods to silently fail.")
     (license license:expat)))
+
+(define-public mujs
+  (package
+    (name "mujs")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "http://git.ghostscript.com/mujs.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0ch0s3vqs7agf65gbks32bj44nk1dr2s23ki47b0bhdhzvw9q93j"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure)) ; no configure
+       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
+                          (string-append "CC=gcc"))
+       #:tests? #f)) ; no tests
+    (home-page "http://dev.mujs.com")
+    (synopsis "JavaScript interpreter written in C")
+    (description "MuJS is a lightweight Javascript interpreter designed for
+embedding in other software to extend them with scripting capabilities.  MuJS
+was designed with a focus on small size, correctness, and simplicity.  It is
+written in portable C and implements ECMAScript as specified by ECMA-262.  The
+interface for binding with native code is designed to be as simple as possible
+to use, and is very similar to Lua.  There is no need to interact with byzantine
+C++ template mechanisms, or worry about marking and unmarking garbage collection
+roots, or wrestle with obscure build systems.")
+    (license license:isc)))
