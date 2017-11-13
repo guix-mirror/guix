@@ -59,6 +59,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nano)
