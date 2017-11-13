@@ -768,7 +768,7 @@ protocols.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.1.9")
+    (version "0.1.10")
     (source
      (origin
        (method url-fetch)
@@ -777,7 +777,7 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1y30xc1dzq9knww274d4y0m8gridcf5j851rxdri8j2s64p3qqgk"))))
+         "1lbvq9pp1ganjk5lql5lzcn8bcmgfi8y026pb2j2nq8yldqrrjby"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
