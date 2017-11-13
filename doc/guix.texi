@@ -9830,9 +9830,6 @@ List of extra command-line options for @command{guix-daemon}.
 File where @command{guix-daemon}'s standard output and standard error
 are written.
 
-@item @code{lsof} (default: @var{lsof})
-The lsof package to use.
-
 @item @code{http-proxy} (default: @code{#f})
 The HTTP proxy used for downloading fixed-output derivations and
 substitutes.

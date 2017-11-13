@@ -39,7 +39,6 @@
   #:use-module (gnu packages less)
   #:use-module (gnu packages zile)
   #:use-module (gnu packages nano)
-  #:use-module (gnu packages lsof)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages man)
   #:use-module (gnu packages texinfo)
@@ -509,7 +508,6 @@ explicitly appear in OS."
   ;; Default set of packages globally visible.  It should include anything
   ;; required for basic administrator tasks.
   (cons* procps psmisc which less zile nano
-         lsof                                 ;for Guix's 'list-runtime-roots'
          pciutils usbutils
          util-linux inetutils isc-dhcp
          (@ (gnu packages admin) shadow)          ;for 'passwd'
