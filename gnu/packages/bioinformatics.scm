@@ -1580,7 +1580,7 @@ high-throughput sequencing data – with an emphasis on simplicity.")
                                   "-2017-0621-source.tar.gz"))
               (sha256
                (base32
-                "1386dg2npx8p62wmv08mjzsd2z3waknb9j1gg3gkvblcy57hymnn"))))
+                "1b4mwm2520ixjbw57sil20f9iixzw4bkdqqwgg1fc3pzm6rz4zmn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
