@@ -24,6 +24,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
+  #:use-module (gnu packages haskell-crypto)
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
