@@ -53,6 +53,7 @@
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages patchutils)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages cpio)

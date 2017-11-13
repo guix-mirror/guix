@@ -21,6 +21,7 @@
 (define-module (gnu packages openstack)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
@@ -248,46 +249,6 @@ tested on Python version 3.2, 2.7 and 2.6.")
 
 (define-public python2-os-testr
   (package-with-python2 python-os-testr))
-
-(define-public python-requests-mock
-  (package
-    (name "python-requests-mock")
-    (version "1.3.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "requests-mock" version))
-       (sha256
-        (base32
-         "0jr997dvk6zbmhvbpcv3rajrgag69mcsm1ai3w3rgk2jdh6rg1mx"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("python-six" ,python-six)))
-    (native-inputs
-     `(("python-pbr" ,python-pbr)
-       ("python-discover" ,python-discover)
-       ("python-docutils" ,python-docutils)
-       ("python-fixtures" ,python-fixtures)
-       ("python-mock" ,python-mock)
-       ("python-sphinx" ,python-sphinx)
-       ("python-testrepository" ,python-testrepository)
-       ("python-testtools" ,python-testtools)))
-    (home-page "https://requests-mock.readthedocs.org/")
-    (synopsis "Mock out responses from the requests package")
-    (description
-      "This module provides a building block to stub out the HTTP requests
-portions of your testing code.")
-    (properties `((python2-variant . ,(delay python2-requests-mock))))
-    (license asl2.0)))
-
-(define-public python2-requests-mock
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-requests-mock)))
-           (arguments
-            `(#:python ,python-2
-              ;; FIXME: 'subunit.run discover: error: no such option: --list'
-              #:tests? #f))))
 
 (define-public python-stevedore
   (package
