@@ -6228,3 +6228,33 @@ and shell-command prompts that are based on bash completion.")
      "This package provides commands @code{easy-kill} and @code{easy-mark} to
 let users kill or mark things easily.")
     (license license:gpl3+)))
+
+(define-public emacs-transmission
+  (package
+    (name "emacs-transmission")
+    (version "0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/holomorph/transmission/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y0bpsy16pycp6m9aqvfjh2x1yswfb305ib7m2slcjpb6njgxfi6"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/holomorph/transmission")
+    (synopsis "Emacs interface to a Transmission session")
+    (description "This package provides an Emacs interface to interact with a
+running session of the Transmission Bittorrent client.
+
+Features:
+
+@itemize
+@item List, add, start/stop, verify, remove torrents.
+@item Set speed limits, ratio limits, bandwidth priorities, trackers.
+@item Navigate to the corresponding file list, torrent info, peer info
+contexts.
+@item Toggle downloading and set priorities for individual files.
+@end itemize\n")
+    (license license:gpl3+)))
