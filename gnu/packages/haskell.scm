@@ -50,6 +50,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
@@ -5134,49 +5135,6 @@ polymorphic byte array management and manipulation functions.  It contains a
 polymorphic byte array abstraction and functions similar to strict ByteString,
 different type of byte array abstraction, raw memory IO operations (memory
 set, memory copy, ..) and more")
-    (license license:bsd-3)))
-
-(define-public ghc-tls
-  (package
-    (name "ghc-tls")
-    (version "1.3.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://hackage.haskell.org/package/"
-                                  "tls/tls-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1rdidf18i781c0vdvy9yn79yh08hmcacf6fp3sgghyiy3h0wyh5l"))))
-    (build-system haskell-build-system)
-    (inputs
-     `(("ghc-mtl" ,ghc-mtl)
-       ("ghc-cereal" ,ghc-cereal)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-memory" ,ghc-memory)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-asn1-types" ,ghc-asn1-types)
-       ("ghc-asn1-encoding" ,ghc-asn1-encoding)
-       ("ghc-x509" ,ghc-x509)
-       ("ghc-x509-store" ,ghc-x509-store)
-       ("ghc-x509-validation" ,ghc-x509-validation)
-       ("ghc-async" ,ghc-async)
-       ("ghc-network" ,ghc-network)
-       ("ghc-hourglass" ,ghc-hourglass)))
-    (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
-    (home-page "https://github.com/vincenthz/hs-tls")
-    (synopsis
-     "TLS/SSL protocol native implementation (Server and Client)")
-    (description
-     "Native Haskell TLS and SSL protocol implementation for server and client.
-This provides a high-level implementation of a sensitive security protocol,
-eliminating a common set of security issues through the use of the advanced
-type system, high level constructions and common Haskell features.  Currently
-implement the SSL3.0, TLS1.0, TLS1.1 and TLS1.2 protocol, and support RSA and
-Ephemeral (Elliptic curve and regular) Diffie Hellman key exchanges, and many
-extensions.")
     (license license:bsd-3)))
 
 (define-public ghc-socks
