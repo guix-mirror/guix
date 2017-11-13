@@ -19,6 +19,7 @@
 (define-module (gnu packages language)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages web)
   #:use-module (guix packages)
   #:use-module (guix build-system perl)

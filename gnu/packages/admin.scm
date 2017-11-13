@@ -55,6 +55,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)

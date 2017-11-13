@@ -325,6 +325,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pdf.scm				\
   %D%/packages/pem.scm				\
   %D%/packages/perl.scm				\
+  %D%/packages/perl-check.scm			\
   %D%/packages/perl-web.scm			\
   %D%/packages/photo.scm			\
   %D%/packages/php.scm				\

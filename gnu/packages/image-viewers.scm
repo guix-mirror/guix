@@ -45,6 +45,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)

@@ -70,6 +70,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages openstack)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)

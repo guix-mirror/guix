@@ -39,6 +39,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pth)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)

@@ -42,6 +42,7 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages search)

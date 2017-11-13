@@ -46,6 +46,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages web)
   #:use-module (gnu packages man)
