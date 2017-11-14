@@ -130,7 +130,8 @@ out if the connection could not be established in less than TIMEOUT seconds."
                  (_ (ftp-open (uri-host uri) #:timeout timeout))))
          (size (false-if-exception (ftp-size conn (uri-path uri))))
          (in   (ftp-retr conn (basename (uri-path uri))
-                         (dirname (uri-path uri)))))
+                         (dirname (uri-path uri))
+                         #:timeout timeout)))
     (call-with-output-file file
       (lambda (out)
         (dump-port* in out

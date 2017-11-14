@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -228,7 +228,7 @@ TIMEOUT, an ETIMEDOUT error is raised."
                                 (sockaddr:scopeid sa)))
           (else #f))))
 
-(define* (ftp-list conn #:optional directory)
+(define* (ftp-list conn #:optional directory #:key timeout)
   (if directory
       (ftp-chdir conn directory))
 
@@ -236,7 +236,7 @@ TIMEOUT, an ETIMEDOUT error is raised."
          (ai   (ftp-connection-addrinfo conn))
          (s    (socket (addrinfo:fam ai) (addrinfo:socktype ai)
                        (addrinfo:protocol ai))))
-    (connect s (address-with-port (addrinfo:addr ai) port))
+    (connect* s (address-with-port (addrinfo:addr ai) port) timeout)
     (setvbuf s _IOLBF)
 
     (dynamic-wind
@@ -270,7 +270,8 @@ TIMEOUT, an ETIMEDOUT error is raised."
           (or (eqv? code 226)
               (throw 'ftp-error conn "LIST" code message)))))))
 
-(define* (ftp-retr conn file #:optional directory)
+(define* (ftp-retr conn file #:optional directory
+                   #:key timeout)
   "Retrieve FILE from DIRECTORY (or, if omitted, the current directory) from
 FTP connection CONN.  Return a binary port to that file.  The returned port
 must be closed before CONN can be used for other purposes."
@@ -291,7 +292,7 @@ must be closed before CONN can be used for other purposes."
         (or (eqv? code 226)
             (throw 'ftp-error conn "LIST" code message))))
 
-    (connect s (address-with-port (addrinfo:addr ai) port))
+    (connect* s (address-with-port (addrinfo:addr ai) port) timeout)
     (setvbuf s _IOLBF)
 
     (%ftp-command (string-append "RETR " file)
