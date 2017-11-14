@@ -119,7 +119,7 @@
                         "gnc-fq-check"
                         "gnc-fq-helper"
                         "gnc-fq-dump")))))))
-    (home-page "http://www.gnucash.org/")
+    (home-page "https://www.gnucash.org/")
     (synopsis "Personal and small business financial accounting software")
     (description
      "GnuCash is personal and professional financial-accounting software.
@@ -156,7 +156,7 @@ financial calculations or scheduled transactions.")
        ("libxslt" ,libxslt)
        ("docbook-xsl" ,docbook-xsl)
        ("scrollkeeper" ,scrollkeeper)))
-    (home-page "http://www.gnucash.org/")
+    (home-page "https://www.gnucash.org/")
     (synopsis "Documentation for GnuCash")
     (description
      "User guide and other documentation for GnuCash in various languages.
