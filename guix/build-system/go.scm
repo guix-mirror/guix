@@ -82,6 +82,7 @@
                    (import-path "")
                    (unpack-path "")
                    (tests? #t)
+                   (allow-go-reference? #f)
                    (system (%current-system))
                    (guile #f)
                    (imported-modules %go-build-system-modules)
@@ -107,6 +108,7 @@
                 #:import-path ,import-path
                 #:unpack-path ,unpack-path
                 #:tests? ,tests?
+                #:allow-go-reference? ,allow-go-reference?
                 #:inputs %build-inputs)))
 
   (define guile-for-build
