@@ -37,6 +37,7 @@
             gexp?
             with-imported-modules
             with-extensions
+            let-system
 
             gexp-input
             gexp-input?
@@ -195,7 +196,9 @@ returns its output file name of OBJ's OUTPUT."
     ((? derivation? drv)
      (derivation->output-path drv output))
     ((? string? file)
-     file)))
+     file)
+    ((? self-quoting? obj)
+     obj)))
 
 (define (register-compiler! compiler)
   "Register COMPILER as a gexp compiler."
@@ -326,6 +329,52 @@ The expander specifies how an object is converted to its sexp representation."
                 (if (derivation? lowered)
                     (derivation-file-name lowered)
                     lowered)))
+
+
+;;;
+;;; System dependencies.
+;;;
+
+;; Binding form for the current system and cross-compilation target.
+(define-record-type <system-binding>
+  (system-binding proc)
+  system-binding?
+  (proc system-binding-proc))
+
+(define-syntax let-system
+  (syntax-rules ()
+    "Introduce a system binding in a gexp.  The simplest form is:
+
+  (let-system system
+    (cond ((string=? system \"x86_64-linux\") ...)
+          (else ...)))
+
+which binds SYSTEM to the currently targeted system.  The second form is
+similar, but it also shows the cross-compilation target:
+
+  (let-system (system target)
+    ...)
+
+Here TARGET is bound to the cross-compilation triplet or #f."
+    ((_ (system target) exp0 exp ...)
+     (system-binding (lambda (system target)
+                       exp0 exp ...)))
+    ((_ system exp0 exp ...)
+     (system-binding (lambda (system target)
+                       exp0 exp ...)))))
+
+(define-gexp-compiler system-binding-compiler <system-binding>
+  compiler => (lambda (binding system target)
+                (match binding
+                  (($ <system-binding> proc)
+                   (with-monad %store-monad
+                     ;; PROC is expected to return a lowerable object.
+                     ;; 'lower-object' takes care of residualizing it to a
+                     ;; derivation or similar.
+                     (return (proc system target))))))
+
+  ;; Delegate to the expander of the object returned by PROC.
+  expander => #f)
 
 
 ;;;
@@ -706,6 +755,15 @@ GEXP) is false, meaning that GEXP is a plain Scheme object, return the empty
 list."
   (gexp-attribute gexp gexp-self-extensions))
 
+(define (self-quoting? x)
+  (letrec-syntax ((one-of (syntax-rules ()
+                            ((_) #f)
+                            ((_ pred rest ...)
+                             (or (pred x)
+                                 (one-of rest ...))))))
+    (one-of symbol? string? keyword? pair? null? array?
+            number? boolean? char?)))
+
 (define* (lower-inputs inputs
                        #:key system target)
   "Turn any object from INPUTS into a derivation input for SYSTEM or a store
@@ -714,23 +772,32 @@ When TARGET is true, use it as the cross-compilation target triplet."
   (define (store-item? obj)
     (and (string? obj) (store-path? obj)))
 
+  (define filterm
+    (lift1 (cut filter ->bool <>) %store-monad))
+
   (with-monad %store-monad
-    (mapm/accumulate-builds
-     (match-lambda
-       (((? struct? thing) sub-drv ...)
-        (mlet %store-monad ((obj (lower-object
-                                  thing system #:target target)))
-          (return (match obj
-                    ((? derivation? drv)
-                     (let ((outputs (if (null? sub-drv)
-                                        '("out")
-                                        sub-drv)))
-                       (derivation-input drv outputs)))
-                    ((? store-item? item)
-                     item)))))
-       (((? store-item? item))
-        (return item)))
-     inputs)))
+    (>>= (mapm/accumulate-builds
+          (match-lambda
+            (((? struct? thing) sub-drv ...)
+             (mlet %store-monad ((obj (lower-object
+                                       thing system #:target target)))
+               (return (match obj
+                         ((? derivation? drv)
+                          (let ((outputs (if (null? sub-drv)
+                                             '("out")
+                                             sub-drv)))
+                            (derivation-input drv outputs)))
+                         ((? store-item? item)
+                          item)
+                         ((? self-quoting?)
+                          ;; Some inputs such as <system-binding> can lower to
+                          ;; a self-quoting object that FILTERM will filter
+                          ;; out.
+                          #f)))))
+            (((? store-item? item))
+             (return item)))
+          inputs)
+         filterm)))
 
 (define* (lower-reference-graphs graphs #:key system target)
   "Given GRAPHS, a list of (FILE-NAME INPUT ...) lists for use as a
@@ -1146,15 +1213,6 @@ references; otherwise, return only non-native references."
                      (target (%current-target-system)))
   "Return (monadically) the sexp corresponding to EXP for the given OUTPUT,
 and in the current monad setting (system type, etc.)"
-  (define (self-quoting? x)
-    (letrec-syntax ((one-of (syntax-rules ()
-                              ((_) #f)
-                              ((_ pred rest ...)
-                               (or (pred x)
-                                   (one-of rest ...))))))
-      (one-of symbol? string? keyword? pair? null? array?
-              number? boolean? char?)))
-
   (define* (reference->sexp ref #:optional native?)
     (with-monad %store-monad
       (match ref

@@ -8123,6 +8123,32 @@ the second case, the resulting script contains a @code{(string-append
 @dots{})} expression to construct the file name @emph{at run time}.
 @end deffn
 
+@deffn {Scheme Syntax} let-system @var{system} @var{body}@dots{}
+@deffnx {Scheme Syntax} let-system (@var{system} @var{target}) @var{body}@dots{}
+Bind @var{system} to the currently targeted system---e.g.,
+@code{"x86_64-linux"}---within @var{body}.
+
+In the second case, additionally bind @var{target} to the current
+cross-compilation target---a GNU triplet such as
+@code{"arm-linux-gnueabihf"}---or @code{#f} if we are not
+cross-compiling.
+
+@code{let-system} is useful in the occasional case where the object
+spliced into the gexp depends on the target system, as in this example:
+
+@example
+#~(system*
+   #+(let-system system
+       (cond ((string-prefix? "armhf-" system)
+              (file-append qemu "/bin/qemu-system-arm"))
+             ((string-prefix? "x86_64-" system)
+              (file-append qemu "/bin/qemu-system-x86_64"))
+             (else
+              (error "dunno!"))))
+   "-net" "user" #$image)
+@end example
+@end deffn
+
 @deffn {Scheme Syntax} with-parameters ((@var{parameter} @var{value}) @dots{}) @var{exp}
 This macro is similar to the @code{parameterize} form for
 dynamically-bound @dfn{parameters} (@pxref{Parameters,,, guile, GNU

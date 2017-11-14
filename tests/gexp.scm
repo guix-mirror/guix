@@ -321,6 +321,60 @@
        (string=? result
                  (string-append (derivation->output-path drv)
                                 "/bin/touch"))))))
+(test-equal "let-system"
+  (list `(begin ,(%current-system) #t) '(system-binding) '()
+        'low '() '())
+  (let* ((exp #~(begin
+                  #$(let-system system system)
+                  #t))
+         (low (run-with-store %store (lower-gexp exp))))
+    (list (lowered-gexp-sexp low)
+          (match (gexp-inputs exp)
+            (((($ (@@ (guix gexp) <system-binding>)) "out"))
+             '(system-binding))
+            (x x))
+          (gexp-native-inputs exp)
+          'low
+          (lowered-gexp-inputs low)
+          (lowered-gexp-sources low))))
+
+(test-equal "let-system, target"
+  (list `(list ,(%current-system) #f)
+        `(list ,(%current-system) "aarch64-linux-gnu"))
+  (let ((exp #~(list #$@(let-system (system target)
+                          (list system target)))))
+    (list (gexp->sexp* exp)
+          (gexp->sexp* exp "aarch64-linux-gnu"))))
+
+(test-equal "let-system, ungexp-native, target"
+  `(here it is: ,(%current-system) #f)
+  (let ((exp #~(here it is: #+@(let-system (system target)
+                                 (list system target)))))
+    (gexp->sexp* exp "aarch64-linux-gnu")))
+
+(test-equal "let-system, nested"
+  (list `(system* ,(string-append "qemu-system-" (%current-system))
+                  "-m" "256")
+        '()
+        '(system-binding))
+  (let ((exp #~(system*
+                #+(let-system (system target)
+                    (file-append (@@ (gnu packages virtualization)
+                                     qemu)
+                                 "/bin/qemu-system-"
+                                 system))
+                "-m" "256")))
+    (list (match (gexp->sexp* exp)
+            (('system* command rest ...)
+             `(system* ,(and (string-prefix? (%store-prefix) command)
+                             (basename command))
+                       ,@rest))
+            (x x))
+          (gexp-inputs exp)
+          (match (gexp-native-inputs exp)
+            (((($ (@@ (guix gexp) <system-binding>)) "out"))
+             '(system-binding))
+            (x x)))))
 
 (test-assert "ungexp + ungexp-native"
   (let* ((exp    (gexp (list (ungexp-native %bootstrap-guile)

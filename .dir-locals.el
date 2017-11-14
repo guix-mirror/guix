@@ -85,6 +85,7 @@
    (eval . (put 'with-imported-modules 'scheme-indent-function 1))
    (eval . (put 'with-extensions 'scheme-indent-function 1))
    (eval . (put 'with-parameters 'scheme-indent-function 1))
+   (eval . (put 'let-system 'scheme-indent-function 1))
 
    (eval . (put 'with-database 'scheme-indent-function 2))
    (eval . (put 'call-with-transaction 'scheme-indent-function 2))
