@@ -1107,7 +1107,7 @@ delivery.")
        #:make-flags '("INSTALL_ARG=-no_chown")
        ;; No 'check' target.
        #:tests? #f))
-    (home-page "http://www.exim.org/")
+    (home-page "https://www.exim.org/")
     (synopsis
      "Message Transfer Agent (MTA) developed at the University of Cambridge")
     (description
