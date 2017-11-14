@@ -1308,8 +1308,8 @@ various ways that may be running with too much privilege.")
     (description
      "The smartmontools package contains utility programs to control and
 monitor storage systems using the Self-Monitoring, Analysis and Reporting
-Technology System (S.M.A.R.T.) built into most modern ATA and SCSI harddisks.
-In many cases, these utilities will provide advanced warning of disk
+Technology System (@dfn{S.M.A.R.T.}) built into most modern ATA and SCSI hard
+disks.  In many cases, these utilities will provide advanced warning of disk
 degradation and failure.")
     (license license:gpl2+)))
 
