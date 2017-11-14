@@ -202,7 +202,7 @@ reboot\n")
                            #:imported-modules '((gnu services herd)
                                                 (guix combinators))))
                       (installation-disk-image-file-system-type "ext4")
-                      (target-size (* 1200 MiB)))
+                      (target-size (* 2200 MiB)))
   "Run SCRIPT (a shell script following the GuixSD installation procedure) in
 OS to install TARGET-OS.  Return a VM image of TARGET-SIZE bytes containing
 the installed system.  The packages specified in PACKAGES will be appended to
@@ -793,7 +793,7 @@ export GUIX_BUILD_OPTIONS=--no-grafts
 ls -l /run/current-system/gc-roots
 parted --script /dev/vdb mklabel gpt \\
   mkpart primary ext2 1M 3M \\
-  mkpart primary ext2 3M 1G \\
+  mkpart primary ext2 3M 2G \\
   set 1 boot on \\
   set 1 bios_grub on
 mkfs.btrfs -L my-root /dev/vdb2
