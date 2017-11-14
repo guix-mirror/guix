@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,15 +47,15 @@
 (define-public gnucash
   (package
     (name "gnucash")
-    (version "2.6.17")
+    (version "2.6.18")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
-                          version "/gnucash-" version ".tar.bz2"))
+                          version "/gnucash-" version "-1.tar.bz2"))
       (sha256
        (base32
-        "0g2risryfgplxh6cxpsl7fn255vipgsx38b4l081h665nqwmz5nv"))
+        "1794qi7lkn1kbnhzk08wawacfcphbln3ngdl3q0qax5drv7hnwv8"))
       (patches (search-patches "gnucash-price-quotes-perl.patch"))))
     (build-system glib-or-gtk-build-system)
     (inputs
@@ -141,7 +142,7 @@ financial calculations or scheduled transactions.")
                            version "/gnucash-docs-" version ".tar.gz"))
        (sha256
         (base32
-         "0dfb4m4084apav9kjsc4mfbj99xsyxm59qhpm1nxvhybn5h6qr3r"))))
+         "0bzc7mvdba2sc8m61yxa1fp2liqs00b64dvfxhv854vdrl1z5vmb"))))
     (build-system gnu-build-system)
     ;; These are native-inputs because they are only required for building the
     ;; documentation.
