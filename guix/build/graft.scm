@@ -214,6 +214,7 @@ an exception is caught."
           (print-exception port #f key args)
           (primitive-exit 1))))))
 
+;; We need this as long as we support Guile < 2.0.13.
 (define* (mkdir-p* dir #:optional (mode #o755))
   "This is a variant of 'mkdir-p' that works around
 <http://bugs.gnu.org/24659> by passing MODE explicitly in each 'mkdir' call."
