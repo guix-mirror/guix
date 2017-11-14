@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -266,7 +266,7 @@ maintained upstream.")
 (define-public aria2
   (package
     (name "aria2")
-    (version "1.33.0")
+    (version "1.33.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
@@ -274,7 +274,7 @@ maintained upstream.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "132bhzrkiblxq5gkp597grfamnxkp1wiy2p22zajvkh7zp13yvlr"))))
+                "06syqxia701dk96rcbhnd4x0arjj6d22gm3aqksz38am9y2f8f95"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-libaria2"
