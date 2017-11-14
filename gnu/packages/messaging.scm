@@ -867,6 +867,7 @@ instant messenger with audio and video chat capabilities.")
              #t)))))
     (inputs
      `(("ffmpeg" ,ffmpeg-3.3)
+       ("filteraudio", filteraudio)
        ("glib" ,glib)
        ("gtk+" ,gtk+-2)
        ("libsodium" ,libsodium)
