@@ -22,6 +22,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,6 +57,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages time)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages language)
@@ -82,6 +84,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
@@ -1494,6 +1497,55 @@ trees (LSM), for sustained throughput under random insert workloads.")
     (license license:gpl3) ; or GPL-2
     ;; configure.ac: WiredTiger requires a 64-bit build.
     (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))))
+
+(define-public guile-wiredtiger
+  (package
+    (name "guile-wiredtiger")
+    (version "20171113.6cbc51da")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://framagit.org/a-guile-mind/guile-wiredtiger.git")
+                    (commit "6cbc51dab95d28fe31ae025fbdd88f3ecbf2111b")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0x3qwpgch5pg0k21kc792h4y6b36a8xd1zkfq8ar2l2mqmpzkzyd"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:configure-flags
+       (list (string-append "--with-libwiredtiger-prefix="
+                            (assoc-ref %build-inputs "wiredtiger")))
+       #:make-flags '("GUILE_AUTO_COMPILE=0")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "sh" "bootstrap"))))
+         (add-before 'bootstrap 'remove-bundled-dependencies
+           (lambda _
+             ;; TODO: Remove microkanren.scm when we have a separate package
+             ;; for it.
+             (delete-file "htmlprag.scm")
+             (substitute* "Makefile.am"
+               (("htmlprag\\.scm") ""))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("wiredtiger" ,wiredtiger)
+       ("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("guile-lib" ,guile-lib)))                 ;for (htmlprag)
+    (synopsis "Wired Tiger bindings for GNU Guile")
+    (description
+     "This package provides Guile bindings to the WiredTiger ``NoSQL''
+database.")
+    (home-page "https://framagit.org/a-guile-mind/guile-wiredtiger")
+    (license license:gpl3+)))
 
 (define-public perl-db-file
  (package
