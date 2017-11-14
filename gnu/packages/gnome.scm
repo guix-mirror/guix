@@ -2834,7 +2834,7 @@ output devices.")
        ("glib" ,glib)
        ("json-glib" ,json-glib)
        ("libsoup" ,libsoup)))
-    (home-page "http://freedesktop.org/wiki/Software/GeoClue/")
+    (home-page "https://www.freedesktop.org/wiki/Software/GeoClue/")
     (synopsis "Geolocation service")
     (description "Geoclue is a D-Bus service that provides location
 information.  The primary goal of the Geoclue project is to make creating
