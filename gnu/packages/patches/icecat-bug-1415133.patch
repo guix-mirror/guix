@@ -1,0 +1,40 @@
+Based on:
+  https://hg.mozilla.org/releases/mozilla-esr52/raw-rev/22fe3ff3f923
+
+Adapted to apply cleanly to IceCat.
+
+# HG changeset patch
+# User Marco Bonardo <mbonardo@mozilla.com>
+# Date 1510052455 -3600
+# Node ID 22fe3ff3f92358596521f7155ddc512006022207
+# Parent  2909ba991f3134f9fbf4859cf08582f1c9845594
+Bug 1415133 - Downgrades from 55+ to ESR lose bookmarks. r=past a=lizzard
+
+MozReview-Commit-ID: 44Rw7m1FP4h
+
+diff --git a/toolkit/components/places/Database.cpp b/toolkit/components/places/Database.cpp
+--- a/toolkit/components/places/Database.cpp
++++ b/toolkit/components/places/Database.cpp
+@@ -761,16 +761,21 @@ Database::InitSchema(bool* aDatabaseMigr
+     // 2. implement a method that performs upgrade to your version from the
+     //    previous one.
+     //
+     // NOTE: The downgrade process is pretty much complicated by the fact old
+     //       versions cannot know what a new version is going to implement.
+     //       The only thing we will do for downgrades is setting back the schema
+     //       version, so that next upgrades will run again the migration step.
+ 
++    if (currentSchemaVersion > 36) {
++      // These versions are not downgradable.
++      return NS_ERROR_FILE_CORRUPTED;
++    }
++
+     if (currentSchemaVersion < DATABASE_SCHEMA_VERSION) {
+       *aDatabaseMigrated = true;
+ 
+       if (currentSchemaVersion < 11) {
+         // These are versions older than IceCat 4 that are not supported
+         // anymore.  In this case it's safer to just replace the database.
+         return NS_ERROR_FILE_CORRUPTED;
+       }
+

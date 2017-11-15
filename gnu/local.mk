@@ -744,6 +744,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
+  %D%/packages/patches/icecat-bug-1348660-pt5.patch		\
+  %D%/packages/patches/icecat-bug-1415133.patch			\
   %D%/packages/patches/icu4c-CVE-2017-7867-CVE-2017-7868.patch	\
   %D%/packages/patches/icu4c-CVE-2017-14952.patch		\
   %D%/packages/patches/icu4c-reset-keyword-list-iterator.patch	\
