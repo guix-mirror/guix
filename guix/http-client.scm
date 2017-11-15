@@ -302,9 +302,15 @@ Raise an '&http-get-error' condition if downloading fails."
                    (base64-encode digest 0 (bytevector-length digest)
                                   #f #f base64url-alphabet))))
 
-(define* (http-fetch/cached uri #:key (ttl (%http-cache-ttl)) text?)
+(define* (http-fetch/cached uri #:key (ttl (%http-cache-ttl)) text?
+                            (write-cache dump-port)
+                            (cache-miss (const #t)))
   "Like 'http-fetch', return an input port, but cache its contents in
-~/.cache/guix.  The cache remains valid for TTL seconds."
+~/.cache/guix.  The cache remains valid for TTL seconds.
+
+Call WRITE-CACHE with the HTTP input port and the cache output port to write
+the data to cache.  Call CACHE-MISS with URI just before fetching data from
+URI."
   (let ((file (cache-file-for-uri uri)))
     (define (update-cache cache-port)
       (define cache-time
@@ -327,11 +333,12 @@ Raise an '&http-get-error' condition if downloading fails."
                      (raise c))))
         (let ((port (http-fetch uri #:text? text?
                                 #:headers headers)))
+          (cache-miss uri)
           (mkdir-p (dirname file))
           (when cache-port
             (close-port cache-port))
           (with-atomic-file-output file
-            (cut dump-port port <>))
+            (cut write-cache port <>))
           (close-port port)
           (open-input-file file))))
 

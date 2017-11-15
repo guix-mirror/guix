@@ -19,7 +19,6 @@
 (define-module (guix cve)
   #:use-module (guix utils)
   #:use-module (guix http-client)
-  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (sxml ssax)
   #:use-module (web uri)
   #:use-module (srfi srfi-1)
@@ -68,24 +67,11 @@
 (define %current-year-ttl
   ;; According to <https://nvd.nist.gov/download.cfm#CVE_FEED>, feeds are
   ;; updated "approximately every two hours."
-  (* 3600 3))
+  (* 60 30))
 
 (define %past-year-ttl
   ;; Update the previous year's database more and more infrequently.
-  (* 3600 24 2 (date-month %now)))
-
-(define (call-with-cve-port uri ttl proc)
-  "Pass PROC an input port from which to read the CVE stream."
-  (let ((port (http-fetch uri)))
-    (dynamic-wind
-      (const #t)
-      (lambda ()
-        (call-with-decompressed-port 'gzip port
-          (lambda (port)
-            (setvbuf port _IOFBF 65536)
-            (proc port))))
-      (lambda ()
-        (close-port port)))))
+  (* 3600 24 (date-month %now)))
 
 (define %cpe-package-rx
   ;; For applications: "cpe:/a:VENDOR:PACKAGE:VERSION", or sometimes
@@ -194,40 +180,27 @@ vulnerability objects."
     (('v id (packages ...))
      (vulnerability id packages))))
 
+(define (write-cache input cache)
+  "Read vulnerabilities as gzipped XML from INPUT, and write it as a compact
+sexp to CACHE."
+  (call-with-decompressed-port 'gzip input
+    (lambda (input)
+      ;; XXX: The SSAX "error port" is used to send pointless warnings such as
+      ;; "warning: Skipping PI".  Turn that off.
+      (define vulns
+        (parameterize ((current-ssax-error-port (%make-void-port "w")))
+          (xml->vulnerabilities input)))
+
+      (write `(vulnerabilities
+               1                                  ;format version
+               ,(map vulnerability->sexp vulns))
+             cache))))
+
 (define (fetch-vulnerabilities year ttl)
   "Return the list of <vulnerability> for YEAR, assuming the on-disk cache has
 the given TTL (fetch from the NIST web site when TTL has expired)."
-  ;; Note: We used to keep the original XML files in cache but parsing it
-  ;; would take typically ~15s for a year of data.  Thus, we instead store a
-  ;; summarized version thereof as an sexp, which can be parsed in 1s or so.
-  (define cache
-    (string-append (cache-directory) "/cve/" (number->string year)))
-
-  (define (do-fetch)
-    (call-with-cve-port (yearly-feed-uri year) ttl
-      (lambda (port)
-        ;; XXX: The SSAX "error port" is used to send pointless warnings such as
-        ;; "warning: Skipping PI".  Turn that off.
-        (format (current-error-port) "fetching CVE database for ~a...~%" year)
-        (parameterize ((current-ssax-error-port (%make-void-port "w")))
-          (xml->vulnerabilities port)))))
-
-  (define (update-cache)
-    (mkdir-p (dirname cache))
-    (let ((vulns (do-fetch)))
-      (with-atomic-file-output cache
-        (lambda (port)
-          (write `(vulnerabilities
-                   1                              ;format version
-                   ,(map vulnerability->sexp vulns))
-                 port)))
-      vulns))
-
-  (define (old? file)
-    ;; Return true if PORT has passed TTL.
-    (let* ((s   (stat file))
-           (now (current-time time-utc)))
-      (< (+ (stat:mtime s) ttl) (time-second now))))
+  (define (cache-miss uri)
+    (format (current-error-port) "fetching CVE database for ~a...~%" year))
 
   (define (read* port)
     ;; Disable read options to avoid populating the source property weak
@@ -242,17 +215,18 @@ the given TTL (fetch from the NIST web site when TTL has expired)."
         (lambda ()
           (read-options options)))))
 
-  (catch 'system-error
-    (lambda ()
-      (if (old? cache)
-          (update-cache)
-          (match (call-with-input-file cache read*)
-            (('vulnerabilities 1 vulns)
-             (map sexp->vulnerability vulns))
-            (x
-             (update-cache)))))
-    (lambda args
-      (update-cache))))
+  ;; Note: We used to keep the original XML files in cache but parsing it
+  ;; would take typically ~15s for a year of data.  Thus, we instead store a
+  ;; summarized version thereof as an sexp, which can be parsed in 1s or so.
+  (let* ((port (http-fetch/cached (yearly-feed-uri year)
+                                  #:ttl ttl
+                                  #:write-cache write-cache
+                                  #:cache-miss cache-miss))
+         (sexp (read* port)))
+    (close-port port)
+    (match sexp
+      (('vulnerabilities 1 vulns)
+       (map sexp->vulnerability vulns)))))
 
 (define (current-vulnerabilities)
   "Return the current list of Common Vulnerabilities and Exposures (CVE) as
@@ -306,9 +280,5 @@ vulnerabilities affecting the given package version."
                  '()
                  package table)))
 
-
-;;; Local Variables:
-;;; eval: (put 'call-with-cve-port 'scheme-indent-function 2)
-;;; End:
 
 ;;; cve.scm ends here
