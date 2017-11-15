@@ -306,6 +306,13 @@ host name without trailing dot."
       ;; never be closed.  So we use `fileno', but keep a weak reference to
       ;; PORT, so the file descriptor gets closed when RECORD is GC'd.
       (register-tls-record-port record port)
+
+      ;; Write HTTP requests line by line rather than byte by byte:
+      ;; <https://bugs.gnu.org/22966>.  This is not possible on Guile 2.0.
+      (cond-expand
+        (guile-2.0 #f)
+        (else (setvbuf record 'line)))
+
       record)))
 
 (define (ensure-uri uri-or-string)                ;XXX: copied from (web http)
