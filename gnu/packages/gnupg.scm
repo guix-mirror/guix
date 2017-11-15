@@ -979,34 +979,3 @@ keyring content.  Parcimonie is a daemon that fetches one key at a time using
 the Tor network, waits a bit, changes the Tor circuit being used, and starts
 over.")
     (license license:gpl1+)))
-
-(define-public python2-pgpdump
-  (package
-    (name "python2-pgpdump")
-    (version "1.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pgpdump" version))
-       (sha256
-        (base32
-         "0s4nh8h7qsdj2yf29bspjs1zvxd4lcd11r6g11dp7fppgf2h0iqw"))))
-    (build-system python-build-system)
-
-    ;; Currently fails to build with Python 3.
-    (arguments `(#:python ,python-2))
-
-    (home-page "https://github.com/toofishes/python-pgpdump")
-    (synopsis "Python library for parsing PGP packets")
-    (description
-     "Python-pgpdump is an OpenPGP packet parser based on
-@uref{http://www.mew.org/~kazu/proj/pgpdump/, pgpdump}.  It notably supports:
-
-@itemize
-@item signature packets;
-@item public key packets;
-@item secret key packets;
-@item trust, user ID, and user attribute packets;
-@item ASCII-armor decoding and CRC check.
-@end itemize\n")
-    (license license:bsd-3)))
