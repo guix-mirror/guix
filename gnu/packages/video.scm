@@ -101,6 +101,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages sdl)

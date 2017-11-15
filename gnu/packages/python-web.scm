@@ -21,6 +21,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,32 @@
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
+
+(define-public python-furl
+  (package
+    (name "python-furl")
+    (version "0.5.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "furl" version))
+        (sha256
+          (base32
+            "0lzpfpm686hvz3sr1mcrnd1b3lgmnw8v59gb43wfi98r3b671pqc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-orderedmultidict" ,python-orderedmultidict)))
+    (native-inputs
+     `(("python-pycodestyle" ,python-pycodestyle)))
+    (home-page "https://github.com/gruns/furl")
+    (synopsis "URL manipulation in Python")
+    (description "Furl provides an easy-to-use alternative to the
+@code{urllib} and @code{urlparse} modules for manipulating URLs.")
+    (license license:unlicense)))
+
+(define-public python2-furl
+  (package-with-python2 python-furl))
 
 (define-public python-httplib2
   (package
@@ -508,6 +535,38 @@ term.js Javascript terminal emulator library.")
           ,python2-backport-ssl-match-hostname)
           ,@(package-propagated-inputs terminado))))))
 
+(define-public python-wsgi-intercept
+  (package
+    (name "python-wsgi-intercept")
+    (version "1.2.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                    "https://pypi.python.org/packages/"
+                    "38/76/ebcbc24d0cb77db34520a3ca6ed1bd43ace17d182bbd8dd7d976f1c176fb/"
+                    "wsgi_intercept-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0kjj2v2dvmnpdd5h5gk9rzz0f54rhjb0yiz3zg65bmp65slfw65d"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-httplib2" ,python-httplib2)
+       ("python-requests" ,python-requests)
+       ("python-urllib3" ,python-urllib3)))
+    (synopsis "Puts a WSGI application in place of a real URI for testing")
+    (description "Wsgi_intercept installs a WSGI application in place of a real
+URI for testing.  Testing a WSGI application normally involves starting a
+server at a local host and port, then pointing your test code to that address.
+Instead, this library lets you intercept calls to any specific host/port
+combination and redirect them into a WSGI application importable by your test
+program.  Thus, you can avoid spawning multiple processes or threads to test
+your Web app.")
+    (home-page "https://github.com/cdent/wsgi-intercept")
+    (license license:expat)))
+
 (define-public python-webob
   (package
     (name "python-webob")
@@ -948,6 +1007,43 @@ WebSocket usage in Python programs.")
 (define-public python2-websocket-client
   (package-with-python2 python-websocket-client))
 
+(define-public python-requests
+  (package
+    (name "python-requests")
+    (version "2.13.0")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "requests" version))
+             (sha256
+              (base32
+               "1s0wg4any4dsv5l3hqjxqk2zgb7pdbqhy9rhc8kh3aigfq4ws8jp"))))
+    ;; TODO: unbundle urllib3 and chardet.
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: Some tests require network access.
+     '(#:tests? #f))
+    (home-page "http://python-requests.org/")
+    (synopsis "Python HTTP library")
+    (description
+     "Requests is a Python HTTP client library.  It aims to be easier to use
+than Python’s urllib2 library.")
+    (license license:asl2.0)))
+
+;; Some software requires an older version of Requests, notably Docker
+;; Compose.
+(define-public python-requests-2.7
+  (package (inherit python-requests)
+    (version "2.7.0")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "requests" version))
+             (sha256
+              (base32
+               "0gdr9dxm24amxpbyqpbh3lbwxc2i42hnqv50sigx568qssv3v2ir"))))))
+
+(define-public python2-requests
+  (package-with-python2 python-requests))
+
 (define-public python-requests-mock
   (package
     (name "python-requests-mock")
@@ -1013,6 +1109,38 @@ with python-requests.")
 
 (define-public python2-requests-toolbelt
   (package-with-python2 python-requests-toolbelt))
+
+(define-public python-oauthlib
+  (package
+    (name "python-oauthlib")
+    (version "1.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "oauthlib" version))
+              (sha256
+               (base32
+                "1bfrj70vdjxjw74khbyh6f0dksv7p5rh2346jnlrffyacd3gwjzg"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("python-cryptography" ,python-cryptography)
+       ("python-pyjwt" ,python-pyjwt)
+       ("python-blinker" ,python-blinker)))
+    (home-page "https://github.com/idan/oauthlib")
+    (synopsis "OAuth implementation for Python")
+    (description
+     "Oauthlib is a generic, spec-compliant, thorough implementation of the
+OAuth request-signing logic.")
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-oauthlib))))))
+
+(define-public python2-oauthlib
+  (let ((base (package-with-python2 (strip-python2-variant python-oauthlib))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-unittest2" ,python2-unittest2)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-rauth
   (package
@@ -2118,3 +2246,47 @@ Templates.")
 (define-public python2-uritemplate
   (package-with-python2 python-uritemplate))
 
+(define-public python-publicsuffix
+  (package
+    (name "python-publicsuffix")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "publicsuffix" version))
+              (sha256
+               (base32
+                "1adx520249z2cy7ykwjr1k190mn2888wqn9jf8qm27ly4qymjxxf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; tests use the internet
+    (home-page "https://www.tablix.org/~avian/git/publicsuffix.git")
+    (synopsis "Get suffix for a domain name")
+    (description "Get a public suffix for a domain name using the Public Suffix
+List.")
+    (license license:expat)))
+
+(define-public python2-publicsuffix
+  (package-with-python2 python-publicsuffix))
+
+(define-public python-publicsuffix2
+  (package
+    (name "python-publicsuffix2")
+    (version "2.20160818")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "publicsuffix2" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1bb55yka9vkn7i6y1kjzxa516kh6v4gsrxa90w5wdz5p5n968r68"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; The test suite requires network access.
+    (home-page "https://github.com/pombredanne/python-publicsuffix2")
+    (synopsis "Get a public suffix for a domain name using the Public Suffix List")
+    (description "Get a public suffix for a domain name using the Public Suffix
+List.  Forked from and using the same API as the publicsuffix package.")
+    (license (list license:expat license:mpl2.0))))
+
+(define-public python2-publicsuffix2
+  (package-with-python2 python-publicsuffix2))

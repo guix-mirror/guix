@@ -46,6 +46,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
