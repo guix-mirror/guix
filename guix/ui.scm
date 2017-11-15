@@ -1121,9 +1121,14 @@ score, the more relevant OBJ is to REGEXPS."
 (define %package-metrics
   ;; Metrics used to compute the "relevance score" of a package against a set
   ;; of regexps.
-  `((,package-name . 3)
-    (,package-synopsis-string . 2)
-    (,package-description-string . 1)))
+  `((,package-name . 4)
+    (,package-synopsis-string . 3)
+    (,package-description-string . 2)
+    (,(lambda (type)
+        (match (and=> (package-location type) location-file)
+          ((? string? file) (basename file ".scm"))
+          (#f "")))
+     . 1)))
 
 (define (package-relevance package regexps)
   "Return a score denoting the relevance of PACKAGE for REGEXPS.  A score of
