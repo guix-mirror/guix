@@ -21,6 +21,7 @@
 (define-module (gnu packages openstack)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)

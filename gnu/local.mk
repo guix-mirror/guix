@@ -341,6 +341,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/protobuf.scm			\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
+  %D%/packages/python-crypto.scm		\
   %D%/packages/python-web.scm			\
   %D%/packages/tryton.scm			\
   %D%/packages/qt.scm				\
