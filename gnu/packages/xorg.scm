@@ -5973,6 +5973,9 @@ basic eye-candy effects.")
      `(#:python ,python-2 ;; no full Python 3 support yet
        #:configure-flags '("--with-tests"
                            "--with-bundle_tests"
+                           "--without-opengl" ;; TODO: pygtkglext needed.
+                           "--without-Xdummy" ;; We use Xvfb instead.
+                           "--without-Xdummy_wrapper"
                            "--without-strict")
        #:modules ((guix build python-build-system)
                   (guix build utils))
@@ -6001,13 +6004,15 @@ basic eye-candy effects.")
              (substitute* "setup.py"
                (("/usr/lib/")
                 (string-append (assoc-ref outputs "out") "/lib/")))
-             (substitute* "./etc/xpra/conf.d/55_server_x11.conf.in"
-               (("xvfb = %.*")
-                (string-append "xvfb = "
-                               (assoc-ref inputs "xorg-server")
-                               "/bin/Xvfb +extension Composite -nolisten tcp"
-                               " -noreset -auth $XAUTHORITY"
-                               " -screen 0 5760x2560x24+32")))
+             (substitute* "./xpra/scripts/config.py"
+               ((":.*join.*xvfb.*")
+                (string-append ": \"" (assoc-ref inputs "xorg-server")
+                               "/bin/Xvfb +extension Composite"
+                               " -screen 0 5760x2560x24+32 -dpi 96 -nolisten"
+                               " tcp -noreset -auth $XAUTHORITY\",\n")))
+             (substitute* "./xpra/scripts/config.py"
+               (("socket-dir.*: \"\",")
+                "socket-dir\"        : \"~/.xpra\","))
              #t)))))
     (home-page "https://www.xpra.org/")
     (synopsis "Remote access to individual applications or full desktops")
