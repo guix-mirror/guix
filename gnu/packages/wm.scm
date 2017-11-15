@@ -719,7 +719,7 @@ Keybinder works with GTK-based applications using the X Window System.")
 (define-public spectrwm
   (package
     (name "spectrwm")
-    (version "3.0.2")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
@@ -730,7 +730,7 @@ Keybinder works with GTK-based applications using the X Window System.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "065b7j8s0lxw3p58fyf3c1mr5203pdm0kww42v245rlx0f005kl2"))))
+         "16lxcharxslf9rc39wxa3mr2nx5d8kzm9ls7p7dal8yrwr7y59dp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((pkg-config (lambda (flag)
