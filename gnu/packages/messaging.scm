@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -124,6 +125,35 @@ unmodified.  (4) Perfect forward secrecy: If you lose control of your private
 keys, no previous conversation is compromised.")
     (home-page "https://otr.cypherpunks.ca/")
     (license (list license:lgpl2.1 license:gpl2))))
+
+(define-public libsignal-protocol-c
+  (package
+  (name "libsignal-protocol-c")
+  (version "2.3.1")
+  (source (origin
+           (method url-fetch)
+           (uri (string-append "https://github.com/WhisperSystems/"
+                               "libsignal-protocol-c/archive/v" version
+                               ".tar.gz"))
+           (file-name (string-append name "-" version ".tar.gz"))
+           (sha256
+            (base32
+             "1klz9jvbnmfc3qy2x6qcswzw14a7kyzs51dlg18yllvir1f1kz0s"))))
+  (arguments
+   `(;; Required for proper linking and for tests to run.
+     #:configure-flags '("-DBUILD_SHARED_LIBS=on" "-DBUILD_TESTING=1")))
+  (build-system cmake-build-system)
+  (inputs `( ;; Required for tests:
+            ("check", check)
+            ("openssl", openssl)))
+  (native-inputs `(("pkg-config", pkg-config)))
+  (home-page "https://github.com/WhisperSystems/libsignal-protocol-c")
+  (synopsis "Implementation of a ratcheting forward secrecy protocol")
+  (description "libsignal-protocol-c is an implementation of a ratcheting
+forward secrecy protocol that works in synchronous and asynchronous
+messaging environments.  It can be used with messaging software to provide
+end-to-end encryption.")
+  (license license:gpl3+)))
 
 (define-public bitlbee
   (package
