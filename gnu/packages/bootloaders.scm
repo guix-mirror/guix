@@ -237,7 +237,8 @@ menu to select one of the installed operating systems.")
          ("perl" ,perl)
          ("python-2" ,python-2)))
       (inputs
-       `(("libuuid" ,util-linux)))
+       `(("libuuid" ,util-linux)
+         ("mtools" ,mtools)))
       (arguments
        `(#:parallel-build? #f
          #:make-flags
@@ -252,11 +253,17 @@ menu to select one of the installed operating systems.")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'patch-files
-             (lambda _
+             (lambda* (#:key inputs #:allow-other-keys)
                (substitute* (find-files "." "Makefile.*|ppmtolss16")
                  (("/bin/pwd") (which "pwd"))
                  (("/bin/echo") (which "echo"))
                  (("/usr/bin/perl") (which "perl")))
+               (let ((mtools (assoc-ref inputs "mtools")))
+                 (substitute* (find-files "." "\\.c$")
+                   (("mcopy")
+                    (string-append mtools "/bin/mcopy"))
+                   (("mattrib")
+                    (string-append mtools "/bin/mattrib"))))
                #t))
            (delete 'configure)
            (add-before 'build 'set-permissions
