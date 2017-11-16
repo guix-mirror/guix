@@ -6883,3 +6883,29 @@ done to the IDE or continuous integration servers which simplifies adoption.")
        ("reflect" ,java-powermock-reflect)
        ("support" ,java-powermock-api-support)
        ("cglib" ,java-cglib)))))
+
+(define-public java-jboss-jms-api-spec
+  (package
+    (name "java-jboss-jms-api-spec")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jboss/jboss-jms-api_spec/"
+                                  "archive/jboss-jms-api_" version
+                                  "_spec-1.0.1.Final.tar.gz"))
+              (sha256
+               (base32
+                "07bqblw9kq2i8q92bz70fvavq5xjfkaixl8xa0m0cypjgy82rb7m"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jboss-jms-api_spec.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "."
+       #:tests? #f)); no tests
+    (home-page "https://github.com/jboss/jboss-jms-api_spec")
+    (synopsis "Java Message Service API specification")
+    (description "Java Message Service (JMS) API is used to send messages
+messages between two or more clients.  It is a messaging standard that allows
+application components to create, send, receive, and read messages.")
+    ; either gpl2 only with GPL Classpath Exception, or cddl.
+    (license (list license:gpl2 license:cddl1.0))))
