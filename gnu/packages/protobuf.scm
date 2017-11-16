@@ -26,11 +26,48 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses)
-                #:select (bsd-2 bsd-3))
+                #:select (asl2.0 bsd-2 bsd-3 non-copyleft))
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python))
+
+(define-public fstrm
+  (package
+    (name "fstrm")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.farsightsecurity.com/dist/" name "/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1i9y8a1712aj80p5a1kcp378bnjrg3s2127q7304hklhmjcrjl1d"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libevent" ,libevent)))
+    (home-page "https://github.com/farsightsec/fstrm")
+    (synopsis "Implementation of the Frame Streams data transport protocol")
+    (description
+     "fstrm is an optimised implementation of Frame Streams as a C library and
+several tools built on top of it.
+
+@dfn{Frame Streams} is a light-weight, binary-clean protocol that allows for
+the transport of arbitrarily-encoded data payload sequences with minimal
+framing overhead---just four bytes per data frame.  It does not specify an
+encoding format for these data frames and can be used with any data
+serialisation format that produces byte sequences, such as Protocol Buffers,
+XML, JSON, MessagePack, YAML, etc.
+
+Frame Streams can be used either as a streaming transport over a reliable byte
+stream socket (TCP sockets, TLS connections, @code{AF_UNIX} sockets, etc.) for
+data in motion, or as a file format for data at rest.")
+    (license (list asl2.0
+                   (non-copyleft #f "See libmy/argv.c"))))) ; libmy/argv*
 
 (define-public protobuf
   (package
