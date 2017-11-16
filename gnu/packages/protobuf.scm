@@ -46,6 +46,24 @@
                 "0y6cr4l7bwa6zvjv5flzr4cx28shk5h8dz99xw90v8qih954pcrb"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
+    (outputs (list "out"
+                   "static"))           ; ~12 MiB of .a files
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move static libraries to the "static" output.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (lib    (string-append out "/lib"))
+                    (static (assoc-ref outputs "static"))
+                    (slib   (string-append static "/lib")))
+               (mkdir-p slib)
+               (for-each (lambda (file)
+                           (install-file file slib)
+                           (delete-file file))
+                         (find-files lib "\\.a$"))
+               #t))))))
     (home-page "https://github.com/google/protobuf")
     (synopsis "Data encoding for remote procedure calls (RPCs)")
     (description
