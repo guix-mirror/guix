@@ -4145,7 +4145,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.7")
+    (version "0.8")
     (source
      (origin
        (method url-fetch)
@@ -4153,7 +4153,7 @@ used by nftables.")
                            "/files/nftables-" version ".tar.bz2"))
        (sha256
         (base32
-         "0hzdqigdx4i6jbpxbdyq4zy4p4waqn8l6vvz7685ikh1v0wr4qzy"))))
+         "16iq9x0qxikdhp1nan500rk33ycqddl1k57876m4dfv3n7kqhnrz"))))
     (build-system gnu-build-system)
     (inputs `(("bison", bison)
               ("flex", flex)
