@@ -28,6 +28,7 @@
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -518,7 +519,7 @@ and keep up to date translations of documentation.")
 (define-public gnome-disk-utility
   (package
     (name "gnome-disk-utility")
-    (version "3.26.1")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -526,7 +527,7 @@ and keep up to date translations of documentation.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "10spllvcq2q71xk3dnhzjk8v4qx9am8y1h68k8z2j0l94g1c8bi3"))))
+                "1wjnw9hpjqyhrr116491rfzd0837g6jqvzq2z1ndx2sdqv19caxa"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")
