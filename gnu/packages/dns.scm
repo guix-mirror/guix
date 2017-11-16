@@ -494,20 +494,16 @@ Extensions} (DNSSEC).")
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  ;; Remove bundled libraries and dependencies on them.
-                  (substitute* "configure"
-                    (("src/contrib/dnstap/Makefile") ""))
-                  (substitute* "src/Makefile.in"
-                    (("contrib/dnstap ") ""))
+                  ;; Delete bundled libraries.
                   (with-directory-excursion "src/contrib"
-                    (for-each delete-file-recursively
-                              (list "dnstap" "lmdb")))
+                    (delete-file-recursively "lmdb"))
                   #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("gnutls" ,gnutls)
+     `(("fstrm" ,fstrm)
+       ("gnutls" ,gnutls)
        ("jansson" ,jansson)
        ("libcap-ng" ,libcap-ng)
        ("libedit" ,libedit)
@@ -516,6 +512,7 @@ Extensions} (DNSSEC).")
        ("lmdb" ,lmdb)
        ("ncurses" ,ncurses)
        ("nettle" ,nettle)
+       ("protobuf-c" ,protobuf-c)
 
        ;; For ‘pykeymgr’, needed to migrate keys from versions <= 2.4.
        ("python" ,python-2)
@@ -548,6 +545,7 @@ Extensions} (DNSSEC).")
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
              "--with-module-rosedb=yes" ; serve static records from a database
+             "--with-module-dnstap=yes" ; allow detailed query logging
              (string-append "--with-bash-completions="
                             (assoc-ref %outputs "out")
                             "/etc/bash_completion.d"))))
