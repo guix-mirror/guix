@@ -25,8 +25,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
-  #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-2 bsd-3 non-copyleft))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libevent)
@@ -66,8 +65,8 @@ XML, JSON, MessagePack, YAML, etc.
 Frame Streams can be used either as a streaming transport over a reliable byte
 stream socket (TCP sockets, TLS connections, @code{AF_UNIX} sockets, etc.) for
 data in motion, or as a file format for data at rest.")
-    (license (list asl2.0
-                   (non-copyleft #f "See libmy/argv.c"))))) ; libmy/argv*
+    (license (list license:asl2.0
+                   (license:non-copyleft #f "See libmy/argv*")))))
 
 (define-public protobuf
   (package
@@ -107,7 +106,7 @@ data in motion, or as a file format for data at rest.")
      "Protocol Buffers are a way of encoding structured data in an efficient
 yet extensible format.  Google uses Protocol Buffers for almost all of its
 internal RPC protocols and file formats.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 ;; XXX Remove this old version when no other packages depend on it.
 (define-public protobuf-2
@@ -145,7 +144,7 @@ data serialization format.  It includes @code{libprotobuf-c}, a pure C library
 that implements protobuf encoding and decoding, and @code{protoc-c}, a code
 generator that converts Protocol Buffer @code{.proto} files to C descriptor
 code.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public python-protobuf
   (package
@@ -166,7 +165,7 @@ code.")
     (description
      "Protocol buffers are a language-neutral, platform-neutral extensible
 mechanism for serializing structured data.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-protobuf
   (package-with-python2 python-protobuf))
