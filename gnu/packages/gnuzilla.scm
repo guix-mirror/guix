@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;

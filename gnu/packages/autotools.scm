@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2017 ng0 <ng0@libertad.pw>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
