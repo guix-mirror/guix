@@ -6088,7 +6088,7 @@ not included are ones that require dependency to the Databind package.")
 (define-public java-fasterxml-jackson-core
   (package
     (name "java-fasterxml-jackson-core")
-    (version "2.9.1")
+    (version "2.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6096,7 +6096,7 @@ not included are ones that require dependency to the Databind package.")
                                   "jackson-core-" version ".tar.gz"))
               (sha256
                (base32
-                "1sdfp74zvlh4xr5h5bj87yjlp6kny3i8ai9m0q3xs7f8hvmxpx09"))))
+                "0q2d6qnylyxj5jh0sam1b095b5486f7ipzhxgwcgbm254ls7fqc1"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-core.jar"
