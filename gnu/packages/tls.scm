@@ -38,6 +38,7 @@
   #:use-module (guix build-system haskell)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages haskell)

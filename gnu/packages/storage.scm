@@ -27,6 +27,7 @@
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)

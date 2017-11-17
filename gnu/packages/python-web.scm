@@ -43,6 +43,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages django)
   #:use-module (gnu packages pkg-config)

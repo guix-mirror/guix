@@ -19,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages openstack)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)

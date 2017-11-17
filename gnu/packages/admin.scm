@@ -46,6 +46,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)

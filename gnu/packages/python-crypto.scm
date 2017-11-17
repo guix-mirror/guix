@@ -37,6 +37,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)

@@ -25,6 +25,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages python))
 
 (define-public time

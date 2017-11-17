@@ -35,6 +35,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages file)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages databases)

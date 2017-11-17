@@ -31,6 +31,7 @@
 (define-module (gnu packages haskell)
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)

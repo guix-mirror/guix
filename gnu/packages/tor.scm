@@ -33,6 +33,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
