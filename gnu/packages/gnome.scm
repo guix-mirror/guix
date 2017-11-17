@@ -4044,7 +4044,7 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.4")
+    (version "0.9.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/gnumdk/eolie/"
@@ -4052,7 +4052,7 @@ work and the interface is well tested.")
                                   "/eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "0zw2zqgnpsvk35nrp4kqkh2hb5kchzpvi684xjv7a9hhrlsxkdqd"))))
+                "1qlaxczs82vyww06v5m8zwhvaiilp5zhxp5yp632a8947cg5blnz"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -4099,6 +4099,7 @@ work and the interface is well tested.")
        ("gtk+" ,gtk+)
        ("atk" ,atk)    ; propagated by gtk+, but we need it in LD_LIBRARY_PATH
        ("python" ,python-wrapper)
+       ("python-dateutil" ,python-dateutil)
        ("python-pygobject" ,python-pygobject)
        ("python-pycairo" ,python-pycairo)
        ("libsecret" ,libsecret)
