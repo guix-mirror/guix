@@ -45,12 +45,13 @@
 ;;; Code:
 
 (define-record-type <pool>
-  (%make-pool queue mutex condvar workers)
+  (%make-pool queue mutex condvar workers busy)
   pool?
   (queue    pool-queue)
   (mutex    pool-mutex)
   (condvar  pool-condition-variable)
-  (workers  pool-workers))
+  (workers  pool-workers)
+  (busy     pool-busy))
 
 (define-syntax-rule (without-mutex mutex exp ...)
   (dynamic-wind
@@ -62,12 +63,14 @@
       (lock-mutex mutex))))
 
 (define* (worker-thunk mutex condvar pop-queue
-                       #:key (thread-name "guix worker"))
+                       #:key idle busy (thread-name "guix worker"))
   "Return the thunk executed by worker threads."
   (define (loop)
     (match (pop-queue)
       (#f                                         ;empty queue
-       (wait-condition-variable condvar mutex))
+       (idle)
+       (wait-condition-variable condvar mutex)
+       (busy))
       ((? procedure? proc)
        ;; Release MUTEX while executing PROC.
        (without-mutex mutex
@@ -97,19 +100,24 @@ threads as reported by the operating system."
   (let* ((mutex   (make-mutex))
          (condvar (make-condition-variable))
          (queue   (make-q))
+         (busy    count)
          (procs   (unfold (cut >= <> count)
                           (lambda (n)
                             (worker-thunk mutex condvar
                                           (lambda ()
                                             (and (not (q-empty? queue))
                                                  (q-pop! queue)))
+                                          #:busy (lambda ()
+                                                   (set! busy (+ 1 busy)))
+                                          #:idle (lambda ()
+                                                   (set! busy (- busy 1)))
                                           #:thread-name thread-name))
                           1+
                           0))
          (threads (map (lambda (proc)
                          (call-with-new-thread proc))
                        procs)))
-    (%make-pool queue mutex condvar threads)))
+    (%make-pool queue mutex condvar threads (lambda () busy))))
 
 (define (pool-enqueue! pool thunk)
   "Enqueue THUNK for future execution by POOL."
@@ -118,9 +126,11 @@ threads as reported by the operating system."
     (signal-condition-variable (pool-condition-variable pool))))
 
 (define (pool-idle? pool)
-  "Return true if POOL doesn't have any task in its queue."
+  "Return true if POOL doesn't have any task in its queue and all the workers
+are currently idle (i.e., waiting for a task)."
   (with-mutex (pool-mutex pool)
-    (q-empty? (pool-queue pool))))
+    (and (q-empty? (pool-queue pool))
+         (zero? ((pool-busy pool))))))
 
 (define-syntax-rule (eventually pool exp ...)
   "Run EXP eventually on one of the workers of POOL."
