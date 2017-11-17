@@ -37,6 +37,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system scons)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
@@ -1063,12 +1064,26 @@ games.")
               (file-name (string-append name "-" version))
               (sha256
                (base32 "1mz89nafc1m7srbqvy7iagxrxmqvf5hbqi7i0lwaapkx6q0kpkq7"))))
-    (build-system gnu-build-system)
+    (build-system scons-build-system)
     (arguments
-     `(#:tests? #f ; There are no tests
+     `(#:scons ,scons-python2
+       #:scons-flags (list "platform=x11"
+                           ;; Avoid using many of the bundled libs.
+                           ;; Note: These options can be found in the SConstruct file.
+                           "builtin_freetype=no"
+                           "builtin_glew=no"
+                           "builtin_libmpdec=no"
+                           "builtin_libogg=no"
+                           "builtin_libpng=no"
+                           "builtin_libtheora=no"
+                           "builtin_libvorbis=no"
+                           "builtin_libwebp=no"
+                           "builtin_openssl=no"
+                           "builtin_opus=no"
+                           "builtin_zlib=no")
+       #:tests? #f ; There are no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
          (add-after 'unpack 'scons-use-env
            (lambda _
              ;; Scons does not use the environment variables by default,
@@ -1079,24 +1094,6 @@ games.")
                  "env_base = Environment(tools=custom_tools)\n"
                  "env_base = Environment(ENV=os.environ)")))
              #t))
-         (replace 'build
-           (lambda _
-             (zero? (system*
-                     "scons"
-                     "platform=x11"
-                     ;; Avoid using many of the bundled libs.
-                     ;; Note: These options can be found in the SConstruct file.
-                     "builtin_freetype=no"
-                     "builtin_glew=no"
-                     "builtin_libmpdec=no"
-                     "builtin_libogg=no"
-                     "builtin_libpng=no"
-                     "builtin_libtheora=no"
-                     "builtin_libvorbis=no"
-                     "builtin_libwebp=no"
-                     "builtin_openssl=no"
-                     "builtin_opus=no"
-                     "builtin_zlib=no"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1128,8 +1125,7 @@ games.")
                            Type=Application~%"
                            out)))
                #t))))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("scons" ,scons)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("alsa-lib" ,alsa-lib)
               ("freetype" ,freetype)
               ("glew" ,glew)
@@ -1144,8 +1140,7 @@ games.")
               ("mesa" ,mesa)
               ("openssl" ,openssl)
               ("opusfile" ,opusfile)
-              ("pulseaudio" ,pulseaudio)
-              ("python2" ,python-2)))
+              ("pulseaudio" ,pulseaudio)))
     (home-page "https://godotengine.org/")
     (synopsis "Advanced 2D and 3D game engine")
     (description
