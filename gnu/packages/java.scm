@@ -1930,15 +1930,15 @@ API and version 2.1 of the Java ServerPages API.")
 (define-public java-swt
   (package
     (name "java-swt")
-    (version "4.6")
+    (version "4.7.1a")
     (source
      ;; The types of many variables and procedures differ in the sources
      ;; dependent on whether the target architecture is a 32-bit system or a
      ;; 64-bit system.  Instead of patching the sources on demand in a build
      ;; phase we download either the 32-bit archive (which mostly uses "int"
      ;; types) or the 64-bit archive (which mostly uses "long" types).
-     (let ((hash32 "0jmx1h65wqxsyjzs64i2z6ryiynllxzm13cq90fky2qrzagcw1ir")
-           (hash64 "0wnd01xssdq9pgx5xqh5lfiy3dmk60dzzqdxzdzf883h13692lgy")
+     (let ((hash32 "09q0cbh90d90q3a7dx9430kc4m6bijrkr4lajrmzzvi0jjdpq4v9")
+           (hash64 "17k5hs75a87ssmc5xhwdfdm2gn4zba0r837l2455za01krnkaa2q")
            (file32 "x86")
            (file64 "x86_64"))
        (let-values (((hash file)
@@ -1948,13 +1948,14 @@ API and version 2.1 of the Java ServerPages API.")
          (origin
            (method url-fetch)
            (uri (string-append
-                 "http://ftp-stud.fht-esslingen.de/pub/Mirrors/"
-                 "eclipse/eclipse/downloads/drops4/R-" version
-                 "-201606061100/swt-" version "-gtk-linux-" file ".zip"))
+                 "http://download.eclipse.org/eclipse/downloads/drops4/"
+                 "R-" version "-201710090410/swt-" version
+                 "-gtk-linux-" file ".zip"))
            (sha256 (base32 hash))))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "swt.jar"
+       #:jdk ,icedtea-8
        #:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
@@ -1988,8 +1989,7 @@ API and version 2.1 of the Java ServerPages API.")
                          (find-files "." "\\.so$"))
                #t))))))
     (inputs
-     `(("xulrunner" ,icecat)
-       ("gtk" ,gtk+-2)
+     `(("gtk" ,gtk+-2)
        ("libxtst" ,libxtst)
        ("libxt" ,libxt)
        ("mesa" ,mesa)
