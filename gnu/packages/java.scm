@@ -6367,7 +6367,7 @@ interface and high-performance Typed Access API.")
 (define-public java-fasterxml-jackson-dataformat-xml
   (package
     (name "java-fasterxml-jackson-dataformat-xml")
-    (version "2.9.1")
+    (version "2.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6375,7 +6375,7 @@ interface and high-performance Typed Access API.")
                                   "jackson-dataformat-xml-" version ".tar.gz"))
               (sha256
                (base32
-                "0x3m9n4kwclcyvxhxjx654qpjza4crphml1q2392qpnbfydx6lnh"))))
+                "1j1qanvcdh6afagr67zqrlypjkf0n6wr1qzpbvkw79lii72j6pbr"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-dataformat-xml.jar"
