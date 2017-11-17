@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system scons)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -508,19 +510,10 @@ audio and video).")
               (sha256
                (base32
                 "0hmcaywnwzjci3pp4xpvbijnnwvibz7gf9xzcdjbdca910y5728j"))))
-    (build-system gnu-build-system)
+    (build-system scons-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
-       #:phases
-       ;; TODO: Add scons-build-system and use it here.
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (mkdir-p out)
-                      (zero? (system* "scons" (string-append "PREFIX=" out))))))
-         (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
+     `(#:scons-flags (list (string-append "PREFIX=" %output))
+       #:tests? #f)) ;no "check" target
     (inputs
      `(("boost" ,boost)
        ("jack" ,jack-1)
@@ -529,9 +522,7 @@ audio and video).")
        ("liblo" ,liblo)
        ("rubberband" ,rubberband)))
     (native-inputs
-     `(("scons" ,scons)
-       ("python" ,python-2)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://das.nasophon.de/klick/")
     (synopsis "Metronome for JACK")
     (description
