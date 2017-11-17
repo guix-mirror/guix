@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
+  #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
@@ -3643,9 +3645,14 @@ form of assemblies or reads.")
         (base32
          "1hmvdalz3zj5sqqklg0l4npjdv37cv2hsdi1al9iby2ndxjs1b73"))
        (patches (search-patches "metabat-fix-compilation.patch"))))
-    (build-system gnu-build-system)
+    (build-system scons-build-system)
     (arguments
-     `(#:phases
+     `(#:scons ,scons-python2
+       #:scons-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "BOOST_ROOT=" (assoc-ref %build-inputs "boost")))
+       #:tests? #f ;; Tests are run during the build phase.
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-includes
            (lambda _
@@ -3675,30 +3682,13 @@ form of assemblies or reads.")
                                "/lib'"))
                ;; Do not distribute README.
                (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)") ""))
-             #t))
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (mkdir (assoc-ref outputs "out"))
-             (zero? (system* "scons"
-                             (string-append
-                              "PREFIX="
-                              (assoc-ref outputs "out"))
-                             (string-append
-                              "BOOST_ROOT="
-                              (assoc-ref inputs "boost"))
-                             "install"))))
-         ;; Check and install are carried out during build phase.
-         (delete 'check)
-         (delete 'install))))
+             #t)))))
     (inputs
      `(("zlib" ,zlib)
        ("perl" ,perl)
        ("samtools" ,samtools)
        ("htslib" ,htslib)
        ("boost" ,boost)))
-    (native-inputs
-     `(("scons" ,scons)))
     (home-page "https://bitbucket.org/berkeleylab/metabat")
     (synopsis
      "Reconstruction of single genomes from complex microbial communities")
