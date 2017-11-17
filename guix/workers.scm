@@ -75,12 +75,14 @@
        ;; Release MUTEX while executing PROC.
        (without-mutex mutex
          (catch #t proc
+           (const #f)
            (lambda (key . args)
              ;; XXX: In Guile 2.0 ports are not thread-safe, so this could
              ;; crash (Guile 2.2 is fine).
              (display-backtrace (make-stack #t) (current-error-port))
              (print-exception (current-error-port)
-                              (stack-ref (make-stack #t) 0)
+                              (and=> (make-stack #t)
+                                     (cut stack-ref <> 0))
                               key args))))))
     (loop))
 
