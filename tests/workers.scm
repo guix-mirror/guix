@@ -42,4 +42,30 @@
         (poll)))
     result))
 
+;; Same as above, but throw exceptions within the workers and make sure they
+;; remain alive.
+(test-equal "exceptions"
+  4242
+  (let* ((pool   (make-pool 10))
+         (result 0)
+         (1+!    (let ((lock (make-mutex)))
+                   (lambda ()
+                     (with-mutex lock
+                       (set! result (+ result 1)))))))
+    (let loop ((i 10))
+      (unless (zero? i)
+        (pool-enqueue! pool (lambda ()
+                              (throw 'whatever)))
+        (loop (- i 1))))
+    (let loop ((i 4242))
+      (unless (zero? i)
+        (pool-enqueue! pool 1+!)
+        (loop (- i 1))))
+    (let poll ()
+      (unless (pool-idle? pool)
+        (pk 'busy result)
+        (sleep 1)
+        (poll)))
+    result))
+
 (test-end)
