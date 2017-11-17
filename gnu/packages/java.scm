@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6061,7 +6062,7 @@ the system under test at the same time.")
 (define-public java-fasterxml-jackson-annotations
   (package
     (name "java-fasterxml-jackson-annotations")
-    (version "2.9.1")
+    (version "2.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6069,7 +6070,7 @@ the system under test at the same time.")
                                   "jackson-annotations-" version ".tar.gz"))
               (sha256
                (base32
-                "005ksgqx2ds3zdmlvbcmmz82y28b1mx0i9bpvprim1jaddbba0bd"))))
+                "0b4wdxjxfbl3gkilylfdbl7fzimfpyih676jiwdf19i4056j8lqw"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-annotations.jar"
