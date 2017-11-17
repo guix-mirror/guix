@@ -2925,6 +2925,36 @@ sequencer and LFO.  It can hold any number of arpeggiator, sequencer, or LFO
 modules running in parallel.")
     (license license:gpl2+)))
 
+(define-public qmidiroute
+  (package
+    (name "qmidiroute")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/alsamodular/QMidiRoute/"
+                                  version "/qmidiroute-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "19v1ppbglgl3z9v7xdqc0k33w71cqq8a7d6ihvfs7iz77dygrih9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-qt5"
+             "CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://alsamodular.sourceforge.net/")
+    (synopsis "MIDI event router and filter")
+    (description "QMidiRoute is a MIDI event router and filter.  MIDI note,
+control change, program change and pitch bend events are logged, and can be
+filtered, redirected and transformed into other events according to MIDI maps
+defined as tabs in the main control surface.")
+    (license license:gpl2+)))
+
 (define-public seq24
   (package
     (name "seq24")
