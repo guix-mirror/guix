@@ -567,8 +567,8 @@ end-to-end encryption support; XML console.")
 (define-public dino
   ;; The only release tarball is for version 0.0, but it is very old and fails
   ;; to build.
-  (let ((commit "f6ac5bbd26638412a2289fd1d28ef12de1d7e8b5")
-        (revision "1"))
+  (let ((commit "2a514d0969f5c25d5e2d14421125a47df6b14974")
+        (revision "2"))
     (package
       (name "dino")
       (version (string-append "0.0-" revision "." (string-take commit 9)))
@@ -576,13 +576,11 @@ end-to-end encryption support; XML console.")
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/dino/dino.git")
-                      (commit commit)
-                      (recursive? #t))) ; Needed for the 'libsignal-protocol-c'
-                                        ; submodule.
+                      (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "14vk5jmvn8igjikrvg7pinrzahw8gryysb1v9y3vw47ncyic8b7p"))))
+                  "0v9fqikxvamdw7bxbwc4s01x0vf30vl77149y16krijaqnq6kzv0"))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f ; there are no tests
@@ -597,6 +595,18 @@ end-to-end encryption support; XML console.")
                              (guix build glib-or-gtk-build-system))
          #:phases
          (modify-phases %standard-phases
+           ;; The signal-protocol plugin accesses internal headers of
+           ;; libsignal-protocol-c, so we need to put the sources there.
+           (add-after 'unpack 'unpack-sources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((unpack (lambda (source target)
+                               (with-directory-excursion target
+                                 (zero? (system* "tar" "xvf"
+                                                 (assoc-ref inputs source)
+                                                 "--strip-components=1"))))))
+                 (unpack "libsignal-protocol-c-source"
+                         "plugins/signal-protocol/libsignal-protocol-c")
+                 #t)))
            (add-after 'install 'glib-or-gtk-wrap
              (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
       (inputs
@@ -611,6 +621,7 @@ end-to-end encryption support; XML console.")
          ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
       (native-inputs
        `(("pkg-config" ,pkg-config)
+         ("libsignal-protocol-c-source", (package-source libsignal-protocol-c))
          ("glib" ,glib "bin")
          ("vala" ,vala)
          ("gettext" ,gettext-minimal)))
