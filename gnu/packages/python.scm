@@ -7190,32 +7190,6 @@ timestamps.")
 (define-public python2-pyrfc3339
   (package-with-python2 python-pyrfc3339))
 
-(define-public python-werkzeug
-  (package
-    (name "python-werkzeug")
-    (version "0.11.15")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "Werkzeug" version))
-       (sha256
-        (base32
-         "1h5wycw8yj7q0grqsjnsqflmrlsdagvl2j4dsgdncci6mjc7fpa5"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("python-pytest" ,python-pytest)))
-    (home-page "http://werkzeug.pocoo.org/")
-    (synopsis "Utilities for WSGI applications")
-    (description "One of the most advanced WSGI utility modules.  It includes a
-powerful debugger, full-featured request and response objects, HTTP utilities to
-handle entity tags, cache control headers, HTTP dates, cookie handling, file
-uploads, a powerful URL routing system and a bunch of community-contributed
-addon modules.")
-    (license license:x11)))
-
-(define-public python2-werkzeug
-  (package-with-python2 python-werkzeug))
-
 (define-public python-configobj
   (package
     (name "python-configobj")
@@ -7972,43 +7946,6 @@ python-xdo for newer bindings.)")
 (define-public python2-xdo
   (package-with-python2 python-xdo))
 
-(define-public python-wtforms
-  (package
-    (name "python-wtforms")
-    (version "2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "WTForms" version ".zip"))
-       (sha256
-        (base32
-         "0vyl26y9cg409cfyj8rhqxazsdnd0jipgjw06civhrd53yyi1pzz"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-django-test
-           ;; Don't fail the tests when the inputs for the optional tests cannot be found.
-           (lambda _
-             (substitute*
-               "tests/runtests.py"
-               (("'ext_django.tests', 'ext_sqlalchemy', 'ext_dateutil', 'locale_babel'") "")
-               (("sys.stderr.write(\"### Disabled test '%s', dependency not found\n\" % name)") ""))
-             #t)))))
-    (native-inputs
-     `(("unzip" ,unzip)))
-    (home-page "http://wtforms.simplecodes.com/")
-    (synopsis
-     "Form validation and rendering library for Python web development")
-    (description
-     "WTForms is a flexible forms validation and rendering library
-for Python web development.  It is very similar to the web form API
-available in Django, but is a standalone package.")
-    (license license:bsd-3)))
-
-(define-public python2-wtforms
-  (package-with-python2 python-wtforms))
-
 (define-public python-mako
   (package
     (name "python-mako")
@@ -8056,72 +7993,6 @@ server with very acceptable performance.")
 
 (define-public python2-waitress
   (package-with-python2 python-waitress))
-
-(define-public python-paste
-  (package
-    (name "python-paste")
-    (version "2.0.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "Paste" version))
-       (sha256
-        (base32
-         "062jk0nlxf6lb2wwj6zc20rlvrwsnikpkh90y0dn8cjch93s6ii3"))
-       (patches (search-patches "python-paste-remove-website-test.patch"
-                                "python-paste-remove-timing-test.patch"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("python-nose" ,python-nose)))
-    (propagated-inputs
-     `(("python-six" ,python-six)))
-    (home-page "http://pythonpaste.org")
-    (synopsis
-     "Python web development tools, focusing on WSGI")
-    (description
-     "Paste provides a variety of web development tools and middleware which
-can be nested together to build web applications.  Paste's design closely
-follows ideas flowing from WSGI (Web Standard Gateway Interface).")
-    (license license:expat)))
-
-(define-public python2-paste
-  (package-with-python2 python-paste))
-
-(define-public python-pastescript
-  (package
-    (name "python-pastescript")
-    (version "2.0.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "PasteScript" version))
-       (sha256
-        (base32
-         "1h3nnhn45kf4pbcv669ik4faw04j58k8vbj1hwrc532k0nc28gy0"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("python-nose" ,python-nose)))
-    (propagated-inputs
-     `(("python-paste" ,python-paste)
-       ("python-pastedeploy" ,python-pastedeploy)))
-    (home-page "http://pythonpaste.org/script/")
-    (arguments
-     '(;; Unfortunately, this requires the latest unittest2,
-       ;; but that requires traceback2 which requires linecache2 which requires
-       ;; unittest2.  So we're skipping tests for now.
-       ;; (Note: Apparently linetest2 only needs unittest2 for its tests,
-       ;; so in theory we could get around this situation somehow.)
-       #:tests? #f))
-    (synopsis
-     "Pluggable command line tool for serving web applications and more")
-    (description
-     "PasteScript is a plugin-friendly command line tool which provides a
-variety of features, from launching web applications to bootstrapping project
-layouts.")
-    (license license:expat)))
-
-(define-public python2-pastescript
-  (package-with-python2 python-pastescript))
 
 (define-public python-pyquery
   (package
@@ -12357,26 +12228,6 @@ complex datatypes to and from native Python datatypes.")
 
 (define-public python2-marshmallow
   (package-with-python2 python-marshmallow))
-
-(define-public python-bottle
-  (package
-    (name "python-bottle")
-    (version "0.12.13")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (pypi-uri "bottle" version))
-      (sha256
-        (base32
-          "0m9k2a7yxvggc4kw8fsvj381vgsvfcdshg5nzy6vwrxiw2p53drr"))))
-    (build-system python-build-system)
-    (home-page "http://bottlepy.org/")
-    (synopsis "WSGI framework for small web-applications.")
-    (description "@code{python-bottle} is a WSGI framework for small web-applications.")
-    (license license:expat)))
-
-(define-public python2-bottle
-  (package-with-python2 python-bottle))
 
 (define-public python-apispec
   (package
