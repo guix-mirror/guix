@@ -1408,6 +1408,7 @@ is subjective.")
     (build-system ant-build-system)
     (arguments
      `(#:build-target "build"
+       #:jdk ,icedtea-8
        #:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
