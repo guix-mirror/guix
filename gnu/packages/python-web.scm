@@ -45,6 +45,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
