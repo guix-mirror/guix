@@ -89,6 +89,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
@@ -2638,55 +2639,6 @@ interested parties to subscribe to events, or \"signals\".")
 Markdown input files, and more.  Pelican uses Jinja2 for templating
 and is very extensible.")
     (license license:agpl3+)))
-
-(define-public python-scikit-learn
-  (package
-    (name "python-scikit-learn")
-    (version "0.19.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/scikit-learn/scikit-learn/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0g7q4ri75mj93wpa9bp83a3jmrf3dm5va9h7k4zkbcxr6bgqka15"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
-           ;; Running tests from the source directory requires
-           ;; an "inplace" build with paths relative to CWD.
-           ;; http://scikit-learn.org/stable/developers/advanced_installation.html#testing
-           ;; Use the installed version instead.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             ;; some tests require access to "$HOME"
-             (setenv "HOME" "/tmp")
-             ;; Step out of the source directory just to be sure.
-             (chdir "..")
-             (zero? (system* "nosetests" "-v" "sklearn")))))))
-    (inputs
-     `(("openblas" ,openblas)))
-    (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-cython" ,python-cython)))
-    (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)))
-    (home-page "http://scikit-learn.org/")
-    (synopsis "Machine Learning in Python")
-    (description
-     "Scikit-learn provides simple and efficient tools for data
-mining and data analysis.")
-    (license license:bsd-3)))
-
-(define-public python2-scikit-learn
-  (package-with-python2 python-scikit-learn))
 
 (define-public python-scikit-image
   (package
