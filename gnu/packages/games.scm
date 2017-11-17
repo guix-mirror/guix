@@ -808,7 +808,7 @@ fight Morgoth, the Lord of Darkness.")
        (patches (search-patches "pingus-sdl-libs-config.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("scons" ,scons)))
+                     ("scons-python2" ,scons-python2)))
     (inputs `(("sdl" ,sdl)
               ("sdl-image" ,sdl-image)
               ("sdl-mixer" ,sdl-mixer)
@@ -817,15 +817,11 @@ fight Morgoth, the Lord of Darkness.")
               ("libpng" ,libpng)
               ("boost" ,boost)))
     (arguments
-     '(#:tests? #f                      ; no check target
+     '(#:make-flags (list (string-append "PREFIX=" %output))
+       #:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-        (replace 'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (zero? (system* "make" "install"
-                            (string-append "PREFIX="
-                                           (assoc-ref outputs "out")))))))))
+         (delete 'configure)))) ; no configure script
     (home-page "http://pingus.seul.org/welcome.html")
     (synopsis "Lemmings clone")
     (description
