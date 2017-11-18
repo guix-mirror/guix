@@ -2187,21 +2187,24 @@ detailed track info including timbre, pitch, rhythm and loudness information.
 (define-public python-pylast
   (package
     (name "python-pylast")
-    (version "1.9.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pylast" version))
               (sha256
                (base32
-                "190c6sicc80v21wbbwbq771nqmxw4r6aqmxs22ndj177rc2l275f"))))
+                "0r9h7g8i8l2mgqjwkda3v6prfbkb2im5kap1az9ppmhjm9i4jkcf"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Requires unpackaged python-flaky.
+    ;; Tests require network access.  See
+    ;; https://github.com/pylast/pylast/issues/105
+    (arguments '(#:tests? #f))
     (native-inputs
      `(("python-coverage" ,python-coverage)
+       ("python-pycodestyle" ,python-pycodestyle)
        ("python-mock" ,python-mock)
        ("python-pep8" ,python-pep8)
        ("python-pytest" ,python-pytest)
+       ("python-flaky" ,python-flaky)
        ("python-pyflakes" ,python-pyflakes)
        ("python-pyyaml" ,python-pyyaml)))
     (propagated-inputs
