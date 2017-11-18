@@ -1894,6 +1894,38 @@ designs.")
                      license:asl2.0
                      license:cpl1.0)))))
 
+(define-public javacc
+  (package
+    (name "javacc")
+    (version "7.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/javacc/javacc/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append "javacc-" version ".tar.gz"))
+              (sha256
+               (base32
+                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-bundled-libs
+           (lambda _
+             (delete-file-recursively "lib") #t))
+         (replace 'install (install-jars "target")))))
+    (home-page "https://javacc.org/")
+    (synopsis "Java parser generator")
+    (description "Java Compiler Compiler (JavaCC) is the most popular parser
+generator for use with Java applications.  A parser generator is a tool that
+reads a grammar specification and converts it to a Java program that can
+recognize matches to the grammar.  In addition to the parser generator itself,
+JavaCC provides other standard capabilities related to parser generation such
+as tree building (via a tool called JJTree included with JavaCC), actions,
+debugging, etc.")
+    (license license:bsd-3)))
+
 (define-public java-classpathx-servletapi
   (package
     (name "java-classpathx-servletapi")
