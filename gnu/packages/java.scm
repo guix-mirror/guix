@@ -7966,3 +7966,35 @@ that is part of the SWT Tools project.")
     (description "Java-jansi-native contains the native library for the jansi
 frobnication library/framework.")
     (license license:asl2.0)))
+
+(define-public java-jansi
+  (package
+    (name "java-jansi")
+    (version "1.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/fusesource/jansi/archive/"
+                                  "jansi-project-" version ".tar.gz"))
+              (sha256
+               (base32
+                "11kh3144i3fzp21dpy8zg52mjmsr214k7km9p8ly0rqk2px0qq2z"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jansi.jar"
+       #:source-dir "jansi/src/main/java"
+       #:test-dir "jansi/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'check 'clear-term
+           (lambda _
+             (zero? (system* "echo" "-e" "\\e[0m")))))))
+    (inputs
+     `(("java-jansi-native" ,java-jansi-native)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://fusesource.github.io/jansi/")
+    (synopsis "Portable ANSI escape sequences")
+    (description "Jansi is a Java library that allows you to use ANSI escape
+sequences to format your console output which works on every platform.")
+    (license license:asl2.0)))
