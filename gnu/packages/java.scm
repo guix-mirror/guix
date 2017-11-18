@@ -7858,3 +7858,55 @@ Objects into their JSON representation.  It can also be used to convert a JSON
 string to an equivalent Java object.  Gson can work with arbitrary Java objects
 including pre-existing objects that you do not have source-code of.")
     (license license:asl2.0)))
+
+(define-public java-hawtjni
+  (package
+    (name "java-hawtjni")
+    (version "1.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/fusesource/hawtjni/archive/"
+                                  "hawtjni-project-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bqfd732rmh6svyx17fpw9175gc9gzkcbyps2yyrf50c3zzjas6g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "hawtjni.jar"
+       #:source-dir "hawtjni-generator/src/main/java:hawtjni-runtime/src/main/java"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-native
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "hawtjni-generator/src/main/resources/"
+               (and
+                 (system* "gcc" "-c" "hawtjni.c" "-o" "hawtjni.o"
+                          "-fPIC" "-O2"
+                          (string-append "-I" (assoc-ref inputs "jdk") "/include/linux"))
+                 (system* "gcc" "-c" "hawtjni-callback.c" "-o" "hawtjni-callback.o"
+                          "-fPIC" "-O2"
+                          (string-append "-I" (assoc-ref inputs "jdk") "/include/linux"))
+                 (system* "gcc" "-o" "libhawtjni.so" "-shared"
+                          "hawtjni.o" "hawtjni-callback.o")))))
+         (add-after 'install 'install-native
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (inc (string-append out "/include")))
+               (mkdir-p lib)
+               (mkdir-p inc)
+               (with-directory-excursion "hawtjni-generator/src/main/resources/"
+                 (copy-file "libhawtjni.so" (string-append lib "/libhawtjni.so"))
+                 (copy-file "hawtjni.h" (string-append inc "/hawtjni.h"))))
+             #t)))))
+    (inputs
+     `(("java-commons-cli" ,java-commons-cli)
+       ("java-asm" ,java-asm)
+       ("java-geronimo-xbean-finder" ,java-geronimo-xbean-finder)))
+    (home-page "https://fusesource.github.io/hawtjni/")
+    (synopsis "JNI code generator")
+    (description "HawtJNI is a code generator that produces the JNI code needed
+to implement Java native methods.  It is based on the jnigen code generator
+that is part of the SWT Tools project.")
+    (license license:asl2.0)))
