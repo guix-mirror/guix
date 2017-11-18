@@ -6119,6 +6119,44 @@ container.")))
        ("server" ,java-eclipse-jetty-server-9.2)
        ,@(package-inputs java-eclipse-jetty-util-9.2)))))
 
+(define-public java-jsoup
+  (package
+    (name "java-jsoup")
+    (version "1.10.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jhy/jsoup/archive/jsoup-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0xbzw7rjv7s4nz1xk9b2cnin6zkpaldmc3svk71waa7hhjgp0a20"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jsoup.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (let ((classes-dir (string-append (getcwd) "/build/classes")))
+               (with-directory-excursion "src/main/java"
+                 (for-each (lambda (file)
+                             (let ((dist (string-append classes-dir "/" file)))
+                               (mkdir-p (dirname dist))
+                               (copy-file file dist)))
+                   (find-files "." ".*.properties"))))
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-gson" ,java-gson)))
+    (home-page "https://jsoup.org")
+    (synopsis "HTML parser")
+    (description "Jsoup is a Java library for working with real-world HTML.  It
+provides a very convenient API for extracting and manipulating data, using the
+best of DOM, CSS, and jQuery-like methods.")
+    (license l:expat)))
+
 (define-public tidyp
   (package
     (name "tidyp")
