@@ -1098,26 +1098,27 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
            (lambda* (#:key outputs #:allow-other-keys)
              (with-output-to-file "Makefile"
                (lambda _
-                 (display
-                   (string-append
-                     "libbitshuffle.so: src/bitshuffle.o src/bitshuffle_core.o "
-                     "src/iochain.o lz4/lz4.o\n"
-                     "\tgcc -O3 -ffast-math -std=c99 -o $@ -shared -fPIC $^\n"
-                     "\n"
-                     "%.o: %.c\n"
-                     "\tgcc -O3 -ffast-math -std=c99 -fPIC -Isrc -Ilz4 -c $< -o $@\n"
-                     "\n"
-                     "PREFIX:=" (assoc-ref outputs "out") "\n"
-                     "LIBDIR:=$(PREFIX)/lib\n"
-                     "INCLUDEDIR:=$(PREFIX)/include\n"
-                     "install: libbitshuffle.so\n"
-                     "\tinstall -dm755 $(LIBDIR)\n"
-                     "\tinstall -dm755 $(INCLUDEDIR)\n"
-                     "\tinstall -m755 libbitshuffle.so $(LIBDIR)\n"
-                     "\tinstall -m644 src/bitshuffle.h $(INCLUDEDIR)\n"
-                     "\tinstall -m644 src/bitshuffle_core.h $(INCLUDEDIR)\n"
-                     "\tinstall -m644 src/iochain.h $(INCLUDEDIR)\n"
-                     "\tinstall -m644 lz4/lz4.h $(INCLUDEDIR)\n")))))))))
+                 (format #t "\
+libbitshuffle.so: src/bitshuffle.o src/bitshuffle_core.o src/iochain.o lz4/lz4.o
+\tgcc -O3 -ffast-math -std=c99 -o $@ -shared -fPIC $^
+
+%.o: %.c
+\tgcc -O3 -ffast-math -std=c99 -fPIC -Isrc -Ilz4 -c $< -o $@
+
+PREFIX:=~a
+LIBDIR:=$(PREFIX)/lib
+INCLUDEDIR:=$(PREFIX)/include
+
+install: libbitshuffle.so
+\tinstall -dm755 $(LIBDIR)
+\tinstall -dm755 $(INCLUDEDIR)
+\tinstall -m755 libbitshuffle.so $(LIBDIR)
+\tinstall -m644 src/bitshuffle.h $(INCLUDEDIR)
+\tinstall -m644 src/bitshuffle_core.h $(INCLUDEDIR)
+\tinstall -m644 src/iochain.h $(INCLUDEDIR)
+\tinstall -m644 lz4/lz4.h $(INCLUDEDIR)
+" (assoc-ref outputs "out"))))
+             #t)))))
     (inputs '())
     (native-inputs '())))
 
