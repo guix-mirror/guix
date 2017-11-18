@@ -7531,7 +7531,7 @@ on mapping using Entrez Gene identifiers.")
 (define-public r-org-ce-eg-db
   (package
     (name "r-org-ce-eg-db")
-    (version "3.4.0")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -7541,7 +7541,7 @@ on mapping using Entrez Gene identifiers.")
                                   "org.Ce.eg.db_" version ".tar.gz"))
               (sha256
                (base32
-                "12llfzrrc09kj2wzbisdspv38qzkzgpsbn8kv7qkwg746k3pq436"))))
+                "02ggchixlmzywhsbr0h2ms4dravv7m5964cjxqcjxqs16vjwlbk9"))))
     (properties
      `((upstream-name . "org.Ce.eg.db")))
     (build-system r-build-system)
