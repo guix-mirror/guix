@@ -7800,6 +7800,18 @@ public Bundle getBundle()"))
        ("java-osgi-framework" ,java-osgi-framework)
        ("java-eclipse-osgi" ,java-eclipse-osgi)
        ("java-osgi-service-packageadmin" ,java-osgi-service-packageadmin)))))
+ 
+(define-public java-geronimo-xbean-asm-util
+  (package
+    (inherit java-geronimo-xbean-reflect)
+    (name "java-geronimo-xbean-asm-util")
+    (arguments
+     `(#:jar-name "geronimo-xbean-asm-util.jar"
+       #:source-dir "xbean-asm-util/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-asm" ,java-asm)))
+    (native-inputs '())))
 
 (define-public java-gson
   (package
