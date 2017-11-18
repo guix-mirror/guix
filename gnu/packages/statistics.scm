@@ -367,6 +367,8 @@ k-nearest neighbour, Learning Vector Quantization and Self-Organizing Maps.")
         (base32
          "1bkvqmv8h2c423q9ag2afb6s9j2vcdlxsf559zzbimraphrr2c2b"))))
     (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
     (home-page "http://cran.r-project.org/web/packages/cluster")
     (synopsis "Methods for cluster analysis")
     (description
@@ -389,7 +391,8 @@ Hubert, based on Kaufman and Rousseeuw (1990) \"Finding Groups in Data\".")
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/codetools")
     (synopsis "Code analysis tools for R")
-    (description "This package provides code analysis tools for R.")
+    (description "This package provides code analysis tools for R to check R
+code for possible problems.")
     ;; Any version of the GPL.
     (license (list license:gpl2+ license:gpl3+))))
 
@@ -426,13 +429,15 @@ for reading and writing some dBase files.")
          "1xhha8kw10jv8pv8b61hb5in9qiw3r2a9kdji3qlm991s4zd4wlb"))))
     (properties `((upstream-name . "KernSmooth")))
     (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
     (home-page "http://cran.r-project.org/web/packages/KernSmooth")
     (synopsis "Functions for kernel smoothing")
     (description
      "This package provides functions for kernel smoothing (and density
 estimation) corresponding to the book: Wand, M.P. and Jones, M.C. (1995)
 \"Kernel Smoothing\".")
-    ;; Unlimited distribution
+    ;; Unlimited use and distribution
     (license (license:non-copyleft "file://LICENCE.note"))))
 
 (define-public r-lattice
@@ -1664,28 +1669,6 @@ features require SQL translation to be provided by the package author.")
      "This package provides ACE and AVAS methods for choosing regression
 transformations.")
     (license license:expat)))
-
-(define-public r-cluster
-  (package
-    (name "r-cluster")
-    (version "2.0.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "cluster" version))
-       (sha256
-        (base32
-         "1z4gbz7chxxi4ly6c0yjlikwgf8aa8dlg05cn5cd6pjr21zvh97l"))))
-    (build-system r-build-system)
-    (inputs
-     `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/cluster")
-    (synopsis "Methods for data cluster analysis")
-    (description
-     "This package provides tools that are useful in finding groups in data.
-It is based on the methods described in Kaufman and Rousseeuw (1990) \"Finding
-Groups in Data\".")
-    (license license:gpl2+)))
 
 (define-public r-formula
   (package
@@ -2950,24 +2933,6 @@ traverse through all the elements of a vector, list, or other collection of
 data.")
     (license license:asl2.0)))
 
-(define-public r-codetools
-  (package
-    (name "r-codetools")
-    (version "0.2-15")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "codetools" version))
-       (sha256
-        (base32
-         "0h7sjmvvsi35041jp47cxhsqzgf1y8jrw6fxii7n26i8g7nrh1sf"))))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/codetools")
-    (synopsis "Code analysis tools for R")
-    (description "This package provides code analysis tools for R to check R
-code for possible problems.")
-    (license (list license:gpl2+ license:gpl3+))))
-
 (define-public r-foreach
   (package
     (name "r-foreach")
@@ -4177,30 +4142,6 @@ by coloring the curve according to cutoff.  All components of a performance
 plot can be quickly adjusted using a flexible parameter dispatching
 mechanism.")
     (license license:gpl2+)))
-
-(define-public r-kernsmooth
-  (package
-    (name "r-kernsmooth")
-    (version "2.23-15")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "KernSmooth" version))
-       (sha256
-        (base32
-         "1xhha8kw10jv8pv8b61hb5in9qiw3r2a9kdji3qlm991s4zd4wlb"))))
-    (properties `((upstream-name . "KernSmooth")))
-    (build-system r-build-system)
-    (inputs
-     `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/KernSmooth")
-    (synopsis "Functions for kernel smoothing")
-    (description
-     "This package provides functions for kernel smoothing (and density
-estimation) corresponding to the book: Wand, M.P.  and Jones, M.C. (1995)
-\"Kernel Smoothing\".")
-    ;; Unlimited use and distribution
-    (license (license:non-copyleft "file://LICENSE.note"))))
 
 (define-public r-zoo
   (package
