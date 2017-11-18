@@ -7762,6 +7762,45 @@ outputting XML data from Java code.")
 and graphs of objects for dependency injection frameworks")
     (license license:asl2.0)))
 
+(define-public java-geronimo-xbean-bundleutils
+  (package
+    (inherit java-geronimo-xbean-reflect)
+    (name "java-geronimo-xbean-bundleutils")
+    (arguments
+     `(#:jar-name "geronimo-xbean-bundleutils.jar"
+       #:source-dir "xbean-bundleutils/src/main/java"
+       #:test-dir "xbean-bundleutils/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-java
+           (lambda _
+             ;; We use a more recent version of osgi, so this file requires
+             ;; more interface method implementations.
+             (substitute* "xbean-bundleutils/src/main/java/org/apache/xbean/osgi/bundle/util/DelegatingBundleContext.java"
+               (("import org.osgi.framework.ServiceRegistration;")
+                "import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.ServiceFactory;
+import java.util.Collection;
+import org.osgi.framework.ServiceObjects;")
+               (("public Bundle getBundle\\(\\)")
+                "@Override
+public <S> ServiceObjects<S> getServiceObjects(ServiceReference<S> reference) {
+ throw new UnsupportedOperationException();
+}
+@Override
+public <S> ServiceRegistration<S> registerService(Class<S> clazz,
+        ServiceFactory<S> factory, Dictionary<String, ?> properties) {
+ throw new UnsupportedOperationException();
+}
+public Bundle getBundle()"))
+             #t)))))
+    (inputs
+     `(("java-slf4j" ,java-slf4j-api)
+       ("java-asm" ,java-asm)
+       ("java-osgi-framework" ,java-osgi-framework)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)
+       ("java-osgi-service-packageadmin" ,java-osgi-service-packageadmin)))))
+
 (define-public java-gson
   (package
     (name "java-gson")
