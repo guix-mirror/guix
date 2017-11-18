@@ -7761,3 +7761,30 @@ outputting XML data from Java code.")
     (description "Xbean-reflect provides very flexible ways to create objects
 and graphs of objects for dependency injection frameworks")
     (license license:asl2.0)))
+
+(define-public java-gson
+  (package
+    (name "java-gson")
+    (version "2.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/gson/archive/"
+                                  "gson-parent-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1j4qnp7v046q0k48c4kyf69sxaasx2h949d3cqwsm3kzxms3x0f9"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "gson.jar"
+       #:source-dir "gson/src/main/java"
+       #:test-dir "gson/src/test"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://github.com/google/gson")
+    (synopsis "Java serialization/deserialization library from/to JSON")
+    (description "Gson is a Java library that can be used to convert Java
+Objects into their JSON representation.  It can also be used to convert a JSON
+string to an equivalent Java object.  Gson can work with arbitrary Java objects
+including pre-existing objects that you do not have source-code of.")
+    (license license:asl2.0)))
