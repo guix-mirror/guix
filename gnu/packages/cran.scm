@@ -733,11 +733,11 @@ and S4 methods with inlined C, C++ or Fortran code supporting @code{.C} and
     (home-page "http://cran.r-project.org/web/packages/bbmle")
     (synopsis "Tools for General Maximum Likelihood Estimation")
     (description
-     "Methods and functions for fitting maximum likelihood models in R.  This
-package modifies and extends the @code{mle} classes in the @code{stats4}
-package.")
+     "This package provides methods and functions for fitting maximum
+likelihood models in R.  This package modifies and extends the @code{mle}
+classes in the @code{stats4} package.")
     ;; Any version of the GPL
-    (license (list license:gpl2 license:gpl3))))
+    (license license:gpl2+)))
 
 (define-public r-emdbook
   (package
@@ -1447,31 +1447,6 @@ plot and a kernel density plot.")
 suite of fast incremental algorithms for machine learning that can be used for
 training models for classification or ranking.")
     (license license:asl2.0)))
-
-(define-public r-bbmle
-  (package
-    (name "r-bbmle")
-    (version "1.0.20")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "bbmle" version))
-       (sha256
-        (base32
-         "1xzij7swrrzl5ly8l3lw6awh486zcm00251dwqws1y23fbgyh3vc"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-lattice" ,r-lattice)
-       ("r-mass" ,r-mass)
-       ("r-numderiv" ,r-numderiv)))
-    (home-page "http://cran.r-project.org/web/packages/bbmle/")
-    (synopsis "Tools for General Maximum Likelihood Estimation")
-    (description
-     "This package provides methods and functions for fitting maximum
-likelihood models in R.  This package modifies and extends the @code{mle}
-classes in the @code{stats4} package.")
-    ;; Any version of the GPL
-    (license license:gpl2+)))
 
 (define-public r-xts
   (package
