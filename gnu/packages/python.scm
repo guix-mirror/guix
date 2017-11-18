@@ -1365,19 +1365,17 @@ existing ones.")
 (define-public scons
   (package
     (name "scons")
-    (version "2.5.1")
+    (version "3.0.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/scons/scons/" version
                                  "/scons-" version ".tar.gz"))
              (sha256
               (base32
-               "1wji1z9jdkhnmm99apx6fhld9cs52rr56aigniyrcsmlwy52298b"))))
+               "0wzid419mlwqw9llrg8gsx4nkzhqy16m4m40r0xnh6cwscw5wir4"))))
     (build-system python-build-system)
     (arguments
-     ;; With Python 3.x, fails to build with a syntax error.
-     `(#:python ,python-2
-       #:use-setuptools? #f                ; still relies on distutils
+     `(#:use-setuptools? #f                ; still relies on distutils
        #:tests? #f))                       ; no 'python setup.py test' command
     (home-page "http://scons.org/")
     (synopsis "Software construction tool written in Python")
@@ -1388,6 +1386,11 @@ functionality similar to autoconf/automake and compiler caches such as ccache.
 In short, SCons is an easier, more reliable and faster way to build
 software.")
     (license license:x11)))
+
+(define-public scons-python2
+  (package
+    (inherit (package-with-python2 scons))
+    (name "scons-python2")))
 
 (define-public python-extras
   (package
