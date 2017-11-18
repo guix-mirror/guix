@@ -8114,3 +8114,67 @@ Dependency Injection (CDI).")
 conversion between Objects and Strings.  It is not intended to tackle the
 wider problem of Object to Object transformation.")
     (license license:asl2.0)))
+
+(define-public java-joda-time
+  (package
+    (name "java-joda-time")
+    (version "2.9.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/JodaOrg/joda-time/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1i9x91mi7yg2pasl0k3912f1pg46n37sps6rdb0v1gs8hj9ppwc1"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-joda-time.jar"
+       #:source-dir "src/main/java"
+       #:test-include (list "**/Test*.java")
+       ;; There is no runnable test in these files
+       #:test-exclude (list "**/Test*Chronology.java" "**/Test*Field.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-resources
+           (lambda _
+             (mkdir-p "build/classes/org/joda/time/tz/data")
+             (mkdir-p "build/classes/org/joda/time/format")
+             ;; This will produce an exception, but it's all right.
+             (zero? (system* "java" "-cp"
+                             (string-append "build/classes:" (getenv "CLASSPATH"))
+                             "org.joda.time.tz.ZoneInfoCompiler"
+                             "-src" "src/main/java/org/joda/time/tz/src"
+                             "-dst" "build/classes/org/joda/time/tz/data"
+                             "africa" "antarctica" "asia" "australasia"
+                             "europe" "northamerica" "southamerica"
+                             "pacificnew" "etcetera" "backward" "systemv"))
+             (for-each (lambda (f)
+                         (copy-file f (string-append
+                                        "build/classes/org/joda/time/format/"
+                                        (basename f))))
+               (find-files "src/main/java/org/joda/time/format" ".*.properties"))
+             #t))
+         (add-before 'install 'regenerate-jar
+           (lambda _
+             ;; We need to regenerate the jar file to add generated data.
+             (delete-file "build/jar/java-joda-time.jar")
+             (zero? (system* "ant" "jar"))))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (mkdir-p "build/test-classes/org/joda/time/tz/data")
+             (copy-file "src/test/resources/tzdata/ZoneInfoMap"
+                        "build/test-classes/org/joda/time/tz/data/ZoneInfoMap")
+             (copy-recursively "src/test/resources" "build/test-classes")
+             #t)))))
+    (inputs
+     `(("java-joda-convert" ,java-joda-convert)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("tzdata" ,tzdata)))
+    (home-page "http://www.joda.org/joda-time/")
+    (synopsis "Replacement for the Java date and time classes")
+    (description "Joda-Time is a replacement for the Java date and time
+classes prior to Java SE 8.")
+    (license license:asl2.0)))
