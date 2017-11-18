@@ -8083,3 +8083,34 @@ specific events.")
     (description "Java-cdi-api contains the required APIs for Contexts and
 Dependency Injection (CDI).")
     (license license:asl2.0)))
+
+(define-public java-joda-convert
+  (package
+    (name "java-joda-convert")
+    (version "1.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/JodaOrg/joda-convert/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vp346xz7dh9br4q7xazhc7hvzf76a6hf95fki9bg67q5jr0kjh7"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:source-dir "src/main/java"
+       #:test-include (list "**/Test*.java")
+       ;; Contains only interfaces and base classes (no test)
+       #:test-exclude (list "**/test*/**.java")))
+    (inputs
+     `(("java-guava" ,java-guava)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://www.joda.org/joda-convert/")
+    (synopsis "Conversion between Objects and Strings")
+    (description "Joda-Convert provides a small set of classes to aid
+conversion between Objects and Strings.  It is not intended to tackle the
+wider problem of Object to Object transformation.")
+    (license license:asl2.0)))
