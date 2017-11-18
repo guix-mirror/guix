@@ -9856,33 +9856,6 @@ and more.")
 the earlier snpMatrix package, allowing for uncertainty in genotypes.")
     (license license:gpl3)))
 
-(define-public r-org-hs-eg-db
-  (package
-    (name "r-org-hs-eg-db")
-    (version "3.4.2")
-    (source (origin
-              (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "http://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Hs.eg.db_"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0izzmas99j64sc4x8pxi09xw0ra1941kjrsl8sjxl0cjw1d2b32z"))))
-    (properties
-     `((upstream-name . "org.Hs.eg.db")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)))
-    (home-page "https://bioconductor.org/packages/org.Hs.eg.db/")
-    (synopsis "Genome-wide annotation for Human")
-    (description
-     "This package contains genome-wide annotations for Human, primarily based
-on mapping using Entrez Gene identifiers.")
-    (license license:artistic2.0)))
-
 (define-public r-homo-sapiens
   (package
     (name "r-homo-sapiens")
