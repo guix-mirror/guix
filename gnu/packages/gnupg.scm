@@ -548,37 +548,37 @@ and signature functionality from Python programs.")
   (package
     (name "perl-gnupg-interface")
     (version "0.52")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://cpan/authors/id/A/AL/ALEXMV/GnuPG-Interface-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0dgx8yhdsmhkazcrz14n4flrk1afv7azgl003hl4arxvi1d9yyi4"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AL/ALEXMV/"
+                                  "GnuPG-Interface-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dgx8yhdsmhkazcrz14n4flrk1afv7azgl003hl4arxvi1d9yyi4"))))
     (build-system perl-build-system)
     (arguments
-     '(;; Result: FAIL
-       ;; Failed 10/20 test programs. 21/52 subtests failed.
-       #:tests? #f))
-    (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("which" ,which)))
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; FIXME: This test fails for unknown reasons
+         (add-after 'unpack 'delete-broken-test
+           (lambda _
+             (delete-file "t/encrypt_symmetrically.t")
+             #t)))))
     (inputs
-     `(("gnupg" ,gnupg)))
+     `(("gnupg" ,gnupg-1)))
     (propagated-inputs
      `(("perl-moo" ,perl-moo)
-       ("perl-moox-late" ,perl-moox-late)
-       ("perl-moox-handlesvia" ,perl-moox-handlesvia)))
-    (home-page "http://search.cpan.org/~alexmv/GnuPG-Interface/")
+       ("perl-moox-handlesvia" ,perl-moox-handlesvia)
+       ("perl-moox-late" ,perl-moox-late)))
+    (native-inputs
+     `(("which" ,which)
+       ("perl-module-install" ,perl-module-install)))
+    (home-page "http://search.cpan.org/dist/GnuPG-Interface/")
     (synopsis "Perl interface to GnuPG")
-    (description
-     "@code{GnuPG::Interface} and its associated modules are designed to
-provide an object-oriented method for interacting with GnuPG, being able to
-perform functions such as but not limited to encrypting, signing, decryption,
-verification, and key-listing parsing.")
+    (description "@code{GnuPG::Interface} and its associated modules are
+designed to provide an object-oriented method for interacting with GnuPG,
+being able to perform functions such as but not limited to encrypting,
+signing, decryption, verification, and key-listing parsing.")
     (license license:perl-license)))
 
 (define-public pius
@@ -855,43 +855,6 @@ them to transform your existing public key into a secret key.")
 @uref{https://gnupg.org, GnuPG}.  It can be used to encrypt, decrypt, and sign
 files, to verify signatures, and to manage the private and public keys.")
     (license license:gpl3+)))
-
-(define-public perl-gnupg-interface
-  (package
-    (name "perl-gnupg-interface")
-    (version "0.52")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/A/AL/ALEXMV/"
-                                  "GnuPG-Interface-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0dgx8yhdsmhkazcrz14n4flrk1afv7azgl003hl4arxvi1d9yyi4"))))
-    (build-system perl-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; FIXME: This test fails for unknown reasons
-         (add-after 'unpack 'delete-broken-test
-           (lambda _
-             (delete-file "t/encrypt_symmetrically.t")
-             #t)))))
-    (inputs
-     `(("gnupg" ,gnupg-1)))
-    (propagated-inputs
-     `(("perl-moo" ,perl-moo)
-       ("perl-moox-handlesvia" ,perl-moox-handlesvia)
-       ("perl-moox-late" ,perl-moox-late)))
-    (native-inputs
-     `(("which" ,which)
-       ("perl-module-install" ,perl-module-install)))
-    (home-page "http://search.cpan.org/dist/GnuPG-Interface/")
-    (synopsis "Perl interface to GnuPG")
-    (description "@code{GnuPG::Interface} and its associated modules are
-designed to provide an object-oriented method for interacting with GnuPG,
-being able to perform functions such as but not limited to encrypting,
-signing, decryption, verification, and key-listing parsing.")
-    (license license:perl-license)))
 
 (define-public parcimonie
   (package
