@@ -1206,6 +1206,64 @@ install: libbitshuffle.so
 compresser/decompresser.")
     (license license:asl2.0)))
 
+(define-public java-snappy-1
+  (package
+    (inherit java-snappy)
+    (version "1.0.3-rc3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xerial/snappy-java/archive/"
+                                  "snappy-java-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08hsxlqidiqck0q57fshwyv3ynyxy18vmhrai9fyc8mz17m7gsa3"))))
+    (arguments
+     `(#:jar-name "snappy.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-binaries
+           (lambda _
+             (delete-file "lib/org/xerial/snappy/OSInfo.class")
+             (delete-file-recursively "src/main/resources/org/xerial/snappy/native")
+             #t))
+         (add-before 'build 'build-jni
+           (lambda _
+             ;; Rebuild one of the binaries we removed earlier
+             (system* "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
+                      "-d" "lib")
+             ;; Link to the dynamic snappy, not the static ones
+             (substitute* "Makefile.common"
+               (("-shared") "-shared -lsnappy"))
+             (substitute* "Makefile"
+               ;; Don't download the sources here.
+               (("\\$\\(SNAPPY_UNPACKED\\) ") "")
+               ((": \\$\\(SNAPPY_UNPACKED\\) ") ":")
+               ;; What we actually want to build
+               (("SNAPPY_OBJ:=.*")
+                "SNAPPY_OBJ:=$(addprefix $(SNAPPY_OUT)/, SnappyNative.o)\n")
+               ;; Since we removed the directory structure in "native" during
+               ;; the previous phase, we need to recreate it.
+               (("NAME\\): \\$\\(SNAPPY_OBJ\\)")
+                "NAME): $(SNAPPY_OBJ)\n\t@mkdir -p $(@D)"))
+             ;; Finally we can run the Makefile to build the dynamic library.
+             (zero? (system* "make" "native"))))
+         ;; Once we have built the shared library, we need to place it in the
+         ;; "build" directory so it can be added to the jar file.
+         (add-after 'build-jni 'copy-jni
+           (lambda _
+             (copy-recursively "src/main/resources/org/xerial/snappy/native"
+                               "build/classes/org/xerial/snappy/native")
+             #t))
+         (add-before 'check 'fix-tests
+           (lambda _
+             (mkdir-p "src/test/resources/org/xerial/snappy/")
+             (copy-recursively "src/test/java/org/xerial/snappy/testdata"
+                               "src/test/resources/org/xerial/snappy/testdata")
+             (install-file "src/test/java/org/xerial/snappy/alice29.txt"
+                           "src/test/resources/org/xerial/snappy/")
+             #t)))))))
+
 (define-public java-iq80-snappy
   (package
     (name "java-iq80-snappy")
