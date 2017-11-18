@@ -2961,7 +2961,7 @@ from high-throughput sequencing assays.")
 (define-public java-htsjdk
   (package
     (name "java-htsjdk")
-    (version "1.129")
+    (version "2.3.0") ; last version without build dependency on gradle
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2970,15 +2970,18 @@ from high-throughput sequencing assays.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0asdk9b8jx2ij7yd6apg9qx03li8q7z3ml0qy2r2qczkra79y6fw"))
+                "1ibhzzxsfc38nqyk9r8zqj6blfc1kh26iirypd4q6n90hs2m6nyq"))
               (modules '((guix build utils)))
-              ;; remove build dependency on git
-              (snippet '(substitute* "build.xml"
-                          (("failifexecutionfails=\"true\"")
-                           "failifexecutionfails=\"false\"")))))
+              (snippet
+               ;; Delete pre-built binaries
+               '(begin
+                  (delete-file-recursively "lib")
+                  (mkdir-p "lib")
+                  #t))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; test require Internet access
+       #:jdk ,icedtea-8
        #:make-flags
        (list (string-append "-Ddist=" (assoc-ref %outputs "out")
                             "/share/java/htsjdk/"))
@@ -2987,6 +2990,15 @@ from high-throughput sequencing assays.")
        (modify-phases %standard-phases
          ;; The build phase also installs the jars
          (delete 'install))))
+    (inputs
+     `(("java-ngs" ,java-ngs)
+       ("java-snappy-1" ,java-snappy-1)
+       ("java-commons-compress" ,java-commons-compress)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ("java-commons-jexl-2" ,java-commons-jexl-2)
+       ("java-xz" ,java-xz)))
+    (native-inputs
+     `(("java-testng" ,java-testng)))
     (home-page "http://samtools.github.io/htsjdk/")
     (synopsis "Java API for high-throughput sequencing data (HTS) formats")
     (description
