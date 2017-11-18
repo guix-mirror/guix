@@ -1047,7 +1047,8 @@ well as bzip2.")
        (modify-phases %standard-phases
          (add-before 'check 'make-required-dir
            (lambda _
-             (mkdir-p "bitshuffle/plugin"))))))
+             (mkdir-p "bitshuffle/plugin")
+             #t)))))
     (inputs
      `(("numpy" ,python-numpy)
        ("h5py" ,python-h5py)
