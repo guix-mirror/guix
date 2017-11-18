@@ -7998,3 +7998,30 @@ frobnication library/framework.")
     (description "Jansi is a Java library that allows you to use ANSI escape
 sequences to format your console output which works on every platform.")
     (license license:asl2.0)))
+
+(define-public java-jboss-el-api-spec
+  (package
+    (name "java-jboss-el-api-spec")
+    (version "3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jboss/jboss-el-api_spec/"
+                                  "archive/jboss-el-api_" version
+                                  "_spec-1.0.7.Final.tar.gz"))
+              (sha256
+               (base32
+                "1j45ljxalwlibxl7g7iv952sjxkw275m8vyxxij8l6wdd5pf0pdh"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jboss-el-api_spec.jar"
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/jboss/jboss-el-api_spec")
+    (synopsis "JSR-341 expression language 3.0 API")
+    (description "This package contains an implementation of the JSR-341
+specification for the expression language 3.0.  It implements an expression
+language inspired by ECMAScript and XPath.  This language is used with
+JavaServer Pages (JSP).")
+    ;; Either GPL2 only or CDDL.
+    (license (list license:gpl2 license:cddl1.1))))
