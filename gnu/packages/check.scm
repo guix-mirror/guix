@@ -12,6 +12,8 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -24,6 +26,7 @@
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1676,3 +1679,90 @@ create data based on random numbers and yet remain repeatable.")
 
 (define-public python2-nose-timer
   (package-with-python2 python-nose-timer))
+
+(define-public python-freezegun
+  (package
+    (name "python-freezegun")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "freezegun" version))
+       (sha256
+        (base32
+         "1sf38d3ibv1jhhvr52x7dhrsiyqk1hm165dfv8w8wh0fhmgxg151"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-coverage" ,python-coverage)))
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-dateutil" ,python-dateutil)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The tests are normally executed via `make test`, but the PyPi
+         ;; package does not include the Makefile.
+         (replace 'check
+           (lambda _
+             (zero? (system* "nosetests" "./tests/")))))))
+    (home-page "https://github.com/spulec/freezegun")
+    (synopsis "Test utility for mocking the datetime module")
+    (description
+     "FreezeGun is a library that allows your python tests to travel through
+time by mocking the datetime module.")
+    (license license:asl2.0)))
+
+(define-public python2-freezegun
+  (package-with-python2 python-freezegun))
+
+(define-public python-flexmock
+  (package
+    (name "python-flexmock")
+    (version "0.10.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "flexmock" version))
+              (sha256
+               (base32
+                "0arc6njvs6i9v9hgvzk5m50296g7zy5m9d7pyb43vdsdgxrci5gy"))))
+    (build-system python-build-system)
+    (home-page "https://flexmock.readthedocs.org")
+    (synopsis "Testing library for Python")
+    (description
+     "flexmock is a testing library for Python that makes it easy to create
+mocks, stubs and fakes.")
+    (license license:bsd-3)))
+
+(define-public python2-flexmock
+  (package-with-python2 python-flexmock))
+
+(define-public python-flaky
+  (package
+    (name "python-flaky")
+    (version "3.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "flaky" version))
+              (sha256
+               (base32
+                "18pkmf79rfkfpy1d2rrx3v55nxj762ilyk9rvd6s6dccxw58imsa"))))
+    (build-system python-build-system)
+    (arguments
+     ;; TODO: Tests require 'coveralls' and 'genty' which are not in Guix yet.
+     '(#:tests? #f))
+    (home-page "https://github.com/box/flaky")
+    (synopsis "Automatically rerun flaky tests")
+    (description
+     "Flaky is a plugin for @code{nose} or @code{py.test} that automatically
+reruns flaky tests.
+
+Ideally, tests reliably pass or fail, but sometimes test fixtures must rely
+on components that aren't 100% reliable.  With flaky, instead of removing
+those tests or marking them to @code{@@skip}, they can be automatically
+retried.")
+    (license license:asl2.0)))
+
+(define-public python2-flaky
+  (package-with-python2 python-flaky))

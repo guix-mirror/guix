@@ -3667,35 +3667,6 @@ multivalue dictionary that retains the order of insertions and deletions.")
 (define-public python2-orderedmultidict
   (package-with-python2 python-orderedmultidict))
 
-(define-public python-flaky
-  (package
-    (name "python-flaky")
-    (version "3.4.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "flaky" version))
-              (sha256
-               (base32
-                "18pkmf79rfkfpy1d2rrx3v55nxj762ilyk9rvd6s6dccxw58imsa"))))
-    (build-system python-build-system)
-    (arguments
-     ;; TODO: Tests require 'coveralls' and 'genty' which are not in Guix yet.
-     '(#:tests? #f))
-    (home-page "https://github.com/box/flaky")
-    (synopsis "Automatically rerun flaky tests")
-    (description
-     "Flaky is a plugin for @code{nose} or @code{py.test} that automatically
-reruns flaky tests.
-
-Ideally, tests reliably pass or fail, but sometimes test fixtures must rely
-on components that aren't 100% reliable.  With flaky, instead of removing
-those tests or marking them to @code{@@skip}, they can be automatically
-retried.")
-    (license license:asl2.0)))
-
-(define-public python2-flaky
-  (package-with-python2 python-flaky))
-
 (define-public python-autopep8
   (package
   (name "python-autopep8")
@@ -9165,27 +9136,6 @@ collections of data.")
 (define-public python2-backpack
   (package-with-python2 python-backpack))
 
-(define-public python-flexmock
-  (package
-    (name "python-flexmock")
-    (version "0.10.2")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "flexmock" version))
-              (sha256
-               (base32
-                "0arc6njvs6i9v9hgvzk5m50296g7zy5m9d7pyb43vdsdgxrci5gy"))))
-    (build-system python-build-system)
-    (home-page "https://flexmock.readthedocs.org")
-    (synopsis "Testing library for Python")
-    (description
-     "flexmock is a testing library for Python that makes it easy to create
-mocks, stubs and fakes.")
-    (license license:bsd-3)))
-
-(define-public python2-flexmock
-  (package-with-python2 python-flexmock))
-
 (define-public python-prompt-toolkit
  (package
   (name "python-prompt-toolkit")
@@ -9556,43 +9506,6 @@ discovery, monitoring and configuration.")
 
 (define-public python2-schematics
   (package-with-python2 python-schematics))
-
-(define-public python-freezegun
-  (package
-    (name "python-freezegun")
-    (version "0.3.8")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "freezegun" version))
-        (sha256
-          (base32
-            "1sf38d3ibv1jhhvr52x7dhrsiyqk1hm165dfv8w8wh0fhmgxg151"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("python-coverage" ,python-coverage)))
-    (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-dateutil" ,python-dateutil)))
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-        ;; The tests are normally executed via `make test`, but the PyPi
-        ;; package does not include the Makefile.
-        (replace 'check
-          (lambda _
-            (zero? (system* "nosetests" "./tests/")))))))
-    (home-page "https://github.com/spulec/freezegun")
-    (synopsis "Test utility for mocking the datetime module")
-    (description
-      "FreezeGun is a library that allows your python tests to travel through
-time by mocking the datetime module.")
-    (license license:asl2.0)))
-
-(define-public python2-freezegun
-  (package-with-python2 python-freezegun))
-
 
 (define-public python-odfpy
   (package
