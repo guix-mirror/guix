@@ -7524,8 +7524,8 @@ downloaded from Encode.")
     (home-page "https://www.bioconductor.org/packages/org.Hs.eg.db/")
     (synopsis "Genome wide annotation for Human")
     (description
-     "This package provides mappings from Entrez gene identifiers to various
-annotations for the human genome.")
+     "This package contains genome-wide annotations for Human, primarily based
+on mapping using Entrez Gene identifiers.")
     (license license:artistic2.0)))
 
 (define-public r-org-ce-eg-db
