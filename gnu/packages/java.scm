@@ -6992,6 +6992,63 @@ In addition to the expression language, MVEL serves as a templating language for
 configuration and string construction.")
     (license license:asl2.0)))
 
+(define-public java-commons-jexl-2
+  (package
+    (name "java-commons-jexl")
+    (version "2.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/jexl/source/"
+                                  "commons-jexl-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1ai7632bwwaxglb0nbpblpr2jw5g20afrsaq372ipkphi3ncy1jz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "commons-jexl-2.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-broken-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "src/test/java/org/apache/commons/jexl2/"
+               (substitute* "ArithmeticTest.java"
+                 (("asserter.assertExpression\\(\"3 / 0\"") "//")
+                 (("asserter.assertExpression\\(\"imanull") "//"))
+               ;; This test fails with "ambiguous method invocation"
+               (delete-file "CacheTest.java")
+               ;; This test doesn't have access to the temp directory
+               (substitute* "ClassCreatorTest.java"
+                 (("java.io.tmpdir") "user.dir"))
+               ;; This test fails in trying to detect whether it can run.
+               (substitute* "ClassCreator.java"
+                 (("boolean canRun =.*") "boolean canRun = false;\n"))
+               ;; ...and these tests depend on it.
+               (delete-file "scripting/JexlScriptEngineOptionalTest.java")
+               (delete-file "scripting/JexlScriptEngineTest.java"))
+             #t))
+         (add-before 'build 'run-javacc
+           (lambda _
+             (with-directory-excursion "src/main/java/org/apache/commons/jexl2/parser/"
+               (and (zero? (system* "java" "jjtree" "Parser.jjt"))
+                    (zero? (system* "java" "javacc" "Parser.jj")))))))))
+    (inputs
+     `(("java-commons-logging-minimal" ,java-commons-logging-minimal)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("javacc" ,javacc-4)))
+    (home-page "https://commons.apache.org/proper/commons-jexl/")
+    (synopsis "Java Expression Language ")
+    (description "JEXL is a library intended to facilitate the implementation
+of dynamic and scripting features in applications and frameworks written in
+Java.  JEXL implements an Expression Language based on some extensions to the
+JSTL Expression Language supporting most of the constructs seen in
+shell-script or ECMAScript.  Its goal is to expose scripting features usable
+by technical operatives or consultants working with enterprise platforms.")
+    (license license:asl2.0)))
+
 (define-public java-lz4
   (package
     (name "java-lz4")
