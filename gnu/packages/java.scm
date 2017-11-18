@@ -7296,7 +7296,8 @@ application components to create, send, receive, and read messages.")
          (add-before 'configure 'move-version.java
            (lambda _
              (copy-file "mail/src/main/resources/javax/mail/Version.java"
-                        "mail/src/main/java/javax/mail/Version.java")))
+                        "mail/src/main/java/javax/mail/Version.java")
+             #t))
          (add-before 'build 'copy-resources
            (lambda _
              (copy-recursively "mail/src/main/resources/META-INF"
