@@ -7812,6 +7812,25 @@ public Bundle getBundle()"))
     (inputs
      `(("java-asm" ,java-asm)))
     (native-inputs '())))
+ 
+(define-public java-geronimo-xbean-finder
+  (package
+    (inherit java-geronimo-xbean-reflect)
+    (name "java-geronimo-xbean-finder")
+    (arguments
+     `(#:jar-name "geronimo-xbean-finder.jar"
+       #:source-dir "xbean-finder/src/main/java"
+       #:test-dir "xbean-finder/src/test"))
+    (inputs
+     `(("java-slf4j-api" ,java-slf4j-api)
+       ("java-asm" ,java-asm)
+       ("java-geronimo-xbean-bundleutils" ,java-geronimo-xbean-bundleutils)
+       ("java-geronimo-xbean-asm-util" ,java-geronimo-xbean-asm-util)
+       ("java-osgi-service-packageadmin" ,java-osgi-service-packageadmin)
+       ("java-osgi-framework" ,java-osgi-framework)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))))
 
 (define-public java-gson
   (package
