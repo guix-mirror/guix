@@ -542,6 +542,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
+  %D%/packages/patches/audacity-build-with-system-portaudio.patch \
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
   %D%/packages/patches/automake-regexp-syntax.patch		\
   %D%/packages/patches/automake-test-gzip-warning.patch		\

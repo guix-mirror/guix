@@ -82,6 +82,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages music)
   #:use-module (srfi srfi-1))
 
 (define-public alsa-modular-synth
@@ -275,20 +276,42 @@ engineers, musicians, soundtrack editors and composers.")
 (define-public audacity
   (package
     (name "audacity")
-    (version "2.1.3")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/audacity/audacity/archive"
                            "/Audacity-" version ".tar.gz"))
        (sha256
-        (base32 "11mx7gb4dbqrgfp7hm0154x3m76ddnmhf2675q5zkxn7jc5qfc6b"))))
+        (base32 "09xpr4bjnainz1xmc35v3qg3dadjr9wv8bmn1p4y91aqyihnhjry"))
+       (patches (search-patches "audacity-build-with-system-portaudio.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove bundled libraries.
+        '(begin
+           (for-each
+            (lambda (dir)
+              (delete-file-recursively (string-append "lib-src/" dir)))
+            '("expat" "ffmpeg" "libflac" "libid3tag" "libmad" "libogg"
+              "libsndfile" "libsoxr" "libvamp" "libvorbis" "lv2"
+              "portaudio-v19" "portmidi" "soundtouch" "twolame"
+              ;; FIXME: these libraries have not been packaged yet:
+              ;; "libnyquist"
+              ;; "libscorealign"
+              ;; "libwidgetextra"
+              ;; "portburn"
+              ;; "portsmf"
+              ;; "portmixer"
+
+              ;; FIXME: we have this library, but it differs in that the Slide
+              ;; class does not have a member "getInverseStretchedTime".
+              ;; "sbsms"
+              ))
+           #t))))
     (build-system gnu-build-system)
     (inputs
-     ;; TODO: Add portSMF and libwidgetextra once they're packaged.  In-tree
-     ;; versions shipping with Audacity are used for now.
-     `(("wxwidgets" ,wxwidgets-gtk2)
-       ("gtk" ,gtk+-2)
+     `(("wxwidgets" ,wxwidgets)
+       ("gtk" ,gtk+)
        ("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
        ("expat" ,expat)
@@ -297,7 +320,7 @@ engineers, musicians, soundtrack editors and composers.")
        ("flac" ,flac)
        ("libid3tag" ,libid3tag)
        ("libmad" ,libmad)
-       ("libsbsms" ,libsbsms)
+       ;;("libsbsms" ,libsbsms)         ;bundled version is modified
        ("libsndfile" ,libsndfile)
        ("soundtouch" ,soundtouch)
        ("soxr" ,soxr)                   ;replaces libsamplerate
@@ -305,8 +328,10 @@ engineers, musicians, soundtrack editors and composers.")
        ("vamp" ,vamp)
        ("libvorbis" ,libvorbis)
        ("lv2" ,lv2)
-       ("lilv" ,lilv)
-       ("portaudio" ,portaudio)))
+       ("lilv" ,lilv)                   ;for lv2
+       ("suil" ,suil)                   ;for lv2
+       ("portaudio" ,portaudio)
+       ("portmidi" ,portmidi)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -318,22 +343,55 @@ engineers, musicians, soundtrack editors and composers.")
     (arguments
      '(#:configure-flags
        (let ((libid3tag (assoc-ref %build-inputs "libid3tag"))
-             (libmad (assoc-ref %build-inputs "libmad")))
+             (libmad (assoc-ref %build-inputs "libmad"))
+             (portmidi (assoc-ref %build-inputs "portmidi")))
          (list
           ;; Loading FFmpeg dynamically is problematic.
           "--disable-dynamic-loading"
-          ;; libid3tag and libmad provide no .pc files, so pkg-config fails to
-          ;; find them.  Force their inclusion.
+          ;; portmidi, libid3tag and libmad provide no .pc files, so
+          ;; pkg-config fails to find them.  Force their inclusion.
           (string-append "ID3TAG_CFLAGS=-I" libid3tag "/include")
           (string-append "ID3TAG_LIBS=-L" libid3tag "/lib -lid3tag -lz")
           (string-append "LIBMAD_CFLAGS=-I" libmad "/include")
-          (string-append "LIBMAD_LIBS=-L" libmad "/lib -lmad")))
+          (string-append "LIBMAD_LIBS=-L" libmad "/lib -lmad")
+          (string-append "PORTMIDI_CFLAGS=-I" portmidi "/include")
+          (string-append "PORTMIDI_LIBS=-L" portmidi "/lib -lportmidi")
+          "EXPAT_USE_SYSTEM=yes"
+          "FFMPEG_USE_SYSTEM=yes"
+          "LAME_USE_SYSTEM=yes"
+          "LIBFLAC_USE_SYSTEM=yes"
+          "LIBID3TAG_USE_SYSTEM=yes"
+          "LIBMAD_USE_SYSTEM=yes"
+          "USE_LOCAL_LIBNYQUIST="      ;not packaged yet
+          ;;"LIBSBSMS_USE_SYSTEM=yes"  ;bundled version is patched
+          "LIBSNDFILE_USE_SYSTEM=yes"
+          "LIBSOUNDTOUCH_USE_SYSTEM=yes"
+          "LIBSOXR_USE_SYSTEM=yes"
+          "LIBTWOLAME_USE_SYSTEM=yes"
+          "LIBVAMP_USE_SYSTEM=yes"
+          "LIBVORBIS_USE_SYSTEM=yes"
+          "LV2_USE_SYSTEM=yes"
+          "PORTAUDIO_USE_SYSTEM=yes"))
        #:phases
        (modify-phases %standard-phases
-         ;; FFmpeg is only detected if autoreconf runs.
-         (add-after 'unpack 'autoreconf
+         (add-after 'unpack 'fix-sbsms-check
            (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))
+             ;; This check is wrong: there is no 2.2.0 release; not even the
+             ;; bundled sources match this release string.
+             (substitute* '("m4/audacity_checklib_libsbsms.m4"
+                            "configure")
+               (("sbsms >= 2.2.0") "sbsms >= 2.0.0"))
+             #t))
+         (add-after 'unpack 'use-upstream-headers
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("src/NoteTrack.cpp"
+                            "src/AudioIO.cpp"
+                            "src/AudioIO.h")
+               (("../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h")
+               (("../lib-src/portmidi/porttime/porttime.h") "porttime.h"))
+             (substitute* "src/prefs/MidiIOPrefs.cpp"
+               (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h"))
+             #t)))
        ;; The test suite is not "well exercised" according to the developers,
        ;; and fails with various errors.  See
        ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
