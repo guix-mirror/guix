@@ -7910,3 +7910,59 @@ including pre-existing objects that you do not have source-code of.")
 to implement Java native methods.  It is based on the jnigen code generator
 that is part of the SWT Tools project.")
     (license license:asl2.0)))
+
+(define-public java-jansi-native
+  (package
+    (name "java-jansi-native")
+    (version "1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/fusesource/jansi-native/"
+                                  "archive/jansi-native-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0j2ydlgxbzbgshqkwghbxxxnbnx1mmjgd6k5fw6xfvxw1z956yqf"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jansi-native.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-native
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; there are more required files for windows in windows/
+             (with-directory-excursion "src/main/native-package/src"
+               (substitute* "jansi_ttyname.c"
+                 (("#include \"jansi_.*") ""))
+               (and
+                 (system* "gcc" "-c" "jansi_ttyname.c" "-o" "jansi_ttyname.o"
+                          (string-append "-I" (assoc-ref inputs "java-hawtjni")
+                                         "/include")
+                          (string-append "-I" (assoc-ref inputs "jdk")
+                                         "/include/linux")
+                          "-fPIC" "-O2")
+                 (system* "gcc" "-o" "libjansi.so" "-shared" "jansi_ttyname.o")))))
+         (add-before 'build 'install-native
+           (lambda _
+             (let ((dir (string-append "build/classes/META-INF/native/"
+                                       ,(match (%current-system)
+                                          ((or "i686-linux" "armhf-linux")
+                                           "linux32")
+                                          ((or "x86_64-linux" "aarch64-linux")
+                                           "linux64")))))
+               (install-file "src/main/native-package/src/libjansi.so" dir))
+             #t))
+         (add-after 'install 'install-native
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/include"))
+             (install-file "src/main/native-package/src/jansi.h"
+                           (string-append (assoc-ref outputs "out") "/include"))
+             #t)))))
+    (inputs
+     `(("java-hawtjni" ,java-hawtjni)))
+    (home-page "https://fusesource.github.io/jansi/")
+    (synopsis "Native library for jansi")
+    (description "Java-jansi-native contains the native library for the jansi
+frobnication library/framework.")
+    (license license:asl2.0)))
