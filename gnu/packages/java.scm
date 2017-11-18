@@ -8140,15 +8140,18 @@ wider problem of Object to Object transformation.")
            (lambda _
              (mkdir-p "build/classes/org/joda/time/tz/data")
              (mkdir-p "build/classes/org/joda/time/format")
-             ;; This will produce an exception, but it's all right.
-             (zero? (system* "java" "-cp"
-                             (string-append "build/classes:" (getenv "CLASSPATH"))
-                             "org.joda.time.tz.ZoneInfoCompiler"
-                             "-src" "src/main/java/org/joda/time/tz/src"
-                             "-dst" "build/classes/org/joda/time/tz/data"
-                             "africa" "antarctica" "asia" "australasia"
-                             "europe" "northamerica" "southamerica"
-                             "pacificnew" "etcetera" "backward" "systemv"))
+             ;; This will produce the following exception:
+             ;; java.io.IOException: Resource not found: "org/joda/time/tz/data/ZoneInfoMap"
+             ;; which is normal, because it doesn't exist yet. It still generates
+             ;; the same file as in the binary one can find on maven.
+             (invoke "java" "-cp"
+                     (string-append "build/classes:" (getenv "CLASSPATH"))
+                     "org.joda.time.tz.ZoneInfoCompiler"
+                     "-src" "src/main/java/org/joda/time/tz/src"
+                     "-dst" "build/classes/org/joda/time/tz/data"
+                     "africa" "antarctica" "asia" "australasia"
+                     "europe" "northamerica" "southamerica"
+                     "pacificnew" "etcetera" "backward" "systemv")
              (for-each (lambda (f)
                          (copy-file f (string-append
                                         "build/classes/org/joda/time/format/"
@@ -8159,7 +8162,7 @@ wider problem of Object to Object transformation.")
            (lambda _
              ;; We need to regenerate the jar file to add generated data.
              (delete-file "build/jar/java-joda-time.jar")
-             (zero? (system* "ant" "jar"))))
+             (invoke "ant" "jar")))
          (add-before 'check 'copy-test-resources
            (lambda _
              (mkdir-p "build/test-classes/org/joda/time/tz/data")
@@ -8177,4 +8180,78 @@ wider problem of Object to Object transformation.")
     (synopsis "Replacement for the Java date and time classes")
     (description "Joda-Time is a replacement for the Java date and time
 classes prior to Java SE 8.")
+    (license license:asl2.0)))
+
+(define-public java-xerces
+  (package
+    (name "java-xerces")
+    (version "2.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/xerces/j/source/"
+                           "Xerces-J-src." version ".tar.gz"))
+       (sha256
+        (base32 "1006igwy2lqrmjvdk64v8dg6qbk9c29pm8xxx7r87n0vnpvmx6pm"))
+       (patches (search-patches
+                 "java-xerces-xjavac_taskdef.patch"
+                 "java-xerces-build_dont_unzip.patch"
+                 "java-xerces-bootclasspath.patch"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f;; Test files are not present
+       #:test-target "test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-build.properties
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((jaxp (assoc-ref inputs "java-jaxp"))
+                  (resolver (assoc-ref inputs "java-apache-xml-commons-resolver")))
+              (with-output-to-file "build.properties"
+                (lambda _
+                  (format #t
+                   "jar.jaxp = ~a/share/java/jaxp.jar~@
+                   jar.apis-ext = ~a/share/java/jaxp.jar~@
+                   jar.resolver = ~a/share/java/xml-resolver.jar~%"
+                   jaxp jaxp resolver)))
+              ;; Make xerces use our version of jaxp in tests
+              (substitute* "build.xml"
+                (("xml-apis.jar")
+                 (string-append jaxp "/share/java/jaxp.jar"))
+                (("\\$\\{tools.dir\\}/\\$\\{jar.apis\\}")
+                 "${jar.apis}")))
+            #t))
+         (replace 'install (install-jars "build")))))
+    (inputs
+     `(("java-apache-xml-commons-resolver" ,java-apache-xml-commons-resolver)
+       ("java-jaxp" ,java-jaxp)))
+    (home-page "https://xerces.apache.org/xerces2-j/")
+    (synopsis "Validating XML parser for Java with DOM level 3 support")
+    (description "The Xerces2 Java parser is the reference implementation of
+XNI, the Xerces Native Interface, and also a fully conforming XML Schema
+processor.
+
+Xerces2-J supports the following standards and APIs:
+
+@itemize
+@item eXtensible Markup Language (XML) 1.0 Second Edition Recommendation
+@item Namespaces in XML Recommendation
+@item Document Object Model (DOM) Level 2 Core, Events, and Traversal and
+      Range Recommendations
+@item Simple API for XML (SAX) 2.0.1 Core and Extension
+@item Java APIs for XML Processing (JAXP) 1.2.01
+@item XML Schema 1.0 Structures and Datatypes Recommendations
+@item Experimental implementation of the Document Object Model (DOM) Level 3
+      Core and Load/Save Working Drafts
+@item Provides a partial implementation of the XML Inclusions (XInclude) W3C
+      Candidate Recommendation
+@end itemize
+
+Xerces is now able to parse documents written according to the XML 1.1
+Candidate Recommendation, except that it does not yet provide an option to
+enable normalization checking as described in section 2.13 of this
+specification.  It also handles namespaces according to the XML Namespaces 1.1
+Candidate Recommendation, and will correctly serialize XML 1.1 documents if
+the DOM level 3 load/save API's are in use.")
     (license license:asl2.0)))

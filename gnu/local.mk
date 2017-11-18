@@ -776,6 +776,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
   %D%/packages/patches/java-powermock-fix-java-files.patch		\
+  %D%/packages/patches/java-xerces-bootclasspath.patch	\
+  %D%/packages/patches/java-xerces-build_dont_unzip.patch	\
+  %D%/packages/patches/java-xerces-xjavac_taskdef.patch	\
   %D%/packages/patches/jemalloc-arm-address-bits.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jbig2dec-CVE-2016-9601.patch		\
