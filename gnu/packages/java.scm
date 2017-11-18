@@ -3412,34 +3412,6 @@ working with compressed files such as ar, cpio, Unix dump, tar, zip, gzip, XZ,
 Pack200, bzip2, 7z, arj, lzma, snappy, DEFLATE, lz4 and Z files.")
     (license license:asl2.0)))
 
-(define-public java-commons-net
-  (package
-    (name "java-commons-net")
-    (version "3.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://apache/commons/net/source/"
-                                  "commons-net-" version "-src.tar.gz"))
-              (sha256
-               (base32
-                "0n0cmnddk9qdqhjvka8pc6hd9mn2qi3166f1s6xk32h7rfy1adxr"))))
-    (build-system ant-build-system)
-    (arguments
-     `(;; FIXME: MainTest.java tries to read "examples.properties" (which
-       ;; should be "resources/examples/examples.properties"), but gets "null"
-       ;; instead.
-       #:tests? #f
-       #:jar-name "commons-net.jar"))
-    (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://commons.apache.org/net/")
-    (synopsis "Client library for many basic Internet protocols")
-    (description "The Apache Commons Net library implements the client side of
-many basic Internet protocols.  The purpose of the library is to provide
-fundamental protocol access, not higher-level abstractions.")
-    (license license:asl2.0)))
-
 (define-public java-osgi-annotation
   (package
     (name "java-osgi-annotation")
@@ -4800,50 +4772,6 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
      `(("junit" ,java-junit)))
     (propagated-inputs
      `(("stringtemplate" ,java-stringtemplate-3)))))
-
-(define-public java-asm
-  (package
-    (name "java-asm")
-    (version "5.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.forge.ow2.org/asm/"
-                                  "asm-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0kxvmv5275rnjl7jv0442k3wjnq03ngkb7sghs78avf45pzm4qgr"))))
-    (build-system ant-build-system)
-    (arguments
-     `(#:build-target "compile"
-       #:test-target "test"
-       ;; The tests require an old version of Janino, which no longer compiles
-       ;; with the JDK7.
-       #:tests? #f
-       ;; We don't need these extra ant tasks, but the build system asks us to
-       ;; provide a path anyway.
-       #:make-flags (list (string-append "-Dobjectweb.ant.tasks.path=foo"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'build-jars
-           (lambda* (#:key make-flags #:allow-other-keys)
-             ;; We cannot use the "jar" target because it depends on a couple
-             ;; of unpackaged, complicated tools.
-             (mkdir "dist")
-             (zero? (system* "jar"
-                             "-cf" (string-append "dist/asm-" ,version ".jar")
-                             "-C" "output/build/tmp" "."))))
-         (replace 'install
-           (install-jars "dist")))))
-    (native-inputs
-     `(("java-junit" ,java-junit)))
-    (home-page "http://asm.ow2.org/")
-    (synopsis "Very small and fast Java bytecode manipulation framework")
-    (description "ASM is an all purpose Java bytecode manipulation and
-analysis framework.  It can be used to modify existing classes or dynamically
-generate classes, directly in binary form.  The provided common
-transformations and analysis algorithms allow to easily assemble custom
-complex transformations and code analysis tools.")
-    (license license:bsd-3)))
 
 (define-public java-commons-cli-1.2
   ;; This is a bootstrap dependency for Maven2.
