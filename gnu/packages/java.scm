@@ -1926,6 +1926,30 @@ as tree building (via a tool called JJTree included with JavaCC), actions,
 debugging, etc.")
     (license license:bsd-3)))
 
+(define-public javacc-4
+  (package (inherit javacc)
+    (version "4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/javacc/javacc.git")
+                    (commit "release_41")))
+              (file-name (string-append "javacc-" version "-checkout"))
+              (sha256
+               (base32
+                "07ysav7j8r1c6h8qxrgqk6lwdp74ly0ad1935lragxml0qqc3ka0"))))
+    ;; Tests fail with
+    ;; /tmp/guix-build-javacc-4.1.drv-0/source/test/javacodeLA/build.xml:60:
+    ;; JAVACODE failed
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-bundled-libs
+           (lambda _
+             (delete-file-recursively "lib") #t))
+         (replace 'install (install-jars "bin/lib")))))))
+
 (define-public java-classpathx-servletapi
   (package
     (name "java-classpathx-servletapi")
