@@ -58,6 +58,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages cpio)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages vim)

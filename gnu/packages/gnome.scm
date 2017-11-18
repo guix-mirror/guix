@@ -122,6 +122,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)

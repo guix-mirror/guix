@@ -56,6 +56,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
 

@@ -43,6 +43,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))

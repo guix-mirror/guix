@@ -96,6 +96,7 @@
   #:use-module (gnu packages samba)
   #:use-module (gnu packages screen)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages web)

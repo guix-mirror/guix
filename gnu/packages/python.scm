@@ -111,6 +111,7 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
@@ -468,31 +469,6 @@ pidof, tty, taskset, pmap.")
 
 (define-public python2-psutil
   (package-with-python2 python-psutil))
-
-(define-public python-pytz
-  (package
-    (name "python-pytz")
-    (version "2017.2")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (pypi-uri "pytz" version ".zip"))
-      (sha256
-       (base32
-        "12cmd3j46d2gcw08bspvp6s9icfcvx88zjz52n1bli9dyvl5dh7m"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("unzip" ,unzip)))
-    (home-page "http://pythonhosted.org/pytz")
-    (synopsis "Python timezone library")
-    (description "This library brings the Olson tz database into Python.  It
-allows accurate and cross platform timezone calculations using Python 2.4 or
-higher.  It also solves the issue of ambiguous times at the end of daylight
-saving time.  Almost all of the Olson timezones are supported.")
-    (license license:expat)))
-
-(define-public python2-pytz
-  (package-with-python2 python-pytz))
 
 (define-public python-clyent
   (package
@@ -1004,59 +980,6 @@ Python file, so it can be easily copied into your project.")
 (define-public python2-six
   (package-with-python2 python-six))
 
-(define-public python-dateutil
-  (package
-    (name "python-dateutil")
-    (version "2.6.0")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (pypi-uri "python-dateutil" version))
-      (sha256
-       (base32
-        "1lhq0hxjc3cfha101q02ld5ijlpfyjn2w1yh7wvpiy367pgzi8k2"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-six" ,python-six)))
-    (home-page "https://dateutil.readthedocs.io/en/stable/")
-    (synopsis "Extensions to the standard datetime module")
-    (description
-     "The dateutil module provides powerful extensions to the standard
-datetime module, available in Python 2.3+.")
-    (license license:bsd-3)))
-
-(define-public python2-dateutil
-  (package-with-python2 python-dateutil))
-
-(define-public python-parsedatetime
-  (package
-    (name "python-parsedatetime")
-    (version "2.4")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (pypi-uri "parsedatetime" version))
-      (sha256
-       (base32
-        "0jxqkjks7z9dn222cqgvskp4wr6d92aglinxq7pd2w4mzdc7r09x"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-pyicu" ,python-pyicu)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
-    (propagated-inputs
-     `(("python-future" ,python-future)))
-    (home-page "https://github.com/bear/parsedatetime/")
-    (synopsis
-     "Parse human-readable date/time text")
-    (description
-     "Parse human-readable date/time text.")
-    (license license:asl2.0)))
-
-(define-public python2-parsedatetime
-  (package-with-python2 python-parsedatetime))
-
 (define-public python-schedule
   (package
     (name "python-schedule")
@@ -1116,30 +1039,6 @@ doing practical, real world data analysis in Python.")
 
 (define-public python2-pandas
   (package-with-python2 python-pandas))
-
-(define-public python-tzlocal
-  (package
-    (name "python-tzlocal")
-    (version "1.2.2")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (pypi-uri "tzlocal" version))
-      (sha256
-       (base32
-        "0paj7vlsb0np8b5sp4bv64wxv7qk2piyp7xg29pkhdjwsbls9fnb"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-pytz" ,python-pytz)))
-    (home-page "https://github.com/regebro/tzlocal")
-    (synopsis
-     "Local timezone information for Python")
-    (description
-     "Tzlocal returns a tzinfo object with the local timezone information.
-This module attempts to fix a glaring hole in pytz, that there is no way to
-get the local timezone information, unless you know the zoneinfo name, and
-under several distributions that's hard or impossible to figure out.")
-    (license license:cc0)))
 
 (define-public python2-mechanize
   (package
@@ -4564,30 +4463,6 @@ computing.")
        `(("python2-mock" ,python2-mock)
          ,@(package-native-inputs ipython))))))
 
-(define-public python-isodate
-  (package
-    (name "python-isodate")
-    (version "0.5.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "isodate" version))
-        (sha256
-          (base32
-            "0cafaiwixgpxwh9dsd28qb0dbzsj6xpxjdkyk30ns91ps10mq422"))))
-    (build-system python-build-system)
-    (home-page
-      "http://cheeseshop.python.org/pypi/isodate")
-    (synopsis
-      "Python date parser and formatter")
-    (description
-      "Python-isodate is a python module for parsing and formatting
-ISO 8601 dates, time and duration.")
-    (license license:bsd-3)))
-
-(define-public python2-isodate
-  (package-with-python2 python-isodate))
-
 (define-public python-urwid
   (package
     (name "python-urwid")
@@ -5791,55 +5666,6 @@ and MAC network addresses.")
 (define-public python2-wrapt
   (package-with-python2 python-wrapt))
 
-(define-public python-iso8601
-  (package
-  (name "python-iso8601")
-  (version "0.1.11")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (pypi-uri "iso8601" version))
-      (sha256
-       (base32
-        "0c7gh3lsdjds262h0v1sqc66l7hqgfwbakn96qrhdbl0i3vm5yz8"))))
-  (build-system python-build-system)
-  (native-inputs
-   `(("python-pytest" ,python-pytest)))
-  (home-page "https://bitbucket.org/micktwomey/pyiso8601")
-  (synopsis "Module to parse ISO 8601 dates")
-  (description
-    "This module parses the most common forms of ISO 8601 date strings (e.g.
-@code{2007-01-14T20:34:22+00:00}) into @code{datetime} objects.")
-  (license license:expat)))
-
-(define-public python2-iso8601
-  (package-with-python2 python-iso8601))
-
-(define-public python-monotonic
-  (package
-    (name "python-monotonic")
-    (version "0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/m/monotonic/monotonic-"
-               version
-               ".tar.gz"))
-        (sha256
-          (base32
-            "0yz0bcbwx8r2c01czzfpbrxddynxyk9k95jj8h6sgcb7xmfvl998"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/atdt/monotonic")
-    (synopsis "Implementation of time.monotonic() for Python 2 & < 3.3")
-    (description
-      "This module provides a monotonic() function which returns the value (in
-fractional seconds) of a clock which never goes backwards.")
-    (license license:asl2.0)))
-
-(define-public python2-monotonic
-  (package-with-python2 python-monotonic))
-
 (define-public python-xlrd
   (package
     (name "python-xlrd")
@@ -6753,31 +6579,6 @@ This allows one to make simple text-mode user interfaces on Unix-like systems")
                 (sha256
                  (base32
                   "0d8k7lxk50imdyx85lv8j98i4c93a71iwpapnl1506rpkbm9qvd9")))))))
-
-(define-public python-pyrfc3339
-  (package
-    (name "python-pyrfc3339")
-    (version "1.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pyRFC3339" version))
-       (sha256
-        (base32
-         "0dgm4l9y8jiax5cp6yxjd2i27cq8h33sh81n1wfbmnmqb32cdywd"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-pytz" ,python-pytz)))
-    (native-inputs
-     `(("python-nose" ,python-nose)))
-    (home-page "https://github.com/kurtraschke/pyRFC3339")
-    (synopsis "Python timestamp library")
-    (description "Python library for generating and parsing RFC 3339-compliant
-timestamps.")
-    (license license:expat)))
-
-(define-public python2-pyrfc3339
-  (package-with-python2 python-pyrfc3339))
 
 (define-public python-configobj
   (package
@@ -8836,34 +8637,6 @@ objects, patterned after the Mocha library for Ruby.")
 (define-public python2-chai
   (package-with-python2 python-chai))
 
-(define-public python-arrow
-  (package
-    (name "python-arrow")
-    (version "0.10.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "arrow" version))
-              (sha256
-               (base32
-                "08n7q2l69hlainds1byd4lxhwrq7zsw7s640zkqc3bs5jkq0cnc0"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(;; For testing
-       ("python-chai" ,python-chai)
-       ("python-simplejson" ,python-simplejson)))
-    (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)))
-    (home-page "https://github.com/crsmithdev/arrow/")
-    (synopsis "Dates and times for Python")
-    (description
-     "Arrow is a Python library to creating, manipulating, formatting and
-converting dates, times, and timestamps.  It implements and updates the
-datetime type.")
-    (license license:asl2.0)))
-
-(define-public python2-arrow
-  (package-with-python2 python-arrow))
-
 (define-public python-inflection
   (package
     (name "python-inflection")
@@ -9930,31 +9703,6 @@ useful as a validator for JSON data.")
 
 (define-public python2-validictory
   (package-with-python2 python-validictory))
-
-(define-public python-aniso8601
-  (package
-    (name "python-aniso8601")
-    (version "1.3.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "aniso8601" version))
-        (sha256
-          (base32
-            "1waj54iv3n3lw1fapbz8a93yjgrybgpc86wif5baxdh1arpj9df3"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)))
-    (home-page
-      "https://bitbucket.org/nielsenb/aniso8601")
-    (synopsis
-      "Python library for parsing ISO 8601 strings")
-    (description
-      "This package contains a library for parsing ISO 8601 datetime strings.")
-    (license license:bsd-3)))
-
-(define-public python2-aniso8601
-  (package-with-python2 python-aniso8601))
 
 (define-public python-pyev
   (package

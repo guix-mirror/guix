@@ -82,6 +82,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)

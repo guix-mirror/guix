@@ -57,6 +57,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages base)
   #:use-module (gnu packages web)

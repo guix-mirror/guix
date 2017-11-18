@@ -25,7 +25,8 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages check)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages python-crypto))
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages time))
 
 (define-public jrnl
   (package
