@@ -3008,6 +3008,84 @@ sequencing (HTS) data.  There are also an number of useful utilities for
 manipulating HTS data.")
     (license license:expat)))
 
+;; This version matches java-htsjdk 2.3.0.  Later versions also require a more
+;; recent version of java-htsjdk, which depends on gradle.
+(define-public java-picard
+  (package
+    (name "java-picard")
+    (version "2.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/broadinstitute/picard.git")
+                    (commit version)))
+              (file-name (string-append "java-picard-" version "-checkout"))
+              (sha256
+               (base32
+                "1ll7mf4r3by92w2nhlmpa591xd1f46xlkwh59mq6fvbb5pdwzvx6"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete pre-built binaries.
+                  (delete-file-recursively "lib")
+                  (mkdir-p "lib")
+                  (substitute* "build.xml"
+                    ;; Remove build-time dependency on git.
+                    (("failifexecutionfails=\"true\"")
+                     "failifexecutionfails=\"false\"")
+                    ;; Use our htsjdk.
+                    (("depends=\"compile-htsjdk, ")
+                     "depends=\"")
+                    (("depends=\"compile-htsjdk-tests, ")
+                     "depends=\"")
+                    ;; Build picard-lib.jar before building picard.jar
+                    (("name=\"picard-jar\" depends=\"" line)
+                     (string-append line "picard-lib-jar, ")))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "picard-jar"
+       #:test-target "test"
+       ;; Tests require jacoco:coverage.
+       #:tests? #f
+       #:make-flags
+       (list (string-append "-Dhtsjdk_lib_dir="
+                            (assoc-ref %build-inputs "java-htsjdk")
+                            "/share/java/htsjdk/")
+             "-Dhtsjdk-classes=dist/tmp"
+             (string-append "-Dhtsjdk-version="
+                            ,(package-version java-htsjdk)))
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-our-htsjdk
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("\\$\\{htsjdk\\}/lib")
+                (string-append (assoc-ref inputs "java-htsjdk")
+                               "/share/java/htsjdk/")))
+             #t))
+         (add-after 'unpack 'make-test-target-independent
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("name=\"test\" depends=\"compile, ")
+                "name=\"test\" depends=\""))
+             #t))
+         (replace 'install (install-jars "dist")))))
+    (inputs
+     `(("java-htsjdk" ,java-htsjdk)
+       ("java-guava" ,java-guava)))
+    (native-inputs
+     `(("java-testng" ,java-testng)))
+    (home-page "http://broadinstitute.github.io/picard/")
+    (synopsis "Tools for manipulating high-throughput sequencing data and formats")
+    (description "Picard is a set of Java command line tools for manipulating
+high-throughput sequencing (HTS) data and formats.  Picard is implemented
+using the HTSJDK Java library to support accessing file formats that are
+commonly used for high-throughput sequencing data such as SAM, BAM, CRAM and
+VCF.")
+    (license license:expat)))
+
 (define-public htslib
   (package
     (name "htslib")
