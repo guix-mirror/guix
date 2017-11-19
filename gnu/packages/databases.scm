@@ -1764,6 +1764,33 @@ for ODBC.")
 (define-public python2-pyodbc-c
   (package-with-python2 python-pyodbc-c))
 
+(define-public python-pyodbc
+  (package
+    (name "python-pyodbc")
+    (version "4.0.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyodbc" version))
+       (sha256
+        (base32
+         "0a83zwz3h1agshnsc6r7al6q83222w8601gpzzzjvjz5m56ghmcn"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (inputs
+     `(("unixodbc" ,unixodbc)))
+    (arguments
+     `(;; No unit tests exist.
+       #:tests? #f))
+    (home-page "https://github.com/mkleehammer/pyodbc")
+    (synopsis "Python ODBC Library")
+    (description "@code{python-pyodbc} provides a Python DB-API driver
+for ODBC.")
+    (license (license:x11-style "file:///LICENSE.TXT"))))
+
+(define-public python2-pyodbc
+  (package-with-python2 python-pyodbc))
+
 (define-public mdbtools
   (package
     (name "mdbtools")
