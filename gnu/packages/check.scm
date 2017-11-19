@@ -64,15 +64,15 @@
 (define-public check
   (package
     (name "check")
-    (version "0.10.0")
+    (version "0.12.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://github.com/libcheck/check/files/71408/"
-                          "/check-" version ".tar.gz"))
+      (uri (string-append "https://github.com/libcheck/check/releases/download/"
+                          version "/check-" version ".tar.gz"))
       (sha256
        (base32
-        "0lhhywf5nxl3dd0hdakra3aasl590756c9kmvyifb3vgm9k0gxgm"))))
+        "0d22h8xshmbpl9hba9ch3xj8vb9ybm5akpsbbh7yj07fic4h2hj6"))))
     (build-system gnu-build-system)
     (home-page "https://libcheck.github.io/check/")
     (synopsis "Unit test framework for C")
@@ -84,20 +84,6 @@ catch both assertion failures and code errors that cause segmentation
 faults or other signals.  The output from unit tests can be used within
 source code editors and IDEs.")
     (license license:lgpl2.1+)))
-
-;; XXX: Some packages require this newer version.  Incorporate this
-;; into the main 'check' package during the next rebuild cycle.
-(define-public check-0.11.0
-  (package
-    (inherit check)
-    (version "0.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/libcheck/check/releases"
-                                  "/download/" version "/check-" version ".tar.gz"))
-              (sha256
-               (base32
-                "05jn1pgb7hqb937xky2147nnq3r4qy5wwr79rddpax3bms5a9xr4"))))))
 
 (define-public cunit
   (package

@@ -1097,7 +1097,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
        ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
      `(("bison" ,bison)
-       ("check" ,check-0.11.0)
+       ("check" ,check)
        ("flex" ,flex)
        ("pkg-config" ,pkg-config)))
     (arguments
