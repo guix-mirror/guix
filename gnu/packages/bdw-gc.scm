@@ -91,15 +91,15 @@ C or C++ programs, though that is not its primary goal.")
 (define-public libatomic-ops
   (package
     (name "libatomic-ops")
-    (version "7.4.4")
+    (version "7.4.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-"
-                    version ".tar.gz"))
+                    "https://github.com/ivmai/libatomic_ops/releases/download/v"
+                    version "/libatomic_ops-" version ".tar.gz"))
               (sha256
                (base32
-                "13vg5fqwil17zpf4hj4h8rh3blzmym693lkdjgvwpgni1mh0l8dz"))))
+                "0sj3plzpbqgxrqpjq3w2zi3zxxqqps71ncdwk5s1k30i9d9da1f4"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (synopsis "Accessing hardware atomic memory update operations")
