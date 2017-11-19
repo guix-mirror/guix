@@ -7236,6 +7236,41 @@ for high performance inter-thread communication that avoids the need for
 message queues or resource locking.")
     (license license:asl2.0)))
 
+(define-public java-commons-bcel
+  (package
+    (name "java-commons-bcel")
+    (version "6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/bcel/source/bcel-"
+                                  version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0j3x1rxd673k07psclk8k13rqh0x0mf2yy5qiwkiw4z3afa568jy"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "bcel.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main/java"
+       #:test-dir "src/test/java"
+       ;; FIXME: Tests require the unpackaged jna.
+       #:tests? #f))
+    (home-page "https://commons.apache.org/proper/commons-bcel/")
+    (synopsis "Byte code engineering library")
+    (description "The Byte Code Engineering Library (Apache Commons BCEL) is
+intended to give users a convenient way to analyze, create, and
+manipulate (binary) Java class files.  Classes are represented by objects
+which contain all the symbolic information of the given class: methods, fields
+and byte code instructions, in particular.
+
+Such objects can be read from an existing file, be transformed by a
+program (e.g. a class loader at run-time) and written to a file again.  An
+even more interesting application is the creation of classes from scratch at
+run-time.  The @dfn{Byte Code Engineering Library} (BCEL) may be also useful
+if you want to learn about the @dfn{Java Virtual Machine} (JVM) and the format
+of Java @code{.class} files.")
+    (license license:asl2.0)))
+
 (define-public java-xerial-core
   (package
     (name "java-xerial-core")
