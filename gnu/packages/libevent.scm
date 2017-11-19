@@ -131,13 +131,12 @@ programs.")
                 "0pbq9kb96fp131fcmmpjngh8n4nsnwafzirdi8j934wnmnlsyjnn"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'unpack 'autogen
-                 (lambda _
-                   ;; Fashionable people don't run 'make dist' these days, so
-                   ;; we need to do that ourselves.
-                   (zero? (system* "sh" "autogen.sh")))
-                 %standard-phases)
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'autogen
+                    (lambda _
+                      ;; Fashionable people don't run 'make dist' these days, so
+                      ;; we need to do that ourselves.
+                      (zero? (system* "sh" "autogen.sh")))))
 
        ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
        #:tests? #f))
