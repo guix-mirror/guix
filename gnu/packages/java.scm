@@ -6516,6 +6516,62 @@ provides control over value quantization behavior across the value range and
 the subsequent value resolution at any given level.")
     (license license:public-domain)))
 
+(define-public java-cofoja
+  (package
+    (name "java-cofoja")
+    (version "1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/nhatminhle/cofoja.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append "java-cofoja-" version "-checkout"))
+              (sha256
+               (base32
+                "0p7sz8y5xgpi5rx1qwn6587fkd52qr3ha3ybh14gqcyxhikl525w"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "dist"
+       #:test-target "test"
+       #:jdk ,icedtea-8
+       #:make-flags
+       (list "-Ddist.dir=dist")
+       #:modules ((guix build ant-build-system)
+                  (guix build java-utils)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (ice-9 match))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The bulid system ignores the class path the ant-build-system sets
+         ;; up and instead expects to find all dependencies in the "lib"
+         ;; directory.
+         (add-after 'unpack 'create-libdir
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "lib")
+             (for-each
+              (lambda (file)
+                (let ((target (string-append "lib/" (basename file))))
+                  (unless (file-exists? target)
+                    (symlink file target))))
+              (append-map (match-lambda
+                            ((label . dir)
+                             (find-files dir "\\.jar$")))
+                          inputs))
+             #t))
+         (replace 'install (install-jars "dist")))))
+    (inputs
+     `(("java-asm" ,java-asm)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/nhatminhle/cofoja")
+    (synopsis "Contracts for Java")
+    (description "Contracts for Java, or Cofoja for short, is a contract
+programming framework and test tool for Java, which uses annotation processing
+and bytecode instrumentation to provide run-time checking. (In particular,
+this is not a static analysis tool.)")
+    (license license:lgpl3+)))
+
 (define-public java-aopalliance
   (package
     (name "java-aopalliance")
