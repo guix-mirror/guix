@@ -171,7 +171,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.6.3")
+   (version "1.7.1")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -179,7 +179,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "06hh8hml5fwp1pcg4r7k8syiqaxb4p1532y7sacr66mnprkv67p3"))))
+               "0khmcm4k0cckw5ql9z66ahp1zy5dn978vw8p41h91dhk6glacicn"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
