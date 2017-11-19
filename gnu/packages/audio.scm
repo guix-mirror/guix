@@ -83,7 +83,8 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public alsa-modular-synth
   (package
@@ -341,13 +342,19 @@ engineers, musicians, soundtrack editors and composers.")
        ("python" ,python-2)
        ("which" ,which)))
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        (let ((libid3tag (assoc-ref %build-inputs "libid3tag"))
              (libmad (assoc-ref %build-inputs "libmad"))
              (portmidi (assoc-ref %build-inputs "portmidi")))
          (list
           ;; Loading FFmpeg dynamically is problematic.
           "--disable-dynamic-loading"
+          ;; SSE instructions are available on Intel systems only.
+          ,@(if (any (cute string-prefix? <> (or (%current-target-system)
+                                                 (%current-system)))
+                    '("x64_64" "i686"))
+              '()
+              '("--enable-sse=no"))
           ;; portmidi, libid3tag and libmad provide no .pc files, so
           ;; pkg-config fails to find them.  Force their inclusion.
           (string-append "ID3TAG_CFLAGS=-I" libid3tag "/include")
