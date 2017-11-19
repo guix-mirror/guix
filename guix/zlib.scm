@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,31 +149,6 @@ the number of uncompressed bytes written, a strictly positive integer."
   ;; Z_DEFAULT_COMPRESSION.
   -1)
 
-(define (close-procedure gzfile port)
-  "Return a procedure that closes GZFILE, ensuring its underlying PORT is
-closed even if closing GZFILE triggers an exception."
-  (let-syntax ((ignore-EBADF
-                (syntax-rules ()
-                  ((_ exp)
-                   (catch 'system-error
-                     (lambda ()
-                       exp)
-                     (lambda args
-                       (unless (= EBADF (system-error-errno args))
-                         (apply throw args))))))))
-
-    (lambda ()
-      (catch 'zlib-error
-        (lambda ()
-          ;; 'gzclose' closes the underlying file descriptor.  'close-port'
-          ;; calls close(2) and gets EBADF, which we swallow.
-          (gzclose gzfile)
-          (ignore-EBADF (close-port port)))
-        (lambda args
-          ;; Make sure PORT is closed despite the zlib error.
-          (ignore-EBADF (close-port port))
-          (apply throw args))))))
-
 (define* (make-gzip-input-port port #:key (buffer-size %default-buffer-size))
   "Return an input port that decompresses data read from PORT, a file port.
 PORT is automatically closed when the resulting port is closed.  BUFFER-SIZE
@@ -183,7 +158,14 @@ buffered input, which would be lost (and is lost anyway)."
   (define gzfile
     (match (drain-input port)
       (""                                         ;PORT's buffer is empty
-       (gzdopen (fileno port) "r"))
+       ;; 'gzclose' will eventually close the file descriptor beneath PORT.
+       ;; 'close-port' on PORT would get EBADF if 'gzclose' already closed it,
+       ;; so that's no good; revealed ports are no good either because they
+       ;; leak (see <https://bugs.gnu.org/28784>); calling 'close-port' after
+       ;; 'gzclose' doesn't work either because it leads to a race condition
+       ;; (see <https://bugs.gnu.org/29335>).  So we dup and close PORT right
+       ;; away.
+       (gzdopen (dup (fileno port)) "r"))
       (_
        ;; This is unrecoverable but it's better than having the buffered input
        ;; be lost, leading to unclear end-of-file or corrupt-data errors down
@@ -197,8 +179,10 @@ buffered input, which would be lost (and is lost anyway)."
   (unless (= buffer-size %default-buffer-size)
     (gzbuffer! gzfile buffer-size))
 
+  (close-port port)                               ;we no longer need it
   (make-custom-binary-input-port "gzip-input" read! #f #f
-                                 (close-procedure gzfile port)))
+                                 (lambda ()
+                                   (gzclose gzfile))))
 
 (define* (make-gzip-output-port port
                                 #:key
@@ -210,7 +194,7 @@ port is closed."
   (define gzfile
     (begin
       (force-output port)                         ;empty PORT's buffer
-      (gzdopen (fileno port)
+      (gzdopen (dup (fileno port))
                (string-append "w" (number->string level)))))
 
   (define (write! bv start count)
@@ -219,8 +203,10 @@ port is closed."
   (unless (= buffer-size %default-buffer-size)
     (gzbuffer! gzfile buffer-size))
 
+  (close-port port)
   (make-custom-binary-output-port "gzip-output" write! #f #f
-                                  (close-procedure gzfile port)))
+                                  (lambda ()
+                                    (gzclose gzfile))))
 
 (define* (call-with-gzip-input-port port proc
                                     #:key (buffer-size %default-buffer-size))
