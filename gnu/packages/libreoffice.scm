@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -356,33 +357,17 @@ CorelDRAW documents of all versions.")
 (define-public libetonyek
   (package
     (name "libetonyek")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0y60vi1plyq69fqbcjnc0v8mvcjqjsl1ry6rmb3bq3q7j8a2fm6z"))
-      (patches
-       (cons
-        (origin
-          (method url-fetch)
-          ;; Drop incorrect test that fails with latest liblangtag.
-          (uri (string-append "https://cgit.freedesktop.org/libreoffice"
-                              "/libetonyek/patch/?id="
-                              "1a20d8ece2ea3e8aa1d319cd88e8a6aa637982f2"))
-          (file-name "libetonyek-build-with-liblangtag-0.6.patch")
-          (sha256
-           (base32
-            "0zdyykg3cmq226m54yjhg1fj5200c371h2qgjfna62dxa1jd6m97")))
-        (search-patches "libetonyek-build-with-mdds-1.2.patch")))))
+               "1b1lqy6g7flximlv0bp8jbsivyhdp679yj0d0q4jzm968h6y3nv9"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-mdds=1.2")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoreconf
-                    (lambda _ (system* "autoreconf"))))))
+     `(#:configure-flags '("--with-mdds=1.2")))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
@@ -390,9 +375,7 @@ CorelDRAW documents of all versions.")
        ("gperf" ,gperf)
        ("liblangtag" ,liblangtag)
        ("mdds" ,mdds)
-       ("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf) ; due to patch
-       ("automake" ,automake)))
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
      `(("librevenge" ,librevenge)
        ("libxml2" ,libxml2)))
@@ -537,15 +520,14 @@ created by PageMaker version 6.x and 7.")
 (define-public libvisio
   (package
     (name "libvisio")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
-      (patches (search-patches "libvisio-fix-tests.patch"))
       (sha256 (base32
-               "132szijxm95ibzq5qqaylifbf6wa81g08jxggnwv22v60dwhc2j3"))))
+               "1yahpfl13qk6178irv8jn5ppxdn7isafqisyqsdw0lqxcz9h447y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -626,14 +608,14 @@ spreadsheet documents.")
 (define-public libstaroffice
   (package
     (name "libstaroffice")
-    (version "0.0.4")
+    (version "0.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/fosnola/libstaroffice/releases/download/"
                            version "/libstaroffice-" version ".tar.xz"))
        (sha256 (base32
-                "0flh0hs31fsq1dmkhf2502lxskiy7fbj5q8gn4b4f502s228fwkf"))))
+                "10m9imcgqf7kdhn1a5ara62fdayidwm7qzj3binsls40snnhfm9i"))))
     (build-system gnu-build-system)
     (inputs
      `(("librevenge" ,librevenge)
@@ -871,16 +853,16 @@ and to return information on pronunciations, meanings and synonyms.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "5.3.6.1")
+    (version "5.3.7.2")
     (source
      (origin
       (method url-fetch)
       (uri
         (string-append
-          "http://download.documentfoundation.org/libreoffice/src/"
+          "https://download.documentfoundation.org/libreoffice/src/"
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256 (base32
-               "023a7hr7v5cf0ipga4ijhyl58ncgbjrp500qq5fwf65j8g2c3apz"))))
+               "0z7fssp0jcj09wxad1wmhy69n71a2mwl933lxp9dz5sdvzncxmy3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; autoreconf is run by the LibreOffice build system, since after
@@ -907,7 +889,7 @@ and to return information on pronunciations, meanings and synonyms.")
        ("gperf" ,gperf)
        ("graphite2" ,graphite2)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("harfbuzz" ,harfbuzz)
        ("hunspell" ,hunspell)
        ("hyphen" ,hyphen)
@@ -1054,8 +1036,8 @@ and to return information on pronunciations, meanings and synonyms.")
           "--disable-coinmp"
           "--disable-firebird-sdbc" ; embedded firebird
           "--disable-gltf"
-          "--without-doxygen"
-          "--disable-gtk3")))
+          "--disable-gtk" ; disable use of GTK+ 2
+          "--without-doxygen")))
     (home-page "https://www.libreoffice.org/")
     (synopsis "Office suite")
     (description "LibreOffice is a comprehensive office suite.  It contains

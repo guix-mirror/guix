@@ -35,10 +35,15 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system haskell)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-check)
+  #:use-module (gnu packages haskell-crypto)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
@@ -48,7 +53,10 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages base)
   #:use-module (srfi srfi-1))
 
@@ -789,3 +797,46 @@ for developers to include cryptographic and SSL/TLS capabilities in their
 coding footprint.")
     (home-page "https://tls.mbed.org")
     (license license:asl2.0)))
+
+(define-public ghc-tls
+  (package
+    (name "ghc-tls")
+    (version "1.3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "tls/tls-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rdidf18i781c0vdvy9yn79yh08hmcacf6fp3sgghyiy3h0wyh5l"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-cereal" ,ghc-cereal)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-asn1-types" ,ghc-asn1-types)
+       ("ghc-asn1-encoding" ,ghc-asn1-encoding)
+       ("ghc-x509" ,ghc-x509)
+       ("ghc-x509-store" ,ghc-x509-store)
+       ("ghc-x509-validation" ,ghc-x509-validation)
+       ("ghc-async" ,ghc-async)
+       ("ghc-network" ,ghc-network)
+       ("ghc-hourglass" ,ghc-hourglass)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/vincenthz/hs-tls")
+    (synopsis
+     "TLS/SSL protocol native implementation (Server and Client)")
+    (description
+     "Native Haskell TLS and SSL protocol implementation for server and client.
+This provides a high-level implementation of a sensitive security protocol,
+eliminating a common set of security issues through the use of the advanced
+type system, high level constructions and common Haskell features.  Currently
+implement the SSL3.0, TLS1.0, TLS1.1 and TLS1.2 protocol, and support RSA and
+Ephemeral (Elliptic curve and regular) Diffie Hellman key exchanges, and many
+extensions.")
+    (license license:bsd-3)))

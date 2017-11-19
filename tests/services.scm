@@ -23,7 +23,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
-  #:use-module (srfi srfi-64))
+  #:use-module (srfi srfi-64)
+  #:use-module (ice-9 match))
 
 (define live-service
   (@@ (gnu services herd) live-service))
@@ -205,5 +206,12 @@
     (lambda (unload load)
       (list (map live-service-provision unload)
             (map shepherd-service-provision load)))))
+
+(test-eq "lookup-service-types"
+  system-service-type
+  (and (null? (lookup-service-types 'does-not-exist-at-all))
+       (match (lookup-service-types 'system)
+         ((one) one)
+         (x x))))
 
 (test-end)

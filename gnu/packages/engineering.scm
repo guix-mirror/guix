@@ -96,24 +96,38 @@
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-        (add-after 'unpack 'patch-paths
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out")))
-             (substitute* "librecad/src/lib/engine/rs_system.cpp"
-               (("/usr/share") (string-append out "/share"))))))
-        (replace 'configure
-         (lambda* (#:key inputs #:allow-other-keys)
-           (system* "qmake" (string-append "BOOST_DIR="
-                                           (assoc-ref inputs "boost")))))
-        (replace 'install
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let* ((out   (assoc-ref outputs "out"))
-                  (bin   (string-append out "/bin"))
-                  (share (string-append out "/share/librecad")))
-             (mkdir-p bin)
-             (install-file "unix/librecad" bin)
-             (mkdir-p share)
-             (copy-recursively "unix/resources" share)))))))
+         ;; Without this patch boost complains that "make_array" is not a
+         ;; member of "boost::serialization".
+         (add-after 'unpack 'patch-boost-error
+           (lambda _
+             (substitute* "librecad/src/lib/math/lc_quadratic.h"
+               (("#include \"rs_vector.h\"" line)
+                (string-append line
+                               "\n#include <boost/serialization/array_wrapper.hpp>")))
+             (substitute* "librecad/src/lib/math/rs_math.cpp"
+               (("#include <boost/numeric/ublas/matrix.hpp>" line)
+                (string-append "#include <boost/serialization/array_wrapper.hpp>\n"
+                               line)))
+             #t))
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "librecad/src/lib/engine/rs_system.cpp"
+                 (("/usr/share") (string-append out "/share"))))))
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (system* "qmake" (string-append "BOOST_DIR="
+                                             (assoc-ref inputs "boost")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (share (string-append out "/share/librecad")))
+               (mkdir-p bin)
+               (install-file "unix/librecad" bin)
+               (mkdir-p share)
+               (copy-recursively "unix/resources" share))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("muparser" ,muparser)
@@ -185,14 +199,14 @@ utilities.")
 (define-public pcb
   (package
     (name "pcb")
-    (version "4.0.0")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcb/pcb/pcb-" version
                                   "/pcb-" version ".tar.gz"))
               (sha256
                (base32
-                "1i6sk8g8h9avms142wl07yv20m1cm4c3fq3v6hybrhdxs2n17plf"))))
+                "1a7rilp75faidny0r4fdwdxkflyrqp6svxv9lbg7h868293962iz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -201,6 +215,14 @@ utilities.")
            (lambda _
              (substitute* "configure"
                (("wish85") "wish8.6"))
+             #t))
+         ;; It checks for "xhost", which we don't have.  This shouldn't
+         ;; matter, because the test is supposed to be skipped, but it causes
+         ;; "run_tests.sh" (and thus the "check" phase) to fail.
+         (add-after 'unpack 'fix-check-for-display
+           (lambda _
+             (substitute* "tests/run_tests.sh"
+               (("have_display=no") "have_display=yes"))
              #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -292,7 +314,10 @@ featuring various improvements and bug fixes.")))
                                        "fastcap-mulGlobal.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("texlive" ,texlive)
+     ;; FIXME: with texlive-tiny citation references are rendered as question
+     ;; marks.  During the build warnings like these are printed:
+     ;; LaTeX Warning: Citation `nabors91' on page 2 undefined on input line 3.
+     `(("texlive" ,texlive-tiny)
        ("ghostscript" ,ghostscript)))
     (arguments
      `(#:make-flags '("CC=gcc" "RM=rm" "SHELL=sh" "all")
@@ -303,69 +328,70 @@ featuring various improvements and bug fixes.")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'build 'make-doc
-                    (lambda _
-                      (zero? (system* "make" "CC=gcc" "RM=rm" "SHELL=sh"
-                                      "manual"))))
+           (lambda _
+             (zero? (system* "make" "CC=gcc" "RM=rm" "SHELL=sh"
+                             "manual"))))
          (add-before 'make-doc 'fix-doc
-                     (lambda _
-                       (substitute* "doc/Makefile" (("/bin/rm") (which "rm")))
-                       (substitute* (find-files "doc" "\\.tex")
-                         (("\\\\special\\{psfile=([^,]*),.*scale=([#0-9.]*).*\\}"
-                           all file scale)
-                          (string-append "\\includegraphics[scale=" scale "]{"
-                                         file "}"))
-                         (("\\\\psfig\\{figure=([^,]*),.*width=([#0-9.]*in).*\\}"
-                           all file width)
-                          (string-append "\\includegraphics[width=" width "]{"
-                                         file "}"))
-                         (("\\\\psfig\\{figure=([^,]*),.*height=([#0-9.]*in).*\\}"
-                           all file height)
-                          (string-append "\\includegraphics[height=" height "]{"
-                                         file "}"))
-                         (("\\\\psfig\\{figure=([^,]*)\\}" all file)
-                          (string-append "\\includegraphics{" file "}")))
-                       (substitute* '("doc/mtt.tex" "doc/tcad.tex" "doc/ug.tex")
-                         (("^\\\\documentstyle\\[(.*)\\]\\{(.*)\\}"
-                           all options class)
-                          (string-append "\\documentclass[" options "]{"
-                                         class "}\n"
-                                         "\\usepackage{graphicx}\n"
-                                         "\\usepackage{robinspace}"))
-                         (("\\\\setlength\\{\\\\footheight\\}\\{.*\\}" all)
-                          (string-append "%" all))
-                         (("\\\\setstretch\\{.*\\}" all)
-                          (string-append "%" all)))
-                       #t))
+           (lambda _
+             (substitute* "doc/Makefile" (("/bin/rm") (which "rm")))
+             (substitute* (find-files "doc" "\\.tex")
+               (("\\\\special\\{psfile=([^,]*),.*scale=([#0-9.]*).*\\}"
+                 all file scale)
+                (string-append "\\includegraphics[scale=" scale "]{"
+                               file "}"))
+               (("\\\\psfig\\{figure=([^,]*),.*width=([#0-9.]*in).*\\}"
+                 all file width)
+                (string-append "\\includegraphics[width=" width "]{"
+                               file "}"))
+               (("\\\\psfig\\{figure=([^,]*),.*height=([#0-9.]*in).*\\}"
+                 all file height)
+                (string-append "\\includegraphics[height=" height "]{"
+                               file "}"))
+               (("\\\\psfig\\{figure=([^,]*)\\}" all file)
+                (string-append "\\includegraphics{" file "}")))
+             (substitute* '("doc/mtt.tex" "doc/tcad.tex" "doc/ug.tex")
+               (("^\\\\documentstyle\\[(.*)\\]\\{(.*)\\}"
+                 all options class)
+                (string-append "\\documentclass[" options "]{"
+                               class "}\n"
+                               "\\usepackage{graphicx}\n"
+                               "\\usepackage{robinspace}"))
+               (("\\\\setlength\\{\\\\footheight\\}\\{.*\\}" all)
+                (string-append "%" all))
+               (("\\\\setstretch\\{.*\\}" all)
+                (string-append "%" all)))
+             #t))
          (delete 'configure)
          (add-before 'install 'clean-bin
-                     (lambda _
-                       (delete-file (string-append (getcwd) "/bin/README"))
-                       #t))
+           (lambda _
+             (delete-file (string-append (getcwd) "/bin/README"))
+             #t))
          (add-before 'install 'make-pdf
-                     (lambda _
-                       (with-directory-excursion "doc"
-                         (and
-                          (every (lambda (file)
-                                   (zero? (system* "dvips" file "-o")))
-                                 (find-files "." "\\.dvi"))
-                          (every (lambda (file)
-                                   (zero? (system* "ps2pdf" file)))
-                                 '("mtt.ps" "ug.ps" "tcad.ps"))
-                          (zero? (system* "make" "clean"))))))
+           (lambda _
+             (setenv "HOME" "/tmp")     ; FIXME: for texlive font cache
+             (with-directory-excursion "doc"
+               (and
+                (every (lambda (file)
+                         (zero? (system* "dvips" file "-o")))
+                       (find-files "." "\\.dvi"))
+                (every (lambda (file)
+                         (zero? (system* "ps2pdf" file)))
+                       '("mtt.ps" "ug.ps" "tcad.ps"))
+                (zero? (system* "make" "clean"))))))
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (data (string-append out "/share"))
-                           (bin (string-append out "/bin"))
-                           (doc (string-append data "/doc/" ,name "-" ,version))
-                           (examples (string-append doc "/examples")))
-                      (with-directory-excursion "bin"
-                        (for-each (lambda (f)
-                                    (install-file f bin))
-                                  (find-files "." ".*")))
-                      (copy-recursively "doc" doc)
-                      (copy-recursively "examples" examples)
-                      #t))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (data (string-append out "/share"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (examples (string-append doc "/examples")))
+               (with-directory-excursion "bin"
+                 (for-each (lambda (f)
+                             (install-file f bin))
+                           (find-files "." ".*")))
+               (copy-recursively "doc" doc)
+               (copy-recursively "examples" examples)
+               #t))))))
     (home-page "http://www.rle.mit.edu/cpg/research_codes.htm")
     (synopsis "Multipole-accelerated capacitance extraction program")
     (description
@@ -1622,4 +1648,134 @@ parallel computing platforms.  It also supports serial execution.")
 aims to support all kinds of circuit simulation types---e.g. DC, AC,
 S-parameter, transient, noise and harmonic balance analysis.  Pure digital
 simulations are also supported.")
+    (license license:gpl2+)))
+
+(define-public qucs-s
+  (package
+    (name "qucs-s")
+    (version "0.0.19S")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ra3xdh/qucs/releases/download/"
+                                  version "/qucs-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bhahvdqmayaw0306fxz1ghmjhd4fq05yk3rk7zi0z703w5imgjv"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-scripts
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("qucs/qucsdigi"
+                            "qucs/qucsdigilib"
+                            "qucs/qucsveri")
+               (("\\$BINDIR")
+                (string-append (assoc-ref inputs "qucs") "/bin"))
+               (("freehdl-config")
+                (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-config"))
+               (("freehdl-v2cc")
+                (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-v2cc"))
+               (("cp ")
+                (string-append (assoc-ref inputs "coreutils") "/bin/cp "))
+               (("glibtool")
+                (string-append (assoc-ref inputs "libtool") "/bin/libtool"))
+               (("sed")
+                (string-append (assoc-ref inputs "sed") "/bin/sed"))
+               (("iverilog")
+                (string-append (assoc-ref inputs "iverilog") "/bin/iverilog"))
+               (("vvp")
+                (string-append (assoc-ref inputs "iverilog") "/bin/vvp")))
+             #t))
+         (add-after 'patch-scripts 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "qucs/main.cpp"
+               (((string-append "QucsSettings\\.Qucsator = QucsSettings\\.BinDir "
+                                "\\+ \"qucsator\" \\+ executableSuffix"))
+                (string-append "}{ QucsSettings.Qucsator = \""
+                               (assoc-ref inputs "qucs") "/bin/qucsator\""))
+               (((string-append "else QucsSettings\\.XyceExecutable = "
+                                "\"/usr/local/Xyce-Release-6.2.0-OPENSOURCE/bin/runxyce"))
+                (string-append "QucsSettings.XyceExecutable = \""
+                               (assoc-ref inputs "xyce-serial") "/bin/Xyce"))
+               (((string-append "else QucsSettings\\.XyceParExecutable = \"/usr/local"
+                                "/Xyce-Release-6.2.0-OPENMPI-OPENSOURCE/bin/xmpirun"))
+                (string-append "QucsSettings.XyceParExecutable = \""
+                               (assoc-ref inputs "mpi") "/bin/mpirun"))
+               (("%p")
+                (string-append "%p "(assoc-ref inputs "xyce-parallel") "/bin/Xyce"))
+               (("else QucsSettings\\.NgspiceExecutable = \"ngspice\"")
+                (string-append "QucsSettings.NgspiceExecutable = " "\""
+                               (assoc-ref inputs "ngspice") "/bin/ngspice\"")))
+             (substitute* "qucs/qucs_actions.cpp"
+               (("qucstrans")
+                (string-append (assoc-ref inputs "qucs") "/bin/qucstrans"))
+               (("qucsattenuator")
+                (string-append (assoc-ref inputs "qucs") "/bin/qucsattenuator"))
+               (("qucsrescodes")
+                (string-append (assoc-ref inputs "qucs") "/bin/qucsrescodes")))
+             #t))
+         (add-after 'install 'install-scripts
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (for-each
+              (lambda (script)
+                (let ((file (string-append "../qucs-" ,version
+                                           "/qucs/" script))
+                      (out (assoc-ref outputs "out")))
+                  (install-file file (string-append out "/bin"))
+                  (chmod (string-append out "/bin/" script) #o555)))
+              '("qucsdigi" "qucsdigilib" "qucsveri"))
+             #t))
+         (add-after 'install-scripts 'make-wrapper
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (file (string-append out "/bin/qucs-s"))
+                    (qucs (assoc-ref inputs "qucs"))
+                    (qucsator (string-append qucs "/bin/qucsator")))
+               (wrap-program file
+                 `("CPLUS_INCLUDE_PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                    "/include")))
+                 `("PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                    "/bin")))
+                 `("LIBRARY_PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                    "/lib")))
+                 `("QUCSATOR" ":" prefix (,qucsator))
+                 `("QUCSCONV" ":" prefix (,(string-append qucsator "/bin/qucsconv")))
+                 `("ADMSXMLBINDIR" ":" prefix (,(string-append (assoc-ref inputs "adms")
+                                                               "/bin")))
+                 `("ASCOBINDIR" ":" prefix (,(string-append (assoc-ref inputs "asco")
+                                                            "/bin")))
+                 `("QUCS_OCTAVE" ":" prefix (,(string-append (assoc-ref inputs "octave")
+                                                             "/bin/octave"))))
+               (symlink qucsator (string-append out "/bin/qucsator"))
+               #t))))))
+    (native-inputs
+     `(("libtool-native" ,libtool)))
+    (inputs
+     `(("adms" ,adms)
+       ("asco" ,asco)
+       ("coreutils" ,coreutils)
+       ("freehdl" ,freehdl)
+       ("gcc-toolchain" ,gcc-toolchain)
+       ("iverilog" ,iverilog)
+       ("libtool" ,libtool)
+       ("mpi" ,openmpi)
+       ("ngspice" ,ngspice)
+       ("octave" ,octave)
+       ("qt4" ,qt-4)
+       ("qucs" ,qucs)
+       ("sed" ,sed)
+       ("xyce-serial" ,xyce-serial)
+       ("xyce-parallel" ,xyce-parallel)))
+    (home-page "https://ra3xdh.github.io/")
+    (synopsis "Circuit simulator with graphical user interface")
+    (description
+     "Qucs-S is a spin-off of the Qucs cross-platform circuit simulator.
+The S letter indicates SPICE.  The purpose of the Qucs-S subproject is to use
+free SPICE circuit simulation kernels with the Qucs GUI.  It provides the
+simulator backends @code{Qucsator}, @code{ngspice} and @code{Xyce}.")
     (license license:gpl2+)))

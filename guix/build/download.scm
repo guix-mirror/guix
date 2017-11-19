@@ -130,7 +130,8 @@ out if the connection could not be established in less than TIMEOUT seconds."
                  (_ (ftp-open (uri-host uri) #:timeout timeout))))
          (size (false-if-exception (ftp-size conn (uri-path uri))))
          (in   (ftp-retr conn (basename (uri-path uri))
-                         (dirname (uri-path uri)))))
+                         (dirname (uri-path uri))
+                         #:timeout timeout)))
     (call-with-output-file file
       (lambda (out)
         (dump-port* in out
@@ -305,6 +306,13 @@ host name without trailing dot."
       ;; never be closed.  So we use `fileno', but keep a weak reference to
       ;; PORT, so the file descriptor gets closed when RECORD is GC'd.
       (register-tls-record-port record port)
+
+      ;; Write HTTP requests line by line rather than byte by byte:
+      ;; <https://bugs.gnu.org/22966>.  This is not possible on Guile 2.0.
+      (cond-expand
+        (guile-2.0 #f)
+        (else (setvbuf record 'line)))
+
       record)))
 
 (define (ensure-uri uri-or-string)                ;XXX: copied from (web http)
@@ -512,6 +520,57 @@ port if PORT is a TLS session record port."
     (when (and var (variable-bound? var))
       (let ((declare-relative-uri-header! (variable-ref var)))
         (declare-relative-uri-header! "Location")))))
+
+;; XXX: Work around broken proxy handling on Guile 2.2 <= 2.2.2, fixed in
+;; Guile commits 7d0d9e2c25c1e872cfc7d14ab5139915f1813d56 and
+;; 6ad28ae3bc6a6d9e95ab7d70510d12c97673a143.  See bug report at
+;; <https://lists.gnu.org/archive/html/guix-devel/2017-11/msg00070.html>.
+(cond-expand
+  (guile-2.2
+   (when (<= (string->number (micro-version)) 2)
+     (let ()
+       (define put-symbol (@@ (web http) put-symbol))
+       (define put-non-negative-integer
+         (@@ (web http) put-non-negative-integer))
+       (define write-http-version
+         (@@ (web http) write-http-version))
+
+       (define (write-request-line method uri version port)
+         "Write the first line of an HTTP request to PORT."
+         (put-symbol port method)
+         (put-char port #\space)
+         (when (http-proxy-port? port)
+           (let ((scheme (uri-scheme uri))
+                 (host (uri-host uri))
+                 (host-port (uri-port uri)))
+             (when (and scheme host)
+               (put-symbol port scheme)
+               (put-string port "://")
+               (cond
+                ((string-index host #\:)          ;<---- The fix is here!
+                 (put-char port #\[)              ;<---- And here!
+                 (put-string port host)
+                 (put-char port #\]))
+                (else
+                 (put-string port host)))
+               (unless ((@@ (web uri) default-port?) scheme host-port)
+                 (put-char port #\:)
+                 (put-non-negative-integer port host-port)))))
+         (let ((path (uri-path uri))
+               (query (uri-query uri)))
+           (if (string-null? path)
+               (put-string port "/")
+               (put-string port path))
+           (when query
+             (put-string port "?")
+             (put-string port query)))
+         (put-char port #\space)
+         (write-http-version version port)
+         (put-string port "\r\n"))
+
+       (module-set! (resolve-module '(web http)) 'write-request-line
+                    write-request-line))))
+  (else #t))
 
 (define (resolve-uri-reference ref base)
   "Resolve the URI reference REF, interpreted relative to the BASE URI, into a

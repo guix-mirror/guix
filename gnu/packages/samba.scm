@@ -151,14 +151,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.6.8")
+    (version "4.7.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "0pap686cl0j5c9v1v09krpqdk416x3851fbcap5ysp1zajrfw7aq"))))
+               "14ngvqkdcjmc1nfyx2vgh82jmqdj6rhpqdqq4az7dcnzi4i52cpx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -311,14 +311,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.9.33")
+    (version "0.9.34")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1p0vxmldk99xpp7i4y6kpb75f8m7hxyv5bzkspy9hhpxh7ljww92"))))
+                "12kvfjs0dwi4iqbz740a37z0c7kmg8bhl53mwdj02jkznbw3w8bk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -346,14 +346,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.1.31")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ipbz9m50dkancq0dbz12q815nkknbsp2i3sxpsqhmmknlm3xm84"))))
+                "03arsnsbkxb2d811pbarb7d12yg8g05f1q576z48sp647dd3xda4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

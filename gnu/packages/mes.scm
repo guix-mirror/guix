@@ -34,7 +34,7 @@
 (define-public nyacc
   (package
     (name "nyacc")
-    (version "0.82.0")
+    (version "0.82.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/nyacc/"
@@ -42,7 +42,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ll0mjivhxpj3r81w4a8p4bclr3byzp38ig1j11jvwnbl6lawgj7"))))
+                "0ykz64jlf1kpxz3qqr0nmci57r5yqwyd3s2g93vrmcnpy9d7y22p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("guile" ,guile-2.2)))
@@ -58,7 +58,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.10")
+      (version "0.11")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://gitlab.com/janneke/mes"
@@ -67,7 +67,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "0djmhnvha8phxgb4msysnjmy1nnllb08bnw4xhdayq8ppi4zdmcv"))))
+                  "0m0kk7rxl8q7pjdmis36bwgv1i824nn3d7k3xxm8j64bl0gbhkmr"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
@@ -93,7 +93,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                    (display "Please run
     build-aux/gitlog-to-changelog --srcdir=<git-checkout> > ChangeLog\n")))
                #t))
-           (delete 'strip)))) ; binutil's strip b0rkes Mescc/M1/hex2 binaries
+           (delete 'strip)))) ; binutil's strip b0rkes MesCC/M1/hex2 binaries
       (synopsis "Scheme interpreter and C compiler for full source bootstrapping")
       (description
        "Mes [Maxwell Equations of Software] aims to create full source

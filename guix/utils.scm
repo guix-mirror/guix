@@ -28,6 +28,7 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-39)
   #:use-module (ice-9 binary-ports)
   #:autoload   (rnrs io ports) (make-custom-binary-input-port)
@@ -59,6 +60,14 @@
             location-column
             source-properties->location
             location->source-properties
+
+            &error-location
+            error-location?
+            error-location
+
+            &fix-hint
+            fix-hint?
+            condition-fix-hint
 
             nix-system->gnu-triplet
             gnu-triplet->nix-system
@@ -749,6 +758,14 @@ a location object."
   `((line     . ,(and=> (location-line loc) 1-))
     (column   . ,(location-column loc))
     (filename . ,(location-file loc))))
+
+(define-condition-type &error-location &error
+  error-location?
+  (location  error-location))                     ;<location>
+
+(define-condition-type &fix-hint &condition
+  fix-hint?
+  (hint condition-fix-hint))                      ;string
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-progress-reporter 'scheme-indent-function 1)

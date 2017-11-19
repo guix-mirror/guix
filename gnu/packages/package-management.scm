@@ -36,6 +36,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages databases)
@@ -47,15 +48,18 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages web)
   #:use-module (gnu packages man)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages patchutils)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages cpio)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages vim)
@@ -82,8 +86,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.13.0")
-        (commit "357ab93aacbd882a48cd7961ab301afa78c941d0")
-        (revision 8))
+        (commit "ff23b47dbee038236386ddc2ed2fff4c77ad3aa1")
+        (revision 9))
     (package
       (name "guix")
 
@@ -99,7 +103,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "19cf4gpdkqv8lxpqg4ibmxhmnsm2ggi3wrhaslfmypa2a5b5jls1"))
+                  "19y39fm4bjvq4rz3360p8avxpsmflsgrz83l8ig49819a38qs6zm"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -415,7 +419,7 @@ symlinks to the files in a common directory such as /usr/local.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.13.0.1")
+    (version "4.13.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.rpm.org/releases/rpm-"
@@ -423,7 +427,7 @@ symlinks to the files in a common directory such as /usr/local.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "03cvbwbfrhm0fa02j7828k1qp05hf2m0fradwcf2nqhrsjkppz17"))))
+                "1521y4ghjns449kzpwkjn9cksh686383xnfx0linzlalqc3jqgig"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
@@ -488,13 +492,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "81")
+    (version "88")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "093lxy6zj69i19fxdkj3jnai3b1ajqbksyqcvy8wqj3plaaxjna5"))))
+                "1zp6nb37igssxg4bqsi3cw5klx4prhcx50mzg4463l50mssn8mp2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -515,6 +519,10 @@ transactions from C or Python.")
                         (("@tool_required\\('readelf'\\)") "")
                         (("\\['readelf',")
                          (string-append "['" (which "readelf") "',")))
+                      #t))
+                  (add-before 'check 'delete-failing-test
+                    (lambda _
+                      (delete-file "tests/test_tools.py") ;this requires /sbin to be on the path
                       #t)))))
     (inputs `(("rpm" ,rpm)                        ;for rpm-python
               ("python-file" ,python-file)
@@ -713,7 +721,17 @@ This package provides Conda as a library.")
                  ;; And it aborts if the directory doesn't exist.
                  (mkdir-p target)
                  (zero? (system* "python" "utils/setup-testing.py" "install"
-                                 (string-append "--prefix=" out))))))))))
+                                 (string-append "--prefix=" out))))))
+           ;; The "activate" and "deactivate" scripts don't need wrapping.
+           ;; They also break when they are renamed.
+           (add-after 'wrap 'undo-wrap
+             (lambda* (#:key outputs #:allow-other-keys)
+               (with-directory-excursion (string-append (assoc-ref outputs "out") "/bin/")
+                 (delete-file "deactivate")
+                 (rename-file ".deactivate-real" "deactivate")
+                 (delete-file "activate")
+                 (rename-file ".activate-real" "activate")
+                 #t)))))))
     (description
      "Conda is a cross-platform, Python-agnostic binary package manager.  It
 is the package manager used by Anaconda installations, but it may be used for

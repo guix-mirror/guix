@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
-;;; Coypright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Coypright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Coypright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Coypright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Coypright © 2016 Julien Lepiller <julien@lepiller.eu>
@@ -40,37 +40,38 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages game-development)
-  #:use-module (gnu packages ghostscript)
-  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages djvu)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages backup)
+  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages lesstif)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages imagemagick)
-  #:use-module (gnu packages gl)
-  #:use-module (gnu packages photo)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages qt)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages gtk)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages curl)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages photo)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
 (define-public poppler
@@ -570,7 +571,7 @@ extracting content or merging files.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://mupdf.com/downloads/archive/"
+        (uri (string-append "https://mupdf.com/downloads/archive/"
                             name "-" version "-source.tar.gz"))
         (sha256
          (base32
@@ -581,19 +582,7 @@ extracting content or merging files.")
                                  "mupdf-CVE-2017-14687.patch"
                                  "mupdf-CVE-2017-15587.patch"))
         (modules '((guix build utils)))
-        (snippet
-            ;; Delete all the bundled libraries except for mujs, which is
-            ;; developed by the same team as mupdf and has no releases.
-            ;; TODO Package mujs and don't use the bundled copy.
-            '(for-each delete-file-recursively
-                       '("thirdparty/curl"
-                         "thirdparty/freetype"
-                         "thirdparty/glfw"
-                         "thirdparty/harfbuzz"
-                         "thirdparty/jbig2dec"
-                         "thirdparty/libjpeg"
-                         "thirdparty/openjpeg"
-                         "thirdparty/zlib")))))
+        (snippet '(delete-file-recursively "thirdparty"))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
@@ -603,6 +592,7 @@ extracting content or merging files.")
         ("libjpeg" ,libjpeg)
         ("libx11" ,libx11)
         ("libxext" ,libxext)
+        ("mujs" ,mujs)
         ("openjpeg" ,openjpeg)
         ("openssl" ,openssl)
         ("zlib" ,zlib)))
@@ -615,7 +605,7 @@ extracting content or merging files.")
                            (string-append "prefix=" (assoc-ref %outputs "out")))
         #:phases (modify-phases %standard-phases
                   (delete 'configure))))
-    (home-page "http://mupdf.com")
+    (home-page "https://mupdf.com")
     (synopsis "Lightweight PDF viewer and toolkit")
     (description
       "MuPDF is a C library that implements a PDF and XPS parsing and
@@ -624,8 +614,8 @@ but also provides support for other operations such as searching and
 listing the table of contents and hyperlinks.
 
 The library ships with a rudimentary X11 viewer, and a set of command
-line tools for batch rendering (pdfdraw), rewriting files (pdfclean),
-and examining the file structure (pdfshow).")
+line tools for batch rendering @command{pdfdraw}, rewriting files
+@command{pdfclean}, and examining the file structure @command{pdfshow}.")
     (license license:agpl3+)))
 
 (define-public qpdf

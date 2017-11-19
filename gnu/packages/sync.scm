@@ -22,6 +22,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix download)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
@@ -35,14 +36,15 @@
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.3.3")
+    (version "2.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.owncloud.com/desktop/stable/"
                            "owncloudclient-" version ".tar.xz"))
        (sha256
-        (base32 "1r5ddln1wc9iyjizgqb104i0r6qhzsmm2wdnxfaif119cv0vphda"))
+        (base32 "1fpi1mlp2b8sx2993b4mava5c6qw794dmlayih430299z1l9wh49"))
+       (patches (search-patches "owncloud-disable-updatecheck.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin

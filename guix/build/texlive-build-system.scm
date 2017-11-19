@@ -46,7 +46,7 @@
     ;; Build a modifiable union of all inputs (but exclude bash)
     (match inputs
       (((names . directories) ...)
-       (union-build out directories
+       (union-build out (filter directory-exists? directories)
                     #:create-all-directories? #t
                     #:log-port (%make-void-port "w"))))
 

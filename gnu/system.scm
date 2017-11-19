@@ -39,7 +39,6 @@
   #:use-module (gnu packages less)
   #:use-module (gnu packages zile)
   #:use-module (gnu packages nano)
-  #:use-module (gnu packages lsof)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages man)
   #:use-module (gnu packages texinfo)
@@ -509,7 +508,6 @@ explicitly appear in OS."
   ;; Default set of packages globally visible.  It should include anything
   ;; required for basic administrator tasks.
   (cons* procps psmisc which less zile nano
-         lsof                                 ;for Guix's 'list-runtime-roots'
          pciutils usbutils
          util-linux inetutils isc-dhcp
          (@ (gnu packages admin) shadow)          ;for 'passwd'
@@ -727,7 +725,8 @@ use 'plain-file' instead~%")
   "Return the environment variables of OS for
 @var{session-environment-service-type}, to be used in @file{/etc/environment}."
   `(("LANG" . ,(operating-system-locale os))
-    ("TZ" . ,(operating-system-timezone os))
+    ;; Note: No need to set 'TZ' since (1) we provide /etc/localtime, and (2)
+    ;; it doesn't work for setuid binaries.  See <https://bugs.gnu.org/29212>.
     ("TZDIR" . ,(file-append tzdata "/share/zoneinfo"))
     ;; Tell 'modprobe' & co. where to look for modules.
     ("LINUX_MODULE_DIRECTORY" . "/run/booted-system/kernel/lib/modules")

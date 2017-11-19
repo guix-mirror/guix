@@ -121,41 +121,32 @@ containing the source code.  Write any debugging output to DEBUG-PORT."
 
     ;; Compile the .scm files.  Hide warnings.
     (parameterize ((current-warning-port (%make-void-port "w")))
-      (with-directory-excursion out
-        ;; Filter out files depending on Guile-SSH when Guile-SSH is missing.
-        (let ((files (filter has-all-its-dependencies?
-                             (all-scheme-files "."))))
-          (compile-files out out
+      ;; Filter out files depending on Guile-SSH when Guile-SSH is missing.
+      (let ((files (filter has-all-its-dependencies?
+                           (all-scheme-files out))))
+        (compile-files out out files
 
-                         ;; XXX: 'compile-files' except ready-to-use relative
-                         ;; file names.
-                         (map (lambda (file)
-                                (if (string-prefix? "./" file)
-                                    (string-drop file 2)
-                                    file))
-                              files)
+                       #:workers (parallel-job-count)
 
-                         #:workers (parallel-job-count)
+                       ;; Disable warnings.
+                       #:warning-options '()
 
-                         ;; Disable warnings.
-                         #:warning-options '()
+                       #:report-load
+                       (lambda (file total completed)
+                         (display #\cr log-port)
+                         (format log-port
+                                 "loading...\t~5,1f% of ~d files" ;FIXME: i18n
+                                 (* 100. (/ completed total)) total)
+                         (force-output log-port)
+                         (format debug-port "~%loading '~a'...~%" file))
 
-                         #:report-load
-                         (lambda (file total completed)
-                           (display #\cr log-port)
-                           (format log-port
-                                   "loading...\t~5,1f% of ~d files" ;FIXME: i18n
-                                   (* 100. (/ completed total)) total)
-                           (force-output log-port)
-                           (format debug-port "~%loading '~a'...~%" file))
-
-                         #:report-compilation
-                         (lambda (file total completed)
-                           (display #\cr log-port)
-                           (format log-port "compiling...\t~5,1f% of ~d files" ;FIXME: i18n
-                                   (* 100. (/ completed total)) total)
-                           (force-output log-port)
-                           (format debug-port "~%compiling '~a'...~%" file)))))))
+                       #:report-compilation
+                       (lambda (file total completed)
+                         (display #\cr log-port)
+                         (format log-port "compiling...\t~5,1f% of ~d files" ;FIXME: i18n
+                                 (* 100. (/ completed total)) total)
+                         (force-output log-port)
+                         (format debug-port "~%compiling '~a'...~%" file))))))
 
   (newline)
   #t)

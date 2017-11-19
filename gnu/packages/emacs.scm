@@ -8,14 +8,14 @@
 ;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -814,14 +814,14 @@ provides an optional IDE-like error list.")
 (define-public emms
   (package
     (name "emacs-emms")
-    (version "4.3")
+    (version "4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dicgkl8l83n4cah5vk7c242abbwpyzlih451blgw37f3rijs480"))
+                "1b0kalhn81dir26jgsma30i5bbly7d3s1ngqpf01zjjpr7lw5v0h"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -1654,16 +1654,16 @@ in the center.")
 (define-public emacs-undo-tree
   (package
     (name "emacs-undo-tree")
-    (version "0.6.4")
+    (version "0.6.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "http://dr-qubit.org/git/undo-tree.git")
-                    (commit "release/0.6.4")))
+                    (commit (string-append "release/" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
-                (base32
-                  "0b6hnv6bq1g5np5q2yw9r9aj1cxpp14akm21br7vpb7wp01fv4b3"))))
+               (base32
+                "1hnh2mnmw179gr094r561w6cw1haid0lpvpqvkc24wpj82vphzpa"))))
     (build-system emacs-build-system)
     (home-page "http://www.dr-qubit.org/emacs.php")
     (synopsis "Treat undo history as a tree")
@@ -2644,11 +2644,11 @@ in @code{html-mode}.")
     (synopsis "Superior Lisp Interaction Mode for Emacs")
     (description
      "SLIME extends Emacs with support for interactive programming in
-Common Lisp.  The features are centered around @{slime-mode}, an Emacs
-minor mode that complements the standard @{lisp-mode}.  While lisp-mode
-supports editing Lisp source files, @{slime-mode} adds support for
-interacting with a running Common Lisp process for compilation,
-debugging, documentation lookup, and so on.")
+Common Lisp.  The features are centered around @command{slime-mode},
+an Emacs minor mode that complements the standard @command{lisp-mode}.
+While lisp-mode supports editing Lisp source files, @command{slime-mode}
+adds support for interacting with a running Common Lisp process
+for compilation, debugging, documentation lookup, and so on.")
     (license license:gpl2+)))
 
 (define-public emacs-popup
@@ -2891,14 +2891,14 @@ package provides a light and a dark variant.")
 (define-public emacs-ahungry-theme
   (package
     (name "emacs-ahungry-theme")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://elpa.gnu.org/packages/ahungry-theme-"
                                  version ".tar"))
              (sha256
               (base32
-               "1b0x7g753gn7mym8286b937zmxv50jgdish2h6wc05w1g1lygwsz"))))
+               "14dhnrlbjzrxk5ligf0z2im5bgnxpjqqzqcrmqg5355xrgpbpb7v"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ahungry/color-theme-ahungry")
     (synopsis "Ahungry color theme for Emacs")
@@ -4077,21 +4077,21 @@ news items, openrc and runscripts.")
 (define-public emacs-evil
   (package
     (name "emacs-evil")
-    (version "1.2.12")
+    (version "1.2.13")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://bitbucket.org/lyro/evil/get/"
-                           version ".tar.bz2"))
-       (file-name (string-append name "-" version ".tar.bz2"))
+       (uri (string-append "https://github.com/emacs-evil/evil/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "17cda9fnbq3gmjcxs3lyq64gxswrf37y864bm53rldwsk3khq2yi"))))
+         "1z63zsxmsc6mh74wv6065carwqmgs7b7lz5044s12xvgsjfbwi8h"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-undo-tree" ,emacs-undo-tree)
        ("emacs-goto-chg" ,emacs-goto-chg)))
-    (home-page "https://bitbucket.com/lyro/evil")
+    (home-page "https://github.com/emacs-evil/evil")
     (synopsis "Extensible Vi layer for Emacs")
     (description
      "Evil is an extensible vi layer for Emacs.  It emulates the
@@ -4169,16 +4169,16 @@ passive voice.")
 (define-public emacs-neotree
   (package
     (name "emacs-neotree")
-    (version "0.2.1")
+    (version "0.5.2")
     (home-page "https://github.com/jaypei/emacs-neotree")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/jaypei/" name
-                    "/archive/v" version ".tar.gz"))
+                    "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "0cr37pdkwjgfijfws5bjskfh1rq9rfngxblcj6v5383vpmn83q7s"))
+                "1zd6dchwyijnf7kgchfcp51gs938l204dk9z6mljrfqf2zy0gp12"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (synopsis "Folder tree view for Emacs")
@@ -5856,7 +5856,7 @@ displays results pretty-printed in XML or JSON with @code{restclient-mode}")
 (define-public emacs-which-key
   (package
     (name "emacs-which-key")
-    (version "3.0.1")
+    (version "3.0.2")
     (source
      (origin
        (method url-fetch)
@@ -5865,7 +5865,7 @@ displays results pretty-printed in XML or JSON with @code{restclient-mode}")
              version ".tar.gz"))
        (sha256
         (base32
-         "0zc9yivdkbxmcllhlbbcvsbj8g8nzzgs0xib488s08p4s0l7xs8m"))
+         "1xvd70cwq9n31f28viyjxmr3nn8l153gsy6scpszvgvjxkiikv24"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (arguments
@@ -6227,4 +6227,34 @@ and shell-command prompts that are based on bash completion.")
     (description
      "This package provides commands @code{easy-kill} and @code{easy-mark} to
 let users kill or mark things easily.")
+    (license license:gpl3+)))
+
+(define-public emacs-transmission
+  (package
+    (name "emacs-transmission")
+    (version "0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/holomorph/transmission/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y0bpsy16pycp6m9aqvfjh2x1yswfb305ib7m2slcjpb6njgxfi6"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/holomorph/transmission")
+    (synopsis "Emacs interface to a Transmission session")
+    (description "This package provides an Emacs interface to interact with a
+running session of the Transmission Bittorrent client.
+
+Features:
+
+@itemize
+@item List, add, start/stop, verify, remove torrents.
+@item Set speed limits, ratio limits, bandwidth priorities, trackers.
+@item Navigate to the corresponding file list, torrent info, peer info
+contexts.
+@item Toggle downloading and set priorities for individual files.
+@end itemize\n")
     (license license:gpl3+)))

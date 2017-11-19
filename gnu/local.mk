@@ -11,6 +11,7 @@
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+# Copyright © 2016, 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -200,6 +201,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gv.scm				\
   %D%/packages/gxmessage.scm			\
   %D%/packages/haskell.scm			\
+  %D%/packages/haskell-check.scm		\
+  %D%/packages/haskell-crypto.scm		\
+  %D%/packages/haskell-web.scm			\
   %D%/packages/ham-radio.scm			\
   %D%/packages/hexedit.scm			\
   %D%/packages/hugs.scm				\
@@ -321,6 +325,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pdf.scm				\
   %D%/packages/pem.scm				\
   %D%/packages/perl.scm				\
+  %D%/packages/perl-check.scm			\
   %D%/packages/perl-web.scm			\
   %D%/packages/photo.scm			\
   %D%/packages/php.scm				\
@@ -336,6 +341,8 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/protobuf.scm			\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
+  %D%/packages/python-crypto.scm		\
+  %D%/packages/python-web.scm			\
   %D%/packages/tryton.scm			\
   %D%/packages/qt.scm				\
   %D%/packages/ragel.scm			\
@@ -461,6 +468,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/spice.scm				\
   %D%/services/ssh.scm				\
   %D%/services/sysctl.scm			\
+  %D%/services/telephony.scm			\
   %D%/services/version-control.scm              \
   %D%/services/vpn.scm				\
   %D%/services/web.scm				\
@@ -535,6 +543,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
+  %D%/packages/patches/audacity-build-with-system-portaudio.patch \
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
@@ -633,6 +642,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-fix-texi2pod.patch			\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-strmov-store-file-names.patch	\
+  %D%/packages/patches/gcc-4-compile-with-gcc-5.patch		 \
   %D%/packages/patches/gcc-4.6-gnu-inline.patch			\
   %D%/packages/patches/gcc-4.9.3-mingw-gthr-default.patch	\
   %D%/packages/patches/gcc-5.0-libvtv-runpath.patch		\
@@ -730,6 +740,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
+  %D%/packages/patches/icecat-bug-1348660-pt5.patch		\
+  %D%/packages/patches/icecat-bug-1415133.patch			\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
@@ -755,6 +767,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-manpage-minus-not-hyphen.patch	\
   %D%/packages/patches/kobodeluxe-midicon-segmentation-fault.patch	\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
+  %D%/packages/patches/ktexteditor-5.39.0-autotests-dependencies.patch	\
   %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/lcms-CVE-2016-10165.patch		\
   %D%/packages/patches/ldc-disable-tests.patch			\
@@ -772,7 +785,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libcroco-CVE-2017-7960.patch		\
   %D%/packages/patches/libcroco-CVE-2017-7961.patch		\
   %D%/packages/patches/libdrm-symbol-check.patch		\
-  %D%/packages/patches/libetonyek-build-with-mdds-1.2.patch     \
   %D%/packages/patches/libevent-dns-tests.patch			\
   %D%/packages/patches/libevent-2.0-CVE-2016-10195.patch	\
   %D%/packages/patches/libevent-2.0-CVE-2016-10196.patch	\
@@ -812,7 +824,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libusb-for-axoloti.patch			\
   %D%/packages/patches/libvirt-CVE-2017-1000256.patch		\
-  %D%/packages/patches/libvisio-fix-tests.patch			\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
   %D%/packages/patches/libxfont-CVE-2017-13720.patch		\
@@ -907,6 +918,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
   %D%/packages/patches/osip-CVE-2017-7853.patch			\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
+  %D%/packages/patches/owncloud-disable-updatecheck.patch	\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch			\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
   %D%/packages/patches/patchelf-page-size.patch			\
@@ -946,6 +958,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/procmail-ambiguous-getline-debian.patch  \
   %D%/packages/patches/procmail-CVE-2014-3618.patch		\
   %D%/packages/patches/proot-test-fhs.patch			\
+  %D%/packages/patches/psm-arch.patch				\
+  %D%/packages/patches/psm-ldflags.patch			\
+  %D%/packages/patches/psm-repro.patch				\
   %D%/packages/patches/pt-scotch-build-parallelism.patch	\
   %D%/packages/patches/pulseaudio-fix-mult-test.patch		\
   %D%/packages/patches/pulseaudio-longer-test-timeout.patch	\
@@ -971,6 +986,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-genshi-isstring-helper.patch	\
   %D%/packages/patches/python-genshi-stripping-of-unsafe-script-tags.patch	\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
+  %D%/packages/patches/python-networkx2-reproducible-build.patch	\
   %D%/packages/patches/python-nose-timer-drop-ordereddict.patch \
   %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
@@ -988,6 +1004,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
+  %D%/packages/patches/qemu-CVE-2017-15038.patch		\
+  %D%/packages/patches/qemu-CVE-2017-15268.patch		\
+  %D%/packages/patches/qemu-CVE-2017-15289.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \

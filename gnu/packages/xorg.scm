@@ -64,8 +64,10 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages video)
@@ -176,7 +178,7 @@ directory tree.")
 (define-public bdftopcf
   (package
     (name "bdftopcf")
-    (version "1.0.5")
+    (version "1.1")
     (source
       (origin
         (method url-fetch)
@@ -186,10 +188,10 @@ directory tree.")
                ".tar.bz2"))
         (sha256
           (base32
-            "09i03sk878cmx2i40lkpsysn7zqcvlczb30j7x3lryb11jz4gx1q"))))
+            "18hiscgljrz10zjcws25bis32nyrg3hzgmiq6scrh7izqmgz0kab"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxfont" ,libxfont)))
+      `(("libxfont" ,libxfont2)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4853,7 +4855,7 @@ an X Window System display.")
 (define-public libxfont
   (package
     (name "libxfont")
-    (version "1.5.2")
+    (version "1.5.3")
     (source
       (origin
         (method url-fetch)
@@ -4861,11 +4863,9 @@ an X Window System display.")
                "mirror://xorg/individual/lib/libXfont-"
                version
                ".tar.bz2"))
-        (patches (search-patches "libxfont-CVE-2017-13720.patch"
-                                 "libxfont-CVE-2017-13722.patch"))
         (sha256
           (base32
-            "0w8d07bkmjiarkx09579bl8zsq903mn8javc7qpi0ix4ink5x502"))))
+            "1l4k3i3xzqdmaszykh6bb2ah78p6c3z7fak7xzgq2d38s87w31db"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fontsproto" ,fontsproto)
@@ -5965,6 +5965,9 @@ basic eye-candy effects.")
      `(#:python ,python-2 ;; no full Python 3 support yet
        #:configure-flags '("--with-tests"
                            "--with-bundle_tests"
+                           "--without-opengl" ;; TODO: pygtkglext needed.
+                           "--without-Xdummy" ;; We use Xvfb instead.
+                           "--without-Xdummy_wrapper"
                            "--without-strict")
        #:modules ((guix build python-build-system)
                   (guix build utils))
@@ -5993,13 +5996,15 @@ basic eye-candy effects.")
              (substitute* "setup.py"
                (("/usr/lib/")
                 (string-append (assoc-ref outputs "out") "/lib/")))
-             (substitute* "./etc/xpra/conf.d/55_server_x11.conf.in"
-               (("xvfb = %.*")
-                (string-append "xvfb = "
-                               (assoc-ref inputs "xorg-server")
-                               "/bin/Xvfb +extension Composite -nolisten tcp"
-                               " -noreset -auth $XAUTHORITY"
-                               " -screen 0 5760x2560x24+32")))
+             (substitute* "./xpra/scripts/config.py"
+               ((":.*join.*xvfb.*")
+                (string-append ": \"" (assoc-ref inputs "xorg-server")
+                               "/bin/Xvfb +extension Composite"
+                               " -screen 0 5760x2560x24+32 -dpi 96 -nolisten"
+                               " tcp -noreset -auth $XAUTHORITY\",\n")))
+             (substitute* "./xpra/scripts/config.py"
+               (("socket-dir.*: \"\",")
+                "socket-dir\"        : \"~/.xpra\","))
              #t)))))
     (home-page "https://www.xpra.org/")
     (synopsis "Remote access to individual applications or full desktops")

@@ -186,6 +186,9 @@
 
 (define lsh-service-type
   (service-type (name 'lsh)
+                (description
+                 "Run the GNU@tie{}lsh secure shell (SSH) daemon,
+@command{lshd}.")
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           lsh-shepherd-service)
@@ -460,6 +463,8 @@ of user-name/file-like tuples."
 
 (define openssh-service-type
   (service-type (name 'openssh)
+                (description
+                 "Run the OpenSSH secure shell (SSH) server, @command{sshd}.")
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           openssh-shepherd-service)
@@ -543,6 +548,8 @@ of user-name/file-like tuples."
 
 (define dropbear-service-type
   (service-type (name 'dropbear)
+                (description
+                 "Run the Dropbear secure shell (SSH) server.")
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           dropbear-shepherd-service)

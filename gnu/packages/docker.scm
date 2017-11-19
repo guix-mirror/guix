@@ -24,7 +24,8 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module (guix utils)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web))
 
 (define-public python-docker-py
   (package

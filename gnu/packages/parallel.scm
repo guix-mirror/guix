@@ -92,16 +92,15 @@ and they are executed on lists of files, hosts, users or other items.")
 (define-public slurm
   (package
    (name "slurm")
-   (version "16.05.9.1")
+   (version "16.05.11")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "https://github.com/SchedMD/slurm/archive/slurm-"
-                  (string-join (string-split version #\.) "-") ".tar.gz"))
-            (file-name (string-append name "-" version ".tar.gz"))
+                  "https://download.schedmd.com/slurm/slurm-"
+                  version ".tar.bz2"))
             (sha256
              (base32
-              "1zx5y2lyjknnca4aw7cbawn00mjhsqzy3h35w7s757cykfjqr8gv"))
+              "0c63mvh13wsp6jlydaz98v35iwg53mk94ynpx9dqn2z4gl53k5y7"))
             (patches (search-patches
                       "slurm-configure-remove-nonfree-contribs.patch"))
             (modules '((guix build utils)))

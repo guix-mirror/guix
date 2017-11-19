@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module (guix hg-download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
@@ -1563,7 +1564,7 @@ IcedTea build harness.")
       (license license:gpl2+))))
 
 (define-public icedtea-8
-  (let* ((version "3.5.1")
+  (let* ((version "3.6.0")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -1572,7 +1573,7 @@ IcedTea build harness.")
                          "/icedtea8/" version "/" name ".tar.xz"))
                    (sha256 (base32 hash))))))
     (package (inherit icedtea-7)
-      (version "3.5.1")
+      (version "3.6.0")
       (source (origin
                 (method url-fetch)
                 (uri (string-append
@@ -1580,7 +1581,7 @@ IcedTea build harness.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "1j8iv0cdk9fkh3yb5is7z29m9k3s89w6y9090538j6aa7p4nmalf"))
+                  "0zj192zrrxqh6j1ywc3399gk2ycay9w8pvzcvvr2kvdkb37ak86h"))
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
@@ -1656,34 +1657,34 @@ IcedTea build harness.")
        `(("jdk" ,icedtea-7 "jdk")
          ("openjdk-src"
           ,(drop "openjdk"
-                 "0a6yrq8y1zkzc7hm2l28rm3vzy5izfxhmmhhhvc91lhfclnqcd2q"))
+                 "0mqxh81kq05z4wydkik0yrr81ibf84xmwsdcw9n2gfrzs4f5jxnb"))
          ("aarch32-drop"
           ,(drop "aarch32"
-                 "0cway5a5hcfyh4pzl9zz5xr7lil4gsliy6r5iqbaasd2d9alvqiq"))
+                 "0b207g2n6kn510zf5vwh58bsxgqrmkvrna4p20r74v9cwcwx83n2"))
          ("corba-drop"
           ,(drop "corba"
-                 "031sc6byd8lqvz3cd07phm13pqrxalxk9f3a2q8pim5n4sbsy0qb"))
+                 "0qinc1q4w01nkr9klhfyd8caxvyrrfxjrz32nd7kgyja2bj8x7dd"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "1815jaj0k0w1s0g0jr1ahkajp1jx2qlb08i6l9ha4wyqqyp49a4n"))
+                 "07azrp3g86vk2laybmr5xfn0yrljkxs0rlm1q48385br225bgdxi"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "0vh4f85cxhqvabzg86ycpz02519cdzgsn5dr75k22rkmbbxnbbl6"))
+                 "018fd2hq57zp3pq06wlxy5pabqcyk36xi8hk0d6xk3a90wsjvyik"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "196ycqz4d9kknc6b219q4ib83l1kkl6w6l1cznw9bzaafyynqa35"))
+                 "0vs488kq5j2cc6kplc78jbhfxwq4fn06l34xrbq4d6y17777arg8"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "0ssnadlr5cxhmj06nmni34kdynix1sjhcvjzahm5yzfd7dfllmgy"))
+                 "04f6d1wvck5jrpvrcw5gsbzxnihcry9zrf1v85czdm959q21zv9c"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "0f7fxf0s9kadvs80hm5ga72pyp9r0fvl8zm1wmd1wrks8kl79sd6"))
+                 "1mfgpzyr6zzy9klf8nn3z6d41fydb9ghpfpqzjq3cl95axfbdl1g"))
          ("nashorn-drop"
           ,(drop "nashorn"
-                 "0m95qgnd4z6p0xp9m06ihss7skx2yrm7xw69jsjsrxpriy1shiwy"))
+                 "1a26cmzbs50gkh4rmmmxls7zljx62vfp1wq02gsfd5jqs4xvlibj"))
          ("shenandoah-drop"
           ,(drop "shenandoah"
-                 "0yjlcgp6mldp30hmkfl68mdwlbg3gb0m6xd5y7srczni7cln5f3i"))
+                 "11hmn9mwmvryfddcanzx3qffjm8bbiv18nwv3iy9cswrvxjy010f"))
          ,@(fold alist-delete (package-native-inputs icedtea-7)
                  '("jdk" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
                    "jdk-drop" "langtools-drop" "hotspot-drop")))))))
@@ -1930,15 +1931,15 @@ API and version 2.1 of the Java ServerPages API.")
 (define-public java-swt
   (package
     (name "java-swt")
-    (version "4.6")
+    (version "4.7.1a")
     (source
      ;; The types of many variables and procedures differ in the sources
      ;; dependent on whether the target architecture is a 32-bit system or a
      ;; 64-bit system.  Instead of patching the sources on demand in a build
      ;; phase we download either the 32-bit archive (which mostly uses "int"
      ;; types) or the 64-bit archive (which mostly uses "long" types).
-     (let ((hash32 "0jmx1h65wqxsyjzs64i2z6ryiynllxzm13cq90fky2qrzagcw1ir")
-           (hash64 "0wnd01xssdq9pgx5xqh5lfiy3dmk60dzzqdxzdzf883h13692lgy")
+     (let ((hash32 "09q0cbh90d90q3a7dx9430kc4m6bijrkr4lajrmzzvi0jjdpq4v9")
+           (hash64 "17k5hs75a87ssmc5xhwdfdm2gn4zba0r837l2455za01krnkaa2q")
            (file32 "x86")
            (file64 "x86_64"))
        (let-values (((hash file)
@@ -1948,13 +1949,14 @@ API and version 2.1 of the Java ServerPages API.")
          (origin
            (method url-fetch)
            (uri (string-append
-                 "http://ftp-stud.fht-esslingen.de/pub/Mirrors/"
-                 "eclipse/eclipse/downloads/drops4/R-" version
-                 "-201606061100/swt-" version "-gtk-linux-" file ".zip"))
+                 "http://download.eclipse.org/eclipse/downloads/drops4/"
+                 "R-" version "-201710090410/swt-" version
+                 "-gtk-linux-" file ".zip"))
            (sha256 (base32 hash))))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "swt.jar"
+       #:jdk ,icedtea-8
        #:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
@@ -1988,8 +1990,7 @@ API and version 2.1 of the Java ServerPages API.")
                          (find-files "." "\\.so$"))
                #t))))))
     (inputs
-     `(("xulrunner" ,icecat)
-       ("gtk" ,gtk+-2)
+     `(("gtk" ,gtk+-2)
        ("libxtst" ,libxtst)
        ("libxt" ,libxt)
        ("mesa" ,mesa)
@@ -2361,6 +2362,183 @@ these two libraries to vary independently of one another.")
 of Java.  It is especially usefull for dynamic loading of application
 components.")
     (license license:asl2.0)))
+
+(define-public java-plexus-container-default-bootstrap
+  (package
+    (name "java-plexus-container-default-bootstrap")
+    (version "1.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/plexus-containers"
+                                  "/archive/plexus-containers-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xw5g30qf4a83608rw9v2hv8pfsz7d69dkdhk6r0wia4q78hh1pc"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "container-default.jar"
+       #:source-dir "plexus-container-default/src/main/java"
+       #:test-dir "plexus-container-default/src/test"
+       #:jdk ,icedtea-8
+       #:tests? #f; requires plexus-archiver, which depends on this package
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively
+               "plexus-container-default/src/main/resources/"
+               "build/classes")
+             #t)))))
+    (inputs
+     `(("worldclass" ,java-plexus-classworlds)
+       ("xbean" ,java-geronimo-xbean-reflect)
+       ("utils" ,java-plexus-utils)
+       ("junit" ,java-junit)
+       ("guava" ,java-guava)))
+    (home-page "https://github.com/codehaus-plexus/plexus-containers")
+    (synopsis "Inversion of controll container")
+    (description "Plexus-default-container is Plexus' inversion-of-control
+(IoC) container.  It is composed of its public API and its default
+implementation.")
+    (license license:asl2.0)))
+
+(define-public java-plexus-io
+  (package
+    (name "java-plexus-io")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/plexus-io"
+                                  "/archive/plexus-io-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0f2j41kihaymxkpbm55smpxjja235vad8cgz94frfy3ppcp021dw"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-io.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             (copy-file "src/main/resources/META-INF/plexus/components.xml"
+                        "build/classes/META-INF/plexus/components.xml")
+             #t)))))
+    (inputs
+     `(("utils" ,java-plexus-utils)
+       ("commons-io" ,java-commons-io)
+       ("java-jsr305" ,java-jsr305)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)
+       ("guava" ,java-guava)
+       ("classworlds" ,java-plexus-classworlds)
+       ("xbean" ,java-geronimo-xbean-reflect)
+       ("container-default" ,java-plexus-container-default-bootstrap)))
+    (home-page "https://github.com/codehaus-plexus/plexus-io")
+    (synopsis "I/O plexus components")
+    (description "Plexus IO is a set of plexus components, which are designed
+for use in I/O operations.  This implementation using plexus components allows
+reusing it in maven.")
+    (license license:asl2.0)))
+
+(define-public java-plexus-archiver
+  (package
+    (name "java-plexus-archiver")
+    (version "3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/plexus-archiver"
+                                  "/archive/plexus-archiver-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0iv1j7khra6icqh3jndng3iipfmkc7l5jq2y802cm8r575v75pyv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-archiver.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-dir "src/test"
+       #:test-exclude (list "**/Abstract*.java" "**/Base*.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-failing
+           (lambda _
+             ;; Requires an older version of plexus container
+             (delete-file
+               "src/test/java/org/codehaus/plexus/archiver/DuplicateFilesTest.java")))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             (copy-file "src/main/resources/META-INF/plexus/components.xml"
+                        "build/classes/META-INF/plexus/components.xml")
+             #t)))))
+    (inputs
+     `(("utils" ,java-plexus-utils)
+       ("commons-io" ,java-commons-io)
+       ("snappy" ,java-iq80-snappy)
+       ("io" ,java-plexus-io)
+       ("compress" ,java-commons-compress)
+       ("container-default" ,java-plexus-container-default-bootstrap)
+       ("snappy" ,java-snappy)
+       ("java-jsr305" ,java-jsr305)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("classworld" ,java-plexus-classworlds)
+       ("xbean" ,java-geronimo-xbean-reflect)
+       ("xz" ,java-tukaani-xz)
+       ("guava" ,java-guava)))
+    (home-page "https://github.com/codehaus-plexus/plexus-archiver")
+    (synopsis "Archiver component of the Plexus project")
+    (description "Plexus-archiver contains a component to deal with project
+archives (jar).")
+    (license license:asl2.0)))
+
+(define-public java-plexus-container-default
+  (package
+    (inherit java-plexus-container-default-bootstrap)
+    (name "java-plexus-container-default")
+    (arguments
+     `(#:jar-name "container-default.jar"
+       #:source-dir "plexus-container-default/src/main/java"
+       #:test-dir "plexus-container-default/src/test"
+       #:test-exclude (list ;"**/*Test.java"
+                            "**/Abstract*.java"
+                            ;; Requires plexus-hierarchy
+                            "**/PlexusHierarchyTest.java"
+                            ;; Failures
+                            "**/ComponentRealmCompositionTest.java"
+                            "**/PlexusContainerTest.java")
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively
+               "plexus-container-default/src/main/resources/"
+               "build/classes")
+             #t))
+         (add-before 'check 'fix-paths
+           (lambda _
+             (let ((dir "plexus-container-default/src/test/java/org/codehaus"))
+               (substitute*
+                 (string-append
+                   dir "/plexus/component/composition/"
+                   "ComponentRealmCompositionTest.java")
+                 (("src/test") "plexus-container-default/src/test"))
+               #t))))))
+    (inputs
+     `(("worldclass" ,java-plexus-classworlds)
+       ("xbean" ,java-geronimo-xbean-reflect)
+       ("utils" ,java-plexus-utils)
+       ("junit" ,java-junit)
+       ("guava" ,java-guava)))
+    (native-inputs
+     `(("archiver" ,java-plexus-archiver)
+       ("hamcrest" ,java-hamcrest-core)))))
 
 (define-public java-asm
   (package
@@ -2847,6 +3025,80 @@ are many features, including:
 @item Utilities to test or create typical set-theory properties of collections
   such as union, intersection, and closure.
 @end itemize\n")
+    (license license:asl2.0)))
+
+(define-public java-commons-collections
+  (package
+    (inherit java-commons-collections4)
+    (name "java-commons-collections")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/collections/source/"
+                                  "commons-collections-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "055r51a5lfc3z7rkxnxmnn1npvkvda7636hjpm4qk7cnfzz98387"))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments java-commons-collections4)
+        ((#:phases phases)
+          `(modify-phases ,phases
+            ;; The manifest is required by the build procedure
+            (add-before 'build 'add-manifest
+              (lambda _
+                (mkdir-p "build/conf")
+                (call-with-output-file "build/conf/MANIFEST.MF"
+                  (lambda (file)
+                    (format file "Manifest-Version: 1.0\n")))))
+            (replace 'install
+              (install-jars "build"))))))))
+
+(define java-commons-collections-test-classes
+  (package
+    (inherit java-commons-collections)
+    (arguments
+     `(#:jar-name "commons-collections-test-classes.jar"
+       #:source-dir "src/test"
+       #:tests? #f))
+    (inputs
+     `(("collection" ,java-commons-collections)))))
+
+(define-public java-commons-beanutils
+  (package
+    (name "java-commons-beanutils")
+    (version "1.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/beanutils/source/"
+                                  "commons-beanutils-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "03cs0bq3sl1sdc7py9g3qnf8n9h473nrkvd3d251kaqv6a2ab7qk"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (rename-file (string-append "dist/commons-beanutils-" ,version
+                                         "-SNAPSHOT.jar")
+                          "commons-beanutils.jar")
+             (install-file "commons-beanutils.jar"
+               (string-append (assoc-ref outputs "out") "/share/java/"))
+             #t)))))
+    (inputs
+     `(("logging" ,java-commons-logging-minimal)
+       ("collections" ,java-commons-collections)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("collections-test" ,java-commons-collections-test-classes)))
+    (home-page "http://commons.apache.org/beanutils/")
+    (synopsis "Dynamically set or get properties in Java")
+    (description "BeanUtils provides a simplified interface to reflection and
+introspection to set or get dynamically determined properties through their
+setter and getter method.")
     (license license:asl2.0)))
 
 (define-public java-commons-io
@@ -3412,32 +3664,43 @@ working with compressed files such as ar, cpio, Unix dump, tar, zip, gzip, XZ,
 Pack200, bzip2, 7z, arj, lzma, snappy, DEFLATE, lz4 and Z files.")
     (license license:asl2.0)))
 
-(define-public java-commons-net
+(define-public java-commons-csv
   (package
-    (name "java-commons-net")
-    (version "3.6")
+    (name "java-commons-csv")
+    (version "1.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://apache/commons/net/source/"
-                                  "commons-net-" version "-src.tar.gz"))
+              (uri (string-append "mirror://apache/commons/csv/source/"
+                                  "commons-csv-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0n0cmnddk9qdqhjvka8pc6hd9mn2qi3166f1s6xk32h7rfy1adxr"))))
+                "1l89m0fm2s3xx3v3iynvangymfg2vlyngaj6fgsi457nmsw7m7ij"))))
     (build-system ant-build-system)
     (arguments
-     `(;; FIXME: MainTest.java tries to read "examples.properties" (which
-       ;; should be "resources/examples/examples.properties"), but gets "null"
-       ;; instead.
-       #:tests? #f
-       #:jar-name "commons-net.jar"))
-    (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://commons.apache.org/net/")
-    (synopsis "Client library for many basic Internet protocols")
-    (description "The Apache Commons Net library implements the client side of
-many basic Internet protocols.  The purpose of the library is to provide
-fundamental protocol access, not higher-level abstractions.")
+     `(#:jar-name "commons-csv.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f)); FIXME: requires java-h2
+    (inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-commons-io" ,java-commons-io)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("junit" ,java-junit)))
+    (home-page "https://commons.apache.org/proper/commons-csv/")
+    (synopsis "Read and write CSV documents")
+    (description "Commons CSV reads and writes files in variations of the Comma
+Separated Value (CSV) format.  The most common CSV formats are predefined in the
+CSVFormat class:
+
+@itemize
+@item Microsoft Excel
+@item Informix UNLOAD
+@item Informix UNLOAD CSV
+@item MySQL
+@item RFC 4180
+@item TDF
+@end itemize
+
+Custom formats can be created using a fluent style API.")
     (license license:asl2.0)))
 
 (define-public java-osgi-annotation
@@ -4127,6 +4390,68 @@ JavaMail API.")
 Java.")
     (license license:asl2.0)))
 
+(define-public java-log4j-core
+  (package
+    (inherit java-log4j-api)
+    (name "java-log4j-core")
+    (inputs
+     `(("java-osgi-core" ,java-osgi-core)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-log4j-api" ,java-log4j-api)
+       ("java-mail" ,java-mail)
+       ("java-jboss-jms-api-spec" ,java-jboss-jms-api-spec)
+       ("java-lmax-disruptor" ,java-lmax-disruptor)
+       ("java-kafka" ,java-kafka-clients)
+       ("java-datanucleus-javax-persistence" ,java-datanucleus-javax-persistence)
+       ("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
+       ("java-fasterxml-jackson-databind" ,java-fasterxml-jackson-databind)
+       ("java-fasterxml-jackson-dataformat-xml" ,java-fasterxml-jackson-dataformat-xml)
+       ("java-fasterxml-jackson-dataformat-yaml" ,java-fasterxml-jackson-dataformat-yaml)
+       ("java-commons-compress" ,java-commons-compress)
+       ("java-commons-csv" ,java-commons-csv)
+       ("java-jeromq" ,java-jeromq)
+       ("java-junit" ,java-junit)))
+    (native-inputs
+     `(("hamcrest" ,java-hamcrest-all)
+       ("java-commons-io" ,java-commons-io)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("slf4j" ,java-slf4j-api)))
+    (arguments
+     `(#:tests? #f ; tests require more dependencies
+       #:test-dir "src/test"
+       #:source-dir "src/main/java"
+       #:jar-name "log4j-core.jar"
+       #:jdk ,icedtea-8
+       #:make-flags
+       (list (string-append "-Ddist.dir=" (assoc-ref %outputs "out")
+                            "/share/java"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-dir
+           (lambda _ (chdir "log4j-core") #t)))))
+    (synopsis "Core component of the Log4j framework")
+    (description "This package provides the core component of the Log4j
+logging framework for Java.")))
+
+(define-public java-log4j-1.2-api
+  (package
+    (inherit java-log4j-api)
+    (name "java-log4j-1.2-api")
+    (arguments
+     `(#:jar-name "java-log4j-1.2-api.jar"
+       #:source-dir "log4j-1.2-api/src/main/java"
+       #:jdk ,icedtea-8
+       ;; Tests require maven-model (and other maven subprojects), which is a
+       ;; cyclic dependency.
+       #:tests? #f))
+    (inputs
+     `(("log4j-api" ,java-log4j-api)
+       ("log4j-core" ,java-log4j-core)
+       ("osgi-core" ,java-osgi-core)
+       ("eclipse-osgi" ,java-eclipse-osgi)
+       ("java-lmax-disruptor" ,java-lmax-disruptor)))))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
@@ -4655,55 +4980,60 @@ tree walking, and translation.")
                 "0qgg5vgsm4l1d6dj9pfbaa25dpv2ry2gny8ajy4vvgvfklw97b3m"))))
     (arguments
      `(#:jar-name (string-append ,name "-" ,version ".jar")
-       #:source-dir (string-append "tool/src/main/java:runtime/Java/src/main/java:"
-                                "tool/src/main/antlr2:tool/src/main/antlr3")
-       #:tests? #f
+       #:source-dir (string-join '("tool/src/main/java"
+                                   "runtime/Java/src/main/java"
+                                   "tool/src/main/antlr2"
+                                   "tool/src/main/antlr3")
+                                 ":")
+       #:tests? #f  ; FIXME: tests seem to require maven plugin
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'bin-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((jar (string-append (assoc-ref outputs "out") "/share/java"))
-                   (bin (string-append (assoc-ref outputs "out") "/bin")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (jar (string-append out "/share/java"))
+                    (bin (string-append out "/bin")))
                (mkdir-p bin)
                (with-output-to-file (string-append bin "/antlr3")
                  (lambda _
                    (display
-                     (string-append "#!" (which "sh") "\n"
-                                    "java -cp " jar "/antlr3-3.3.jar:"
-                                    (string-concatenate
-                                      (find-files (assoc-ref inputs "java-stringtemplate")
-                                                  ".*\\.jar"))
-                                    ":"
-                                    (string-concatenate
-                                      (find-files (string-append
-                                                    (assoc-ref inputs "antlr")
-                                                    "/lib")
-                                                  ".*\\.jar"))
-                                    " org.antlr.Tool $*"))))
-               (chmod (string-append bin "/antlr3") #o755))))
+                    (string-append
+                     "#!" (which "sh") "\n"
+                     "java -cp " jar "/antlr3-3.3.jar:"
+                     (string-join
+                      (append (find-files (assoc-ref inputs "java-stringtemplate")
+                                          ".*\\.jar$")
+                              (find-files (string-append (assoc-ref inputs "antlr")
+                                                         "/lib")
+                                          ".*\\.jar$"))
+                      ":")
+                     " org.antlr.Tool $*"))))
+               (chmod (string-append bin "/antlr3") #o755)
+               #t)))
          (add-before 'build 'generate-grammar
            (lambda _
-             (let ((dir "tool/src/main/antlr2/org/antlr/grammar/v2/"))
-               (for-each (lambda (file)
-                           (display file)
-                           (newline)
-                           (system* "antlr" "-o" dir (string-append dir file)))
-                         '("antlr.g" "antlr.print.g" "assign.types.g"
-                           "buildnfa.g" "codegen.g" "define.g")))
-             (chdir "tool/src/main/antlr3/org/antlr/grammar/v3/")
-             (for-each (lambda (file)
-                         (display file)
-                         (newline)
-                         (system* "antlr3" file))
-                       '("ActionAnalysis.g" "ActionTranslator.g" "ANTLRv3.g"
-                         "ANTLRv3Tree.g"))
-             (chdir "../../../../../../../..")
              (substitute* "tool/src/main/java/org/antlr/tool/Grammar.java"
                (("import org.antlr.grammar.v2.\\*;")
                 "import org.antlr.grammar.v2.*;\n
 import org.antlr.grammar.v2.TreeToNFAConverter;\n
 import org.antlr.grammar.v2.DefineGrammarItemsWalker;\n
-import org.antlr.grammar.v2.ANTLRTreePrinter;"))))
+import org.antlr.grammar.v2.ANTLRTreePrinter;"))
+             (and
+              (with-directory-excursion "tool/src/main/antlr2/org/antlr/grammar/v2/"
+                (every (lambda (file)
+                         (format #t "~a\n" file)
+                         (zero? (system* "antlr" file)))
+                       '("antlr.g" "antlr.print.g" "assign.types.g"
+                         "buildnfa.g" "codegen.g" "define.g")))
+              (with-directory-excursion "tool/src/main/antlr3/org/antlr/grammar/v3/"
+                (every (lambda (file)
+                         (format #t "~a\n" file)
+                         (zero? (system* "antlr3" file)))
+                       '("ActionAnalysis.g" "ActionTranslator.g" "ANTLRv3.g"
+                         "ANTLRv3Tree.g"))))))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
@@ -4714,7 +5044,8 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))))
 <include name=\"**/*.sti\"/>
 <include name=\"**/STLexer.tokens\"/>
 </fileset>
-</copy><exec")))))))
+</copy><exec"))
+             #t)))))
     (native-inputs
      `(("antlr" ,antlr2)
        ("antlr3" ,antlr3-3.1)))
@@ -4794,50 +5125,6 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))))
      `(("junit" ,java-junit)))
     (propagated-inputs
      `(("stringtemplate" ,java-stringtemplate-3)))))
-
-(define-public java-asm
-  (package
-    (name "java-asm")
-    (version "5.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.forge.ow2.org/asm/"
-                                  "asm-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0kxvmv5275rnjl7jv0442k3wjnq03ngkb7sghs78avf45pzm4qgr"))))
-    (build-system ant-build-system)
-    (arguments
-     `(#:build-target "compile"
-       #:test-target "test"
-       ;; The tests require an old version of Janino, which no longer compiles
-       ;; with the JDK7.
-       #:tests? #f
-       ;; We don't need these extra ant tasks, but the build system asks us to
-       ;; provide a path anyway.
-       #:make-flags (list (string-append "-Dobjectweb.ant.tasks.path=foo"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'build-jars
-           (lambda* (#:key make-flags #:allow-other-keys)
-             ;; We cannot use the "jar" target because it depends on a couple
-             ;; of unpackaged, complicated tools.
-             (mkdir "dist")
-             (zero? (system* "jar"
-                             "-cf" (string-append "dist/asm-" ,version ".jar")
-                             "-C" "output/build/tmp" "."))))
-         (replace 'install
-           (install-jars "dist")))))
-    (native-inputs
-     `(("java-junit" ,java-junit)))
-    (home-page "http://asm.ow2.org/")
-    (synopsis "Very small and fast Java bytecode manipulation framework")
-    (description "ASM is an all purpose Java bytecode manipulation and
-analysis framework.  It can be used to modify existing classes or dynamically
-generate classes, directly in binary form.  The provided common
-transformations and analysis algorithms allow to easily assemble custom
-complex transformations and code analysis tools.")
-    (license license:bsd-3)))
 
 (define-public java-commons-cli-1.2
   ;; This is a bootstrap dependency for Maven2.
@@ -6949,3 +7236,244 @@ done to the IDE or continuous integration servers which simplifies adoption.")
        ("reflect" ,java-powermock-reflect)
        ("support" ,java-powermock-api-support)
        ("cglib" ,java-cglib)))))
+
+(define-public java-jboss-jms-api-spec
+  (package
+    (name "java-jboss-jms-api-spec")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jboss/jboss-jms-api_spec/"
+                                  "archive/jboss-jms-api_" version
+                                  "_spec-1.0.1.Final.tar.gz"))
+              (sha256
+               (base32
+                "07bqblw9kq2i8q92bz70fvavq5xjfkaixl8xa0m0cypjgy82rb7m"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jboss-jms-api_spec.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "."
+       #:tests? #f)); no tests
+    (home-page "https://github.com/jboss/jboss-jms-api_spec")
+    (synopsis "Java Message Service API specification")
+    (description "Java Message Service (JMS) API is used to send messages
+messages between two or more clients.  It is a messaging standard that allows
+application components to create, send, receive, and read messages.")
+    ; either gpl2 only with GPL Classpath Exception, or cddl.
+    (license (list license:gpl2 license:cddl1.0))))
+
+(define-public java-mail
+  (package
+    (name "java-mail")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/javaee/javamail/archive/"
+                                  "JAVAMAIL-1_6_0.tar.gz"))
+              (sha256
+               (base32
+                "1b4rg7fpj50ld90a71iz2m4gm3f5cnw18p3q3rbrrryjip46kx92"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-mail.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "mail/src/main/java"
+       #:test-dir "mail/src/test"
+       #:test-exclude
+       (list "**/CollectorFormatterTest.java"
+             "**/CompactFormatterTest.java"
+             "**/DurationFilterTest.java"
+             "**/MailHandlerTest.java"
+             "**/GetLocalAddressTest.java"
+             ;; FIXME: both end with:
+             ;; java.lang.ClassNotFoundException:
+             ;; javax.mail.internet.MimeMultipartParseTest
+             "**/MimeMultipartParseTest.java"
+             "**/SearchTermSerializationTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'move-version.java
+           (lambda _
+             (copy-file "mail/src/main/resources/javax/mail/Version.java"
+                        "mail/src/main/java/javax/mail/Version.java")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "mail/src/main/resources/META-INF"
+                               "build/classes/META-INF")
+             #t)))))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)))
+    (home-page "https://javaee.github.io/javamail/")
+    (synopsis "Mail-related functionnalities in Java")
+    (description "The JavaMail API provides a platform-independent and
+protocol-independent framework to build mail and messaging applications.")
+    ;; General Public License Version 2 only ("GPL") or the Common Development
+    ;; and Distribution License("CDDL")
+    (license (list license:cddl1.1
+                   license:gpl2)))); with classpath exception
+
+(define-public java-jeromq
+  (package
+    (name "java-jeromq")
+    (version "0.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/zeromq/jeromq/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17wx8dlyqmbw77xf6d6wxnhiyky6181zpf1a48jqzz9hidz0j841"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jeromq.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-exclude
+       (list
+         "**/Abstract*.java"
+         ;; Requires network
+         "**/ZBeaconTest.java"
+         ;; Failures
+         "**/CustomDecoderTest.java"
+         "**/CustomEncoderTest.java")))
+    (inputs
+     `(("java-jnacl" ,java-jnacl)))
+    (native-inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("junit" ,java-junit)))
+    (home-page "http://zeromq.org/bindings:java")
+    (synopsis "Java binding for 0MQ")
+    (description "Jeromq provides the java bindings for 0MQ.")
+    (license license:mpl2.0)))
+
+(define-public java-kafka-clients
+  (package
+    (name "java-kafka-clients")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/kafka/" version "/kafka-"
+                                  version "-src.tgz"))
+              (sha256
+               (base32
+                "1yxmnsmliwm7671q5yy9bl4jdqyyn00n26cggz9brwczx80w1vfq"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-kafka-clients.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "clients/src/main/java"
+       #:test-dir "clients/src/test"
+       #:test-exclude
+       (list
+         ;; This file does not contain a class
+         "**/IntegrationTest.java"
+         ;; Requires network
+         "**/ClientUtilsTest.java"
+         ;; End with errors that seem related to our powermock
+         "**/KafkaProducerTest.java"
+         "**/BufferPoolTest.java")))
+    (inputs
+     `(("java-slf4j-api" ,java-slf4j-api)
+       ("java-lz4" ,java-lz4)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-all)
+       ("objenesis" ,java-objenesis)
+       ("asm" ,java-asm)
+       ("cglib" ,java-cglib)
+       ("javassist" ,java-jboss-javassist)
+       ("snappy" ,java-snappy)
+       ("easymock" ,java-easymock)
+       ("powermock" ,java-powermock-core)
+       ("powermock-easymock" ,java-powermock-api-easymock)
+       ("powermock-junit4-common" ,java-powermock-modules-junit4-common)
+       ("powermock-junit4" ,java-powermock-modules-junit4)
+       ("powermock-support" ,java-powermock-api-support)
+       ("bouncycastle" ,java-bouncycastle-bcprov)
+       ("bouncycastle-bcpkix" ,java-bouncycastle-bcpkix)))
+    (home-page "https://kafka.apache.org")
+    (synopsis "Distributed streaming platform")
+    (description "Kafka is a distributed streaming platform, which means:
+@itemize
+@item it can publish and subscribe to streams of records;
+@item it can store streams of records in a fault-tolerant way;
+@item it can process streams of records as they occur.
+@end itemize")
+    ;; Either cddl or gpl2 only.
+    (license (list license:cddl1.1; actually cddl1.1
+                   license:gpl2)))); with classpath exception
+
+(define-public java-jdom
+  (package
+    (name "java-jdom")
+    (version "1.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://jdom.org/dist/binary/archive/jdom-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "07wdpm3jwwc9q38kmdw40fvbmv6jzjrkrf8m0zqs58f79a672wfl"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "package"
+       #:tests? #f; tests are run as part of the build process
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-jars "build")))))
+    (home-page "http://jdom.org/")
+    (synopsis "Access, manipulate, and output XML data")
+    (description "Java-based solution for accessing, manipulating, and
+outputting XML data from Java code.")
+    (license license:bsd-4)))
+
+(define-public java-geronimo-xbean-reflect
+  (package
+    (name "java-geronimo-xbean-reflect")
+    (version "4.5")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                     (url "https://svn.apache.org/repos/asf/geronimo/xbean/tags/xbean-4.5/")
+                     (revision 1807396)))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "18q3i6jgm6rkw8aysfgihgywrdc5nvijrwnslmi3ww497jvri6ja"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "geronimo-xbean-reflect.jar"
+       #:source-dir "xbean-reflect/src/main/java"
+       #:test-dir "xbean-reflect/src/test"
+       #:jdk ,icedtea-8
+       #:test-exclude
+       (list "**/Abstract*.java" "**/AsmParameterNameLoaderTest.java"
+             "**/ObjectRecipeTest.java" "**/ParameterNameLoaderTest.java"
+             "**/RecipeHelperTest.java" "**/XbeanAsmParameterNameLoaderTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-source
+           (lambda _
+             (let ((dir "xbean-reflect/src/main/java/org/apache/xbean/recipe/"))
+               ;; org.apache.xbean.asm6 is actually repackaged java-asm
+               (substitute* (string-append dir "XbeanAsmParameterNameLoader.java")
+                 (("org.apache.xbean.asm5") "org.objectweb.asm"))
+               #t))))))
+    (inputs
+     `(("asm" ,java-asm)
+       ("log4j" ,java-log4j-api)
+       ("log4j-1.2" ,java-log4j-1.2-api)
+       ("log4j-core" ,java-log4j-core)
+       ("logging" ,java-commons-logging-minimal)))
+    (native-inputs
+     `(("junit" ,java-junit)))
+    (home-page "https://geronimo.apache.org/maven/xbean/3.6/xbean-reflect/")
+    (synopsis "Dependency injection helper")
+    (description "Xbean-reflect provides very flexible ways to create objects
+and graphs of objects for dependency injection frameworks")
+    (license license:asl2.0)))

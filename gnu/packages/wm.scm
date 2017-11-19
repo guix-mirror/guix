@@ -42,6 +42,8 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-check)
+  #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
@@ -541,7 +543,7 @@ experience.")
 (define-public awesome
   (package
     (name "awesome")
-    (version "4.0")
+    (version "4.2")
     (source
      (origin (method url-fetch)
              (uri (string-append
@@ -549,7 +551,7 @@ experience.")
                    "master/awesome-" version ".tar.xz"))
              (sha256
               (base32
-               "0czkcz67sab63gf5m2p2pgg05yinjx60hfb9rfyzdkkg28q9f02w"))
+               "0kwpbls9h1alxcmvxh5g9qb995fds5b2ngcr44w0ibazkyls2pdc"))
              (modules '((guix build utils)
                         (srfi srfi-19)))
              (snippet
@@ -598,6 +600,9 @@ experience.")
      `(;; Let compression happen in our 'compress-documentation' phase so that
        ;; '--no-name' is used, which removes timestamps from gzip output.
        #:configure-flags '("-DCOMPRESS_MANPAGES=off")
+
+       ;; Building awesome in its source dir is no longer supported.
+       #:out-of-source? #t
 
        #:phases
        (modify-phases %standard-phases
@@ -714,7 +719,7 @@ Keybinder works with GTK-based applications using the X Window System.")
 (define-public spectrwm
   (package
     (name "spectrwm")
-    (version "3.0.2")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
@@ -725,7 +730,7 @@ Keybinder works with GTK-based applications using the X Window System.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "065b7j8s0lxw3p58fyf3c1mr5203pdm0kww42v245rlx0f005kl2"))))
+         "16lxcharxslf9rc39wxa3mr2nx5d8kzm9ls7p7dal8yrwr7y59dp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((pkg-config (lambda (flag)

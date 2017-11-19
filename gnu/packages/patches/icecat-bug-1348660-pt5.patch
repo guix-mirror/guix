@@ -1,0 +1,727 @@
+This is a subset of the following changeset from upstream:
+  https://hg.mozilla.org/releases/mozilla-esr52/raw-rev/5e07bd37ac61
+
+This excludes all test code from that changeset, including a GIT binary patch
+that is not supported by Guix's patch-and-repack mechanism.
+
+# HG changeset patch
+# User Jan Varga <jan.varga@gmail.com>
+# Date 1490181244 -3600
+# Node ID 5e07bd37ac6162f218dfe03ed83b5dcca9653b68
+# Parent  28934912eede9e14895baf4af7575ca9639f59ee
+Bug 1348660 - Part 5: Implement a method to retrieve usage data for all origins at once. r=btseng, a=lizzard
+
+diff --git a/dom/quota/ActorsChild.cpp b/dom/quota/ActorsChild.cpp
+--- a/dom/quota/ActorsChild.cpp
++++ b/dom/quota/ActorsChild.cpp
+@@ -137,16 +137,52 @@ QuotaUsageRequestChild::HandleResponse(n
+   AssertIsOnOwningThread();
+   MOZ_ASSERT(NS_FAILED(aResponse));
+   MOZ_ASSERT(mRequest);
+ 
+   mRequest->SetError(aResponse);
+ }
+ 
+ void
++QuotaUsageRequestChild::HandleResponse(const nsTArray<OriginUsage>& aResponse)
++{
++  AssertIsOnOwningThread();
++  MOZ_ASSERT(mRequest);
++
++  RefPtr<nsVariant> variant = new nsVariant();
++
++  if (aResponse.IsEmpty()) {
++    variant->SetAsEmptyArray();
++  } else {
++    nsTArray<RefPtr<UsageResult>> usageResults;
++
++    const uint32_t count = aResponse.Length();
++
++    usageResults.SetCapacity(count);
++
++    for (uint32_t index = 0; index < count; index++) {
++      auto& originUsage = aResponse[index];
++
++      RefPtr<UsageResult> usageResult = new UsageResult(originUsage.origin(),
++                                                        originUsage.persisted(),
++                                                        originUsage.usage());
++
++      usageResults.AppendElement(usageResult.forget());
++    }
++
++    variant->SetAsArray(nsIDataType::VTYPE_INTERFACE_IS,
++                        &NS_GET_IID(nsIQuotaUsageResult),
++                        usageResults.Length(),
++                        static_cast<void*>(usageResults.Elements()));
++  }
++
++  mRequest->SetResult(variant);
++}
++
++void
+ QuotaUsageRequestChild::HandleResponse(const OriginUsageResponse& aResponse)
+ {
+   AssertIsOnOwningThread();
+   MOZ_ASSERT(mRequest);
+ 
+   RefPtr<OriginUsageResult> result =
+     new OriginUsageResult(aResponse.usage(),
+                           aResponse.fileUsage(),
+@@ -177,16 +213,20 @@ QuotaUsageRequestChild::Recv__delete__(c
+   AssertIsOnOwningThread();
+   MOZ_ASSERT(mRequest);
+ 
+   switch (aResponse.type()) {
+     case UsageRequestResponse::Tnsresult:
+       HandleResponse(aResponse.get_nsresult());
+       break;
+ 
++    case UsageRequestResponse::TAllUsageResponse:
++      HandleResponse(aResponse.get_AllUsageResponse().originUsages());
++      break;
++
+     case UsageRequestResponse::TOriginUsageResponse:
+       HandleResponse(aResponse.get_OriginUsageResponse());
+       break;
+ 
+     default:
+       MOZ_CRASH("Unknown response type!");
+   }
+ 
+diff --git a/dom/quota/ActorsChild.h b/dom/quota/ActorsChild.h
+--- a/dom/quota/ActorsChild.h
++++ b/dom/quota/ActorsChild.h
+@@ -93,16 +93,19 @@ private:
+ 
+   // Only destroyed by QuotaChild.
+   ~QuotaUsageRequestChild();
+ 
+   void
+   HandleResponse(nsresult aResponse);
+ 
+   void
++  HandleResponse(const nsTArray<OriginUsage>& aResponse);
++
++  void
+   HandleResponse(const OriginUsageResponse& aResponse);
+ 
+   // IPDL methods are only called by IPDL.
+   virtual void
+   ActorDestroy(ActorDestroyReason aWhy) override;
+ 
+   virtual bool
+   Recv__delete__(const UsageRequestResponse& aResponse) override;
+diff --git a/dom/quota/ActorsParent.cpp b/dom/quota/ActorsParent.cpp
+--- a/dom/quota/ActorsParent.cpp
++++ b/dom/quota/ActorsParent.cpp
+@@ -1039,16 +1039,42 @@ private:
+   // IPDL methods.
+   void
+   ActorDestroy(ActorDestroyReason aWhy) override;
+ 
+   bool
+   RecvCancel() override;
+ };
+ 
++class GetUsageOp final
++  : public QuotaUsageRequestBase
++{
++  nsTArray<OriginUsage> mOriginUsages;
++  nsDataHashtable<nsCStringHashKey, uint32_t> mOriginUsagesIndex;
++
++  bool mGetAll;
++
++public:
++  explicit GetUsageOp(const UsageRequestParams& aParams);
++
++private:
++  ~GetUsageOp()
++  { }
++
++  nsresult
++  TraverseRepository(QuotaManager* aQuotaManager,
++                     PersistenceType aPersistenceType);
++
++  nsresult
++  DoDirectoryWork(QuotaManager* aQuotaManager) override;
++
++  void
++  GetResponse(UsageRequestResponse& aResponse) override;
++};
++
+ class GetOriginUsageOp final
+   : public QuotaUsageRequestBase
+ {
+   // If mGetGroupUsage is false, we use mUsageInfo to record the origin usage
+   // and the file usage. Otherwise, we use it to record the group usage and the
+   // limit.
+   UsageInfo mUsageInfo;
+ 
+@@ -5693,16 +5719,20 @@ PQuotaUsageRequestParent*
+ Quota::AllocPQuotaUsageRequestParent(const UsageRequestParams& aParams)
+ {
+   AssertIsOnBackgroundThread();
+   MOZ_ASSERT(aParams.type() != UsageRequestParams::T__None);
+ 
+   RefPtr<QuotaUsageRequestBase> actor;
+ 
+   switch (aParams.type()) {
++    case UsageRequestParams::TAllUsageParams:
++      actor = new GetUsageOp(aParams);
++      break;
++
+     case UsageRequestParams::TOriginUsageParams:
+       actor = new GetOriginUsageOp(aParams);
+       break;
+ 
+     default:
+       MOZ_CRASH("Should never get here!");
+   }
+ 
+@@ -6033,16 +6063,189 @@ QuotaUsageRequestBase::RecvCancel()
+   if (mCanceled.exchange(true)) {
+     NS_WARNING("Canceled more than once?!");
+     return false;
+   }
+ 
+   return true;
+ }
+ 
++GetUsageOp::GetUsageOp(const UsageRequestParams& aParams)
++  : mGetAll(aParams.get_AllUsageParams().getAll())
++{
++  AssertIsOnOwningThread();
++  MOZ_ASSERT(aParams.type() == UsageRequestParams::TAllUsageParams);
++}
++
++nsresult
++GetUsageOp::TraverseRepository(QuotaManager* aQuotaManager,
++                               PersistenceType aPersistenceType)
++{
++  AssertIsOnIOThread();
++  MOZ_ASSERT(aQuotaManager);
++
++  nsresult rv;
++
++  nsCOMPtr<nsIFile> directory =
++    do_CreateInstance(NS_LOCAL_FILE_CONTRACTID, &rv);
++  if (NS_WARN_IF(NS_FAILED(rv))) {
++    return rv;
++  }
++
++  rv = directory->InitWithPath(aQuotaManager->GetStoragePath(aPersistenceType));
++  if (NS_WARN_IF(NS_FAILED(rv))) {
++    return rv;
++  }
++
++  bool exists;
++  rv = directory->Exists(&exists);
++  if (NS_WARN_IF(NS_FAILED(rv))) {
++    return rv;
++  }
++
++  if (!exists) {
++    return NS_OK;
++  }
++
++  nsCOMPtr<nsISimpleEnumerator> entries;
++  rv = directory->GetDirectoryEntries(getter_AddRefs(entries));
++  if (NS_WARN_IF(NS_FAILED(rv))) {
++    return rv;
++  }
++
++  bool persistent = aPersistenceType == PERSISTENCE_TYPE_PERSISTENT;
++
++  bool hasMore;
++  while (NS_SUCCEEDED((rv = entries->HasMoreElements(&hasMore))) &&
++         hasMore && !mCanceled) {
++    nsCOMPtr<nsISupports> entry;
++    rv = entries->GetNext(getter_AddRefs(entry));
++    if (NS_WARN_IF(NS_FAILED(rv))) {
++      return rv;
++    }
++
++    nsCOMPtr<nsIFile> originDir = do_QueryInterface(entry);
++    MOZ_ASSERT(originDir);
++
++    bool isDirectory;
++    rv = originDir->IsDirectory(&isDirectory);
++    if (NS_WARN_IF(NS_FAILED(rv))) {
++      return rv;
++    }
++
++    if (!isDirectory) {
++      nsString leafName;
++      rv = originDir->GetLeafName(leafName);
++      if (NS_WARN_IF(NS_FAILED(rv))) {
++        return rv;
++      }
++
++      if (!leafName.EqualsLiteral(DSSTORE_FILE_NAME)) {
++        QM_WARNING("Something (%s) in the repository that doesn't belong!",
++                   NS_ConvertUTF16toUTF8(leafName).get());
++      }
++      continue;
++    }
++
++    int64_t timestamp;
++    nsCString suffix;
++    nsCString group;
++    nsCString origin;
++    bool isApp;
++    rv = aQuotaManager->GetDirectoryMetadata2WithRestore(originDir,
++                                                         persistent,
++                                                         &timestamp,
++                                                         suffix,
++                                                         group,
++                                                         origin,
++                                                         &isApp);
++    if (NS_WARN_IF(NS_FAILED(rv))) {
++      return rv;
++    }
++
++    if (!mGetAll &&
++        aQuotaManager->IsOriginWhitelistedForPersistentStorage(origin)) {
++      continue;
++    }
++
++    OriginUsage* originUsage;
++
++    // We can't store pointers to OriginUsage objects in the hashtable
++    // since AppendElement() reallocates its internal array buffer as number
++    // of elements grows.
++    uint32_t index;
++    if (mOriginUsagesIndex.Get(origin, &index)) {
++      originUsage = &mOriginUsages[index];
++    } else {
++      index = mOriginUsages.Length();
++
++      originUsage = mOriginUsages.AppendElement();
++
++      originUsage->origin() = origin;
++      originUsage->persisted() = false;
++      originUsage->usage() = 0;
++
++      mOriginUsagesIndex.Put(origin, index);
++    }
++
++    UsageInfo usageInfo;
++    rv = GetUsageForOrigin(aQuotaManager,
++                           aPersistenceType,
++                           group,
++                           origin,
++                           isApp,
++                           &usageInfo);
++    if (NS_WARN_IF(NS_FAILED(rv))) {
++      return rv;
++    }
++
++    originUsage->usage() = originUsage->usage() + usageInfo.TotalUsage();
++  }
++  if (NS_WARN_IF(NS_FAILED(rv))) {
++    return rv;
++  }
++
++  return NS_OK;
++}
++
++nsresult
++GetUsageOp::DoDirectoryWork(QuotaManager* aQuotaManager)
++{
++  AssertIsOnIOThread();
++
++  PROFILER_LABEL("Quota", "GetUsageOp::DoDirectoryWork",
++                 js::ProfileEntry::Category::OTHER);
++
++  nsresult rv;
++
++  for (const PersistenceType type : kAllPersistenceTypes) {
++    rv = TraverseRepository(aQuotaManager, type);
++    if (NS_WARN_IF(NS_FAILED(rv))) {
++      return rv;
++    }
++  }
++
++  return NS_OK;
++}
++
++void
++GetUsageOp::GetResponse(UsageRequestResponse& aResponse)
++{
++  AssertIsOnOwningThread();
++
++  aResponse = AllUsageResponse();
++
++  if (!mOriginUsages.IsEmpty()) {
++    nsTArray<OriginUsage>& originUsages =
++      aResponse.get_AllUsageResponse().originUsages();
++
++    mOriginUsages.SwapElements(originUsages);
++  }
++}
++
+ GetOriginUsageOp::GetOriginUsageOp(const UsageRequestParams& aParams)
+   : mParams(aParams.get_OriginUsageParams())
+   , mGetGroupUsage(aParams.get_OriginUsageParams().getGroupUsage())
+ {
+   AssertIsOnOwningThread();
+   MOZ_ASSERT(aParams.type() == UsageRequestParams::TOriginUsageParams);
+ }
+ 
+diff --git a/dom/quota/PQuota.ipdl b/dom/quota/PQuota.ipdl
+--- a/dom/quota/PQuota.ipdl
++++ b/dom/quota/PQuota.ipdl
+@@ -12,24 +12,30 @@ include "mozilla/dom/quota/Serialization
+ 
+ using mozilla::dom::quota::PersistenceType
+   from "mozilla/dom/quota/PersistenceType.h";
+ 
+ namespace mozilla {
+ namespace dom {
+ namespace quota {
+ 
++struct AllUsageParams
++{
++  bool getAll;
++};
++
+ struct OriginUsageParams
+ {
+   PrincipalInfo principalInfo;
+   bool getGroupUsage;
+ };
+ 
+ union UsageRequestParams
+ {
++  AllUsageParams;
+   OriginUsageParams;
+ };
+ 
+ struct ClearOriginParams
+ {
+   PrincipalInfo principalInfo;
+   PersistenceType persistenceType;
+   bool persistenceTypeIsExplicit;
+diff --git a/dom/quota/PQuotaUsageRequest.ipdl b/dom/quota/PQuotaUsageRequest.ipdl
+--- a/dom/quota/PQuotaUsageRequest.ipdl
++++ b/dom/quota/PQuotaUsageRequest.ipdl
+@@ -3,26 +3,39 @@
+  * You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ include protocol PQuota;
+ 
+ namespace mozilla {
+ namespace dom {
+ namespace quota {
+ 
++struct OriginUsage
++{
++  nsCString origin;
++  bool persisted;
++  uint64_t usage;
++};
++
++struct AllUsageResponse
++{
++  OriginUsage[] originUsages;
++};
++
+ struct OriginUsageResponse
+ {
+   uint64_t usage;
+   uint64_t fileUsage;
+   uint64_t limit;
+ };
+ 
+ union UsageRequestResponse
+ {
+   nsresult;
++  AllUsageResponse;
+   OriginUsageResponse;
+ };
+ 
+ protocol PQuotaUsageRequest
+ {
+   manager PQuota;
+ 
+ parent:
+diff --git a/dom/quota/QuotaManagerService.cpp b/dom/quota/QuotaManagerService.cpp
+--- a/dom/quota/QuotaManagerService.cpp
++++ b/dom/quota/QuotaManagerService.cpp
+@@ -490,16 +490,41 @@ QuotaManagerService::RemoveIdleObserver(
+ 
+ NS_IMPL_ADDREF(QuotaManagerService)
+ NS_IMPL_RELEASE_WITH_DESTROY(QuotaManagerService, Destroy())
+ NS_IMPL_QUERY_INTERFACE(QuotaManagerService,
+                         nsIQuotaManagerService,
+                         nsIObserver)
+ 
+ NS_IMETHODIMP
++QuotaManagerService::GetUsage(nsIQuotaUsageCallback* aCallback,
++                              bool aGetAll,
++                              nsIQuotaUsageRequest** _retval)
++{
++  MOZ_ASSERT(NS_IsMainThread());
++  MOZ_ASSERT(aCallback);
++
++  RefPtr<UsageRequest> request = new UsageRequest(aCallback);
++
++  AllUsageParams params;
++
++  params.getAll() = aGetAll;
++
++  nsAutoPtr<PendingRequestInfo> info(new UsageRequestInfo(request, params));
++
++  nsresult rv = InitiateRequest(info);
++  if (NS_WARN_IF(NS_FAILED(rv))) {
++    return rv;
++  }
++
++  request.forget(_retval);
++  return NS_OK;
++}
++
++NS_IMETHODIMP
+ QuotaManagerService::GetUsageForPrincipal(nsIPrincipal* aPrincipal,
+                                           nsIQuotaUsageCallback* aCallback,
+                                           bool aGetGroupUsage,
+                                           nsIQuotaUsageRequest** _retval)
+ {
+   MOZ_ASSERT(NS_IsMainThread());
+   MOZ_ASSERT(aPrincipal);
+   MOZ_ASSERT(aCallback);
+diff --git a/dom/quota/QuotaRequests.cpp b/dom/quota/QuotaRequests.cpp
+--- a/dom/quota/QuotaRequests.cpp
++++ b/dom/quota/QuotaRequests.cpp
+@@ -86,16 +86,25 @@ RequestBase::GetResultCode(nsresult* aRe
+   if (!mHaveResultOrErrorCode) {
+     return NS_ERROR_FAILURE;
+   }
+ 
+   *aResultCode = mResultCode;
+   return NS_OK;
+ }
+ 
++UsageRequest::UsageRequest(nsIQuotaUsageCallback* aCallback)
++  : mCallback(aCallback)
++  , mBackgroundActor(nullptr)
++  , mCanceled(false)
++{
++  AssertIsOnOwningThread();
++  MOZ_ASSERT(aCallback);
++}
++
+ UsageRequest::UsageRequest(nsIPrincipal* aPrincipal,
+                            nsIQuotaUsageCallback* aCallback)
+   : RequestBase(aPrincipal)
+   , mCallback(aCallback)
+   , mBackgroundActor(nullptr)
+   , mCanceled(false)
+ {
+   AssertIsOnOwningThread();
+diff --git a/dom/quota/QuotaRequests.h b/dom/quota/QuotaRequests.h
+--- a/dom/quota/QuotaRequests.h
++++ b/dom/quota/QuotaRequests.h
+@@ -73,16 +73,18 @@ class UsageRequest final
+ 
+   nsCOMPtr<nsIVariant> mResult;
+ 
+   QuotaUsageRequestChild* mBackgroundActor;
+ 
+   bool mCanceled;
+ 
+ public:
++  explicit UsageRequest(nsIQuotaUsageCallback* aCallback);
++
+   UsageRequest(nsIPrincipal* aPrincipal,
+                nsIQuotaUsageCallback* aCallback);
+ 
+   void
+   SetBackgroundActor(QuotaUsageRequestChild* aBackgroundActor);
+ 
+   void
+   ClearBackgroundActor()
+diff --git a/dom/quota/QuotaResults.cpp b/dom/quota/QuotaResults.cpp
+--- a/dom/quota/QuotaResults.cpp
++++ b/dom/quota/QuotaResults.cpp
+@@ -5,16 +5,53 @@
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ #include "QuotaResults.h"
+ 
+ namespace mozilla {
+ namespace dom {
+ namespace quota {
+ 
++UsageResult::UsageResult(const nsACString& aOrigin,
++                         bool aPersisted,
++                         uint64_t aUsage)
++  : mOrigin(aOrigin)
++  , mUsage(aUsage)
++  , mPersisted(aPersisted)
++{
++}
++
++NS_IMPL_ISUPPORTS(UsageResult,
++                  nsIQuotaUsageResult)
++
++NS_IMETHODIMP
++UsageResult::GetOrigin(nsACString& aOrigin)
++{
++  aOrigin = mOrigin;
++  return NS_OK;
++}
++
++NS_IMETHODIMP
++UsageResult::GetPersisted(bool* aPersisted)
++{
++  MOZ_ASSERT(aPersisted);
++
++  *aPersisted = mPersisted;
++  return NS_OK;
++}
++
++NS_IMETHODIMP
++UsageResult::GetUsage(uint64_t* aUsage)
++{
++  MOZ_ASSERT(aUsage);
++
++  *aUsage = mUsage;
++  return NS_OK;
++}
++
+ OriginUsageResult::OriginUsageResult(uint64_t aUsage,
+                                      uint64_t aFileUsage,
+                                      uint64_t aLimit)
+   : mUsage(aUsage)
+   , mFileUsage(aFileUsage)
+   , mLimit(aLimit)
+ {
+ }
+diff --git a/dom/quota/QuotaResults.h b/dom/quota/QuotaResults.h
+--- a/dom/quota/QuotaResults.h
++++ b/dom/quota/QuotaResults.h
+@@ -8,16 +8,36 @@
+ #define mozilla_dom_quota_QuotaResults_h
+ 
+ #include "nsIQuotaResults.h"
+ 
+ namespace mozilla {
+ namespace dom {
+ namespace quota {
+ 
++class UsageResult
++  : public nsIQuotaUsageResult
++{
++  nsCString mOrigin;
++  uint64_t mUsage;
++  bool mPersisted;
++
++public:
++  UsageResult(const nsACString& aOrigin,
++              bool aPersisted,
++              uint64_t aUsage);
++
++private:
++  virtual ~UsageResult()
++  { }
++
++  NS_DECL_ISUPPORTS
++  NS_DECL_NSIQUOTAUSAGERESULT
++};
++
+ class OriginUsageResult
+   : public nsIQuotaOriginUsageResult
+ {
+   uint64_t mUsage;
+   uint64_t mFileUsage;
+   uint64_t mLimit;
+ 
+ public:
+diff --git a/dom/quota/nsIQuotaManagerService.idl b/dom/quota/nsIQuotaManagerService.idl
+--- a/dom/quota/nsIQuotaManagerService.idl
++++ b/dom/quota/nsIQuotaManagerService.idl
+@@ -10,16 +10,31 @@ interface nsIPrincipal;
+ interface nsIQuotaRequest;
+ interface nsIQuotaUsageCallback;
+ interface nsIQuotaUsageRequest;
+ 
+ [scriptable, builtinclass, uuid(1b3d0a38-8151-4cf9-89fa-4f92c2ef0e7e)]
+ interface nsIQuotaManagerService : nsISupports
+ {
+   /**
++   * Schedules an asynchronous callback that will inspect all origins and
++   * return the total amount of disk space being used by storages for each
++   * origin separately.
++   *
++   * @param aCallback
++   *        The callback that will be called when the usage is available.
++   * @param aGetAll
++   *        An optional boolean to indicate inspection of all origins,
++   *        including internal ones.
++   */
++  [must_use] nsIQuotaUsageRequest
++  getUsage(in nsIQuotaUsageCallback aCallback,
++           [optional] in boolean aGetAll);
++
++  /**
+    * Schedules an asynchronous callback that will return the total amount of
+    * disk space being used by storages for the given origin.
+    *
+    * @param aPrincipal
+    *        A principal for the origin whose usage is being queried.
+    * @param aCallback
+    *        The callback that will be called when the usage is available.
+    * @param aGetGroupUsage
+diff --git a/dom/quota/nsIQuotaRequests.idl b/dom/quota/nsIQuotaRequests.idl
+--- a/dom/quota/nsIQuotaRequests.idl
++++ b/dom/quota/nsIQuotaRequests.idl
+@@ -18,16 +18,17 @@ interface nsIQuotaRequestBase : nsISuppo
+ 
+   [must_use] readonly attribute nsresult resultCode;
+ };
+ 
+ [scriptable, uuid(166e28e6-cf6d-4927-a6d7-b51bca9d3469)]
+ interface nsIQuotaUsageRequest : nsIQuotaRequestBase
+ {
+   // The result can contain one of these types:
++  //   array of nsIQuotaUsageResult
+   //   nsIQuotaOriginUsageResult
+   [must_use] readonly attribute nsIVariant result;
+ 
+   attribute nsIQuotaUsageCallback callback;
+ 
+   [must_use] void
+   cancel();
+ };
+diff --git a/dom/quota/nsIQuotaResults.idl b/dom/quota/nsIQuotaResults.idl
+--- a/dom/quota/nsIQuotaResults.idl
++++ b/dom/quota/nsIQuotaResults.idl
+@@ -1,16 +1,26 @@
+ /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+ /* vim: set ts=2 et sw=2 tw=80: */
+ /* This Source Code Form is subject to the terms of the Mozilla Public
+  * License, v. 2.0. If a copy of the MPL was not distributed with this
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ #include "nsISupports.idl"
+ 
++[scriptable, function, uuid(d8c9328b-9aa8-4f5d-90e6-482de4a6d5b8)]
++interface nsIQuotaUsageResult : nsISupports
++{
++  readonly attribute ACString origin;
++
++  readonly attribute boolean persisted;
++
++  readonly attribute unsigned long long usage;
++};
++
+ [scriptable, function, uuid(96df03d2-116a-493f-bb0b-118c212a6b32)]
+ interface nsIQuotaOriginUsageResult : nsISupports
+ {
+   readonly attribute unsigned long long usage;
+ 
+   readonly attribute unsigned long long fileUsage;
+ 
+   readonly attribute unsigned long long limit;
+

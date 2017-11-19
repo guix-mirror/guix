@@ -28,7 +28,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.39")
+    (version "0.14.40")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -36,7 +36,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "07mrvd3vq0p4f550dpq73xg1vpa2h7xxz7vq07sjw0whapknkw9f"))))
+                "044pjz3x3fgpbsbkzgf72ljpwvvsqfj8fm9cnz7l8293cw2ssq4f"))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
@@ -158,7 +158,8 @@
        ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
        ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
        ("go-github-com-d4l3k-messagediff"
-        ,go-github-com-d4l3k-messagediff)))
+        ,go-github-com-d4l3k-messagediff)
+       ("go-github-com-zillode-notify" ,go-github-com-zillode-notify)))
     (synopsis "Decentralized continuous filesystem synchronization")
     (description "Syncthing is a peer-to-peer file synchronization tool that
 supports a wide variety of computing platforms.  It uses the Block Exchange
@@ -1581,8 +1582,8 @@ rolling hash.")
       (license expat))))
 
 (define-public go-github-com-audriusbutkevicius-kcp-go
-  (let ((commit "02298ef4d96d48912e016f5fb36dcc0cd93c257f")
-        (revision "0"))
+  (let ((commit "8ae5f528469c6ab76110f41eb7a51341b7efb946")
+        (revision "1"))
     (package
       (name "go-github-com-audriusbutkevicius-kcp-go")
       (version (git-version "0.0.0" revision commit))
@@ -1595,12 +1596,13 @@ rolling hash.")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "1xanidjz8rhk28ybxnfk55nsd3h0a707dsq7mmxpjmycdacbm0j0"))))
+            "1bhg7bfc0r4a7i516xasq3i5ln15lsalm7i53b4nchba6db7mq14"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-golang-org-x-net-ipv4" ,go-golang-org-x-net-ipv4)
          ("go-github-com-templexxx-reedsolomon"
           ,go-github-com-templexxx-reedsolomon)
+         ("go-github-com-tjfoc-gmsm-sm4" ,go-github-com-tjfoc-gmsm-sm4)
          ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
          ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
          ("go-github-com-templexxx-xor" ,go-github-com-templexxx-xor)))
@@ -1840,3 +1842,55 @@ Erasure Coding in Go.")
 processor feature detection used by the Go standard libary.")
       (home-page "https://github.com/templexxx/cpufeat")
       (license bsd-3))))
+
+(define-public go-github-com-tjfoc-gmsm-sm4
+  (let ((commit "0f4904804c0f24f1784e10195a4144fcffa86a85")
+        (revision "0"))
+    (package
+      (name "go-github-com-tjfoc-gmsm-sm4")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/tjfoc/gmsm")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1k56gx2ky0c5kf4icafd7zr809lliqzx2mn88lb6d52ljfpf77q5"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/tjfoc/gmsm/sm4"
+         #:unpack-path "github.com/tjfoc/gmsm"))
+      (synopsis "SM4 block cipher")
+      (description "This package provides a Go implementation of SM4, a block
+cipher used in the Chinese National Standard for Wireless LAN WAPI (Wired
+Authentication and Privacy Infrastructure).")
+      (home-page "https://github.com/tjfoc/gmsm")
+      (license asl2.0))))
+
+(define-public go-github-com-zillode-notify
+  (let ((commit "54e3093eb7377fd139c4605f475cc78e83610b9d")
+        (revision "0"))
+    (package
+      (name "go-github-com-zillode-notify")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/zillode/notify")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0xmj0bh15hqbzq5qsbi2nb2lihl1pqdh1vwalwmxywnda3w68xj6"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/zillode/notify"))
+      (propagated-inputs
+       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+      (synopsis "Filesystem event notification library")
+      (description "This package provides @code{notify}, a filesystem event
+notification library in Go.")
+      (home-page "https://github.com/zillode/notify")
+      (license expat))))

@@ -77,6 +77,12 @@
   "Strip the \".scm\" suffix from FILE, and append \".go\"."
   (string-append (string-drop-right file 4) ".go"))
 
+(define (relative-file directory file)
+  "Return FILE relative to DIRECTORY, if possible."
+  (if (string-prefix? (string-append directory "/") file)
+      (string-drop file (+ 1 (string-length directory)))
+      file))
+
 (define* (load-files directory files
                      #:key
                      (report-load (const #f))
@@ -93,13 +99,14 @@
          (report-load #f total completed))
        *unspecified*)
       ((file files ...)
-       (report-load file total completed)
-       (format debug-port "~%loading '~a'...~%" file)
+       (let ((file (relative-file directory file)))
+         (report-load file total completed)
+         (format debug-port "~%loading '~a'...~%" file)
 
-       (parameterize ((current-warning-port debug-port))
-         (resolve-interface (file-name->module-name file)))
+         (parameterize ((current-warning-port debug-port))
+           (resolve-interface (file-name->module-name file)))
 
-       (loop files (+ 1 completed))))))
+         (loop files (+ 1 completed)))))))
 
 (define-syntax-rule (with-augmented-search-path path item body ...)
   "Within the dynamic extent of BODY, augment PATH by adding ITEM to the
@@ -135,11 +142,12 @@ files are for HOST, a GNU triplet such as \"x86_64-linux-gnu\"."
     (with-fluids ((*current-warning-prefix* ""))
       (with-target host
         (lambda ()
-          (compile-file file
-                        #:output-file (string-append build-directory "/"
-                                                     (scm->go file))
-                        #:opts (append warning-options
-                                       (optimization-options file))))))
+          (let ((relative (relative-file source-directory file)))
+            (compile-file file
+                          #:output-file (string-append build-directory "/"
+                                                       (scm->go relative))
+                          #:opts (append warning-options
+                                         (optimization-options relative)))))))
     (with-mutex progress-lock
       (set! completed (+ 1 completed))))
 

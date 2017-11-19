@@ -43,6 +43,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages virtualization)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -236,7 +237,8 @@ menu to select one of the installed operating systems.")
          ("perl" ,perl)
          ("python-2" ,python-2)))
       (inputs
-       `(("libuuid" ,util-linux)))
+       `(("libuuid" ,util-linux)
+         ("mtools" ,mtools)))
       (arguments
        `(#:parallel-build? #f
          #:make-flags
@@ -251,11 +253,17 @@ menu to select one of the installed operating systems.")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'patch-files
-             (lambda _
+             (lambda* (#:key inputs #:allow-other-keys)
                (substitute* (find-files "." "Makefile.*|ppmtolss16")
                  (("/bin/pwd") (which "pwd"))
                  (("/bin/echo") (which "echo"))
                  (("/usr/bin/perl") (which "perl")))
+               (let ((mtools (assoc-ref inputs "mtools")))
+                 (substitute* (find-files "." "\\.c$")
+                   (("mcopy")
+                    (string-append mtools "/bin/mcopy"))
+                   (("mattrib")
+                    (string-append mtools "/bin/mattrib"))))
                #t))
            (delete 'configure)
            (add-before 'build 'set-permissions
@@ -280,7 +288,7 @@ menu to select one of the installed operating systems.")
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.4.4")
+    (version "1.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -288,15 +296,19 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "1yygyvnnpdh241hl90n9p3kxcdvk3jxmsr4ndb961c8mq3ak21s7"))))
+                "08gnl39i4xy3dm8iqwlz2ygx0ml1bgc5kpiys5ll1wvah1j72b04"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("flex" ,flex)))
+       ("flex" ,flex)
+       ("swig" ,swig)))
+    (inputs
+     `(("python-2" ,python-2)))
     (arguments
      `(#:make-flags
        (list "CC=gcc"
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "SETUP_PREFIX=" (assoc-ref %outputs "out"))
              "INSTALL=install")
        #:phases
        (modify-phases %standard-phases
@@ -333,7 +345,8 @@ also initializes the boards (RAM etc).")
 
 (define (make-u-boot-package board triplet)
   "Returns a u-boot package for BOARD cross-compiled for TRIPLET."
-  (let ((same-arch? (if (string-prefix? (%current-system) triplet)
+  (let ((same-arch? (if (string-prefix? (%current-system)
+                                        (gnu-triplet->nix-system triplet))
                       `#t
                       `#f)))
     (package
@@ -375,7 +388,9 @@ also initializes the boards (RAM etc).")
              (lambda* (#:key outputs make-flags #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (libexec (string-append out "/libexec"))
-                      (uboot-files (find-files "." ".*\\.(bin|efi|spl)$")))
+                      (uboot-files (append
+                                    (find-files "." ".*\\.(bin|efi|img|spl)$")
+                                    (find-files "." "^MLO$"))))
                  (mkdir-p libexec)
                  (for-each
                   (lambda (file)

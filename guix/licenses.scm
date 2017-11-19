@@ -42,7 +42,7 @@
             cc-by2.0 cc-by3.0 cc-by4.0
             cc-by-sa2.0 cc-by-sa3.0 cc-by-sa4.0
             cc-sampling-plus-1.0
-            cddl1.0
+            cddl1.0 cddl1.1
             cecill cecill-b cecill-c
             artistic2.0 clarified-artistic
             copyleft-next
@@ -215,6 +215,14 @@ at URI, which may be a file:// URI pointing the package's tree."
 (define cddl1.0
   (license "CDDL 1.0"
            "http://directory.fsf.org/wiki/License:CDDLv1.0"
+           "https://www.gnu.org/licenses/license-list#CDDL"))
+
+;; CDDL1.1 is the same as 1.0, except that "Sun Microsystems, Inc" becomes "Oracle",
+;; "LOST PROFITS" becoms "LOSS OF GOODWILL" and a section is added between 6.2
+;; and 6.3.
+(define cddl1.1
+  (license "CDDL 1.1"
+           "https://oss.oracle.com/licenses/CDDL+GPL-1.1"
            "https://www.gnu.org/licenses/license-list#CDDL"))
 
 (define cecill                                    ;copyleft

@@ -89,7 +89,7 @@ devices on various operating systems.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libusb" ,libusb)))
-    (home-page "http://www.libusb.org")
+    (home-page "http://libusb.info")
     (synopsis "Compatibility shim for libusb")
     (description
      "Libusb-compat provides a shim allowing applications based on older

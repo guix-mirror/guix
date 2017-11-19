@@ -45,6 +45,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -57,7 +59,7 @@
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.15.0.1")
+    (version "0.15.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -65,7 +67,7 @@
                              version "/bitcoin-" version ".tar.gz"))
              (sha256
               (base32
-               "16si3skhm6jhw1pkniv2b9y1kkdhjmhj392palphir0qc1srwzmm"))))
+               "1d22fgwdcn343kd95lh389hj417zwbmnhi29cij8n7wc0nz2vpil"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -263,7 +265,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "2.9.3")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
@@ -272,7 +274,7 @@ do so.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0d0fzb653g7b8ka3x90nl21md4g3n1fv11czdxpdq3s9yr6js6f2"))
+         "184cmpfqcznnm0wfjiarb6dps2vs0s2aykmy2ji7p77x20fbisfi"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -281,19 +283,19 @@ do so.")
            #t))))
     (build-system python-build-system)
     (inputs
-     `(("python-pyaes" ,python2-pyaes)
-       ("python-pysocks" ,python2-pysocks)
-       ("python-sip" ,python2-sip)
-       ("python-pyqt" ,python2-pyqt-4)
-       ("python-ecdsa" ,python2-ecdsa)
-       ("python-pbkdf2" ,python2-pbkdf2)
-       ("python-requests" ,python2-requests)
-       ("python-qrcode" ,python2-qrcode)
-       ("python-protobuf" ,python2-protobuf)
-       ("python-dnspython" ,python2-dnspython)
-       ("python-jsonrpclib" ,python2-jsonrpclib)))
+     `(("python-pyaes" ,python-pyaes)
+       ("python-pysocks" ,python-pysocks)
+       ("python-sip" ,python-sip)
+       ("python-pyqt" ,python-pyqt)
+       ("python-ecdsa" ,python-ecdsa)
+       ("python-pbkdf2" ,python-pbkdf2)
+       ("python-requests" ,python-requests)
+       ("python-qrcode" ,python-qrcode)
+       ("python-protobuf" ,python-protobuf)
+       ("python-dnspython" ,python-dnspython)
+       ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)))
     (arguments
-     `(#:python ,python-2
+     `(#:tests? #f ;; package doesn't have any tests
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-home

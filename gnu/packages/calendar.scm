@@ -31,12 +31,14 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dav)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages time)
   #:use-module (srfi srfi-26))
 
 (define-public libical

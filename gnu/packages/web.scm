@@ -22,6 +22,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,16 +87,18 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openstack)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
@@ -334,7 +337,7 @@ documentation.")
     (source
      (origin
        (method url-fetch)
-       ;; Upstream has disappeared
+       ;; Upstream has disappeared.
        (uri (string-append "https://sources.archlinux.org/other/packages/fcgi/"
                            "fcgi-" version ".tar.gz"))
        (sha256
@@ -345,9 +348,10 @@ documentation.")
     (build-system gnu-build-system)
     ;; Parallel building is not supported.
     (arguments `(#:parallel-build? #f))
-    (home-page "http://www.fastcgi.com")
+    ;; This is an archived fork of the original home page, www.fastcgi.com.
+    (home-page "https://fastcgi-archives.github.io/")
     (synopsis "Language-independent, high-performant extension to CGI")
-    (description "FastCGI is a language independent, scalable extension to CGI
+    (description "FastCGI is a language-independent, scalable extension to CGI
 that provides high performance without the limitations of server specific
 APIs.")
     ;; This package is released under the Open Market License, a variant of
@@ -730,7 +734,7 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.18.0")
+    (version "0.19.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
@@ -738,7 +742,7 @@ for efficient socket-like bidirectional reliable communication channels.")
                                   "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "00iids8ldsqnnndmcfjp6kc00lv7fawf5l24mpbdbkh98yazgc4i"))))
+                "0ydwi9m39qv6k7zagqx2kzxzf59ipxj9r0c71xmwngdx3fslclbk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -870,6 +874,35 @@ unavailable.")
 server).  It was primarily designed to be used by one person or a small group
 of people.")
     (license l:expat)))
+
+(define-public websockify
+  (package
+    (name "websockify")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/novnc/websockify/archive/v"
+                                  version "/archive.tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kjq6gibsvbb6zx5gi8hgh7110x62pbwcqkwapf3k7s27w5y907h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; FIXME: 2 out of 6 tests fail with "ImportError: No module
+     ; named 'stubout'". The tests can be run by replacing the check phase with
+     ; the command "python setup.py nosetests --verbosity=3".
+    (native-inputs `(; Required for tests:
+                     ("python-mox3", python-mox3)
+                     ("python-nose", python-nose)))
+    (propagated-inputs `(("python-numpy", python-numpy)))
+    (home-page "https://github.com/novnc/websockify")
+    (synopsis "WebSockets support for any application/server")
+    (description "Websockify translates WebSockets traffic to normal socket
+traffic.  Websockify accepts the WebSockets handshake, parses it, and then
+begins forwarding traffic between the client and the target in both
+directions.")
+    (license l:lgpl3)))
 
 (define-public wwwoffle
   (package
@@ -3403,7 +3436,7 @@ testing of Catalyst applications without needing to start up a web server.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/L/LB/LBROCARD/"
+       (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                            "Test-WWW-Mechanize-PSGI-" version ".tar.gz"))
        (sha256
         (base32
@@ -3748,13 +3781,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "0rxh89csqlpyf9wv5wlymya9kbddj79mlmxz2x0xmls12gbrxaaa"))))
+                "05pz4ychqp4cqywcdavdi8jj3y09gmam097d2idjnlcg9x61h2s9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
@@ -4151,7 +4184,7 @@ tools they trust (e.g. wget).")
 (define netsurf-buildsystem
   (package
     (name "netsurf-buildsystem")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
@@ -4159,7 +4192,7 @@ tools they trust (e.g. wget).")
                            "buildsystem-" version ".tar.gz"))
        (sha256
         (base32
-         "0wdgvasrjik1dgvvpqbppbpyfzkqd1v45x3g9rq7p67n773azinv"))))
+         "0p5k708lcq8dip9xxck6hml32bjrbyipprm22bbsvdnsc0pqm71x"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
@@ -4215,7 +4248,7 @@ C.  It is developed as part of the NetSurf project.")
 (define-public hubbub
   (package
     (name "hubbub")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
@@ -4223,7 +4256,7 @@ C.  It is developed as part of the NetSurf project.")
                            "lib" name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "101781iw32p47386fxqr01nrkywi12w17ajh02k2vlga4z8zyv86"))
+         "1shi4hv8drn9zy8f2f6yhnz2dqnpg5jkybvqhzggfjx1q35fbxz3"))
        (patches (search-patches "hubbub-sort-entities.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4268,6 +4301,15 @@ NetSurf project.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'include-PERL5LIB-in-wrapper
+           (lambda _
+             (substitute* "IkiWiki/Wrapper.pm"
+               (("^@wrapper\\_hooks")
+                (string-append
+                 "@wrapper_hooks\n"
+                 "        addenv(\"PERL5LIB\", \""
+                 (getenv "PERL5LIB")
+                 "\");")))))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -4314,7 +4356,7 @@ commenting.")
 (define-public libwapcaplet
   (package
     (name "libwapcaplet")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
@@ -4322,7 +4364,7 @@ commenting.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0cs1dd2afjgc3wf5gqg434hv6jdabrp9qvlpl4dp53nhkyfywna3"))))
+         "15yr0pl6qa6biy36qkmd949ydbjzpqiaccpx3sprh4jknabsk1vv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4340,7 +4382,7 @@ developed as part of the Netsurf project.")
 (define-public libcss
   (package
     (name "libcss")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
@@ -4348,7 +4390,7 @@ developed as part of the Netsurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0qp4p1q1dwgdra4pkrzd081zjzisxkgwx650ijx323j8bj725daf"))))
+         "16mns3h8vj7iw8myvgnw58q84irvbjlvfkxh8mdw6fbkjvaa7cnz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4368,7 +4410,7 @@ written in C.  It is developed as part of the NetSurf project.")
 (define-public libdom
   (package
     (name "libdom")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
@@ -4376,7 +4418,7 @@ written in C.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0qy7c8b229aiamyqqjgp6m1jlzc3fpl8s9dk33kxzkj70na8l7hv"))))
+         "1zb7x2qwm6p11lph6j2vcyp4a0a8i1klkqilnk5vb4qmlzzpcv7i"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4404,7 +4446,7 @@ developed as part of the NetSurf project.")
 (define-public libsvgtiny
   (package
     (name "libsvgtiny")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -4412,7 +4454,7 @@ developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0w5hab9x1saz4lq2s9w47x1r64fbzcsl5bvdjph9c9dq68qv3f8a"))))
+         "12ppy2r7m21ykrjgbf067cgi6dn48fkj7i4b7m64xl4dc13y0ah6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4458,7 +4500,7 @@ written in C.  It is developed as part of the NetSurf project.")
 (define-public libnsgif
   (package
     (name "libnsgif")
-    (version "0.1.4")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
@@ -4466,7 +4508,7 @@ written in C.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1ldsyscsgqwc8g5481h9nqmwirpp1pp57hmss450hr0mqra26g0k"))))
+         "1phwf0m24m6nd7096fw14hanl4f8gr9bcppi834lbik04agxk38a"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
@@ -4504,7 +4546,7 @@ developed as part of the NetSurf project.")
 (define-public libnspsl
   (package
     (name "libnspsl")
-    (version "0.1.0")
+    (version "0.1.2")
     (source
      (origin
        (method url-fetch)
@@ -4512,7 +4554,7 @@ developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0x3frscrp9bzxlm9ama5laxjr3zi8cg20r8lhsamw4x4zyyk145y"))))
+         "0wim5hwzwrfrvvap096whf79m2mnfivbqhqlh03ci9d89xb1w0y9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
@@ -4527,7 +4569,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
 (define-public nsgenbind
   (package
     (name "nsgenbind")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method url-fetch)
@@ -4535,7 +4577,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "078gpbfcs96bgcba0ygha0ph9jzqr6ry5s3a8p6sl61px2908s66"))))
+         "1iwjpdaan0njlhb9ir6a2q5vpxfmkqfldkvnqszqdz50b44vd1jv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4555,7 +4597,7 @@ w3c webidl files and a binding configuration file.")
 (define-public netsurf
   (package
     (name "netsurf")
-    (version "3.6")
+    (version "3.7")
     (source
      (origin
        (method url-fetch)
@@ -4563,7 +4605,7 @@ w3c webidl files and a binding configuration file.")
                            "releases/source/netsurf-" version "-src.tar.gz"))
        (sha256
         (base32
-         "174sjx0566agckwmlj4w2cip5qbxdiafyhlp185a1qprxx84pbjr"))
+         "05kynfzzwd4fc03vbqdjpghh5xnk2yrh43w7vikak89vla30mhpg"))
        (patches (search-patches "netsurf-system-utf8proc.patch"
                                 "netsurf-y2038-tests.patch"
                                 "netsurf-longer-test-timeout.patch"))))
@@ -4652,10 +4694,10 @@ w3c webidl files and a binding configuration file.")
                (copy-file "frontends/gtk/res/netsurf-gtk.desktop"
                           desktop)
                (substitute* desktop
-                 (("netsurf-gtk") (string-append out "/bin/netsurf"))
+                 (("netsurf-gtk") (string-append out "/bin/netsurf-gtk"))
                  (("netsurf.png") (string-append out "/share/netsurf/"
                                                  "netsurf.xpm")))
-               (install-file "Docs/netsurf-gtk.1"
+               (install-file "docs/netsurf-gtk.1"
                              (string-append out "/share/man/man1/"))
                #t))))))
     (home-page "http://www.netsurf-browser.org")

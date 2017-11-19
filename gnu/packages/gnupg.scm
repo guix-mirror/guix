@@ -39,6 +39,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pth)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
@@ -126,7 +127,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.4.3")
+    (version "2.4.4")
     (source
      (origin
       (method url-fetch)
@@ -134,7 +135,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0w9bmasln4z8mn16s1is55a06w3nv8jbyal496z5jvr5vcxkm112"))))
+        "18bwffjkx9pn0lawbsn6zhd90i7xhjgpf9b0nl5xw9134w1a2scy"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error) ("pth" ,pth)))
@@ -211,14 +212,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.1")
+    (version "2.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1yv2pwf3vhv9dpbf51fnm0wy03va1cg5r7qaz7rg75cwbgb0rmrl"))))
+                "15w1q0bib742jqnir67bk07mc6ph9yik8wbc5i1bkcyf29s2rdmz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -534,37 +535,37 @@ and signature functionality from Python programs.")
   (package
     (name "perl-gnupg-interface")
     (version "0.52")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://cpan/authors/id/A/AL/ALEXMV/GnuPG-Interface-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0dgx8yhdsmhkazcrz14n4flrk1afv7azgl003hl4arxvi1d9yyi4"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AL/ALEXMV/"
+                                  "GnuPG-Interface-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dgx8yhdsmhkazcrz14n4flrk1afv7azgl003hl4arxvi1d9yyi4"))))
     (build-system perl-build-system)
     (arguments
-     '(;; Result: FAIL
-       ;; Failed 10/20 test programs. 21/52 subtests failed.
-       #:tests? #f))
-    (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("which" ,which)))
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; FIXME: This test fails for unknown reasons
+         (add-after 'unpack 'delete-broken-test
+           (lambda _
+             (delete-file "t/encrypt_symmetrically.t")
+             #t)))))
     (inputs
-     `(("gnupg" ,gnupg)))
+     `(("gnupg" ,gnupg-1)))
     (propagated-inputs
      `(("perl-moo" ,perl-moo)
-       ("perl-moox-late" ,perl-moox-late)
-       ("perl-moox-handlesvia" ,perl-moox-handlesvia)))
-    (home-page "http://search.cpan.org/~alexmv/GnuPG-Interface/")
+       ("perl-moox-handlesvia" ,perl-moox-handlesvia)
+       ("perl-moox-late" ,perl-moox-late)))
+    (native-inputs
+     `(("which" ,which)
+       ("perl-module-install" ,perl-module-install)))
+    (home-page "http://search.cpan.org/dist/GnuPG-Interface/")
     (synopsis "Perl interface to GnuPG")
-    (description
-     "@code{GnuPG::Interface} and its associated modules are designed to
-provide an object-oriented method for interacting with GnuPG, being able to
-perform functions such as but not limited to encrypting, signing, decryption,
-verification, and key-listing parsing.")
+    (description "@code{GnuPG::Interface} and its associated modules are
+designed to provide an object-oriented method for interacting with GnuPG,
+being able to perform functions such as but not limited to encrypting,
+signing, decryption, verification, and key-listing parsing.")
     (license license:perl-license)))
 
 (define-public pius
@@ -842,43 +843,6 @@ them to transform your existing public key into a secret key.")
 files, to verify signatures, and to manage the private and public keys.")
     (license license:gpl3+)))
 
-(define-public perl-gnupg-interface
-  (package
-    (name "perl-gnupg-interface")
-    (version "0.52")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/A/AL/ALEXMV/"
-                                  "GnuPG-Interface-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0dgx8yhdsmhkazcrz14n4flrk1afv7azgl003hl4arxvi1d9yyi4"))))
-    (build-system perl-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; FIXME: This test fails for unknown reasons
-         (add-after 'unpack 'delete-broken-test
-           (lambda _
-             (delete-file "t/encrypt_symmetrically.t")
-             #t)))))
-    (inputs
-     `(("gnupg" ,gnupg-1)))
-    (propagated-inputs
-     `(("perl-moo" ,perl-moo)
-       ("perl-moox-handlesvia" ,perl-moox-handlesvia)
-       ("perl-moox-late" ,perl-moox-late)))
-    (native-inputs
-     `(("which" ,which)
-       ("perl-module-install" ,perl-module-install)))
-    (home-page "http://search.cpan.org/dist/GnuPG-Interface/")
-    (synopsis "Perl interface to GnuPG")
-    (description "@code{GnuPG::Interface} and its associated modules are
-designed to provide an object-oriented method for interacting with GnuPG,
-being able to perform functions such as but not limited to encrypting,
-signing, decryption, verification, and key-listing parsing.")
-    (license license:perl-license)))
-
 (define-public parcimonie
   (package
     (name "parcimonie")
@@ -965,34 +929,3 @@ keyring content.  Parcimonie is a daemon that fetches one key at a time using
 the Tor network, waits a bit, changes the Tor circuit being used, and starts
 over.")
     (license license:gpl1+)))
-
-(define-public python2-pgpdump
-  (package
-    (name "python2-pgpdump")
-    (version "1.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pgpdump" version))
-       (sha256
-        (base32
-         "0s4nh8h7qsdj2yf29bspjs1zvxd4lcd11r6g11dp7fppgf2h0iqw"))))
-    (build-system python-build-system)
-
-    ;; Currently fails to build with Python 3.
-    (arguments `(#:python ,python-2))
-
-    (home-page "https://github.com/toofishes/python-pgpdump")
-    (synopsis "Python library for parsing PGP packets")
-    (description
-     "Python-pgpdump is an OpenPGP packet parser based on
-@uref{http://www.mew.org/~kazu/proj/pgpdump/, pgpdump}.  It notably supports:
-
-@itemize
-@item signature packets;
-@item public key packets;
-@item secret key packets;
-@item trust, user ID, and user attribute packets;
-@item ASCII-armor decoding and CRC check.
-@end itemize\n")
-    (license license:bsd-3)))

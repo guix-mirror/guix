@@ -44,8 +44,10 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -72,7 +74,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "3.6.0")
+    (version "3.11.1")
     (source
       (origin
         (method url-fetch)
@@ -81,7 +83,7 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "0vp2nds4b5xbchsh1rpc1q7093gd26dnw7mgbnax97dcchvlc4sc"))
+          "0kwza7iyyyfhq476z5fk9962iyd0qpgmzm1k36nqcy8sfjbk8mrl"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
@@ -116,6 +118,7 @@
        ("libusb" ,libusb)
        ("libxrender" ,libxrender)
        ("openssl" ,openssl)
+       ("optipng" ,optipng)
        ("podofo" ,podofo)
        ("poppler" ,poppler)
        ("python" ,python-2)
@@ -126,6 +129,7 @@
        ("python2-dateutil" ,python2-dateutil)
        ("python2-dbus" ,python2-dbus)
        ("python2-dnspython" ,python2-dnspython)
+       ("python2-dukpy" ,python2-dukpy)
        ("python2-feedparser" ,python2-feedparser)
        ("python2-html5-parser" ,python2-html5-parser)
        ("python2-lxml" ,python2-lxml)
@@ -181,6 +185,12 @@
                        (find-files (string-append
                                     (assoc-ref inputs "font-liberation")
                                     "/share/fonts/truetype")))
+             #t))
+         (add-after 'install-font-liberation 'install-mimetypes
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "resources/calibre-mimetypes.xml"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/mime/packages"))
              #t)))))
     (home-page "http://calibre-ebook.com/")
     (synopsis "E-book library management software")

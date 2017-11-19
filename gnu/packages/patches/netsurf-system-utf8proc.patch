@@ -28,37 +28,22 @@ Work around upstream's lack of a pkg-config file and update API.
  
  #include "utils/errors.h"
  #include "utils/idna.h"
-@@ -250,7 +250,7 @@
- 		return NSERROR_NOMEM;
- 	}
+--- netsurf-3.7/test/Makefile	2017-10-15 08:39:24.000000000 -0500
++++ netsurf-3.7/test/Makefile	2017-11-05 11:14:46.219013218 -0600
+@@ -139,14 +139,14 @@
+ 	-D_XOPEN_SOURCE=600 \
+ 	-Itest -Iinclude -Icontent/handlers -Ifrontends -I. -I.. \
+ 	-Dnsgtk \
+-	$(shell pkg-config --cflags libcurl libparserutils libwapcaplet libdom libnsutils libutf8proc) \
++	$(shell pkg-config --cflags libcurl libparserutils libwapcaplet libdom libnsutils) \
+ 	$(LIB_CFLAGS)
+ TESTCFLAGS := $(BASE_TESTCFLAGS) \
+ 	$(COV_CFLAGS) \
+ 	$(COV_CPPFLAGS)
  
--	nfc_size = utf8proc_normalise(nfc_label, nfc_size,
-+	nfc_size = utf8proc_normalize_utf32(nfc_label, nfc_size,
- 		UTF8PROC_STABLE | UTF8PROC_COMPOSE);
- 	if (nfc_size < 0) {
- 		return NSERROR_NOMEM;
-@@ -565,7 +565,7 @@
- 	}
- 
- 	/* Perform NFC normalisation */
--	ucs4_len = utf8proc_normalise(ucs4, u_ucs4_len,
-+	ucs4_len = utf8proc_normalize_utf32(ucs4, u_ucs4_len,
- 		UTF8PROC_STABLE | UTF8PROC_COMPOSE);
- 	if (ucs4_len < 0) {
- 		free(ucs4);
---- netsurf-3.6/test/Makefile
-+++ netsurf-3.6/test/Makefile
-@@ -112,11 +112,11 @@
- 		-D_XOPEN_SOURCE=600 \
- 		-Itest -Iinclude -Icontent/handlers -Ifrontends -I. -I.. \
- 		-Dnsgtk \
--		$(shell pkg-config --cflags libcurl libparserutils libwapcaplet libdom libnsutils libutf8proc libidn) \
-+		$(shell pkg-config --cflags libcurl libparserutils libwapcaplet libdom libnsutils libidn) \
- 		$(LIB_CFLAGS) \
- 		$(COV_CFLAGS)
- 
--TESTLDFLAGS := $(shell pkg-config --libs libcurl libparserutils libwapcaplet libdom libnsutils libutf8proc libidn) -lz \
-+TESTLDFLAGS := $(shell pkg-config --libs libcurl libparserutils libwapcaplet libdom libnsutils libidn) -lz -lutf8proc \
- 		$(LIB_LDFLAGS)\
- 		$(COV_LDFLAGS)
+ TESTLDFLAGS := -L$(TESTROOT) \
+-	$(shell pkg-config --libs libcurl libparserutils libwapcaplet libdom libnsutils libutf8proc) -lz \
++	$(shell pkg-config --libs libcurl libparserutils libwapcaplet libdom libnsutils) -lz -lutf8proc \
+ 	$(LIB_LDFLAGS)\
+ 	$(COV_LDFLAGS)
  

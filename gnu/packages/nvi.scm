@@ -54,7 +54,8 @@
 
     (build-system gnu-build-system)
     (arguments
-      `(#:out-of-source? #t))
+      `(#:out-of-source? #t
+        #:configure-flags '("--enable-widechar")))
     (inputs
       `(("bdb" ,bdb)
         ("ncurses" ,ncurses)))

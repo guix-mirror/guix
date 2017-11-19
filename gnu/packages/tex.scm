@@ -50,6 +50,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
@@ -1226,13 +1227,14 @@ tables.")
     (home-page "http://www.ctan.org/pkg/hyperref")
     (synopsis "Extensive support for hypertext in LaTeX")
     (description
-     "The hyperref package is used to handle cross-referencing commands in
-LaTeX to produce hypertext links in the document.  The package provides
-backends for the special set defined for HyperTeX DVI processors; for embedded
-pdfmark commands for processing by Acrobat Distiller (dvips and dvipsone); for
-dviwindo; for PDF control within pdfTeX and dvipdfm; for TeX4ht; and for VTeX
-pdf and HTML backends.  The package is distributed with the backref and
-nameref packages, which make use of the facilities of hyperref.")
+     "The @code{hyperref} package is used to handle cross-referencing commands
+in LaTeX to produce hypertext links in the document.  The package provides
+backends for the @code{\\special} set defined for HyperTeX DVI processors; for
+embedded @code{pdfmark} commands for processing by Acrobat
+Distiller (@code{dvips} and Y&Y's @code{dvipsone}); for Y&Y's @code{dviwindo};
+for PDF control within pdfTeX and @code{dvipdfm}; for TeX4ht; and for VTeX's
+pdf and HTML backends.  The package is distributed with the @code{backref} and
+@code{nameref} packages, which make use of the facilities of @code{hyperref}.")
     (license license:lppl1.3+)))
 
 (define-public texlive-latex-oberdiek
@@ -2379,46 +2381,6 @@ name (such as a4, letter, etc.).  An important feature is the package's
 ability to communicate the paper size it's set up to the output.")
     (license license:lppl)))
 
-(define-public texlive-latex-hyperref
-  (package
-    (name "texlive-latex-hyperref")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "hyperref"))
-              (sha256
-               (base32
-                "03arf3xvz1jsbvlpgc5qxbxbl9wmk8k09cn6b8gv9pzgpjy4vx4j"))))
-    (build-system texlive-build-system)
-    (arguments
-     '(#:tex-directory "latex/hyperref"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-hluatex.def
-           (lambda _
-             ;; This depends on hluatex.dtx, which does not exist and is
-             ;; nowhere to be found in the sources of the TeX Live
-             ;; distribution.
-             (substitute* "hyperref.ins"
-               (("\\\\file\\{hluatex.def\\}.*") ""))
-             #t)))))
-    ;; The package depends on the kvoptions, ltxcmds, and refcount packages,
-    ;; which are part of the oberdiek bundle.
-    (inputs
-     `(("texlive-latex-oberdiek" ,texlive-latex-oberdiek)))
-    (home-page "http://www.ctan.org/pkg/hyperref")
-    (synopsis "Extensive support for hypertext in LaTeX")
-    (description
-     "The @code{hyperref} package is used to handle cross-referencing commands
-in LaTeX to produce hypertext links in the document.  The package provides
-backends for the @code{\\special} set defined for HyperTeX DVI processors; for
-embedded @code{pdfmark} commands for processing by Acrobat
-Distiller (@code{dvips} and Y&Y's @code{dvipsone}); for Y&Y's @code{dviwindo};
-for PDF control within pdfTeX and @code{dvipdfm}; for TeX4ht; and for VTeX's
-pdf and HTML backends.  The package is distributed with the @code{backref} and
-@code{nameref} packages, which make use of the facilities of @code{hyperref}.")
-    (license license:lppl1.3+)))
-
 (define-public texlive-latex-mdwtools
   (package
     (name "texlive-latex-mdwtools")
@@ -2744,31 +2706,6 @@ floats, center, flushleft, and flushright, lists, and pages.")
 and footers, and for controlling their use (for example, at times when LaTeX
 would automatically change the heading style in use).")
     (license license:lppl)))
-
-(define-public texlive-latex-fancyvrb
-  (package
-    (name "texlive-latex-fancyvrb")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "fancyvrb"))
-              (sha256
-               (base32
-                "03l7140y031rr14h02i4z9zqsfvrbn7wzwxbjsrjcgrk6sdr71wv"))))
-    (build-system texlive-build-system)
-    (arguments
-     '(#:build-targets '("fancyvrb.ins") ; fvrb-ex.ins cannot be built
-       #:tex-directory "latex/fancyvrb"))
-    (home-page "http://www.ctan.org/pkg/fancyvrb")
-    (synopsis "Sophisticated verbatim text")
-    (description
-     "This package provides tools for flexible handling of verbatim text
-including: verbatim commands in footnotes; a variety of verbatim environments
-with many parameters; ability to define new customized verbatim environments;
-save and restore verbatim text and environments; write and read files in
-verbatim mode; build \"example\" environments (showing both result and
-verbatim source).")
-    (license license:lppl1.0+)))
 
 (define-public texlive-latex-float
   (package

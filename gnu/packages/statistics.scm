@@ -35,6 +35,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages curl)
@@ -56,6 +57,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages base)
   #:use-module (gnu packages web)
@@ -366,6 +368,8 @@ k-nearest neighbour, Learning Vector Quantization and Self-Organizing Maps.")
         (base32
          "1bkvqmv8h2c423q9ag2afb6s9j2vcdlxsf559zzbimraphrr2c2b"))))
     (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
     (home-page "http://cran.r-project.org/web/packages/cluster")
     (synopsis "Methods for cluster analysis")
     (description
@@ -388,7 +392,8 @@ Hubert, based on Kaufman and Rousseeuw (1990) \"Finding Groups in Data\".")
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/codetools")
     (synopsis "Code analysis tools for R")
-    (description "This package provides code analysis tools for R.")
+    (description "This package provides code analysis tools for R to check R
+code for possible problems.")
     ;; Any version of the GPL.
     (license (list license:gpl2+ license:gpl3+))))
 
@@ -425,13 +430,15 @@ for reading and writing some dBase files.")
          "1xhha8kw10jv8pv8b61hb5in9qiw3r2a9kdji3qlm991s4zd4wlb"))))
     (properties `((upstream-name . "KernSmooth")))
     (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
     (home-page "http://cran.r-project.org/web/packages/KernSmooth")
     (synopsis "Functions for kernel smoothing")
     (description
      "This package provides functions for kernel smoothing (and density
 estimation) corresponding to the book: Wand, M.P. and Jones, M.C. (1995)
 \"Kernel Smoothing\".")
-    ;; Unlimited distribution
+    ;; Unlimited use and distribution
     (license (license:non-copyleft "file://LICENCE.note"))))
 
 (define-public r-lattice
@@ -1159,13 +1166,13 @@ wrong.")
 (define-public r-lazyeval
   (package
     (name "r-lazyeval")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "lazyeval" version))
               (sha256
                (base32
-                "1jwdz40nznlc44hpjli7h98gnpa4d98ifggmj7z88h84n9aqywqk"))))
+                "0q9zx78ncy2ffzrf9sh053069kd3w1xn1ss3gsbyf3y4jhza9cw3"))))
     (build-system r-build-system)
     (home-page "https://github.com/hadley/lazyeval")
     (synopsis "Lazy (non-standard) evaluation in R")
@@ -1409,13 +1416,13 @@ the execution time of R expressions.")
 (define-public r-pryr
   (package
     (name "r-pryr")
-    (version "0.1.2")
+    (version "0.1.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "pryr" version))
               (sha256
                (base32
-                "1in350a8hxwf580afavasvn3jc7x2p1b7nlwmj1scakfz74vghk5"))))
+                "1b1rcywq9sqzgjsnh3ynnx16gp41n94kkzfalm3y4kyy3ls8ikba"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-stringr" ,r-stringr)
@@ -1540,13 +1547,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.1.2")
+    (version "0.1.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "1yc5qyq6h0nrya7m2fqnfv19zh5xwsl28jx6zi2g1zz6ra4cvkwh"))))
+                "1x5rwwsx7xrlyspy41yl5nhyvfgzl73195nsdb4rc6z85ab6r6wd"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")
@@ -1664,28 +1671,6 @@ features require SQL translation to be provided by the package author.")
 transformations.")
     (license license:expat)))
 
-(define-public r-cluster
-  (package
-    (name "r-cluster")
-    (version "2.0.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "cluster" version))
-       (sha256
-        (base32
-         "1z4gbz7chxxi4ly6c0yjlikwgf8aa8dlg05cn5cd6pjr21zvh97l"))))
-    (build-system r-build-system)
-    (inputs
-     `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/cluster")
-    (synopsis "Methods for data cluster analysis")
-    (description
-     "This package provides tools that are useful in finding groups in data.
-It is based on the methods described in Kaufman and Rousseeuw (1990) \"Finding
-Groups in Data\".")
-    (license license:gpl2+)))
-
 (define-public r-formula
   (package
     (name "r-formula")
@@ -1750,13 +1735,13 @@ times.")
 (define-public r-data-table
   (package
     (name "r-data-table")
-    (version "1.10.4-2")
+    (version "1.10.4-3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "data.table" version))
               (sha256
                (base32
-                "159dgcjlrpq17iy7y3a6v2wnlrszjlz031cj4aqcl9bbfkh07mr7"))))
+                "12caklgr19vy9wprdks6zh825vr1iw1cajgwcnbpyvmijqdlz2xs"))))
     (build-system r-build-system)
     (home-page "https://github.com/Rdatatable/data.table/wiki")
     (synopsis "Enhanced version of data.frame R object")
@@ -1955,14 +1940,14 @@ files in R.  It is built on top of the libxml2 C library.")
 (define-public r-multitaper
   (package
     (name "r-multitaper")
-    (version "1.0-13")
+    (version "1.0-14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "multitaper" version))
        (sha256
         (base32
-         "1ckf9bhvd5k7ypaw2viqh3cyj9jij0ygcp4q9pxwqs508s6yx3a5"))))
+         "04wd9bbhyx7697pfy0fpj02v1csr48hkpqj62h9p8a6w84ji4k68"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -2044,14 +2029,14 @@ R version.")
 (define-public r-checkmate
   (package
     (name "r-checkmate")
-    (version "1.8.4")
+    (version "1.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "checkmate" version))
        (sha256
         (base32
-         "1xpq73myr39i33mwihvy494sam77hb3z15yr172a31d8wn1qi53g"))))
+         "1q6igk50lq4fp5d3imgcn1j063h3gsp214ra4nlf534hf4wjlkg9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)))
@@ -2236,14 +2221,14 @@ collation, and NAMESPACE files.")
 (define-public r-openssl
   (package
     (name "r-openssl")
-    (version "0.9.7")
+    (version "0.9.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openssl" version))
        (sha256
         (base32
-         "178fcp9f245i0k9s2w45kbw0ml0r9pfc73ak8hvicw4jz639wzb9"))))
+         "0wm7pkm5yfsxmpyr8n0pvj1398wqg5gzp5clqrg5nb2mflxv2nlc"))))
     (build-system r-build-system)
     (inputs
      `(("libressl" ,libressl)))
@@ -2361,14 +2346,16 @@ tools to simplify the devolpment of R packages.")
 (define-public r-withr
   (package
     (name "r-withr")
-    (version "2.0.0")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "withr" version))
               (sha256
                (base32
-                "0ncq9ygx33rx7aazn53p0a0vbr5xv0r6wbkzcwbhbwyd8k55bgin"))))
+                "12v263fj6l3ds9nrsj6q7h6zhbivp3w2jk7w9dpk1610d3nx9gf8"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
     (home-page "https://github.com/jimhester/withr")
     (synopsis "Run code with temporarily modified global state")
     (description
@@ -2947,24 +2934,6 @@ traverse through all the elements of a vector, list, or other collection of
 data.")
     (license license:asl2.0)))
 
-(define-public r-codetools
-  (package
-    (name "r-codetools")
-    (version "0.2-15")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "codetools" version))
-       (sha256
-        (base32
-         "0h7sjmvvsi35041jp47cxhsqzgf1y8jrw6fxii7n26i8g7nrh1sf"))))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/codetools")
-    (synopsis "Code analysis tools for R")
-    (description "This package provides code analysis tools for R to check R
-code for possible problems.")
-    (license (list license:gpl2+ license:gpl3+))))
-
 (define-public r-foreach
   (package
     (name "r-foreach")
@@ -3094,14 +3063,14 @@ flexible than the orphaned \"base64\" package.")
 (define-public r-irlba
   (package
     (name "r-irlba")
-    (version "2.2.1")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "irlba" version))
        (sha256
         (base32
-         "0zfb7x1701n6gask0f8y2yq0vmb82xkxf6limp43ivx551hx600s"))))
+         "1dclzzkm75sbbqda5scj2hlqnw2sksgxbiqagxs4359fwfszi0k0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
@@ -3416,13 +3385,13 @@ maintenance for package developers.")
 (define-public r-r-utils
   (package
     (name "r-r-utils")
-    (version "2.5.0")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.utils" version))
               (sha256
                (base32
-                "17q3w5dlly5xl2srrzsmf9s7vs5d576vqbcs6sr2p5x4qvqa1q8s"))))
+                "03j7hrs03kyj9qrjxyp5kqv4lpqqpk6xwbkzx6j15d8928yrjr2x"))))
     (properties `((upstream-name . "R.utils")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3590,14 +3559,14 @@ the 'lite' version of the more complete @code{viridis} package.")
 (define-public r-tidyselect
   (package
     (name "r-tidyselect")
-    (version "0.2.2")
+    (version "0.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyselect" version))
        (sha256
         (base32
-         "1lndr0ajd3fhycmrw2fdaiyf32in5pgl5ig901q221g24n87vmnd"))))
+         "0b0w30yq30c7bwpaghp3hp0nncqwcmvrra9j58fhx9jihay3l68c"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-glue" ,r-glue)
@@ -3675,14 +3644,14 @@ It uses and relies on grid graphics and formal (S4) classes and methods.")
 (define-public r-purrr
   (package
     (name "r-purrr")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "purrr" version))
        (sha256
         (base32
-         "0j1y0nbvljcis9hgic4wbbzslcsidhpw0wzs7d2hx7a2ygi6mkma"))))
+         "0wgbnbrqncjpggg8f9bdpcd1gy351s5f0az5k8lc55cvs9lhz3gd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-tibble" ,r-tibble)
@@ -3981,14 +3950,14 @@ hierarchical clustering dendrograms.")
 (define-public r-preprocesscore
   (package
     (name "r-preprocesscore")
-    (version "1.38.1")
+    (version "1.40.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "preprocessCore" version))
        (sha256
         (base32
-         "1ggvmak13rhxc4ghf16ncjfvgszc8yvza93s2l9kn8yiwr96vp2h"))))
+         "0mrdgbkb9dcfr9gsqyxfpshnxx60mq97pl98b8yl00l2gfwz48ph"))))
     (properties
      `((upstream-name . "preprocessCore")))
     (build-system r-build-system)
@@ -4174,30 +4143,6 @@ by coloring the curve according to cutoff.  All components of a performance
 plot can be quickly adjusted using a flexible parameter dispatching
 mechanism.")
     (license license:gpl2+)))
-
-(define-public r-kernsmooth
-  (package
-    (name "r-kernsmooth")
-    (version "2.23-15")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "KernSmooth" version))
-       (sha256
-        (base32
-         "1xhha8kw10jv8pv8b61hb5in9qiw3r2a9kdji3qlm991s4zd4wlb"))))
-    (properties `((upstream-name . "KernSmooth")))
-    (build-system r-build-system)
-    (inputs
-     `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/KernSmooth")
-    (synopsis "Functions for kernel smoothing")
-    (description
-     "This package provides functions for kernel smoothing (and density
-estimation) corresponding to the book: Wand, M.P.  and Jones, M.C. (1995)
-\"Kernel Smoothing\".")
-    ;; Unlimited use and distribution
-    (license (license:non-copyleft "file://LICENSE.note"))))
 
 (define-public r-zoo
   (package
@@ -4664,10 +4609,10 @@ and resampling-based inference.")
     (home-page "https://cran.r-project.org/web/packages/prabclus")
     (synopsis "Parametric bootstrap tests for spatial neighborhood clustering")
     (description
-     "This package provides a distance-based parametric bootstrap tests
-for clustering with spatial neighborhood information.  Some distance measures,
-clustering of presence-absence, abundance and multilocus genetical data for
-species delimitation, nearest neighbor based noise detection.")
+     "This package provides distance-based parametric bootstrap tests for
+clustering with spatial neighborhood information.  It implements some distance
+measures, clustering of presence-absence, abundance and multilocus genetical
+data for species delimitation, nearest neighbor based noise detection.")
     (license license:gpl2+)))
 
 (define-public r-deoptimr
@@ -4696,14 +4641,14 @@ can be efficiently implemented directly in the R language.")
 (define-public r-robustbase
   (package
     (name "r-robustbase")
-    (version "0.92-7")
+    (version "0.92-8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "robustbase" version))
        (sha256
         (base32
-         "13xz4am7y0s0kl5bmbcw3dlhl7ji8h9sjx56wsgmj6r9n35nrggw"))))
+         "080ynchq8pvhnmbivj4fp74n0x9lyr9923sg0s9gq5irgm68kgxw"))))
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
@@ -5037,14 +4982,14 @@ using modular prediction and response module classes.")
 (define-public r-quantreg
   (package
     (name "r-quantreg")
-    (version "5.33")
+    (version "5.34")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantreg" version))
        (sha256
         (base32
-         "1dirmxa4cd05nb0yv0ga6ivw5hkr2zr2cb2lixl1nb6amqn024is"))))
+         "0bmgfgnmzqwmwwaraliry682yb8kcr396q3rlzrd2qzaa9sgxxh4"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -5394,17 +5339,18 @@ is supported.")
 (define-public r-lubridate
   (package
     (name "r-lubridate")
-    (version "1.6.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lubridate" version))
        (sha256
         (base32
-         "0ci6rwij9i1inn840m0mlh1nqgh6vm2lada9kdnjpcjp5kyfv1qs"))))
+         "0pzvazzybzvln3y676yims7whsc74g8i7kgf2nsfbxdq5943z349"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-stringr" ,r-stringr)))
+     `(("r-rcpp" ,r-rcpp)
+       ("r-stringr" ,r-stringr)))
     (home-page
      "http://cran.r-project.org/web/packages/lubridate")
     (synopsis "Make dealing with dates a little easier")
@@ -5432,17 +5378,17 @@ easy and fun.")
     (home-page "http://strimmerlab.org/software/fdrtool/")
     (synopsis "Estimation of false discovery rates and higher criticism")
     (description
-     "This package provides tools to estimate both tail area-based false
-discovery rates (Fdr) as well as local false discovery rates (fdr) for a
-variety of null models (p-values, z-scores, correlation coefficients,
-t-scores).  The proportion of null values and the parameters of the null
-distribution are adaptively estimated from the data.  In addition, the package
-contains functions for non-parametric density estimation (Grenander
-estimator), for monotone regression (isotonic regression and antitonic
-regression with weights), for computing the greatest convex minorant (GCM) and
-the least concave majorant (LCM), for the half-normal and correlation
-distributions, and for computing empirical higher criticism (HC) scores and
-the corresponding decision threshold.")
+     "This package provides tools to estimate tail area-based false discovery
+rates as well as local false discovery rates for a variety of null
+models (p-values, z-scores, correlation coefficients, t-scores).  The
+proportion of null values and the parameters of the null distribution are
+adaptively estimated from the data.  In addition, the package contains
+functions for non-parametric density estimation (Grenander estimator), for
+monotone regression (isotonic regression and antitonic regression with
+weights), for computing the @dfn{greatest convex minorant} (GCM) and the
+@dfn{least concave majorant} (LCM), for the half-normal and correlation
+distributions, and for computing empirical @dfn{higher criticism} (HC) scores
+and the corresponding decision threshold.")
     (license license:gpl3+)))
 
 (define-public r-forcats
@@ -5527,3 +5473,27 @@ tools.")
        "The goal of tgconfig is to provide infrastructure for managing package
 parameters.")
       (license license:gpl3))))
+
+(define-public r-directlabels
+  (package
+    (name "r-directlabels")
+    (version "2017.03.31")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "directlabels" version))
+       (sha256
+        (base32
+         "01ahw0c56mnzwl611s8hnghicww4c4dgf5v2wv6bl1s1pramw9pr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quadprog" ,r-quadprog)))
+    (home-page "http://directlabels.r-forge.r-project.org/")
+    (synopsis "Direct labels for multicolor plots")
+    (description
+     "This package provides an extensible framework for automatically placing
+direct labels onto multicolor plots.  Label positions are described using
+positioning methods that can be re-used across several different plots.  There
+are heuristics for examining @code{trellis} and @code{ggplot} objects and
+inferring an appropriate positioning method.")
+    (license license:gpl3)))

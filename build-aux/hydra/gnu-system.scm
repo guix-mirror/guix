@@ -251,7 +251,8 @@ all its dependencies, and ready to be installed on non-GuixSD distributions.")
       "Return a job for PACKAGE on SYSTEM, or #f if this combination is not
 valid."
       (cond ((member package base-packages)
-             #f)
+             (package-job store (symbol-append 'base. (job-name package))
+                          package system))
             ((supported-package? package system)
              (let ((drv (package-derivation store package system
                                             #:graft? #f)))
@@ -260,6 +261,25 @@ valid."
                                  package system))))
             (else
              #f)))))
+
+(define (all-packages)
+  "Return the list of packages to build."
+  (define (adjust package result)
+    (cond ((package-replacement package)
+           (cons* package                         ;build both
+                  (package-replacement package)
+                  result))
+          ((package-superseded package)
+           result)                                ;don't build it
+          (else
+           (cons package result))))
+
+  (fold-packages adjust
+                 (fold adjust '()                 ;include base packages
+                       (match (%final-inputs)
+                         (((labels packages _ ...) ...)
+                          packages)))
+                 #:select? (const #t)))           ;include hidden packages
 
 
 ;;;
@@ -317,17 +337,7 @@ valid."
                   (case subset
                     ((all)
                      ;; Build everything, including replacements.
-                     (let ((all (fold-packages
-                                 (lambda (package result)
-                                   (cond ((package-replacement package)
-                                          (cons* package
-                                                 (package-replacement package)
-                                                 result))
-                                         ((package-superseded package)
-                                          result) ;don't build it
-                                         (else
-                                          (cons package result))))
-                                 '()))
+                     (let ((all (all-packages))
                            (job (lambda (package)
                                   (package->job store package
                                                 system))))

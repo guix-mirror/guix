@@ -1,0 +1,49 @@
+This patch is taken from Debian and modified slightly
+
+Description: Phoning-home version checks should be disabled in Debian packages
+Author: Sandro Knauß <bugs@ssandroknauss.de>
+Origin: debian
+Bug-debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=721341
+Forwarded: not-needed
+Last-Update: 2014-02-17
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/src/libsync/configfile.cpp
++++ b/src/libsync/configfile.cpp
+@@ -417,11 +417,14 @@ bool ConfigFile::skipUpdateCheck( const
+     QString con( connection );
+     if( connection.isEmpty() ) con = defaultConnection();
+
+-    QVariant fallback = getValue(QLatin1String(skipUpdateCheckC), con, false);
++    QVariant fallback = getValue(QLatin1String(skipUpdateCheckC), con, true);
+     fallback = getValue(QLatin1String(skipUpdateCheckC), QString(), fallback);
+
+     QVariant value = getPolicySetting(QLatin1String(skipUpdateCheckC), fallback);
+-    return value.toBool();
++    if ( !value.toBool() )
++        qDebug() << "Guix has disabled the UpdateCheck mechanism.";
++
++    return true;
+ }
+
+ void ConfigFile::setSkipUpdateCheck( bool skip, const QString& connection )
+--- a/src/gui/generalsettings.cpp
++++ b/src/gui/generalsettings.cpp
+@@ -124,6 +124,7 @@ void GeneralSettings::loadMiscSettings()
+
+ void GeneralSettings::slotUpdateInfo()
+ {
++    /* Guix doesn't want an autoupdater
+     // Note: the sparkle-updater is not an OCUpdater
+     OCUpdater *updater = qobject_cast<OCUpdater*>(Updater::instance());
+     if (ConfigFile().skipUpdateCheck()) {
+@@ -140,6 +141,9 @@ void GeneralSettings::slotUpdateInfo()
+         // can't have those infos from sparkle currently
+         _ui->updatesGroupBox->setVisible(false);
+     }
++    */
++    //hide the update group box for Guix.
++    _ui->updatesGroupBox->setVisible(false);
+ }
+
+ void GeneralSettings::saveMiscSettings()

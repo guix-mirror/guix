@@ -257,7 +257,7 @@ used in KDE development tools Kompare and KDevelop.")
 (define-public libksysguard
   (package
     (name "libksysguard")
-    (version "5.10.4")
+    (version "5.11.2")
     (source
      (origin
        (method url-fetch)
@@ -265,7 +265,7 @@ used in KDE development tools Kompare and KDevelop.")
                            "/libksysguard-" version ".tar.xz"))
        (sha256
         (base32
-         "01w0laywva0p0ar2lvr1k5000bhjikjfxsb4f6p30qswrchrmrh3"))))
+         "12d0r4rilydbqdgkm256khvkb9m0hya3p27xqvv3hg77wgxzdl3f"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
@@ -307,7 +307,7 @@ used in KDE development tools Kompare and KDevelop.")
            (lambda _
              ;; TODO: Fix this failing test-case
              (zero? (system* "ctest" "-E" "processtest")))))))
-    (home-page "https://www.kde.org/info/plasma-5.10.4.php")
+    (home-page "https://www.kde.org/info/plasma-5.11.2.php")
     (synopsis "Network enabled task and system monitoring")
     (description "KSysGuard can obtain information on system load and
 manage running processes.  It obtains this information by interacting

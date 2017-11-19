@@ -46,6 +46,7 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
@@ -391,19 +392,19 @@ The intltool collection can be used to do these things:
 (define itstool
   (package
     (name "itstool")
-    (version "2.0.4")
+    (version "2.0.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.itstool.org/itstool/itstool-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0q7b4qrc758zfx3adsgvz0r93swdbxjr42w37rahngm33nshihlp"))))
+               "0fh34wi52i0qikgvlmrcpf1vx6gc1xqdad4539l4d9hikfsrz45z"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxml2" ,libxml2)
-       ("python-libxml2" ,python-libxml2)
-       ("python" ,python)))
+       ("python2-libxml2" ,python2-libxml2)
+       ("python-2" ,python-2)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases

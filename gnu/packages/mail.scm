@@ -49,6 +49,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages calendar)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
@@ -81,6 +82,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages search)
   #:use-module (gnu packages texinfo)
@@ -94,6 +96,7 @@
   #:use-module (gnu packages samba)
   #:use-module (gnu packages screen)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages web)
@@ -118,14 +121,14 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.3")
+    (version "3.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1v110avpdz0bvz3yh3cfvvd0dnn7sa6hrpql2h8dgnri8fww6cag"))))
+               "1dn71p85wlyisnwsb485sk3q5v393k3dizsa9fmimskdwjwgk3ch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -690,14 +693,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.25.1")
+    (version "0.25.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0c98hzwc60nb6kd15y0fl2ji3yfmr9k6v8ps0h3ihr3vkgn0kgxl"))))
+                "0ai6vbs9wzwfz7jcphgqsqpcbq137l34xhmcli4h5c8n82fvmdp4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "V=1") ; Verbose test output.
@@ -1106,7 +1109,7 @@ delivery.")
        #:make-flags '("INSTALL_ARG=-no_chown")
        ;; No 'check' target.
        #:tests? #f))
-    (home-page "http://www.exim.org/")
+    (home-page "https://www.exim.org/")
     (synopsis
      "Message Transfer Agent (MTA) developed at the University of Cambridge")
     (description

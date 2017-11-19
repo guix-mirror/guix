@@ -372,13 +372,13 @@ TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
       (bytevector->uuid
        (uint-list->bytevector
         (list (hash file-system-type
-                    (expt 2 32))
+                    (- (expt 2 32) 1))
               (hash (operating-system-host-name os)
-                    (expt 2 32))
+                    (- (expt 2 32) 1))
               (hash (operating-system-services os)
-                    (expt 2 32))
+                    (- (expt 2 32) 1))
               (hash (operating-system-file-systems os)
-                    (expt 2 32)))
+                    (- (expt 2 32) 1)))
         (endianness little)
         4)
        type)))

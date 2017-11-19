@@ -211,9 +211,9 @@ by the b43-open driver of Linux-libre.")
                (copy-file "out/bios.bin" (string-append fmw "/bios.bin"))))))))
     (home-page "https://www.seabios.org/SeaBIOS")
     (synopsis "x86 BIOS implementation")
-    (description "SeaBIOS is an open source implementation of a 16bit x86 BIOS.
-SeaBIOS can run in an emulator or it can run natively on X86 hardware with the
-use of coreboot.")
+    (description "SeaBIOS is an implementation of a 16bit x86 BIOS.  SeaBIOS
+can run in an emulator or it can run natively on X86 hardware with the use of
+coreboot.")
     ;; Dual licensed.
     (license (list license:gpl3+ license:lgpl3+
                    ;; src/fw/acpi-dsdt.dsl is lgpl2

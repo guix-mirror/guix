@@ -42,7 +42,6 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages lsof)
   #:use-module (gnu packages terminals)
   #:use-module ((gnu build file-systems)
                 #:select (mount-flags->bit-mask))
@@ -119,7 +118,6 @@
             guix-configuration-substitute-urls
             guix-configuration-extra-options
             guix-configuration-log-file
-            guix-configuration-lsof
 
             guix-service
             guix-service-type
@@ -1374,8 +1372,6 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                     (default '()))
   (log-file         guix-configuration-log-file   ;string
                     (default "/var/log/guix-daemon.log"))
-  (lsof             guix-configuration-lsof       ;<package>
-                    (default lsof))
   (http-proxy       guix-http-proxy               ;string | #f
                     (default #f))
   (tmpdir           guix-tmpdir                   ;string | #f
@@ -1392,7 +1388,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                              use-substitutes? substitute-urls
                              max-silent-time timeout
                              extra-options
-                             log-file lsof http-proxy tmpdir)
+                             log-file http-proxy tmpdir)
      (list (shepherd-service
             (documentation "Run the Guix daemon.")
             (provision '(guix-daemon))
@@ -1409,10 +1405,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                       "--substitute-urls" #$(string-join substitute-urls)
                       #$@extra-options)
 
-                ;; Add 'lsof' (for the GC) to the daemon's $PATH.
                 #:environment-variables
-                (list (string-append "PATH=" #$lsof "/bin")
-                      #$@(if http-proxy
+                (list #$@(if http-proxy
                              (list (string-append "http_proxy=" http-proxy))
                              '())
                       #$@(if tmpdir
@@ -1441,7 +1435,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   (match config
     (($ <guix-configuration> guix build-group build-accounts authorize-key? keys)
      ;; Assume that the store has BUILD-GROUP as its group.  We could
-     ;; otherwise call 'chown' here, but the problem is that on a COW unionfs,
+     ;; otherwise call 'chown' here, but the problem is that on a COW overlayfs,
      ;; chown leads to an entire copy of the tree, which is a bad idea.
 
      ;; Optionally authorize hydra.gnu.org's key.

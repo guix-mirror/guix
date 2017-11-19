@@ -22,7 +22,9 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (gnu packages)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web))
 
 (define-public radicale
   (package

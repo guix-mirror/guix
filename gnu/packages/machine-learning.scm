@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,10 +28,12 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages dejagnu)
@@ -604,3 +607,52 @@ including robotics, embedded devices, mobile phones, and large high performance
 computing environments.")
     (home-page "http://dlib.net")
     (license license:boost1.0)))
+
+(define-public python-scikit-learn
+  (package
+    (name "python-scikit-learn")
+    (version "0.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/scikit-learn/scikit-learn/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0g7q4ri75mj93wpa9bp83a3jmrf3dm5va9h7k4zkbcxr6bgqka15"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           ;; Running tests from the source directory requires
+           ;; an "inplace" build with paths relative to CWD.
+           ;; http://scikit-learn.org/stable/developers/advanced_installation.html#testing
+           ;; Use the installed version instead.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             ;; some tests require access to "$HOME"
+             (setenv "HOME" "/tmp")
+             ;; Step out of the source directory just to be sure.
+             (chdir "..")
+             (zero? (system* "nosetests" "-v" "sklearn")))))))
+    (inputs
+     `(("openblas" ,openblas)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-cython" ,python-cython)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)))
+    (home-page "http://scikit-learn.org/")
+    (synopsis "Machine Learning in Python")
+    (description
+     "Scikit-learn provides simple and efficient tools for data
+mining and data analysis.")
+    (license license:bsd-3)))
+
+(define-public python2-scikit-learn
+  (package-with-python2 python-scikit-learn))

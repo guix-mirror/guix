@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
@@ -53,6 +55,8 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages java)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1035,6 +1039,38 @@ well as bzip2.")
     (license (list license:gpl3+
                    license:public-domain)))) ; most files in lzma/
 
+(define-public bitshuffle
+  (package
+    (name "bitshuffle")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "bitshuffle" version))
+              (sha256
+               (base32
+                "01vcjrvsxjvv47y5hf9rps69zwv0vwd4ydhhms2jfs4rpcnlak6v"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'make-required-dir
+           (lambda _
+             (mkdir-p "bitshuffle/plugin")
+             #t)))))
+    (inputs
+     `(("numpy" ,python-numpy)
+       ("h5py" ,python-h5py)
+       ("hdf5" ,hdf5)))
+    (native-inputs
+     `(("cython" ,python-cython)))
+    (home-page "https://github.com/kiyo-masui/bitshuffle")
+    (synopsis "Filter for improving compression of typed binary data")
+    (description "Bitshuffle is an algorithm that rearranges typed, binary data
+for improving compression, as well as a python/C package that implements this
+algorithm within the Numpy framework.")
+    (license license:expat)))
+
 (define-public snappy
   (package
     (name "snappy")
@@ -1056,6 +1092,177 @@ instead, it aims for very high speeds and reasonable compression. For instance,
 compared to the fastest mode of zlib, Snappy is an order of magnitude faster
 for most inputs, but the resulting compressed files are anywhere from 20% to
 100% bigger.")
+    (license license:asl2.0)))
+
+(define bitshuffle-for-snappy
+  (package
+    (inherit bitshuffle)
+    (name "bitshuffle-for-snappy")
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-output-to-file "Makefile"
+               (lambda _
+                 (format #t "\
+libbitshuffle.so: src/bitshuffle.o src/bitshuffle_core.o src/iochain.o lz4/lz4.o
+\tgcc -O3 -ffast-math -std=c99 -o $@ -shared -fPIC $^
+
+%.o: %.c
+\tgcc -O3 -ffast-math -std=c99 -fPIC -Isrc -Ilz4 -c $< -o $@
+
+PREFIX:=~a
+LIBDIR:=$(PREFIX)/lib
+INCLUDEDIR:=$(PREFIX)/include
+
+install: libbitshuffle.so
+\tinstall -dm755 $(LIBDIR)
+\tinstall -dm755 $(INCLUDEDIR)
+\tinstall -m755 libbitshuffle.so $(LIBDIR)
+\tinstall -m644 src/bitshuffle.h $(INCLUDEDIR)
+\tinstall -m644 src/bitshuffle_core.h $(INCLUDEDIR)
+\tinstall -m644 src/iochain.h $(INCLUDEDIR)
+\tinstall -m644 lz4/lz4.h $(INCLUDEDIR)
+" (assoc-ref outputs "out"))))
+             #t)))))
+    (inputs '())
+    (native-inputs '())))
+
+(define-public java-snappy
+  (package
+    (name "java-snappy")
+    (version "1.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xerial/snappy-java/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w58diryma7qz7aa24yv8shf3flxcbbw8jgcn2lih14wgmww58ww"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "snappy.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-binaries
+           (lambda _
+             (delete-file "lib/org/xerial/snappy/OSInfo.class")
+             (delete-file-recursively "src/main/resources/org/xerial/snappy/native")
+             #t))
+         (add-before 'build 'build-jni
+           (lambda _
+             ;; Rebuild one of the binaries we removed earlier
+             (system* "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
+                      "-d" "lib")
+             ;; Link to the dynamic bitshuffle and snappy, not the static ones
+             (substitute* "Makefile.common"
+               (("-shared")
+                "-shared -lbitshuffle -lsnappy"))
+             (substitute* "Makefile"
+               ;; Don't try to use git, don't download bitshuffle source
+               ;; and don't build it.
+               (("\\$\\(SNAPPY_GIT_UNPACKED\\) ")
+                "")
+               ((": \\$\\(SNAPPY_GIT_UNPACKED\\)")
+                ":")
+               (("\\$\\(BITSHUFFLE_UNPACKED\\) ")
+                "")
+               ((": \\$\\(SNAPPY_SOURCE_CONFIGURED\\)") ":")
+               ;; What we actually want to build
+               (("SNAPPY_OBJ:=.*")
+                "SNAPPY_OBJ:=$(addprefix $(SNAPPY_OUT)/, \
+                 SnappyNative.o BitShuffleNative.o)\n")
+               ;; Since we removed the directory structure in "native" during
+               ;; the previous phase, we need to recreate it.
+               (("NAME\\): \\$\\(SNAPPY_OBJ\\)")
+                "NAME): $(SNAPPY_OBJ)\n\t@mkdir -p $(@D)"))
+             ;; Finally we can run the Makefile to build the dynamic library.
+             (zero? (system* "make" "native"))))
+         ;; Once we have built the shared library, we need to place it in the
+         ;; "build" directory so it can be added to the jar file.
+         (add-after 'build-jni 'copy-jni
+           (lambda _
+             (copy-recursively "src/main/resources/org/xerial/snappy/native"
+                               "build/classes/org/xerial/snappy/native")))
+         (add-before 'check 'fix-failing
+           (lambda _
+             ;; This package assumes maven build, which puts results in "target".
+             ;; We put them in "build" instead, so fix that.
+             (substitute* "src/test/java/org/xerial/snappy/SnappyLoaderTest.java"
+               (("target/classes") "build/classes"))
+             ;; FIXME: probably an error
+             (substitute* "src/test/java/org/xerial/snappy/SnappyOutputStreamTest.java"
+               (("91080") "91013")))))))
+    (inputs
+     `(("osgi-framework" ,java-osgi-framework)))
+    (propagated-inputs
+     `(("bitshuffle" ,bitshuffle-for-snappy)
+       ("snappy" ,snappy)))
+    (native-inputs
+     `(("junit" ,java-junit)
+       ("hamcrest" ,java-hamcrest-core)
+       ("xerial-core" ,java-xerial-core)
+       ("classworlds" ,java-plexus-classworlds)
+       ("perl" ,perl)))
+    (home-page "https://github.com/xerial/snappy-java")
+    (synopsis "Compression/decompression algorithm in Java")
+    (description "Snappy-java is a Java port of the snappy, a fast C++
+compresser/decompresser.")
+    (license license:asl2.0)))
+
+(define-public java-iq80-snappy
+  (package
+    (name "java-iq80-snappy")
+    (version "0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dain/snappy/archive/snappy-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0rb3zhci7w9wzd65lfnk7p3ip0n6gb58a9qpx8n7r0231gahyamf"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "iq80-snappy.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (define (test class)
+               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                           ":build/classes"
+                                                           ":build/test-classes")
+                               "-Dtest.resources.dir=src/test/resources"
+                               "org.testng.TestNG" "-testclass"
+                               class)))
+             (system* "ant" "compile-tests")
+             (and
+               (test "org.iq80.snappy.SnappyFramedStreamTest")
+               (test "org.iq80.snappy.SnappyStreamTest"))))
+         (add-before 'build 'remove-hadoop-dependency
+           (lambda _
+             ;; We don't have hadoop
+             (delete-file "src/main/java/org/iq80/snappy/HadoopSnappyCodec.java")
+             (delete-file "src/test/java/org/iq80/snappy/TestHadoopSnappyCodec.java")
+             #t)))))
+    (home-page "https://github.com/dain/snappy")
+    (native-inputs
+     `(("guava" ,java-guava)
+       ("java-snappy" ,java-snappy)
+       ("hamcrest" ,java-hamcrest-core)
+       ("testng" ,java-testng)))
+    (synopsis "Java port of snappy")
+    (description "Iq80-snappy is a rewrite (port) of Snappy writen in pure
+Java.  This compression code produces a byte-for-byte exact copy of the output
+created by the original C++ code, and extremely fast.")
     (license license:asl2.0)))
 
 (define-public p7zip
@@ -1293,24 +1500,6 @@ or junctions, and always follows hard links.")
      "@command{unshield} is a tool and library for extracting @file{.cab}
  archives from InstallShield installers.")
     (license license:expat)))
-
-(define-public unrar
-  (package
-    (name "unrar")
-    (version "0.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://download.gna.org/unrar/unrar-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1fgmjaxffj3shyxgy765jhxwz1cq88hk0fih1bsdzyvymyyz6mz7"))))
-    (build-system gnu-build-system)
-    (home-page "http://download.gna.org/unrar")
-    (synopsis "RAR archive extraction tool")
-    (description "Unrar is a simple command-line program to list and extract
-RAR archives.")
-    (license license:gpl2+)))
 
 (define-public zstd
   (package
@@ -1634,3 +1823,38 @@ of archives.")
 without having to worry how it does so, or use different interfaces for each
 type by using either Perl modules, or command-line tools on your system.")
     (license license:perl-license)))
+
+(define-public java-tukaani-xz
+  (package
+    (name "java-tukaani-xz")
+    (version "1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://tukaani.org/xz/xz-java-" version ".zip"))
+              (sha256
+               (base32
+                "1z3p1ri1gvl07inxn0agx44ck8n7wrzfmvkz8nbq3njn8r9wba8x"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             ;; Our build system enters the first directory in the archive, but
+             ;; the package is not contained in a subdirectory
+             (chdir "..")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Do we want to install *Demo.jar?
+             (install-file "build/jar/xz.jar"
+                           (string-append
+                             (assoc-ref outputs "out")
+                             "/share/java/xz.jar")))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://tukaani.org")
+    (synopsis "XZ in Java")
+    (description "Tukaani-xz is an implementation of xz compression/decompression
+algorithms in Java.")
+    (license license:public-domain)))

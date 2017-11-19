@@ -46,6 +46,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
@@ -68,6 +70,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages pciutils)
@@ -77,7 +81,6 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages python)
   #:use-module (gnu packages man)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnome)
@@ -1291,7 +1294,7 @@ various ways that may be running with too much privilege.")
 (define-public smartmontools
   (package
     (name "smartmontools")
-    (version "6.5")
+    (version "6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1299,7 +1302,7 @@ various ways that may be running with too much privilege.")
                     version "/smartmontools-" version ".tar.gz"))
               (sha256
                (base32
-                "1g25r6sx85b5lay5n6sbnqv05qxzj6xsafsp93hnrg1h044bps49"))))
+                "0m1hllbb78rr6cxkbalmz1gqkl0psgq8rrmv4gwcmz34n07kvx2i"))))
     (build-system gnu-build-system)
     (inputs `(("libcap-ng" ,libcap-ng)))
     (home-page "https://www.smartmontools.org/")
@@ -1307,8 +1310,8 @@ various ways that may be running with too much privilege.")
     (description
      "The smartmontools package contains utility programs to control and
 monitor storage systems using the Self-Monitoring, Analysis and Reporting
-Technology System (S.M.A.R.T.) built into most modern ATA and SCSI harddisks.
-In many cases, these utilities will provide advanced warning of disk
+Technology System (@dfn{S.M.A.R.T.}) built into most modern ATA and SCSI hard
+disks.  In many cases, these utilities will provide advanced warning of disk
 degradation and failure.")
     (license license:gpl2+)))
 
@@ -2193,7 +2196,7 @@ you are running, what theme or icon set you are using, etc.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "1.3")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jarun/nnn/"
@@ -2201,7 +2204,7 @@ you are running, what theme or icon set you are using, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sivgcmg3hihz15v2wgbxnd0icn06pyvvqdqh8x0mwkhvm434fpb"))))
+                "0zswf8lb29zr1z642i1d0zi1y2mxal8qjqdrpdiqjh197jamj3zm"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))

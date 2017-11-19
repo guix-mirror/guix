@@ -1,0 +1,13 @@
+Add missing flags.
+
+--- psm-3.3/ipath/Makefile~	1970-01-01 01:00:00.000000000 +0100
++++ psm-3.3/ipath/Makefile	2017-10-22 15:10:10.269177711 +0100
+@@ -73,7 +73,7 @@
+ ${TARGLIB}.so.${MAJOR}.${MINOR}: ${${TARGLIB}-objs}
+ 	date +'static __attribute__ ((unused)) char __psc_infinipath_revision[] ="$$""Date: %F %R ${rpm_extra_description}InfiniPath $$";' > _revision.c
+ 	$(CC) -c $(BASECFLAGS) $(INCLUDES) _revision.c -o _revision.o
+-	$(CC) -o $@ -Wl,-soname=${TARGLIB}.so.${MAJOR} -shared \
++	$(CC) -o $@ -Wl,-soname=${TARGLIB}.so.${MAJOR} $(LDFLAGS) -shared \
+ 		-Wl,--unique='*fastpath*' \
+ 		${${TARGLIB}-objs} _revision.o $(LDFLAGS) $(if $(MIC:0=),$(SCIF_LINK_FLAGS))
+ 

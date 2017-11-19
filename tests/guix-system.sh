@@ -68,6 +68,34 @@ else
 fi
 
 
+# Reporting of module not found errors.
+
+cat > "$tmpfile" <<EOF
+;; Line 1.
+(use-modules (gnu))
+  (use-service-modules openssh)
+EOF
+
+if guix system build "$tmpfile" -n 2> "$errorfile"
+then false
+else
+    grep "$tmpfile:3:2: .*module .*openssh.*not found" "$errorfile"
+    grep "Try.*use-service-modules ssh" "$errorfile"
+fi
+
+cat > "$tmpfile" <<EOF
+;; Line 1.
+(use-modules (gnu))
+  (use-package-modules qemu)
+EOF
+
+if guix system build "$tmpfile" -n 2> "$errorfile"
+then false
+else
+    grep "$tmpfile:3:2: .*module .*qemu.*not found" "$errorfile"
+    grep "Try.*use-package-modules virtualization" "$errorfile"
+fi
+
 # Reporting of unbound variables.
 
 cat > "$tmpfile" <<EOF
@@ -95,9 +123,9 @@ else
     then
 	# FIXME: With Guile 2.2.0 the error is reported on line 4.
 	# See <http://bugs.gnu.org/26107>.
-	grep "$tmpfile:[49]:.*[Uu]nbound variable.*GRUB-config" "$errorfile"
+	grep "$tmpfile:[49]:[0-9]: GRUB-config.*[Uu]nbound variable" "$errorfile"
     else
-	grep "$tmpfile:9:.*[Uu]nbound variable.*GRUB-config" "$errorfile"
+	grep "$tmpfile:9:[0-9]: GRUB-config.*[Uu]nbound variable" "$errorfile"
     fi
 fi
 

@@ -27,7 +27,10 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
+  #:use-module (gnu packages time))
 
 (define-public python-django
   (package
@@ -151,7 +154,7 @@ with arguments to the field constructor.")
      `(("python-django" ,python-django)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
-     `(("python-pytest" ,python-pytest-3.0)))
+     `(("python-pytest" ,python-pytest)))
     (home-page "http://pytest-django.readthedocs.org/")
     (synopsis "Django plugin for py.test")
     (description "Pytest-django is a plugin for py.test that provides a set of

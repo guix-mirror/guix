@@ -45,6 +45,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -55,7 +56,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "2.21")
+    (version "2.22.2")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -63,7 +64,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0azgpr4al2pi4858z4xh4lfz84cvzxw3n426fn7rz6cdj34q212j"))))
+                "1kcflv4jb4250g94nqn28i98xqvvci8w7vqpfr62gxlp16z1za05"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -79,6 +80,14 @@
               ("libxt" ,libxt)
               ("libx11" ,libx11)
               ("libxinerama" ,libxinerama)))
+    (native-search-paths
+     ;; Feh allows overriding the libcurl builtin CA path (unset in Guix)
+     ;; with the same variable as the `curl` command line HTTP tool.
+     (list (search-path-specification
+            (variable "CURL_CA_BUNDLE")
+            (file-type 'regular)
+            (separator #f)                         ;single entry
+            (files '("etc/ssl/certs/ca-certificates.crt")))))
     (synopsis "Fast and light imlib2-based image viewer")
     (description
       "feh is an X11 image viewer aimed mostly at console users.

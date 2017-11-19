@@ -221,6 +221,7 @@ Services
 * Database Services::           SQL databases, key-value stores, etc.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
+* Telephony Services::          Telephony services.
 * Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
@@ -1235,9 +1236,12 @@ this optimization.
 Tell whether the garbage collector (GC) must keep outputs of live
 derivations.
 
+@cindex GC roots
+@cindex garbage collector roots
 When set to ``yes'', the GC will keep the outputs of any live derivation
 available in the store---the @code{.drv} files.  The default is ``no'',
 meaning that derivation outputs are kept only if they are GC roots.
+@xref{Invoking guix gc}, for more on GC roots.
 
 @item --gc-keep-derivations[=yes|no]
 Tell whether the garbage collector (GC) must keep derivations
@@ -2337,12 +2341,16 @@ collector to reclaim space from the @file{/gnu/store} directory.  It is
 the @emph{only} way to remove files from @file{/gnu/store}---removing
 files or directories manually may break it beyond repair!
 
+@cindex GC roots
+@cindex garbage collector roots
 The garbage collector has a set of known @dfn{roots}: any file under
 @file{/gnu/store} reachable from a root is considered @dfn{live} and
 cannot be deleted; any other file is considered @dfn{dead} and may be
-deleted.  The set of garbage collector roots includes default user
-profiles, and may be augmented with @command{guix build --root}, for
-example (@pxref{Invoking guix build}).
+deleted.  The set of garbage collector roots (``GC roots'' for short)
+includes default user profiles; by default, the symlinks under
+@file{/var/guix/gcroots} represent these GC roots.  New GC roots can be
+added with @command{guix build --root}, for example (@pxref{Invoking
+guix build}).
 
 Prior to running @code{guix gc --collect-garbage} to make space, it is
 often useful to remove old generations from user profiles; that way, old
@@ -5534,8 +5542,16 @@ packages.
 
 @item --root=@var{file}
 @itemx -r @var{file}
+@cindex GC roots, adding
+@cindex garbage collector roots, adding
 Make @var{file} a symlink to the result, and register it as a garbage
 collector root.
+
+Consequently, the results of this @command{guix build} invocation are
+protected from garbage collection until @var{file} is removed.  When
+that option is omitted, build results are eligible for garbage
+collection as soon as the build completes.  @xref{Invoking guix gc}, for
+more on GC roots.
 
 @item --log-file
 Return the build log file names or URLs for the given
@@ -6901,7 +6917,8 @@ collection, to make it ``persistent''.
 When this option is omitted, the environment is protected from garbage
 collection only for the duration of the @command{guix environment}
 session.  This means that next time you recreate the same environment,
-you could have to rebuild or re-download packages.
+you could have to rebuild or re-download packages.  @xref{Invoking guix
+gc}, for more on GC roots.
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}
@@ -8055,7 +8072,7 @@ types.}.  For the ESP, if you have one and assuming it is
 mkfs.fat -F32 /dev/sda2
 @end example
 
-Preferably, assign partitions a label so that you can easily and
+Preferably, assign file systems a label so that you can easily and
 reliably refer to them in @code{file-system} declarations (@pxref{File
 Systems}).  This is typically done using the @code{-L} option of
 @command{mkfs.ext4} and related commands.  So, assuming the target root
@@ -8080,9 +8097,9 @@ cryptsetup open --type luks /dev/sda1 my-partition
 mkfs.ext4 -L my-root /dev/mapper/my-partition
 @end example
 
-Once that is done, mount the target root partition under @file{/mnt}
+Once that is done, mount the target file system under @file{/mnt}
 with a command like (again, assuming @code{my-root} is the label of the
-root partition):
+root file system):
 
 @example
 mount LABEL=my-root /mnt
@@ -9308,6 +9325,7 @@ declaration.
 * Database Services::           SQL databases, key-value stores, etc.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
+* Telephony Services::          Telephony services.
 * Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
@@ -9811,9 +9829,6 @@ List of extra command-line options for @command{guix-daemon}.
 @item @code{log-file} (default: @code{"/var/log/guix-daemon.log"})
 File where @command{guix-daemon}'s standard output and standard error
 are written.
-
-@item @code{lsof} (default: @var{lsof})
-The lsof package to use.
 
 @item @code{http-proxy} (default: @code{#f})
 The HTTP proxy used for downloading fixed-output derivations and
@@ -14188,6 +14203,212 @@ string, you could instantiate a prosody service like this:
          (opaque-prosody-configuration
           (prosody.cfg.lua "")))
 @end example
+
+
+@node Telephony Services
+@subsubsection Telephony Services
+
+@cindex Murmur (VoIP server)
+@cindex VoIP server
+This section describes how to set up and run a Murmur server.  Murmur is
+the server of the @uref{https://mumble.info, Mumble} voice-over-IP
+(VoIP) suite.
+
+@deftp {Data Type} murmur-configuration
+The service type for the Murmur server.  An example configuration can
+look like this:
+
+@example
+(service murmur-service-type
+         (murmur-configuration
+          (welcome-text
+            "Welcome to this Mumble server running on GuixSD!")
+          (cert-required? #t) ;disallow text password logins
+          (ssl-cert "/etc/letsencrypt/live/mumble.example.com/fullchain.pem")
+          (ssl-key "/etc/letsencrypt/live/mumble.example.com/privkey.pem")))
+@end example
+
+After reconfiguring your system, you can manually set the murmur @code{SuperUser}
+password with the command that is printed during the activation phase.
+
+It is recommended to register a normal Mumble user account
+and grant it admin or moderator rights.
+You can use the @code{mumble} client to
+login as new normal user, register yourself, and log out.
+For the next step login with the name @code{SuperUser} use
+the @code{SuperUser} password that you set previously,
+and grant your newly registered mumble user administrator or moderator
+rights and create some channels.
+
+Available @code{murmur-configuration} fields are:
+
+@table @asis
+@item @code{package} (default: @code{mumble})
+Package that contains @code{bin/murmurd}.
+
+@item @code{user} (default: @code{"murmur"})
+User who will run the Murmur server.
+
+@item @code{group} (default: @code{"murmur"})
+Group of the user who will run the murmur server.
+
+@item @code{port} (default: @code{64738})
+Port on which the server will listen.
+
+@item @code{welcome-text} (default: @code{""})
+Welcome text sent to clients when they connect.
+
+@item @code{server-password} (default: @code{""})
+Password the clients have to enter in order to connect.
+
+@item @code{max-users} (default: @code{100})
+Maximum of users that can be connected to the server at once.
+
+@item @code{max-user-bandwidth} (default: @code{#f})
+Maximum voice traffic a user can send per second.
+
+@item @code{database-file} (default: @code{"/var/lib/murmur/db.sqlite"})
+File name of the sqlite database.
+The service's user will become the owner of the directory.
+
+@item @code{log-file} (default: @code{"/var/log/murmur/murmur.log"})
+File name of the log file.
+The service's user will become the owner of the directory.
+
+@item @code{autoban-attempts} (default: @code{10})
+Maximum number of logins a user can make in @code{autoban-timeframe}
+without getting auto banned for @code{autoban-time}.
+
+@item @code{autoban-timeframe} (default: @code{120})
+Timeframe for autoban in seconds.
+
+@item @code{autoban-time} (default: @code{300})
+Amount of time in seconds for which a client gets banned
+when violating the autoban limits.
+
+@item @code{opus-threshold} (default: @code{100})
+Percentage of clients that need to support opus
+before switching over to opus audio codec.
+
+@item @code{channel-nesting-limit} (default: @code{10})
+How deep channels can be nested at maximum.
+
+@item @code{channelname-regex} (default: @code{#f})
+A string in from of a Qt regular expression that channel names must conform to.
+
+@item @code{username-regex} (default: @code{#f})
+A string in from of a Qt regular expression that user names must conform to.
+
+@item @code{text-message-length} (default: @code{5000})
+Maximum size in bytes that a user can send in one text chat message.
+
+@item @code{image-message-length} (default: @code{(* 128 1024)})
+Maximum size in bytes that a user can send in one image message.
+
+@item @code{cert-required?} (default: @code{#f})
+If it is set to @code{#t} clients that use weak password authentification
+will not be accepted. Users must have completed the certificate wizard to join.
+
+@item @code{remember-channel?} (defualt @code{#f})
+Should murmur remember the last channel each user was in when they disconnected
+and put them into the remembered channel when they rejoin.
+
+@item @code{allow-html?} (default: @code{#f})
+Should html be allowed in text messages, user comments, and channel descriptions.
+
+@item @code{allow-ping?} (default: @code{#f})
+Setting to true exposes the current user count, the maximum user count, and
+the server's maximum bandwidth per client to unauthenticated users. In the
+Mumble client, this information is shown in the Connect dialog.
+
+Disabling this setting will prevent public listing of the server.
+
+@item @code{bonjour?} (default: @code{#f})
+Should the server advertise itself in the local network through the bonjour protocol.
+
+@item @code{send-version?} (default: @code{#f})
+Should the murmur server version be exposed in ping requests.
+
+@item @code{log-days} (default: @code{31})
+Murmur also stores logs in the database, which are accessible via RPC.
+The default is 31 days of months, but you can set this setting to 0 to keep logs forever,
+or -1 to disable logging to the database.
+
+@item @code{obfuscate-ips?} (default @code{#t})
+Should logged ips be obfuscated to protect the privacy of users.
+
+@item @code{ssl-cert} (default: @code{#f})
+File name of the SSL/TLS certificate used for encrypted connections.
+
+@example
+(ssl-cert "/etc/letsencrypt/live/example.com/fullchain.pem")
+@end example
+@item @code{ssl-key} (default: @code{#f})
+Filepath to the ssl private key used for encrypted connections.
+@example
+(ssl-key "/etc/letsencrypt/live/example.com/privkey.pem")
+@end example
+
+@item @code{ssl-dh-params} (default: @code{#f})
+File name of a PEM-encoded file with Diffie-Hellman parameters
+for the SSL/TLS encryption.  Alternatively you set it to
+@code{"@@ffdhe2048"}, @code{"@@ffdhe3072"}, @code{"@@ffdhe4096"}, @code{"@@ffdhe6144"}
+or @code{"@@ffdhe8192"} to use bundled parameters from RFC 7919.
+
+@item @code{ssl-ciphers} (default: @code{#f})
+The @code{ssl-ciphers} option chooses the cipher suites to make available for use
+in SSL/TLS.
+
+This option is specified using
+@uref{https://www.openssl.org/docs/apps/ciphers.html#CIPHER-LIST-FORMAT,
+OpenSSL cipher list notation}.
+
+It is recommended that you try your cipher string using 'openssl ciphers <string>'
+before setting it here, to get a feel for which cipher suites you will get.
+After setting this option, it is recommend that you inspect your Murmur log
+to ensure that Murmur is using the cipher suites that you expected it to.
+
+Note: Changing this option may impact the backwards compatibility of your
+Murmur server, and can remove the ability for older Mumble clients to be able
+to connect to it.
+
+@item @code{public-registration} (default: @code{#f})
+Must be a @code{<murmur-public-registration-configuration>} record or @code{#f}.
+
+You can optionally register your server in the public server list that the
+@code{mumble} client shows on startup.
+You cannot register your server if you have set a @code{server-password},
+or set @code{allow-ping} to @code{#f}.
+
+It might take a few hours until it shows up in the public list.
+
+@item @code{file} (default: @code{#f})
+Optional alternative override for this configuration.
+@end table
+@end deftp
+
+@deftp {Data Type} murmur-public-registration-configuration
+Configuration for public registration of a murmur service.
+
+@table @asis
+@item @code{name}
+This is a display name for your server. Not to be confused with the hostname.
+
+@item @code{password}
+A password to identify your registration.
+Subsequent updates will need the same password. Don't lose your password.
+
+@item @code{url}
+This should be a @code{http://} or @code{https://} link to your web
+site.
+
+@item @code{hostname} (default: @code{#f})
+By default your server will be listed by its IP address.
+If it is set your server will be linked by this host name instead.
+@end table
+@end deftp
+
+
 
 @node Monitoring Services
 @subsubsection Monitoring Services

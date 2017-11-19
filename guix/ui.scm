@@ -26,6 +26,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix ui)
+  #:use-module (guix i18n)
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix store)
@@ -55,10 +56,8 @@
   #:use-module (texinfo)
   #:use-module (texinfo plain-text)
   #:use-module (texinfo string-utils)
-  #:export (G_
-            N_
-            P_
-            report-error
+  #:re-export (G_ N_ P_)                          ;backward compatibility
+  #:export (report-error
             leave
             make-user-module
             load*
@@ -111,26 +110,6 @@
 ;;;
 ;;; Code:
 
-(define %gettext-domain
-  ;; Text domain for strings used in the tools.
-  "guix")
-
-(define %package-text-domain
-  ;; Text domain for package synopses and descriptions.
-  "guix-packages")
-
-(define G_ (cut gettext <> %gettext-domain))
-(define N_ (cut ngettext <> <> <> %gettext-domain))
-
-(define (P_ msgid)
-  "Return the translation of the package description or synopsis MSGID."
-  ;; Descriptions/synopses might occasionally be empty strings, even if that
-  ;; is something we try to avoid.  Since (gettext "") can return a non-empty
-  ;; string, explicitly check for that case.
-  (if (string-null? msgid)
-      msgid
-      (gettext msgid %package-text-domain)))
-
 (define-syntax-rule (define-diagnostic name prefix)
   "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
 messages."
@@ -169,6 +148,18 @@ messages."
   (begin
     (report-error args ...)
     (exit 1)))
+
+(define (print-unbound-variable-error port key args default-printer)
+  ;; Print unbound variable errors more nicely, and in the right language.
+  (match args
+    ((proc message (variable) _ ...)
+     ;; We can always omit PROC because when it's useful (i.e., different from
+     ;; "module-lookup"), it gets displayed before.
+     (format port (G_ "~a: unbound variable") variable))
+    (_
+     (default-printer))))
+
+(set-exception-printer! 'unbound-variable print-unbound-variable-error)
 
 (define (make-user-module modules)
   "Return a new user module with the additional MODULES loaded."
@@ -250,6 +241,45 @@ messages."
              (else
               #t))))))
 
+(define (known-variable-definition variable)
+  "Search among the currently loaded modules one that defines a variable named
+VARIABLE and return it, or #f if none was found."
+  (define (module<? m1 m2)
+    (match (module-name m2)
+      (('gnu _ ...) #t)
+      (('guix _ ...)
+       (match (module-name m1)
+         (('gnu _ ...) #f)
+         (_ #t)))
+      (_ #f)))
+
+  (let loop ((modules (list (resolve-module '() #f #f #:ensure #f)))
+             (suggestions '()))
+    (match modules
+      (()
+       ;; Pick the "best" suggestion.
+       (match (sort suggestions module<?)
+         (() #f)
+         ((first _ ...) first)))
+      ((head tail ...)
+       (let ((next (append tail
+                           (hash-map->list (lambda (name module)
+                                             module)
+                                           (module-submodules head)))))
+         (match (module-local-variable head variable)
+           (#f (loop next suggestions))
+           (_
+            (match (module-name head)
+              (('gnu _ ...) head)                 ;must be that one
+              (_ (loop next (cons head suggestions)))))))))))
+
+(define* (display-hint message #:optional (port (current-error-port)))
+  "Display MESSAGE, a l10n message possibly containing Texinfo markup, to
+PORT."
+  (format port (G_ "hint: ~a~%")
+          (fill-paragraph (texi->plain-text message)
+                          (terminal-columns) 8)))
+
 (define* (report-load-error file args #:optional frame)
   "Report the failure to load FILE, a user-provided Scheme file.
 ARGS is the list of arguments received by the 'throw' handler."
@@ -270,12 +300,30 @@ ARGS is the list of arguments received by the 'throw' handler."
      (let ((loc (source-properties->location properties)))
        (format (current-error-port) (G_ "~a: error: ~a~%")
                (location->string loc) message)))
+    (('unbound-variable proc message (variable) _ ...)
+     (match args
+       ((key . args)
+        (print-exception (current-error-port) frame key args)))
+     (match (known-variable-definition variable)
+       (#f
+        (display-hint (G_ "Did you forget a @code{use-modules} form?")))
+       (module
+        (display-hint (format #f (G_ "Try adding @code{(use-modules ~a)}.")
+                              (module-name module))))))
     (('srfi-34 obj)
      (if (message-condition? obj)
-         (report-error (G_ "~a~%")
-                       (gettext (condition-message obj)
-                                %gettext-domain))
-         (report-error (G_ "exception thrown: ~s~%") obj)))
+         (if (error-location? obj)
+             (format (current-error-port)
+                     (G_ "~a: error: ~a~%")
+                     (location->string (error-location obj))
+                     (gettext (condition-message obj)
+                              %gettext-domain))
+             (report-error (G_ "~a~%")
+                           (gettext (condition-message obj)
+                                    %gettext-domain)))
+         (report-error (G_ "exception thrown: ~s~%") obj))
+     (when (fix-hint? obj)
+       (display-hint (condition-fix-hint obj))))
     ((error args ...)
      (report-error (G_ "failed to load '~a':~%") file)
      (apply display-error frame (current-error-port) args))))
@@ -538,6 +586,11 @@ interpreted."
 directories:~{ ~a~}~%")
                     (file-search-error-file-name c)
                     (file-search-error-search-path c)))
+            ((and (error-location? c) (message-condition? c))
+             (format (current-error-port)
+                     (G_ "~a: error: ~a~%")
+                     (location->string (error-location c))
+                     (gettext (condition-message c) %gettext-domain)))
             ((message-condition? c)
              ;; Normally '&message' error conditions have an i18n'd message.
              (leave (G_ "~a~%")
@@ -1068,9 +1121,14 @@ score, the more relevant OBJ is to REGEXPS."
 (define %package-metrics
   ;; Metrics used to compute the "relevance score" of a package against a set
   ;; of regexps.
-  `((,package-name . 3)
-    (,package-synopsis-string . 2)
-    (,package-description-string . 1)))
+  `((,package-name . 4)
+    (,package-synopsis-string . 3)
+    (,package-description-string . 2)
+    (,(lambda (type)
+        (match (and=> (package-location type) location-file)
+          ((? string? file) (basename file ".scm"))
+          (#f "")))
+     . 1)))
 
 (define (package-relevance package regexps)
   "Return a score denoting the relevance of PACKAGE for REGEXPS.  A score of

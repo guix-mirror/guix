@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2017 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,11 +29,13 @@
   #:use-module ((guix licenses) #:hide (freetype))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages fcitx)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages ibus)
@@ -42,6 +45,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:export (sdl-union))
@@ -94,7 +98,7 @@ joystick, and graphics hardware.")
 (define-public sdl2
   (package (inherit sdl)
     (name "sdl2")
-    (version "2.0.5")
+    (version "2.0.7")
     (source (origin
              (method url-fetch)
              (uri
@@ -102,7 +106,12 @@ joystick, and graphics hardware.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "11c75qj1qxmx67iwkvf9z4x69phk301pdn86zzr6jncnap7kh824"))))
+               "0pjdpxla5kh1w1b0shxrx97a116vyy31njxi0jhyvqhk8d6cfdgf"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sdl)
+       ((#:configure-flags flags)
+        `(append '("--disable-wayland-shared")
+                 ,flags))))
     (inputs
      ;; SDL2 needs to be built with ibus support otherwise some systems
      ;; experience a bug where input events are doubled.
@@ -111,7 +120,10 @@ joystick, and graphics hardware.")
      (append `(("dbus" ,dbus)
                ("fcitx" ,fcitx) ; helps with CJK input
                ("glib" ,glib)
-               ("ibus" ,ibus))
+               ("ibus" ,ibus)
+               ("libxkbcommon", libxkbcommon)
+               ("wayland", wayland)
+               ("wayland-protocols", wayland-protocols))
              (package-inputs sdl)))
     (license bsd-3)))
 

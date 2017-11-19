@@ -55,6 +55,7 @@
 
             %service-type-path
             fold-service-types
+            lookup-service-types
 
             service
             service?
@@ -175,17 +176,32 @@
   (make-parameter `((,%distro-root-directory . "gnu/services")
                     (,%distro-root-directory . "gnu/system"))))
 
+(define (all-service-modules)
+  "Return the default set of service modules."
+  (cons (resolve-interface '(gnu services))
+        (all-modules (%service-type-path))))
+
 (define* (fold-service-types proc seed
                              #:optional
-                             (modules (all-modules (%service-type-path))))
+                             (modules (all-service-modules)))
   "For each service type exported by one of MODULES, call (PROC RESULT).  SEED
 is used as the initial value of RESULT."
   (fold-module-public-variables (lambda (object result)
                                   (if (service-type? object)
                                       (proc object result)
                                       result))
-                                '()
+                                seed
                                 modules))
+
+(define lookup-service-types
+  (let ((table
+         (delay (fold-service-types (lambda (type result)
+                                      (vhash-consq (service-type-name type)
+                                                   type result))
+                                    vlist-null))))
+    (lambda (name)
+      "Return the list of services with the given NAME (a symbol)."
+      (vhash-foldq* cons '() name (force table)))))
 
 ;; Services of a given type.
 (define-record-type <service>

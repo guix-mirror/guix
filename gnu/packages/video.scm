@@ -101,6 +101,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages sdl)
@@ -713,6 +714,12 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 
          "--enable-runtime-cpudetect"
 
+         ;; The HTML pages take 7.2 MiB
+         "--disable-htmlpages"
+
+         ;; The static libraries are 23 MiB
+         "--disable-static"
+
          ;; Runtime cpu detection is not implemented on
          ;; MIPS, so we disable some features.
          "--disable-mips32r2"
@@ -1135,7 +1142,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.10.29")
+    (version "2017.11.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1143,7 +1150,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1yajwi2cr8j05j1rn61gs7yrr93nri4cq8n4zkb3w4a8413h7q4g"))))
+                "1s0c0jnil4rnymj2nzjjv75p4lmk4h67kvxvjv2azknhmax7gcc8"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2332,10 +2339,11 @@ MPEG-2, MPEG-4, DVD (VOB)...
        #:phases
        ;; build scripts not in root of archive
        (modify-phases %standard-phases
-         (add-before 'configure 'pre-configure
+         (add-after 'unpack 'change-to-build-dir
            (lambda _
-             (chdir "Project/GNU/CLI")))
-         (add-after 'unpack 'autogen
+             (chdir "Project/GNU/CLI")
+             #t))
+         (add-after 'change-to-build-dir 'autogen
            (lambda _
              (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://mediaarea.net/en/MediaInfo")

@@ -1,0 +1,13 @@
+Use 'uname -m', which in practice returns the processor architecture.
+
+--- psm-3.3/buildflags.mak~	2014-08-20 21:00:18.000000000 +0100
++++ psm-3.3/buildflags.mak	2017-10-22 12:02:12.855291447 +0100
+@@ -38,7 +38,7 @@
+ endif
+ 
+ export os ?= $(shell uname -s | tr '[A-Z]' '[a-z]')
+-export arch := $(shell uname -p | sed -e 's,\(i[456]86\|athlon$$\),i386,')
++export arch := $(shell uname -m | sed -e 's,\(i[456]86\|athlon$$\),i386,')
+ 
+ CC ?= gcc
+ 

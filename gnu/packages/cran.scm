@@ -52,14 +52,14 @@ colors are provided.")
 (define-public r-glue
   (package
     (name "r-glue")
-    (version "1.1.1")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "glue" version))
        (sha256
         (base32
-         "01awmqby7rwzhzr51m7d87wqibx7ggl6xair8fi3z3q1hkyyv7ih"))))
+         "0vi9y8ix95g6hjqdz9c9y4119apbdjcypdv0ag8cl6vaxqs5n9qr"))))
     (build-system r-build-system)
     (home-page "https://github.com/tidyverse/glue")
     (synopsis "Interpreted string literals")
@@ -539,14 +539,14 @@ plot networks.")
 (define-public r-proxy
   (package
     (name "r-proxy")
-    (version "0.4-17")
+    (version "0.4-19")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "proxy" version))
        (sha256
         (base32
-         "0bg1fn96qrj8whmnl7c3gv244ksm2ykxxsd0zrmw4lb6465pizl2"))))
+         "0ladwgi70jw2a3adgg2xadw8hz3mm6llsw428c1fcrl305sy49vb"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/proxy")
     (synopsis "Distance and similarity measures")
@@ -717,14 +717,14 @@ and S4 methods with inlined C, C++ or Fortran code supporting @code{.C} and
 (define-public r-bbmle
   (package
     (name "r-bbmle")
-    (version "1.0.19")
+    (version "1.0.20")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bbmle" version))
        (sha256
         (base32
-         "014h6mw16gv4acs2p78dy7lla7s428n633aybsb1mbi6250dg0p8"))))
+         "1xzij7swrrzl5ly8l3lw6awh486zcm00251dwqws1y23fbgyh3vc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
@@ -733,11 +733,11 @@ and S4 methods with inlined C, C++ or Fortran code supporting @code{.C} and
     (home-page "http://cran.r-project.org/web/packages/bbmle")
     (synopsis "Tools for General Maximum Likelihood Estimation")
     (description
-     "Methods and functions for fitting maximum likelihood models in R.  This
-package modifies and extends the @code{mle} classes in the @code{stats4}
-package.")
+     "This package provides methods and functions for fitting maximum
+likelihood models in R.  This package modifies and extends the @code{mle}
+classes in the @code{stats4} package.")
     ;; Any version of the GPL
-    (license (list license:gpl2 license:gpl3))))
+    (license license:gpl2+)))
 
 (define-public r-emdbook
   (package
@@ -1243,3 +1243,308 @@ X, and likewise for Y.  Pdist strictly computes distances across the two
 matrices, not within the same matrix, making computations significantly faster
 for certain use cases.")
     (license license:gpl3+)))
+
+(define-public r-ggrepel
+  (package
+    (name "r-ggrepel")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggrepel" version))
+       (sha256
+        (base32
+         "0g0qfm6g71rv27423c1x846ipilnj213knyzrcr09vrpxc87l618"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-rcpp" ,r-rcpp)
+       ("r-scales" ,r-scales)))
+    (home-page "http://github.com/slowkow/ggrepel")
+    (synopsis "Repulsive text and label geometries for ggplot2")
+    (description
+     "This package provides text and label geometries for ggplot2 that help to
+avoid overlapping text labels.  Labels repel away from each other and away
+from the data points.")
+    (license license:gpl3)))
+
+(define-public r-corrplot
+  (package
+    (name "r-corrplot")
+    (version "0.84")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "corrplot" version))
+       (sha256
+        (base32
+         "1k03qd8db7pwg1v318xapx5mpiypiz2n07qr19c4b45diri5xkhd"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/taiyun/corrplot")
+    (synopsis "Visualization of a correlation matrix")
+    (description
+     "This package provides a graphical display of a correlation matrix or
+general matrix.  It also contains some algorithms to do matrix reordering.  In
+addition, corrplot is good at details, including choosing color, text labels,
+color labels, layout, etc.")
+    ;; Any version of the GPL
+    (license license:gpl2+)))
+
+(define-public r-stringdist
+  (package
+    (name "r-stringdist")
+    (version "0.9.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "stringdist" version))
+       (sha256
+        (base32
+         "0j5b7hr53nr9xq44famkpwzi4khix93ffani5pwldqkf8bpdvhci"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/markvanderloo/stringdist")
+    (synopsis "Approximate string matching and string distance functions")
+    (description
+     "This package implements an approximate string matching version of R's
+native @code{match} function.  It can calculate various string distances based
+on edits (Damerau-Levenshtein, Hamming, Levenshtein, optimal sting alignment),
+qgrams (q- gram, cosine, jaccard distance) or heuristic metrics (Jaro,
+Jaro-Winkler).  An implementation of soundex is provided as well.  Distances
+can be computed between character vectors while taking proper care of encoding
+or between integer vectors representing generic sequences.")
+    (license license:gpl3+)))
+
+(define-public r-mice
+  (package
+    (name "r-mice")
+    (version "2.46.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mice" version))
+       (sha256
+        (base32
+         "1gjvlk67zvgipfczsca8zqk97vg3sivv82hblsdwp14s7smhjcax"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-nnet" ,r-nnet)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rpart" ,r-rpart)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/mice/")
+    (synopsis "Multivariate imputation by chained equations")
+    (description
+     "Multiple imputation using @dfn{Fully Conditional Specification} (FCS)
+implemented by the MICE algorithm as described in @url{Van Buuren and
+Groothuis-Oudshoorn (2011), http://doi.org/10.18637/jss.v045.i03}.  Each
+variable has its own imputation model.  Built-in imputation models are
+provided for continuous data (predictive mean matching, normal), binary
+data (logistic regression), unordered categorical data (polytomous logistic
+regression) and ordered categorical data (proportional odds).  MICE can also
+impute continuous two-level data (normal model, pan, second-level variables).
+Passive imputation can be used to maintain consistency between variables.
+Various diagnostic plots are available to inspect the quality of the
+imputations.")
+    ;; Any of these two versions.
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-hardyweinberg
+  (package
+    (name "r-hardyweinberg")
+    (version "1.5.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "HardyWeinberg" version))
+       (sha256
+        (base32
+         "0xbcchmzii0jv0ygr91n72r39j1axraxd2i607b56v4yd5d8sy4k"))))
+    (properties `((upstream-name . "HardyWeinberg")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mice" ,r-mice)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/package=HardyWeinberg")
+    (synopsis "Statistical tests and graphics for Hardy-Weinberg equilibrium")
+    (description
+     "This package contains tools for exploring Hardy-Weinberg equilibrium for
+diallelic genetic marker data.  All classical tests (chi-square, exact,
+likelihood-ratio and permutation tests) for Hardy-Weinberg equilibrium are
+included in the package, as well as functions for power computation and for
+the simulation of marker data under equilibrium and disequilibrium.  Routines
+for dealing with markers on the X-chromosome are included.  Functions for
+testing equilibrium in the presence of missing data by using multiple
+imputation are also provided.  Implements several graphics for exploring the
+equilibrium status of a large set of diallelic markers: ternary plots with
+acceptance regions, log-ratio plots and Q-Q plots.")
+    (license license:gpl2+)))
+
+(define-public r-sm
+  (package
+    (name "r-sm")
+    (version "2.2-5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sm" version))
+       (sha256
+        (base32
+         "0hnq5s2fv94gaj0nyqc1vjdjd64vsp9z23nqa8hxvjcaf996rwj9"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://www.stats.gla.ac.uk/~adrian/sm/")
+    (synopsis "Smoothing methods for nonparametric regression and density estimation")
+    (description
+     "This is software accompanying the book 'Applied Smoothing Techniques for
+Data Analysis---The Kernel Approach with S-Plus Illustrations', Oxford
+University Press.  It provides smoothing methods for nonparametric regression
+and density estimation")
+    (license license:gpl2+)))
+
+(define-public r-vioplot
+  (package
+    (name "r-vioplot")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "vioplot" version))
+       (sha256
+        (base32
+         "16wkb26kv6qr34hv5zgqmgq6zzgysg9i78pvy2c097lr60v087v0"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-sm" ,r-sm)))
+    (home-page "http://wsopuppenkiste.wiso.uni-goettingen.de/~dadler")
+    (synopsis "Violin plot")
+    (description
+     "This package provides a violin plot, which is a combination of a box
+plot and a kernel density plot.")
+    (license license:bsd-3)))
+
+(define-public r-rsofia
+  (package
+    (name "r-rsofia")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              ;; This package has been removed from CRAN, so we can
+              ;; only fetch it from the archives.
+              (uri (string-append "https://cran.r-project.org/src/"
+                                  "contrib/Archive/RSofia/RSofia_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0q931y9rcf6slb0s2lsxhgqrzy4yqwh8hb1124nxg0bjbxvjbihn"))))
+    (properties `((upstream-name . "RSofia")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/src/contrib/Archive/RSofia")
+    (synopsis "Port of sofia-ml to R")
+    (description "This package is a port of sofia-ml to R.  Sofia-ml is a
+suite of fast incremental algorithms for machine learning that can be used for
+training models for classification or ranking.")
+    (license license:asl2.0)))
+
+(define-public r-xts
+  (package
+    (name "r-xts")
+    (version "0.10-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xts" version))
+       (sha256
+        (base32
+         "1w7lxy3hbf005fvpzbwiznj8jbxi07s4189vbgxisd35l9a4v6q4"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-zoo" ,r-zoo)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://github.com/joshuaulrich/xts")
+    (synopsis "Extensible time series")
+    (description
+     "This package provides for uniform handling of R's different time-based
+data classes by extending @code{zoo}, maximizing native format information
+preservation and allowing for user-level customization and extension, while
+simplifying cross-class interoperability.")
+    (license license:gpl2+)))
+
+(define-public r-performanceanalytics
+  (package
+    (name "r-performanceanalytics")
+    (version "1.4.3541")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "PerformanceAnalytics" version))
+       (sha256
+        (base32
+         "1czchsccsbdfjw743j6rm101q2q01pggyl8zmlva213pwm86zb3v"))))
+    (properties
+     `((upstream-name . "PerformanceAnalytics")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-xts" ,r-xts)
+       ("r-zoo" ,r-zoo)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://r-forge.r-project.org/projects/returnanalytics/")
+    (synopsis "Econometric tools for performance and risk analysis")
+    (description "This is a collection of econometric functions for
+performance and risk analysis.  This package aims to aid practitioners and
+researchers in utilizing the latest research in analysis of non-normal return
+streams.  In general, it is most tested on return (rather than price) data on
+a regular scale, but most functions will work with irregular return data as
+well, and increasing numbers of functions will work with P&L or price data
+where possible.")
+    ;; Either version may be picked.
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-laeken
+  (package
+    (name "r-laeken")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "laeken" version))
+       (sha256
+        (base32
+         "1rhkv1kk508pwln1d325iq4fink2ncssps0ypxi52j9d7wk78la6"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-boot" ,r-boot)
+       ("r-mass" ,r-mass)))
+    (home-page "http://cran.r-project.org/web/packages/laeken/")
+    (synopsis "Estimation of indicators on social exclusion and poverty")
+    (description "This package provides tools for the estimation of indicators
+on social exclusion and poverty, as well as an implementation of Pareto tail
+modeling for empirical income distributions.")
+    (license license:gpl2+)))
+
+(define-public r-vcd
+  (package
+    (name "r-vcd")
+    (version "1.4-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "vcd" version))
+       (sha256
+        (base32
+         "05azric2w8mrsdk7y0484cjygcgcmbp96q2v500wvn91fj98kkhp"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-colorspace" ,r-colorspace)
+       ("r-lmtest" ,r-lmtest)
+       ("r-mass" ,r-mass)))
+    (home-page "http://cran.r-project.org/web/packages/vcd/")
+    (synopsis "Visualizing categorical data")
+    (description "This package provides visualization techniques, data sets,
+summary and inference procedures aimed particularly at categorical data.
+Special emphasis is given to highly extensible grid graphics.  The package was
+originally inspired by the book \"Visualizing Categorical Data\" by Michael
+Friendly and is now the main support package for a new book, \"Discrete Data
+Analysis with R\" by Michael Friendly and David Meyer (2015).")
+    (license license:gpl2)))

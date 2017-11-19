@@ -39,6 +39,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -54,6 +55,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages suckless)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages version-control)
@@ -344,6 +346,20 @@ any X11 window.")
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
+         (add-before 'install 'patch-passmenu-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "contrib/dmenu/passmenu"
+               (("dmenu") (string-append (assoc-ref inputs "dmenu")
+                                         "/bin/dmenu"))
+               (("xdotool") (string-append (assoc-ref inputs "xdotool")
+                                           "/bin/xdotool")))
+             #t))
+         (add-after 'install 'install-passmenu
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-file "contrib/dmenu/passmenu"
+                          (string-append out "/bin/passmenu"))
+               #t)))
          (add-after 'install 'wrap-path
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -369,14 +385,16 @@ any X11 window.")
        #:parallel-tests? #f
        #:test-target "test"))
     (inputs
-     `(("getopt" ,util-linux)
+     `(("dmenu" ,dmenu)
+       ("getopt" ,util-linux)
        ("git" ,git)
        ("gnupg" ,gnupg)
        ("qrencode" ,qrencode)
        ("sed" ,sed)
        ("tree" ,tree)
        ("which" ,which)
-       ("xclip" ,xclip)))
+       ("xclip" ,xclip)
+       ("xdotool" ,xdotool)))
     (home-page "http://www.passwordstore.org/")
     (synopsis "Encrypted password manager")
     (description "Password-store is a password manager which uses GnuPG to

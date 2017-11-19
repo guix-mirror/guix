@@ -1042,12 +1042,12 @@ of use.")
        ("qtbase" ,qtbase)
        ("sdl" ,sdl2)
        ("unshield" ,unshield)))
-    (synopsis "Free software re-implementation of the RPG Morrowind engine")
+    (synopsis "Re-implementation of the RPG Morrowind engine")
     (description
-     "OpenMW is a free, open source and modern engine which reimplements and
-extends the one that runs the 2002 open-world RPG Morrowind.  The engine comes
-with its own editor, called OpenMW-CS which allows the user to edit or create
-their own original games.")
+     "OpenMW is a game engine which reimplements and extends the one that runs
+the 2002 open-world RPG Morrowind.  The engine comes with its own editor,
+called OpenMW-CS which allows the user to edit or create their own original
+games.")
     (home-page "https://openmw.org")
     (license license:gpl3)))
 

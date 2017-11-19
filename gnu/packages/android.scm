@@ -29,6 +29,7 @@
   #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ssh)

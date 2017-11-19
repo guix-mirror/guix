@@ -93,6 +93,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio) ;libsndfile
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
@@ -1407,6 +1408,7 @@ is subjective.")
     (build-system ant-build-system)
     (arguments
      `(#:build-target "build"
+       #:jdk ,icedtea-8
        #:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
@@ -2185,21 +2187,24 @@ detailed track info including timbre, pitch, rhythm and loudness information.
 (define-public python-pylast
   (package
     (name "python-pylast")
-    (version "1.9.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pylast" version))
               (sha256
                (base32
-                "190c6sicc80v21wbbwbq771nqmxw4r6aqmxs22ndj177rc2l275f"))))
+                "0r9h7g8i8l2mgqjwkda3v6prfbkb2im5kap1az9ppmhjm9i4jkcf"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Requires unpackaged python-flaky.
+    ;; Tests require network access.  See
+    ;; https://github.com/pylast/pylast/issues/105
+    (arguments '(#:tests? #f))
     (native-inputs
      `(("python-coverage" ,python-coverage)
+       ("python-pycodestyle" ,python-pycodestyle)
        ("python-mock" ,python-mock)
        ("python-pep8" ,python-pep8)
        ("python-pytest" ,python-pytest)
+       ("python-flaky" ,python-flaky)
        ("python-pyflakes" ,python-pyflakes)
        ("python-pyyaml" ,python-pyyaml)))
     (propagated-inputs
@@ -2922,6 +2927,36 @@ develop custom plugins for use in other applications without programming.")
     (description "QMidiArp is an advanced MIDI arpeggiator, programmable step
 sequencer and LFO.  It can hold any number of arpeggiator, sequencer, or LFO
 modules running in parallel.")
+    (license license:gpl2+)))
+
+(define-public qmidiroute
+  (package
+    (name "qmidiroute")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/alsamodular/QMidiRoute/"
+                                  version "/qmidiroute-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "19v1ppbglgl3z9v7xdqc0k33w71cqq8a7d6ihvfs7iz77dygrih9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-qt5"
+             "CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://alsamodular.sourceforge.net/")
+    (synopsis "MIDI event router and filter")
+    (description "QMidiRoute is a MIDI event router and filter.  MIDI note,
+control change, program change and pitch bend events are logged, and can be
+filtered, redirected and transformed into other events according to MIDI maps
+defined as tabs in the main control surface.")
     (license license:gpl2+)))
 
 (define-public seq24

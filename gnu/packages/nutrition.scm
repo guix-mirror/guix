@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages image)

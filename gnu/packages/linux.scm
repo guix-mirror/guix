@@ -18,7 +18,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@no-reply.pragmatique.xyz>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
@@ -140,7 +140,7 @@ defconfig.  Return the appropiate make target if applicable, otherwise return
 (define (linux-libre-urls version)
   "Return a list of URLs for Linux-Libre VERSION."
   (list (string-append
-         "http://linux-libre.fsfla.org/pub/linux-libre/releases/"
+         "https://linux-libre.fsfla.org/pub/linux-libre/releases/"
          version "-gnu/linux-libre-" version "-gnu.tar.xz")
 
         ;; XXX: Work around <http://bugs.gnu.org/14851>.
@@ -319,7 +319,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
              (setenv "EXTRA_VERSION" ,extra-version)
 
              (let ((build  (assoc-ref %standard-phases 'build))
-                   (config (assoc-ref inputs "kconfig")))
+                   (config (assoc-ref (or native-inputs inputs) "kconfig")))
 
                ;; Use a custom kernel configuration file or a default
                ;; configuration file.
@@ -367,31 +367,36 @@ It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
+(define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
 
-(define %linux-libre-version "4.13.10")
-(define %linux-libre-hash "0y1p5b1rxpbr3apvqqv589qwzfyzjpdrzysfj4h17s0k4gy6c5p8")
+(define %linux-libre-version "4.14")
+(define %linux-libre-hash "0y42cn0lq08njvsfg3b2xyziaga268aj2lx034k40wilha6hkw3h")
+
+;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
+;; supports qemu "virt" machine and possibly a large number of ARM boards.
+;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
-                    %intel-compatible-systems
+                    %linux-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.59"
-                    "0z8hq8a6ic38xh33idzl0k0yi4isgd7ncl2g1d6mzf9ixw5krhvc"
+  (make-linux-libre "4.9.62"
+                    "00brapsvchkv2q4p6spvjk92524mfcsj5aq5jcjvqhx50fn71y1w"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.95"
-                    "1k2lp1jgbm5xkl3qf0cqmp07hlv03jaws68l3irid95j99prsw0b"
+  (make-linux-libre "4.4.98"
+                    "1n34bwz6c122byjyfz6z916v7lx4pgsys0a2kq2zmxcfs9kv60xs"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.45"
-                    "1ifpyyq86x0imjdfb9vm7m8dbnkw82a7bqczx166zrssc1fc677l"
+  (make-linux-libre "4.1.46"
+                    "0bg1vplfksgsnxqdxdp2n0b5lv2j299nv52s8hpja5ckp396jkhk"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -401,6 +406,13 @@ It has been modified to remove all non-free binary blobs.")
                     '("armhf-linux")
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
+
+(define-public linux-libre-arm-omap2plus
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
+                    '("armhf-linux")
+                    #:defconfig "omap2plus_defconfig"
+                    #:extra-version "arm-omap2plus"))
 
 
 ;;;
@@ -863,14 +875,14 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.19")
+    (version "4.20")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/strace/strace/" version
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "10bjh2mrkvx41fk60b2iqv5b5k4r7a3qdsx04iyg904jqb3fp4vw"))))
+               "08y5b07vb8jc7ak5xc3x2kx1ly6xiwv1gnppcqjs81kks66i9wsv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1134,7 +1146,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.13.0")
+    (version "4.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1142,7 +1154,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0l2w84cwr54gaw3cbxijf614l76hx8mgcz57v81rwl68z3nq3yww"))))
+                "0rq0n7yxb0hmk0s6wx5awzjgf7ikjbibd0a5ix20ldfcmxlc0fnl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -1999,14 +2011,14 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.02.174")
+    (version "2.02.176")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
                                   version ".tgz"))
               (sha256
                (base32
-                "12qa2yfxnbjdx7kgxqqaglni50b46l5cp1rwjb24mccc830cwvpv"))
+                "0wx4rvy4frdmb66znh2xms2j2n06sm361ki6l5ks4y1ciii87kny"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -4018,7 +4030,7 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
@@ -4026,7 +4038,7 @@ re-use code and to avoid re-inventing the wheel.")
                             "libnftnl-" version ".tar.bz2"))
         (sha256
          (base32
-          "10irjrylcfkbp11617yr19vpfhgl54w0kw02jhj0i1abqv5nxdlv"))))
+          "0f10cfiyl4c0f8k3brxfrw28x7a6qvrakaslg4jgqncwxycxggg6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -4043,7 +4055,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.7")
+    (version "0.8")
     (source
      (origin
        (method url-fetch)
@@ -4051,7 +4063,7 @@ used by nftables.")
                            "/files/nftables-" version ".tar.bz2"))
        (sha256
         (base32
-         "0hzdqigdx4i6jbpxbdyq4zy4p4waqn8l6vvz7685ikh1v0wr4qzy"))))
+         "16iq9x0qxikdhp1nan500rk33ycqddl1k57876m4dfv3n7kqhnrz"))))
     (build-system gnu-build-system)
     (inputs `(("bison", bison)
               ("flex", flex)
@@ -4297,7 +4309,10 @@ comparing system environments.")
         (base32 "19l2m1frna1l765z4j7wl8hp4rb9wrh0hy5496685hd183hmy5pv"))))
     (build-system gnu-build-system)
     (inputs `(("rdma-core" ,rdma-core)
-              ;; TODO: add psm, psm(2).
+              ,@(match (%current-system)
+                       ((member (package-supported-systems psm))
+                        `(("psm" ,psm)))
+                       (_ `()))
               ("libnl" ,libnl)))
     (home-page "https://ofiwg.github.io/libfabric/")
     (synopsis "Open Fabric Interfaces")
@@ -4312,4 +4327,48 @@ Libfabric is a core component of OFI.  It is the library that defines and
 exports the user-space API of OFI, and is typically the only software that
 applications deal with directly.  It works in conjunction with provider
 libraries, which are often integrated directly into libfabric.")
+    (license (list license:bsd-2 license:gpl2)))) ;dual
+
+(define-public psm
+  (package
+    (name "psm")
+    (version "3.3.20170428")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url "http://github.com/01org/psm")
+                           (commit "604758e76dc31e68d1de736ccf5ddf16cb22355b")))
+       (file-name (string-append "psm-" version ".tar.gz"))
+       (sha256
+        (base32 "0nsb325dmhn5ia3d2cnksqr0gdvrrx2hmvlylfgvmaqdpq76zm85"))
+       (patches (search-patches
+                 "psm-arch.patch"     ; uname -p returns "unknown" on Debian 9
+                 "psm-ldflags.patch"  ; build shared lib with LDFLAGS
+                 "psm-repro.patch"))))  ; reproducibility
+    (build-system gnu-build-system)
+    (inputs `(("libuuid" ,util-linux)))
+    (arguments
+     '(#:make-flags `("PSM_USE_SYS_UUID=1" "CC=gcc" "WERROR="
+                      ,(string-append "INSTALL_PREFIX=" %output)
+                      ,(string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'unpack 'patch-/usr/include
+                    (lambda _
+                      (substitute* "Makefile"
+                        (("\\$\\{DESTDIR}/usr/include")
+                         (string-append %output "/include")))
+                      (substitute* "Makefile"
+                        (("/lib64") "/lib"))
+                      #t)))))
+    (home-page "https://github.com/01org/psm")
+    (synopsis "Intel Performance Scaled Messaging (PSM) Libraries")
+    (description
+     "The PSM Messaging API, or PSM API, is Intel's low-level user-level
+communications interface for the True Scale family of products.  PSM users are
+enabled with mechanisms necessary to implement higher level communications
+interfaces in parallel environments.")
+    ;; Only Intel-compatable processors are supported.
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (license (list license:bsd-2 license:gpl2)))) ;dual

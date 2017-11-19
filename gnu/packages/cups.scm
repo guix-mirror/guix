@@ -599,3 +599,39 @@ printer/driver specific, but spooler-independent PPD file.")
 protocols, which cover printers made by Konica, HP (LaserJet), Oki, Samsung,
 and more.  See @file{README} for details.")
     (license license:gpl2+)))
+
+(define-public escpr
+  (package
+    (name "escpr")
+    (version "1.6.17")
+    ;; XXX: This currently works.  But it will break as soon as a newer
+    ;; version is available since the URLs for older versions are not
+    ;; preserved.  An alternative source will be added as soon as
+    ;; available.
+    (source (origin
+              (method url-fetch)
+              ;; The uri has to be chopped up in order to satisfy guix lint.
+              (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/06/66/09/"
+                                  "4ac2bf69bb1ddf4a9ad525596615cbb40fe4dad5/"
+                                  "epson-inkjet-printer-escpr-1.6.17-1lsb3.2.tar.gz"))
+              (sha256
+               (base32
+                "0m6v1wdavw4r25jfywqchsx0v9ss1l5fr8vq9d0d8cmjnz8mqblv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       `(,(string-append "--prefix="
+                         (assoc-ref %outputs "out"))
+         ,(string-append "--with-cupsfilterdir="
+                         (assoc-ref %outputs "out") "/lib/cups/filter")
+         ,(string-append "--with-cupsppddir="
+                         (assoc-ref %outputs "out") "/share/ppd"))))
+    (inputs `(("cups" ,cups-minimal)))
+    (synopsis "ESC/P-R printer driver")
+    (description
+     "This package provides a filter for the Common UNIX Printing
+System (CUPS).  It offers high-quality printing with Seiko Epson color ink jet
+printers.  It can only be used with printers that support the Epson ESC/P-R
+language.")
+    (home-page "http://download.ebz.epson.net/dsc/search/01/search")
+    (license license:gpl2+)))

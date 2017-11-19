@@ -78,7 +78,7 @@
        #:strip-binaries? #f))
     (home-page "http://mingw.org")
     (synopsis "Minimalist GNU for Windows")
-    (description "MinGW provides a complete Open Source programming tool set
-which is suitable for the development of native MS-Windows applications, and
-which does not depend on any 3rd-party C-Runtime dlls.")
+    (description "MinGW provides a complete programming tool set which is
+suitable for the development of native MS-Windows applications, and which does
+not depend on any 3rd-party C-Runtime dlls.")
     (license license:fdl1.3+)))

@@ -21,7 +21,7 @@
   #:use-module (git object)
   #:use-module (guix base32)
   #:use-module (guix hash)
-  #:use-module (guix build utils)
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (rnrs bytevectors)
@@ -55,7 +55,13 @@ make sure no empty directory is left behind."
   (with-throw-handler #t
     (lambda ()
       (mkdir-p directory)
-      (clone url directory))
+
+      ;; Note: Explicitly pass options to work around the invalid default
+      ;; value in Guile-Git: <https://bugs.gnu.org/29238>.
+      (if (module-defined? (resolve-interface '(git))
+                           'clone-init-options)
+          (clone url directory (clone-init-options))
+          (clone url directory)))
     (lambda _
       (false-if-exception (rmdir directory)))))
 

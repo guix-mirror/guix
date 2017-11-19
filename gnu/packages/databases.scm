@@ -1,27 +1,35 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2012, 2014, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
+;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,6 +64,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages time)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages language)
@@ -66,6 +75,7 @@
   #:use-module (gnu packages parallel)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
@@ -73,6 +83,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages statistics)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
@@ -80,11 +91,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system r)
   #:use-module (guix utils)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
@@ -607,14 +620,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.0")
+    (version "10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1lbzwpmdxmk5bh0ix0rn72qbd52dq5cb55nzajscb0bvwa95abvi"))))
+                "04z7lm4h94625vbncwv98svycqr942n3q47ailqaczkszqjlxjrw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-uuid=e2fs")
@@ -652,14 +665,14 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.5")
+    (version "9.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0k3ls2x182jz6djjiqj9kycddabdl2gk1y1ajq1vipnxwfki5nh6"))))))
+                "0m417h30s18rwa7yzkqqcdb22ifpcda2fpg2cyx8bxvjp3ydz71r"))))))
 
 (define-public qdbm
   (package
@@ -1370,14 +1383,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "4.0.1")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "14bm8lkhylc93r4dgl7kkzzpw2xq7gr6w6h80n3jazqnx5mcsj90"))))
+                "04s8cgvwjj1979s3hg8zkwc9pyn3jkjpz5zidp87kfcipifr385i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail
@@ -1491,6 +1504,55 @@ trees (LSM), for sustained throughput under random insert workloads.")
     (license license:gpl3) ; or GPL-2
     ;; configure.ac: WiredTiger requires a 64-bit build.
     (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))))
+
+(define-public guile-wiredtiger
+  (package
+    (name "guile-wiredtiger")
+    (version "20171113.6cbc51da")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://framagit.org/a-guile-mind/guile-wiredtiger.git")
+                    (commit "6cbc51dab95d28fe31ae025fbdd88f3ecbf2111b")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0x3qwpgch5pg0k21kc792h4y6b36a8xd1zkfq8ar2l2mqmpzkzyd"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:configure-flags
+       (list (string-append "--with-libwiredtiger-prefix="
+                            (assoc-ref %build-inputs "wiredtiger")))
+       #:make-flags '("GUILE_AUTO_COMPILE=0")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "sh" "bootstrap"))))
+         (add-before 'bootstrap 'remove-bundled-dependencies
+           (lambda _
+             ;; TODO: Remove microkanren.scm when we have a separate package
+             ;; for it.
+             (delete-file "htmlprag.scm")
+             (substitute* "Makefile.am"
+               (("htmlprag\\.scm") ""))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("wiredtiger" ,wiredtiger)
+       ("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("guile-lib" ,guile-lib)))                 ;for (htmlprag)
+    (synopsis "Wired Tiger bindings for GNU Guile")
+    (description
+     "This package provides Guile bindings to the WiredTiger ``NoSQL''
+database.")
+    (home-page "https://framagit.org/a-guile-mind/guile-wiredtiger")
+    (license license:gpl3+)))
 
 (define-public perl-db-file
  (package
@@ -1866,3 +1928,578 @@ and web services platform functionality.")
     ;; configure: error: ... can only be build on 64bit platforms
     (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))
     (license license:gpl2)))
+
+(define-public r-rmysql
+  (package
+    (name "r-rmysql")
+    (version "0.10.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RMySQL" version))
+       (sha256
+        (base32
+         "1j0vr2l4s02cg2hzgr3pla96pjj4h85sxw28lidy58rg5awnsf82"))))
+    (properties `((upstream-name . "RMySQL")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("mariadb" ,mariadb)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-dbi" ,r-dbi)))
+    (home-page "https://github.com/r-dbi/RMySQL")
+    (synopsis "Database interface and MySQL driver for R")
+    (description
+     "This package provides a DBI interface to MySQL / MariaDB.  The RMySQL
+package contains an old implementation based on legacy code from S-PLUS which
+is being phased out.  A modern MySQL client based on Rcpp is available from
+the RMariaDB package.")
+    (license license:gpl2)))
+
+(define-public python-ccm
+  (package
+    (name "python-ccm")
+    (version "2.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ccm" version))
+       (sha256
+        (base32
+         "177dfxsmk3k4cih6fh6v8d91bh4nqx7ns6pc07w7m7i3cvdx3c8n"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyyaml" ,python-pyyaml)
+       ;; Not listed in setup.py, but used in ccmlib/node.py for full
+       ;; functionality
+       ("python-psutil" ,python-psutil)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/pcmanus/ccm")
+    (synopsis "Cassandra Cluster Manager for Apache Cassandra clusters on
+localhost")
+    (description "Cassandra Cluster Manager is a development tool for testing
+local Cassandra clusters. It creates, launches and removes Cassandra clusters
+on localhost.")
+    (license license:asl2.0)))
+
+(define-public python2-ccm
+  (package-with-python2 python-ccm))
+
+(define-public python2-pysqlite
+  (package
+    (name "python2-pysqlite")
+    (version "2.8.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "pysqlite" version))
+      (sha256
+       (base32
+        "1424gwq9sil2ffmnizk60q36vydkv8rxs6m7xs987kz8cdc37lqp"))))
+    (build-system python-build-system)
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (arguments
+     `(#:python ,python-2 ; incompatible with Python 3
+       #:tests? #f)) ; no test target
+    (home-page "https://github.com/ghaering/pysqlite")
+    (synopsis "SQLite bindings for Python")
+    (description
+     "Pysqlite provides SQLite bindings for Python that comply to the
+Database API 2.0T.")
+    (license license:zlib)))
+
+(define-public python-sqlalchemy
+  (package
+    (name "python-sqlalchemy")
+    (version "1.0.12")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/S/"
+                          "SQLAlchemy/SQLAlchemy-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1l8qclhd0s90w3pvwhi5mjxdwr5j7gw7cjka2fx6f2vqmq7f4yb6"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython) ;for c extensions
+       ("python-pytest" ,python-pytest)
+       ("python-mock"   ,python-mock))) ;for tests
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero? (system* "py.test")))))))
+    (home-page "http://www.sqlalchemy.org")
+    (synopsis "Database abstraction library")
+    (description
+     "SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that
+gives application developers the full power and flexibility of SQL.  It
+provides a full suite of well known enterprise-level persistence patterns,
+designed for efficient and high-performing database access, adapted into a
+simple and Pythonic domain language.")
+    (license license:x11)))
+
+(define-public python2-sqlalchemy
+  (package-with-python2 python-sqlalchemy))
+
+(define-public python-sqlalchemy-utils
+  (package
+    (name "python-sqlalchemy-utils")
+    (version "0.32.13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "SQLAlchemy-Utils" version))
+        (sha256
+         (base32
+          "0vsib7gidjamzsz6w4s5pdhxzxsrkghjnm4sqwk94igjrl3i5ixj"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; FIXME: Many tests require a running database server.
+       ;; #:phases
+       ;; (modify-phases %standard-phases
+       ;;   (replace 'check
+       ;;     (lambda _
+       ;;       (zero? (system* "py.test" "sqlalchemy_utils" "tests")))))
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (native-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-flexmock" ,python-flexmock)
+       ("python-psycopg2" ,python-psycopg2)
+       ("python-pytest" ,python-pytest)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://github.com/kvesteri/sqlalchemy-utils")
+    (synopsis "Various utility functions for SQLAlchemy")
+    (description
+     "SQLAlchemy-utils provides various utility functions and custom data types
+for SQLAlchemy.  SQLAlchemy is an SQL database abstraction library for Python.
+
+You might also want to install the following optional dependencies:
+@enumerate
+@item @code{python-passlib}
+@item @code{python-babel}
+@item @code{python-cryptography}
+@item @code{python-pytz}
+@item @code{python-psycopg2}
+@item @code{python-furl}
+@item @code{python-flask-babel}
+@end enumerate
+")
+    (license license:bsd-3)))
+
+(define-public python2-sqlalchemy-utils
+  (package-with-python2 python-sqlalchemy-utils))
+
+(define-public python-alembic
+  (package
+    (name "python-alembic")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "alembic" version))
+       (sha256
+        (base32
+         "01gx2syqbaxh4hr9pf7pxhlb6p36qaf99140dy19lsx1paxb9p4b"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-mako" ,python-mako)
+       ("python-editor" ,python-editor)))
+    (home-page "http://bitbucket.org/zzzeek/alembic")
+    (synopsis
+     "Database migration tool for SQLAlchemy")
+    (description
+     "Alembic is a lightweight database migration tool for usage with the
+SQLAlchemy Database Toolkit for Python.")
+    (license license:expat)))
+
+(define-public python2-alembic
+  (package-with-python2 python-alembic))
+
+(define-public python-pickleshare
+  (package
+    (name "python-pickleshare")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/p/"
+                           "pickleshare/pickleshare-" version ".tar.gz"))
+       (sha256
+        (base32 "11ljr90j3p6qswdrbl7p4cjb2i93f6vn0vx9anzpshsx0d2mggn0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pathpy" ,python-pathpy)))
+    (home-page "https://github.com/vivainio/pickleshare")
+    (synopsis "Tiny key value database with concurrency support")
+    (description
+     "PickleShare is a small ‘shelve’-like datastore with concurrency support.
+Like shelve, a PickleShareDB object acts like a normal dictionary.  Unlike
+shelve, many processes can access the database simultaneously.  Changing a
+value in database is immediately visible to other processes accessing the same
+database.  Concurrency is possible because the values are stored in separate
+files.  Hence the “database” is a directory where all files are governed by
+PickleShare.")
+    (license license:expat)))
+
+(define-public python2-pickleshare
+  (package-with-python2 python-pickleshare))
+
+(define-public python-apsw
+  (package
+    (name "python-apsw")
+    (version "3.20.1-r1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/rogerbinns/apsw/archive/"
+                            version ".tar.gz"))
+        (sha256
+          (base32
+           "00ai7m2pqi26qaflhz314d8k5i3syw7xzr145fhfl0crhyh6adz2"))))
+    (build-system python-build-system)
+    (inputs
+      `(("sqlite" ,sqlite)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (zero?
+              (system* "python" "setup.py" "build" "--enable-all-extensions"))))
+         (add-after 'build 'build-test-helper
+           (lambda _
+             (zero?
+              (system
+               (string-append "gcc -fPIC -shared -o ./testextension.sqlext "
+                              "-I. -Isqlite3 src/testextension.c") ))))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (zero? (system* "python" "setup.py" "test")))))))
+    (home-page "https://github.com/rogerbinns/apsw/")
+    (synopsis "Another Python SQLite Wrapper")
+    (description "APSW is a Python wrapper for the SQLite
+embedded relational database engine.  In contrast to other wrappers such as
+pysqlite it focuses on being a minimal layer over SQLite attempting just to
+translate the complete SQLite API into Python.")
+    (license license:zlib)))
+
+(define-public python2-apsw
+  (package-with-python2 python-apsw))
+
+(define-public python2-neo4j-driver
+  (package
+    (name "python2-neo4j-driver")
+    ;; NOTE: When upgrading to 1.5.0, please add a python3 variant.
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "neo4j-driver" version))
+              (sha256
+               (base32
+                "011r1vh182p8mm83d8dz9rfnc3l7rf7fd00cyrbyfzi71jmc4g98"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://neo4j.com/developer/python/")
+    (synopsis "Neo4j driver code written in Python")
+    (description "This package provides the Neo4j Python driver that connects
+to the database using Neo4j's binary protocol.  It aims to be minimal, while
+being idiomatic to Python.")
+    (license license:asl2.0)))
+
+(define-public python2-py2neo
+  (package
+    (name "python2-py2neo")
+    (version "3.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "py2neo" version))
+              (sha256
+               (base32
+                "1f1q95vqcvlc3nsc33p841swnjdcjazddlq2dzi3qfnjqjrajxw1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "http://py2neo.org")
+    (synopsis "Library and toolkit for working with Neo4j in Python")
+    (description "This package provides a client library and toolkit for
+working with Neo4j from within Python applications and from the command
+line.  The core library has no external dependencies and has been carefully
+designed to be easy and intuitive to use.")
+    (license license:asl2.0)))
+
+(define-public python-psycopg2
+  (package
+    (name "python-psycopg2")
+    (version "2.7.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "psycopg2" version))
+       (sha256
+        (base32
+         "0rda1j02ds6s28752fhmpwg761sh6jsxi1gpczqkrd28cki1cywv"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests would require a postgresql database "psycopg2_test"
+     ;; and a running postgresql database management service.
+     `(#:tests? #f)) ; TODO re-enable after providing a test-db.
+    (inputs
+     `(("postgresql" ,postgresql))) ; libpq
+    (home-page "http://initd.org/psycopg/")
+    (synopsis "Python PostgreSQL adapter")
+    (description
+     "psycopg2 is a thread-safe PostgreSQL adapter that implements DB-API 2.0. ")
+    (license license:lgpl3+)))
+
+(define-public python2-psycopg2
+  (package-with-python2 python-psycopg2))
+
+(define-public python-sadisplay
+  (package
+    (name "python-sadisplay")
+    (version "0.4.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "sadisplay" version))
+      (sha256
+        (base32
+          "0zqad2fl7q26p090qmqgmxbm6iwgf9zij1w8da1g3wdgjj72ql05"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-sqlalchemy" ,python-sqlalchemy)))
+    (native-inputs
+      `(("python-nose" ,python-nose)))
+    (home-page "https://bitbucket.org/estin/sadisplay")
+    (synopsis "SQLAlchemy schema displayer")
+    (description "This package provides a program to build Entity
+Relationship diagrams from a SQLAlchemy model (or directly from the
+database).")
+    (license license:bsd-3)))
+
+(define-public python2-sadisplay
+  (package-with-python2 python-sadisplay))
+
+(define-public python-mysqlclient
+  (package
+    (name "python-mysqlclient")
+    (version "1.3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mysqlclient" version))
+       (sha256
+        (base32
+         "0qkj570x4rbsblji6frvsvp2v1ap32dqzj1lq62zp9515ffsyaj5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("mariadb" ,mariadb)
+       ("nose" ,python-nose)
+       ("mock" ,python-mock)
+       ("py.test" ,python-pytest)))
+    (inputs
+     `(("mysql" ,mysql)
+       ("libz" ,zlib)
+       ("openssl" ,openssl)))
+    (home-page "https://github.com/PyMySQL/mysqlclient-python")
+    (synopsis "MySQLdb is an interface to the popular MySQL database server for Python")
+    (description "MySQLdb is an interface to the popular MySQL database server
+for Python.  The design goals are:
+@enumerate
+@item Compliance with Python database API version 2.0 [PEP-0249],
+@item Thread-safety,
+@item Thread-friendliness (threads will not block each other).
+@end enumerate")
+    (license license:gpl2)))
+
+(define-public python2-mysqlclient
+  (package-with-python2 python-mysqlclient))
+
+(define-public python-hiredis
+  (package
+    (name "python-hiredis")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hiredis" version))
+       (sha256
+        (base32
+         "1dfm2k9l9zar9nw9fwmm74zrgraxdxs04vx9li56fjcf289qx5fa"))))
+    (build-system python-build-system)
+    (arguments
+     ;; no tests
+     `(#:tests? #f))
+    (home-page "https://github.com/redis/hiredis-py")
+    (synopsis "Python extension that wraps protocol parsing code in hiredis")
+    (description "Python-hiredis is a python extension that wraps protocol
+parsing code in hiredis.  It primarily speeds up parsing of multi bulk replies.")
+    (license license:bsd-3)))
+
+(define-public python2-hiredis
+  (package-with-python2 python-hiredis))
+
+(define-public python-fakeredis
+  (package
+    (name "python-fakeredis")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fakeredis" version))
+       (sha256
+        (base32
+         "0zncahj3byyasyfx9i7k991ph0n0lq8v3a21pqri5qxn9564bk9r"))))
+    (build-system python-build-system)
+    (arguments
+     ;; no tests
+     `(#:tests? #f))
+    (home-page "https://github.com/jamesls/fakeredis")
+    (synopsis "Fake implementation of redis API for testing purposes")
+    (description "Fakeredis is a pure python implementation of the redis-py
+python client that simulates talking to a redis server.  This was created for a
+single purpose: to write unittests.  Setting up redis is not hard, but many time
+ you want to write unittests that do not talk to an external server (such as
+redis).  This module now allows tests to simply use this module as a reasonable
+substitute for redis.")
+    (license license:bsd-3)))
+
+(define-public python2-fakeredis
+  (package-with-python2 python-fakeredis))
+
+(define-public python-redis
+  (package
+    (name "python-redis")
+    (version "2.10.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "redis" version))
+       (sha256
+        (base32 "0csmrkxb29x7xs9b51zplwkkq2hwnbh9jns1g85dykn5rxmaxysx"))))
+    (build-system python-build-system)
+    ;; Tests require a running Redis server
+    (arguments '(#:tests? #f))
+    ;; As long as we are not running test, we do not need this input :-)
+    ;;(native-inputs
+    ;; `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/andymccurdy/redis-py")
+    (synopsis "Redis Python client")
+    (description
+     "This package provides a Python interface to the Redis key-value store.")
+    (license license:expat)))
+
+(define-public python2-redis
+  (package-with-python2 python-redis))
+
+(define-public python-rq
+  (package
+    (name "python-rq")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "rq" version))
+       (sha256
+        (base32 "0gaq5pnh0zy46r8jvygi0ifbvz3pq6i7xla78ijcgjw0x77qzsdh"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-redis" ,python-redis)))
+    (home-page "http://python-rq.org/")
+    (synopsis "Simple job queues for Python")
+    (description
+     "RQ (Redis Queue) is a simple Python library for queueing jobs and
+processing them in the background with workers.  It is backed by Redis and it
+is designed to have a low barrier to entry.")
+    (license license:bsd-2)))
+
+(define-public python2-rq
+  (package-with-python2 python-rq))
+
+(define-public python-trollius-redis
+  (package
+    (name "python-trollius-redis")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "trollius_redis" version))
+        (sha256
+         (base32
+          "0k3vypszmgmaipgw9xscvgm79h2zd6p6ci8gdp5sxl6g5kbqr9fy"))))
+    (build-system python-build-system)
+    ;; TODO: Tests require packaging 'hiredis'.
+    (arguments '(#:tests? #f))
+    (home-page "https://github.com/benjolitz/trollius-redis")
+    (synopsis "Port of asyncio-redis to trollius")
+    (description "@code{trollius-redis} is a Redis client for Python
+  trollius.  It is an asynchronious IO (PEP 3156) implementation of the
+  Redis protocol.")
+    (license license:bsd-2)))
+
+(define-public python2-trollius-redis
+  (package-with-python2 python-trollius-redis))
+
+(define-public python-sqlparse
+  (package
+    (name "python-sqlparse")
+    (version "0.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sqlparse" version))
+              (sha256
+               (base32
+                "1v3xh0bkfhb262dbndgzhivpnhdwavdzz8jjhx9vx0xbrx2880nf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero? (system* "py.test")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/andialbrecht/sqlparse")
+    (synopsis "Non-validating SQL parser")
+    (description "Sqlparse is a non-validating SQL parser for Python.  It
+provides support for parsing, splitting and formatting SQL statements.")
+    (license license:bsd-3)))
+
+(define-public python2-sqlparse
+  (package-with-python2 python-sqlparse))
+
+(define-public python-sql
+  (package
+    (name "python-sql")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-sql" version))
+       (sha256
+        (base32
+         "0p6kaqj02vz0habmdx37zjk6hjxdfm8aw737zs059vvpr70ird87"))))
+    (build-system python-build-system)
+    (home-page "https://python-sql.tryton.org/")
+    (synopsis "Library to write SQL queries in a pythonic way")
+    (description "@code{python-sql} is a library to write SQL queries, that
+transforms idiomatic python function calls to well-formed SQL queries.")
+    (license license:bsd-3)))
+
+(define-public python2-sql
+  (package-with-python2 python-sql))

@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tcl)
@@ -123,6 +125,35 @@ unmodified.  (4) Perfect forward secrecy: If you lose control of your private
 keys, no previous conversation is compromised.")
     (home-page "https://otr.cypherpunks.ca/")
     (license (list license:lgpl2.1 license:gpl2))))
+
+(define-public libsignal-protocol-c
+  (package
+  (name "libsignal-protocol-c")
+  (version "2.3.1")
+  (source (origin
+           (method url-fetch)
+           (uri (string-append "https://github.com/WhisperSystems/"
+                               "libsignal-protocol-c/archive/v" version
+                               ".tar.gz"))
+           (file-name (string-append name "-" version ".tar.gz"))
+           (sha256
+            (base32
+             "1klz9jvbnmfc3qy2x6qcswzw14a7kyzs51dlg18yllvir1f1kz0s"))))
+  (arguments
+   `(;; Required for proper linking and for tests to run.
+     #:configure-flags '("-DBUILD_SHARED_LIBS=on" "-DBUILD_TESTING=1")))
+  (build-system cmake-build-system)
+  (inputs `( ;; Required for tests:
+            ("check", check)
+            ("openssl", openssl)))
+  (native-inputs `(("pkg-config", pkg-config)))
+  (home-page "https://github.com/WhisperSystems/libsignal-protocol-c")
+  (synopsis "Implementation of a ratcheting forward secrecy protocol")
+  (description "libsignal-protocol-c is an implementation of a ratcheting
+forward secrecy protocol that works in synchronous and asynchronous
+messaging environments.  It can be used with messaging software to provide
+end-to-end encryption.")
+  (license license:gpl3+)))
 
 (define-public bitlbee
   (package
@@ -536,8 +567,8 @@ end-to-end encryption support; XML console.")
 (define-public dino
   ;; The only release tarball is for version 0.0, but it is very old and fails
   ;; to build.
-  (let ((commit "54a25fd926070a977138cec94908c55806e22f4a")
-        (revision "1"))
+  (let ((commit "2a514d0969f5c25d5e2d14421125a47df6b14974")
+        (revision "2"))
     (package
       (name "dino")
       (version (string-append "0.0-" revision "." (string-take commit 9)))
@@ -549,15 +580,13 @@ end-to-end encryption support; XML console.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1m100wzr5xqaj3r4vprxj0961833wqk0p7z94nmjsf2f0s67v5r3"))))
+                  "0v9fqikxvamdw7bxbwc4s01x0vf30vl77149y16krijaqnq6kzv0"))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f ; there are no tests
          #:parallel-build? #f ; not supported
-         #:configure-flags
-         ;; FIXME: we disable the omemo plugin because it needs
-         ;; libsignal-protocol, for which we don't have a package yet.
-         '("-DDISABLED_PLUGINS=omemo")
+         ; Use our libsignal-protocol-c instead of the git submodule.
+         #:configure-flags '("-DSHARED_SIGNAL_PROTOCOL=yes")
          #:modules ((guix build cmake-build-system)
                     ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
                     (guix build utils))
@@ -566,10 +595,24 @@ end-to-end encryption support; XML console.")
                              (guix build glib-or-gtk-build-system))
          #:phases
          (modify-phases %standard-phases
+           ;; The signal-protocol plugin accesses internal headers of
+           ;; libsignal-protocol-c, so we need to put the sources there.
+           (add-after 'unpack 'unpack-sources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((unpack (lambda (source target)
+                               (with-directory-excursion target
+                                 (zero? (system* "tar" "xvf"
+                                                 (assoc-ref inputs source)
+                                                 "--strip-components=1"))))))
+                 (unpack "libsignal-protocol-c-source"
+                         "plugins/signal-protocol/libsignal-protocol-c")
+                 #t)))
            (add-after 'install 'glib-or-gtk-wrap
              (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
       (inputs
        `(("libgee" ,libgee)
+         ("libsignal-protocol-c", libsignal-protocol-c)
+         ("libgcrypt", libgcrypt)
          ("libsoup" ,libsoup)
          ("sqlite" ,sqlite)
          ("gpgme" ,gpgme)
@@ -578,6 +621,7 @@ end-to-end encryption support; XML console.")
          ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
       (native-inputs
        `(("pkg-config" ,pkg-config)
+         ("libsignal-protocol-c-source", (package-source libsignal-protocol-c))
          ("glib" ,glib "bin")
          ("vala" ,vala)
          ("gettext" ,gettext-minimal)))

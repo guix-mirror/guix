@@ -129,6 +129,10 @@ fundamental object types for C.")
            (lambda _
              (substitute* "src/tests/responder_socket_access-tests.c"
                (("tcase_add_test\\(tc_utils, resp_str_to_array_test\\);") ""))
+             ;; XXX: These tests fail with recent versions of ldb.  See
+             ;; <https://pagure.io/SSSD/sssd/issue/3563>.
+             (substitute* "Makefile.in"
+               (("sysdb-tests\\$\\(EXEEXT\\)") ""))
              #t)))))
     (inputs
      `(("augeas" ,augeas)

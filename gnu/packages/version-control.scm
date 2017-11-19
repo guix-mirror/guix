@@ -59,6 +59,9 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-check)
+  #:use-module (gnu packages haskell-crypto)
+  #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nano)
@@ -67,8 +70,10 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages openstack)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages admin)
@@ -77,6 +82,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
@@ -851,14 +857,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "4.2.3")
+    (version "4.4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "1b7p3z8lin6hyyzkskskp065qnyfxid2yxnjygni0n4yv33qz404"))))
+               "0ik2ypzxjr6vpcghxvn39a73gw52629n7vwak04gnbycsq95aalg"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require

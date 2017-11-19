@@ -573,7 +573,14 @@ makes the good ol' XlockMore usable."
                      #:environment-variables
                      (list (string-append
                             "GDM_X_SERVER="
-                            #$(gdm-configuration-x-server config))))))
+                            #$(gdm-configuration-x-server config))
+                           ;; XXX: GDM requires access to a handful of
+                           ;; programs and components from Gnome (gnome-shell,
+                           ;; dbus, and gnome-session among others). The
+                           ;; following variables only work provided Gnome is
+                           ;; installed.
+                           "XDG_DATA_DIRS=/run/current-system/profile/share"
+                           "PATH=/run/current-system/profile/bin"))))
          (stop #~(make-kill-destructor))
          (respawn? #t))))
 

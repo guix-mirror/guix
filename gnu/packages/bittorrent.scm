@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -177,20 +177,21 @@ XML-RPC over SCGI.")
     (license l:gpl2+)))
 
 (define-public tremc
-  (let ((commit "401f2303c9b5a6e2e7b0808617d794576d4aa29e")
-        (revision "0"))
+  (let ((commit "9755b50e9444566cff02c977edafdbb3e9750cbb")
+        (revision "1"))
     (package
       (name "tremc")
-      (version (string-append "0.9.0-" revision "." (string-take commit 7)))
+      (version (git-version "0.9.0" revision commit))
       (source
         (origin
           (method git-fetch)
           (uri (git-reference
                  (url "https://github.com/louipc/tremc.git")
                  (commit commit)))
+          (file-name (git-file-name name version))
           (sha256
            (base32
-            "1h2720zn35iggmf9av65g119b0bhskwm1ng0zbkjryaf38nfzpin"))))
+            "05259qss5jka5ygwrh7cngyp6cgazbynji5pshgfzrd2d43pyfq5"))))
       (build-system python-build-system)
       (arguments
        `(#:tests? #f ; no test suite
@@ -265,7 +266,7 @@ maintained upstream.")
 (define-public aria2
   (package
     (name "aria2")
-    (version "1.32.0")
+    (version "1.33.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
@@ -273,7 +274,7 @@ maintained upstream.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0l6whbbcw1qijlczlfqi3mhba3zki0ybjb2prrgncp8km6a92vjl"))))
+                "06syqxia701dk96rcbhnd4x0arjj6d22gm3aqksz38am9y2f8f95"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-libaria2"

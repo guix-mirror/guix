@@ -26,7 +26,8 @@
   #:export (define-record-type*
             alist->record
             object->fields
-            recutils->alist))
+            recutils->alist
+            match-record))
 
 ;;; Commentary:
 ;;;
@@ -374,5 +375,20 @@ pairs.  Stop upon an empty line (after consuming it) or EOF."
                            ,@rest))))))
               (else
                (error "unmatched line" line))))))))
+
+(define-syntax match-record
+  (syntax-rules ()
+    "Bind each FIELD of a RECORD of the given TYPE to it's FIELD name.
+The current implementation does not support thunked and delayed fields."
+    ((_ record type (field fields ...) body ...)
+     (if (eq? (struct-vtable record) type)
+         ;; TODO compute indices and report wrong-field-name errors at
+         ;;      expansion time
+         ;; TODO support thunked and delayed fields
+         (let ((field ((record-accessor type 'field) record)))
+           (match-record record type (fields ...) body ...))
+         (throw 'wrong-type-arg record)))
+    ((_ record type () body ...)
+     (begin body ...))))
 
 ;;; records.scm ends here

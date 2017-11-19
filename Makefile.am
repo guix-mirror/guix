@@ -103,6 +103,7 @@ MODULES =					\
   guix/store.scm				\
   guix/cvs-download.scm				\
   guix/svn-download.scm				\
+  guix/i18n.scm					\
   guix/ui.scm					\
   guix/build/ant-build-system.scm		\
   guix/build/download.scm			\
@@ -180,7 +181,6 @@ MODULES =					\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
   guix/scripts/import/hackage.scm		\
-  guix/scripts/import/json.scm  		\
   guix/scripts/import/elpa.scm  		\
   guix/scripts/import/texlive.scm  		\
   guix/scripts/environment.scm			\
@@ -208,6 +208,7 @@ MODULES +=					\
   guix/import/stackage.scm			\
   guix/scripts/import/crate.scm			\
   guix/scripts/import/gem.scm			\
+  guix/scripts/import/json.scm  		\
   guix/scripts/import/pypi.scm			\
   guix/scripts/import/stackage.scm
 
@@ -235,8 +236,9 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/4.13-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.13-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/4.14-arm.conf	\
+  gnu/packages/aux-files/linux-libre/4.14-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.14-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.9-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.9-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.4-i686.conf	\

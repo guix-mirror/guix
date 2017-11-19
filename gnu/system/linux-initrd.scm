@@ -234,9 +234,6 @@ FILE-SYSTEMS."
           '())
     ,@(if (find (file-system-type-predicate "btrfs") file-systems)
           (list btrfs-progs/static)
-          '())
-    ,@(if volatile-root?
-          (list unionfs-fuse/static)
           '())))
 
 (define* (base-initrd file-systems
@@ -308,7 +305,7 @@ loaded at boot time in the order in which they appear."
             '("isofs")
             '())
       ,@(if volatile-root?
-            '("fuse")
+            '("overlay")
             '())
       ,@extra-modules))
 

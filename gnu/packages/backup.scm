@@ -35,6 +35,7 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
@@ -50,6 +51,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
@@ -449,13 +452,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
               (sha256
                (base32
-                "0iik5lq349cl87imlwra2pp0j36wjhpn8r1d3778azvvqpyjq2d5"))
+                "00jmbfysdpsb2vcckamvsxw5n8xqh4j67diam2p0lmqzsn92syq9"))
               (modules '((guix build utils)))
               (snippet
                '(for-each
@@ -492,6 +495,7 @@ detection, and lossless compression.")
                           (string-append
                             ;; These tests need to write to '/var'.
                             "not test_get_cache_dir "
+                            "and not test_get_config_dir "
                             "and not test_get_keys_dir "
                             "and not test_get_security_dir "
                             ;; These tests assume there is a root user in
