@@ -822,8 +822,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libvirt-CVE-2017-1000256.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
-  %D%/packages/patches/libxfont-CVE-2017-13720.patch		\
-  %D%/packages/patches/libxfont-CVE-2017-13722.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
   %D%/packages/patches/lierolibre-check-unaligned-access.patch	\
