@@ -1314,6 +1314,46 @@ Java.  This compression code produces a byte-for-byte exact copy of the output
 created by the original C++ code, and extremely fast.")
     (license license:asl2.0)))
 
+(define-public java-jbzip2
+  (package
+    (name "java-jbzip2")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://storage.googleapis.com/"
+                                  "google-code-archive-source/v2/"
+                                  "code.google.com/jbzip2/"
+                                  "source-archive.zip"))
+              (file-name (string-append name "-" version ".zip"))
+              (sha256
+               (base32
+                "0ncmhlqmrfmj96nqf6p77b9ws35lcfsvpfxzwxi2asissc83z1l3"))))
+    (build-system ant-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-junit" ,java-junit)))
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:jar-name "jbzip2.jar"
+       #:source-dir "tags/release-0.9.1/src"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-encoding-problems
+           (lambda _
+             ;; Some of the files we're patching are
+             ;; ISO-8859-1-encoded, so choose it as the default
+             ;; encoding so the byte encoding is preserved.
+             (with-fluids ((%default-port-encoding #f))
+               (substitute* "tags/release-0.9.1/src/org/itadaki/bzip2/HuffmanAllocator.java"
+                 (("Milidi.") "Milidiu")))
+             #t)))))
+    (home-page "https://code.google.com/archive/p/jbzip2/")
+    (synopsis "Java bzip2 compression/decompression library")
+    (description "Jbzip2 is a Java bzip2 compression/decompression library.
+It can be used as a replacement for the Apache @code{CBZip2InputStream} /
+@code{CBZip2OutputStream} classes.")
+    (license license:expat)))
+
 (define-public p7zip
   (package
     (name "p7zip")
