@@ -1785,6 +1785,38 @@ IcedTea build harness.")
      `(("java-commons-bcel" ,java-commons-bcel)
        ,@(package-inputs ant/java8)))))
 
+(define-public ant-junit
+  (package
+    (inherit ant/java8)
+    (name "ant-junit")
+    (arguments
+     (substitute-keyword-arguments (package-arguments ant/java8)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'link-junit
+             (lambda* (#:key inputs #:allow-other-keys)
+               (for-each (lambda (file)
+                           (symlink file
+                                    (string-append "lib/optional/"
+                                                   (basename file))))
+                         (find-files (assoc-ref inputs "java-junit")
+                                     "\\.jar$"))
+               #t))
+           (add-after 'build 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out   (assoc-ref outputs "out"))
+                      (share (string-append out "/share/java"))
+                      (bin   (string-append out "/bin"))
+                      (lib   (string-append out "/lib")))
+                 (mkdir-p share)
+                 (install-file (string-append lib "/ant-junit.jar") share)
+                 (delete-file-recursively bin)
+                 (delete-file-recursively lib)
+                 #t)))))))
+    (inputs
+     `(("java-junit" ,java-junit)
+       ,@(package-inputs ant/java8)))))
+
 (define-public clojure
   (let* ((remove-archives '(begin
                              (for-each delete-file
