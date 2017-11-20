@@ -82,7 +82,7 @@ definitions for all the SEARCH-PATHS."
 # for this profile.  You may want to define the 'GUIX_PROFILE' environment
 # variable to point to the \"visible\" name of the profile, like this:
 #
-#  GUIX_PROFILE=/path/to/profile \\
+#  GUIX_PROFILE=/path/to/profile ; \\
 #  source /path/to/profile/etc/profile
 #
 # When GUIX_PROFILE is undefined, the various environment variables refer

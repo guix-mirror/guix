@@ -456,7 +456,7 @@ Source @file{etc/profile} to augment @code{PATH} and other relevant
 environment variables:
 
 @example
-# GUIX_PROFILE=$HOME/.guix-profile \
+# GUIX_PROFILE=$HOME/.guix-profile ; \
   source $GUIX_PROFILE/etc/profile
 @end example
 
@@ -1684,7 +1684,7 @@ Files,,, bash, The GNU Bash Reference Manual}) so that newly-spawned
 shells get all the right environment variable definitions:
 
 @example
-GUIX_PROFILE="$HOME/.guix-profile" \
+GUIX_PROFILE="$HOME/.guix-profile" ; \
 source "$HOME/.guix-profile/etc/profile"
 @end example
 
