@@ -2648,7 +2648,7 @@ arbitrary parameters.")
 (define-public perl-devel-stacktrace
   (package
     (name "perl-devel-stacktrace")
-    (version "2.00")
+    (version "2.03")
     (source
      (origin
        (method url-fetch)
@@ -2656,7 +2656,7 @@ arbitrary parameters.")
                            "Devel-StackTrace-" version ".tar.gz"))
        (sha256
         (base32
-         "1r65iq5i11xh0r0kp3pdycydnd3kxpdmxnp0hq9hx9lr60kygsqx"))))
+         "0j58kgjr9s3vibsgifmk9k5h7daag0cb9x45f30m9qi4pr7cs63n"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Devel-StackTrace/")
     (synopsis "Object representing a stack trace")
