@@ -3086,6 +3086,120 @@ commonly used for high-throughput sequencing data such as SAM, BAM, CRAM and
 VCF.")
     (license license:expat)))
 
+;; This is the last version of Picard to provide net.sf.samtools
+(define-public java-picard-1.113
+  (package (inherit java-picard)
+    (name "java-picard")
+    (version "1.113")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/broadinstitute/picard.git")
+                    (commit version)))
+              (file-name (string-append "java-picard-" version "-checkout"))
+              (sha256
+               (base32
+                "0lkpvin2fz3hhly4l02kk56fqy8lmlgyzr9kmvljk6ry6l1hw973"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete pre-built binaries.
+                  (delete-file-recursively "lib")
+                  (mkdir-p "lib")
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "picard-jar"
+       #:test-target "test"
+       ;; FIXME: the class path at test time is wrong.
+       ;; [testng] Error: A JNI error has occurred, please check your installation and try again
+       ;; [testng] Exception in thread "main" java.lang.NoClassDefFoundError: com/beust/jcommander/ParameterException
+       #:tests? #f
+       #:jdk ,icedtea-8
+       ;; This is only used for tests.
+       #:make-flags
+       (list "-Dsamjdk.intel_deflater_so_path=lib/jni/libIntelDeflater.so")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Do not use bundled ant bzip2.
+         (add-after 'unpack 'use-ant-bzip
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("\\$\\{lib\\}/apache-ant-1.8.2-bzip2.jar")
+                (string-append (assoc-ref inputs "ant")
+                               "/lib/ant.jar")))
+             #t))
+         (add-after 'unpack 'make-test-target-independent
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("name=\"test\" depends=\"compile, ")
+                "name=\"test\" depends=\"compile-tests, ")
+               (("name=\"compile\" depends=\"compile-src, compile-tests\"")
+                "name=\"compile\" depends=\"compile-src\""))
+             #t))
+         (add-after 'unpack 'fix-deflater-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/java/net/sf/samtools/Defaults.java"
+               (("getStringProperty\\(\"intel_deflater_so_path\", null\\)")
+                (string-append "getStringProperty(\"intel_deflater_so_path\", \""
+                               (assoc-ref outputs "out")
+                               "/lib/jni/libIntelDeflater.so"
+                               "\")")))
+             #t))
+         ;; Build the deflater library, because we've previously deleted the
+         ;; pre-built one.  This can only be built with access to the JDK
+         ;; sources.
+         (add-after 'build 'build-jni
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "lib/jni")
+             (mkdir-p "jdk-src")
+             (and (zero? (system* "tar" "--strip-components=1" "-C" "jdk-src"
+                                  "-xf" (assoc-ref inputs "jdk-src")))
+                  (zero? (system* "javah" "-jni"
+                                  "-classpath" "classes"
+                                  "-d" "lib/"
+                                  "net.sf.samtools.util.zip.IntelDeflater"))
+                  (with-directory-excursion "src/c/inteldeflater"
+                    (zero? (system* "gcc" "-I../../../lib" "-I."
+                                    (string-append "-I" (assoc-ref inputs "jdk")
+                                                   "/include/linux")
+                                    "-I../../../jdk-src/src/share/native/common/"
+                                    "-I../../../jdk-src/src/solaris/native/common/"
+                                    "-c" "-O3" "-fPIC" "IntelDeflater.c"))
+                    (zero? (system* "gcc" "-shared"
+                                    "-o" "../../../lib/jni/libIntelDeflater.so"
+                                    "IntelDeflater.o" "-lz" "-lstdc++"))))))
+         ;; We can only build everything else after building the JNI library.
+         (add-after 'build-jni 'build-rest
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* `("ant" "all" ,@make-flags)))))
+         (add-before 'build 'set-JAVA6_HOME
+           (lambda _
+             (setenv "JAVA6_HOME" (getenv "JAVA_HOME"))
+             #t))
+         (replace 'install (install-jars "dist"))
+         (add-after 'install 'install-jni-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((jni (string-append (assoc-ref outputs "out")
+                                       "/lib/jni")))
+               (mkdir-p jni)
+               (install-file "lib/jni/libIntelDeflater.so" jni)
+               #t))))))
+    (inputs
+     `(("java-snappy-1" ,java-snappy-1)
+       ("java-commons-jexl-2" ,java-commons-jexl-2)
+       ("java-cofoja" ,java-cofoja)
+       ("ant" ,ant) ; for bzip2 support at runtime
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("ant-apache-bcel" ,ant-apache-bcel)
+       ("ant-junit" ,ant-junit)
+       ("java-testng" ,java-testng)
+       ("java-commons-bcel" ,java-commons-bcel)
+       ("java-jcommander" ,java-jcommander)
+       ("jdk" ,icedtea-8 "jdk")
+       ("jdk-src" ,(car (assoc-ref (package-native-inputs icedtea-8) "jdk-drop")))))))
+
 (define-public htslib
   (package
     (name "htslib")
