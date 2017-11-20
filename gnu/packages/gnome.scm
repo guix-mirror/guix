@@ -454,6 +454,16 @@ commonly used macros.")
        (base32
         "0pkq5l1llw8gkjhfq6y58iyj6wac8dh1mc3rzjzn6nd7lrkdx8cg"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libc   (assoc-ref inputs "libc")))
+               (substitute* "libgnome-desktop/gnome-languages.c"
+                 (("\"locale\"")
+                  (string-append "\"" libc "/bin/locale\"")))
+               #t))))))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("itstool" ,itstool)
