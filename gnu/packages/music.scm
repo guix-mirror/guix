@@ -3083,16 +3083,30 @@ are a C compiler and glib.  Full API documentation and examples are included.")
      `(#:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'set-ldflags
-          (lambda* (#:key outputs #:allow-other-keys)
-            (setenv "LDFLAGS"
-                    (string-append
-                     "-Wl,-rpath=\""
-                     (assoc-ref outputs "out") "/lib/lmms"
-                     ":"
-                     (assoc-ref outputs "out") "/lib/lmms/ladspa"
-                     "\"")))))))
+         (add-before 'configure 'set-ldflags
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "LDFLAGS"
+                     (string-append
+                      "-Wl,-rpath=\""
+                      (assoc-ref outputs "out") "/lib/lmms"
+                      ":"
+                      (assoc-ref outputs "out") "/lib/lmms/ladspa"
+                      "\""))
+             #t))
+         (add-before 'configure 'remove-Werror
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("SET\\(WERROR_FLAGS \"\\$\\{WERROR_FLAGS\\} -Werror")
+                "SET(WERROR_FLAGS \"${WERROR_FLAGS}"))
+             #t))
+         (add-before 'reset-gzip-timestamps 'make-manpages-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (map (lambda (file)
+                    (make-file-writable file))
+                  (find-files (string-append (assoc-ref outputs "out")
+                                             "/share/man")
+                              ".*\\.gz$"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
