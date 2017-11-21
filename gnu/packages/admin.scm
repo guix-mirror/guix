@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -2295,3 +2295,39 @@ on systems running the Linux kernel.")
     ;; arm and aarch64 don't have cpuid.h
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:gpl2+)))
+
+(define-public masscan
+  (package
+    (name "masscan")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/robertdavidgraham/masscan"
+                                  "/archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y9af345g00z83rliv6bmlqg37xwc7xpnx5xqdgmjikzcxgk9pji"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpcap" ,libpcap)))
+    (arguments
+     '(#:test-target "regress"
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; There is no ./configure script
+         (add-after 'unpack 'patch-path
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pcap (assoc-ref inputs "libpcap")))
+               (substitute* "src/rawsock-pcap.c"
+                 (("libpcap.so") (string-append pcap "/lib/libpcap.so")))
+               #t))))))
+    (synopsis "TCP port scanner")
+    (description "MASSCAN is an asynchronous TCP port scanner.  It can detect
+open ports, and also complete the TCP connection and interact with the remote
+application, collecting the information received.")
+    (home-page "https://github.com/robertdavidgraham/masscan")
+        ;; 'src/siphash24.c' is the SipHash reference implementation, which
+        ;; bears a CC0 Public Domain Dedication.
+    (license license:agpl3+)))
