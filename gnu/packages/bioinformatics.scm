@@ -3076,7 +3076,7 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
      "The IDR (Irreproducible Discovery Rate) framework is a unified approach
 to measure the reproducibility of findings identified from replicate
 experiments and provide highly stable thresholds based on reproducibility.")
-    (license license:gpl3+)))
+    (license license:gpl2+)))
 
 (define-public jellyfish
   (package
