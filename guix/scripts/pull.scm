@@ -149,6 +149,8 @@ Download and deploy the latest version of Guix.\n"))
 
 (define what-to-build
   (store-lift show-what-to-build))
+(define indirect-root-added
+  (store-lift add-indirect-root))
 
 (define %self-build-file
   ;; The file containing code to build Guix.  This serves the same purpose as
@@ -169,48 +171,33 @@ contained therein.  Use COMMIT as the version string."
     ;; tree.
     (build source #:verbose? verbose? #:version commit)))
 
-(define* (install-latest source-dir config-dir)
-  "Make SOURCE-DIR, a store file name, the latest Guix in CONFIG-DIR."
-  (let ((latest (string-append config-dir "/latest")))
-    (if (and (file-exists? latest)
-             (string=? (readlink latest) source-dir))
-        (begin
-          (display (G_ "Guix already up to date\n"))
-          #t)
-        (begin
-          (switch-symlinks latest source-dir)
-          (format #t
-                  (G_ "updated ~a successfully deployed under `~a'~%")
-                  %guix-package-name latest)
-          #t))))
-
-(define (build-and-install mdrv)
-  "Bind MDRV, a monadic value for a derivation, build it, and finally install
-it as the latest Guix."
-  (define do-it
-    ;; Weirdness follows!  Before we were called, the Guix modules have
-    ;; probably been reloaded, leading to a "parallel universe" with disjoint
-    ;; record types.  However, procedures in this file have already cached the
-    ;; module relative to which they lookup global bindings (see
-    ;; 'toplevel-box' documentation), so they're stuck in the old world.  To
-    ;; work around that, evaluate our procedure in the context of the "new"
-    ;; (guix scripts pull) module--which has access to the new <derivation>
-    ;; record, and so on.
-    (eval '(lambda (mdrv cont)
-             ;; Reopen a connection to the daemon so that we have a record
-             ;; with the new type.
-             (with-store store
-               (run-with-store store
-                 (mlet %store-monad ((drv mdrv))
-                   (mbegin %store-monad
-                     (what-to-build (list drv))
-                     (built-derivations (list drv))
-                     (return (cont (derivation->output-path drv))))))))
-          (resolve-module '(guix scripts pull)))) ;the new module
-
-  (do-it mdrv
-         (lambda (result)
-           (install-latest result (config-directory)))))
+(define* (build-and-install source config-dir
+                            #:key verbose? commit)
+  "Build the tool from SOURCE, and install it in CONFIG-DIR."
+  (mlet* %store-monad ((source        (build-from-source source
+                                                         #:commit commit
+                                                         #:verbose? verbose?))
+                       (source-dir -> (derivation->output-path source))
+                       (to-do?        (what-to-build (list source)))
+                       (built?        (built-derivations (list source))))
+    ;; Always update the 'latest' symlink, regardless of whether SOURCE was
+    ;; already built or not.
+    (if built?
+        (mlet* %store-monad
+            ((latest -> (string-append config-dir "/latest"))
+             (done      (indirect-root-added latest)))
+          (if (and (file-exists? latest)
+                   (string=? (readlink latest) source-dir))
+              (begin
+                (display (G_ "Guix already up to date\n"))
+                (return #t))
+              (begin
+                (switch-symlinks latest source-dir)
+                (format #t
+                        (G_ "updated ~a successfully deployed under `~a'~%")
+                        %guix-package-name latest)
+                (return #t))))
+        (leave (G_ "failed to update Guix, check the build log~%")))))
 
 (define (honor-lets-encrypt-certificates! store)
   "Tell Guile-Git to use the Let's Encrypt certificates."
@@ -271,10 +258,6 @@ certificates~%"))
              (when (use-le-certs? url)
                (honor-lets-encrypt-certificates! store))
 
-             ;; Ensure the 'latest' symlink is registered as a GC root.
-             (add-indirect-root store
-                                (string-append (config-directory) "/latest"))
-
              (format (current-error-port)
                      (G_ "Updating from Git repository at '~a'...~%")
                      url)
@@ -293,16 +276,10 @@ certificates~%"))
                                 (if (assoc-ref opts 'bootstrap?)
                                     %bootstrap-guile
                                     (canonical-package guile-2.0)))))
-
-                 ;; 'build-from-source' may cause a reload of the Guix
-                 ;; modules.  This leads to a parallel world: its record types
-                 ;; are disjoint from those we've seen until now (because we
-                 ;; use "generative" record types), and so on.  Thus, special
-                 ;; care must be taken once we have return from that call.
-                 (build-and-install
-                  (build-from-source checkout
-                                     #:commit commit
-                                     #:verbose?
-                                     (assoc-ref opts 'verbose?))))))))))))
+                 (run-with-store store
+                   (build-and-install checkout (config-directory)
+                                      #:commit commit
+                                      #:verbose?
+                                      (assoc-ref opts 'verbose?))))))))))))
 
 ;;; pull.scm ends here

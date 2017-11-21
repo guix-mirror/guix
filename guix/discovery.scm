@@ -25,8 +25,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 ftw)
-  #:export (scheme-files
-            scheme-modules
+  #:export (scheme-modules
             fold-modules
             all-modules
             fold-module-public-variables))
