@@ -1611,7 +1611,8 @@ deliver it in various ways.")
        ;; getline() in formail.c.  The patch is provided by Debian as
        ;; patch 24.
        (patches (search-patches "procmail-ambiguous-getline-debian.patch"
-                                "procmail-CVE-2014-3618.patch"))))
+                                "procmail-CVE-2014-3618.patch"
+                                "procmail-CVE-2017-16844.patch"))))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'configure
