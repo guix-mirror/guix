@@ -3050,7 +3050,7 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
 (define-public idr
   (package
     (name "idr")
-    (version "2.0.0")
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3059,10 +3059,15 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1k3x44biak00aiv3hpm1yd6nn4hhp7n0qnbs3zh2q9sw7qr1qj5r"))))
+                "1rjdly6daslw66r43g9md8znizlscn1sphycqyldzsidkc4vxqv3"))
+              ;; Delete generated C code.
+              (snippet
+               '(begin (delete-file "idr/inv_cdf.c") #t))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f)) ; FIXME: "ImportError: No module named 'utility'"
+    ;; There is only one test ("test_inv_cdf.py") and it tests features that
+    ;; are no longer part of this package.  It also asserts False, which
+    ;; causes the tests to always fail.
+    (arguments `(#:tests? #f))
     (propagated-inputs
      `(("python-scipy" ,python-scipy)
        ("python-sympy" ,python-sympy)
