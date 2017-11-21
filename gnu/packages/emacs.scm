@@ -434,6 +434,7 @@ on stdout instead of using a socket as the Emacsclient does.")
        ("perl" ,perl)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
+       ;; XXX Add 'magit-popup' dependency for the next release (after 2.11.0).
        ("with-editor" ,emacs-with-editor)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -544,20 +545,28 @@ support for Git-SVN.")
 (define-public emacs-magit-popup
   (package
     (name "emacs-magit-popup")
-    (version (package-version magit))
+    (version "2.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://raw.githubusercontent.com/magit/magit/"
-                    version "/lisp/magit-popup.el"))
-              (file-name (string-append "magit-popup-" version ".el"))
+                    "https://github.com/magit/magit-popup/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0w750kwngq63hi9drad3jxldwkg83sldb9w9r2xl2mqm3hm4l8s6"))))
+                "1dnk611f7lww6rb03hk8ijg2jwxx9f26pjfff4bwjmnjz7hnd6vz"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-info
+           (lambda _
+             (zero? (system* "make" "info")))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
-    (home-page "https://github.com/magit/magit")
+    (home-page "https://github.com/magit/magit-popup")
     (synopsis "Define prefix-infix-suffix command combos")
     (description
      "This library implements a generic interface for toggling switches and
