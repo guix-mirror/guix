@@ -3014,7 +3014,7 @@ regardless of @code{highlight-symbol-idle-delay}.
 (define-public emacs-hl-todo
   (package
     (name "emacs-hl-todo")
-    (version "1.7.4")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3023,7 +3023,7 @@ regardless of @code{highlight-symbol-idle-delay}.
               (file-name (string-append "hl-todo-" version ".el"))
               (sha256
                (base32
-                "016ivl4s0ysrm1xbfi86j5xcs759fcb0mkspxw81x8mpi3yb46ya"))))
+                "0g0h9v4572p7mcird8wsj1c41haf60krslm6mlpi4mdbh248kv6z"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/hl-todo")
     (synopsis "Emacs mode to highlight TODO and similar keywords")
