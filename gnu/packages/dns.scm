@@ -558,6 +558,11 @@ number of programming techniques to improve speed.  For example, the responder
 is completely lock-free, resulting in a very high response rate.  Other features
 include automatic @dfn{DNS Security Extensions} (DNSSEC) signing, dynamic record
 synthesis, and on-the-fly re-configuration.")
-    (license (list license:expat        ; src/contrib/{hat-trie,murmurhash3}
-                   license:lgpl2.0+     ; parts of scr/contrib/ucw
-                   license:gpl3+))))    ; everything else
+    (license
+     (list
+      ;; src/contrib/{hat-trie,murmurhash3,openbsd},
+      ;; src/dnssec/contrib/vpool.[ch], and parts of libtap/ are ‘MIT’ (expat).
+      license:expat
+      license:lgpl2.0+              ; parts of scr/contrib/ucw
+      license:public-domain         ; src/contrib/fnv and possibly murmurhash3
+      license:gpl3+))))             ; everything else
