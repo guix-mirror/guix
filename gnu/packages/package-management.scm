@@ -182,12 +182,6 @@
                           (substitute* "tests/guix-environment-container.sh"
                             (("guix environment --version")
                              "exit 77\n")))
-                        ;; XXX: On some file systems (notably Btrfs), the test
-                        ;; for freed disk space after GC may fail.  See
-                        ;; <https://bugs.gnu.org/29363>.
-                        (substitute* "tests/store.scm"
-                          (("(\\(> freed 0\\))" all)
-                           (string-append ";" all)))
                         #t))
                     (add-before 'check 'set-SHELL
                       (lambda _

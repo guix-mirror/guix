@@ -180,7 +180,9 @@
                               (random-text) '())))
     (let-values (((paths freed) (delete-paths %store (list p))))
       (and (equal? paths (list p))
-           (> freed 0)
+           ;; XXX: On some file systems (notably Btrfs), freed
+           ;; may return 0.  See <https://bugs.gnu.org/29363>.
+           ;;(> freed 0)
            (not (file-exists? p))))))
 
 (test-assert "add-text-to-store vs. delete-paths"
