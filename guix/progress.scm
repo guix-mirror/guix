@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
 
             progress-reporter/silent
             progress-reporter/file
+            progress-reporter/bar
 
             byte-count->string
             current-terminal-columns
@@ -211,6 +213,39 @@ ABBREVIATION used to shorten FILE for display."
           (rate-limited-render))))
      ;; Don't miss the last report.
      (stop render))))
+
+(define* (progress-reporter/bar total
+                                #:optional
+                                (prefix "")
+                                (port (current-error-port)))
+  "Return a reporter that shows a progress bar every time one of the TOTAL
+tasks is performed.  Write PREFIX at the beginning of the line."
+  (define done 0)
+
+  (define (report-progress)
+    (set! done (+ 1 done))
+    (unless (> done total)
+      (let* ((ratio (* 100. (/ done total))))
+        (erase-in-line port)
+        (if (string-null? prefix)
+            (display (progress-bar ratio (current-terminal-columns)) port)
+            (let ((width (- (current-terminal-columns)
+                            (string-length prefix) 3)))
+              (display prefix port)
+              (display "  " port)
+              (display (progress-bar ratio width) port)))
+        (force-output port))))
+
+  (progress-reporter
+   (start (lambda ()
+            (set! done 0)))
+   (report report-progress)
+   (stop (lambda ()
+           (erase-in-line port)
+           (unless (string-null? prefix)
+             (display prefix port)
+             (newline port))
+           (force-output port)))))
 
 ;; TODO: replace '(@ (guix build utils) dump-port))'.
 (define* (dump-port* in out
