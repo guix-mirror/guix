@@ -4197,14 +4197,14 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20171016")
+    (version "20171116")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "1196kv83p953nd9c5gxkn8ndw2kmm2kfw34dldap6m89khqflz5a"))))
+                "04adsyzjb6klai65g481sc964yyqcip7gqy7a1gp7qhfxx53z582"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
