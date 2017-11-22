@@ -53,7 +53,7 @@ corresponding to old generations of the system."
   APPEND ~a
 ~%"
                 #$label #$label
-                #$kernel #$kernel #$initrd
+                #$kernel (dirname #$kernel) #$initrd
                 (string-join (list #$@kernel-arguments)))))
 
   (define builder
