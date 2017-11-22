@@ -146,7 +146,8 @@ INTERVAL (a time-duration object), otherwise does nothing and returns #f."
 (define* (progress-bar % #:optional (bar-width 20))
   "Return % as a string representing an ASCII-art progress bar.  The total
 width of the bar is BAR-WIDTH."
-  (let* ((fraction (/ % 100))
+  (let* ((bar-width (max 3 (- bar-width 2)))
+         (fraction (/ % 100))
          (filled   (inexact->exact (floor (* fraction bar-width))))
          (empty    (- bar-width filled)))
     (format #f "[~a~a]"
