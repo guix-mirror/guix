@@ -4861,6 +4861,31 @@ jQuery and Bootstrap resources included via osscdn.")
      "This Emacs package highlights the s-exp at the current position.")
     (license license:gpl3+)))
 
+(define-public emacs-highlight-stages
+  (let ((commit "29cbc5b78261916da042ddb107420083da49b271")
+        (revision "1"))
+    (package
+      (name "emacs-highlight-stages")
+      (version (string-append "1.1.0" "-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/zk-phi/highlight-stages.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0r6nbcrr0dqpgm8dir8ahzjy7rw4nrac48byamzrq96r7ajlxlv0"))
+         (patches
+          (search-patches "emacs-highlight-stages-add-gexp.patch"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/wigust/highlight-stages")
+      (synopsis "Minor mode that highlights (quasi-quoted) expressions")
+      (description "@code{highlight-stages} provides an Emacs minor mode that
+highlights quasi-quoted expressions.")
+      (license license:gpl3+))))
+
 (define-public emacspeak
   (package
     (name "emacspeak")
