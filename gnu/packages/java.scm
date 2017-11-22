@@ -2084,6 +2084,155 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
     (native-inputs
      `(("unzip" ,unzip)))))
 
+(define-public java-cisd-base
+  (let ((revision 38938)
+        (base-version "14.12.0"))
+    (package
+      (name "java-cisd-base")
+      (version (string-append base-version "-" (number->string revision)))
+      (source (origin
+                (method svn-fetch)
+                (uri (svn-reference
+                      (url (string-append "http://svnsis.ethz.ch/repos/cisd/"
+                                          "base/tags/release/"
+                                          (version-major+minor base-version)
+                                          ".x/" base-version "/base/"))
+                      (revision revision)))
+                (file-name (string-append "java-cisd-base-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1i5adyf7nzclb0wydgwa1az04qliid8035vpahaandmkmigbnxiy"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Delete included gradle jar
+                    (delete-file-recursively "gradle/wrapper")
+                    ;; Delete pre-built native libraries
+                    (delete-file-recursively "libs")
+                    #t))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:make-flags '("-file" "build/build.xml")
+         #:test-target "jar-test"
+         #:jdk ,icedtea-8
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-build-resources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (copy-recursively (assoc-ref inputs "build-resources")
+                                 "../build_resources")
+               #t))
+           (add-after 'unpack-build-resources 'fix-dependencies
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "build/build.xml"
+                 (("\\$\\{lib\\}/testng/testng-jdk15.jar")
+                  (string-append (assoc-ref inputs "java-testng")
+                                 "/share/java/java-testng.jar"))
+                 (("\\$\\{lib\\}/commons-lang/commons-lang.jar")
+                  (string-append (assoc-ref inputs "java-commons-lang")
+                                 "/share/java/commons-lang-"
+                                 ,(package-version java-commons-lang) ".jar"))
+                 (("\\$\\{lib\\}/commons-io/commons-io.jar")
+                  (string-append (assoc-ref inputs "java-commons-io")
+                                 "/share/java/commons-io-"
+                                 ,(package-version java-commons-io)
+                                 "-SNAPSHOT.jar"))
+                 ;; Remove dependency on svn
+                 (("<build-info.*") "")
+                 (("\\$\\{revision.number\\}")
+                  ,(number->string revision))
+                 (("\\$\\{version.number\\}") ,base-version))
+               ;; Remove dependency on classycle
+               (substitute* "../build_resources/ant/build-common.xml"
+                 (("<taskdef name=\"dependency-checker.*") "")
+                 (("classname=\"classycle.*") "")
+                 (("classpath=\"\\$\\{lib\\}/classycle.*") ""))
+               #t))
+           ;; A few tests fail because of the lack of a proper /etc/groups and
+           ;; /etc/passwd file in the build container.
+           (add-after 'unpack 'disable-broken-tests
+             (lambda _
+               (substitute* "sourceTest/java/ch/systemsx/cisd/base/AllTests.java"
+                 (("Unix.isOperational\\(\\)") "false"))
+               #t))
+           ;; These decorators are almost useless and pull in an unpackaged
+           ;; dependency.
+           (add-after 'unpack 'remove-useless-decorators
+             (lambda _
+               (substitute* "source/java/ch/systemsx/cisd/base/unix/Unix.java"
+                 (("@Private") "")
+                 (("import ch.rinn.restrictions.Private;") ""))
+               (substitute* "sourceTest/java/ch/systemsx/cisd/base/unix/UnixTests.java"
+                 (("@Friend.*") "")
+                 (("import ch.rinn.restrictions.Friend;") ""))
+               #t))
+           (add-before 'configure 'build-native-code
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((jdk (assoc-ref inputs "jdk"))
+                     (dir ,(match (%current-system)
+                             ("i686-linux"
+                              "i386-Linux")
+                             ((or "armhf-linux" "aarch64-linux")
+                              "arm-Linux")
+                             ((or "x86_64-linux")
+                              "amd64-Linux")
+                             (_ "unknown-Linux"))))
+                 (with-directory-excursion "source/c"
+                   (invoke "gcc" "-shared" "-O3" "-fPIC" "unix.c"
+                           (string-append "-I" jdk "/include")
+                           (string-append "-I" jdk "/include/linux")
+                           "-o" "libunix.so")
+                   (invoke "gcc" "-shared" "-O3" "-fPIC"
+                           "-DMACHINE_BYTE_ORDER=1"
+                           "copyCommon.c"
+                           "copyByteChar.c"
+                           "copyByteDouble.c"
+                           "copyByteFloat.c"
+                           "copyByteInt.c"
+                           "copyByteLong.c"
+                           "copyByteShort.c"
+                           (string-append "-I" jdk "/include")
+                           (string-append "-I" jdk "/include/linux")
+                           "-o" "libnativedata.so"))
+                 (install-file "source/c/libunix.so"
+                               (string-append "libs/native/unix/" dir))
+                 (install-file "source/c/libnativedata.so"
+                               (string-append "libs/native/nativedata/" dir))
+                 #t)))
+           ;; In the "check" phase we only build the test executable.
+           (add-after 'check 'run-tests
+             (lambda _
+               (invoke "java" "-jar" "targets/dist/sis-base-test.jar")
+               (delete-file "targets/dist/sis-base-test.jar")
+               #t))
+           (replace 'install (install-jars "targets/dist")))))
+      (native-inputs
+       `(("jdk" ,icedtea-8)
+         ("java-commons-lang" ,java-commons-lang)
+         ("java-commons-io" ,java-commons-io)
+         ("java-testng" ,java-testng)
+         ("build-resources"
+          ,(origin
+             (method svn-fetch)
+             (uri (svn-reference
+                   (url (string-append "http://svnsis.ethz.ch/repos/cisd/"
+                                       "base/tags/release/"
+                                       (version-major+minor base-version)
+                                       ".x/" base-version
+                                       "/build_resources/"))
+                   (revision revision)))
+             (sha256
+              (base32
+               "0b6335gkm4x895rac6kfg9d3rpq0sy19ph4zpg2gyw6asfsisjhk"))))))
+      (home-page "http://svnsis.ethz.ch")
+      (synopsis "Utility classes for libraries from ETH Zurich")
+      (description "This library supplies some utility classes needed for
+libraries from the SIS division at ETH Zurich like jHDF5.")
+      ;; The C sources are under a non-copyleft license, which looks like a
+      ;; variant of the BSD licenses.  The whole package is under the ASL2.0.
+      (license (list license:asl2.0
+                     (license:non-copyleft "file://source/c/COPYING"))))))
+
 (define-public java-classpathx-servletapi
   (package
     (name "java-classpathx-servletapi")
