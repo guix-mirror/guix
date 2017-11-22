@@ -31,6 +31,10 @@
             progress-reporter?
             call-with-progress-reporter
 
+            start-progress-reporter!
+            stop-progress-reporter!
+            progress-reporter-report!
+
             progress-reporter/silent
             progress-reporter/file
             progress-reporter/bar
@@ -59,6 +63,24 @@ stopped."
   (match reporter
     (($ <progress-reporter> start report stop)
      (dynamic-wind start (lambda () (proc report)) stop))))
+
+(define (start-progress-reporter! reporter)
+  "Low-level procedure to start REPORTER."
+  (match reporter
+    (($ <progress-reporter> start report stop)
+     (start))))
+
+(define (progress-reporter-report! reporter)
+  "Low-level procedure to lead REPORTER to emit a report."
+  (match reporter
+    (($ <progress-reporter> start report stop)
+     (report))))
+
+(define (stop-progress-reporter! reporter)
+  "Low-level procedure to stop REPORTER."
+  (match reporter
+    (($ <progress-reporter> start report stop)
+     (stop))))
 
 (define progress-reporter/silent
   (make-progress-reporter noop noop noop))

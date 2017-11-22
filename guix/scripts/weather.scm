@@ -23,10 +23,11 @@
   #:use-module (guix packages)
   #:use-module (guix profiles)
   #:use-module (guix derivations)
+  #:use-module (guix progress)
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix grafts)
-  #:use-module (guix build syscalls)
+  #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:use-module (guix scripts substitute)
   #:use-module (gnu packages)
   #:use-module (web uri)
@@ -48,42 +49,38 @@
                       (cons package result))))
                  '()))
 
+(define (call-with-progress-reporter reporter proc)
+  "This is a variant of 'call-with-progress-reporter' that works with monadic
+scope."
+  ;; TODO: Move to a more appropriate place.
+  (with-monad %store-monad
+    (start-progress-reporter! reporter)
+    (mlet* %store-monad ((report -> (lambda ()
+                                      (progress-reporter-report! reporter)))
+                         (result (proc report)))
+      (stop-progress-reporter! reporter)
+      (return result))))
+
 (define* (package-outputs packages
                           #:optional (system (%current-system)))
   "Return the list of outputs of all of PACKAGES for the given SYSTEM."
   (let ((packages (filter (cut supported-package? <> system) packages)))
-
-    (define update-progress!
-      (let ((total (length packages))
-            (done  0)
-            (width (max 10 (- (terminal-columns) 10))))
-        (lambda ()
-          (set! done (+ 1 done))
-          (let* ((ratio (/ done total 1.))
-                 (done  (inexact->exact (round (* width ratio))))
-                 (left  (- width done)))
-            (format (current-error-port) "~5,1f% [~a~a]\r"
-                    (* ratio 100.)
-                    (make-string done #\#)
-                    (make-string left #\space))
-            (when (>= done total)
-              (newline (current-error-port)))
-            (force-output (current-error-port))))))
-
     (format (current-error-port)
             (G_ "computing ~h package derivations for ~a...~%")
             (length packages) system)
 
-    (foldm %store-monad
-           (lambda (package result)
-             (mlet %store-monad ((drv (package->derivation package system
-                                                           #:graft? #f)))
-               (update-progress!)
-               (match (derivation->output-paths drv)
-                 (((names . items) ...)
-                  (return (append items result))))))
-           '()
-           packages)))
+    (call-with-progress-reporter (progress-reporter/bar (length packages))
+      (lambda (report)
+        (foldm %store-monad
+               (lambda (package result)
+                 (mlet %store-monad ((drv (package->derivation package system
+                                                               #:graft? #f)))
+                   (report)
+                   (match (derivation->output-paths drv)
+                     (((names . items) ...)
+                      (return (append items result))))))
+               '()
+               packages)))))
 
 (cond-expand
   (guile-2.2
@@ -204,31 +201,32 @@ Report the availability of substitutes.\n"))
 
 (define (guix-weather . args)
   (with-error-handling
-    (let* ((opts     (parse-command-line args %options
-                                         (list %default-options)
-                                         #:build-options? #f))
-           (urls     (assoc-ref opts 'substitute-urls))
-           (systems  (match (filter-map (match-lambda
-                                          (('system . system) system)
-                                          (_ #f))
-                                        opts)
-                       (() (list (%current-system)))
-                       (systems systems)))
-           (packages (let ((file (assoc-ref opts 'manifest)))
-                       (if file
-                           (load-manifest file)
-                           (all-packages))))
-           (items    (with-store store
-                       (parameterize ((%graft? #f))
-                         (concatenate
-                          (run-with-store store
-                            (mapm %store-monad
-                                  (lambda (system)
-                                    (package-outputs packages system))
-                                  systems)))))))
-      (for-each (lambda (server)
-                  (report-server-coverage server items))
-                urls))))
+    (parameterize ((current-terminal-columns (terminal-columns)))
+      (let* ((opts     (parse-command-line args %options
+                                           (list %default-options)
+                                           #:build-options? #f))
+             (urls     (assoc-ref opts 'substitute-urls))
+             (systems  (match (filter-map (match-lambda
+                                            (('system . system) system)
+                                            (_ #f))
+                                          opts)
+                         (() (list (%current-system)))
+                         (systems systems)))
+             (packages (let ((file (assoc-ref opts 'manifest)))
+                         (if file
+                             (load-manifest file)
+                             (all-packages))))
+             (items    (with-store store
+                         (parameterize ((%graft? #f))
+                           (concatenate
+                            (run-with-store store
+                              (mapm %store-monad
+                                    (lambda (system)
+                                      (package-outputs packages system))
+                                    systems)))))))
+        (for-each (lambda (server)
+                    (report-server-coverage server items))
+                  urls)))))
 
 ;;; Local Variables:
 ;;; eval: (put 'let/time 'scheme-indent-function 1)
