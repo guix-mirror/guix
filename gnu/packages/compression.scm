@@ -1727,14 +1727,14 @@ manipulate, read, and write Zip archive files.")
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.3.0")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://libzip.org/download/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wykw0q9dwdzx0gssi2dpgckx9ggr2spzc1amjnff6wi6kz6x4xa"))))
+                "11g1hvm2bxa2v5plakfzcwyk5hb5fz4kgrkp38l0xhnv21888xv2"))))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
