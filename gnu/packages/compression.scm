@@ -1731,7 +1731,7 @@ manipulate, read, and write Zip archive files.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://nih.at/libzip/libzip-" version ".tar.xz"))
+                    "https://libzip.org/download/" name "-" version ".tar.xz"))
               (sha256
                (base32
                 "0wykw0q9dwdzx0gssi2dpgckx9ggr2spzc1amjnff6wi6kz6x4xa"))))
@@ -1750,7 +1750,7 @@ manipulate, read, and write Zip archive files.")
     (inputs
      `(("zlib" ,zlib)))
     (build-system gnu-build-system)
-    (home-page "https://nih.at/libzip/index.html")
+    (home-page "https://libzip.org")
     (synopsis "C library for reading, creating, and modifying zip archives")
     (description "Libzip is a C library for reading, creating, and modifying
 zip archives.  Files can be added from data buffers, files, or compressed data
