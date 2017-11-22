@@ -153,6 +153,11 @@ width of the bar is BAR-WIDTH."
             (make-string filled #\#)
             (make-string empty #\space))))
 
+(define (erase-in-line port)
+  "Write an ANSI erase-in-line sequence to PORT to erase the whole line and
+move the cursor to the beginning of the line."
+  (display "\r\x1b[K" port))
+
 (define* (progress-reporter/file file size
                                  #:optional (log-port (current-output-port))
                                  #:key (abbreviation basename))
@@ -176,7 +181,7 @@ ABBREVIATION used to shorten FILE for display."
                                      (byte-count->string throughput)
                                      (seconds->string elapsed)
                                      (progress-bar %) %)))
-            (display "\r\x1b[K" log-port)
+            (erase-in-line log-port)
             (display (string-pad-middle left right
                                         (current-terminal-columns))
                      log-port)
@@ -188,7 +193,7 @@ ABBREVIATION used to shorten FILE for display."
                                      (byte-count->string throughput)
                                      (seconds->string elapsed)
                                      (byte-count->string transferred))))
-            (display "\r\x1b[K" log-port)
+            (erase-in-line log-port)
             (display (string-pad-middle left right
                                         (current-terminal-columns))
                      log-port)
