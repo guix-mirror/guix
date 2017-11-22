@@ -796,7 +796,7 @@ messenger protocol.")
 (define-public utox
   (package
    (name "utox")
-   (version "0.11.0")
+   (version "0.16.1")
    (source
     (origin
      (method url-fetch)
@@ -805,37 +805,41 @@ messenger protocol.")
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
       (base32
-       "15s4iwjk1s0kihjqn0f07c9618clbphpr827mds3xddkiwnjz37v"))))
+       "14xl72y4w1x2kk0cvkcr9pmywllm0r9w2grjqiknwn95pw6yxz6q"))))
    (build-system cmake-build-system)
    (arguments
-    '(#:tests? #f ; No test phase.
-      #:phases
+    `(#:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'fix-freetype-include
-          (lambda _
-            (substitute* "CMakeLists.txt"
-              (("/usr/include/freetype2")
-               (string-append (assoc-ref %build-inputs "freetype")
-                              "/include/freetype2")))))
-        (add-before 'install 'patch-cmake-find-utox
-          (lambda _
-            (substitute* "../build/cmake_install.cmake"
-              (("/uTox-0.11.0/utox")
-               "/build/utox")))))))
+        (add-before 'build 'patch-absolute-filename-libgtk-3
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "../uTox-0.16.1/src/xlib/gtk.c"
+                         (("libgtk-3.so")
+                         (string-append (assoc-ref inputs "gtk+")
+                                        "/lib/libgtk-3.so")))))
+        (add-after 'install 'wrap-program
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (wrap-program (string-append (assoc-ref outputs "out")
+                                         "/bin/utox")
+            ;; For GtkFileChooserDialog.
+            `("GSETTINGS_SCHEMA_DIR" =
+              (,(string-append (assoc-ref inputs "gtk+")
+                               "/share/glib-2.0/schemas")))))))))
    (inputs
-    ;; TODO: Fix the file chooser dialog; which input does it need?
     `(("dbus" ,dbus)
       ("filteraudio" ,filteraudio)
       ("fontconfig" ,fontconfig)
       ("freetype" ,freetype)
       ("libsodium" ,libsodium)
       ("c-toxcore" ,c-toxcore)
+      ("check" ,check)
+      ("gtk+" ,gtk+)
       ("libvpx" ,libvpx)
       ("libx11" ,libx11)
       ("libxext" ,libxext)
       ("libxrender" ,libxrender)
       ("openal" ,openal)
       ("v4l-utils" ,v4l-utils)))
+   (native-inputs `(("pkg-config" ,pkg-config)))
    (synopsis "Lightweight Tox client")
    (description
     "Utox is a lightweight Tox client.  Tox is a distributed and secure
