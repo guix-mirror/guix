@@ -98,6 +98,7 @@
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system r)
+  #:use-module (guix build-system scons)
   #:use-module ((guix build utils) #:hide (which))
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
@@ -398,7 +399,7 @@ applications.")
               (patches
                (list
                 (search-patch "mongodb-support-unknown-linux-distributions.patch")))))
-    (build-system gnu-build-system)
+    (build-system scons-build-system)
     (inputs
      `(("openssl" ,openssl)
        ("pcre" ,pcre)
@@ -410,12 +411,11 @@ applications.")
        ("zlib" ,zlib)
        ("snappy" ,snappy)))
     (native-inputs
-     `(("scons" ,scons)
-       ("python" ,python-2)
-       ("valgrind" ,valgrind)
+     `(("valgrind" ,valgrind)
        ("perl" ,perl)))
     (arguments
-     `(#:phases
+     `(#:scons ,scons-python2
+       #:phases
        (let ((common-options
               `(;; "--use-system-tcmalloc" TODO: Missing gperftools
                 "--use-system-pcre"
@@ -437,7 +437,6 @@ applications.")
                 ,(format #f "--jobs=~a" (parallel-job-count))
                 "--ssl")))
          (modify-phases %standard-phases
-           (delete 'configure) ; There is no configure phase
            (add-after 'unpack 'scons-propagate-environment
              (lambda _
                ;; Modify the SConstruct file to arrange for
