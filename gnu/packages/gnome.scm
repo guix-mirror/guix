@@ -1791,14 +1791,14 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.35")
+    (version "0.10.36")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "0f2p3p7idfpbms4mi75031014mqsv09s21b6w1359p09raph3461"))))
+               (base32 "1mma1gp179dh7kvwzd7q3mwg0719hhbm9f5sqw28flv5lv05zrng"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;4.1 MiB of gtk-doc
