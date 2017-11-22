@@ -1461,7 +1461,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
 (define-public supertuxkart
   (package
     (name "supertuxkart")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
@@ -1469,8 +1469,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
                            version "/supertuxkart-" version "-src.tar.xz"))
        (sha256
         (base32
-         "10l2ljmd7mv8f9ylarqmxxryicdnph2qkm3g5maxnsm2k2q0n20b"))
-       (patches (search-patches "supertuxkart-angelscript-ftbfs.patch"))
+         "1c4w47ibj87lgwiqygq8qi7jiz6gklj4dwf5bs5zk15s0rqlw0fq"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
@@ -1495,6 +1494,8 @@ This game is based on the GPL version of the famous game TuxRacer.")
        (list "-DUSE_WIIUSE=0"
              ;; Do not use the bundled zlib
              "-DNO_IRR_COMPILE_WITH_ZLIB_=TRUE"
+             ;; FIXME: needs libopenglrecorder
+             "-DBUILD_RECORDER=0"
              ;; Irrlicht returns an integer instead of a boolean
              "-DCMAKE_C_FLAGS=-fpermissive")
        #:phases
