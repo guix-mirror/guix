@@ -18021,7 +18021,7 @@ manual}).
 
 @item @code{serial-unit} (default: @code{#f})
 The serial unit used by the bootloader, as an integer from 0 to 3.
-For GRUB it is choosen at run-time; currently GRUB chooses 0, which
+For GRUB, it is chosen at run-time; currently GRUB chooses 0, which
 corresponds to COM1 (@pxref{Serial terminal,,, grub,GNU GRUB manual}).
 
 @item @code{serial-speed} (default: @code{#f})
