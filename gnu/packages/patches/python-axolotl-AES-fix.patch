@@ -1,0 +1,24 @@
+Patch taken from the Debian package for python-axolotl-0.1.39.
+See <https://bugs.gnu.org/29415>.
+
+Description: Removes IV paramenter from AES constructor, since it is not necessary for ctr mode.
+Author: Josue Ortega <josue@debian.org>
+Last-Update: 2017-04-13
+
+--- a/axolotl/sessioncipher.py
++++ b/axolotl/sessioncipher.py
+@@ -228,13 +228,7 @@
+         # counterint = struct.unpack(">L", counterbytes)[0]
+         # counterint = int.from_bytes(counterbytes, byteorder='big')
+         ctr = Counter.new(128, initial_value=counter)
+-
+-        # cipher = AES.new(key, AES.MODE_CTR, counter=ctr)
+-        ivBytes = bytearray(16)
+-        ByteUtil.intToByteArray(ivBytes, 0, counter)
+-
+-        cipher = AES.new(key, AES.MODE_CTR, IV=bytes(ivBytes), counter=ctr)
+-
++        cipher = AES.new(key, AES.MODE_CTR, counter=ctr)
+         return cipher
+ 
+ 

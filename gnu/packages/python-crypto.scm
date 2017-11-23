@@ -450,7 +450,7 @@ python-axolotl.")
 (define-public python-axolotl
   (package
     (name "python-axolotl")
-    (version "0.1.35")
+    (version "0.1.39")
     (source
      (origin
        (method url-fetch)
@@ -458,8 +458,9 @@ python-axolotl.")
              "https://github.com/tgalal/python-axolotl/archive/"
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
+       (patches (search-patches "python-axolotl-AES-fix.patch"))
        (sha256
-        (base32 "1z8d89p7v40p4bwywjm9h4z28fdvra79ddw06azlkrfjbl7dxmz8"))))
+        (base32 "0badsgkgz0ir3hqynxzsfjgacppi874syvvmgccc6j164053x6zm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
