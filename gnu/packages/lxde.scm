@@ -215,6 +215,7 @@ speed up the access to freedesktop.org defined application menus.")
               (uri (string-append "mirror://sourceforge/" name "/"
                                   "PCManFM%20%2B%20Libfm%20%28tarball%20release"
                                   "%29/PCManFM/" name "-" version ".tar.xz"))
+              (patches (search-patches "pcmanfm-CVE-2017-8934.patch"))
               (sha256
                (base32
                 "0rxdh0dfzc84l85c54blq42gczygq8adhr3l9hqzy1dp530cm1hc"))))
