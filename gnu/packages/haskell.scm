@@ -3328,7 +3328,7 @@ finite maps and priority queues where the priority and element are distinct.")
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-edisonapi" ,ghc-edisonapi)))
     (home-page "http://rwd.rdockins.name/edison/home/")
-    (synopsis "Library of efficent, purely-functional data structures")
+    (synopsis "Library of efficient, purely-functional data structures")
     (description
      "This package provides the core Edison data structure implementations,
 including multiple sequence, set, bag, and finite map concrete implementations
