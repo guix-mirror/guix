@@ -29,6 +29,7 @@
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4255,7 +4256,7 @@ reproducible research.")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
 lists, and project planning with a fast and effective plain-text system.
 
-This package is equivilent to org-plus-contrib, but only includes additional
+This package is equivalent to org-plus-contrib, but only includes additional
 files that you would find in @file{contrib/} from the git repository.")))
 
 (define-public emacs-flx
