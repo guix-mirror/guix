@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -218,14 +219,15 @@ speed up the access to freedesktop.org defined application menus.")
                (base32
                 "0rxdh0dfzc84l85c54blq42gczygq8adhr3l9hqzy1dp530cm1hc"))))
     (build-system gnu-build-system)
-    ;; (#:configure-flags '("--sysconfdir=/etc")) suggested in README.
     (inputs `(("gtk+"   ,gtk+-2)
-              ;; TODO: add ("gvfs" ,gvfs).
+              ("gvfs"   ,gvfs)                    ;for trash and mount support
               ("libfm"  ,libfm)
               ("libx11" ,libx11)))
     (native-inputs `(("intltool"   ,intltool)
                      ("libtool"    ,libtool)
                      ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("lxmenu-data" ,lxmenu-data)))     ;for "Open With..." application list
     (synopsis "LXDE file manager")
     (description "PCMan is a lightweight GTK+ based file manager, compliant
 with freedesktop.org standard.")
