@@ -1492,6 +1492,55 @@ It currently supports MySQL, Postgres and SQLite3.")
 SQL databases.  This package implements the interface for SQLite.")
     (license license:gpl2+)))
 
+(define-public guile-dsv
+  (package
+    (name "guile-dsv")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/artyom-poptsov/guile-dsv")
+                    (commit "7d2e06a15e1d8478cd0e8fb4c79aec519dc4cfd0")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0ywb0hdbs4lcjag8b3id43fpyn5s6gscg7dk0n9ryigyvch80wxj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs `(("guile" ,guile-2.2)))
+    (propagated-inputs `(("guile-lib" ,guile-lib)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-guilesitedir
+                    (lambda _
+                      (substitute* "Makefile.in"
+                        (("^guilesitedir =.*$")
+                         "guilesitedir = \
+$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
+                      (substitute* "modules/Makefile.in"
+                        (("^guilesitedir =.*$")
+                         "guilesitedir = \
+$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
+                      (substitute* "modules/dsv/Makefile.in"
+                        (("^guilesitedir =.*$")
+                         "guilesitedir = \
+$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
+                      #t))
+                  (add-after 'unpack 'autoreconf
+                    (lambda _
+                      (zero? (system* "autoreconf" "-vfi")))))))
+    (home-page "https://github.com/artyom-poptsov/guile-dsv")
+    (synopsis "DSV module for Guile")
+    (description
+     "Guile-DSV is a GNU Guile module for working with the
+delimiter-separated values (DSV) data format.  Guile-DSV supports the
+Unix-style DSV format and RFC 4180 format.")
+    (license license:gpl3+)))
+
 (define-public guile-xosd
   (package
     (name "guile-xosd")
