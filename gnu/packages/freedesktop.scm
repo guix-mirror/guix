@@ -40,7 +40,9 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
@@ -613,7 +615,9 @@ Analysis and Reporting Technology) functionality.")
        ("libatasmart" ,libatasmart)
        ("libgudev" ,libgudev)
        ("polkit" ,polkit)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux)
+       ("cryptsetup" ,cryptsetup)
+       ("parted" ,parted)))
     (outputs '("out"
                "doc"))                            ;5 MiB of gtk-doc HTML
     (arguments
@@ -653,14 +657,22 @@ Analysis and Reporting Technology) functionality.")
                "girdir = $(datadir)/gir-1.0\n")
               (("typelibsdir = .*")
                "typelibsdir = $(libdir)/girepository-1.0\n"))))
-         (add-after 'install 'set-mount-file-name
+         (add-after 'install 'wrap-udisksd
            (lambda* (#:key outputs inputs #:allow-other-keys)
              ;; Tell 'udisksd' where to find the 'mount' command.
              (let ((out   (assoc-ref outputs "out"))
-                   (utils (assoc-ref inputs "util-linux")))
+                   (utils (assoc-ref inputs "util-linux"))
+                   (cryptsetup (assoc-ref inputs "cryptsetup"))
+                   (parted (assoc-ref inputs "parted")))
                (wrap-program (string-append out "/libexec/udisks2/udisksd")
                  `("PATH" ":" prefix
                    (,(string-append utils "/bin") ;for 'mount'
+                    ;; cryptsetup is required for setting encrypted
+                    ;; partitions, e.g. in gnome-disks
+                    ,(string-append cryptsetup "/sbin")
+                    ;; parted is required for managing partitions, e.g. in
+                    ;; gnome-disks
+                    ,(string-append parted "/sbin")
                     "/run/current-system/profile/bin"
                     "/run/current-system/profile/sbin")))
                #t))))))
