@@ -391,6 +391,12 @@ using them.  See @url{http://prosody.im/doc/advanced_ssl_config}."
 See @url{http://prosody.im/doc/modules/mod_tls}."
      common)
 
+    (disable-sasl-mechanisms
+     (string-list '("DIGEST-MD5"))
+     "Set of mechanisms that will never be offered.  See
+@url{https://prosody.im/doc/modules/mod_saslauth}."
+     common)
+
     (s2s-require-encryption?
      (boolean #f)
      "Whether to force all server-to-server connections to be encrypted or not.
