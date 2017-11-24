@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -165,7 +166,7 @@
                                (configuration-field-default-value-thunk f)
                                (lambda _ '%invalid))))
                 (define (show-default? val)
-                  (or (string? default) (number? default) (boolean? default)
+                  (or (string? val) (number? val) (boolean? val)
                       (and (symbol? val) (not (eq? val '%invalid)))
                       (and (list? val) (and-map show-default? val))))
                 `(deftypevr (% (category

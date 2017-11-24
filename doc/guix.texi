@@ -13991,8 +13991,9 @@ Defaults to @samp{#f}.
 @deftypevr {@code{prosody-configuration} parameter} module-list modules-enabled
 This is the list of modules Prosody will load on startup.  It looks for
 @code{mod_modulename.lua} in the plugins folder, so make sure that exists too.
-Documentation on modules can be found at: @url{http://prosody.im/doc/modules}.
-Defaults to @samp{%default-modules-enabled}.
+Documentation on modules can be found at:
+@url{http://prosody.im/doc/modules}.
+Defaults to @samp{("roster" "saslauth" "tls" "dialback" "disco" "carbons" "private" "blocklist" "vcard" "version" "uptime" "time" "ping" "pep" "register" "admin_adhoc")}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} string-list modules-disabled
@@ -14096,6 +14097,7 @@ Defaults to @samp{#f}.
 @deftypevr {@code{prosody-configuration} parameter} string-list disable-sasl-mechanisms
 Set of mechanisms that will never be offered.  See
 @url{https://prosody.im/doc/modules/mod_saslauth}.
+Defaults to @samp{("DIGEST-MD5")}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} boolean s2s-require-encryption?
@@ -14263,6 +14265,7 @@ Hostname of the component.
 
 @deftypevr {@code{prosody-configuration} parameter} non-negative-integer-list component-ports
 Port(s) Prosody listens on for component connections.
+Defaults to @samp{(5347)}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} string component-interface

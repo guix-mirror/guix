@@ -354,8 +354,8 @@ Example: @code{(admins '(\"user1@@example.com\" \"user2@@example.net\"))}"
      (module-list %default-modules-enabled)
      "This is the list of modules Prosody will load on startup.  It looks for
 @code{mod_modulename.lua} in the plugins folder, so make sure that exists too.
-Documentation on modules can be found at: @url{http://prosody.im/doc/modules}.
-Defaults to @samp{%default-modules-enabled}."
+Documentation on modules can be found at:
+@url{http://prosody.im/doc/modules}."
      common)
 
     (modules-disabled
@@ -722,7 +722,7 @@ See also @url{http://prosody.im/doc/modules/mod_muc}."
                                      (display c))
                                    str))))
             (define (show-default? val)
-              (or (string? default) (number? default) (boolean? default)
+              (or (string? val) (number? val) (boolean? val)
                   (and (list? val) (and-map show-default? val))))
             (format #t "@deftypevr {@code{~a} parameter} ~a ~a\n~a\n"
                     configuration-name field-type field-name field-docs)
