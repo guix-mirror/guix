@@ -28,6 +28,7 @@
 (define-module (guix ui)
   #:use-module (guix i18n)
   #:use-module (guix gexp)
+  #:use-module (guix sets)
   #:use-module (guix utils)
   #:use-module (guix store)
   #:use-module (guix config)
@@ -253,8 +254,9 @@ VARIABLE and return it, or #f if none was found."
          (_ #t)))
       (_ #f)))
 
-  (let loop ((modules (list (resolve-module '() #f #f #:ensure #f)))
-             (suggestions '()))
+  (let loop ((modules     (list (resolve-module '() #f #f #:ensure #f)))
+             (suggestions '())
+             (visited     (setq)))
     (match modules
       (()
        ;; Pick the "best" suggestion.
@@ -262,16 +264,19 @@ VARIABLE and return it, or #f if none was found."
          (() #f)
          ((first _ ...) first)))
       ((head tail ...)
-       (let ((next (append tail
-                           (hash-map->list (lambda (name module)
-                                             module)
-                                           (module-submodules head)))))
-         (match (module-local-variable head variable)
-           (#f (loop next suggestions))
-           (_
-            (match (module-name head)
-              (('gnu _ ...) head)                 ;must be that one
-              (_ (loop next (cons head suggestions)))))))))))
+       (if (set-contains? visited head)
+           (loop tail suggestions visited)
+           (let ((visited (set-insert head visited))
+                 (next    (append tail
+                                  (hash-map->list (lambda (name module)
+                                                    module)
+                                                  (module-submodules head)))))
+             (match (module-local-variable head variable)
+               (#f (loop next suggestions visited))
+               (_
+                (match (module-name head)
+                  (('gnu _ ...) head)             ;must be that one
+                  (_ (loop next (cons head suggestions) visited)))))))))))
 
 (define* (display-hint message #:optional (port (current-error-port)))
   "Display MESSAGE, a l10n message possibly containing Texinfo markup, to
