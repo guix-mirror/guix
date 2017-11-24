@@ -423,7 +423,8 @@ to USB sticks meant to be read-only."
               ;; install QEMU networking or anything like that.  Assume USB
               ;; mass storage devices (usb-storage.ko) are available.
               (initrd (lambda (file-systems . rest)
-                        (apply base-initrd file-systems
+                        (apply (operating-system-initrd os)
+                               file-systems
                                #:volatile-root? #t
                                rest)))
 
@@ -488,7 +489,8 @@ of the GNU system as described by OS."
   (let ((os (operating-system (inherit os)
               ;; Use an initrd with the whole QEMU shebang.
               (initrd (lambda (file-systems . rest)
-                        (apply base-initrd file-systems
+                        (apply (operating-system-initrd os)
+                               file-systems
                                #:virtio? #t
                                rest)))
 
@@ -574,7 +576,8 @@ environment with the store shared with the host.  MAPPINGS is a list of
                   (target "/dev/vda")))
 
     (initrd (lambda (file-systems . rest)
-              (apply base-initrd file-systems
+              (apply (operating-system-initrd os)
+                     file-systems
                      #:volatile-root? #t
                      #:virtio? #t
                      rest)))
