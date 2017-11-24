@@ -507,6 +507,15 @@ site} for more information."
   (udisks   udisks-configuration-udisks
             (default udisks)))
 
+(define %udisks-activation
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (let ((run-dir "/var/run/udisks2"))
+          (mkdir-p run-dir)
+          (chmod run-dir #o700)))))
+
 (define udisks-service-type
   (let ((udisks-package (lambda (config)
                           (list (udisks-configuration-udisks config)))))
@@ -518,6 +527,8 @@ site} for more information."
                                             udisks-package)
                          (service-extension udev-service-type
                                             udisks-package)
+                         (service-extension activation-service-type
+                                            (const %udisks-activation))
 
                          ;; Profile 'udisksctl' & co. in the system profile.
                          (service-extension profile-service-type
