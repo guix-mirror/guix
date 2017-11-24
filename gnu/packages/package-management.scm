@@ -63,6 +63,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages acl)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
@@ -520,7 +521,6 @@ transactions from C or Python.")
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (add-before 'unpack 'n (lambda _ #t))
                   ;; setup.py mistakenly requires python-magic from PyPi, even
                   ;; though the Python bindings of `file` are sufficient.
                   ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
@@ -535,8 +535,15 @@ transactions from C or Python.")
                          (string-append "['" (which "xxd") "',")))
                       (substitute* "diffoscope/comparators/elf.py"
                         (("@tool_required\\('readelf'\\)") "")
-                        (("\\['readelf',")
-                         (string-append "['" (which "readelf") "',")))
+                        (("get_tool_name\\('readelf'\\)")
+                         (string-append "'" (which "readelf") "'")))
+                      (substitute* "diffoscope/comparators/directory.py"
+                        (("@tool_required\\('stat'\\)") "")
+                        (("@tool_required\\('getfacl'\\)") "")
+                        (("\\['stat',")
+                         (string-append "['" (which "stat") "',"))
+                        (("\\['getfacl',")
+                         (string-append "['" (which "getfacl") "',")))
                       #t))
                   (add-before 'check 'delete-failing-test
                     (lambda _
@@ -547,6 +554,7 @@ transactions from C or Python.")
               ("python-debian" ,python-debian)
               ("python-libarchive-c" ,python-libarchive-c)
               ("python-tlsh" ,python-tlsh)
+              ("acl" ,acl)                        ;for getfacl
               ("colordiff" ,colordiff)
               ("xxd" ,xxd)
 
