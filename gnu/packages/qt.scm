@@ -102,7 +102,7 @@ system, and the core design of Django is reused in Grantlee.")
 (define-public qt
   (package
     (name "qt")
-    (version "5.9.2")
+    (version "5.9.3")
     (outputs '("out" "examples"))
     (source (origin
              (method url-fetch)
@@ -115,7 +115,7 @@ system, and the core design of Django is reused in Grantlee.")
                  version ".tar.xz"))
              (sha256
                (base32
-                 "1zr0hvhryn2ada53ln7cycymh602cncli86n291bsgzas6j72qbc"))
+                 "0ik0ikwa0qb7dqcr9knxpnwv50b7m6m2iglzq9yjs3437zqdib2p"))
              (modules '((guix build utils)))
              (snippet
               '(begin
