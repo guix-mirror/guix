@@ -711,6 +711,7 @@ a graphical desktop environment like GNOME.")
        ;; Lua 5.1 is still recommended for production usage.
        ;; See https://prosody.im/doc/packagers.
        ("lua" ,lua-5.1)
+       ("lua5.1-bitop" ,lua5.1-bitop)
        ("lua5.1-expat" ,lua5.1-expat)
        ("lua5.1-socket" ,lua5.1-socket)
        ("lua5.1-filesystem" ,lua5.1-filesystem)
