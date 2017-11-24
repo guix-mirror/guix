@@ -3964,7 +3964,7 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/36538/interval-" version ".tar.gz"))
+                                  "file/37077/interval-" version ".tar.gz"))
               (sha256
                (base32
                 "08fdcf3hbwqphglvwprvqzgkg0qbimpyhnqsgv3gac4y1ap0f903"))))
