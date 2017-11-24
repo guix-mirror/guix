@@ -146,6 +146,7 @@
 
 (define %test-prosody
   (let* ((config (prosody-configuration
+                  (disable-sasl-mechanisms '())
                   (virtualhosts
                    (list
                     (virtualhost-configuration
