@@ -153,7 +153,7 @@ highlighting.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://dist.infotropique.org/fish-guix/"
+       (uri (string-append "https://d.n0.is/releases/fish-guix/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -166,7 +166,7 @@ highlighting.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; No configure script.
-    (home-page "https://www.infotropique.org/projects/fish-guix/")
+    (home-page "https://n0.is/s/fish-guix/")
     (synopsis "Fish completions for Guix")
     (description
      "Fish-guix provides completions for Guix for users of the fish shell.")
