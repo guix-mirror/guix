@@ -525,7 +525,12 @@
      (every (lambda (entry)
               (match (utmpx-user entry)
                 ((? string?)
-                 (or (eqv? (login-type BOOT_TIME) (utmpx-login-type entry))
+                 ;; Ensure we have a valid PID for those entries where it
+                 ;; makes sense.
+                 (or (not (memv (utmpx-login-type entry)
+                                (list (login-type INIT_PROCESS)
+                                      (login-type LOGIN_PROCESS)
+                                      (login-type USER_PROCESS))))
                      (> (utmpx-pid entry) 0)))
                 (#f                               ;might be DEAD_PROCESS
                  #t)))
