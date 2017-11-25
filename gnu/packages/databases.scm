@@ -376,14 +376,14 @@ applications.")
 (define-public mongodb
   (package
     (name "mongodb")
-    (version "3.4.9")
+    (version "3.4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mongodb/mongo/archive/r"
                                   version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "0gidwyvh3bdwmk2pccgkqkaln4ysgn8iwa7ihjzllsq0rdg95045"))
+               (base32 "0676lvkljj7a5hdhv78dbykqnqrj9lbn9799mi84b8vbnzsq961r"))
               (patches
                (list
                 (search-patch "mongodb-support-unknown-linux-distributions.patch")))))
