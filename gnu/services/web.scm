@@ -191,16 +191,6 @@ of index files."
             (syntax-parameterize ((<> (identifier-syntax x*)))
               (list tail ...))
             '())))
-    (for-each
-     (match-lambda
-      ((record-key . file)
-       (if (and file (not (file-exists? file)))
-           (error
-            (simple-format
-             #f
-             "~A in the nginx configuration for the server with name \"~A\" does not exist" record-key server-name)))))
-     `(("ssl-certificate"     . ,ssl-certificate)
-       ("ssl-certificate-key" . ,ssl-certificate-key)))
     (list
      "    server {\n"
      (and/l http-port  "      listen " (number->string <>) ";\n")
