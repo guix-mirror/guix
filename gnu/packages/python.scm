@@ -8906,14 +8906,14 @@ collections of data.")
 (define-public python-prompt-toolkit
  (package
   (name "python-prompt-toolkit")
-  (version "1.0.9")
+  (version "1.0.15")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "prompt_toolkit" version ".tar.gz"))
       (sha256
         (base32
-          "172r15k9kwdw2lnajvpz1632dd16nqz1kcal1p0lq5ywdarj6rfd"))))
+          "05v9h5nydljwpj5nm8n804ms0glajwfy1zagrzqrg91wk3qqi1c5"))))
   (build-system python-build-system)
   (arguments
    '(#:tests? #f)) ; The test suite uses some Windows-specific data types.
