@@ -828,6 +828,7 @@ consume data received from the server, or both.")))
                "1hfsih5iy4fi6mnpw2shf1lzx9hxcdc1arspad1mark17l5s4pmr"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:parallel-tests? _ #f) #f) ; can lead to race condition
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'lengthen-test-timeout
