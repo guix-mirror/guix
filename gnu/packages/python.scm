@@ -1109,26 +1109,20 @@ Python 3.3+.")
 (define-public python-pyicu
   (package
     (name "python-pyicu")
-    (version "1.9.5")
+    (version "1.9.8")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "PyICU" version))
       (sha256
        (base32
-        "16rmxy9y0qhqqna2v49i7nzwm09as699rbyvh4raw7w602w55c3k"))))
+        "05nz4p2dpkhwj6y9kik24xbvmfxji39nl0xw0sc0nvp9fgzf6xnd"))))
     (build-system python-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'delete-failing-test
-           (lambda _
-             ;; XXX: These tests require locales that are unavailable
-             ;; in the build environment.
-             (delete-file "test/test_DateTimeParserGenerator.py")
-             #t)))))
     (inputs
      `(("icu4c" ,icu4c)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-six" ,python-six)))
     (home-page "http://pyicu.osafoundation.org/")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
