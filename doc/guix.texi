@@ -14913,6 +14913,13 @@ This can be useful if you have an existing configuration file, or it's
 not possible to do what is required through the other parts of the
 nginx-configuration record.
 
+@item @code{server-names-hash-bucket-size} (default: @code{#f})
+Bucket size for the server names hash tables, defaults to @code{#f} to
+use the size of the processors cache line.
+
+@item @code{server-names-hash-bucket-max-size} (default: @code{#f})
+Maximum bucket size for the server names hash tables.
+
 @end table
 @end deffn
 

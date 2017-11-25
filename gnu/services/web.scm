@@ -38,6 +38,8 @@
             nginx-configuration-run-directory
             nginx-configuration-server-blocks
             nginx-configuration-upstream-blocks
+            nginx-configuration-server-names-hash-bucket-size
+            nginx-configuration-server-names-hash-bucket-max-size
             nginx-configuration-file
 
             <nginx-server-configuration>
@@ -141,6 +143,10 @@
                  (default '()))          ;list of <nginx-server-configuration>
   (upstream-blocks nginx-configuration-upstream-blocks
                    (default '()))      ;list of <nginx-upstream-configuration>
+  (server-names-hash-bucket-size nginx-configuration-server-names-hash-bucket-size
+                                 (default #f))
+  (server-names-hash-bucket-max-size nginx-configuration-server-names-hash-bucket-max-size
+                                     (default #f))
   (file          nginx-configuration-file         ;#f | string | file-like
                  (default #f)))
 
@@ -225,7 +231,9 @@ of index files."
         (cons head out)))
   (fold-right flatten1 '() lst))
 
-(define (default-nginx-config nginx log-directory run-directory server-list upstream-list)
+(define (default-nginx-config nginx log-directory run-directory server-list
+                              upstream-list server-names-hash-bucket-size
+                              server-names-hash-bucket-max-size)
   (apply mixed-text-file "nginx.conf"
          (flatten
           "user nginx nginx;\n"
@@ -239,6 +247,18 @@ of index files."
           "    scgi_temp_path " run-directory "/scgi_temp;\n"
           "    access_log " log-directory "/access.log;\n"
           "    include " nginx "/share/nginx/conf/mime.types;\n"
+          (if server-names-hash-bucket-size
+              (string-append
+               "    server_names_hash_bucket_size "
+               (number->string server-names-hash-bucket-size)
+               ";\n")
+              "")
+          (if server-names-hash-bucket-max-size
+              (string-append
+               "    server_names_hash_bucket_max_size "
+               (number->string server-names-hash-bucket-max-size)
+               ";\n")
+              "")
           "\n"
           (map emit-nginx-upstream-config upstream-list)
           (map emit-nginx-server-config server-list)
@@ -258,7 +278,8 @@ of index files."
 (define nginx-activation
   (match-lambda
     (($ <nginx-configuration> nginx log-directory run-directory server-blocks
-                              upstream-blocks file)
+                              upstream-blocks server-names-hash-bucket-size
+                              server-names-hash-bucket-max-size file)
      #~(begin
          (use-modules (guix build utils))
 
@@ -279,13 +300,16 @@ of index files."
          (system* (string-append #$nginx "/sbin/nginx")
                   "-c" #$(or file
                              (default-nginx-config nginx log-directory
-                               run-directory server-blocks upstream-blocks))
+                               run-directory server-blocks upstream-blocks
+                               server-names-hash-bucket-size
+                               server-names-hash-bucket-max-size))
                   "-t")))))
 
 (define nginx-shepherd-service
   (match-lambda
     (($ <nginx-configuration> nginx log-directory run-directory server-blocks
-                              upstream-blocks file)
+                              upstream-blocks server-names-hash-bucket-size
+                              server-names-hash-bucket-max-size file)
      (let* ((nginx-binary (file-append nginx "/sbin/nginx"))
             (nginx-action
              (lambda args
@@ -294,7 +318,9 @@ of index files."
                     (system* #$nginx-binary "-c"
                              #$(or file
                                    (default-nginx-config nginx log-directory
-                                     run-directory server-blocks upstream-blocks))
+                                     run-directory server-blocks upstream-blocks
+                                     server-names-hash-bucket-size
+                                     server-names-hash-bucket-max-size))
                              #$@args))))))
 
        ;; TODO: Add 'reload' action.
