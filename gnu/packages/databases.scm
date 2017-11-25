@@ -99,6 +99,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system r)
   #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
@@ -405,6 +406,12 @@ applications.")
        (let ((common-options
               `(;; "--use-system-tcmalloc" TODO: Missing gperftools
                 "--use-system-pcre"
+                ;; wiredtiger is 64-bit only
+                ,,(if (any (cute string-prefix? <> (or (%current-target-system)
+                                                       (%current-system)))
+                           '("i686-linux" "armhf-linux"))
+                    ``"--wiredtiger=off"
+                    ``"--wiredtiger=on")
                 ;; TODO
                 ;; build/opt/mongo/db/fts/unicode/string.o failed: Error 1
                 ;; --use-system-boost
