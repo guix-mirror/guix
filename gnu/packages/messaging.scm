@@ -831,7 +831,6 @@ messenger protocol.")
       ("freetype" ,freetype)
       ("libsodium" ,libsodium)
       ("c-toxcore" ,c-toxcore)
-      ("check" ,check)
       ("gtk+" ,gtk+)
       ("libvpx" ,libvpx)
       ("libx11" ,libx11)
@@ -839,7 +838,9 @@ messenger protocol.")
       ("libxrender" ,libxrender)
       ("openal" ,openal)
       ("v4l-utils" ,v4l-utils)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (native-inputs
+    `(("check" ,check)
+      ("pkg-config" ,pkg-config)))
    (synopsis "Lightweight Tox client")
    (description
     "Utox is a lightweight Tox client.  Tox is a distributed and secure
