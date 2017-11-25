@@ -11142,31 +11142,41 @@ The G-Expression denoting the default SLiM theme and its name.
 @end defvr
 
 @deffn {Scheme Procedure} xorg-start-command [#:guile] @
-  [#:configuration-file #f] [#:xorg-server @var{xorg-server}]
-Return a derivation that builds a @var{guile} script to start the X server
-from @var{xorg-server}.  @var{configuration-file} is the server configuration
-file or a derivation that builds it; when omitted, the result of
-@code{xorg-configuration-file} is used.
+  [#:modules %default-xorg-modules] @
+  [#:fonts %default-xorg-fonts] @
+  [#:configuration-file (xorg-configuration-file @dots{})] @
+  [#:xorg-server @var{xorg-server}]
+Return a @code{startx} script in which @var{modules}, a list of X module
+packages, and @var{fonts}, a list of X font directories, are available.  See
+@code{xorg-wrapper} for more details on the arguments.  The result should be
+used in place of @code{startx}.
 
 Usually the X server is started by a login manager.
 @end deffn
 
 @deffn {Scheme Procedure} xorg-configuration-file @
+  [#:modules %default-xorg-modules] @
+  [#:fonts %default-xorg-fonts] @
   [#:drivers '()] [#:resolutions '()] [#:extra-config '()]
 Return a configuration file for the Xorg server containing search paths for
 all the common drivers.
 
+@var{modules} must be a list of @dfn{module packages} loaded by the Xorg
+server---e.g., @code{xf86-video-vesa}, @code{xf86-input-keyboard}, and so on.
+@var{fonts} must be a list of font directories to add to the server's
+@dfn{font path}.
+
 @var{drivers} must be either the empty list, in which case Xorg chooses a
 graphics driver automatically, or a list of driver names that will be tried in
-this order---e.g., @code{(\"modesetting\" \"vesa\")}.
+this order---e.g., @code{("modesetting" "vesa")}.
 
 Likewise, when @var{resolutions} is the empty list, Xorg chooses an
 appropriate screen resolution; otherwise, it must be a list of
 resolutions---e.g., @code{((1024 768) (640 480))}.
 
 Last, @var{extra-config} is a list of strings or objects appended to the
-@code{text-file*} argument list.  It is used to pass extra text to be added
-verbatim to the configuration file.
+configuration file.  It is used to pass extra text to be
+added verbatim to the configuration file.
 @end deffn
 
 @deffn {Scheme Procedure} screen-locker-service @var{package} [@var{name}]
