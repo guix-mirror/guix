@@ -6300,3 +6300,61 @@ contexts.
 @item Toggle downloading and set priorities for individual files.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public eless
+  (package
+    (name "eless")
+    (version "0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/kaushalmodi/eless/archive/"
+                    "v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gjnnhgw5xs1w3qfnkvwa2nv44gnxr8pkhx3c7qig45p8nh1461h"))))
+    (build-system trivial-build-system)
+    (inputs
+     `(("bash" ,bash)))
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (setenv "PATH" (string-append
+                         (assoc-ref %build-inputs "tar") "/bin" ":"
+                         (assoc-ref %build-inputs "gzip") "/bin"))
+         (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+         (chdir (string-append "eless" "-" ,version))
+         (substitute* "eless" (("/usr/bin/env bash")
+                               (string-append (assoc-ref %build-inputs "bash")
+                                              "/bin/bash")))
+         (install-file "eless" (string-append %output "/bin"))
+         (install-file "doc/eless.info" (string-append %output "/share/info"))
+         #t)))
+    (home-page "https://github.com/kaushalmodi/eless")
+    (synopsis "Use Emacs as a paginator")
+    (description "@code{eless} provides a combination of Bash script
+and a minimal Emacs view-mode.
+
+Feautures:
+
+@itemize
+@item Independent of a user’s Emacs config.
+@item Customizable via the @code{(locate-user-emacs-file \"elesscfg\")} config.
+@item Not require an Emacs server to be already running.
+@item Syntax highlighting.
+@item Org-mode file rendering.
+@item @code{man} page viewer.
+@item Info viewer.
+@item Dired, wdired, (batch edit symbolic links).
+@item Colored diffs, git diff, git log, ls with auto ANSI detection.
+@item Filter log files lines matching a regexp.
+@item Auto-revert log files similar to @code{tail -f}.
+@item Quickly change frame and font sizes.
+@end itemize\n")
+    (license license:expat)))
