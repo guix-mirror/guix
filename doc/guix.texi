@@ -10996,10 +10996,17 @@ Package object of the Open vSwitch.
 
 @cindex X11
 @cindex X Window System
+@cindex login manager
 Support for the X Window graphical display system---specifically
 Xorg---is provided by the @code{(gnu services xorg)} module.  Note that
 there is no @code{xorg-service} procedure.  Instead, the X server is
-started by the @dfn{login manager}, currently SLiM.
+started by the @dfn{login manager}, by default SLiM.
+
+@cindex window manager
+To use X11, you must install at least one @dfn{window manager}---for
+example the @code{windowmaker} or @code{openbox} packages---preferably
+by adding it to the @code{packages} field of your operating system
+definition (@pxref{operating-system Reference, system-wide packages}).
 
 @defvr {Scheme Variable} slim-service-type
 This is the type for the SLiM graphical login manager for X11.
@@ -11036,8 +11043,19 @@ When @code{auto-login?} is true, SLiM logs in directly as
 @itemx @code{theme-name} (default: @code{%default-slim-theme-name})
 The graphical theme to use and its name.
 
-@item @code{auto-login-session} (default: @code{windowmaker})
-The default session to use when none is specified.
+@item @code{auto-login-session} (default: @code{#f})
+If true, this must be the name of the executable to start as the default
+session---e.g., @code{(file-append windowmaker "/bin/windowmaker")}.
+
+If false, a session described by one of the available @file{.desktop}
+files in @code{/run/current-system/profile} and @code{~/.guix-profile}
+will be used.
+
+@quotation Note
+You must install at least one window manager in the system profile or in
+your user profile.  Failing to do that, if @code{auto-login-session} is
+false, you will be unable to log in.
+@end quotation
 
 @item @code{startx} (default: @code{(xorg-start-command)})
 The command used to start the X11 graphical server.

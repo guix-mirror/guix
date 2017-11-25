@@ -309,10 +309,15 @@ used in place of @code{startx}."
                   fallback-session)
   "Return a system-wide xinitrc script that starts the specified X session,
 which should be passed to this script as the first argument.  If not, the
-@var{fallback-session} will be used."
+@var{fallback-session} will be used or, if @var{fallback-session} is false, a
+desktop session from the system or user profile will be used."
   (define builder
     #~(begin
-        (use-modules (ice-9 match))
+        (use-modules (ice-9 match)
+                     (ice-9 regex)
+                     (ice-9 ftw)
+                     (srfi srfi-1)
+                     (srfi srfi-26))
 
         (define (close-all-fdes)
           ;; Close all the open file descriptors except 0 to 2.
@@ -336,16 +341,59 @@ which should be passed to this script as the first argument.  If not, the
             (execl shell shell "--login" "-c"
                    (string-join (cons command args)))))
 
+        (define system-profile
+          "/run/current-system/profile")
+
+        (define user-profile
+          (and=> (getpw (getuid))
+                 (lambda (pw)
+                   (string-append (passwd:dir pw) "/.guix-profile"))))
+
+        (define (xsession-command desktop-file)
+          ;; Read from DESKTOP-FILE its X session command and return it as a
+          ;; list.
+          (define exec-regexp
+            (make-regexp "^[[:blank:]]*Exec=(.*)$"))
+
+          (call-with-input-file desktop-file
+            (lambda (port)
+              (let loop ()
+                (match (read-line port)
+                  ((? eof-object?) #f)
+                  ((= (cut regexp-exec exec-regexp <>) result)
+                   (if result
+                       (string-tokenize (match:substring result 1))
+                       (loop))))))))
+
+        (define (find-session profile)
+          ;; Return an X session command from PROFILE or #f if none was found.
+          (let ((directory (string-append profile "/share/xsessions")))
+            (match (scandir directory
+                            (cut string-suffix? ".desktop" <>))
+              ((or () #f)
+               #f)
+              ((sessions ...)
+               (any xsession-command
+                    (map (cut string-append directory "/" <>)
+                         sessions))))))
+
         (let* ((home          (getenv "HOME"))
                (xsession-file (string-append home "/.xsession"))
                (session       (match (command-line)
-                                ((_)       (list #$fallback-session))
-                                ((_ x ..1) x))))
+                                ((_)
+                                 #$(if fallback-session
+                                       #~(list #$fallback-session)
+                                       #f))
+                                ((_ x ..1)
+                                 x))))
           (if (file-exists? xsession-file)
               ;; Run ~/.xsession when it exists.
               (apply exec-from-login-shell xsession-file session)
-              ;; Otherwise, start the specified session.
-              (apply exec-from-login-shell session)))))
+              ;; Otherwise, start the specified session or a fallback.
+              (apply exec-from-login-shell
+                     (or session
+                         (find-session user-profile)
+                         (find-session system-profile)))))))
 
   (program-file "xinitrc" builder))
 
@@ -383,7 +431,7 @@ which should be passed to this script as the first argument.  If not, the
   (shepherd slim-configuration-shepherd
             (default shepherd))
   (auto-login-session slim-configuration-auto-login-session
-                      (default (file-append windowmaker "/bin/wmaker")))
+                      (default #f))
   (startx slim-configuration-startx
           (default (xorg-start-command))))
 
@@ -469,8 +517,7 @@ reboot_cmd " shepherd "/sbin/reboot\n"
                        (theme %default-slim-theme)
                        (theme-name %default-slim-theme-name)
                        (xauth xauth) (shepherd shepherd)
-                       (auto-login-session (file-append windowmaker
-                                                        "/bin/wmaker"))
+                       (auto-login-session #f)
                        (startx (xorg-start-command)))
   "Return a service that spawns the SLiM graphical login manager, which in
 turn starts the X display server with @var{startx}, a command as returned by
