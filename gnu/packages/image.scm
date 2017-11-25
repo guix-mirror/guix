@@ -207,25 +207,24 @@ in-memory raw vectors.")
     ;; Any of these GPL versions.
     (license (list license:gpl2 license:gpl3))))
 
-(define-public pngcrunch
+(define-public pngcrush
   (package
-   (name "pngcrunch")
-   (version "1.8.11")
+   (name "pngcrush")
+   (version "1.8.13")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/pmt/pngcrush/"
-                                version "/pngcrush-" version ".tar.xz"))
+                                version "/pngcrush-" version "-nolib.tar.xz"))
             (sha256 (base32
-                     "1c7m316i91jp3h1dj1ppppdv6zilm2njk1wrpqy2zj0fcll06lwd"))))
+                     "0l43c59d6v9l0g07z3q3ywhb8xb3vz74llv3mna0izk9bj6aqkiv"))))
    (build-system gnu-build-system)
    (arguments
-    '(#:make-flags '("-f" "Makefile-nolib")
-      #:tests? #f ; no check target
+    '(#:tests? #f ; no check target
       #:phases
       (modify-phases %standard-phases
         (replace 'configure
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (substitute* "Makefile-nolib"
+            (substitute* "Makefile"
               (("^(PNG(INC|LIB) = )/usr/local/" line vardef)
                (string-append vardef (assoc-ref inputs "libpng") "/"))
               (("^(Z(INC|LIB) = )/usr/local/" line vardef)
@@ -236,11 +235,15 @@ in-memory raw vectors.")
    (inputs
     `(("libpng" ,libpng)
       ("zlib" , zlib)))
-   (home-page "https://pmt.sourceforge.net/pngcrush")
+   (home-page "https://pmt.sourceforge.io/pngcrush")
    (synopsis "Utility to compress PNG files")
    (description "pngcrusqh is an optimizer for PNG (Portable Network Graphics)
 files.  It can compress them as much as 40% losslessly.")
    (license license:zlib)))
+
+(define-public pngcrunch
+  ;; This package used to be wrongfully name "pngcrunch".
+  (deprecated-package "pngcrunch" pngcrush))
 
 (define-public libjpeg
   (package
