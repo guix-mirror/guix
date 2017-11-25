@@ -479,20 +479,15 @@ arithmetic ops.")
 (define-public jbig2dec
   (package
     (name "jbig2dec")
-    (version "0.13")
+    (version "0.14")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://downloads.ghostscript.com/public/" name "/"
                             name "-" version ".tar.gz"))
         (sha256
-          (base32 "04akiwab8iy5iy34razcvh9mcja9wy737civ3sbjxk4j143s1b2s"))
-        (patches (search-patches "jbig2dec-ignore-testtest.patch"
-                                 "jbig2dec-CVE-2016-9601.patch"
-                                 "jbig2dec-CVE-2017-7885.patch"
-                                 "jbig2dec-CVE-2017-7975.patch"
-                                 "jbig2dec-CVE-2017-7976.patch"))))
-
+          (base32 "0k01hp0q4275fj4rbr1gy64svfraw5w7wvwl08yjhvsnpb1rid11"))
+        (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
     (build-system gnu-build-system)
     (synopsis "Decoder of the JBIG2 image compression format")
     (description

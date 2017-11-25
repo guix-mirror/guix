@@ -1,8 +1,8 @@
-Do not run the "testtest script", it doesn't seem to do anything and reports
-failiute. TODO: Actually fix the test instead of ignoring it.
+Do not run the test 'test_jbig2dec.py'. It doesn't seem to do anything
+and reports failure. TODO: Actually fix the test instead of ignoring it.
 
 diff --git a/Makefile.in b/Makefile.in
-index 0573592..1a5de77 100644
+index 63982d4..8af1d61 100644
 --- a/Makefile.in
 +++ b/Makefile.in
 @@ -93,7 +93,7 @@ host_triplet = @host@
