@@ -5172,21 +5172,20 @@ command-line arguments or read from stdin.")
          "0sdbb2ag6vmybi8zmbjszi492a587giaaqxyy1p6gy03cb8mc512"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; 11 tests of 105 fail to mock "requests".
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'check)
          (add-after 'install 'check
-           (lambda* (#:key inputs outputs target (tests? (not target)) #:allow-other-keys)
-             (if tests?
-               (begin
-                 (add-installed-pythonpath inputs outputs)
-                 (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
-                                               ":" (getenv "PATH")))
-                 (zero? (system* "py.test")))
-               (begin
-                 (format #t "test suite not run~%")
-                 #t)))))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
+                                           ":" (getenv "PATH")))
+             (zero? (system* "py.test" "-v" "-k"
+                             (string-append
+                              ;; These tests attempt to make a connection to
+                              ;; an external web service.
+                              "not test_get_item_with_kwargs"
+                              " and not test_ia"))))))))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-jsonpatch" ,python-jsonpatch-0.4)
