@@ -1123,7 +1123,7 @@ Python 3.3+.")
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-six" ,python-six)))
-    (home-page "http://pyicu.osafoundation.org/")
+    (home-page "https://github.com/ovalhub/pyicu")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
