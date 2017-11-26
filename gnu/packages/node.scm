@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,14 +41,18 @@
 (define-public node
   (package
     (name "node")
-    (version "8.7.0")
+    (version "8.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "1a0ginagx3pav6v7adyp76jisia4qgbsq6pz3als4kshwlk4a667"))))
+                "1qbiz7hgwlirhwpd71c8yzcbwsyi5bjlfp6lxb6v55j6rizinj9j"))
+              ;; See https://github.com/nodejs/node/issues/16688
+              ;; Remove this next update (>8.9.1).
+              (patches
+                (search-patches "node-test-http2-server-rst-stream.patch"))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO: Purge the bundled copies from the source.
@@ -76,6 +81,10 @@
                (("'/usr/bin/env'")
                 (string-append "'" (which "env") "'")))
 
+
+             ;; test-make-doc needs doc-only target, which is inhibited below
+             (for-each delete-file
+                       '("test/doctool/test-make-doc.js"))
              ;; FIXME: This test seems to depends on files that are not
              ;; available in the bundled v8. See
              ;; https://github.com/nodejs/node/issues/13344
@@ -88,12 +97,12 @@
                          "test/parallel/test-util-inspect.js"
                          "test/parallel/test-v8-serdes.js"
                          "test/parallel/test-dgram-membership.js"
-                         "test/parallel/test-dgram-multicast-set-interface-lo.js"
                          "test/parallel/test-dns-cancel-reverse-lookup.js"
                          "test/parallel/test-dns-resolveany.js"
                          "test/parallel/test-cluster-master-error.js"
                          "test/parallel/test-cluster-master-kill.js"
                          "test/parallel/test-npm-install.js"
+                         "test/parallel/test-regress-GH-746.js"
                          "test/sequential/test-child-process-emfile.js"
                          "test/sequential/test-benchmark-child-process.js"
                          "test/sequential/test-http-regr-gh-2928.js"))
@@ -115,6 +124,14 @@
                              (string-append (assoc-ref inputs "python")
                                             "/bin/python")
                              "configure" flags)))))
+         (add-before 'check 'skip-check-doc-only
+           (lambda _
+             (substitute* "Makefile"
+               ;; requires js-yaml, which is not part of the distribution,
+               ;; and falls back to using npm to download it
+               (("\\$\\(MAKE\\) doc-only" all)
+                (string-append "#" all)))
+             #t))
          (add-after 'patch-shebangs 'patch-npm-shebang
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((bindir (string-append (assoc-ref outputs "out")
