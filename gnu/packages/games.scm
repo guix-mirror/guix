@@ -4505,7 +4505,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.20.0")
+    (version "0.20.1")
     (source
      (origin
        (method url-fetch)
@@ -4519,7 +4519,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                             version "-nodeps.tar.xz")))
        (sha256
         (base32
-         "0127dgldij2h4m7cf32yy9ndv4vcz03g4km71lmxrsi5mw7ljgpd"))
+         "0cagx7687r5ln7pmzl60akjhjpyqd62z9zhfr2mqfk53wl9jbsbj"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -4604,7 +4604,7 @@ fabulous Orb of Zot.")
        ("sdl2-mixer" ,sdl2-mixer)))
     (native-inputs
      `(,@(package-native-inputs crawl)
-       ;; TODO: Add advpng or pngcrush for additional PNG optimization.
+       ("pngcrush" ,pngcrush)
        ("which" ,which)))
     (synopsis "Graphical roguelike dungeon crawler game")))
 
