@@ -4898,7 +4898,7 @@ used to start services with both privileged and non-privileged port numbers.")
 (define-public tidy-html
   (package
     (name "tidy-html")
-    (version "5.4.0")
+    (version "5.6.0")
     (source
      (origin
        (method url-fetch)
@@ -4907,7 +4907,7 @@ used to start services with both privileged and non-privileged port numbers.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0yhbgbjl45b4sjxwc394cjra6iy02q1pi66p28zy70lr6jvm9mx2"))))
+         "0n29wcgw32rhnraj9j21ibhwi0xagmmcskhbaz8ihxly7nx3p9h8"))))
     (build-system cmake-build-system)
     (outputs '("out"
                "static")) ; 1.0MiB of .a files
