@@ -392,6 +392,10 @@ applications.")
     (inputs
      `(("openssl" ,openssl)
        ("pcre" ,pcre)
+        ,@(match (%current-system)
+            ((or "x86_64-linux" "aarch64-linux" "mips64el-linux")
+             `(("wiredtiger" ,wiredtiger)))
+            (_ `()))
        ("yaml-cpp" ,yaml-cpp)
        ("zlib" ,zlib)
        ("snappy" ,snappy)
@@ -411,7 +415,7 @@ applications.")
                                                        (%current-system)))
                            '("i686-linux" "armhf-linux"))
                     ``"--wiredtiger=off"
-                    ``"--wiredtiger=on")
+                    ``"--use-system-wiredtiger")
                 ;; TODO
                 ;; build/opt/mongo/db/fts/unicode/string.o failed: Error 1
                 ;; --use-system-boost
