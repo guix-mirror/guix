@@ -4203,6 +4203,8 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
+    ;; emacs-org-contrib inherits from this package.  Please update its sha256
+    ;; checksum as well.
     (version "20171116")
     (source (origin
               (method url-fetch)
@@ -4230,7 +4232,7 @@ reproducible research.")
                                   (package-version emacs-org) ".tar"))
               (sha256
                (base32
-                "0xy2xrndlhs4kyvh6mmv24dnh3fn5p63d2gaimnrypf1p8znwzh4"))))
+                "071vqv6hdyjp85ap39930782ks07ypjzch81r8kax3ybwfrf0chx"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
