@@ -94,7 +94,8 @@
        ("w3m" ,w3m)
        ("xmlto" ,xmlto)))
     (propagated-inputs
-     `(("xprop" ,xprop) ; for Xfce detecting
+     `(("perl-file-mimeinfo" ,perl-file-mimeinfo) ; for mimeopen fallback
+       ("xprop" ,xprop) ; for Xfce detecting
        ("xset" ,xset))) ; for xdg-screensaver
     (arguments
      `(#:tests? #f   ; no check target
