@@ -8316,11 +8316,6 @@ of gene-level counts.")
            (lambda* (#:key outputs #:allow-other-keys)
              (system* "tar" "-xzvf"
                       "src/hdf5source/hdf5small.tgz" "-C" "src/" )
-             (substitute* "src/Makevars"
-               (("^.*cd hdf5source &&.*$") "")
-               (("^.*gunzip -dc hdf5small.tgz.*$") "")
-               (("^.*rm -rf hdf5.*$") "")
-               (("^.*mv hdf5source/hdf5 ..*$") ""))
              (substitute* "src/hdf5/configure"
                (("/bin/mv") "mv"))
              #t)))))
