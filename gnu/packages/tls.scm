@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -484,14 +485,14 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.5.5")
+    (version "2.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1i77viqy1afvbr392npk9v54k9zhr9zq2vhv6pliza22b0ymwzz5"))))
+                "162wgzmg4zzqj5cxrsrmkfv1623dc4g8h3fsf1lvjw9i4sc6bbdf"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
