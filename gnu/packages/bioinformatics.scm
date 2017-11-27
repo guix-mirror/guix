@@ -3292,7 +3292,7 @@ experiments and provide highly stable thresholds based on reproducibility.")
 (define-public jellyfish
   (package
     (name "jellyfish")
-    (version "2.2.4")
+    (version "2.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/gmarcais/Jellyfish/"
@@ -3300,7 +3300,7 @@ experiments and provide highly stable thresholds based on reproducibility.")
                                   "/jellyfish-" version ".tar.gz"))
               (sha256
                (base32
-                "0a6xnynqy2ibfbfz86b9g2m2dgm7f1469pmymkpam333gi3p26nk"))))
+                "1a1iwq9pq54k2m9ypvwl5s0bqfl64gwh9dx5af9i382ajas2016q"))))
     (build-system gnu-build-system)
     (outputs '("out"      ;for library
                "ruby"     ;for Ruby bindings
@@ -3323,7 +3323,10 @@ experiments and provide highly stable thresholds based on reproducibility.")
      `(("bc" ,bc)
        ("time" ,time)
        ("ruby" ,ruby)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("htslib" ,htslib)))
     (synopsis "Tool for fast counting of k-mers in DNA")
     (description
      "Jellyfish is a tool for fast, memory-efficient counting of k-mers in
