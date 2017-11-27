@@ -1833,16 +1833,6 @@ manipulate, read, and write Zip archive files.")
               (sha256
                (base32
                 "11g1hvm2bxa2v5plakfzcwyk5hb5fz4kgrkp38l0xhnv21888xv2"))))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'remove-failing-tests
-           ;; These tests are known to fail on 32-bit architectures.
-           ;; see thread: https://nih.at/listarchive/libzip-discuss/msg00713.html
-           (lambda _
-             (substitute* "regress/Makefile"
-               (("encryption-nonrandom") "#encryption-nonrandom"))
-             #t)))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
