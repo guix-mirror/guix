@@ -466,13 +466,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
               (sha256
                (base32
-                "00jmbfysdpsb2vcckamvsxw5n8xqh4j67diam2p0lmqzsn92syq9"))
+                "1rvn8b6clzd1r317r9jkvk34r31risi0dxfjc7jffhnwasck4anc"))
               (modules '((guix build utils)))
               (snippet
                '(for-each
@@ -521,7 +521,8 @@ detection, and lossless compression.")
                             "and not benchmark "
                             ;; These tests assume the kernel supports FUSE.
                             "and not test_fuse "
-                            "and not test_fuse_allow_damaged_files"))))))
+                            "and not test_fuse_allow_damaged_files "
+                            "and not test_mount_hardlinks"))))))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
