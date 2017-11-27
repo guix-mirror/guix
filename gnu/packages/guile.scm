@@ -1263,7 +1263,7 @@ key-value cache and store.")
 (define-public guile-wisp
   (package
     (name "guile-wisp")
-    (version "0.9.0")
+    (version "0.9.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/ArneBab/"
@@ -1271,25 +1271,23 @@ key-value cache and store.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0y5fxacalkgbv9s71h58vdvm2h2ln3rk024dd0vszwcf953as5fq"))))
+                "1f2bbicq1rxnwmiplrm4r75wj06w385mjkyvi7g4k740bgwcrzxr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((system base compile)
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'substitute-before-config
+         (add-before 'configure 'substitute-before-config
 
           (lambda* (#:key inputs #:allow-other-keys)
             (let ((bash (assoc-ref inputs "bash")))
-              ;; configure checks for guile-2.0, but ours is just named "guile" :)
-              (substitute* "configure"
-                (("guile-2.0") "guile"))
               ;; Puts together some test files with /bin/bash hardcoded
               (substitute* "Makefile.in"
-                (("/bin/bash")
-                 (string-append bash "/bin/bash") ))
+                (("/usr/bin/env bash")
+                 (string-append bash "/bin/bash"))
+                (("\\$\\(GUILE_EFFECTIVE_VERSION\\)/site")
+                 "site/$(GUILE_EFFECTIVE_VERSION)")) ;use the right order
               #t)))
 
          ;; auto compilation breaks, but if we set HOME to /tmp,
@@ -1299,37 +1297,25 @@ key-value cache and store.")
           (lambda _
             (setenv "HOME" "/tmp")
             #t))
-         (replace
-          'install
+         (add-after 'install 'install-go-files
           (lambda* (#:key outputs inputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
-                   (module-dir (string-append out "/share/guile/site/2.0"))
-                   (language-dir
-                    (string-append module-dir "/language/wisp"))
-                   (guild (string-append (assoc-ref inputs "guile")
-                                         "/bin/guild")))
-              ;; Make installation directories.
-              (mkdir-p module-dir)
-              (mkdir-p language-dir)
-
-              ;; copy the source
-              (copy-file "wisp-scheme.scm"
-                         (string-append module-dir "/wisp-scheme.scm"))
-              (copy-file "language/wisp/spec.scm"
-                         (string-append language-dir "/spec.scm"))
-
+                   (module-dir (string-append out "/share/guile/site")))
               ;; compile to the destination
-              (compile-file "wisp-scheme.scm"
-                            #:output-file (string-append
-                                           module-dir "/wisp-scheme.go"))
-              (compile-file "language/wisp/spec.scm"
-                            #:output-file (string-append
-                                           language-dir "/spec.go"))
+              (for-each (lambda (file)
+                          (compile-file file
+                                        #:output-file
+                                        (string-append
+                                         (string-drop-right file 4)
+                                         ".go")))
+                        (find-files module-dir "\\.scm$"))
               #t))))))
     (home-page "http://draketo.de/english/wisp")
     (inputs
-     `(("guile" ,guile-2.0)
-       ("python" ,python)))
+     `(("guile" ,guile-2.0)))
+    (native-inputs
+     `(("python" ,python)
+       ("pkg-config" ,pkg-config)))
     (synopsis "Whitespace to lisp syntax for Guile")
     (description "Wisp is a syntax for Guile which provides a Python-like
 whitespace-significant language.  It may be easier on the eyes for some
