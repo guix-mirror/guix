@@ -1177,3 +1177,53 @@ application data and cache data.")
 Freedesktop.org @dfn{Desktop Entry} specification.  It can also run the
 applications define in those files.")
     (license license:perl-license)))
+
+(define-public perl-file-mimeinfo
+  (package
+    (name "perl-file-mimeinfo")
+    (version "0.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
+                           "File-MimeInfo-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ipbh63bkh1r2gy5g7q4bzhki8j29mm1jkhbv60p9vwsdys5s91a"))))
+    (build-system perl-build-system)
+    ;; If the tests are fixed, add perl-test-pod, perl-test-pod-coverage, and
+    ;; perl-test-tiny as native-inputs.
+    (propagated-inputs
+     `(("shared-mime-info" ,shared-mime-info)
+       ("perl-file-desktopentry" ,perl-file-desktopentry)))
+    (arguments
+     ;; Some tests fail due to requiring the mimetype of perl files to be
+     ;; text/plain when they are actually application/x-perl.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (prog)
+                           (wrap-program (string-append out "/bin/" prog)
+                             `("PERL5LIB" ":" prefix
+                               (,(string-append (getenv "PERL5LIB") ":" out
+                                                "/lib/perl5/site_perl")))))
+                         '("mimeopen" "mimetype")))
+             #t)))))
+    (home-page "http://search.cpan.org/dist/File-MimeInfo/")
+    (synopsis "Determine file type from the file name")
+    (description
+     "@code{File::Mimeinfo} can be used to determine the MIME type of a file.
+It tries to implement the Freedesktop specification for a shared MIME
+database.
+
+This package also contains two related utilities:
+
+@itemize
+@item @command{mimetype} determines a file's MIME type;
+@item @command{mimeopen} opens files in an appropriate program according to
+their MIME type.
+@end itemize")
+    (license license:perl-license)))
