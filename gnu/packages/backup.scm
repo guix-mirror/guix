@@ -560,7 +560,7 @@ provide an efficient and secure way to backup data.  The data deduplication
 technique used makes Borg suitable for daily backups since only changes are
 stored.  The authenticated encryption technique makes it suitable for backups
 to not fully trusted targets.  Borg is a fork of Attic.")
-    (home-page "https://borgbackup.github.io/borgbackup/")
+    (home-page "https://www.borgbackup.org/")
     (license license:bsd-3)))
 
 (define-public attic
