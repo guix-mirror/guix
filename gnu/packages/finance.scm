@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -319,7 +320,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.11.0.0")
+    (version "0.11.1.0")
     (source
      (origin
        (method url-fetch)
@@ -337,7 +338,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
            #t))
        (sha256
         (base32
-         "083w40a553c0r3i18020jcrv5s0b64vx3d8xrn9nwkb2237ighlk"))))
+         "16shd834025jyzy68h3gag1sz8vbk875hy4j97hrki8pacz8vd5m"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
