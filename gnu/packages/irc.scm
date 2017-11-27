@@ -297,14 +297,14 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
 (define-public limnoria
   (package
     (name "limnoria")
-    (version "2017.08.18")
+    (version "2017.10.01")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "limnoria" version))
        (sha256
         (base32
-         "1hij444l45mjli8i67iyd3syf263ijj1l0cm3irqjjxv5r3f9zjj"))))
+         "1hd8h257x7a0s4rvb4aqvfi77qfcyv6jaz70nndg7y6p4yhvjmy6"))))
     (build-system python-build-system)
     (inputs
      `(("python-pytz" ,python-pytz)
