@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,12 +60,15 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
   #:use-module (gnu packages w3m)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
@@ -1145,4 +1149,31 @@ manually by a user.")
 specified by the Freedesktop.org Base Directory Specification.  This
 specifications gives a mechanism to locate directories for configuration,
 application data and cache data.")
+    (license license:perl-license)))
+
+(define-public perl-file-desktopentry
+  (package
+    (name "perl-file-desktopentry")
+    (version "0.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
+                           "File-DesktopEntry-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1f1maqix2kbfg2rf008m7mqnvv6nvcf9y6pcgdv2kxp2vbih370n"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (propagated-inputs
+     `(("perl-file-basedir" ,perl-file-basedir)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/~michielb/File-DesktopEntry/")
+    (synopsis "Handle @file{.desktop} files")
+    (description
+     "@code{File::DesktopEntry} parses @file{.desktop} files defined by the
+Freedesktop.org @dfn{Desktop Entry} specification.  It can also run the
+applications define in those files.")
     (license license:perl-license)))
