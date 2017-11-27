@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -152,14 +153,14 @@ interactive dialogs to guide them.")
 (define-public coda
   (package
     (name "coda")
-    (version "2.18.2")
+    (version "2.18.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/stcorp/coda/releases/download/"
                            version "/coda-" version ".tar.gz"))
        (sha256
-        (base32 "01fnqcby9jijvf3jxr1fk4bny059lvvq5wbqm7ns60ilykfdnm6a"))
+        (base32 "1zlzgcvwmmjm8mw8w4rg2rqy0pjilz7kyyxm0y4p8cbljbbjxxz0"))
        (patches (search-patches "coda-use-system-libs.patch"))
        (modules '((guix build utils)))
        (snippet
