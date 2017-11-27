@@ -2949,7 +2949,7 @@ service via the system message bus.")
 (define-public libgweather
   (package
     (name "libgweather")
-    (version "3.26.0")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2957,7 +2957,7 @@ service via the system message bus.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vkbc8rvmrlfiws844izxfl01r6l9p6agf8vvgszzkry1gfbm12v"))))
+                "1f64ix7acj0j0qvxwxaazii2bhsjgh5ang1kw14fkg25ndq899zw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
