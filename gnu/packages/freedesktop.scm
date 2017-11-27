@@ -32,6 +32,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
@@ -60,6 +61,8 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages xml)
@@ -1113,3 +1116,33 @@ localization (i.e. translation) of the file names.  Designed to be
 automatically run when a user logs in, xdg-user-dirs can also be run
 manually by a user.")
     (license license:gpl2)))
+
+(define-public perl-file-basedir
+  (package
+    (name "perl-file-basedir")
+    (version "0.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KI/KIMRYAN/"
+                           "File-BaseDir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0aq8d4hsaxqibp36f773y6dfck7zd82v85sp8vhi6pjkg3pmf2hj"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-file-which" ,perl-file-which)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("xdg-user-dirs" ,xdg-user-dirs)))
+    (propagated-inputs
+     `(("perl-ipc-system-simple" ,perl-ipc-system-simple)))
+    (home-page "http://search.cpan.org/dist/File-BaseDir/")
+    (synopsis "Use the Freedesktop.org base directory specification")
+    (description
+     "@code{File::Basedir} can be used to find directories and files as
+specified by the Freedesktop.org Base Directory Specification.  This
+specifications gives a mechanism to locate directories for configuration,
+application data and cache data.")
+    (license license:perl-license)))
