@@ -1312,7 +1312,7 @@ key-value cache and store.")
               #t))))))
     (home-page "http://draketo.de/english/wisp")
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (native-inputs
      `(("python" ,python)
        ("pkg-config" ,pkg-config)))
