@@ -1274,8 +1274,11 @@ key-value cache and store.")
                 "1f2bbicq1rxnwmiplrm4r75wj06w385mjkyvi7g4k740bgwcrzxr"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:modules ((system base compile)
-                  ,@%gnu-build-system-modules)
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 rdelim)
+                  (ice-9 popen))
+
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'substitute-before-config
@@ -1300,14 +1303,22 @@ key-value cache and store.")
          (add-after 'install 'install-go-files
           (lambda* (#:key outputs inputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
-                   (module-dir (string-append out "/share/guile/site")))
+                   (effective (read-line
+                               (open-pipe* OPEN_READ
+                                           "guile" "-c"
+                                           "(display (effective-version))")))
+                   (module-dir (string-append out "/share/guile/site/"
+                                              effective))
+                   (object-dir (string-append out "/lib/guile/" effective
+                                              "/site-ccache"))
+                   (prefix     (string-length module-dir)))
               ;; compile to the destination
               (for-each (lambda (file)
-                          (compile-file file
-                                        #:output-file
-                                        (string-append
-                                         (string-drop-right file 4)
-                                         ".go")))
+                          (let* ((base (string-drop (string-drop-right file 4)
+                                                    prefix))
+                                 (go   (string-append object-dir base ".go")))
+                           (invoke "guild" "compile" "-L" module-dir
+                                    file "-o" go)))
                         (find-files module-dir "\\.scm$"))
               #t))))))
     (home-page "http://draketo.de/english/wisp")
