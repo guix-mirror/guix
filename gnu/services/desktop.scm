@@ -854,7 +854,7 @@ with the administrator's password."
 
 (define %desktop-services
   ;; List of services typically useful for a "desktop" use case.
-  (cons* (slim-service)
+  (cons* (service slim-service-type)
 
          ;; Screen lockers are a pretty useful thing and these are small.
          (screen-locker-service slock)

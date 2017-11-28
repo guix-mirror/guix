@@ -52,7 +52,20 @@
 
             %default-slim-theme
             %default-slim-theme-name
+
             slim-configuration
+            slim-configuration?
+            slim-configuration-slim
+            slim-configuration-allow-empty-passwords?
+            slim-configuration-auto-login?
+            slim-configuration-default-user
+            slim-configuration-theme
+            slim-configuration-theme-name
+            slim-configuration-xauth
+            slim-configuration-shepherd
+            slim-configuration-auto-login-session
+            slim-configuration-startx
+
             slim-service-type
             slim-service
 
@@ -355,17 +368,24 @@ which should be passed to this script as the first argument.  If not, the
   slim-configuration?
   (slim slim-configuration-slim
         (default slim))
-  (allow-empty-passwords? slim-configuration-allow-empty-passwords?)
-  (auto-login? slim-configuration-auto-login?)
-  (default-user slim-configuration-default-user)
-  (theme slim-configuration-theme)
-  (theme-name slim-configuration-theme-name)
+  (allow-empty-passwords? slim-configuration-allow-empty-passwords?
+                          (default #t))
+  (auto-login? slim-configuration-auto-login?
+               (default #f))
+  (default-user slim-configuration-default-user
+                (default ""))
+  (theme slim-configuration-theme
+         (default %default-slim-theme))
+  (theme-name slim-configuration-theme-name
+              (default %default-slim-theme-name))
   (xauth slim-configuration-xauth
          (default xauth))
   (shepherd slim-configuration-shepherd
             (default shepherd))
-  (auto-login-session slim-configuration-auto-login-session)
-  (startx slim-configuration-startx))
+  (auto-login-session slim-configuration-auto-login-session
+                      (default (file-append windowmaker "/bin/wmaker")))
+  (startx slim-configuration-startx
+          (default (xorg-start-command))))
 
 (define (slim-pam-service config)
   "Return a PAM service for @command{slim}."
@@ -440,9 +460,10 @@ reboot_cmd " shepherd "/sbin/reboot\n"
                        ;; Unconditionally add xterm to the system profile, to
                        ;; avoid bad surprises.
                        (service-extension profile-service-type
-                                          (const (list xterm)))))))
+                                          (const (list xterm)))))
+                (default-value (slim-configuration))))
 
-(define* (slim-service #:key (slim slim)
+(define* (slim-service #:key (slim slim)          ;deprecated
                        (allow-empty-passwords? #t) auto-login?
                        (default-user "")
                        (theme %default-slim-theme)
