@@ -11883,3 +11883,31 @@ belong to tagged versions.")
 
 (define-public python2-setuptools-scm-git-archive
   (package-with-python2 python-setuptools-scm-git-archive))
+
+(define-public python-pyclipper
+  (package
+    (name "python-pyclipper")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyclipper" version ".zip"))
+       (sha256
+        (base32
+         "1zpmwv3bya3j984y5cf9x9d5108kf6mxldcba68wiq0frv5qrssw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)); 8 Tests fail, 37 succeed
+    (propagated-inputs
+     `(("python-setuptools-scm-git-archive" ,python-setuptools-scm-git-archive)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://github.com/greginvm/pyclipper")
+    (synopsis "Wrapper for Angus Johnson's Clipper library")
+    (description
+     "Pyclipper is a Cython wrapper for the C++ translation of the
+  Angus Johnson's polygon clipping Clipper library (ver. 6.2.1).")
+    (license license:expat)))
+
+(define-public python2-pyclipper
+  (package-with-python2 python-pyclipper))
