@@ -19898,16 +19898,14 @@ definition may look like this:
   (let ((commit "c3f29bc928d5900971f65965feaae59e1272a3f7")
         (revision "1"))          ;Guix package revision
     (package
-      (version (string-append "0.9-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.9" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "git://example.org/my-package.git")
                       (commit commit)))
                 (sha256 (base32 "1mbikn@dots{}"))
-                (file-name (string-append "my-package-" version
-                                          "-checkout"))))
+                (file-name (git-file-name name version))))
       ;; @dots{}
       )))
 @end example
