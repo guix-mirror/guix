@@ -125,4 +125,9 @@
                           (certbot-configuration
                            (inherit config)
                            (hosts (append (certbot-configuration-hosts config)
-                                          additional-hosts)))))))
+                                          additional-hosts)))))
+                (default-value (certbot-configuration))
+                (description
+                 "Automatically renew @url{https://letsencrypt.org, Let's
+Encrypt} HTTPS certificates by adjusting the nginx web server configuration
+and periodically invoking @command{certbot}.")))
