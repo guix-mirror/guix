@@ -1095,6 +1095,7 @@ installed as @code{stb_image}.")
        (method url-fetch)
        (uri (string-append "http://prdownloads.sourceforge.net/optipng/optipng-"
                            version ".tar.gz"))
+       (patches (search-patches "optipng-CVE-2017-1000229.patch"))
        (sha256
         (base32
          "105yk5qykvhiahzag67gm36s2kplxf6qn5hay02md0nkrcgn6w28"))))
