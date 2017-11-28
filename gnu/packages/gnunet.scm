@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
@@ -144,14 +144,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.55")
+   (version "0.9.57")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1y6h1slav5l6k8zyb01dpw65dscdgxxgfa3a0z9qnn7jr66sn70c"))))
+              "0kmgkk9sjg1n3q7rbzw5y4qmgh51zn5qi2j69gbqmr6phxjaghfy"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -177,9 +177,8 @@ tool to extract metadata from a file and print the results.")
 C library.  It makes it easy to run an HTTP server as part of another
 application.  The library is fully HTTP 1.1 compliant.  It can listen on
 multiple ports, supports four different threading models, and supports
-IPv6.  It
-also features security features such as basic and digest authentication
-and support for SSL3 and TLS.")
+IPv6.  It also features security features such as basic and digest
+authentication and support for SSL3 and TLS.")
    (license license:lgpl2.1+)
    (home-page "https://www.gnu.org/software/libmicrohttpd/")))
 
