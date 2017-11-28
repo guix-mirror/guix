@@ -364,8 +364,6 @@ which should be passed to this script as the first argument.  If not, the
          (default xauth))
   (shepherd slim-configuration-shepherd
             (default shepherd))
-  (bash slim-configuration-bash
-        (default bash))
   (auto-login-session slim-configuration-auto-login-session)
   (startx slim-configuration-startx))
 
@@ -449,7 +447,7 @@ reboot_cmd " shepherd "/sbin/reboot\n"
                        (default-user "")
                        (theme %default-slim-theme)
                        (theme-name %default-slim-theme-name)
-                       (xauth xauth) (shepherd shepherd) (bash bash)
+                       (xauth xauth) (shepherd shepherd)
                        (auto-login-session (file-append windowmaker
                                                         "/bin/wmaker"))
                        (startx (xorg-start-command)))
@@ -484,7 +482,7 @@ theme."
             (allow-empty-passwords? allow-empty-passwords?)
             (auto-login? auto-login?) (default-user default-user)
             (theme theme) (theme-name theme-name)
-            (xauth xauth) (shepherd shepherd) (bash bash)
+            (xauth xauth) (shepherd shepherd)
             (auto-login-session auto-login-session)
             (startx startx))))
 
