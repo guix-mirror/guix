@@ -75,7 +75,7 @@
                "03vvdfhdmf16121v7xs8is2krwnv15wpkhkf16a4yf8nsfc3f2w1"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-stuff
                    (lambda* (#:key inputs #:allow-other-keys)
                      (substitute* "grub-core/Makefile.in"
@@ -102,7 +102,10 @@
                       (substitute* "Makefile.in"
                         (("grub_cmd_date grub_cmd_set_date grub_cmd_sleep")
                           "grub_cmd_date grub_cmd_sleep"))
-                      #t)))))
+                      #t)))
+       ;; Disable tests on ARM platforms.
+       #:tests? ,(not (string-prefix? "arm" (or (%current-target-system)
+                                                (%current-system))))))
     (inputs
      `(("gettext" ,gettext-minimal)
 
