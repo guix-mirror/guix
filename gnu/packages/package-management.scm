@@ -196,15 +196,17 @@
                         #t))
                     (add-after 'install 'wrap-program
                       (lambda* (#:key inputs outputs #:allow-other-keys)
-                        ;; Make sure the 'guix' command finds GnuTLS and
-                        ;; Guile-JSON automatically.
+                        ;; Make sure the 'guix' command finds GnuTLS,
+                        ;; Guile-JSON, and Guile-Git automatically.
                         (let* ((out    (assoc-ref outputs "out"))
                                (guile  (assoc-ref inputs "guile"))
                                (json   (assoc-ref inputs "guile-json"))
                                (git    (assoc-ref inputs "guile-git"))
+                               (bs     (assoc-ref inputs
+                                                  "guile-bytestructures"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
-                               (deps   (list json gnutls git ssh))
+                               (deps   (list json gnutls git bs ssh))
                                (effective
                                 (read-line
                                  (open-pipe* OPEN_READ
