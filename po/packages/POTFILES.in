@@ -59,3 +59,4 @@ gnu/packages/wordnet.scm
 gnu/packages/xiph.scm
 gnu/services/base.scm
 gnu/services/networking.scm
+gnu/services/version-control.scm

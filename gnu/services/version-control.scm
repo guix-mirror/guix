@@ -156,7 +156,11 @@
           (service-extension account-service-type
                              (const %git-daemon-accounts))
           (service-extension activation-service-type
-                             git-daemon-activation)))))
+                             git-daemon-activation)))
+   (description
+    "Expose Git respositories over the insecure @code{git://} TCP-based
+protocol.")
+   (default-value (git-daemon-configuration))))
 
 (define* (git-daemon-service #:key (config (git-daemon-configuration)))
   "Return a service that runs @command{git daemon}, a simple TCP server to
@@ -259,7 +263,10 @@ access to exported repositories under @file{/srv/git}."
                              cgit-activation)
           (service-extension nginx-service-type
                              cgit-configuration-nginx-config)))
-   (default-value (cgit-configuration))))
+   (default-value (cgit-configuration))
+   (description
+    "Run the Cgit web interface, which allows users to browse Git
+repositories.")))
 
 
 ;;;
