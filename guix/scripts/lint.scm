@@ -618,7 +618,10 @@ patch could not be found."
           (max    99))
       (for-each (match-lambda
                   ((? string? patch)
-                   (when (> (+ margin (- (string-length patch) prefix))
+                   (when (> (+ margin (if (string-prefix? %distro-directory
+                                                          patch)
+                                          (- (string-length patch) prefix)
+                                          (string-length patch)))
                             max)
                      (emit-warning
                       package
