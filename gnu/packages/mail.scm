@@ -1043,6 +1043,7 @@ delivery.")
                   (string-append "ftp://ftp.exim.org/pub/exim/exim4/old/exim-"
                                  version ".tar.bz2")))
        (patches (search-patches "exim-CVE-2017-16943.patch"
+                                "exim-CVE-2017-16944.patch"
                                 "exim-CVE-2017-1000369.patch"))
        (sha256
         (base32
