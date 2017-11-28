@@ -585,3 +585,36 @@ generate bitmaps.")
      "UfoLib reads and writes Unified Font Object (UFO)
 files.  UFO is a file format that stores fonts source files.")
     (license license:bsd-3)))
+
+(define-public python2-defcon
+  (package
+    (name "python2-defcon")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "defcon" version ".zip"))
+       (sha256
+        (base32
+         "1f41w54fdjy9izxcwzqa142kd56whqsg9nq5k4508jb6iip84h89"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python2-pytest-3.0" ,python2-pytest-3.0)
+       ("python2-pytest-runner" ,python2-pytest-runner)))
+    (propagated-inputs
+     `(("python2-fonttools" ,python2-fonttools)
+       ("python2-ufolib" ,python2-ufolib)))
+    (home-page "https://pypi.python.org/pypi/defcon")
+    (synopsis "Flexible objects for representing @acronym{UFO, unified font object} data")
+    (description
+     "Defcon is a set of @acronym{UFO, unified font object} based objects
+optimized for use in font editing applications.  The objects are built to
+be lightweight, fast and flexible.  The objects are very bare-bones and
+they are not meant to be end-all, be-all objects.  Rather, they are meant
+to provide base functionality so that you can focus on your application’s
+behavior, not object observing or maintaining cached data.  Defcon
+implements UFO3 as described by the UFO font format.")
+    (license license:expat)))
