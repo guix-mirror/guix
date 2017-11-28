@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
@@ -330,6 +330,19 @@
                        (patches (list "/path/to/y.patch")))))))
          (check-patch-file-names pkg)))
      "file names of patches should start with the package name")))
+
+(test-assert "patches: file name too long"
+  (->bool
+   (string-contains
+     (with-warnings
+       (let ((pkg (dummy-package "x"
+                    (source
+                     (dummy-origin
+                      (patches (list (string-append "x-"
+                                                    (make-string 100 #\a)
+                                                    ".patch"))))))))
+         (check-patch-file-names pkg)))
+     "file name is too long")))
 
 (test-assert "patches: not found"
   (->bool
