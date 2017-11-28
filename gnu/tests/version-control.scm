@@ -31,7 +31,8 @@
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix modules)
-  #:export (%test-cgit))
+  #:export (%test-cgit
+            %test-git-http))
 
 (define README-contents
   "Hello!  This is what goes inside the 'README' file.")
@@ -199,3 +200,94 @@ HTTP-PORT."
    (name "cgit")
    (description "Connect to a running Cgit server.")
    (value (run-cgit-test))))
+
+
+;;;
+;;; Git server.
+;;;
+
+(define %git-nginx-configuration
+  (nginx-configuration
+   (server-blocks
+    (list
+     (nginx-server-configuration
+      (http-port 19418)
+      (https-port #f)
+      (ssl-certificate #f)
+      (ssl-certificate-key #f)
+      (locations
+       (list (git-http-nginx-location-configuration
+              (git-http-configuration (export-all? #t)
+                                      (uri-path "/git"))))))))))
+
+(define %git-http-os
+  (simple-operating-system
+   (dhcp-client-service)
+   (service fcgiwrap-service-type)
+   (service nginx-service-type %git-nginx-configuration)
+   %test-repository-service))
+
+(define* (run-git-http-test #:optional (http-port 19418))
+  (define os
+    (marionette-operating-system
+     %git-http-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (port-forwardings `((8080 . ,http-port)))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette)
+                             (guix build utils))
+      #~(begin
+          (use-modules (srfi srfi-64)
+                       (rnrs io ports)
+                       (gnu build marionette)
+                       (guix build utils))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "git-http")
+
+          ;; Wait for nginx to be up and running.
+          (test-eq "nginx running"
+            'running!
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'nginx)
+                'running!)
+             marionette))
+
+          ;; Make sure Git test repository is created.
+          (test-assert "Git test repository"
+            (marionette-eval
+             '(file-exists? "/srv/git/test")
+             marionette))
+
+          ;; Make sure we can clone the repo from the host.
+          (test-equal "clone"
+            '#$README-contents
+            (begin
+              (invoke #$(file-append git "/bin/git") "clone" "-v"
+                      "http://localhost:8080/git/test" "/tmp/clone")
+              (call-with-input-file "/tmp/clone/README"
+                get-string-all)))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "git-http" test))
+
+(define %test-git-http
+  (system-test
+   (name "git-http")
+   (description "Connect to a running Git HTTP server.")
+   (value (run-git-http-test))))
