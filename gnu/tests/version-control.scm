@@ -30,14 +30,38 @@
   #:use-module (gnu packages version-control)
   #:use-module (guix gexp)
   #:use-module (guix store)
+  #:use-module (guix modules)
   #:export (%test-cgit))
+
+(define README-contents
+  "Hello!  This is what goes inside the 'README' file.")
 
 (define %make-git-repository
   ;; Create Git repository in /srv/git/test.
-  #~(begin
-      (mkdir-p "/srv/git/test")
-      (system* (string-append #$git "/bin/git") "-C" "/srv/git/test"
-               "init" "--bare")))
+  (with-imported-modules (source-module-closure
+                          '((guix build utils)))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (let ((git (string-append #$git "/bin/git")))
+          (mkdir-p "/tmp/test-repo")
+          (with-directory-excursion "/tmp/test-repo"
+            (call-with-output-file "/tmp/test-repo/README"
+              (lambda (port)
+                (display #$README-contents port)))
+            (invoke git "config" "--global" "user.email" "charlie@example.org")
+            (invoke git "config" "--global" "user.name" "A U Thor")
+            (invoke git "init")
+            (invoke git "add" ".")
+            (invoke git "commit" "-m" "That's a commit."))
+
+          (mkdir-p "/srv/git")
+          (rename-file "/tmp/test-repo/.git" "/srv/git/test")))))
+
+(define %test-repository-service
+  ;; Service that creates /srv/git/test.
+  (simple-service 'make-git-repository activation-service-type
+                  %make-git-repository))
 
 (define %cgit-configuration-nginx
   (list
@@ -68,8 +92,7 @@
           (service cgit-service-type
                    (cgit-configuration
                     (nginx %cgit-configuration-nginx)))
-          (simple-service 'make-git-repository activation-service-type
-                          %make-git-repository))))
+          %test-repository-service)))
     (operating-system
       (inherit base-os)
       (packages (cons* git
@@ -161,7 +184,9 @@ HTTP-PORT."
             (test-url "/test")
             (test-url "/test/log")
             (test-url "/test/tree")
+            (test-url "/test/tree/README")
             (test-url "/test/does-not-exist" 404)
+            (test-url "/test/tree/does-not-exist" 404)
             (test-url "/does-not-exist" 404))
 
           (test-end)
