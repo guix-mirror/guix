@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -158,6 +159,7 @@
        ("libepoxy" ,libepoxy)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
+       ("libseccomp" ,libseccomp)
        ("libusb" ,libusb)                         ;USB pass-through support
        ("mesa" ,mesa)
        ("ncurses" ,ncurses)
