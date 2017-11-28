@@ -136,12 +136,16 @@
                     (ice-9 rdelim))
 
          #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
+                    (add-before 'configure 'bootstrap
                       (lambda _
                         ;; Make sure 'msgmerge' can modify the PO files.
                         (for-each (lambda (po)
                                     (chmod po #o666))
                                   (find-files "." "\\.po$"))
+
+                        (call-with-output-file ".tarball-version"
+                          (lambda (port)
+                            (display ,version port)))
 
                         (zero? (system* "sh" "bootstrap"))))
                     (add-before
