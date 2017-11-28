@@ -92,8 +92,10 @@ to 'make'."
                   #:host host
                   #:report-load (lambda (file total completed)
                                   (when file
-                                    (format #t "  LOAD     ~a~%" file)))
+                                    (format #t "  LOAD     ~a~%" file)
+                                    (force-output)))
                   #:report-compilation (lambda (file total completed)
                                          (when file
                                            (format #t "  GUILEC   ~a~%"
-                                                   (scm->go file)))))))
+                                                   (scm->go file))
+                                           (force-output))))))
