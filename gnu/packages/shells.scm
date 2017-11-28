@@ -317,7 +317,7 @@ history mechanism, job control and a C-like syntax.")
 (define-public zsh
   (package
     (name "zsh")
-    (version "5.2")
+    (version "5.4.2")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
@@ -328,7 +328,7 @@ history mechanism, job control and a C-like syntax.")
                            ".tar.gz")))
               (sha256
                (base32
-                "0dsr450v8nydvpk8ry276fvbznlrjgddgp7zvhcw4cv69i9lr4ps"))))
+                "1jdcfinzmki2w963msvsanv29vqqfmdfm4rncwpw0r3zqnrcsywm"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
                  #:phases
@@ -351,7 +351,17 @@ history mechanism, job control and a C-like syntax.")
                                           "Test/B02typeset.ztst"
                                           "Completion/Unix/Command/_init_d"
                                           "Util/preconfig")
-                                      (("/bin/sh") (which "sh")))))))))
+                                      (("/bin/sh") (which "sh"))))))
+                   (add-before 'check 'patch-test
+                     (lambda _
+                       ;; In Zsh, `command -p` searches a predefined set of
+                       ;; paths that don't exist in the build environment. See
+                       ;; the assignment of 'path' in Src/init.c'
+                       (substitute* "Test/A01grammar.ztst"
+                         (("command -pv") "command -v")
+                         (("command -p") "command ")
+                         (("'command' -p") "'command' "))
+                       #t)))))
     (native-inputs `(("autoconf" ,autoconf)))
     (inputs `(("ncurses" ,ncurses)
               ("pcre" ,pcre)
