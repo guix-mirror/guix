@@ -84,6 +84,8 @@
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
              (patches (search-patches "qemu-CVE-2017-15038.patch"
+                                      "qemu-CVE-2017-15118.patch"
+                                      "qemu-CVE-2017-15119.patch"
                                       "qemu-CVE-2017-15268.patch"
                                       "qemu-CVE-2017-15289.patch"))
              (sha256
