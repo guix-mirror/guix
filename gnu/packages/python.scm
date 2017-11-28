@@ -11856,3 +11856,30 @@ services.")
 
 (define-public python2-jsonrpclib-pelix
   (package-with-python2 python-jsonrpclib-pelix))
+
+(define-public python-setuptools-scm-git-archive
+  (package
+    (name "python-setuptools-scm-git-archive")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "setuptools_scm_git_archive" version))
+       (sha256
+        (base32
+         "1nii1sz5jq75ilf18bjnr11l9rz1lvdmyk66bxl7q90qan85yhjj"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest-3.0" ,python-pytest-3.0)))
+    (propagated-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/Changaco/setuptools_scm_git_archive/")
+    (synopsis "Setuptools_scm plugin for git archives")
+    (description
+     "The setuptools_scm_git_archive package is a plugin to
+setuptools_scm, which supports obtaining versions from git archives that
+belong to tagged versions.")
+    (license license:expat)))
+
+(define-public python2-setuptools-scm-git-archive
+  (package-with-python2 python-setuptools-scm-git-archive))
