@@ -4892,7 +4892,7 @@ new API's in libXft, or the legacy API's in libX11.")
   (package
     (inherit libxfont)
     (version "2.0.1")
-    (replacement libxfont2/fixed)
+    (replacement libxfont2-2.0.3)
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
@@ -4901,14 +4901,22 @@ new API's in libXft, or the legacy API's in libX11.")
                (base32
                 "0znvwk36nhmyqpmhbm9mzisgixp1mp5qkfald8x1n5yxbm3vpyz9"))))))
 
-(define libxfont2/fixed
+;; Fixes the following security vulnerabilities:
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-13720
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-13722
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-16612
+(define-public libxfont2-2.0.3
   (package
     (inherit libxfont2)
+    (version "2.0.3")
     (source
      (origin
        (inherit (package-source libxfont2))
-       (patches (search-patches "libxfont-CVE-2017-13720.patch"
-                                "libxfont-CVE-2017-13722.patch"))))))
+       (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0klwmimmhm3axpj8pwn5l41lbggh47r5aazhw63zxkbwfgyvg2hf"))))))
 
 (define-public libxi
   (package
