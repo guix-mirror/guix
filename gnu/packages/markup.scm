@@ -161,7 +161,7 @@ convert it to structurally valid XHTML (or HTML).")
         (base32
          "1xx7v3wnla7m6wa3h33whxw3vvincaicg4yra1b9wbzf2aix9rnw"))
        (patches
-        (search-patches "perl-text-markdown-discount-use-system-markdown.patch"))))
+        (search-patches "perl-text-markdown-discount-unbundle.patch"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
