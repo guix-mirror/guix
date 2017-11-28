@@ -1259,7 +1259,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.964")
+    (version "0.4.985")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1268,7 +1268,7 @@ other site that youtube-dl supports.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1icxi4f2yli74zyvwfcdrpp56g81kdkan31dc2brs4p0rj567kfx"))))
+                "0a11z8bq4b4pgibrrx6hwjkg9hn8vx01ql9jxa73s6d7ry5nhmwm"))))
     (build-system python-build-system)
     (arguments
      ;; no tests
