@@ -24,7 +24,7 @@ Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017 Chris Marusich@*
-Copyright @copyright{} 2016, 2017 Efraim Flashner@*
+Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 ng0@*
 Copyright @copyright{} 2016, 2017 Jan Nieuwenhuizen@*
@@ -10766,6 +10766,59 @@ make an initial adjustment of more than 1,000 seconds.
 @defvr {Scheme Variable} %ntp-servers
 List of host names used as the default NTP servers.
 @end defvr
+
+@cindex OpenNTPD
+@deffn {Scheme Procedure} openntpd-service-type
+Run the @command{ntpd}, the Network Time Protocol (NTP) daemon, as implemented
+by @uref{http://www.openntpd.org, OpenNTPD}.  The daemon will keep the system
+clock synchronized with that of the given servers.
+
+@example
+(service
+ openntpd-service-type
+ (openntpd-configuration
+  (listen-on '("127.0.0.1" "::1"))
+  (sensor '("udcf0 correction 70000"))
+  (constraint-from '("www.gnu.org"))
+  (constraints-from '("https://www.google.com/"))
+  (allow-large-adjustment? #t)))
+
+@end example
+@end deffn
+
+@deftp {Data Type} openntpd-configuration
+@table @asis
+@item @code{openntpd} (default: @code{(file-append openntpd "/sbin/ntpd")})
+The openntpd executable to use.
+@item @code{listen-on} (default: @code{'("127.0.0.1" "::1")})
+A list of local IP addresses or hostnames the ntpd daemon should listen on.
+@item @code{query-from} (default: @code{'()})
+A list of local IP address the ntpd daemon should use for outgoing queries.
+@item @code{sensor} (default: @code{'()})
+Specify a list of timedelta sensor devices ntpd should use.  @code{ntpd}
+will listen to each sensor that acutally exists and ignore non-existant ones.
+See @uref{https://man.openbsd.org/ntpd.conf, upstream documentation} for more
+information.
+@item @code{server} (default: @var{%ntp-servers})
+Specify a list of IP addresses or hostnames of NTP servers to synchronize to.
+@item @code{servers} (default: @code{'()})
+Specify a list of IP addresses or hostnames of NTP pools to synchronize to.
+@item @code{constraint-from} (default: @code{'()})
+@code{ntpd} can be configured to query the ‘Date’ from trusted HTTPS servers via TLS.
+This time information is not used for precision but acts as an authenticated
+constraint, thereby reducing the impact of unauthenticated NTP
+man-in-the-middle attacks.
+Specify a list of URLs, IP addresses or hostnames of HTTPS servers to provide
+a constraint.
+@item @code{constraints-from} (default: @code{'()})
+As with constraint from, specify a list of URLs, IP addresses or hostnames of
+HTTPS servers to provide a constraint.  Should the hostname resolve to multiple
+IP addresses, @code{ntpd} will calculate a median constraint from all of them.
+@item @code{allow-large-adjustment?} (default: @code{#f})
+Determines if @code{ntpd} is allowed to make an initial adjustment of more
+than 180 seconds.
+@end table
+@end deftp
 
 @cindex inetd
 @deffn {Scheme variable} inetd-service-type
