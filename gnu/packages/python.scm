@@ -11911,3 +11911,32 @@ belong to tagged versions.")
 
 (define-public python2-pyclipper
   (package-with-python2 python-pyclipper))
+
+(define-public python2-booleanoperations
+  (package
+    (name "python2-booleanoperations")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "booleanOperations" version ".zip"))
+       (sha256
+        (base32
+         "1hw42fazdpvsn77glx96hwsj9l17mvx37sc5707s08y5w6fx16mn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python2-pytest-3.0" ,python2-pytest-3.0)
+       ("python2-pytest-runner" ,python2-pytest-runner)))
+    (propagated-inputs
+     `(("python-fonttools" ,python2-fonttools)
+       ("python-pyclipper" ,python2-pyclipper)
+       ("python-ufolib" ,python2-ufolib)))
+    (home-page "https://github.com/typemytype/booleanOperations")
+    (synopsis "Boolean operations on paths")
+    (description
+     "BooleanOperations provides a Python library that enables
+boolean operations on paths.")
+    (license license:expat)))
