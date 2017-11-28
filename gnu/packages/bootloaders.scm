@@ -302,7 +302,11 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "08gnl39i4xy3dm8iqwlz2ygx0ml1bgc5kpiys5ll1wvah1j72b04"))))
+                "08gnl39i4xy3dm8iqwlz2ygx0ml1bgc5kpiys5ll1wvah1j72b04"))
+              ;; Fix build and tests on 32 bits platforms.
+              ;; Will probably be fixed in 1.4.6 release.
+              (patches (search-patches "dtc-format-modifier.patch"
+                                       "dtc-32-bits-check.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
