@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
@@ -600,6 +602,29 @@ print, summary, etc.")
 and other distributions related to the eigenvalues of large Wishart
 matrices.")
     (license license:bsd-3)))
+
+(define-public r-rmpi
+  (package
+    (name "r-rmpi")
+    (version "0.6-6")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "Rmpi" version))
+              (sha256
+               (base32
+                "0fm6z049aaq2c9xagm8n64d9560hg9d8hyb0m359fii672nhkz6q"))))
+    (properties `((upstream-name . "Rmpi")))
+    (build-system r-build-system)
+    (arguments
+     `(#:configure-flags '("--configure-args=\"--with-Rmpi-type=OPENMPI\"")))
+    (inputs
+     `(("openmpi" ,openmpi)))
+    (home-page "http://www.stats.uwo.ca/faculty/yu/Rmpi")
+    (synopsis "R interface to message-passing interface (MPI)")
+    (description
+     "This package provides an interface (wrapper) to MPI APIs.  It also
+provides an interactive R manager and worker environment.")
+    (license license:gpl2+)))
 
 (define-public r-lmoments
   (package
