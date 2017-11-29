@@ -4879,6 +4879,7 @@ information about monads.)
        [#:disallowed-references #f] @
        [#:leaked-env-vars #f] @
        [#:script-name (string-append @var{name} "-builder")] @
+       [#:deprecation-warnings #f] @
        [#:local-build? #f] [#:substitutable? #t] [#:guile-for-build #f]
 Return a derivation @var{name} that runs @var{exp} (a gexp) with
 @var{guile-for-build} (a derivation) on @var{system}; @var{exp} is
@@ -4918,6 +4919,9 @@ In the latter case, the list denotes store items that the result is allowed to
 refer to.  Any reference to another store item will lead to a build error.
 Similarly for @var{disallowed-references}, which can list items that must not be
 referenced by the outputs.
+
+@var{deprecation-warnings} determines whether to show deprecation warnings while
+compiling modules.  It can be @code{#f}, @code{#t}, or @code{'detailed}.
 
 The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn

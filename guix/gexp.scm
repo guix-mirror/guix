@@ -564,6 +564,7 @@ names and file names suitable for the #:allowed-references argument to
                            allowed-references disallowed-references
                            leaked-env-vars
                            local-build? (substitutable? #t)
+                           deprecation-warnings
                            (script-name (string-append name "-builder")))
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
 derivation) on SYSTEM; EXP is stored in a file called SCRIPT-NAME.  When
@@ -598,6 +599,9 @@ In the latter case, the list denotes store items that the result is allowed to
 refer to.  Any reference to another store item will lead to a build error.
 Similarly for DISALLOWED-REFERENCES, which can list items that must not be
 referenced by the outputs.
+
+DEPRECATION-WARNINGS determines whether to show deprecation warnings while
+compiling modules.  It can be #f, #t, or 'detailed.
 
 The other arguments are as for 'derivation'."
   (define %modules
@@ -648,7 +652,9 @@ The other arguments are as for 'derivation'."
                                      (compiled-modules %modules
                                                        #:system system
                                                        #:module-path module-path
-                                                       #:guile guile-for-build)
+                                                       #:guile guile-for-build
+                                                       #:deprecation-warnings
+                                                       deprecation-warnings)
                                      (return #f)))
                        (graphs   (if references-graphs
                                      (lower-reference-graphs references-graphs
@@ -1023,7 +1029,8 @@ last one is created from the given <scheme-file> object."
                            #:key (name "module-import-compiled")
                            (system (%current-system))
                            (guile (%guile-for-build))
-                           (module-path %load-path))
+                           (module-path %load-path)
+                           (deprecation-warnings #f))
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other."
@@ -1073,7 +1080,15 @@ they can refer to each other."
     (gexp->derivation name build
                       #:system system
                       #:guile-for-build guile
-                      #:local-build? #t)))
+                      #:local-build? #t
+                      #:env-vars
+                      (case deprecation-warnings
+                        ((#f)
+                         '(("GUILE_WARN_DEPRECATED" . "no")))
+                        ((detailed)
+                         '(("GUILE_WARN_DEPRECATED" . "detailed")))
+                        (else
+                         '())))))
 
 
 ;;;
