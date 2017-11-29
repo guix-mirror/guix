@@ -270,6 +270,7 @@ using the kernel build-in overlayfs."
   ;; Make sure /root/etc/mtab is a symlink to /proc/self/mounts.
   (false-if-exception
     (delete-file "/root/etc/mtab"))
+  (mkdir-p "/root/etc")
   (symlink "/proc/self/mounts" "/root/etc/mtab"))
 
 (define (switch-root root)
