@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -875,7 +876,7 @@ postfix notation.  For more information on stack based languages, see
 (define-public ghc-happy
   (package
     (name "ghc-happy")
-    (version "1.19.5")
+    (version "1.19.8")
     (source
      (origin
        (method url-fetch)
@@ -885,10 +886,8 @@ postfix notation.  For more information on stack based languages, see
              ".tar.gz"))
        (sha256
         (base32
-         "1nj353q4z1g186fpjzf0dnsg71qhxqpamx8jy89rjjvv3p0kmw32"))))
+         "186ky3bly0i3cc56qk3r7j7pxh2108aackq4n2lli7jmbnb3kxsd"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ;; cannot satisfy -package mtl.  Possible Cabal
-                               ;; issue.
     (inputs
      `(("ghc-mtl" ,ghc-mtl)))
     (home-page "https://hackage.haskell.org/package/happy")
