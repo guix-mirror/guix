@@ -382,7 +382,7 @@ and will take advantage of multiple processor cores where possible.")
 (define-public libtorrent-rasterbar
   (package
     (name "libtorrent-rasterbar")
-    (version "1.1.4")
+    (version "1.1.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -392,7 +392,7 @@ and will take advantage of multiple processor cores where possible.")
                 "/libtorrent-rasterbar-" version ".tar.gz"))
               (sha256
                (base32
-                "19pb9sn71m4gnnrm3f1kxic63km9s3vx2mj7rznzfv9sh1kj7x6c"))))
+                "0c398b7hsa5dvj4m0jc8h7mn0m3nawmagb6c5c7ml5c9hc338c8h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
