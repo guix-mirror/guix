@@ -382,7 +382,7 @@ and will take advantage of multiple processor cores where possible.")
 (define-public libtorrent-rasterbar
   (package
     (name "libtorrent-rasterbar")
-    (version "1.1.2")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -390,11 +390,9 @@ and will take advantage of multiple processor cores where possible.")
                 "https://github.com/arvidn/libtorrent/releases/download/libtorrent-"
                 (string-join (string-split version #\.) "_")
                 "/libtorrent-rasterbar-" version ".tar.gz"))
-              (patches
-               (search-patches "libtorrent-rasterbar-boost-compat.patch"))
               (sha256
                (base32
-                "16im9qsmfrmmkhfjpij9739nqpn4s6wgc9cikdxbcyshfhimzra5"))))
+                "19pb9sn71m4gnnrm3f1kxic63km9s3vx2mj7rznzfv9sh1kj7x6c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
