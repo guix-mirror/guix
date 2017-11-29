@@ -370,7 +370,11 @@ everything from small to very large projects with speed and efficiency.")
               (sha256
                (base32
                 "1b3figbhp5l83vd37vq6j2narrq4yl9pfw6mw0px0dzb1hz3jqka"))
-              (patches (search-patches "libgit2-0.25.1-mtime-0.patch"))))
+              (patches (search-patches "libgit2-0.25.1-mtime-0.patch"))
+
+              ;; Remove bundled software.
+              (snippet '(delete-file-recursively "deps"))
+              (modules '((guix build utils)))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -390,7 +394,7 @@ everything from small to very large projects with speed and efficiency.")
            (lambda _ (zero? (system* "./libgit2_clar" "-v" "-Q")))))))
     (inputs
      `(("libssh2" ,libssh2)
-       ("libcurl" ,curl)
+       ("http-parser" ,http-parser)
        ("python" ,python-wrapper)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
