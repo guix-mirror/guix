@@ -50,7 +50,9 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define unifont
   ;; GNU Unifont, <http://gnu.org/s/unifont>.
@@ -103,9 +105,10 @@
                         (("grub_cmd_date grub_cmd_set_date grub_cmd_sleep")
                           "grub_cmd_date grub_cmd_sleep"))
                       #t)))
-       ;; Disable tests on ARM platforms.
-       #:tests? ,(not (string-prefix? "arm" (or (%current-target-system)
-                                                (%current-system))))))
+       ;; Disable tests on ARM and AARCH64 platforms.
+       #:tests? ,(not (any (cute string-prefix? <> (or (%current-target-system)
+                                                       (%current-system)))
+                           '("arm" "aarch64")))))
     (inputs
      `(("gettext" ,gettext-minimal)
 
