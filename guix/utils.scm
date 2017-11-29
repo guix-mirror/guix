@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,6 +76,7 @@
             %current-target-system
             package-name->name+version
             target-mingw?
+            target-arm32?
             version-compare
             version>?
             version>=?
@@ -466,6 +468,9 @@ a character other than '@'."
 (define* (target-mingw? #:optional (target (%current-target-system)))
   (and target
        (string-suffix? "-mingw32" target)))
+
+(define (target-arm32?)
+  (string-prefix? "arm" (or (%current-target-system) (%current-system))))
 
 (define version-compare
   (let ((strverscmp
