@@ -43,7 +43,7 @@
   (package
    (name "curl")
    (version "7.55.1")
-   (replacement curl-7.56.1)
+   (replacement curl-7.57.0)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
@@ -123,10 +123,10 @@ tunneling, and so on.")
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
 
-(define-public curl-7.56.1
+(define-public curl-7.57.0
   (package
     (inherit curl)
-    (version "7.56.1")
+    (version "7.57.0")
     (source
       (origin
         (method url-fetch)
@@ -134,4 +134,4 @@ tunneling, and so on.")
                             version ".tar.xz"))
         (sha256
          (base32
-          "1l9r386qz7l7h4n5lysrf1wq93lyc72a7shgg9b8s5d0ycn2ivcf"))))))
+          "0y3qbjjcxhcvm1yawp3spfssjbskv0g6gyzld6ckif5pf8ygvxpm"))))))
