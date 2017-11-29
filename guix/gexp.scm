@@ -1096,10 +1096,12 @@ they can refer to each other."
 ;;;
 
 (define (default-guile)
-  ;; Lazily resolve 'guile-final'.  This module must not refer to (gnu …)
+  ;; Lazily resolve 'guile-2.2' (not 'guile-final' because this is for
+  ;; programs returned by 'program-file' and we don't want to keep references
+  ;; to several Guile packages).  This module must not refer to (gnu …)
   ;; modules directly, to avoid circular dependencies, hence this hack.
-  (module-ref (resolve-interface '(gnu packages commencement))
-              'guile-final))
+  (module-ref (resolve-interface '(gnu packages guile))
+              'guile-2.2))
 
 (define (load-path-expression modules)
   "Return as a monadic value a gexp that sets '%load-path' and
