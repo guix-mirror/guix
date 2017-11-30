@@ -36,6 +36,8 @@
   #:use-module (guix graph)
   #:use-module (guix scripts graph)
   #:use-module (guix build utils)
+  #:use-module (guix progress)
+  #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:use-module (gnu build install)
   #:autoload   (gnu build file-systems)
                  (find-partition-by-label find-partition-by-uuid)
@@ -141,8 +143,18 @@ REFERENCES as its set of references."
 TARGET, and register them."
   (mlet* %store-monad ((to-copy (topologically-sorted* (list item)))
                        (refs    (mapm %store-monad references* to-copy)))
-    (for-each (cut copy-item <> <> target #:log-port log-port)
-              to-copy refs)
+    (define progress-bar
+      (progress-reporter/bar (length to-copy)
+                             (format #f (G_ "copying to '~a'...")
+                                     target)))
+
+    (call-with-progress-reporter progress-bar
+      (lambda (report)
+        (let ((void (%make-void-port "w")))
+          (for-each (lambda (item refs)
+                      (copy-item item refs target #:log-port void)
+                      (report))
+                    to-copy refs))))
 
     (return *unspecified*)))
 
@@ -1092,7 +1104,8 @@ argument list and OPTS is the option alist."
                                          parse-sub-command))
            (args     (option-arguments opts))
            (command  (assoc-ref opts 'action)))
-      (parameterize ((%graft? (assoc-ref opts 'graft?)))
+      (parameterize ((%graft? (assoc-ref opts 'graft?))
+                     (current-terminal-columns (terminal-columns)))
         (process-command command args opts)))))
 
 ;;; Local Variables:
