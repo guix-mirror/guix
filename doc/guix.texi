@@ -2197,7 +2197,7 @@ make sure you checked the GPG signature of
 Then, you can run something like this:
 
 @example
-# guix archive --authorize < hydra.gnu.org.pub
+# guix archive --authorize < @var{prefix}/share/guix/hydra.gnu.org.pub
 @end example
 
 Once this is in place, the output of a command like @code{guix build}
