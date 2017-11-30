@@ -3278,20 +3278,19 @@ message passing.")
 (define-public r-bigmemory
   (package
     (name "r-bigmemory")
-    (version "4.5.19")
+    (version "4.5.31")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bigmemory" version))
        (sha256
         (base32
-         "191gbzca557kpk7mdsg716vfyqpr7j5din6qb8hin4g1nkzzwmg6"))))
+         "0wv0p746zz5a6r1yd0fgpj2kfcyzk2f4rxqz92p6lp9jzakv4lfs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-rcpp" ,r-rcpp)
-       ("r-bigmemory-sri" ,r-bigmemory-sri)
-       ("r-r-utils" ,r-r-utils)))
+       ("r-bigmemory-sri" ,r-bigmemory-sri)))
     (home-page "http://www.bigmemory.org")
     (synopsis "Manage large matrices with shared memory or memory-mapped files")
     (description "This package provides methods to create, store, access, and
