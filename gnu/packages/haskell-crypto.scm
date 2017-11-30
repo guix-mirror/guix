@@ -34,7 +34,7 @@
 (define-public ghc-asn1-types
   (package
     (name "ghc-asn1-types")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -42,7 +42,7 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1iif9yrh4mmj249gyvam0zb2vb3jnlz777gahh2z9sx00dsx9rja"))))
+                "05vjchyqiy9n275cygffhn0ma7fz7jx52j0dcdm9qm8h9bziymqc"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-memory" ,ghc-memory)
