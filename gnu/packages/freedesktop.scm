@@ -278,7 +278,16 @@ the freedesktop.org XDG Base Directory specification.")
                (substitute* (string-append out "/lib/libelogind.la")
                  (("-lcap")
                   (string-append "-L" libcap "/lib -lcap")))
-               #t))))))
+               #t)))
+         (add-after 'unpack 'remove-uaccess-tag
+           (lambda _
+             ;; systemd supports a "uaccess" built-in tag, but eudev currently
+             ;; doesn't.  This leads to eudev warnings that we'd rather not
+             ;; see, so remove the reference to "uaccess."
+             (substitute* "src/login/73-seat-late.rules.in"
+               (("^TAG==\"uaccess\".*" line)
+                (string-append "# " line "\n")))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
