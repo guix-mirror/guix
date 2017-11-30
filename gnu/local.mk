@@ -1071,7 +1071,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/synfigstudio-fix-ui-with-gtk3.patch 	\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
-  %D%/packages/patches/t1lib-CVE-2011-1552+CVE-2011-1553+CVE-2011-1554.patch		\
+  %D%/packages/patches/t1lib-CVE-2011-1552+.patch		\
   %D%/packages/patches/tar-CVE-2016-6321.patch			\
   %D%/packages/patches/tar-skip-unreliable-tests.patch		\
   %D%/packages/patches/tcl-mkindex-deterministic.patch		\
