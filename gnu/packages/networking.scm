@@ -1536,3 +1536,34 @@ at the IP layer and link layer, as well as a host of supplementary
 functionality.  Using libnet, quick and simple packet assembly applications
 can be whipped up with little effort.")
     (license license:bsd-2)))
+
+(define-public mtr
+  (package
+    (name "mtr")
+    (version "0.92")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://ftp.bitwizard.nl/" name "/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10j3ds3p27jygys4x08kj8fi3zlsgiv72xsfazkah6plwawrv5zj"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libcap" ,libcap)
+       ("ncurses" ,ncurses)))
+    (native-inputs
+     ;; The 0.92 release tarball still requires the ‘autoheader’ tool.
+     `(("autoconf" ,autoconf)))
+    (arguments
+     `(#:tests? #f))                    ; tests require network access
+    (home-page "https://www.bitwizard.nl/mtr/")
+    (synopsis "Network diagnostic tool")
+    (description
+     "@dfn{mtr} (My TraceRoute) combines the functionality of the
+@command{traceroute} and @command{ping} programs in a single network diagnostic
+tool.  @command{mtr} uses ICMP ECHO packets to detect intermediate routers (or
+@dfn{hops}) between the local host and a user-specified destination.  It then
+continually measures the response time and packet loss at each hop, and
+displays the results in real time.")
+    (license license:gpl2+)))
