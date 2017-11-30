@@ -136,12 +136,14 @@
                     (ice-9 rdelim))
 
          #:phases (modify-phases %standard-phases
-                    (add-before 'configure 'bootstrap
+                    (add-after 'unpack 'bootstrap
                       (lambda _
                         ;; Make sure 'msgmerge' can modify the PO files.
                         (for-each (lambda (po)
                                     (chmod po #o666))
                                   (find-files "." "\\.po$"))
+
+                        (patch-shebang "build-aux/git-version-gen")
 
                         (call-with-output-file ".tarball-version"
                           (lambda (port)
