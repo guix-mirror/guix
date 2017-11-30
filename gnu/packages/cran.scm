@@ -1208,6 +1208,40 @@ classification and bagging for classification, regression and survival
 problems as well as resampling based estimators of prediction error.")
     (license license:gpl2+)))
 
+(define-public r-psych
+  (package
+    (name "r-psych")
+    (version "1.7.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "psych" version))
+       (sha256
+        (base32
+         "0daismb8pdk392vdy304hqx0m3jx62gx3a0hygjygc125rhfla7k"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-foreign" ,r-foreign)
+       ("r-lattice" ,r-lattice)
+       ("r-mnormt" ,r-mnormt)
+       ("r-nlme" ,r-nlme)))
+    (home-page "http://cran.r-project.org/web/packages/psych/")
+    (synopsis "Procedures for psychological, psychometric, and personality research")
+    (description
+     "This package provides a general purpose toolbox for personality,
+psychometric theory and experimental psychology.  Functions are primarily for
+multivariate analysis and scale construction using factor analysis, principal
+component analysis, cluster analysis and reliability analysis, although others
+provide basic descriptive statistics.  Item Response Theory is done using
+factor analysis of tetrachoric and polychoric correlations.  Functions for
+analyzing data at multiple levels include within and between group statistics,
+including correlations and factor analysis.  Functions for simulating and
+testing particular item and test structures are included.  Several functions
+serve as a useful front end for structural equation modeling.  Graphical
+displays of path diagrams, factor analysis and structural equation models are
+created using basic graphics.")
+    (license license:gpl2+)))
+
 (define-public r-recipes
   (package
     (name "r-recipes")
