@@ -6084,7 +6084,7 @@ and edge labels with positional information, etc.
 (define-public ghc-array
   (package
     (name "ghc-array")
-    (version "0.5.1.1")
+    (version "0.5.2.0")
     (source
      (origin
        (method url-fetch)
@@ -6093,7 +6093,7 @@ and edge labels with positional information, etc.
              version ".tar.gz"))
        (sha256
         (base32
-         "08r2rq4blvc737mrg3xhlwiw13jmsz5dlf2fd0ghb9cdaxc6kjc9"))))
+         "12v83s2imxb3p2crnlzrpjh0nk6lpysw9bdk9yahs6f37csa5jaj"))))
     (build-system haskell-build-system)
     (home-page
      "http://hackage.haskell.org/package/array")
