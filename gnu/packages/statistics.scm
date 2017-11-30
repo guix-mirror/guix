@@ -5094,14 +5094,14 @@ bootstrap test for generalized linear mixed models.")
 (define-public r-car
   (package
     (name "r-car")
-    (version "2.1-5")
+    (version "2.1-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "car" version))
        (sha256
         (base32
-         "1bm0ks9ga60z3izgq0d4kvirr9v4yf1820d1wznkihnbb55bc3m6"))))
+         "14l4d9j87xnb0bz2wgqqbxnlnbcdfb5vx2fw6kdxj91kyrk6lhnj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
