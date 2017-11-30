@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -149,7 +149,7 @@ highlighting.")
 (define-public fish-guix
   (package
     (name "fish-guix")
-    (version "0.1.1")
+    (version "0.1.2.1")
     (source
      (origin
        (method url-fetch)
@@ -157,7 +157,7 @@ highlighting.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0xi0j9lvzh43lrj82gz52n2cjln0i0pgayngrg4hy5w4449biy0z"))))
+         "0k71hcn7nr523w74jw2i68x52s9hv6vmasnvnn7yr3xxvzn4kqgf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No checks.
@@ -170,7 +170,7 @@ highlighting.")
     (synopsis "Fish completions for Guix")
     (description
      "Fish-guix provides completions for Guix for users of the fish shell.")
-    (license public-domain)))
+    (license bsd-3)))
 
 (define-public rc
   (package
