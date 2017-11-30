@@ -772,7 +772,7 @@ package are to parse or generate Haskell 98 code.")
 (define-public ghc-alex
   (package
     (name "ghc-alex")
-    (version "3.1.4")
+    (version "3.2.3")
     (source
      (origin
        (method url-fetch)
@@ -782,11 +782,8 @@ package are to parse or generate Haskell 98 code.")
              ".tar.gz"))
        (sha256
         (base32
-         "17x13nbbr79xgdlzywjqw19vcl6iygjnssjnxnajgijkv764wknn"))))
+         "0bi1cs9b8ir33h1fl6x2xw4ymygapqbr713ridpf7rmk2wa7jqqs"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: Tests broken for GHC 7.10.  Fixed
-                               ; upstream, see
-                               ; <https://github.com/simonmar/alex/issues/62>
     (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "http://www.haskell.org/alex/")
     (synopsis
