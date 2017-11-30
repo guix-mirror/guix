@@ -30,6 +30,7 @@
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6358,3 +6359,25 @@ Feautures:
 @item Quickly change frame and font sizes.
 @end itemize\n")
     (license license:expat)))
+
+(define-public emacs-evil-matchit
+  (package
+    (name "emacs-evil-matchit")
+    (version "2.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/redguardtoo/evil-matchit/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hm0k53m7d8zv2pk4p93k5mmilsv1mz7y2z6dqf7r6f0zmncs31a"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/redguardtoo/evil-matchit")
+    (synopsis "Vim matchit ported into Emacs")
+    (description
+     "@code{evil-matchit} is a minor mode for jumping between matching tags in
+evil mode using @kbd{%}.  It is a port of @code{matchit} for Vim.")
+    (license license:gpl3+)))
