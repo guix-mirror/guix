@@ -1242,6 +1242,39 @@ displays of path diagrams, factor analysis and structural equation models are
 created using basic graphics.")
     (license license:gpl2+)))
 
+(define-public r-broom
+  (package
+    (name "r-broom")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "broom" version))
+       (sha256
+        (base32
+         "119pc2jnxvm13cvd77c7d14p3bn68f4jm310vj3yfck40101n9if"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-nlme" ,r-nlme)
+       ("r-plyr" ,r-plyr)
+       ("r-psych" ,r-psych)
+       ("r-reshape2" ,r-reshape2)
+       ("r-stringr" ,r-stringr)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "http://github.com/tidyverse/broom")
+    (synopsis "Convert statistical analysis objects into tidy data frames")
+    (description
+     "This package provides tools to convert statistical analysis objects from
+R into tidy data frames, so that they can more easily be combined, reshaped
+and otherwise processed with tools like @code{dplyr}, @code{tidyr} and
+@code{ggplot2}.  The package provides three S3 generics: @code{tidy}, which
+summarizes a model's statistical findings such as coefficients of a
+regression; @code{augment}, which adds columns to the original data such as
+predictions, residuals and cluster assignments; and @code{glance}, which
+provides a one-row summary of model-level statistics.")
+    (license license:expat)))
+
 (define-public r-recipes
   (package
     (name "r-recipes")
