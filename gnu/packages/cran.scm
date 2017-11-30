@@ -320,14 +320,14 @@ rows, dropping names) to see if the modified versions are identical.")
 (define-public r-dendextend
   (package
     (name "r-dendextend")
-    (version "1.5.2")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dendextend" version))
        (sha256
         (base32
-         "04jz58apibfrkjcrdmw2hmsav6qpb5cs6qdai81k1v1iznfcya42"))))
+         "0pichh08zi12lpxzc061dmv4smj6lizygd1xymln8wfz18sf7923"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fpc" ,r-fpc)
