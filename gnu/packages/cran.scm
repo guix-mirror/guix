@@ -1278,23 +1278,25 @@ provides a one-row summary of model-level statistics.")
 (define-public r-recipes
   (package
     (name "r-recipes")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "recipes" version))
        (sha256
         (base32
-         "0rydk403qihxmcv3zz323r3ywk4g1v7ibvj452rxhm0z22sqk9kb"))))
+         "0id46c7iaf49miw4kxpidsbg3hdywav43n1lh2zd1vg5946bzg04"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-ddalpha" ,r-ddalpha)
+     `(("r-broom" ,r-broom)
+       ("r-ddalpha" ,r-ddalpha)
        ("r-dimred" ,r-dimred)
        ("r-dplyr" ,r-dplyr)
        ("r-gower" ,r-gower)
        ("r-ipred" ,r-ipred)
        ("r-lubridate" ,r-lubridate)
        ("r-magrittr" ,r-magrittr)
+       ("r-matrix" ,r-matrix)
        ("r-purrr" ,r-purrr)
        ("r-rcpproll" ,r-rcpproll)
        ("r-rlang" ,r-rlang)
