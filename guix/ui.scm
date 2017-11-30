@@ -313,7 +313,7 @@ ARGS is the list of arguments received by the 'throw' handler."
        (#f
         (display-hint (G_ "Did you forget a @code{use-modules} form?")))
        (module
-        (display-hint (format #f (G_ "Try adding @code{(use-modules ~a)}.")
+        (display-hint (format #f (G_ "Did you forget @code{(use-modules ~a)}?")
                               (module-name module))))))
     (('srfi-34 obj)
      (if (message-condition? obj)
