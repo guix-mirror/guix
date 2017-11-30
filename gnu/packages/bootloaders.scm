@@ -164,8 +164,8 @@ menu to select one of the installed operating systems.")
      `(;; TODO: Tests need a UEFI firmware for qemu. There is one at
        ;; https://github.com/tianocore/edk2/tree/master/OvmfPkg .
        ;; Search for 'OVMF' in "tests/util/grub-shell.in".
-       #:tests? #f
        ,@(substitute-keyword-arguments (package-arguments grub)
+           ((#:tests? _ #f) #f)
            ((#:configure-flags flags ''())
             `(cons "--with-platform=efi" ,flags))
            ((#:phases phases)
