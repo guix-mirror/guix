@@ -809,11 +809,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtasn1-CVE-2017-10790.patch		\
   %D%/packages/patches/libtheora-config-guess.patch		\
-  %D%/packages/patches/libtiff-CVE-2016-10688.patch		\
-  %D%/packages/patches/libtiff-CVE-2017-9936.patch		\
-  %D%/packages/patches/libtiff-tiffgetfield-bugs.patch		\
-  %D%/packages/patches/libtiff-tiffycbcrtorgb-integer-overflow.patch	\
-  %D%/packages/patches/libtiff-tiffycbcrtorgbinit-integer-overflow.patch	\
   %D%/packages/patches/libtirpc-CVE-2017-8779.patch		\
   %D%/packages/patches/libtorrent-rasterbar-boost-compat.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
