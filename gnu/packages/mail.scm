@@ -1034,7 +1034,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.89")
+    (version "4.89.1")
     (source
      (origin
        (method url-fetch)
@@ -1042,12 +1042,9 @@ delivery.")
                                  version ".tar.bz2")
                   (string-append "ftp://ftp.exim.org/pub/exim/exim4/old/exim-"
                                  version ".tar.bz2")))
-       (patches (search-patches "exim-CVE-2017-16943.patch"
-                                "exim-CVE-2017-16944.patch"
-                                "exim-CVE-2017-1000369.patch"))
        (sha256
         (base32
-         "1c0syp7yxngmq7y8vqsrvijinzin5m941vn0ljihdfld7kh2wbwi"))))
+         "133sjkcm9wlhpcxflr5v865varc1995bqa1y3vjs1w6zc34kp18w"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
