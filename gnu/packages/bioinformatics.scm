@@ -5977,14 +5977,14 @@ high-throughput sequencing experiments.")
 (define-public r-deseq2
   (package
     (name "r-deseq2")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DESeq2" version))
        (sha256
         (base32
-         "1hcxnkkjfvz4hj8iqidshwsjq7jnl1z7wj63dvcwlx1zx5aichyh"))))
+         "1iyimg1s0x5pdmvl8x08s8h0v019y0nhjzs50chagbpk2x91fsmv"))))
     (properties `((upstream-name . "DESeq2")))
     (build-system r-build-system)
     (propagated-inputs
