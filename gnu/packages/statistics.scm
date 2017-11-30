@@ -110,7 +110,7 @@ be output in text, PostScript, PDF or HTML.")
 (define-public r-minimal
   (package
     (name "r-minimal")
-    (version "3.4.2")
+    (version "3.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -118,7 +118,7 @@ be output in text, PostScript, PDF or HTML.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0r0cv2kc3x5z9xycpnxx6fbvv22psw2m342jhpslbxkc8g1307lp"))))
+                "09pl0w01fr09bsrwd7nz2r5psysj0z93w4chz3hm2havvqqvhg3s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-2017a)
