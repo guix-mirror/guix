@@ -5150,18 +5150,19 @@ classification and regression models.")
 (define-public r-rcppprogress
   (package
     (name "r-rcppprogress")
-    (version "0.3")
+    (version "0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppProgress" version))
        (sha256
         (base32
-         "0796g11w7iv3ix1wfm3fh09qq7jki4r4cp1mjagq77igri3xrr9x"))))
+         "09ayw6d69i0lplmaj5md25p5hn1nmiyp6a4sh60v93nrrs1cq7iv"))))
     (properties `((upstream-name . "RcppProgress")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)))
+     `(("r-devtools" ,r-devtools)
+       ("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/kforner/rcpp_progress")
     (synopsis "Interruptible progress bar for C++ in R packages")
     (description
