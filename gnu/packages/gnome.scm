@@ -5870,7 +5870,8 @@ software that do not provide their own configuration interface.")
     (build-system trivial-build-system)
     (source #f)
     (propagated-inputs
-     `(("nautilus" ,nautilus)))
+     `(("nautilus" ,nautilus)
+       ("evince" ,evince)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -5882,7 +5883,9 @@ software that do not provide their own configuration interface.")
            (call-with-output-file (string-append apps "/defaults.list")
              (lambda (port)
                (format port "[Default Applications]\n")
-               (format port "inode/directory=org.gnome.Nautilus.desktop\n")))
+               (format port "inode/directory=org.gnome.Nautilus.desktop\n")
+               (format port "application/pdf=evince.desktop\n")
+               (format port "application/postscript=evince.desktop\n")))
            #t))))
     (synopsis "Default MIME type associations for the GNOME desktop")
     (description
