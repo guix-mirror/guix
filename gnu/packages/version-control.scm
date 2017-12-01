@@ -188,6 +188,9 @@ as well as the classic centralized workflow.")
                      "NO_INSTALL_HARDLINKS=indeed")
       #:test-target "test"
 
+      ;; Tests fail randomly when parallel: <https://bugs.gnu.org/29512>.
+      #:parallel-tests? #f
+
       ;; The explicit --with-tcltk forces the build system to hardcode the
       ;; absolute file name to 'wish'.
       #:configure-flags (list (string-append "--with-tcltk="
