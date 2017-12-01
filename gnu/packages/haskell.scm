@@ -3710,7 +3710,7 @@ unbounded @code{Integer} type.")
 (define-public ghc-clock
   (package
     (name "ghc-clock")
-    (version "0.5.1")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
@@ -3719,7 +3719,7 @@ unbounded @code{Integer} type.")
              "clock/"
              "clock-" version ".tar.gz"))
        (sha256
-        (base32 "1ncph7vi2q6ywwc8ysxl1ibw6i5dwfvln88ssfazk8jgpj4iyykw"))))
+        (base32 "07v91s20halsqjmziqb1sqjp2sjpckl9by7y28aaklwqi2bh2rl8"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tasty" ,ghc-tasty)
