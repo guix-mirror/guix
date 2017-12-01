@@ -4541,14 +4541,16 @@ descriptions.")
 (define-public ghc-cmark
   (package
     (name "ghc-cmark")
-    (version "0.5.3.1")
+    (version "0.5.6")
     (source (origin
               (method url-fetch)
+              ;; XXX As of version 0.5.6, this package bundles libcmark 0.28.0.
+              ;; See cbits/cmark_version.h.
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "cmark/cmark-" version ".tar.gz"))
               (sha256
                (base32
-                "09515h9b26az9c2mbl6l7azimaixa6yff8w359k0ml8jwykjvqaa"))))
+                "1c1j3a8b9qx5zk9myqm3gap8ymz7fipwrdmyfsq9wkkdr9x4np45"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-text" ,ghc-text)))
@@ -4559,8 +4561,8 @@ descriptions.")
     (description
      "This package provides Haskell bindings for
 @uref{https://github.com/jgm/cmark, libcmark}, the reference parser for
-CommonMark, a fully specified variant of Markdown.  It includes sources for
-libcmark (0.21.0) and does not require prior installation of the C library.")
+CommonMark, a fully specified variant of Markdown.  It includes bundled libcmark
+sources, and does not require prior installation of the C library.")
     (license license:bsd-3)))
 
 (define-public ghc-executable-path
