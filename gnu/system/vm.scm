@@ -278,7 +278,8 @@ the image."
      #~(begin
          (use-modules (gnu build vm)
                       (guix build utils)
-                      (srfi srfi-26))
+                      (srfi srfi-26)
+                      (ice-9 binary-ports))
 
          (let ((inputs
                 '#$(append (list qemu parted e2fsprogs dosfstools)

@@ -676,7 +676,8 @@ and TARGET arguments."
     (gexp->file "bootloader-installer"
                 (with-imported-modules '((guix build utils))
                   #~(begin
-                      (use-modules (guix build utils))
+                      (use-modules (guix build utils)
+                                   (ice-9 binary-ports))
                       (#$installer #$bootloader #$device #$target))))))
 
 (define* (perform-action action os
