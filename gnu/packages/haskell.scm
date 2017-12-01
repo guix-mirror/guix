@@ -3551,7 +3551,7 @@ library for Haskell.")
 (define-public ghc-async
   (package
     (name "ghc-async")
-    (version "2.0.2")
+    (version "2.1.1.1")
     (source
      (origin
        (method url-fetch)
@@ -3561,7 +3561,7 @@ library for Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "0azx4qk65a9a2gvqsfmz3w89m6shzr2iz0i5lly2zvly4n2d6m6v"))))
+         "1qj4fp1ynwg0l453gmm27vgkzb5k5m2hzdlg5rdqi9kf8rqy90yd"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stm" ,ghc-stm)
