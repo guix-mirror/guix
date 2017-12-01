@@ -222,7 +222,7 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
        (modify-phases %standard-phases
          (add-after
           'unpack 'set-rpath-in-LDFLAGS
-          ,(ardour-rpath-phase (version-prefix version 1))))
+          ,(ardour-rpath-phase (version-major version))))
        #:test-target "test"
        #:python ,python-2))
     (inputs

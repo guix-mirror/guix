@@ -387,7 +387,7 @@ authentication.")
      (list (search-path-specification
             (variable "PURPLE_PLUGIN_PATH")
             (files (list (string-append "lib/purple-"
-                                        (version-prefix version 1))
+                                        (version-major version))
                          "lib/pidgin")))))
     (home-page "http://www.pidgin.im/")
     (synopsis "Graphical multi-protocol instant messaging client")

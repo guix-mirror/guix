@@ -2917,7 +2917,7 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
        (method url-fetch)
        (uri (string-append
              "http://eddylab.org/software/hmmer"
-             (version-prefix version 1) "/"
+             (version-major version) "/"
              version "/hmmer-" version ".tar.gz"))
        (sha256
         (base32

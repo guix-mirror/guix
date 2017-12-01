@@ -114,7 +114,7 @@ be output in text, PostScript, PDF or HTML.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
-                                  (version-prefix version 1) "/R-"
+                                  (version-major version) "/R-"
                                   version ".tar.gz"))
               (sha256
                (base32
