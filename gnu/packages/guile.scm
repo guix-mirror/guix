@@ -1386,11 +1386,11 @@ users and in some situations.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("guile" ,guile-2.2)
-       ("guile-sdl" ,guile-sdl)
+     `(("guile-sdl" ,guile-sdl)
        ("guile-opengl" ,guile-opengl)))
     (inputs
-     `(("gsl" ,gsl)
+     `(("guile" ,guile-2.2)
+       ("gsl" ,gsl)
        ("freeimage" ,freeimage)
        ("mesa" ,mesa)))
     (synopsis "2D/3D game engine for GNU Guile")
