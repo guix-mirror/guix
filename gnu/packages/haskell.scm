@@ -3481,7 +3481,7 @@ pragmas in your code.")
 (define-public ghc-blaze-builder
   (package
     (name "ghc-blaze-builder")
-    (version "0.4.0.1")
+    (version "0.4.0.2")
     (source
      (origin
        (method url-fetch)
@@ -3491,7 +3491,7 @@ pragmas in your code.")
              ".tar.gz"))
        (sha256
         (base32
-         "1id3w33x9f7q5m3xpggmvzw03bkp94bpfyz81625bldqgf3yqdn1"))))
+         "1m33y6p5xldni8p4fzg8fmsyqvkfmnimdamr1xjnsmgm3dkf9lws"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))          ; FIXME: Missing test libraries.
     (inputs
