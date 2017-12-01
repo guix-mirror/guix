@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 André <eu@euandre.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages cook)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages docbook)
@@ -57,18 +59,22 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-crypto)
   #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages nano)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages web)
   #:use-module (gnu packages openstack)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
@@ -80,6 +86,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages time)
@@ -1723,3 +1730,42 @@ network protocols, and core version control algorithms.")
      `(("java-javaewah" ,java-javaewah)
        ("java-jsch" ,java-jsch)
        ("java-slf4j-api" ,java-slf4j-api)))))
+
+(define-public gource
+  (package
+    (name "gource")
+    (version "0.47")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/acaudwell/Gource/archive/"
+                    "gource-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1llqwdnfa1pff8bxk27qsqff1fcg0a9kfdib0rn7p28vl21n1cgj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-boost-libdir="
+                            (assoc-ref %build-inputs "boost")
+                            "/lib"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost"     ,boost)
+       ("ftgl"      ,ftgl)
+       ("glew"      ,glew)
+       ("glm"       ,glm)
+       ("glu"       ,glu)
+       ("libpng"    ,libpng)
+       ("mesa"      ,mesa)
+       ("pcre"      ,pcre)
+       ("sdl-union" ,(sdl-union (list sdl2 sdl2-image)))))
+    (home-page "http://gource.io/")
+    (synopsis "3D visualisation tool for source control repositories")
+    (description "@code{gource} provides a software version control
+visualization.  The repository is displayed as a tree where the root of the
+repository is the centre, directories are branches and files are leaves.
+Contributors to the source code appear and disappear as they contribute to
+specific files and directories.")
+    (license license:gpl3+)))
