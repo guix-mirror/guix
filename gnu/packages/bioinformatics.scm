@@ -11079,3 +11079,32 @@ contains a few programs for model fitting and phylogenetic tree reconstruction
 using nucleotide or amino-acid sequence data.")
     ;; GPLv3 only
     (license license:gpl3)))
+
+(define-public kallisto
+  (package
+    (name "kallisto")
+    (version "0.43.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/pachterlab/"
+                                  "kallisto/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03j3iqhvq7ya3c91gidly3k3jvgm97vjq4scihrlxh315j696r11"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f))          ; no "check" target
+    (inputs
+     `(("hdf5" ,hdf5)
+       ("zlib" ,zlib)))
+    (home-page "http://pachterlab.github.io/kallisto/")
+    (synopsis "Near-optimal RNA-Seq quantification")
+    (description
+     "Kallisto is a program for quantifying abundances of transcripts from
+RNA-Seq data, or more generally of target sequences using high-throughput
+sequencing reads.  It is based on the novel idea of pseudoalignment for
+rapidly determining the compatibility of reads with targets, without the need
+for alignment.  Pseudoalignment of reads preserves the key information needed
+for quantification, and kallisto is therefore not only fast, but also as
+accurate as existing quantification tools.")
+    (license license:bsd-2)))
