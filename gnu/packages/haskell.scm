@@ -3764,7 +3764,7 @@ Haskell, based on complemented PATRICIA tries.")
 (define-public ghc-bytestring-builder
   (package
     (name "ghc-bytestring-builder")
-    (version "0.10.6.0.0")
+    (version "0.10.8.1.0")
     (source
      (origin
        (method url-fetch)
@@ -3773,7 +3773,7 @@ Haskell, based on complemented PATRICIA tries.")
              "/bytestring-builder-" version ".tar.gz"))
        (sha256
         (base32
-         "1mkg24zl0rapb3gqzkyj5ibp07wx3yzd72hmfczssl0is63rjhww"))))
+         "1hnvjac28y44yn78c9vdp1zvrknvlw98ky3g4n5vivr16rvh8x3d"))))
     (build-system haskell-build-system)
     (arguments `(#:haddock? #f)) ; Package contains no documentation.
     (home-page "https://hackage.haskell.org/package/bytestring-builder")
