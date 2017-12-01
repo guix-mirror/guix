@@ -829,17 +829,16 @@ tool lex or flex for C/C++.")
 (define-public ghc-cmdargs
   (package
     (name "ghc-cmdargs")
-    (version "0.10.13")
+    (version "0.10.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://hackage.haskell.org/package/cmdargs/cmdargs-"
-             version
-             ".tar.gz"))
+             version ".tar.gz"))
        (sha256
         (base32
-         "0vmz7f0ssrqlp6wzmc0mjqj4qczfgk58g0lr0yz7jamamlgpq4b6"))))
+         "1lnmcsf6p9yrwwz1zvrw5lbc32xpff7b70yz4ylawaflnlz6wrlh"))))
     (build-system haskell-build-system)
     (home-page
      "http://community.haskell.org/~ndm/cmdargs/")
