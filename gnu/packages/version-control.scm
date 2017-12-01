@@ -98,6 +98,7 @@
       (uri (string-append "https://launchpad.net/bzr/"
                           (version-major+minor version) "/" version
                           "/+download/bzr-" version ".tar.gz"))
+      (patches (search-patches "bazaar-CVE-2017-14176.patch"))
       (sha256
        (base32
         "1cysix5k3wa6y7jjck3ckq3abls4gvz570s0v0hxv805nwki4i8d"))))
