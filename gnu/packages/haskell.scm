@@ -5880,7 +5880,7 @@ the @code{mtl-tf} package.")
 (define-public ghc-bytestring
   (package
     (name "ghc-bytestring")
-    (version "0.10.8.1")
+    (version "0.10.8.2")
     (source
      (origin
        (method url-fetch)
@@ -5889,7 +5889,7 @@ the @code{mtl-tf} package.")
              version ".tar.gz"))
        (sha256
         (base32
-         "16zwb1p83z7vc5wlhvknpy80b5a2jxc5awx67rk52qnp9idmyq9d"))))
+         "0fjc5ybxx67l0kh27l6vq4saf88hp1wnssj5ka90ii588y76cvys"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-random" ,ghc-random)
