@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -68,7 +68,7 @@ a flexible and convenient way.")
                 "0gqgs4zc3r87apns0k5qp689p2ylxx2596s2mkmkxjjay99brv88"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'patch-source-shebangs 'patch-test-shebangs
            (lambda* (#:key outputs #:allow-other-keys)
@@ -88,6 +88,7 @@ a flexible and convenient way.")
              #t)))
        #:configure-flags
        (let ((groff (assoc-ref %build-inputs "groff"))
+             (groff-minimal (assoc-ref %build-inputs "groff-minimal"))
              (less  (assoc-ref %build-inputs "less"))
              (gzip  (assoc-ref %build-inputs "gzip"))
              (bzip2 (assoc-ref %build-inputs "bzip2"))
@@ -110,17 +111,24 @@ a flexible and convenient way.")
                        (string-append "--with-systemdtmpfilesdir="
                                       %output "/lib/tmpfiles.d"))
                  (map (lambda (prog)
-                        (string-append "--with-" prog "=" groff "/bin/" prog))
+                        (string-append "--with-" prog "=" groff-minimal
+                                       "/bin/" prog))
                       '("nroff" "eqn" "neqn" "tbl" "refer" "pic"))))
+
+       ;; At run time we should refer to GROFF-MINIMAL, not GROFF (the latter
+       ;; pulls in Perl.)
+       #:disallowed-references (,groff)
+
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("groff" ,groff)))   ;needed at build time (troff, grops, soelim, etc.)
     (inputs
      `(("flex" ,flex)
        ("gdbm" ,gdbm)
-       ("groff" ,groff)
+       ("groff-minimal" ,groff-minimal)
        ("less" ,less)
        ("libpipeline" ,libpipeline)
        ("util-linux" ,util-linux)))
