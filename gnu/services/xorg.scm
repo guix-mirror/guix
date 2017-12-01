@@ -113,6 +113,8 @@
         (file-append font-alias "/share/fonts/X11/100dpi")
         (file-append font-alias "/share/fonts/X11/misc")
         (file-append font-alias "/share/fonts/X11/cyrillic")
+        (file-append font-misc-misc               ;default fonts for xterm
+                     "/share/fonts/X11/misc")
         (file-append font-adobe75dpi "/share/fonts/X11/75dpi")))
 
 (define* (xorg-configuration-file #:key
