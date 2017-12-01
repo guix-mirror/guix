@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2479,8 +2480,8 @@ these two libraries to vary independently of one another.")
      `(("java-junit" ,java-junit)))
     (home-page "http://codehaus-plexus.github.io/plexus-classworlds/")
     (synopsis "Java class loader framework")
-    (description "Plexus classworlds replaces the native ClassLoader mechanism
-of Java.  It is especially usefull for dynamic loading of application
+    (description "Plexus classworlds replaces the native @code{ClassLoader}
+mechanism of Java.  It is especially useful for dynamic loading of application
 components.")
     (license license:asl2.0)))
 
@@ -2517,9 +2518,9 @@ components.")
        ("junit" ,java-junit)
        ("guava" ,java-guava)))
     (home-page "https://github.com/codehaus-plexus/plexus-containers")
-    (synopsis "Inversion of controll container")
+    (synopsis "Inversion-of-control container")
     (description "Plexus-default-container is Plexus' inversion-of-control
-(IoC) container.  It is composed of its public API and its default
+(@dfn{IoC}) container.  It is composed of its public API and its default
 implementation.")
     (license license:asl2.0)))
 
@@ -3084,7 +3085,7 @@ available in the Java programming language or Commons Lang.")
     (synopsis "Benchmark harness for the JVM")
     (description "JMH is a Java harness for building, running, and analysing
 nano/micro/milli/macro benchmarks written in Java and other languages
-targetting the JVM.")
+targeting the JVM.")
     ;; GPLv2 only
     (license license:gpl2)))
 
@@ -7363,9 +7364,9 @@ of Java @code{.class} files.")
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-core)))
     (home-page "https://github.com/xerial/xerial-java")
-    (synopsis "Data managment libraries for Java")
+    (synopsis "Data management libraries for Java")
     (description "Xerial is a set of data management libraries for the Java
-programming language.  The ulitimate goal of the Xerial project is to manage
+programming language.  The ultimate goal of the Xerial project is to manage
 everything as database, including class objects, text format data, data
 streams, etc.")
     (license license:asl2.0)))
