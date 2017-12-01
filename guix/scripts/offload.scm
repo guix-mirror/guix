@@ -118,7 +118,7 @@ determined."
   (catch #t
     (lambda ()
       ;; Avoid ABI incompatibility with the <build-machine> record.
-      (set! %fresh-auto-compile #t)
+      ;; (set! %fresh-auto-compile #t)
 
       (save-module-excursion
        (lambda ()

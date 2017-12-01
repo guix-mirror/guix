@@ -195,7 +195,7 @@ messages."
   (catch #t
     (lambda ()
       ;; XXX: Force a recompilation to avoid ABI issues.
-      (set! %fresh-auto-compile #t)
+      ;; (set! %fresh-auto-compile #t)
       (set! %load-should-auto-compile #t)
 
       (save-module-excursion
