@@ -2870,7 +2870,7 @@ encourages inductive, recursive definitions of graph algorithms.")
 (define-public ghc-chasingbottoms
   (package
     (name "ghc-chasingbottoms")
-    (version "1.3.0.13")
+    (version "1.3.1.3")
     (source
      (origin
        (method url-fetch)
@@ -2878,14 +2878,7 @@ encourages inductive, recursive definitions of graph algorithms.")
                            "ChasingBottoms-" version ".tar.gz"))
        (sha256
         (base32
-         "1fb86jd6cdz4rx3fj3r9n8d60kx824ywwy7dw4qnrdran46ja3pl"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; The Hackage page and the cabal file linked there for this package
-        ;; both list 0.7 as the upper version limit, but the source tarball
-        ;; specifies 0.6.  Assume the Hackage page is correct.
-        '(substitute* "ChasingBottoms.cabal"
-           (("syb >= 0.1.0.2 && < 0.6") "syb >= 0.1.0.2 && < 0.7")))))
+         "04jwwjs22mqc4hvpp4c3gpb79inrrq5sapks5khknspv2hslm61q"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
