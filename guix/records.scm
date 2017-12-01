@@ -81,7 +81,7 @@ fields, and DELAYED is the list of identifiers of delayed fields."
                (record-error 'name s "extraneous field initializers ~a"
                              unexpected)))
 
-           #`(make-struct type 0
+           #`(make-struct/no-tail type
                           #,@(map (lambda (field index)
                                     (or (field-inherited-value field)
                                         (if (innate-field? field)
