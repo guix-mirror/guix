@@ -150,7 +150,9 @@ non-determinism in the build process.")
                            "/glusterfs-" version ".tar.gz"))
        (sha256
         (base32
-         "02sn9s3jjva2i1l47y3in326n8jgp57rbykz5s8m87y4bzpw0ym1"))))
+         "02sn9s3jjva2i1l47y3in326n8jgp57rbykz5s8m87y4bzpw0ym1"))
+       (patches
+        (search-patches "glusterfs-use-PATH-instead-of-hardcodes.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
