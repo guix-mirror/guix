@@ -5689,7 +5689,7 @@ this problem.")
 (define-public ghc-bytestring-handle
   (package
     (name "ghc-bytestring-handle")
-    (version "0.1.0.4")
+    (version "0.1.0.6")
     (source
      (origin
        (method url-fetch)
@@ -5698,7 +5698,7 @@ this problem.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0q5yzx90ad9w7qvaix05bynxwlsbqjrgfc4hqb355ibf991wd0rh"))))
+         "18f17aja1ivhr3zyg2cccn2m03hdn5jf5410dndkhf12gvgiqs7y"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
