@@ -4561,7 +4561,7 @@ sources, and does not require prior installation of the C library.")
 (define-public ghc-executable-path
   (package
     (name "ghc-executable-path")
-    (version "0.0.3")
+    (version "0.0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -4569,7 +4569,7 @@ sources, and does not require prior installation of the C library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1jg58qf19qz93c60ryglcavwdcysz4fd4qn8kpw5im9w9kniawlc"))))
+                "0vxwmnsvx13cawcyhbyljkds0l1vr996ijldycx7nj0asjv45iww"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/executable-path")
     (synopsis "Find out the full path of the executable")
