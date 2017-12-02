@@ -3490,16 +3490,30 @@ The following service daemons are also provided:
 (define-public rng-tools
   (package
     (name "rng-tools")
-    (version "5")
+    (version "6.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                "http://downloads.sourceforge.net/sourceforge/gkernel/"
-                "rng-tools-" version ".tar.gz"))
+              (uri (string-append "https://github.com/nhorman/rng-tools/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "13h7lc8wl9khhvkr0i3bl5j9bapf8anhqis1lcnwxg1vc2v058b0"))))
+                "00ywsknjpc9jd9kfmz2syk9l0xkiiwyx5qhl5zvhhc69v6682i31"))))
     (build-system gnu-build-system)
+    (arguments
+     `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
+       #:configure-flags '("--without-nistbeacon")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "sh" "autogen.sh")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libsysfs" ,sysfsutils)))
     (synopsis "Random number generator daemon")
     (description
      "Monitor a hardware random number generator, and supply entropy
