@@ -4090,7 +4090,7 @@ semigroup.")
 (define-public ghc-free
   (package
     (name "ghc-free")
-    (version "4.12.1")
+    (version "4.12.4")
     (source
      (origin
        (method url-fetch)
@@ -4100,7 +4100,7 @@ semigroup.")
              ".tar.gz"))
        (sha256
         (base32
-         "0sr8phvrb4ny8j1wzq55rdn8q4br23q4pw2j276npr844825jr9p"))))
+         "1147s393442xf4gkpbq0rd1p286vmykgx85mxhk5d1c7wfm4bzn9"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-prelude-extras" ,ghc-prelude-extras)
