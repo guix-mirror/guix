@@ -221,6 +221,7 @@ the freedesktop.org XDG Base Directory specification.")
               (method url-fetch)
               (uri (string-append "https://github.com/elogind/elogind/"
                                   "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1qcxian48z2dj5gfmp7brrngdydqf2jm00f4rjr5sy1myh8fy931"))
