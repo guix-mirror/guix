@@ -3573,17 +3573,16 @@ will eventually deliver a value of type @code{a}.")
 (define-public ghc-fingertree
   (package
     (name "ghc-fingertree")
-    (version "0.1.1.0")
+    (version "0.1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://hackage.haskell.org/package/fingertree/fingertree-"
-             version
-             ".tar.gz"))
+             version ".tar.gz"))
        (sha256
         (base32
-         "1w6x3kp3by5yjmam6wlrf9vap5l5rrqaip0djbrdp0fpf2imn30n"))))
+         "1ryjj7qrx70ckcjlr02x9zh86kfp76azbxq05r7hawqkaqg44sfs"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
     (home-page "https://hackage.haskell.org/package/fingertree")
