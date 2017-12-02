@@ -130,14 +130,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
    ;; to be updated as well.
-   (version "2.15.0")
+   (version "2.15.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0siyxg1ppg6szjp8xp37zfq1fj97kbdxpigi3asmidqhkx41cw8h"))))
+              "0p04linqdywdf7m1hqa904fzqvgzplsxlzdqrn96j1j5gpyr174r"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -149,9 +149,8 @@ as well as the classic centralized workflow.")
                 "mirror://kernel.org/software/scm/git/git-manpages-"
                 version ".tar.xz"))
           (sha256
-
            (base32
-            "0xqwfg9xz5nw3ifaki87ahbz0xk5zmkgqs0ig357pxwh2i20kb92"))))))
+            "0mi609plzqqwx271hr9m5j4syggqx255bbzml6ca9j5fadywysvc"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
