@@ -13,6 +13,7 @@
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,7 +87,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
@@ -95,7 +96,7 @@ human.")
                            version "-src.tar.xz"))
        (sha256
         (base32
-         "1gkxsv3g4pkzbjkd1c27k15m2b5y2fqnnijphnaiv542yk7csqb7"))))
+         "0wrl8kxb16wzdgfjj057yv18cfg0b8z8lxp1fl2q8fkdgr7phm9g"))))
     (build-system cmake-build-system)
     (inputs
      `(("libgcrypt" ,libgcrypt)
