@@ -1387,7 +1387,7 @@ old @code{time} library.  For new projects, the newer
 (define-public ghc-dlist
   (package
     (name "ghc-dlist")
-    (version "0.7.1.2")
+    (version "0.8.0.3")
     (source
      (origin
        (method url-fetch)
@@ -1396,7 +1396,7 @@ old @code{time} library.  For new projects, the newer
              version
              ".tar.gz"))
        (sha256
-        (base32 "10rp96rryij7d8gz5kv8ygc6chm1624ck5mbnqs2a3fkdzqj2b9k"))))
+        (base32 "0brgai4vs7xz29p06kd6gzg5bpa8iy3k7yzgcc44izspd74q4rw7"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
