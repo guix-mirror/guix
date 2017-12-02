@@ -324,7 +324,7 @@ the image."
                            (flags '(boot))
                            (initializer initialize)))
                     ;; Append a small EFI System Partition for use with UEFI
-                    ;; bootloaders if we are not targetting ARM because UEFI
+                    ;; bootloaders if we are not targeting ARM because UEFI
                     ;; support in U-Boot is experimental.
                     ;;
                     ;; FIXME: ‘target-arm32?’ may be not operate on the right
