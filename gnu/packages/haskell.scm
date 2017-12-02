@@ -5999,7 +5999,7 @@ files and directories in a portable way.")
 (define-public ghc-fgl-arbitrary
   (package
     (name "ghc-fgl-arbitrary")
-    (version "0.2.0.2")
+    (version "0.2.0.3")
     (source
      (origin
        (method url-fetch)
@@ -6008,7 +6008,7 @@ files and directories in a portable way.")
              version ".tar.gz"))
        (sha256
         (base32
-         "12qbsla4vivffris6y3gj29vrafkpyazqdbdy2m55nggypqpf7ah"))))
+         "0ln1szgfy8fa78l3issq4fx3aqnnd54w3cb4wssrfi48vd5rkfjm"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-fgl" ,ghc-fgl)
