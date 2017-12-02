@@ -65,7 +65,7 @@ for screen-scraping.")
 (define-public ghc-cookie
   (package
     (name "ghc-cookie")
-    (version "0.4.1.6")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
@@ -75,7 +75,7 @@ for screen-scraping.")
              ".tar.gz"))
        (sha256
         (base32
-         "0b6ym6fn29p5az4dwydy036lxj131kagrmgb93w4bbkqfkds8b9s"))))
+         "0qpdydhb9gw590ffabqg70x7xvjpg8l74idqnrfbhv5yrr7hryzv"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-old-locale" ,ghc-old-locale)
