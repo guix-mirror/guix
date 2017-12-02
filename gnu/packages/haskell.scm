@@ -2646,7 +2646,7 @@ online}.")
 (define-public ghc-exceptions
   (package
     (name "ghc-exceptions")
-    (version "0.8.0.2")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
@@ -2656,7 +2656,7 @@ online}.")
              ".tar.gz"))
        (sha256
         (base32
-         "1x1bk1jf42k1gigiqqmkkh38z2ffhx8rsqiszdq3f94m2h6kw2h7"))))
+         "1gl7xzffsqmigam6zg0jsglncgzxqafld2p6kb7ccp9xirzdjsjd"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Missing test-framework package.
     (inputs
