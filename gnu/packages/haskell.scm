@@ -7878,7 +7878,7 @@ vector. ")
 (define-public ghc-foldl
   (package
     (name "ghc-foldl")
-    (version "1.3.2")
+    (version "1.3.5")
     (source
      (origin
        (method url-fetch)
@@ -7887,7 +7887,7 @@ vector. ")
                            "foldl-" version ".tar.gz"))
        (sha256
         (base32
-         "1z3xjz4khs2kr3mqkbh7dz4kd6gkdk2r67wjkvrxnmp533aqh90n"))))
+         "10qsp7dj2xsq4q2xm6x6b12y5pq32qf7my41hnkmdwwbccvhdxb2"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-mwc-randam" ,ghc-mwc-random)
               ("ghc-primitive" ,ghc-primitive)
