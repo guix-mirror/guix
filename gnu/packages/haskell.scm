@@ -4375,7 +4375,7 @@ using a simple box model.")
 (define-public ghc-deepseq-generics
   (package
     (name "ghc-deepseq-generics")
-    (version "0.1.1.2")
+    (version "0.2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -4383,16 +4383,8 @@ using a simple box model.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "01pvigx8n9p8hwbzp2qiq6kzf7cxiam843jz2sjgliacmmp1v7l3"))))
+                "17bwghc15mc9pchfd1w46jh2p3wzc86aj6a537wqwxn08rayzcxh"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'relax-ghc-prim-dependency
-          (lambda _
-            (substitute* "deepseq-generics.cabal"
-              (("< 0.4") "< 0.5"))
-            #t)))))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
