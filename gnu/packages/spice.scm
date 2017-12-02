@@ -203,20 +203,15 @@ which allows users to view a desktop computing environment.")
 (define-public spice
   (package
     (name "spice")
-    (version "0.12.8")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                "http://www.spice-space.org/download/releases/"
+                "https://www.spice-space.org/download/releases/"
                 "spice-" version ".tar.bz2"))
               (sha256
                (base32
-                "0za03i77j8i3g5l2np2j7vy8cqsdbkm9wbv4hjnaqq9xhz2sa0gr"))
-              (patches
-               (search-patches "spice-CVE-2017-7506.patch"
-                               "spice-CVE-2016-9577.patch"
-                               "spice-CVE-2016-9578-1.patch"
-                               "spice-CVE-2016-9578-2.patch"))))
+                "0j5q7cp5p95jk8fp48gz76rz96lifimdsx1wnpmfal0nnnar9nrs"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("openssl" ,openssl)
@@ -228,6 +223,7 @@ which allows users to view a desktop computing environment.")
         ("libjpeg-turbo" ,libjpeg-turbo)
         ("lz4" ,lz4)
         ("opus" ,opus)
+        ("orc" ,orc)
         ("zlib" ,zlib)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
