@@ -1562,8 +1562,8 @@ can be whipped up with little effort.")
     (description
      "@dfn{mtr} (My TraceRoute) combines the functionality of the
 @command{traceroute} and @command{ping} programs in a single network diagnostic
-tool.  @command{mtr} uses ICMP ECHO packets to detect intermediate routers (or
-@dfn{hops}) between the local host and a user-specified destination.  It then
-continually measures the response time and packet loss at each hop, and
+tool.  @command{mtr} can use several network protocols to detect intermediate
+routers (or @dfn{hops}) between the local host and a user-specified destination.
+It then continually measures the response time and packet loss at each hop, and
 displays the results in real time.")
     (license license:gpl2+)))
