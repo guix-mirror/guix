@@ -5925,7 +5925,7 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
 (define-public ghc-directory
   (package
     (name "ghc-directory")
-    (version "1.2.7.0")
+    (version "1.3.1.5")
     (source
      (origin
        (method url-fetch)
@@ -5934,7 +5934,7 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0h3hrqskadmbigaxbz2k5xxjjjlmfaq2zdn2g7jh1wv9k6yrxraa"))))
+         "0zkqihmdfz7bzv3sxh1p9ijl4vra880kfy3qy9h96flq7d2if0f2"))))
     (build-system haskell-build-system)
     (home-page "http://hackage.haskell.org/package/directory")
     (synopsis "Platform-agnostic library for filesystem operations")
