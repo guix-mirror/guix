@@ -4581,7 +4581,7 @@ as invoked.\" This library tries to provide the missing path.")
 (define-public ghc-enclosed-exceptions
   (package
     (name "ghc-enclosed-exceptions")
-    (version "1.0.1.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -4589,7 +4589,7 @@ as invoked.\" This library tries to provide the missing path.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "16ax1kqdsk4apg642qxkm2hf9vb5hzmkd14zmkxra8ssp8rn28z5"))))
+                "1wc9h6zdnb5impvvml6vnjapajjanw7zgpnzg7c0v7115nwfm6vv"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-lifted-base" ,ghc-lifted-base)
