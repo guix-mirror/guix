@@ -497,7 +497,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/linux-initrd.scm			\
   %D%/build/linux-modules.scm			\
   %D%/build/marionette.scm			\
-  %D%/build/shepherd.scm			\
   %D%/build/vm.scm				\
 						\
   %D%/tests.scm					\
@@ -520,6 +519,7 @@ GNU_SYSTEM_MODULES =				\
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
+  %D%/build/shepherd.scm			\
   %D%/build/svg.scm
 
 patchdir = $(guilemoduledir)/%D%/packages/patches
