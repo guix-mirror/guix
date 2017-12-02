@@ -3136,3 +3136,58 @@ on the ALSA software PCM plugin.")
 customized and extended using either the s7 Scheme implementation (included in
 the Snd sources), Ruby, or Forth.")
     (license (license:non-copyleft "file://COPYING"))))
+
+(define-public cli-visualizer
+  (package
+    (name "cli-visualizer")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dpayne/cli-visualizer/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07zkm87f2fr8kc6531zrkya7q81sdanm6813y2f54mg13g41y6hi"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("googletest" ,googletest)
+       ("ncurses" ,ncurses)
+       ("pulseaudio" ,pulseaudio)))
+    (arguments
+     '(#:test-target "test"
+       #:make-flags
+       (list (string-append "PREFIX=" %output "/bin/") "ENABLE_PULSE=1")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-sudo
+           (lambda _
+             (substitute* "install.sh" (("sudo") ""))
+             #t))
+         (add-before 'check 'set-check-environment
+           (lambda _
+             (setenv "CXX" "g++")
+             (setenv "CC" "gcc")
+             #t))
+         (add-before 'install 'make-prefix
+           (lambda _
+             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin"))
+             #t))
+         (add-after 'install 'data
+           (lambda _
+             (for-each (lambda (file)
+                         (install-file file
+                                       (string-append (assoc-ref %outputs "out")
+                                                      "/share/doc")))
+                       (find-files "examples"))
+             #t)))))
+    (home-page "https://github.com/dpayne/cli-visualizer/")
+    (synopsis "Command-line audio visualizer")
+    (description "@code{cli-visualizer} displays fast-Fourier
+transforms (FFTs) of the sound being played, as well as other graphical
+representations.")
+    (license license:expat)))
