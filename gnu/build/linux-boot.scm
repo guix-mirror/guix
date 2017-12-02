@@ -21,7 +21,6 @@
   #:use-module (rnrs io ports)
   #:use-module (system repl error-handling)
   #:autoload   (system repl repl) (start-repl)
-  #:autoload   (system base compile) (compile-file)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
