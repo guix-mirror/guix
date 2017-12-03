@@ -32,7 +32,7 @@
 (define-public libunistring
   (package
    (name "libunistring")
-   (version "0.9.7")
+   (version "0.9.8")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -40,7 +40,7 @@
                   version ".tar.xz"))
             (sha256
              (base32
-              "15z76qrmrvkc3c6hfq2lzzqysgd21s682f2smycfab5g598n8drf"))
+              "101gjj9q39pjlcaixylya6is5i7vlbnxr1w5w6raqvvhab7ki4vv"))
             (modules '((guix build utils)))
             (snippet
              '(begin
