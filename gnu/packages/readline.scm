@@ -26,7 +26,28 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (ice-9 format))
+
+(define (patch-url seqno)
+  (format #f "mirror://gnu/readline/readline-7.0-patches/readline70-~3,'0d" seqno))
+
+(define (readline-patch seqno sha256)
+  "Return the origin of Readline patch SEQNO, with expected hash SHA256"
+  (origin
+    (method url-fetch)
+    (uri (patch-url seqno))
+    (sha256 sha256)))
+
+(define-syntax-rule (patch-series (seqno hash) ...)
+  (list (readline-patch seqno (base32 hash))
+        ...))
+
+(define %patch-series-7.0
+  (patch-series
+   (1 "0xm3sxvwmss7ddyfb11n6pgcqd1aglnpy15g143vzcf75snb7hcs")
+   (2 "0n1dxmqsbjgrfxb1hgk5c6lsraw4ncbnzxlsx7m35nym6lncjiw7")
+   (3 "1027kmymniizcy0zbdlrczxfx3clxcdln5yq05q9yzlc6y9slhwy")))
 
 (define-public readline
   (let ((post-install-phase
@@ -42,15 +63,18 @@
                         (find-files lib "\\.a"))))))
     (package
       (name "readline")
-      (version "7.0")
+      (version (string-append "7.0."
+                              (number->string (length %patch-series-7.0))))
       (source (origin
                (method url-fetch)
                (uri (string-append "mirror://gnu/readline/readline-"
-                                   version ".tar.gz"))
+                                   (version-major+minor version) ".tar.gz"))
                (sha256
                 (base32
                  "0d13sg9ksf982rrrmv5mb6a2p4ys9rvg9r71d6il0vr8hmql63bm"))
-               (patches (search-patches "readline-link-ncurses.patch"))
+               (patches (append
+                         %patch-series-7.0
+                         (search-patches "readline-link-ncurses.patch")))
                (patch-flags '("-p0"))))
       (build-system gnu-build-system)
       (propagated-inputs `(("ncurses" ,ncurses)))
