@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages qt)
@@ -469,3 +471,31 @@ be used by Python applications using GStreamer.")
     (propagated-inputs
      `(("gst-plugins-base" ,gst-plugins-base)
        ("python-pygobject" ,python2-pygobject)))))
+
+(define-public gst123
+  (package
+    (name "gst123")
+    (version "0.3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://space.twc.de/~stefan/gst123/gst123-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0zaa117n4wkya9p903vkj8hj58lmdb66pxsdx5wwcv7nffbp5d67"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("ncurses" ,ncurses)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://space.twc.de/~stefan/gst123.php")
+    (synopsis "Flexible command line media player based on gstreamer")
+    (description "The program gst123 is designed to be a more flexible command
+line player in the spirit of ogg123 and mpg123, based on the gstreamer media
+framework.  It plays all file formats gstreamer supports, so if you have a
+music collection which contains different file formats, like flac, ogg and
+mp3, you can use gst123 to play all your music files.")
+    (license license:lgpl2.0+)))
