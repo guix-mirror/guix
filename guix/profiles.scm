@@ -812,7 +812,8 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
           ;; install a UTF-8 locale.
           (setenv "LOCPATH"
                   (string-append #+glibc-utf8-locales "/lib/locale/"
-                                 #+(package-version glibc-utf8-locales)))
+                                 #+(version-major+minor
+                                    (package-version glibc-utf8-locales))))
           (setlocale LC_ALL "en_US.utf8")
 
           (match (append-map ca-files '#$(manifest-inputs manifest))
@@ -1256,7 +1257,8 @@ are cross-built for TARGET."
       #~(begin
           (setenv "LOCPATH"
                   #$(file-append glibc-utf8-locales "/lib/locale/"
-                                 (package-version glibc-utf8-locales)))
+                                 (version-major+minor
+                                  (package-version glibc-utf8-locales))))
           (setlocale LC_ALL "en_US.utf8")))
 
     (define builder

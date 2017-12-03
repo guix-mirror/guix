@@ -538,7 +538,8 @@ specifies modules in scope when evaluating SNIPPET."
               (setenv "LOCPATH"
                       (string-append #+locales "/lib/locale/"
                                      #+(and locales
-                                            (package-version locales))))
+                                            (version-major+minor
+                                             (package-version locales)))))
               (setlocale LC_ALL "en_US.utf8"))
 
             (setenv "PATH" (string-append #+xz "/bin" ":"
