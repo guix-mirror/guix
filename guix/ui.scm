@@ -555,9 +555,9 @@ interpreted."
                    ("out"   "")
                    (output (string-append ":" output))))
 
-               (report-error (G_ "profile contains conflicting entries for ~a:~a~%")
+               (report-error (G_ "profile contains conflicting entries for ~a~a~%")
                              (manifest-entry-name entry)
-                             (manifest-entry-output entry))
+                             (manifest-entry-output* entry))
                (report-error (G_ "  first entry: ~a@~a~a ~a~%")
                              (manifest-entry-name entry)
                              (manifest-entry-version entry)
