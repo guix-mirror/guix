@@ -1268,9 +1268,6 @@ are cross-built for TARGET."
                          (guix search-paths)
                          (srfi srfi-1))
 
-            ;; Don't complain about _IO* on Guile 2.2.
-            (debug-disable 'warn-deprecated)
-
             (setvbuf (current-output-port) _IOLBF)
             (setvbuf (current-error-port) _IOLBF)
 
@@ -1292,6 +1289,9 @@ are cross-built for TARGET."
     (gexp->derivation "profile" builder
                       #:system system
                       #:target target
+
+                      ;; Don't complain about _IO* on Guile 2.2.
+                      #:env-vars '(("GUILE_WARN_DEPRECATED" . "no"))
 
                       ;; Not worth offloading.
                       #:local-build? #t
