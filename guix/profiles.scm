@@ -1268,8 +1268,8 @@ are cross-built for TARGET."
                          (guix search-paths)
                          (srfi srfi-1))
 
-            (setvbuf (current-output-port) _IOLBF)
-            (setvbuf (current-error-port) _IOLBF)
+            (setvbuf (current-output-port) 'line)
+            (setvbuf (current-error-port) 'line)
 
             #+(if locales? set-utf8-locale #t)
 
