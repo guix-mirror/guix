@@ -231,39 +231,43 @@ of index files."
         (cons head out)))
   (fold-right flatten1 '() lst))
 
-(define (default-nginx-config nginx log-directory run-directory server-list
-                              upstream-list server-names-hash-bucket-size
-                              server-names-hash-bucket-max-size)
-  (apply mixed-text-file "nginx.conf"
-         (flatten
-          "user nginx nginx;\n"
-          "pid " run-directory "/pid;\n"
-          "error_log " log-directory "/error.log info;\n"
-          "http {\n"
-          "    client_body_temp_path " run-directory "/client_body_temp;\n"
-          "    proxy_temp_path " run-directory "/proxy_temp;\n"
-          "    fastcgi_temp_path " run-directory "/fastcgi_temp;\n"
-          "    uwsgi_temp_path " run-directory "/uwsgi_temp;\n"
-          "    scgi_temp_path " run-directory "/scgi_temp;\n"
-          "    access_log " log-directory "/access.log;\n"
-          "    include " nginx "/share/nginx/conf/mime.types;\n"
-          (if server-names-hash-bucket-size
-              (string-append
-               "    server_names_hash_bucket_size "
-               (number->string server-names-hash-bucket-size)
-               ";\n")
-              "")
-          (if server-names-hash-bucket-max-size
-              (string-append
-               "    server_names_hash_bucket_max_size "
-               (number->string server-names-hash-bucket-max-size)
-               ";\n")
-              "")
-          "\n"
-          (map emit-nginx-upstream-config upstream-list)
-          (map emit-nginx-server-config server-list)
-          "}\n"
-          "events {}\n")))
+(define (default-nginx-config config)
+  (match-record config
+                <nginx-configuration>
+                (nginx log-directory run-directory
+                 server-blocks upstream-blocks
+                 server-names-hash-bucket-size
+                 server-names-hash-bucket-max-size)
+   (apply mixed-text-file "nginx.conf"
+          (flatten
+           "user nginx nginx;\n"
+           "pid " run-directory "/pid;\n"
+           "error_log " log-directory "/error.log info;\n"
+           "http {\n"
+           "    client_body_temp_path " run-directory "/client_body_temp;\n"
+           "    proxy_temp_path " run-directory "/proxy_temp;\n"
+           "    fastcgi_temp_path " run-directory "/fastcgi_temp;\n"
+           "    uwsgi_temp_path " run-directory "/uwsgi_temp;\n"
+           "    scgi_temp_path " run-directory "/scgi_temp;\n"
+           "    access_log " log-directory "/access.log;\n"
+           "    include " nginx "/share/nginx/conf/mime.types;\n"
+           (if server-names-hash-bucket-size
+               (string-append
+                "    server_names_hash_bucket_size "
+                (number->string server-names-hash-bucket-size)
+                ";\n")
+               "")
+           (if server-names-hash-bucket-max-size
+               (string-append
+                "    server_names_hash_bucket_max_size "
+                (number->string server-names-hash-bucket-max-size)
+                ";\n")
+               "")
+           "\n"
+           (map emit-nginx-upstream-config upstream-blocks)
+           (map emit-nginx-server-config server-blocks)
+           "}\n"
+           "events {}\n"))))
 
 (define %nginx-accounts
   (list (user-group (name "nginx") (system? #t))
@@ -275,61 +279,53 @@ of index files."
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin")))))
 
-(define nginx-activation
-  (match-lambda
-    (($ <nginx-configuration> nginx log-directory run-directory server-blocks
-                              upstream-blocks server-names-hash-bucket-size
-                              server-names-hash-bucket-max-size file)
-     #~(begin
-         (use-modules (guix build utils))
+(define (nginx-activation config)
+  (match-record config
+                <nginx-configuration>
+                (nginx log-directory run-directory file)
+   #~(begin
+       (use-modules (guix build utils))
 
-         (format #t "creating nginx log directory '~a'~%" #$log-directory)
-         (mkdir-p #$log-directory)
-         (format #t "creating nginx run directory '~a'~%" #$run-directory)
-         (mkdir-p #$run-directory)
-         (format #t "creating nginx temp directories '~a/{client_body,proxy,fastcgi,uwsgi,scgi}_temp'~%" #$run-directory)
-         (mkdir-p (string-append #$run-directory "/client_body_temp"))
-         (mkdir-p (string-append #$run-directory "/proxy_temp"))
-         (mkdir-p (string-append #$run-directory "/fastcgi_temp"))
-         (mkdir-p (string-append #$run-directory "/uwsgi_temp"))
-         (mkdir-p (string-append #$run-directory "/scgi_temp"))
-         ;; Start-up logs. Once configuration is loaded, nginx switches to
-         ;; log-directory.
-         (mkdir-p (string-append #$run-directory "/logs"))
-         ;; Check configuration file syntax.
-         (system* (string-append #$nginx "/sbin/nginx")
-                  "-c" #$(or file
-                             (default-nginx-config nginx log-directory
-                               run-directory server-blocks upstream-blocks
-                               server-names-hash-bucket-size
-                               server-names-hash-bucket-max-size))
-                  "-t")))))
+       (format #t "creating nginx log directory '~a'~%" #$log-directory)
+       (mkdir-p #$log-directory)
+       (format #t "creating nginx run directory '~a'~%" #$run-directory)
+       (mkdir-p #$run-directory)
+       (format #t "creating nginx temp directories '~a/{client_body,proxy,fastcgi,uwsgi,scgi}_temp'~%" #$run-directory)
+       (mkdir-p (string-append #$run-directory "/client_body_temp"))
+       (mkdir-p (string-append #$run-directory "/proxy_temp"))
+       (mkdir-p (string-append #$run-directory "/fastcgi_temp"))
+       (mkdir-p (string-append #$run-directory "/uwsgi_temp"))
+       (mkdir-p (string-append #$run-directory "/scgi_temp"))
+       ;; Start-up logs. Once configuration is loaded, nginx switches to
+       ;; log-directory.
+       (mkdir-p (string-append #$run-directory "/logs"))
+       ;; Check configuration file syntax.
+       (system* (string-append #$nginx "/sbin/nginx")
+                "-c" #$(or file
+                           (default-nginx-config config))
+                  "-t"))))
 
-(define nginx-shepherd-service
-  (match-lambda
-    (($ <nginx-configuration> nginx log-directory run-directory server-blocks
-                              upstream-blocks server-names-hash-bucket-size
-                              server-names-hash-bucket-max-size file)
-     (let* ((nginx-binary (file-append nginx "/sbin/nginx"))
-            (nginx-action
-             (lambda args
-               #~(lambda _
-                   (zero?
-                    (system* #$nginx-binary "-c"
-                             #$(or file
-                                   (default-nginx-config nginx log-directory
-                                     run-directory server-blocks upstream-blocks
-                                     server-names-hash-bucket-size
-                                     server-names-hash-bucket-max-size))
-                             #$@args))))))
+(define (nginx-shepherd-service config)
+  (match-record config
+                <nginx-configuration>
+                (nginx file run-directory)
+   (let* ((nginx-binary (file-append nginx "/sbin/nginx"))
+          (nginx-action
+           (lambda args
+             #~(lambda _
+                 (zero?
+                  (system* #$nginx-binary "-c"
+                           #$(or file
+                                 (default-nginx-config config))
+                           #$@args))))))
 
-       ;; TODO: Add 'reload' action.
-       (list (shepherd-service
-              (provision '(nginx))
-              (documentation "Run the nginx daemon.")
-              (requirement '(user-processes loopback))
-              (start (nginx-action "-p" run-directory))
-              (stop (nginx-action "-s" "stop"))))))))
+     ;; TODO: Add 'reload' action.
+     (list (shepherd-service
+            (provision '(nginx))
+            (documentation "Run the nginx daemon.")
+            (requirement '(user-processes loopback))
+            (start (nginx-action "-p" run-directory))
+            (stop (nginx-action "-s" "stop")))))))
 
 (define nginx-service-type
   (service-type (name 'nginx)
