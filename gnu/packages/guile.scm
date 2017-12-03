@@ -1507,16 +1507,16 @@ SQL databases.  This package implements the interface for SQLite.")
 (define-public guile-dsv
   (package
     (name "guile-dsv")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/guile-dsv")
-                    (commit "7d2e06a15e1d8478cd0e8fb4c79aec519dc4cfd0")))
+                    (commit "bdc5267d007478abc20ea96d7c459b7dd9560b3d")))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0ywb0hdbs4lcjag8b3id43fpyn5s6gscg7dk0n9ryigyvch80wxj"))))
+                "1irw6mz8998nwyhzrw9g94jcz60b9zljgqfmipaz1ybn8579qjx0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
