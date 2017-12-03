@@ -2362,8 +2362,8 @@ parser isolation, and labeled blocks for better error messages.")
         (base32
          "0arvbaxgkawzdp38hh53akkahjg2aa3kj2b4ns0ni8a5ylg2cqmp"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
-                               ; -package contravariant-1.3.3"
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)))
     (inputs
      `(("ghc-contravariant" ,ghc-contravariant)
        ("ghc-distributive" ,ghc-distributive)
