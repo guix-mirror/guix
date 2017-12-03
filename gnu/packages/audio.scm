@@ -1158,18 +1158,7 @@ PS, and DAB+.")
      (substitute-keyword-arguments (package-arguments faust)
        ((#:make-flags flags)
         `(list (string-append "prefix=" (assoc-ref %outputs "out"))
-               "world"))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           ;; Files appear under $out/share/faust that are read-only.  The
-           ;; install phase tries to overwrite them and fails, so we change
-           ;; the permissions first.
-           (add-before 'install 'fix-permissions
-             (lambda* (#:key outputs #:allow-other-keys)
-               (for-each (lambda (file)
-                           (chmod file #o644))
-                         (find-files "architecture/max-msp" ".*"))
-               #t))))))
+               "world"))))
     (native-inputs
      `(("llvm" ,llvm-with-rtti)
        ("which" ,which)
