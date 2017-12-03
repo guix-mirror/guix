@@ -489,7 +489,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.4.2")
+    (version "2.4.3")
     (source
      (origin
        (method url-fetch)
@@ -497,7 +497,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0zglapd3sz08p2z9x8a5va3jnz17b3n5a1bskf7f2dgx6m3v5b6i"))))
+         "0bpiby916k3k8bm7q8b1dflva6zs0a4ircskrck0d538dfcrb50q"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)
