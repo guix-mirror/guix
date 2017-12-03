@@ -1416,17 +1416,16 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jack-2
   (package (inherit jack-1)
     (name "jack2")
-    (version "1.9.10")
+    (version "1.9.11-RC1")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "https://github.com/jackaudio/jack2/archive/v"
-                   version
-                   ".tar.gz"))
+             (uri (string-append "https://github.com/jackaudio/jack2/releases/"
+                                 "download/v" version "/jack2-"
+                                 version ".tar.gz"))
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "03b0iiyk3ng3vh5s8gaqwn565vik7910p56mlbk512bw3dhbdwc8"))))
+               "0ks72xxv8qrpwjc2ksr74rnp178h62g5vdplb2rn4vhkw86yw3kk"))))
     (build-system waf-build-system)
     (arguments
      `(#:python ,python-2
