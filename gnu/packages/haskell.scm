@@ -2370,12 +2370,11 @@ parser isolation, and labeled blocks for better error messages.")
     (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
                                ; -package contravariant-1.3.3"
     (inputs
-     `(("ghc-distributive" ,ghc-distributive)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-contravariant" ,ghc-contravariant)
+     `(("ghc-contravariant" ,ghc-contravariant)
+       ("ghc-distributive" ,ghc-distributive)
        ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-tagged" ,ghc-tagged)
-       ("ghc-contravariant" ,ghc-contravariant)))
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
     (home-page "https://github.com/ekmett/comonad/")
     (synopsis "Comonads for Haskell")
     (description "This library provides @code{Comonad}s for Haskell.")
