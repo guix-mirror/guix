@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -106,7 +107,7 @@ Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
 (define-public mescc-tools
   (package
     (name "mescc-tools")
-    (version "0.2")
+    (version "0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -116,9 +117,8 @@ Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0gmyczh88xcsmrmxqksbpaqidchj5hfqxqk7apx40k9r3vav6mnz"))))
+                "04lvyyp7isamgddrnfpi92lgqdflzdzx5kc2x8fxmgsjisy0dgr4"))))
     (build-system gnu-build-system)
-    (supported-systems '("i686-linux" "x86_64-linux"))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:test-target "test"
