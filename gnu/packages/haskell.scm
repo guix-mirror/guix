@@ -7146,7 +7146,7 @@ Typical applications of Priority Search Queues include:
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
     (home-page "http://iki.fi/matti.niemenmaa/glob/")
     (synopsis "Haskell library matching glob patterns against file paths")
-    (description "This package providesa Haskell library for globbing:
+    (description "This package providesa Haskell library for @dfn{globbing}:
 matching patterns against file paths.")
     (license license:bsd-3)))
 
