@@ -30,6 +30,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bootloaders)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages cryptsetup)
@@ -275,8 +276,14 @@ You have been warned.  Thanks for being so brave.
                                               "/bin/sh"))))
 
           ;; Keep a reference to BARE-BONES-OS to make sure it can be
-          ;; installed without downloading/building anything.
-          (service gc-root-service-type (list bare-bones-os)))))
+          ;; installed without downloading/building anything.  Also keep the
+          ;; things needed by 'profile-derivation' to minimize the amount of
+          ;; download.
+          (service gc-root-service-type
+                   (list bare-bones-os
+                         glibc-utf8-locales
+                         texinfo
+                         (canonical-package guile-2.2))))))
 
 (define %issue
   ;; Greeting.
