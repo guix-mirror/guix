@@ -7096,8 +7096,8 @@ different API.
 
 @item @code{IntPSQ p v} is a far more efficient implementation.  It fixes the
 key type to @code{Int} and uses a
-@code{http://en.wikipedia.org/wiki/Radix_tree, radix tree}
-(like @code{IntMap}) with an additional min-heap property.
+@code{http://en.wikipedia.org/wiki/Radix_tree, radix tree} (like @code{IntMap})
+with an additional min-heap property.
 
 @item @code{HashPSQ k p v} is a fairly straightforward extension
 of @code{IntPSQ}: it simply uses the keys' hashes as indices in the
