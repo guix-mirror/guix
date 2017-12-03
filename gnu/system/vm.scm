@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -666,6 +666,8 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
 
      "-no-reboot"
      "-net nic,model=virtio"
+     "-object" "rng-random,filename=/dev/urandom,id=guixsd-vm-rng"
+     "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
 
      #$@(map virtfs-option shared-fs)
      "-vga std"
