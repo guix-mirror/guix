@@ -275,7 +275,7 @@ certificates~%"))
                                 store
                                 (if (assoc-ref opts 'bootstrap?)
                                     %bootstrap-guile
-                                    (canonical-package guile-2.0)))))
+                                    (canonical-package guile-2.2)))))
                  (run-with-store store
                    (build-and-install checkout (config-directory)
                                       #:commit commit

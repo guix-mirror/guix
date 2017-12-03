@@ -49,7 +49,7 @@
   #:use-module (srfi srfi-37)
   #:use-module (gnu packages)
   #:autoload   (gnu packages base) (canonical-package)
-  #:autoload   (gnu packages guile) (guile-2.0)
+  #:autoload   (gnu packages guile) (guile-2.2)
   #:autoload   (gnu packages bootstrap) (%bootstrap-guile)
   #:export (build-and-use-profile
             delete-generations
@@ -918,5 +918,5 @@ processed, #f otherwise."
                              (%store)
                              (if (assoc-ref opts 'bootstrap?)
                                  %bootstrap-guile
-                                 (canonical-package guile-2.0)))))
+                                 (canonical-package guile-2.2)))))
               (process-actions (%store) opts)))))))
