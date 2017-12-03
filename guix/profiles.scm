@@ -1117,82 +1117,80 @@ the entries in MANIFEST."
     (module-ref (resolve-interface '(gnu packages man)) 'man-db))
 
   (define build
-    #~(begin
-        (use-modules (guix build utils)
-                     (srfi srfi-1)
-                     (srfi srfi-19)
-                     (srfi srfi-26))
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils)
+                       (srfi srfi-1)
+                       (srfi srfi-19)
+                       (srfi srfi-26))
 
-        (define entries
-          (filter-map (lambda (directory)
-                        (let ((man (string-append directory "/share/man")))
-                          (and (directory-exists? man)
-                               man)))
-                      '#$(manifest-inputs manifest)))
+          (define entries
+            (filter-map (lambda (directory)
+                          (let ((man (string-append directory "/share/man")))
+                            (and (directory-exists? man)
+                                 man)))
+                        '#$(manifest-inputs manifest)))
 
-        (define manpages-collection-dir
-          (string-append (getenv "PWD") "/manpages-collection"))
+          (define manpages-collection-dir
+            (string-append (getenv "PWD") "/manpages-collection"))
 
-        (define man-directory
-          (string-append #$output "/share/man"))
+          (define man-directory
+            (string-append #$output "/share/man"))
 
-        (define (get-manpage-tail-path manpage-path)
-          (let ((index (string-contains manpage-path "/share/man/")))
-            (unless index
-              (error "Manual path doesn't contain \"/share/man/\":"
-                     manpage-path))
-            (string-drop manpage-path (+ index (string-length "/share/man/")))))
+          (define (get-manpage-tail-path manpage-path)
+            (let ((index (string-contains manpage-path "/share/man/")))
+              (unless index
+                (error "Manual path doesn't contain \"/share/man/\":"
+                       manpage-path))
+              (string-drop manpage-path (+ index (string-length "/share/man/")))))
 
-        (define (populate-manpages-collection-dir entries)
-          (let ((manpages (append-map (cut find-files <> #:stat stat) entries)))
-            (for-each (lambda (manpage)
-                        (let* ((dest-file (string-append
-                                           manpages-collection-dir "/"
-                                           (get-manpage-tail-path manpage))))
-                          (mkdir-p (dirname dest-file))
-                          (catch 'system-error
-                            (lambda ()
-                              (symlink manpage dest-file))
-                            (lambda args
-                              ;; Different packages may contain the same
-                              ;; manpage.  Simply ignore the symlink error.
-                              #t))))
-                      manpages)))
+          (define (populate-manpages-collection-dir entries)
+            (let ((manpages (append-map (cut find-files <> #:stat stat) entries)))
+              (for-each (lambda (manpage)
+                          (let* ((dest-file (string-append
+                                             manpages-collection-dir "/"
+                                             (get-manpage-tail-path manpage))))
+                            (mkdir-p (dirname dest-file))
+                            (catch 'system-error
+                              (lambda ()
+                                (symlink manpage dest-file))
+                              (lambda args
+                                ;; Different packages may contain the same
+                                ;; manpage.  Simply ignore the symlink error.
+                                #t))))
+                        manpages)))
 
-        (mkdir-p manpages-collection-dir)
-        (populate-manpages-collection-dir entries)
+          (mkdir-p manpages-collection-dir)
+          (populate-manpages-collection-dir entries)
 
-        ;; Create a mandb config file which contains a custom made
-        ;; manpath. The associated catpath is the location where the database
-        ;; gets generated.
-        (copy-file #+(file-append man-db "/etc/man_db.conf")
-                   "man_db.conf")
-        (substitute* "man_db.conf"
-          (("MANDB_MAP	/usr/man		/var/cache/man/fsstnd")
-           (string-append "MANDB_MAP " manpages-collection-dir " "
-                          man-directory)))
+          ;; Create a mandb config file which contains a custom made
+          ;; manpath. The associated catpath is the location where the database
+          ;; gets generated.
+          (copy-file #+(file-append man-db "/etc/man_db.conf")
+                     "man_db.conf")
+          (substitute* "man_db.conf"
+            (("MANDB_MAP	/usr/man		/var/cache/man/fsstnd")
+             (string-append "MANDB_MAP " manpages-collection-dir " "
+                            man-directory)))
 
-        (mkdir-p man-directory)
-        (setenv "MANPATH" (string-join entries ":"))
+          (mkdir-p man-directory)
+          (setenv "MANPATH" (string-join entries ":"))
 
-        (format #t "Creating manual page database for ~a packages... "
-                (length entries))
-        (force-output)
-        (let* ((start-time (current-time))
-               (exit-status (system* #+(file-append man-db "/bin/mandb")
-                                    "--quiet" "--create"
-                                    "-C" "man_db.conf"))
-               (duration (time-difference (current-time) start-time)))
-          (format #t "done in ~,3f s~%"
-                  (+ (time-second duration)
-                     (* (time-nanosecond duration) (expt 10 -9))))
+          (format #t "Creating manual page database for ~a packages... "
+                  (length entries))
           (force-output)
-          (zero? exit-status))))
+          (let* ((start-time (current-time))
+                 (exit-status (system* #+(file-append man-db "/bin/mandb")
+                                       "--quiet" "--create"
+                                       "-C" "man_db.conf"))
+                 (duration (time-difference (current-time) start-time)))
+            (format #t "done in ~,3f s~%"
+                    (+ (time-second duration)
+                       (* (time-nanosecond duration) (expt 10 -9))))
+            (force-output)
+            (zero? exit-status)))))
 
   (gexp->derivation "manual-database" build
-                    #:modules '((guix build utils)
-                                (srfi srfi-19)
-                                (srfi srfi-26))
                     #:local-build? #t))
 
 (define %default-profile-hooks
