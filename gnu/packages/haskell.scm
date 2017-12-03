@@ -3584,7 +3584,12 @@ will eventually deliver a value of type @code{a}.")
         (base32
          "1ryjj7qrx70ckcjlr02x9zh86kfp76azbxq05r7hawqkaqg44sfs"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
     (home-page "https://hackage.haskell.org/package/fingertree")
     (synopsis "Generic finger-tree structure")
     (description "This library provides finger trees, a general sequence
