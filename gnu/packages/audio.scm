@@ -453,14 +453,14 @@ plugins are provided.")
 (define-public calf
   (package
     (name "calf")
-    (version "0.0.60")
+    (version "0.90.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://calf-studio-gear.org/files/calf-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "019fwg00jv217a5r767z7szh7vdrarybac0pr2sk26xp81kibrx9"))))
+                "0dijv2j7vlp76l10s4v8gbav26ibaqk8s24ci74vrc398xy00cib"))))
     (build-system gnu-build-system)
     (inputs
      `(("fluidsynth" ,fluidsynth)
