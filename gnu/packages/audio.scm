@@ -1100,17 +1100,19 @@ PS, and DAB+.")
 (define-public faust
   (package
     (name "faust")
-    (version "0.9.67")
+    (version "0.9.90")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/faudiostream/faust-" version ".zip"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/grame-cncm/faust.git")
+                    (commit (string-append "v"
+                                           (string-map (lambda (c)
+                                                         (if (char=? c #\.) #\- c))
+                                                       version)))))
+              (file-name (string-append "faust-" version "-checkout"))
               (sha256
                (base32
-                "068vl9536zn0j4pknwfcchzi90rx5pk64wbcbd67z32w0csx8xm1"))
-              (snippet
-               ;; Remove prebuilt library
-               '(delete-file "architecture/android/libs/armeabi-v7a/libfaust_dsp.so"))))
+                "0qc6iwjd3i80jdyjc186c6ywipmjzl8wlsp4050pbr56q4rlkd4z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
@@ -1118,7 +1120,16 @@ PS, and DAB+.")
        #:phases
        (modify-phases %standard-phases
          ;; no "configure" script
-         (delete 'configure))))
+         (delete 'configure)
+         ;; Files appear under $out/share/faust that are read-only.  The
+         ;; install phase tries to overwrite them and fails, so we change
+         ;; the permissions first.
+         (add-before 'install 'fix-permissions
+           (lambda _
+             (for-each (lambda (file)
+                         (chmod file #o644))
+                       (find-files "architecture/max-msp" ".*"))
+             #t)))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "http://faust.grame.fr/")
