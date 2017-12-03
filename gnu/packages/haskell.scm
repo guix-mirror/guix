@@ -3960,8 +3960,8 @@ indexed variants.")
     (description "Cheapskate is an experimental Markdown processor in pure
 Haskell.  It aims to process Markdown efficiently and in the most forgiving
 possible way.  It is designed to deal with any input, including garbage, with
-linear performance.  Output is sanitized by default for protection against XSS
-attacks.")
+linear performance.  Output is sanitized by default for protection against
+cross-site scripting (@dfn{XSS}) attacks.")
     (license license:bsd-3)))
 
 (define-public ghc-bifunctors
