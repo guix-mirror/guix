@@ -20302,6 +20302,28 @@ unknown, but if you would like to investigate further (and have
 significant computational and storage resources to do so), then let us
 know.
 
+@unnumberedsubsec Reducing the Set of Bootstrap Binaries
+
+Our bootstrap binaries currently include GCC, Guile, etc.  That's a lot
+of binary code!  Why is that a problem?  It's a problem because these
+big chunks of binary code are practically non-auditable, which makes it
+hard to establish what source code produced them.  Every unauditable
+binary also leaves us vulnerable to compiler backdoors as described by
+Ken Thompson in the 1984 paper @emph{Reflections on Trusting Trust}.
+
+This is mitigated by the fact that our bootstrap binaries were generated
+from an earlier Guix revision.  Nevertheless it lacks the level of
+transparency that we get in the rest of the package dependency graph,
+where Guix always gives us a source-to-binary mapping.  Thus, our goal
+is to reduce the set of bootstrap binaries to the bare minimum.
+
+The @uref{http://bootstrappable.org, Bootstrappable.org web site} lists
+on-going projects to do that.  One of these is about replacing the
+bootstrap GCC with a sequence of assemblers, interpreters, and compilers
+of increasing complexity, which could be built from source starting from
+a simple and auditable assembler.  Your help is welcome!
+
+
 @node Porting
 @section Porting to a New Platform
 
