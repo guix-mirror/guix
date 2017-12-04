@@ -71,18 +71,21 @@ dependencies.")
     (license gpl3+))))
 
 (define-public guile-wm
+  (let ((commit "f3c7b3be719f425ffb87265d34855a73366351be")
+        (revision "1"))
   (package
     (name "guile-wm")
-    (version "1.0")
+    (version (git-version "1.0" revision commit))
     (synopsis "X11 window manager toolkit in Scheme")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://web.archive.org/web/20161005084324/"
-                                  "http://www.markwitmer.com/dist/guile-wm-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mwitmer/guile-wm")
+                    (commit commit)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1l9qcz236jxvryndimjy62cf8zxf8i3f8vg3zpqqjhw15j9mdk3r"))))
+                "086dijnpl5dpglf70d6f9sizyakr313y7blpdjrmbi687j1x3qcl"))))
     (build-system gnu-build-system)
     (arguments
      `( ;; The '.scm' files go to $(datadir), so set that to the
@@ -135,14 +138,15 @@ dependencies.")
                                     Type=Application~%"
                           ,name ,synopsis %output))))
              #t)))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("texinfo" ,texinfo)))
     (inputs `(("guile" ,guile-2.0)
               ("guile-xcb" ,guile-xcb)))
-    (home-page "http://www.markwitmer.com/guile-xcb/guile-wm.html")
+    (home-page "https://github.com/mwitmer/guile-wm/releases")
     (description
      "Guile-WM is a simple window manager that's completely customizable—you
 have total control of what it does by choosing which modules to include.
 Included with it are a few modules that provide basic TinyWM-like window
 management, some window record-keeping, multi-monitor support, and emacs-like
 keymaps and minibuffer.  At this point, it's just enough to get you started.")
-    (license gpl3+)))
+    (license gpl3+))))
