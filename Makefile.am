@@ -655,9 +655,9 @@ release: dist
 	    echo "failed to produced GuixSD installation image for $$system" >&2 ;	\
 	    exit 1 ;									\
 	  fi ;										\
-	  xz < "$$image" > "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz.tmp" ;	\
-	  mv "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz.tmp"			\
-	     "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz" ;				\
+	  xz < "$$image" > "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.iso.xz.tmp" ;	\
+	  mv "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.iso.xz.tmp"			\
+	     "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.iso.xz" ;			\
 	done
 	for system in $(GUIXSD_VM_SYSTEMS) ; do						\
 	  image=`$(top_builddir)/pre-inst-env						\

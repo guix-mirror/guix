@@ -7855,7 +7855,7 @@ about their support in GNU/Linux.
 
 An ISO-9660 installation image that can be written to a USB stick or
 burnt to a DVD can be downloaded from
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz},
+@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz},
 where @var{system} is one of:
 
 @table @code
@@ -7871,8 +7871,8 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz.sig
-$ gpg --verify guixsd-install-@value{VERSION}.@var{system}.xz.sig
+$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ gpg --verify guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
 @end example
 
 If that command fails because you do not have the required public key,
@@ -7898,7 +7898,7 @@ To copy the image to a USB stick, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guixsd-install-@value{VERSION}.@var{system}.xz
+xz -d guixsd-install-@value{VERSION}.@var{system}.iso.xz
 @end example
 
 @item
@@ -7907,7 +7907,7 @@ its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=guixsd-install-@value{VERSION}.x86_64-linux of=/dev/sdX
+dd if=guixsd-install-@value{VERSION}.x86_64-linux.iso of=/dev/sdX
 sync
 @end example
 
@@ -7923,7 +7923,7 @@ To copy the image to a DVD, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guixsd-install-@value{VERSION}.@var{system}.xz
+xz -d guixsd-install-@value{VERSION}.@var{system}.iso.xz
 @end example
 
 @item
@@ -7932,7 +7932,7 @@ its device name.  Assuming that the DVD drive is known as @file{/dev/srX},
 copy the image with:
 
 @example
-growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.x86_64
+growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.x86_64.iso
 @end example
 
 Access to @file{/dev/srX} usually requires root privileges.
@@ -8317,7 +8317,7 @@ Boot the USB installation image in an VM:
 @example
 qemu-system-x86_64 -m 1024 -smp 1 \
   -net user -net nic,model=virtio -boot menu=on \
-  -drive file=guixsd-install-@value{VERSION}.@var{system} \
+  -drive file=guixsd-install-@value{VERSION}.@var{system}.iso \
   -drive file=guixsd.img
 @end example
 
