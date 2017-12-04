@@ -584,7 +584,7 @@ SOURCE_TARBALLS =					\
   $(foreach ext,tar.gz,$(PACKAGE_FULL_TARNAME).$(ext))
 
 # Systems supported by Guix.
-SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux armhf-linux
+SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux armhf-linux aarch64-linux
 
 # Guix binary tarballs.
 BINARY_TARBALLS =							\
