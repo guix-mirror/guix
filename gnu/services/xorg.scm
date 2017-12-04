@@ -390,7 +390,8 @@ desktop session from the system or user profile will be used."
                                  x))))
           (if (file-exists? xsession-file)
               ;; Run ~/.xsession when it exists.
-              (apply exec-from-login-shell xsession-file session)
+              (apply exec-from-login-shell xsession-file
+                     (or session '()))
               ;; Otherwise, start the specified session or a fallback.
               (apply exec-from-login-shell
                      (or session
