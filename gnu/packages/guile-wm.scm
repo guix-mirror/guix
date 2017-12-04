@@ -34,41 +34,40 @@
 (define-public guile-xcb
   (let ((commit "db7d5a393cc37a56f66541b3f33938b40c6f35b3")
         (revision "1"))
-  (package
-    (name "guile-xcb")
-    (version (git-version "1.3" revision commit))
-    (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/mwitmer/guile-xcb")
-                   (commit commit)))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "16w4vgzbmnwih4bgfn8rw85ryfvzhc6hyly6bic9sd7hhc82rcnd"))))
-    (build-system gnu-build-system)
-    (arguments '(;; Parallel builds fail.
-                 #:parallel-build? #f
-
-                 #:configure-flags (list (string-append
-                                          "--with-guile-site-dir="
-                                          (assoc-ref %outputs "out")
-                                          "/share/guile/site/2.2")
-                                         (string-append
-                                          "--with-guile-site-ccache-dir="
-                                          (assoc-ref %outputs "out")
-                                          "/share/guile/site/2.2"))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("texinfo" ,texinfo)))
-    (inputs `(("guile" ,guile-2.2)
-              ("xcb" ,xcb-proto)))
-    (home-page "https://github.com/mwitmer/guile-xcb")
-    (synopsis "XCB bindings for Guile")
-    (description
-     "Guile-XCB implements the XCB protocol and provides all the tools
+    (package
+      (name "guile-xcb")
+      (version (git-version "1.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mwitmer/guile-xcb")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "16w4vgzbmnwih4bgfn8rw85ryfvzhc6hyly6bic9sd7hhc82rcnd"))))
+      (build-system gnu-build-system)
+      (arguments '(;; Parallel builds fail.
+                   #:parallel-build? #f
+                   #:configure-flags (list (string-append
+                                            "--with-guile-site-dir="
+                                            (assoc-ref %outputs "out")
+                                            "/share/guile/site/2.2")
+                                           (string-append
+                                            "--with-guile-site-ccache-dir="
+                                            (assoc-ref %outputs "out")
+                                            "/share/guile/site/2.2"))))
+      (native-inputs `(("pkg-config" ,pkg-config)
+                       ("texinfo" ,texinfo)))
+      (inputs `(("guile" ,guile-2.2)
+                ("xcb" ,xcb-proto)))
+      (home-page "https://github.com/mwitmer/guile-xcb")
+      (synopsis "XCB bindings for Guile")
+      (description
+       "Guile-XCB implements the XCB protocol and provides all the tools
 necessary to write X client code in Guile Scheme without any external
 dependencies.")
-    (license gpl3+))))
+      (license gpl3+))))
 
 (define-public guile-wm
   (let ((commit "f3c7b3be719f425ffb87265d34855a73366351be")
