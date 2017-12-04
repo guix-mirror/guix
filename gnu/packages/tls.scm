@@ -815,6 +815,9 @@ then ported to the GNU / Linux environment.")
         (base32
          "11wnj34rfqxjggmdgf042i49lr6civgbqwv2p7p8bn6k2919vg4r"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DUSE_SHARED_MBEDTLS_LIBRARY=ON")))
     (native-inputs
      `(("perl" ,perl)))
     (synopsis "Small TLS library")
