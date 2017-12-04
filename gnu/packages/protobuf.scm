@@ -71,7 +71,7 @@ data in motion, or as a file format for data at rest.")
 (define-public protobuf
   (package
     (name "protobuf")
-    (version "3.4.1")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/google/protobuf/releases/"
@@ -79,7 +79,7 @@ data in motion, or as a file format for data at rest.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0y6cr4l7bwa6zvjv5flzr4cx28shk5h8dz99xw90v8qih954pcrb"))))
+                "0lc5d5cnhsaiazc5gnsnv19bikk22rgcqlqzzrfvk6mkq98v1mld"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (outputs (list "out"
