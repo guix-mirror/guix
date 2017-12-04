@@ -1259,7 +1259,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.990")
+    (version "0.4.995")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1268,11 +1268,10 @@ other site that youtube-dl supports.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1758drgp2wq6d8nz8bpfark2cli9sj0qd8srdhn0rx3rd4l5n7nj"))))
+                "0i89mn8v8znn3csgzfg8dz5vcn3ld66xj02az6137bljhgivjxra"))))
     (build-system python-build-system)
     (arguments
-     ;; no tests
-     '(#:tests? #f))
+     '(#:tests? #f))                    ; no tests
     (inputs
      `(("ffmpeg" ,ffmpeg)))
     (synopsis "Download videos, audios, or images from Web sites")
