@@ -308,10 +308,10 @@ host name without trailing dot."
       (register-tls-record-port record port)
 
       ;; Write HTTP requests line by line rather than byte by byte:
-      ;; <https://bugs.gnu.org/22966>.  This is not possible on Guile 2.0.
+      ;; <https://bugs.gnu.org/22966>.  This is possible with Guile >= 2.2.
       (cond-expand
-        (guile-2.0 #f)
-        (else (setvbuf record 'line)))
+        (guile-2.2 (setvbuf record 'line))
+        (else #f))
 
       record)))
 
