@@ -1795,10 +1795,10 @@ a new command using the matched rule, and runs it.")
     (home-page "https://www.gentoo.com/di/")
     (synopsis "Advanced df like disk information utility")
     (description
-     "'di' is a disk information utility, displaying everything
-(and more) that your @code{df} command does.  It features the ability to
-display your disk usage in whatever format you prefer.  It is designed to be
-highly portable.  Great for heterogeneous networks.")
+     "'di' is a disk information utility, displaying everything that your
+@code{df} command does and more.  It features the ability to display your disk
+usage in whatever format you prefer.  It is designed to be highly portable and
+produce uniform output across heterogeneous networks.")
     (license license:zlib)))
 
 (define-public cbatticon
