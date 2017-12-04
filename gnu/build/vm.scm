@@ -127,8 +127,10 @@ the #:references-graphs parameter of 'derivation'."
                                            builder)
                   (append
                    (if make-disk-image?
-                       `("-drive" ,(string-append "file=" output
-                                                  ",if=virtio"))
+                       `("-device" "virtio-blk,drive=myhd"
+                         "-drive" ,(string-append "if=none,file=" output
+                                                  ",format=" disk-image-format
+                                                  ",id=myhd"))
                        '())
                    ;; Only enable kvm if we see /dev/kvm exists.
                    ;; This allows users without hardware virtualization to still
