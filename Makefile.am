@@ -602,9 +602,6 @@ GUIXSD_IMAGE_BASE = guixsd-install-$(PACKAGE_VERSION)
 # Prefix of the GuixSD VM image file name.
 GUIXSD_VM_IMAGE_BASE = guixsd-vm-image-$(PACKAGE_VERSION)
 
-# Size of the VM image (for x86_64 typically).
-GUIXSD_VM_IMAGE_SIZE ?= 2GiB
-
 # The release process works in several phases:
 #
 #   0. We assume the developer created a 'vX.Y' tag.
@@ -663,7 +660,6 @@ release: dist
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system vm-image							\
 	    --system=$$system								\
-	    --image-size=$(GUIXSD_VM_IMAGE_SIZE)					\
 	    gnu/system/examples/vm-image.tmpl` ;					\
 	  if [ ! -f "$$image" ] ; then							\
 	    echo "failed to produced GuixSD VM image for $$system" >&2 ;		\
