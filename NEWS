@@ -10,6 +10,82 @@ Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 0.14.0 (since 0.13.0)
+
+** Package management
+
+*** ‘guix package’ displays how much will be downloaded
+*** ‘guix package’ warns about insufficient disk space
+*** ‘guix package’ now reports package collisions early on
+*** ‘guix package --search’ sorts results by relevance
+*** ‘guix pull’ now fetches code directly over Git using Guile-Git
+*** Substitutes can be downloaded from servers equivalent to the authorized ones
+*** New ‘guix weather’ command
+*** ‘guix publish --cache’ now also caches uncompressed items
+*** ‘guix publish’ no longer removes live items from its cache
+*** ‘guix challenge’ now displays an overall summary
+*** ‘guix refresh’ no longer uses FTP for GNU and GNOME packages
+*** ‘guix refresh’ has a new ‘-m’ or ‘--manifest’ option
+*** New ‘refresh’ checker for ‘guix lint’
+*** New ‘json’ importer for ‘guix import’ to simplify first packages
+*** New ‘texlive’ importer for ‘guix import’
+
+** Distribution
+
+*** GuixSD installation image is now available as ISO-9660
+*** GuixSD installation image now includes an ‘sshd’ service
+*** New (gnu bootloaders) API, with support for U-Boot and extlinux
+*** ‘grub-configuration’ is deprecated in favor of ‘bootloader-configuration’
+*** ‘%desktop-services’ now includes NetworkManager instead of Wicd
+*** The (uuid …) form can now specify FAT32 and ISO-9660 UUIDs
+*** ‘guix system’ now reports missing file system UUIDs and labels
+*** ‘guix system’ can provide hints when reporting unbound variables
+*** New ‘--file-system-type’ option for ‘guix system disk-image’
+*** ‘guix system disk-image’ can now creates ISO-9660 images
+*** ‘guix system vm-image’ & co. automatically estimate the image size
+*** ‘guix system vm’ now uses overlayfs instead of unionfs
+*** TeX Live is now also available as a set of small ‘texlive-’ packages
+*** New ‘guix system search’ command to search for services
+*** New services
+
+certbot, fcgiwrap, gdm, git-http, knot, libvirt, memcached, mongodb, mpd,
+murmur, rsync, tailon, sysctl
+
+*** XXX new packages
+
+*** XXX package updates
+
+** Programming interfaces
+
+*** New build systems: ‘font’, ‘meson’, ‘minify’, ‘scons’, ‘texlive’
+*** ‘cmake-build-system’ now supports cross-compilation
+*** Various improvements to ‘asdf-build-system’, ‘emacs-build-system’,
+    ‘ant-build-system’, and ‘go-build-system’
+*** ‘patches’ field of <origin> can now contain any lowerable object
+*** (gnu system vm) has a new ‘make-iso9660-image’ procedure
+*** ‘openssh-service-type’ can now be extended with new authorized keys
+*** ‘rottlog-service-type’ can now be extended with new ‘log-rotation’s
+*** ‘network-manager-service-type’ now supports VPN plugins
+*** <service-type> now has a ‘description’ field, used by ‘guix system search’
+*** New ‘virtual-machine’ form in (gnu system vm)
+*** New (gnu system uuid) module, which defines a disjoint <uuid> type
+*** New (guix progress) module
+
+** Noteworthy bug fixes
+
+*** GuixSD no longer creates setuid binaries in /gnu/store
+    (<https://bugs.gnu.org/28751>)
+*** /root is no longer world-readable (<http://bugs.gnu.org/27135>)
+*** ‘guix publish’ no longer leaks memory (<https://bugs.gnu.org/28784>)
+*** Missing cursor icons in GNOME could cause crashes
+    (<https://bugs.gnu.org/25958>)
+*** Setuid programs now honor the system timezone
+    (<https://bugs.gnu.org/29212>)
+
+** Native language support
+
+Updated translations: da (Danish), fr (French)
+
 * Changes in 0.13.0 (since 0.12.0)
 
 ** Package management
