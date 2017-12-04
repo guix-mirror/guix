@@ -2151,8 +2151,8 @@ also result from derivation builds, can be available as substitutes.
 
 @cindex hydra
 @cindex build farm
-The @code{hydra.gnu.org} server is a front-end to an official build farm
-that builds packages from the GNU distribution continuously for some
+The @code{mirror.hydra.gnu.org} server is a front-end to an official build farm
+that builds packages from Guix continuously for some
 architectures, and makes them available as substitutes.  This is the
 default source of substitutes; it can be overridden by passing the
 @option{--substitute-urls} option either to @command{guix-daemon}
@@ -2201,6 +2201,17 @@ Then, you can run something like this:
 # guix archive --authorize < @var{prefix}/share/guix/hydra.gnu.org.pub
 @end example
 
+@quotation Note
+Similarly, the @file{berlin.guixsd.org.pub} file contains the public key
+for the project's new build farm, reachable at
+@indicateurl{https://berlin.guixsd.org}.
+
+As of this writing @code{berlin.guixsd.org} is being upgraded so it can
+better scale up, but you might want to give it a try.  It is backed by
+20 x86_64/i686 build nodes and may be able to provide substitutes more
+quickly than @code{mirror.hydra.gnu.org}.
+@end quotation
+
 Once this is in place, the output of a command like @code{guix build}
 should change from something like:
 
@@ -2219,7 +2230,7 @@ to something like:
 
 @example
 $ guix build emacs --dry-run
-The following files would be downloaded:
+112.3 MB would be downloaded:
    /gnu/store/pk3n22lbq6ydamyymqkkz7i69wiwjiwi-emacs-24.3
    /gnu/store/2ygn4ncnhrpr61rssa6z0d9x22si0va3-libjpeg-8d
    /gnu/store/71yz6lgx4dazma9dwn2mcjxaah9w77jq-cairo-1.12.16
