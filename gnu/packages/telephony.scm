@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Francesco Frassinelli <fraph24@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages linux)
@@ -246,6 +248,29 @@ Real-time Transport Protocol (SRTP), the Universal Security Transform (UST),
 and a supporting cryptographic kernel.")
     (home-page "https://github.com/cisco/libsrtp")
     (license license:bsd-3)))
+
+(define-public bctoolbox
+  (package
+    (name "bctoolbox")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/linphone/bctoolbox/bctoolbox-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "14ivv6bh6qywys6yyb34scy9w78d636xl1f7cyxm3gwx2qv71lx5"))))
+    (build-system gnu-build-system)
+    (arguments '(#:make-flags '("CFLAGS=-fPIC")))
+    (native-inputs
+     `(("cunit" ,cunit)))
+    (inputs
+     `(("mbedtls" ,mbedtls-apache)))
+    (home-page "https://www.linphone.org")
+    (synopsis "Utilities library for linphone software")
+    (description "BCtoolbox is a utilities library used by Belledonne
+Communications softwares like linphone.")
+    (license license:gpl2+)))
 
 (define-public libiax2
   (let ((commit "0e5980f1d78ce462e2d1ed6bc39ff35c8341f201"))
