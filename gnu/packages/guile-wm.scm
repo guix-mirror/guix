@@ -53,14 +53,14 @@
                  #:configure-flags (list (string-append
                                           "--with-guile-site-dir="
                                           (assoc-ref %outputs "out")
-                                          "/share/guile/site/2.0")
+                                          "/share/guile/site/2.2")
                                          (string-append
                                           "--with-guile-site-ccache-dir="
                                           (assoc-ref %outputs "out")
-                                          "/share/guile/site/2.0"))))
+                                          "/share/guile/site/2.2"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("texinfo" ,texinfo)))
-    (inputs `(("guile" ,guile-2.0)
+    (inputs `(("guile" ,guile-2.2)
               ("xcb" ,xcb-proto)))
     (home-page "https://github.com/mwitmer/guile-xcb")
     (synopsis "XCB bindings for Guile")
@@ -92,17 +92,17 @@ dependencies.")
        ;; standard value.
        #:configure-flags (list (string-append "--datadir="
                                               (assoc-ref %outputs "out")
-                                              "/share/guile/site/2.0"))
+                                              "/share/guile/site/2.2"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-go-directory
           (lambda* (#:key outputs #:allow-other-keys)
-            ;; Install .go files to $out/share/guile/site/2.0.
+            ;; Install .go files to $out/share/guile/site/2.2.
             (let ((out (assoc-ref outputs "out")))
               (substitute* "module/Makefile.in"
                 (("^wmdir = .*$")
                  (string-append "wmdir = " out
-                                "/share/guile/site/2.0\n"))))
+                                "/share/guile/site/2.2\n"))))
             #t))
          (add-after 'install 'set-load-path
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -111,10 +111,10 @@ dependencies.")
              (let* ((out  (assoc-ref outputs "out"))
                     (prog (string-append out "/bin/guile-wm"))
                     (mods (string-append
-                           out "/share/guile/site/2.0"))
+                           out "/share/guile/site/2.2"))
                     (xcb  (string-append
                            (assoc-ref inputs "guile-xcb")
-                           "/share/guile/site/2.0")))
+                           "/share/guile/site/2.2")))
                (wrap-program
                    prog
                  `("GUILE_LOAD_PATH" ":" prefix (,mods ,xcb))
@@ -140,7 +140,7 @@ dependencies.")
              #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("texinfo" ,texinfo)))
-    (inputs `(("guile" ,guile-2.0)
+    (inputs `(("guile" ,guile-2.2)
               ("guile-xcb" ,guile-xcb)))
     (home-page "https://github.com/mwitmer/guile-wm/releases")
     (description
