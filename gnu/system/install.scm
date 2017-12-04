@@ -264,7 +264,10 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                     ;; The root account is passwordless, so make sure
                     ;; a password is set before allowing logins.
                     (allow-empty-passwords? #f)
-                    (password-authentication? #t)))
+                    (password-authentication? #t)
+
+                    ;; Don't start it upfront.
+                    (%auto-start? #f)))
 
           ;; Since this is running on a USB stick with a overlayfs as the root
           ;; file system, use an appropriate cache configuration.
