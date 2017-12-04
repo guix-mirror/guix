@@ -272,6 +272,29 @@ and a supporting cryptographic kernel.")
 Communications softwares like linphone.")
     (license license:gpl2+)))
 
+(define-public ortp
+  (package
+    (name "ortp")
+    (version "0.27.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.savannah.nongnu.org/"
+                                  "releases/linphone/ortp/sources/ortp-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1by0dqdqrj5avzcvjws30g8v5sa61wj12x00sxw0kn1smcrshqgb"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bctoolbox" ,bctoolbox)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://linphone.org/")
+    (synopsis "Implementation of the Real-time transport protocol")
+    (description "oRTP is a library implementing the Real-time transport
+protocol (RFC 3550).")
+    (license license:lgpl2.1+)))
+
 (define-public libiax2
   (let ((commit "0e5980f1d78ce462e2d1ed6bc39ff35c8341f201"))
     ;; This is the commit used by the Ring Project.
