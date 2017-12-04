@@ -197,7 +197,7 @@ System Installation
 
 * Limitations::                 What you can expect.
 * Hardware Considerations::     Supported hardware.
-* USB Stick Installation::      Preparing the installation medium.
+* USB Stick and DVD Installation::  Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
 * Proceeding with the Installation::  The real thing.
 * Installing GuixSD in a VM::   GuixSD playground.
@@ -7764,8 +7764,7 @@ available.
 @menu
 * Limitations::                 What you can expect.
 * Hardware Considerations::     Supported hardware.
-* USB Stick Installation::      Preparing the installation medium.
-* DVD Installation::            Preparing the installation medium.
+* USB Stick and DVD Installation:: Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
 * Proceeding with the Installation::  The real thing.
 * Installing GuixSD in a VM::   GuixSD playground.
@@ -7851,10 +7850,11 @@ web site.  It contains a catalog of hardware devices with information
 about their support in GNU/Linux.
 
 
-@node USB Stick Installation
-@subsection USB Stick Installation
+@node USB Stick and DVD Installation
+@subsection USB Stick and DVD Installation
 
-An installation image for USB sticks can be downloaded from
+An ISO-9660 installation image that can be written to a USB stick or
+burnt to a DVD can be downloaded from
 @indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz},
 where @var{system} is one of:
 
@@ -7888,6 +7888,8 @@ and rerun the @code{gpg --verify} command.
 
 This image contains the tools necessary for an installation.
 It is meant to be copied @emph{as is} to a large-enough USB stick or DVD.
+
+@unnumberedsubsubsec Copying to a USB Stick
 
 To copy the image to a USB stick, follow these steps:
 
@@ -7905,57 +7907,14 @@ its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=guixsd-install-@value{VERSION}.x86_64 of=/dev/sdX
+dd if=guixsd-install-@value{VERSION}.x86_64-linux of=/dev/sdX
 sync
 @end example
 
 Access to @file{/dev/sdX} usually requires root privileges.
 @end enumerate
 
-Once this is done, you should be able to reboot the system and boot from
-the USB stick.  The latter usually requires you to get in the BIOS or
-UEFI boot menu, where you can choose to boot from the USB stick.
-
-@xref{Installing GuixSD in a VM}, if, instead, you would like to install
-GuixSD in a virtual machine (VM).
-
-@node DVD Installation
-@subsection DVD Installation
-
-An installation image for DVDs can be downloaded from
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz},
-where @var{system} is one of:
-
-@table @code
-@item x86_64-linux
-for a GNU/Linux system on Intel/AMD-compatible 64-bit CPUs;
-
-@item i686-linux
-for a 32-bit GNU/Linux system on Intel-compatible CPUs.
-@end table
-
-@c start duplication of authentication part from ``Binary Installation''
-Make sure to download the associated @file{.sig} file and to verify the
-authenticity of the image against it, along these lines:
-
-@example
-$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz.sig
-$ gpg --verify guixsd-install-@value{VERSION}.@var{system}.xz.sig
-@end example
-
-If that command fails because you do not have the required public key,
-then run this command to import it:
-
-@example
-$ gpg --keyserver pgp.mit.edu --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
-@end example
-
-@noindent
-and rerun the @code{gpg --verify} command.
-@c end duplication
-
-This image contains the tools necessary for an installation.
-It is meant to be copied @emph{as is} to a large-enough USB stick or DVD.
+@unnumberedsubsubsec Burning on a DVD
 
 To copy the image to a DVD, follow these steps:
 
@@ -7979,12 +7938,15 @@ growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.x86_64
 Access to @file{/dev/srX} usually requires root privileges.
 @end enumerate
 
+@unnumberedsubsubsec Booting
+
 Once this is done, you should be able to reboot the system and boot from
-the DVD.  The latter usually requires you to get in the BIOS or
-UEFI boot menu, where you can choose to boot from the DVD.
+the USB stick or DVD.  The latter usually requires you to get in the
+BIOS or UEFI boot menu, where you can choose to boot from the USB stick.
 
 @xref{Installing GuixSD in a VM}, if, instead, you would like to install
 GuixSD in a virtual machine (VM).
+
 
 @node Preparing for Installation
 @subsection Preparing for Installation
@@ -8336,7 +8298,7 @@ disk image, follow these steps:
 @enumerate
 @item
 First, retrieve and decompress the GuixSD installation image as
-described previously (@pxref{USB Stick Installation}).
+described previously (@pxref{USB Stick and DVD Installation}).
 
 @item
 Create a disk image that will hold the installed system.  To make a
