@@ -693,6 +693,8 @@ language.")
                                (string-take commit 7))
                "-DCMAKE_BUILD_TYPE=Release"
                "-DKICAD_SKIP_BOOST=ON"; Use our system's boost library.
+               (string-append "-DCMAKE_INSTALL_LIBDIR="
+                              (assoc-ref %outputs "out") "/lib")
                "-DKICAD_SCRIPTING=ON"
                "-DKICAD_SCRIPTING_MODULES=ON"
                "-DKICAD_SCRIPTING_WXPYTHON=ON"
@@ -721,14 +723,6 @@ language.")
                    `("PYTHONPATH" ":" prefix (,path))
                    `("PATH" ":" prefix
                      (,(string-append python "/bin:")))))
-               #t))
-           (add-after 'wrap-program 'install-lib-3d
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (for-each
-                (lambda (file)
-                  (install-file file (string-append (assoc-ref outputs "out")
-                                                    "/lib")))
-                (find-files "." "^libkicad_3dsg.*"))
                #t)))))
       (native-inputs
        `(("boost" ,boost)
