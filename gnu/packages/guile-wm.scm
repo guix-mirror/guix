@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,22 +25,27 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages texinfo)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public guile-xcb
+  (let ((commit "db7d5a393cc37a56f66541b3f33938b40c6f35b3")
+        (revision "1"))
   (package
     (name "guile-xcb")
-    (version "1.3")
+    (version (git-version "1.3" revision commit))
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://web.archive.org/web/20150803094848/"
-                                 "http://www.markwitmer.com/dist/guile-xcb-"
-                                 version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/mwitmer/guile-xcb")
+                   (commit commit)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "04dvbqdrrs67490gn4gkq9zk8mqy3mkls2818ha4p0ckhh0pm149"))))
+               "16w4vgzbmnwih4bgfn8rw85ryfvzhc6hyly6bic9sd7hhc82rcnd"))))
     (build-system gnu-build-system)
     (arguments '(;; Parallel builds fail.
                  #:parallel-build? #f
@@ -52,16 +58,17 @@
                                           "--with-guile-site-ccache-dir="
                                           (assoc-ref %outputs "out")
                                           "/share/guile/site/2.0"))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("texinfo" ,texinfo)))
     (inputs `(("guile" ,guile-2.0)
               ("xcb" ,xcb-proto)))
-    (home-page "http://www.markwitmer.com/guile-xcb/guile-xcb.html")
+    (home-page "https://github.com/mwitmer/guile-xcb")
     (synopsis "XCB bindings for Guile")
     (description
      "Guile-XCB implements the XCB protocol and provides all the tools
 necessary to write X client code in Guile Scheme without any external
 dependencies.")
-    (license gpl3+)))
+    (license gpl3+))))
 
 (define-public guile-wm
   (package
