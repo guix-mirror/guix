@@ -63,6 +63,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages mp3) ;taglib
@@ -72,6 +73,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages telephony)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim) ;xxd
@@ -3027,6 +3029,53 @@ mixers.")
 
 (define-public python2-pyalsaaudio
   (package-with-python2 python-pyalsaaudio))
+
+(define-public bluez-alsa
+  (package
+    (name "bluez-alsa")
+    (version "1.2.0")
+    (source (origin
+              ;; The tarballs are mere snapshots and don't contain a
+              ;; bootstrapped build system.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Arkq/bluez-alsa.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1qinf41wl2ihx54zmmhanycihwjkn7dn1cicq6pp4rqbiv79b95x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("bluez" ,bluez)
+       ("glib" ,glib)
+       ("libbsd" ,libbsd)
+       ("ncurses" ,ncurses)
+       ("ortp" ,ortp)
+       ("sbc" ,sbc)))
+    (home-page "https://github.com/Arkq/bluez-alsa")
+    (synopsis "Bluetooth ALSA backend")
+    (description "This project is a rebirth of a direct integration between
+Bluez and ALSA.  Since Bluez >= 5, the build-in integration has been removed
+in favor of 3rd party audio applications.  From now on, Bluez acts as a
+middleware between an audio application, which implements Bluetooth audio
+profile, and a Bluetooth audio device.  BlueALSA registers all known Bluetooth
+audio profiles in Bluez, so in theory every Bluetooth device (with audio
+capabilities) can be connected.  In order to access the audio stream, one has
+to connect to the ALSA PCM device called @code{bluealsa}.  The device is based
+on the ALSA software PCM plugin.")
+    (license license:expat)))
 
 (define-public snd
   (package
