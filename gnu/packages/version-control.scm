@@ -245,6 +245,13 @@ as well as the classic centralized workflow.")
             ;; FIXME: Some hooks fail with "basename: command not found".
             ;; See 't/trash directory.t9164.../svn-hook.log'.
             (delete-file "t/t9164-git-svn-dcommit-concurrent.sh")
+
+            ;; XXX: These tests fail intermittently for unknown reasons:
+            ;; <https://bugs.gnu.org/29546>.
+            (for-each delete-file
+                      '("t/t9128-git-svn-cmd-branch.sh"
+                        "t/t9167-git-svn-cmd-branch-subproject.sh"
+                        "t/t9141-git-svn-multiple-branches.sh"))
             #t))
         (add-after 'install 'install-shell-completion
           (lambda* (#:key outputs #:allow-other-keys)
