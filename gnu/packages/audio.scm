@@ -3041,6 +3041,7 @@ mixers.")
               (uri (git-reference
                     (url "https://github.com/Arkq/bluez-alsa.git")
                     (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1qinf41wl2ihx54zmmhanycihwjkn7dn1cicq6pp4rqbiv79b95x"))))
