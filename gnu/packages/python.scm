@@ -3657,6 +3657,32 @@ Python's distutils.")
 services for your Python modules and applications.")
     (license license:lgpl3+)))
 
+(define-public python-olefile
+  (package
+    (name "python-olefile")
+    (version "0.44")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/decalage2/olefile/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wmxbrhyqjry2000zx0zdhqdqxhgi06nz7sbzjlh222q2zjv1gpj"))))
+    (build-system python-build-system)
+    (home-page
+     "https://www.decalage.info/python/olefileio")
+    (synopsis "Read and write Microsoft OLE2 files.")
+    (description
+     "@code{olefile} can parse, read and write Microsoft OLE2 files (Structured
+Storage or Compound Document, Microsoft Office).  It is an improved version of
+the OleFileIO module from PIL, the Python Image Library.")
+    (license license:bsd-3)))
+
+(define-public python2-olefile
+  (package-with-python2 python-olefile))
+
 (define-public python-pillow
   (package
     (name "python-pillow")
