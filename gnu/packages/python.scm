@@ -3686,15 +3686,14 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "3.3.3")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pillow" version))
-       (patches (search-patches "python-pillow-freetype-2.7-test-failure.patch"))
        (sha256
         (base32
-         "0xkv0p1d73gz0a1qaasf0ai4262g8f334j07vd60bjrxs2wr3nmj"))))
+         "09xmn7rl6840sli2iz1k3fgxfgmri2nqz6vkinmb9mgg8ifp2z59"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose"       ,python-nose)))
@@ -3706,6 +3705,8 @@ the OleFileIO module from PIL, the Python Image Library.")
        ("openjpeg" ,openjpeg)
        ("libtiff"  ,libtiff)
        ("libwebp"  ,libwebp)))
+    (propagated-inputs
+     `(("python-olefile" ,python-olefile)))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after
