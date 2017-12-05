@@ -588,7 +588,7 @@ export XCURSOR_PATH=$HOME/.icons:$HOME/.guix-profile/share/icons:/run/current-sy
 unset PATH
 
 # Load the system profile's settings.
-GUIX_PROFILE=/run/current-system/profile \\
+GUIX_PROFILE=/run/current-system/profile ; \\
 . /run/current-system/profile/etc/profile
 
 # Prepend setuid programs.
@@ -608,7 +608,7 @@ fi
 if [ -f \"$HOME/.guix-profile/etc/profile\" ]
 then
   # Load the user profile's settings.
-  GUIX_PROFILE=\"$HOME/.guix-profile\" \\
+  GUIX_PROFILE=\"$HOME/.guix-profile\" ; \\
   . \"$HOME/.guix-profile/etc/profile\"
 else
   # At least define this one so that basic things just work

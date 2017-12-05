@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,18 +152,20 @@ a highly stable and efficient implementation.")
 (define-public taglib
   (package
     (name "taglib")
-    (version "1.10")
+    (version "1.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://taglib.github.io/releases/taglib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1alv6vp72p0x9i9yscmz2a71anjwqy53y9pbcbqxvc1c0i82vhr4"))))
+                "0ssjcdjv4qf9liph5ry1kngam1y7zp8fzr9xv4wzzrma22kabldn"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f))                    ;no 'test' target
+    (arguments
+      '(#:tests? #f ; Tests are not ran with BUILD_SHARED_LIBS on.
+        #:configure-flags (list "-DBUILD_SHARED_LIBS=ON")))
     (inputs `(("zlib" ,zlib)))
-    (home-page "http://developer.kde.org/~wheeler/taglib.html")
+    (home-page "http://taglib.org")
     (synopsis "Library to access audio file meta-data")
     (description
      "TagLib is a C++ library for reading and editing the meta-data of several

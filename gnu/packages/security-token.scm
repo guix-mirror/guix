@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,7 +83,7 @@ readers and is needed to communicate with such devices through the
 (define-public eid-mw
   (package
     (name "eid-mw")
-    (version "4.3.0")
+    (version "4.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -91,9 +92,9 @@ readers and is needed to communicate with such devices through the
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0s646p19kq27wb160v9b8aaiy30k2shmq4njm471ggd2j7n7a6rs"))))
+                "1ay9znry9dkhhn783paqy8czvv3w5gdpmq8ag8znx9akza8c929z"))))
     (build-system glib-or-gtk-build-system)
-        (native-inputs
+    (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("gettext" ,gnu-gettext)
@@ -114,7 +115,7 @@ readers and is needed to communicate with such devices through the
        (modify-phases %standard-phases
          ;; The github tarball doesn't contain a configure script.
          (add-before 'configure 'autoreconf
-                     (lambda _ (zero? (system* "autoreconf" "-i")))))))
+           (lambda _ (zero? (system* "autoreconf" "-i")))))))
     (synopsis "Belgian eID Middleware")
     (description "The Belgian eID Middleware is required to authenticate with
 online services using the Belgian electronic identity card.")

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -45,13 +45,27 @@
   #:use-module (ice-9 match)
   #:export (xorg-configuration-file
             %default-xorg-modules
+            %default-xorg-fonts
             xorg-wrapper
             xorg-start-command
             xinitrc
 
             %default-slim-theme
             %default-slim-theme-name
+
             slim-configuration
+            slim-configuration?
+            slim-configuration-slim
+            slim-configuration-allow-empty-passwords?
+            slim-configuration-auto-login?
+            slim-configuration-default-user
+            slim-configuration-theme
+            slim-configuration-theme-name
+            slim-configuration-xauth
+            slim-configuration-shepherd
+            slim-configuration-auto-login-session
+            slim-configuration-startx
+
             slim-service-type
             slim-service
 
@@ -70,10 +84,51 @@
 ;;;
 ;;; Code:
 
-(define* (xorg-configuration-file #:key (drivers '()) (resolutions '())
+(define %default-xorg-modules
+  ;; Default list of modules loaded by the server.  Note that the order
+  ;; matters since it determines which driver is going to be used when there's
+  ;; a choice.
+  (list xf86-video-vesa
+        xf86-video-fbdev
+        xf86-video-ati
+        xf86-video-cirrus
+        xf86-video-intel
+        xf86-video-mach64
+        xf86-video-nouveau
+        xf86-video-nv
+        xf86-video-sis
+
+        ;; Libinput is the new thing and is recommended over evdev/synaptics:
+        ;; <http://who-t.blogspot.fr/2015/01/xf86-input-libinput-compatibility-with.html>.
+        xf86-input-libinput
+
+        xf86-input-evdev
+        xf86-input-keyboard
+        xf86-input-mouse
+        xf86-input-synaptics))
+
+(define %default-xorg-fonts
+  ;; Default list of fonts available to the X server.
+  (list (file-append font-alias "/share/fonts/X11/75dpi")
+        (file-append font-alias "/share/fonts/X11/100dpi")
+        (file-append font-alias "/share/fonts/X11/misc")
+        (file-append font-alias "/share/fonts/X11/cyrillic")
+        (file-append font-misc-misc               ;default fonts for xterm
+                     "/share/fonts/X11/misc")
+        (file-append font-adobe75dpi "/share/fonts/X11/75dpi")))
+
+(define* (xorg-configuration-file #:key
+                                  (modules %default-xorg-modules)
+                                  (fonts %default-xorg-fonts)
+                                  (drivers '()) (resolutions '())
                                   (extra-config '()))
   "Return a configuration file for the Xorg server containing search paths for
 all the common drivers.
+
+@var{modules} must be a list of @dfn{module packages} loaded by the Xorg
+server---e.g., @code{xf86-video-vesa}, @code{xf86-input-keyboard}, and so on.
+@var{fonts} must be a list of font directories to add to the server's
+@dfn{font path}.
 
 @var{drivers} must be either the empty list, in which case Xorg chooses a
 graphics driver automatically, or a list of driver names that will be tried in
@@ -84,17 +139,32 @@ appropriate screen resolution; otherwise, it must be a list of
 resolutions---e.g., @code{((1024 768) (640 480))}.
 
 Last, @var{extra-config} is a list of strings or objects appended to the
-@code{mixed-text-file} argument list.  It is used to pass extra text to be
+configuration file.  It is used to pass extra text to be
 added verbatim to the configuration file."
-  (define (device-section driver)
-    (string-append "
+  (define all-modules
+    ;; 'xorg-server' provides 'fbdevhw.so' etc.
+    (append modules (list xorg-server)))
+
+  (define build
+    #~(begin
+        (use-modules (ice-9 match)
+                     (srfi srfi-1)
+                     (srfi srfi-26))
+
+        (call-with-output-file #$output
+          (lambda (port)
+            (define drivers
+              '#$drivers)
+
+            (define (device-section driver)
+              (string-append "
 Section \"Device\"
   Identifier \"device-" driver "\"
   Driver \"" driver "\"
 EndSection"))
 
-  (define (screen-section driver resolutions)
-    (string-append "
+            (define (screen-section driver resolutions)
+              (string-append "
 Section \"Screen\"
   Identifier \"screen-" driver "\"
   Device \"device-" driver "\"
@@ -108,65 +178,56 @@ Section \"Screen\"
   EndSubSection
 EndSection"))
 
-  (apply mixed-text-file "xserver.conf" "
-Section \"Files\"
-  FontPath \"" font-alias "/share/fonts/X11/75dpi\"
-  FontPath \"" font-alias "/share/fonts/X11/100dpi\"
-  FontPath \"" font-alias "/share/fonts/X11/misc\"
-  FontPath \"" font-alias "/share/fonts/X11/cyrillic\"
-  FontPath \"" font-adobe75dpi "/share/fonts/X11/75dpi\"
-  ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
-  ModulePath \"" xf86-video-fbdev "/lib/xorg/modules/drivers\"
-  ModulePath \"" xf86-video-ati "/lib/xorg/modules/drivers\"
-  ModulePath \"" xf86-video-cirrus "/lib/xorg/modules/drivers\"
-  ModulePath \"" xf86-video-intel "/lib/xorg/modules/drivers\"
-  ModulePath \"" xf86-video-mach64 "/lib/xorg/modules/drivers\"
-  ModulePath \"" xf86-video-nouveau "/lib/xorg/modules/drivers\"
-  ModulePath \"" xf86-video-nv "/lib/xorg/modules/drivers\"
-  ModulePath \"" xf86-video-sis "/lib/xorg/modules/drivers\"
+            (define (expand modules)
+              ;; Append to MODULES the relevant /lib/xorg/modules
+              ;; sub-directories.
+              (append-map (lambda (module)
+                            (filter-map (lambda (directory)
+                                          (let ((full (string-append module
+                                                                     directory)))
+                                            (and (file-exists? full)
+                                                 full)))
+                                        '("/lib/xorg/modules/drivers"
+                                          "/lib/xorg/modules/input"
+                                          "/lib/xorg/modules/multimedia"
+                                          "/lib/xorg/modules/extensions")))
+                          modules))
 
-  # Libinput is the new thing and is recommended over evdev/synaptics
-  # by those who know:
-  # <http://who-t.blogspot.fr/2015/01/xf86-input-libinput-compatibility-with.html>.
-  ModulePath \"" xf86-input-libinput "/lib/xorg/modules/input\"
+            (display "Section \"Files\"\n" port)
+            (for-each (lambda (font)
+                        (format port "  FontPath \"~a\"~%" font))
+                      '#$fonts)
+            (for-each (lambda (module)
+                        (format port
+                                "  ModulePath \"~a\"~%"
+                                module))
+                      (append (expand '#$all-modules)
 
-  ModulePath \"" xf86-input-evdev "/lib/xorg/modules/input\"
-  ModulePath \"" xf86-input-keyboard "/lib/xorg/modules/input\"
-  ModulePath \"" xf86-input-mouse "/lib/xorg/modules/input\"
-  ModulePath \"" xf86-input-synaptics "/lib/xorg/modules/input\"
-  ModulePath \"" xorg-server "/lib/xorg/modules\"
-  ModulePath \"" xorg-server "/lib/xorg/modules/drivers\"
-  ModulePath \"" xorg-server "/lib/xorg/modules/extensions\"
-  ModulePath \"" xorg-server "/lib/xorg/modules/multimedia\"
-EndSection
-
+                              ;; For fbdevhw.so and so on.
+                              (list #$(file-append xorg-server
+                                                   "/lib/xorg/modules"))))
+            (display "EndSection\n" port)
+            (display "
 Section \"ServerFlags\"
   Option \"AllowMouseOpenFail\" \"on\"
-EndSection
-"
-  (string-join (map device-section drivers) "\n") "\n"
-  (string-join (map (cut screen-section <> resolutions)
-                    drivers)
-               "\n")
+EndSection\n" port)
 
-  "\n"
-  extra-config))
+            (display (string-join (map device-section drivers) "\n")
+                     port)
+            (newline port)
+            (display (string-join
+                      (map (cut screen-section <> '#$resolutions)
+                           drivers)
+                      "\n")
+                     port)
+            (newline port)
 
-(define %default-xorg-modules
-  (list xf86-video-vesa
-        xf86-video-fbdev
-        xf86-video-ati
-        xf86-video-cirrus
-        xf86-video-intel
-        xf86-video-mach64
-        xf86-video-nouveau
-        xf86-video-nv
-        xf86-video-sis
-        xf86-input-libinput
-        xf86-input-evdev
-        xf86-input-keyboard
-        xf86-input-mouse
-        xf86-input-synaptics))
+            (for-each (lambda (config)
+                        (display config port))
+                      '#$extra-config)))))
+
+  (computed-file "xserver.conf" build))
+
 
 (define (xorg-configuration-directory modules)
   "Return a directory that contains the @code{.conf} files for X.org that
@@ -196,8 +257,9 @@ in @var{modules}."
 
 (define* (xorg-wrapper #:key
                        (guile (canonical-package guile-2.0))
-                       (configuration-file (xorg-configuration-file))
                        (modules %default-xorg-modules)
+                       (configuration-file (xorg-configuration-file
+                                            #:modules modules))
                        (xorg-server xorg-server))
   "Return a derivation that builds a @var{guile} script to start the X server
 from @var{xorg-server}.  @var{configuration-file} is the server configuration
@@ -221,12 +283,16 @@ in place of @code{/usr/bin/X}."
 
 (define* (xorg-start-command #:key
                              (guile (canonical-package guile-2.0))
-                             (configuration-file (xorg-configuration-file))
                              (modules %default-xorg-modules)
+                             (fonts %default-xorg-fonts)
+                             (configuration-file
+                              (xorg-configuration-file #:modules modules
+                                                       #:fonts fonts))
                              (xorg-server xorg-server))
-  "Return a derivation that builds a @code{startx} script in which a number of
-X modules are available.  See @code{xorg-wrapper} for more details on the
-arguments.  The result should be used in place of @code{startx}."
+  "Return a @code{startx} script in which @var{modules}, a list of X module
+packages, and @var{fonts}, a list of X font directories, are available.  See
+@code{xorg-wrapper} for more details on the arguments.  The result should be
+used in place of @code{startx}."
   (define X
     (xorg-wrapper #:guile guile
                   #:configuration-file configuration-file
@@ -245,10 +311,15 @@ arguments.  The result should be used in place of @code{startx}."
                   fallback-session)
   "Return a system-wide xinitrc script that starts the specified X session,
 which should be passed to this script as the first argument.  If not, the
-@var{fallback-session} will be used."
+@var{fallback-session} will be used or, if @var{fallback-session} is false, a
+desktop session from the system or user profile will be used."
   (define builder
     #~(begin
-        (use-modules (ice-9 match))
+        (use-modules (ice-9 match)
+                     (ice-9 regex)
+                     (ice-9 ftw)
+                     (srfi srfi-1)
+                     (srfi srfi-26))
 
         (define (close-all-fdes)
           ;; Close all the open file descriptors except 0 to 2.
@@ -272,16 +343,60 @@ which should be passed to this script as the first argument.  If not, the
             (execl shell shell "--login" "-c"
                    (string-join (cons command args)))))
 
+        (define system-profile
+          "/run/current-system/profile")
+
+        (define user-profile
+          (and=> (getpw (getuid))
+                 (lambda (pw)
+                   (string-append (passwd:dir pw) "/.guix-profile"))))
+
+        (define (xsession-command desktop-file)
+          ;; Read from DESKTOP-FILE its X session command and return it as a
+          ;; list.
+          (define exec-regexp
+            (make-regexp "^[[:blank:]]*Exec=(.*)$"))
+
+          (call-with-input-file desktop-file
+            (lambda (port)
+              (let loop ()
+                (match (read-line port)
+                  ((? eof-object?) #f)
+                  ((= (cut regexp-exec exec-regexp <>) result)
+                   (if result
+                       (string-tokenize (match:substring result 1))
+                       (loop))))))))
+
+        (define (find-session profile)
+          ;; Return an X session command from PROFILE or #f if none was found.
+          (let ((directory (string-append profile "/share/xsessions")))
+            (match (scandir directory
+                            (cut string-suffix? ".desktop" <>))
+              ((or () #f)
+               #f)
+              ((sessions ...)
+               (any xsession-command
+                    (map (cut string-append directory "/" <>)
+                         sessions))))))
+
         (let* ((home          (getenv "HOME"))
                (xsession-file (string-append home "/.xsession"))
                (session       (match (command-line)
-                                ((_)       (list #$fallback-session))
-                                ((_ x ..1) x))))
+                                ((_)
+                                 #$(if fallback-session
+                                       #~(list #$fallback-session)
+                                       #f))
+                                ((_ x ..1)
+                                 x))))
           (if (file-exists? xsession-file)
               ;; Run ~/.xsession when it exists.
-              (apply exec-from-login-shell xsession-file session)
-              ;; Otherwise, start the specified session.
-              (apply exec-from-login-shell session)))))
+              (apply exec-from-login-shell xsession-file
+                     (or session '()))
+              ;; Otherwise, start the specified session or a fallback.
+              (apply exec-from-login-shell
+                     (or session
+                         (find-session user-profile)
+                         (find-session system-profile)))))))
 
   (program-file "xinitrc" builder))
 
@@ -304,19 +419,24 @@ which should be passed to this script as the first argument.  If not, the
   slim-configuration?
   (slim slim-configuration-slim
         (default slim))
-  (allow-empty-passwords? slim-configuration-allow-empty-passwords?)
-  (auto-login? slim-configuration-auto-login?)
-  (default-user slim-configuration-default-user)
-  (theme slim-configuration-theme)
-  (theme-name slim-configuration-theme-name)
+  (allow-empty-passwords? slim-configuration-allow-empty-passwords?
+                          (default #t))
+  (auto-login? slim-configuration-auto-login?
+               (default #f))
+  (default-user slim-configuration-default-user
+                (default ""))
+  (theme slim-configuration-theme
+         (default %default-slim-theme))
+  (theme-name slim-configuration-theme-name
+              (default %default-slim-theme-name))
   (xauth slim-configuration-xauth
          (default xauth))
   (shepherd slim-configuration-shepherd
             (default shepherd))
-  (bash slim-configuration-bash
-        (default bash))
-  (auto-login-session slim-configuration-auto-login-session)
-  (startx slim-configuration-startx))
+  (auto-login-session slim-configuration-auto-login-session
+                      (default #f))
+  (startx slim-configuration-startx
+          (default (xorg-start-command))))
 
 (define (slim-pam-service config)
   "Return a PAM service for @command{slim}."
@@ -391,16 +511,16 @@ reboot_cmd " shepherd "/sbin/reboot\n"
                        ;; Unconditionally add xterm to the system profile, to
                        ;; avoid bad surprises.
                        (service-extension profile-service-type
-                                          (const (list xterm)))))))
+                                          (const (list xterm)))))
+                (default-value (slim-configuration))))
 
-(define* (slim-service #:key (slim slim)
+(define* (slim-service #:key (slim slim)          ;deprecated
                        (allow-empty-passwords? #t) auto-login?
                        (default-user "")
                        (theme %default-slim-theme)
                        (theme-name %default-slim-theme-name)
-                       (xauth xauth) (shepherd shepherd) (bash bash)
-                       (auto-login-session (file-append windowmaker
-                                                        "/bin/wmaker"))
+                       (xauth xauth) (shepherd shepherd)
+                       (auto-login-session #f)
                        (startx (xorg-start-command)))
   "Return a service that spawns the SLiM graphical login manager, which in
 turn starts the X display server with @var{startx}, a command as returned by
@@ -433,7 +553,7 @@ theme."
             (allow-empty-passwords? allow-empty-passwords?)
             (auto-login? auto-login?) (default-user default-user)
             (theme theme) (theme-name theme-name)
-            (xauth xauth) (shepherd shepherd) (bash bash)
+            (xauth xauth) (shepherd shepherd)
             (auto-login-session auto-login-session)
             (startx startx))))
 

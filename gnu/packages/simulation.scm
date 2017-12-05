@@ -84,6 +84,8 @@
      `(("gzip" ,gzip)
        ("gnuplot" ,gnuplot)
        ("openmpi" ,openmpi)))
+    (outputs '("debug"                  ;~60MB
+               "out"))
     (arguments
      `( ;; Executable files and shared libraries are located in the 'platforms'
        ;; subdirectory.
@@ -170,6 +172,15 @@
                       (substitute* "wmake/wmakeSchedulerUptime"
                         (("lockDir=.*$")
                          "lockDir=$HOME/.$WM_PROJECT/.wmake\n"))
+                      #t))
+                  (add-after 'build 'cleanup
+                    ;; Avoid unncessary, voluminous object and dep files.
+                    (lambda _
+                      (delete-file-recursively
+                       "platforms/linux64GccDPInt32Opt/src")
+                      (delete-file-recursively
+                       "platforms/linux64GccDPInt32OptSYSTEMOPENMPI")
+                      (for-each delete-file (find-files "." "\\.o$"))
                       #t))
                   (replace 'install
                     (lambda _

@@ -130,7 +130,7 @@ online pastebin services.")
     (origin
      (method git-fetch)
      (uri (git-reference
-           (url "https://github.com/rockdaboot/wget2")
+           (url "https://gitlab.com/gnuwget/wget2.git")
            (commit "b45709d3d21714135ce79df6abbdcb704684063d")
            (recursive? #t))) ;; Needed for 'gnulib' git submodule.
      (file-name (string-append name "-" version "-checkout"))
@@ -167,7 +167,7 @@ online pastebin services.")
              ("python", python)))
    ;; TODO: Add libbrotlidec, libnghttp2.
    (native-inputs `(("pkg-config", pkg-config)))
-   (home-page "https://github.com/rockdaboot/wget2")
+   (home-page "https://gitlab.com/gnuwget/wget2")
    (synopsis "Successor of GNU Wget")
    (description "GNU Wget2 is the successor of GNU Wget, a file and recursive
 website downloader.  Designed and written from scratch it wraps around libwget,

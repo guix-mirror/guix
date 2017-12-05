@@ -454,6 +454,16 @@ commonly used macros.")
        (base32
         "0pkq5l1llw8gkjhfq6y58iyj6wac8dh1mc3rzjzn6nd7lrkdx8cg"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libc   (assoc-ref inputs "libc")))
+               (substitute* "libgnome-desktop/gnome-languages.c"
+                 (("\"locale\"")
+                  (string-append "\"" libc "/bin/locale\"")))
+               #t))))))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("itstool" ,itstool)
@@ -1059,7 +1069,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
 (define-public glade3
   (package
     (name "glade")
-    (version "3.20.1")
+    (version "3.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1067,7 +1077,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1pxikhzdzd092d4x3nacf5gfzi3mvhywrhcfqc07xakbsinnfr40"))))
+                "1vdbqqvf6nrkqml4awrq4pzfwsm5v39wdzg943nys6lmf1am9l87"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f ; needs X, GL, and software rendering
@@ -1787,14 +1797,14 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.35")
+    (version "0.10.36")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "0f2p3p7idfpbms4mi75031014mqsv09s21b6w1359p09raph3461"))))
+               (base32 "1mma1gp179dh7kvwzd7q3mwg0719hhbm9f5sqw28flv5lv05zrng"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;4.1 MiB of gtk-doc
@@ -1851,7 +1861,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.35")
+    (version "1.12.36")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1859,7 +1869,7 @@ Hints specification (EWMH).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "02kcq2af16m9mlzgkbdzswhw0nl6zf01dmvsfq3shy1mab7f7cbp"))))
+                "0j28qpbz9a9p80x27kcwxl5n1hf36nn2fa7dxwrbhcdx4rgy5grw"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
@@ -2945,7 +2955,7 @@ service via the system message bus.")
 (define-public libgweather
   (package
     (name "libgweather")
-    (version "3.26.0")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2953,7 +2963,7 @@ service via the system message bus.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vkbc8rvmrlfiws844izxfl01r6l9p6agf8vvgszzkry1gfbm12v"))))
+                "1f64ix7acj0j0qvxwxaazii2bhsjgh5ang1kw14fkg25ndq899zw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3687,7 +3697,7 @@ which can read a large number of file formats.")
 (define-public rhythmbox
  (package
    (name "rhythmbox")
-   (version "3.4.1")
+   (version "3.4.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3695,7 +3705,7 @@ which can read a large number of file formats.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1dj1hgdyhmwzs6h2zr89b1ipk0p6g7x74rfz56a5yjds3ik8d7q3"))))
+              "0hzcns8gf5yb0rm4ss8jd8qzarcaplp5cylk6plwilsqfvxj4xn2"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:configure-flags
@@ -4051,7 +4061,7 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.12")
+    (version "0.9.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/gnumdk/eolie/"
@@ -4059,7 +4069,7 @@ work and the interface is well tested.")
                                   "/eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "1qlaxczs82vyww06v5m8zwhvaiilp5zhxp5yp632a8947cg5blnz"))))
+                "1khpc6x40y5gm0a3p5fxiva9p1djijxmsh74xinigddnyqbjqw69"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -4386,7 +4396,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.26.3")
+    (version "0.27.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4394,7 +4404,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1r8fd63r7c5n99hwrkzv9jlrk84z4sa15q3h70pydzfjnfqf90zv"))))
+                "1jav7qv0s1v6wvd7x2ri85hjqnbswq883pnd228qhd6bhjbryp89"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))
@@ -5866,7 +5876,8 @@ software that do not provide their own configuration interface.")
     (build-system trivial-build-system)
     (source #f)
     (propagated-inputs
-     `(("nautilus" ,nautilus)))
+     `(("nautilus" ,nautilus)
+       ("evince" ,evince)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -5878,7 +5889,9 @@ software that do not provide their own configuration interface.")
            (call-with-output-file (string-append apps "/defaults.list")
              (lambda (port)
                (format port "[Default Applications]\n")
-               (format port "inode/directory=org.gnome.Nautilus.desktop\n")))
+               (format port "inode/directory=org.gnome.Nautilus.desktop\n")
+               (format port "application/pdf=evince.desktop\n")
+               (format port "application/postscript=evince.desktop\n")))
            #t))))
     (synopsis "Default MIME type associations for the GNOME desktop")
     (description

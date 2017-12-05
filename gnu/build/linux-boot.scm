@@ -21,7 +21,6 @@
   #:use-module (rnrs io ports)
   #:use-module (system repl error-handling)
   #:autoload   (system repl repl) (start-repl)
-  #:autoload   (system base compile) (compile-file)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -270,6 +269,7 @@ using the kernel build-in overlayfs."
   ;; Make sure /root/etc/mtab is a symlink to /proc/self/mounts.
   (false-if-exception
     (delete-file "/root/etc/mtab"))
+  (mkdir-p "/root/etc")
   (symlink "/proc/self/mounts" "/root/etc/mtab"))
 
 (define (switch-root root)

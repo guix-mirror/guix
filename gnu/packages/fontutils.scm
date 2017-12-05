@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
 (define-module (gnu packages fontutils)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -44,7 +46,8 @@
   #:use-module (guix svn-download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public freetype
   (package
@@ -556,3 +559,103 @@ opentype fonts.  You can save fonts in many different outline formats, and
 generate bitmaps.")
    (license license:gpl3+)
    (home-page "https://fontforge.github.io/en-US/")))
+
+(define-public python2-ufolib
+  (package
+    (name "python2-ufolib")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ufoLib" version ".zip"))
+       (sha256
+        (base32 "1njin1465qqzshnrvcl5sbv0bsy15gj6fycbw4lmcnwkx5sldgyx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (propagated-inputs
+     `(("python2-fonttools" ,python2-fonttools)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python2-pytest-3.0" ,python2-pytest-3.0)
+       ("python2-pytest-runner" ,python2-pytest-runner)))
+    (home-page "https://github.com/unified-font-object/ufoLib")
+    (synopsis "Low-level UFO reader and writer")
+    (description
+     "UfoLib reads and writes Unified Font Object (UFO)
+files.  UFO is a file format that stores fonts source files.")
+    (license license:bsd-3)))
+
+(define-public python2-defcon
+  (package
+    (name "python2-defcon")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "defcon" version ".zip"))
+       (sha256
+        (base32
+         "1f41w54fdjy9izxcwzqa142kd56whqsg9nq5k4508jb6iip84h89"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python2-pytest-3.0" ,python2-pytest-3.0)
+       ("python2-pytest-runner" ,python2-pytest-runner)))
+    (propagated-inputs
+     `(("python2-fonttools" ,python2-fonttools)
+       ("python2-ufolib" ,python2-ufolib)))
+    (home-page "https://pypi.python.org/pypi/defcon")
+    (synopsis "Flexible objects for representing @acronym{UFO, unified font object} data")
+    (description
+     "Defcon is a set of @acronym{UFO, unified font object} based objects
+optimized for use in font editing applications.  The objects are built to
+be lightweight, fast and flexible.  The objects are very bare-bones and
+they are not meant to be end-all, be-all objects.  Rather, they are meant
+to provide base functionality so that you can focus on your application’s
+behavior, not object observing or maintaining cached data.  Defcon
+implements UFO3 as described by the UFO font format.")
+    (license license:expat)))
+
+(define-public nototools
+  (package
+    (name "nototools")
+    (version "20170925")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/googlei18n/nototools/"
+                           "archive/v2017-09-25-tooling-for-phase3-"
+                           "update.tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pvacw18cm9l4sb66pqyjc7hc74xhhfxc7kd5ald8lixf4wzg0s8"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (propagated-inputs
+     `(("python2-booleanoperations" ,python2-booleanoperations)
+       ("python2-defcon" ,python2-defcon)
+       ("python2-fonttools" ,python2-fonttools)
+       ("python2-pillow" ,python2-pillow)
+       ("python2-pyclipper" ,python2-pyclipper)
+       ("python2-ufolib" ,python2-ufolib)))
+    (home-page "https://github.com/googlei18n/nototools")
+    (synopsis "Noto fonts support tools and scripts")
+    (description
+     "Nototools is a Python package containing Python scripts used to
+maintain the Noto Fonts project.")
+    (license (list license:asl2.0
+                   ;; Sample texts are attributed to UN and OHCHR.
+                   ;; The permissions on the UDHR are pretty lax:
+                   ;; http://www.ohchr.org/EN/UDHR/Pages/Introduction.aspx
+                   ;; "If UDHR translations or materials are reproduced, users
+                   ;; should make reference to this website as a source by
+                   ;; providing a link."
+                   license:public-domain
+                   (license:non-copyleft
+                    "file://sample_texts/attributions.txt"
+                    "See sample_texts/attributions.txt in the distribution.")))))

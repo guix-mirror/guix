@@ -18,7 +18,7 @@
 
 (define-module (guix ssh)
   #:use-module (guix store)
-  #:use-module ((guix ui) #:select (G_ N_))
+  #:use-module (guix i18n)
   #:use-module (ssh session)
   #:use-module (ssh auth)
   #:use-module (ssh key)

@@ -237,7 +237,7 @@ corresponding bytevector; otherwise return #f."
 ;; This is necessary to serialize bytevectors with the right printer in some
 ;; circumstances.  For instance, GRUB "search --fs-uuid" command compares the
 ;; string representation of UUIDs, not the raw bytes; thus, when emitting a
-;; GRUB 'search' command, we need to procedure the right string representation
+;; GRUB 'search' command, we need to produce the right string representation
 ;; (see <https://debbugs.gnu.org/cgi/bugreport.cgi?msg=52;att=0;bug=27735>).
 (define-record-type <uuid>
   (make-uuid type bv)

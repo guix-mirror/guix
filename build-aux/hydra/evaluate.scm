@@ -27,6 +27,12 @@
              (ice-9 pretty-print)
              (ice-9 format))
 
+(define %top-srcdir
+  (and=> (assq-ref (current-source-location) 'filename)
+         (lambda (file)
+           (canonicalize-path
+            (string-append (dirname file) "/../..")))))
+
 (define %user-module
   ;; Hydra user module.
   (let ((m (make-module)))
@@ -101,7 +107,8 @@ Otherwise return THING."
                             (if (equal? cuirass? "cuirass")
                                 'cuirass-jobs
                                 'hydra-jobs))
-                store '())
+                store `((guix
+                         . ((file-name . ,%top-srcdir)))))
           (((names . thunks) ...)
            (map (lambda (job thunk)
                   (format (current-error-port) "evaluating '~a'... " job)

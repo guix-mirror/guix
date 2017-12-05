@@ -98,15 +98,17 @@ computers over a network.")
 (define-public openntpd
   (package
     (name "openntpd")
-    (version "6.2p2")
+    (version "6.2p3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://openbsd/OpenNTPD/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1chghbh1bnwhxdgkqki51w94nwvlyj1a9q8716r4v2h0gc9s822q"))))
+                "0fn12i4kzsi0zkr4qp3dp9bycmirnfapajqvdfx02zhr4hanj0kv"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("libressl" ,libressl))) ; enable TLS time constraints. See ntpd.conf(5).
     (home-page "http://www.openntpd.org/")
     (synopsis "NTP client and server by the OpenBSD Project")
     (description "OpenNTPD is the OpenBSD Project's implementation of a client

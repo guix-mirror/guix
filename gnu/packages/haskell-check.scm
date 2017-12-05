@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -283,7 +284,7 @@ test-framework.")
 (define-public ghc-tasty-rerun
   (package
     (name "ghc-tasty-rerun")
-    (version "1.1.6")
+    (version "1.1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -291,7 +292,7 @@ test-framework.")
                     "tasty-rerun-" version ".tar.gz"))
               (sha256
                (base32
-                "0ycxg7whabgcxyzy6gr536x8ykzx45whh1wrbsc7c58zi862fczd"))))
+                "18hz1xqinf59mzvd68ygj9333v0a32qxfcas7crn4iniq5zv71kj"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-mtl" ,ghc-mtl)

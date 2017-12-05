@@ -8,6 +8,7 @@
 # Copyright © 2017 Leo Famulari <leo@famulari.name>
 # Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+# Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 #
 # This file is part of GNU Guix.
 #
@@ -94,6 +95,7 @@ MODULES =					\
   guix/build-system/waf.scm			\
   guix/build-system/r.scm			\
   guix/build-system/ruby.scm			\
+  guix/build-system/scons.scm			\
   guix/build-system/texlive.scm			\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
@@ -127,6 +129,7 @@ MODULES =					\
   guix/build/ocaml-build-system.scm		\
   guix/build/r-build-system.scm			\
   guix/build/ruby-build-system.scm		\
+  guix/build/scons-build-system.scm		\
   guix/build/texlive-build-system.scm		\
   guix/build/waf-build-system.scm		\
   guix/build/haskell-build-system.scm		\
@@ -413,7 +416,7 @@ check-system: $(GOBJECTS)
 # Public key used to sign substitutes from hydra.gnu.org & co.
 dist_pkgdata_DATA =				\
   hydra.gnu.org.pub				\
-  bayfront.guixsd.org.pub
+  berlin.guixsd.org.pub
 
 # Bash completion file.
 dist_bashcompletion_DATA = etc/completion/bash/guix
@@ -432,6 +435,7 @@ EXTRA_DIST =						\
   build-aux/hydra/evaluate.scm				\
   build-aux/hydra/gnu-system.scm			\
   build-aux/hydra/guix.scm				\
+  build-aux/hydra/guix-modular.scm			\
   build-aux/check-available-binaries.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/generate-authors.scm			\
@@ -579,7 +583,7 @@ SOURCE_TARBALLS =					\
   $(foreach ext,tar.gz,$(PACKAGE_FULL_TARNAME).$(ext))
 
 # Systems supported by Guix.
-SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux armhf-linux
+SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux armhf-linux aarch64-linux
 
 # Guix binary tarballs.
 BINARY_TARBALLS =							\
@@ -596,9 +600,6 @@ GUIXSD_IMAGE_BASE = guixsd-install-$(PACKAGE_VERSION)
 
 # Prefix of the GuixSD VM image file name.
 GUIXSD_VM_IMAGE_BASE = guixsd-vm-image-$(PACKAGE_VERSION)
-
-# Size of the VM image (for x86_64 typically).
-GUIXSD_VM_IMAGE_SIZE ?= 2GiB
 
 # The release process works in several phases:
 #
@@ -650,15 +651,14 @@ release: dist
 	    echo "failed to produced GuixSD installation image for $$system" >&2 ;	\
 	    exit 1 ;									\
 	  fi ;										\
-	  xz < "$$image" > "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz.tmp" ;	\
-	  mv "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz.tmp"			\
-	     "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.xz" ;				\
+	  xz < "$$image" > "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.iso.xz.tmp" ;	\
+	  mv "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.iso.xz.tmp"			\
+	     "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.iso.xz" ;			\
 	done
 	for system in $(GUIXSD_VM_SYSTEMS) ; do						\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system vm-image							\
 	    --system=$$system								\
-	    --image-size=$(GUIXSD_VM_IMAGE_SIZE)					\
 	    gnu/system/examples/vm-image.tmpl` ;					\
 	  if [ ! -f "$$image" ] ; then							\
 	    echo "failed to produced GuixSD VM image for $$system" >&2 ;		\

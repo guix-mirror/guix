@@ -352,7 +352,7 @@ FileSize: ~a~%"
        (let* ((base     "http://localhost:6797/")
               (part     (store-path-hash-part %item))
               (url      (string-append base part ".narinfo"))
-              (nar-url  (string-append base "/nar/gzip/" (basename %item)))
+              (nar-url  (string-append base "nar/gzip/" (basename %item)))
               (cached   (string-append cache "/gzip/" (basename %item)
                                        ".narinfo"))
               (nar      (string-append cache "/gzip/"

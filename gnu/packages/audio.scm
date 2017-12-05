@@ -63,6 +63,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages mp3) ;taglib
@@ -72,6 +73,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages telephony)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim) ;xxd
@@ -83,7 +85,8 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public alsa-modular-synth
   (package
@@ -341,13 +344,19 @@ engineers, musicians, soundtrack editors and composers.")
        ("python" ,python-2)
        ("which" ,which)))
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        (let ((libid3tag (assoc-ref %build-inputs "libid3tag"))
              (libmad (assoc-ref %build-inputs "libmad"))
              (portmidi (assoc-ref %build-inputs "portmidi")))
          (list
           ;; Loading FFmpeg dynamically is problematic.
           "--disable-dynamic-loading"
+          ;; SSE instructions are available on Intel systems only.
+          ,@(if (any (cute string-prefix? <> (or (%current-target-system)
+                                                 (%current-system)))
+                    '("x64_64" "i686"))
+              '()
+              '("--enable-sse=no"))
           ;; portmidi, libid3tag and libmad provide no .pc files, so
           ;; pkg-config fails to find them.  Force their inclusion.
           (string-append "ID3TAG_CFLAGS=-I" libid3tag "/include")
@@ -446,14 +455,14 @@ plugins are provided.")
 (define-public calf
   (package
     (name "calf")
-    (version "0.0.60")
+    (version "0.90.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://calf-studio-gear.org/files/calf-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "019fwg00jv217a5r767z7szh7vdrarybac0pr2sk26xp81kibrx9"))))
+                "0dijv2j7vlp76l10s4v8gbav26ibaqk8s24ci74vrc398xy00cib"))))
     (build-system gnu-build-system)
     (inputs
      `(("fluidsynth" ,fluidsynth)
@@ -1093,17 +1102,19 @@ PS, and DAB+.")
 (define-public faust
   (package
     (name "faust")
-    (version "0.9.67")
+    (version "0.9.90")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/faudiostream/faust-" version ".zip"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/grame-cncm/faust.git")
+                    (commit (string-append "v"
+                                           (string-map (lambda (c)
+                                                         (if (char=? c #\.) #\- c))
+                                                       version)))))
+              (file-name (string-append "faust-" version "-checkout"))
               (sha256
                (base32
-                "068vl9536zn0j4pknwfcchzi90rx5pk64wbcbd67z32w0csx8xm1"))
-              (snippet
-               ;; Remove prebuilt library
-               '(delete-file "architecture/android/libs/armeabi-v7a/libfaust_dsp.so"))))
+                "0qc6iwjd3i80jdyjc186c6ywipmjzl8wlsp4050pbr56q4rlkd4z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
@@ -1111,7 +1122,16 @@ PS, and DAB+.")
        #:phases
        (modify-phases %standard-phases
          ;; no "configure" script
-         (delete 'configure))))
+         (delete 'configure)
+         ;; Files appear under $out/share/faust that are read-only.  The
+         ;; install phase tries to overwrite them and fails, so we change
+         ;; the permissions first.
+         (add-before 'install 'fix-permissions
+           (lambda _
+             (for-each (lambda (file)
+                         (chmod file #o644))
+                       (find-files "architecture/max-msp" ".*"))
+             #t)))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "http://faust.grame.fr/")
@@ -1140,18 +1160,7 @@ PS, and DAB+.")
      (substitute-keyword-arguments (package-arguments faust)
        ((#:make-flags flags)
         `(list (string-append "prefix=" (assoc-ref %outputs "out"))
-               "world"))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           ;; Files appear under $out/share/faust that are read-only.  The
-           ;; install phase tries to overwrite them and fails, so we change
-           ;; the permissions first.
-           (add-before 'install 'fix-permissions
-             (lambda* (#:key outputs #:allow-other-keys)
-               (for-each (lambda (file)
-                           (chmod file #o644))
-                         (find-files "architecture/max-msp" ".*"))
-               #t))))))
+               "world"))))
     (native-inputs
      `(("llvm" ,llvm-with-rtti)
        ("which" ,which)
@@ -1207,7 +1216,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.36.0")
+    (version "0.36.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1215,7 +1224,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0nb0gwcmvc9xjh9pjasjbaqgpadanv4rw1njccpcmmin9xvicsqn"))))
+               "1g5949jwh2n755xjs3kcbdb8a1wxr5mn0m115wdnk27dxcdn93b0"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -1409,17 +1418,16 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jack-2
   (package (inherit jack-1)
     (name "jack2")
-    (version "1.9.10")
+    (version "1.9.11-RC1")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "https://github.com/jackaudio/jack2/archive/v"
-                   version
-                   ".tar.gz"))
+             (uri (string-append "https://github.com/jackaudio/jack2/releases/"
+                                 "download/v" version "/jack2-"
+                                 version ".tar.gz"))
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "03b0iiyk3ng3vh5s8gaqwn565vik7910p56mlbk512bw3dhbdwc8"))))
+               "0ks72xxv8qrpwjc2ksr74rnp178h62g5vdplb2rn4vhkw86yw3kk"))))
     (build-system waf-build-system)
     (arguments
      `(#:python ,python-2
@@ -3021,6 +3029,54 @@ mixers.")
 
 (define-public python2-pyalsaaudio
   (package-with-python2 python-pyalsaaudio))
+
+(define-public bluez-alsa
+  (package
+    (name "bluez-alsa")
+    (version "1.2.0")
+    (source (origin
+              ;; The tarballs are mere snapshots and don't contain a
+              ;; bootstrapped build system.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Arkq/bluez-alsa.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1qinf41wl2ihx54zmmhanycihwjkn7dn1cicq6pp4rqbiv79b95x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("bluez" ,bluez)
+       ("glib" ,glib)
+       ("libbsd" ,libbsd)
+       ("ncurses" ,ncurses)
+       ("ortp" ,ortp)
+       ("sbc" ,sbc)))
+    (home-page "https://github.com/Arkq/bluez-alsa")
+    (synopsis "Bluetooth ALSA backend")
+    (description "This project is a rebirth of a direct integration between
+Bluez and ALSA.  Since Bluez >= 5, the build-in integration has been removed
+in favor of 3rd party audio applications.  From now on, Bluez acts as a
+middleware between an audio application, which implements Bluetooth audio
+profile, and a Bluetooth audio device.  BlueALSA registers all known Bluetooth
+audio profiles in Bluez, so in theory every Bluetooth device (with audio
+capabilities) can be connected.  In order to access the audio stream, one has
+to connect to the ALSA PCM device called @code{bluealsa}.  The device is based
+on the ALSA software PCM plugin.")
+    (license license:expat)))
 
 (define-public snd
   (package

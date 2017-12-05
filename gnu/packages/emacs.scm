@@ -29,6 +29,8 @@
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -276,6 +278,7 @@ editor (without an X toolkit)" )
               (uri (git-reference
                     (url "git://git.hcoop.net/git/bpt/emacs.git")
                     (commit "41120e0f595b16387eebfbf731fff70481de1b4b")))
+              (patches (search-patches "guile-emacs-fix-configure.patch"))
               (sha256
                (base32
                 "0lvcvsz0f4mawj04db35p1dvkffdqkz8pkhc0jzh9j9x2i63kcz6"))))
@@ -294,7 +297,11 @@ editor (without an X toolkit)" )
         `(modify-phases ,phases
            (add-after 'unpack 'autogen
                       (lambda _
-                        (zero? (system* "sh" "autogen.sh"))))))))))
+                        (zero? (system* "sh" "autogen.sh"))))
+           ;; Build sometimes fails: deps/dispnew.d: No such file or directory
+           (add-before 'build 'make-deps-dir
+             (lambda _
+               (zero? (system* "mkdir" "-p" "src/deps"))))))))))
 
 
 ;;;
@@ -434,6 +441,7 @@ on stdout instead of using a socket as the Emacsclient does.")
        ("perl" ,perl)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
+       ;; XXX Add 'magit-popup' dependency for the next release (after 2.11.0).
        ("with-editor" ,emacs-with-editor)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -544,20 +552,28 @@ support for Git-SVN.")
 (define-public emacs-magit-popup
   (package
     (name "emacs-magit-popup")
-    (version (package-version magit))
+    (version "2.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://raw.githubusercontent.com/magit/magit/"
-                    version "/lisp/magit-popup.el"))
-              (file-name (string-append "magit-popup-" version ".el"))
+                    "https://github.com/magit/magit-popup/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0w750kwngq63hi9drad3jxldwkg83sldb9w9r2xl2mqm3hm4l8s6"))))
+                "1dnk611f7lww6rb03hk8ijg2jwxx9f26pjfff4bwjmnjz7hnd6vz"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-info
+           (lambda _
+             (zero? (system* "make" "info")))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
-    (home-page "https://github.com/magit/magit")
+    (home-page "https://github.com/magit/magit-popup")
     (synopsis "Define prefix-infix-suffix command combos")
     (description
      "This library implements a generic interface for toggling switches and
@@ -3014,7 +3030,7 @@ regardless of @code{highlight-symbol-idle-delay}.
 (define-public emacs-hl-todo
   (package
     (name "emacs-hl-todo")
-    (version "1.7.4")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3023,7 +3039,7 @@ regardless of @code{highlight-symbol-idle-delay}.
               (file-name (string-append "hl-todo-" version ".el"))
               (sha256
                (base32
-                "016ivl4s0ysrm1xbfi86j5xcs759fcb0mkspxw81x8mpi3yb46ya"))))
+                "0g0h9v4572p7mcird8wsj1c41haf60krslm6mlpi4mdbh248kv6z"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/hl-todo")
     (synopsis "Emacs mode to highlight TODO and similar keywords")
@@ -4188,14 +4204,16 @@ passive voice.")
 (define-public emacs-org
   (package
     (name "emacs-org")
-    (version "20171016")
+    ;; emacs-org-contrib inherits from this package.  Please update its sha256
+    ;; checksum as well.
+    (version "20171205")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "1196kv83p953nd9c5gxkn8ndw2kmm2kfw34dldap6m89khqflz5a"))))
+                "0a1rm94ci47jf5579sxscily680ysmy3hnxjcs073n45nk76za04"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4215,7 +4233,7 @@ reproducible research.")
                                   (package-version emacs-org) ".tar"))
               (sha256
                (base32
-                "0xy2xrndlhs4kyvh6mmv24dnh3fn5p63d2gaimnrypf1p8znwzh4"))))
+                "1y61csa284gy8l0fj0mv67mkm4fsi4lz401987qp6a6z260df4n5"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -4242,11 +4260,11 @@ reproducible research.")
                #t))))))
     (propagated-inputs
      `(("emacs-org" ,emacs-org)))
-    (synopsis "Contributed packages to Org-mode")
+    (synopsis "Contributed packages to Org mode")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
 lists, and project planning with a fast and effective plain-text system.
 
-This package is equivilent to org-plus-contrib, but only includes additional
+This package is equivalent to org-plus-contrib, but only includes additional
 files that you would find in @file{contrib/} from the git repository.")))
 
 (define-public emacs-flx
@@ -4850,6 +4868,31 @@ jQuery and Bootstrap resources included via osscdn.")
     (description
      "This Emacs package highlights the s-exp at the current position.")
     (license license:gpl3+)))
+
+(define-public emacs-highlight-stages
+  (let ((commit "29cbc5b78261916da042ddb107420083da49b271")
+        (revision "1"))
+    (package
+      (name "emacs-highlight-stages")
+      (version (string-append "1.1.0" "-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/zk-phi/highlight-stages.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0r6nbcrr0dqpgm8dir8ahzjy7rw4nrac48byamzrq96r7ajlxlv0"))
+         (patches
+          (search-patches "emacs-highlight-stages-add-gexp.patch"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/wigust/highlight-stages")
+      (synopsis "Minor mode that highlights (quasi-quoted) expressions")
+      (description "@code{highlight-stages} provides an Emacs minor mode that
+highlights quasi-quoted expressions.")
+      (license license:gpl3+))))
 
 (define-public emacspeak
   (package
@@ -6257,4 +6300,84 @@ Features:
 contexts.
 @item Toggle downloading and set priorities for individual files.
 @end itemize\n")
+    (license license:gpl3+)))
+
+(define-public eless
+  (package
+    (name "eless")
+    (version "0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/kaushalmodi/eless/archive/"
+                    "v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gjnnhgw5xs1w3qfnkvwa2nv44gnxr8pkhx3c7qig45p8nh1461h"))))
+    (build-system trivial-build-system)
+    (inputs
+     `(("bash" ,bash)))
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (setenv "PATH" (string-append
+                         (assoc-ref %build-inputs "tar") "/bin" ":"
+                         (assoc-ref %build-inputs "gzip") "/bin"))
+         (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+         (chdir (string-append "eless" "-" ,version))
+         (substitute* "eless" (("/usr/bin/env bash")
+                               (string-append (assoc-ref %build-inputs "bash")
+                                              "/bin/bash")))
+         (install-file "eless" (string-append %output "/bin"))
+         (install-file "doc/eless.info" (string-append %output "/share/info"))
+         #t)))
+    (home-page "https://github.com/kaushalmodi/eless")
+    (synopsis "Use Emacs as a paginator")
+    (description "@code{eless} provides a combination of Bash script
+and a minimal Emacs view-mode.
+
+Feautures:
+
+@itemize
+@item Independent of a user’s Emacs config.
+@item Customizable via the @code{(locate-user-emacs-file \"elesscfg\")} config.
+@item Not require an Emacs server to be already running.
+@item Syntax highlighting.
+@item Org-mode file rendering.
+@item @code{man} page viewer.
+@item Info viewer.
+@item Dired, wdired, (batch edit symbolic links).
+@item Colored diffs, git diff, git log, ls with auto ANSI detection.
+@item Filter log files lines matching a regexp.
+@item Auto-revert log files similar to @code{tail -f}.
+@item Quickly change frame and font sizes.
+@end itemize\n")
+    (license license:expat)))
+
+(define-public emacs-evil-matchit
+  (package
+    (name "emacs-evil-matchit")
+    (version "2.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/redguardtoo/evil-matchit/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hm0k53m7d8zv2pk4p93k5mmilsv1mz7y2z6dqf7r6f0zmncs31a"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/redguardtoo/evil-matchit")
+    (synopsis "Vim matchit ported into Emacs")
+    (description
+     "@code{evil-matchit} is a minor mode for jumping between matching tags in
+evil mode using @kbd{%}.  It is a port of @code{matchit} for Vim.")
     (license license:gpl3+)))

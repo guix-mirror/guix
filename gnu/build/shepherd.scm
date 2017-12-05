@@ -60,11 +60,13 @@
       (type "tmpfs")
       (check? #f)))
 
-  (define passwd
+  (define accounts
     ;; This is for processes in the default user namespace but living in a
     ;; different mount namespace, so that they can lookup users.
-    (file-system-mapping
-     (source "/etc/passwd") (target source)))
+    (list (file-system-mapping
+           (source "/etc/passwd") (target source))
+          (file-system-mapping
+           (source "/etc/group") (target source))))
 
   (define nscd-socket
     (file-system-mapping
@@ -78,7 +80,7 @@
                                         %network-file-mappings))
                             ,@(if (and (memq 'mnt namespaces)
                                        (not (memq 'user namespaces)))
-                                  (list passwd)
+                                  accounts
                                   '())
                             ,%store-mapping)))    ;XXX: coarse-grain
             (map file-system-mapping->bind-mount

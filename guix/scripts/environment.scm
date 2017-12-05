@@ -586,7 +586,7 @@ message if any test fails."
                          store
                          (if bootstrap?
                              %bootstrap-guile
-                             (canonical-package guile-2.0)))))
+                             (canonical-package guile-2.2)))))
           (run-with-store store
             ;; Containers need a Bourne shell at /bin/sh.
             (mlet* %store-monad ((bash       (environment-bash container?

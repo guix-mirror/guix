@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,7 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
@@ -319,7 +321,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.11.0.0")
+    (version "0.11.1.0")
     (source
      (origin
        (method url-fetch)
@@ -337,7 +339,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
            #t))
        (sha256
         (base32
-         "083w40a553c0r3i18020jcrv5s0b64vx3d8xrn9nwkb2237ighlk"))))
+         "16shd834025jyzy68h3gag1sz8vbk875hy4j97hrki8pacz8vd5m"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -418,7 +420,7 @@ Monero command line client and daemon.")
 (define-public monero-core
   (package
     (name "monero-core")
-    (version "0.11.0.0")
+    (version "0.11.1.0")
     (source
      (origin
        (method url-fetch)
@@ -427,7 +429,7 @@ Monero command line client and daemon.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hnrkgwb1sva67pcjym2gvb4zifp2s849dfbnjzbxk3yczpcyqzg"))))
+         "1q7a9kpcjgp74fbplzs2iszdld6gwbfrydyd9in9izhwp100p1rr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -438,6 +440,7 @@ Monero command line client and daemon.")
        ("libunwind" ,libunwind)
        ("openssl" ,openssl)
        ("qt" ,qt)
+       ("readline" ,readline)
        ("unbound" ,unbound)))
     (propagated-inputs
      `(("monero" ,monero)))

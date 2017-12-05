@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -381,11 +382,11 @@ in the Mozilla clients.")
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS")
     (synopsis "Network Security Services")
     (description
-     "Network Security Services (NSS) is a set of libraries designed to support
-cross-platform development of security-enabled client and server applications.
-Applications built with NSS can support SSL v2 and v3, TLS, PKCS #5, PKCS #7,
-PKCS #11, PKCS #12, S/MIME, X.509 v3 certificates, and other security
-standards.")
+     "Network Security Services (@dfn{NSS}) is a set of libraries designed to
+support cross-platform development of security-enabled client and server
+applications.  Applications built with NSS can support SSL v2 and v3, TLS,
+PKCS #5, PKCS #7, PKCS #11, PKCS #12, S/MIME, X.509 v3 certificates, and other
+security standards.")
     (license license:mpl2.0)))
 
 (define (mozilla-patch file-name changeset hash)

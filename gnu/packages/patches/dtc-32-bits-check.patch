@@ -1,0 +1,134 @@
+This fixes tests on 32 bits platforms. Patch taken from upstream.
+
+commit f8872e29ce06d78d3db71b3ab26a7465fc8a9586
+Author: David Gibson <david@gibson.dropbear.id.au>
+Date:   Fri Oct 6 23:07:30 2017 +1100
+
+    tests: Avoid 64-bit arithmetic in assembler
+    
+    For testing we (ab)use the assembler to build us a sample dtb, independent
+    of the other tools (dtc and libfdt) that we're trying to test.  In a few
+    places this uses 64-bit arithmetic to decompose 64-bit constants into
+    the individual bytes in the blob.
+    
+    Unfortunately, it seems that some builds of GNU as don't support >32 bit
+    arithmetic, though it's not entirely clear to me which do and which don't
+    (Fedora i386 does support 64-bit, Debian arm32 doesn't).
+    
+    Anyway, to be safe, this avoids 64-bit arithmetic in assembler at the cost
+    of some extra awkwardness because we have to define the values in 32-bit
+    halves.
+    
+    Signed-off-by: David Gibson <david@gibson.dropbear.id.au>
+
+diff --git a/tests/testdata.h b/tests/testdata.h
+index 3588778..f6bbe1d 100644
+--- a/tests/testdata.h
++++ b/tests/testdata.h
+@@ -4,15 +4,25 @@
+ #define ASM_CONST_LL(x)	(x##ULL)
+ #endif
+ 
+-#define TEST_ADDR_1	ASM_CONST_LL(0xdeadbeef00000000)
+-#define TEST_SIZE_1	ASM_CONST_LL(0x100000)
+-#define TEST_ADDR_2	ASM_CONST_LL(123456789)
+-#define TEST_SIZE_2	ASM_CONST_LL(010000)
++#define TEST_ADDR_1H	ASM_CONST_LL(0xdeadbeef)
++#define TEST_ADDR_1L	ASM_CONST_LL(0x00000000)
++#define TEST_ADDR_1	((TEST_ADDR_1H << 32) | TEST_ADDR_1L)
++#define TEST_SIZE_1H	ASM_CONST_LL(0x00000000)
++#define TEST_SIZE_1L	ASM_CONST_LL(0x00100000)
++#define TEST_SIZE_1	((TEST_SIZE_1H << 32) | TEST_SIZE_1L)
++#define TEST_ADDR_2H	ASM_CONST_LL(0)
++#define TEST_ADDR_2L	ASM_CONST_LL(123456789)
++#define TEST_ADDR_2	((TEST_ADDR_2H << 32) | TEST_ADDR_2L)
++#define TEST_SIZE_2H	ASM_CONST_LL(0)
++#define TEST_SIZE_2L	ASM_CONST_LL(010000)
++#define TEST_SIZE_2	((TEST_SIZE_2H << 32) | TEST_SIZE_2L)
+ 
+ #define TEST_VALUE_1	0xdeadbeef
+ #define TEST_VALUE_2	123456789
+ 
+-#define TEST_VALUE64_1	ASM_CONST_LL(0xdeadbeef01abcdef)
++#define TEST_VALUE64_1H	ASM_CONST_LL(0xdeadbeef)
++#define TEST_VALUE64_1L	ASM_CONST_LL(0x01abcdef)
++#define TEST_VALUE64_1	((TEST_VALUE64_1H << 32) | TEST_VALUE64_1L)
+ 
+ #define PHANDLE_1	0x2000
+ #define PHANDLE_2	0x2001
+diff --git a/tests/trees.S b/tests/trees.S
+index 9854d1d..9859914 100644
+--- a/tests/trees.S
++++ b/tests/trees.S
+@@ -7,16 +7,6 @@
+ 	.byte	((val) >> 8) & 0xff ; \
+ 	.byte	(val) & 0xff	;
+ 
+-#define FDTQUAD(val) \
+-	.byte	((val) >> 56) & 0xff ; \
+-	.byte	((val) >> 48) & 0xff ; \
+-	.byte	((val) >> 40) & 0xff ; \
+-	.byte	((val) >> 32) & 0xff ; \
+-	.byte	((val) >> 24) & 0xff ; \
+-	.byte	((val) >> 16) & 0xff ; \
+-	.byte	((val) >> 8) & 0xff ; \
+-	.byte	(val) & 0xff	;
+-
+ #define TREE_HDR(tree) \
+ 	.balign	8		; \
+ 	.globl	_##tree		; \
+@@ -33,14 +23,16 @@ tree:	\
+ 	FDTLONG(tree##_strings_end - tree##_strings) ; \
+ 	FDTLONG(tree##_struct_end - tree##_struct) ;
+ 
+-#define RSVMAP_ENTRY(addr, len) \
+-	FDTQUAD(addr)		; \
+-	FDTQUAD(len)		; \
++#define RSVMAP_ENTRY(addrh, addrl, lenh, lenl) \
++	FDTLONG(addrh)		; \
++	FDTLONG(addrl)		; \
++	FDTLONG(lenh)		; \
++	FDTLONG(lenl)
+ 
+ #define EMPTY_RSVMAP(tree) \
+ 	.balign	8		; \
+ tree##_rsvmap:			; \
+-	RSVMAP_ENTRY(0, 0) \
++	RSVMAP_ENTRY(0, 0, 0, 0) \
+ tree##_rsvmap_end:		;
+ 
+ #define PROPHDR(tree, name, len) \
+@@ -52,9 +44,10 @@ tree##_rsvmap_end:		;
+ 	PROPHDR(tree, name, 4) \
+ 	FDTLONG(val)		;
+ 
+-#define PROP_INT64(tree, name, val) \
++#define PROP_INT64(tree, name, valh, vall) \
+ 	PROPHDR(tree, name, 8) \
+-	FDTQUAD(val)		;
++	FDTLONG(valh)		; \
++	FDTLONG(vall)		;
+ 
+ #define PROP_STR(tree, name, str) \
+ 	PROPHDR(tree, name, 55f - 54f) \
+@@ -81,16 +74,16 @@ tree##_##name:			; \
+ 
+ 	.balign	8
+ test_tree1_rsvmap:
+-	RSVMAP_ENTRY(TEST_ADDR_1, TEST_SIZE_1)
+-	RSVMAP_ENTRY(TEST_ADDR_2, TEST_SIZE_2)
+-	RSVMAP_ENTRY(0, 0)
++	RSVMAP_ENTRY(TEST_ADDR_1H, TEST_ADDR_1L, TEST_SIZE_1H, TEST_SIZE_1L)
++	RSVMAP_ENTRY(TEST_ADDR_2H, TEST_ADDR_2L, TEST_SIZE_2H, TEST_SIZE_2L)
++	RSVMAP_ENTRY(0, 0, 0, 0)
+ test_tree1_rsvmap_end:
+ 
+ test_tree1_struct:
+ 	BEGIN_NODE("")
+ 	PROP_STR(test_tree1, compatible, "test_tree1")
+ 	PROP_INT(test_tree1, prop_int, TEST_VALUE_1)
+-	PROP_INT64(test_tree1, prop_int64, TEST_VALUE64_1)
++	PROP_INT64(test_tree1, prop_int64, TEST_VALUE64_1H, TEST_VALUE64_1L)
+ 	PROP_STR(test_tree1, prop_str, TEST_STRING_1)
+ 	PROP_INT(test_tree1, address_cells, 1)
+ 	PROP_INT(test_tree1, size_cells, 0)

@@ -1,0 +1,36 @@
+commit 3e346a2a84b099766ea8a3a4a4549f6172483062
+Author: Ludovic Courtès <ludo@gnu.org>
+Date:   Sun Dec 3 22:30:03 2017 +0100
+
+    service: In 'exec-command', close open ports before 'execl'.
+    
+    This gets rid of annoying "Bad file descriptor" warnings from shepherd.
+    
+    * modules/shepherd/service.scm (exec-command): In 'loop', invoke
+    'close-port' and the ports returned by (fdes->ports i).
+
+diff --git a/modules/shepherd/service.scm b/modules/shepherd/service.scm
+index b2d8bc5..0ad28a0 100644
+--- a/modules/shepherd/service.scm
++++ b/modules/shepherd/service.scm
+@@ -1,5 +1,5 @@
+ ;; service.scm -- Representation of services.
+-;; Copyright (C) 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
++;; Copyright (C) 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+ ;; Copyright (C) 2002, 2003 Wolfgang Järling <wolfgang@pro-linux.de>
+ ;; Copyright (C) 2014 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
+ ;; Copyright (C) 2016 Alex Kost <alezost@gmail.com>
+@@ -744,6 +744,14 @@ false."
+ 
+        (let loop ((i 3))
+          (when (< i max-fd)
++           ;; First try to close any ports associated with file descriptor I.
++           ;; Otherwise the finalization thread might get around to closing
++           ;; those ports eventually, which will raise an EBADF exception (on
++           ;; 2.2), leading to messages like "error in the finalization
++           ;; thread: Bad file descriptor".
++           (for-each (lambda (port)
++                       (catch-system-error (close-port port)))
++                     (fdes->ports i))
+            (catch-system-error (close-fdes i))
+            (loop (+ i 1)))))

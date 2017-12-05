@@ -76,81 +76,102 @@
              ,lisp))))
 
 (define-public gcl
-  (package
-    (name "gcl")
-    (version "2.6.12")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/" name "/" name "-" version ".tar.gz"))
-      (sha256
-       (base32 "1s4hs2qbjqmn9h88l4xvsifq5c3dlc5s74lyb61rdi5grhdlkf4f"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:parallel-build? #f  ; The build system seems not to be thread safe.
-       #:tests? #f  ; There does not seem to be make check or anything similar.
-       #:configure-flags '("--enable-ansi") ; required for use by the maxima package
-       #:make-flags (list
-                     "CFLAGS=-fgnu89-inline" ; removes inline function warnings
-                     (string-append "GCC=" (assoc-ref %build-inputs "gcc")
-                                    "/bin/gcc"))
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'pre-conf
-                    (lambda _
-                      (substitute*
-                        (append
-                         '("pcl/impl/kcl/makefile.akcl"
-                           "add-defs"
-                           "unixport/makefile.dos"
-                           "add-defs.bat"
-                           "gcl-tk/makefile.prev"
-                           "add-defs1")
-                         (find-files "h" "\\.defs"))
-                        (("SHELL=/bin/bash")
-                         (string-append "SHELL=" (which "bash")))
-                        (("SHELL=/bin/sh")
-                         (string-append "SHELL=" (which "sh"))))
-                      (substitute* "h/linux.defs"
-                        (("#CC") "CC")
-                        (("-fwritable-strings") "")
-                        (("-Werror") ""))
-                      #t))
-                  (add-after 'install 'wrap
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let* ((gcl (assoc-ref outputs "out"))
-                             (input-path (lambda (lib path)
-                                           (string-append
-                                            (assoc-ref inputs lib) path)))
-                             (binaries '("binutils")))
-                        ;; GCC and the GNU binutils are necessary for GCL to be
-                        ;; able to compile Lisp functions and programs (this is
-                        ;; a standard feature in Common Lisp). While the
-                        ;; the location of GCC is specified in the make-flags,
-                        ;; the GNU binutils must be available in GCL's $PATH.
-                        (wrap-program (string-append gcl "/bin/gcl")
-                          `("PATH" prefix ,(map (lambda (binary)
-                                                  (input-path binary "/bin"))
-                                                binaries))))
-                      #t))
-                  ;; drop strip phase to make maxima build, see
-                  ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
-                  (delete 'strip))))
-    (inputs
-     `(("gmp" ,gmp)
-       ("readline" ,readline)))
-    (native-inputs
-     `(("gcc" ,gcc-4.9)
-       ("m4" ,m4)
-       ("texinfo" ,texinfo)
-       ("texlive" ,texlive)))
-    (home-page "https://www.gnu.org/software/gcl/")
-    (synopsis "A Common Lisp implementation")
-    (description "GCL is an implementation of the Common Lisp language.  It
+  (let ((commit "5956140b1083e2302a59d7ce2054b0b7c2cbb417")
+        (revision "1")) ;Guix package revision
+    (package
+      (name "gcl")
+      (version (string-append "2.6.12-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.savannah.gnu.org/r/gcl.git")
+               (commit commit)))
+         (file-name (string-append "gcl-" version "-checkout"))
+         (sha256
+          (base32 "0mwclf2879mh3d9xqkqhghf58lwy7srsnsq9x0f1cc6j302sy4hb"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:parallel-build? #f  ; The build system seems not to be thread safe.
+         #:tests? #f  ; There does not seem to be make check or anything similar.
+         #:configure-flags '("--enable-ansi") ; required for use by the maxima package
+         #:make-flags (list
+                       (string-append "GCL_CC=" (assoc-ref %build-inputs "gcc")
+                                      "/bin/gcc")
+                       (string-append "CC=" (assoc-ref %build-inputs "gcc")
+                                      "/bin/gcc"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'pre-conf
+             (lambda* (#:key inputs #:allow-other-keys)
+               (chdir "gcl")
+               (substitute*
+                   (append
+                    '("pcl/impl/kcl/makefile.akcl"
+                      "add-defs"
+                      "unixport/makefile.dos"
+                      "add-defs.bat"
+                      "gcl-tk/makefile.prev"
+                      "add-defs1")
+                    (find-files "h" "\\.defs"))
+                 (("SHELL=/bin/bash")
+                  (string-append "SHELL=" (which "bash")))
+                 (("SHELL=/bin/sh")
+                  (string-append "SHELL=" (which "sh"))))
+               (substitute* "h/linux.defs"
+                 (("#CC") "CC")
+                 (("-fwritable-strings") "")
+                 (("-Werror") ""))
+               (substitute* "lsp/gcl_top.lsp"
+                 (("\"cc\"")
+                  (string-append "\"" (assoc-ref %build-inputs "gcc")
+                                 "/bin/gcc\""))
+                 (("\\(or \\(get-path \\*cc\\*\\) \\*cc\\*\\)") "*cc*")
+                 (("\"ld\"")
+                  (string-append "\"" (assoc-ref %build-inputs "binutils")
+                                 "/bin/ld\""))
+                 (("\\(or \\(get-path \\*ld\\*\\) \\*ld\\*\\)") "*ld*")
+                 (("\\(get-path \"objdump --source \"\\)")
+                  (string-append "\"" (assoc-ref %build-inputs "binutils")
+                                 "/bin/objdump --source \"")))
+               #t))
+           (add-after 'install 'wrap
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((gcl (assoc-ref outputs "out"))
+                      (input-path (lambda (lib path)
+                                    (string-append
+                                     (assoc-ref inputs lib) path)))
+                      (binaries '("binutils")))
+                 ;; GCC and the GNU binutils are necessary for GCL to be
+                 ;; able to compile Lisp functions and programs (this is
+                 ;; a standard feature in Common Lisp). While the
+                 ;; the location of GCC is specified in the make-flags,
+                 ;; the GNU binutils must be available in GCL's $PATH.
+                 (wrap-program (string-append gcl "/bin/gcl")
+                   `("PATH" prefix ,(map (lambda (binary)
+                                           (input-path binary "/bin"))
+                                         binaries))))
+               #t))
+           ;; drop strip phase to make maxima build, see
+           ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
+           (delete 'strip))))
+      (inputs
+       `(("gmp" ,gmp)
+         ("readline" ,readline)))
+      (native-inputs
+       `(("gcc" ,gcc-4.9)
+         ("m4" ,m4)
+         ("texinfo" ,texinfo)
+         ("texlive" ,texlive)))
+      (home-page "https://www.gnu.org/software/gcl/")
+      (synopsis "A Common Lisp implementation")
+      (description "GCL is an implementation of the Common Lisp language.  It
 features the ability to compile to native object code and to load native
 object code modules directly into its lisp core.  It also features a
 stratified garbage collection strategy, a source-level debugger and a built-in
 interface to the Tk widget system.")
-    (license license:lgpl2.0+)))
+      (license license:lgpl2.0+))))
 
 (define-public ecl
   (package

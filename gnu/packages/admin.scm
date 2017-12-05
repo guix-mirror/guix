@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -162,7 +162,8 @@ and provides a \"top-like\" mode (monitoring).")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "174q1qg7yg6w1hfvlfv720hr6hid4h5xzw15y3ycfpspllzldhcb"))))
+                "174q1qg7yg6w1hfvlfv720hr6hid4h5xzw15y3ycfpspllzldhcb"))
+              (patches (search-patches "shepherd-close-fds.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -1772,13 +1773,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.43")
+    (version "4.44")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "1q25jy51qfzsym9b2w0cqzscq2j492gn60dy6gbp88m8nwm4sdy8"))))
+        (base32 "0803lp8kd3mp1jcm17i019xiqxdy85hhs6xk67zib8gmvg500gcn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Obscure test failures.
@@ -1794,10 +1795,10 @@ a new command using the matched rule, and runs it.")
     (home-page "https://www.gentoo.com/di/")
     (synopsis "Advanced df like disk information utility")
     (description
-     "'di' is a disk information utility, displaying everything
-(and more) that your @code{df} command does.  It features the ability to
-display your disk usage in whatever format you prefer.  It is designed to be
-highly portable.  Great for heterogeneous networks.")
+     "'di' is a disk information utility, displaying everything that your
+@code{df} command does and more.  It features the ability to display your disk
+usage in whatever format you prefer.  It is designed to be highly portable and
+produce uniform output across heterogeneous networks.")
     (license license:zlib)))
 
 (define-public cbatticon
@@ -2295,3 +2296,39 @@ on systems running the Linux kernel.")
     ;; arm and aarch64 don't have cpuid.h
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:gpl2+)))
+
+(define-public masscan
+  (package
+    (name "masscan")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/robertdavidgraham/masscan"
+                                  "/archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y9af345g00z83rliv6bmlqg37xwc7xpnx5xqdgmjikzcxgk9pji"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpcap" ,libpcap)))
+    (arguments
+     '(#:test-target "regress"
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; There is no ./configure script
+         (add-after 'unpack 'patch-path
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pcap (assoc-ref inputs "libpcap")))
+               (substitute* "src/rawsock-pcap.c"
+                 (("libpcap.so") (string-append pcap "/lib/libpcap.so")))
+               #t))))))
+    (synopsis "TCP port scanner")
+    (description "MASSCAN is an asynchronous TCP port scanner.  It can detect
+open ports, and also complete the TCP connection and interact with the remote
+application, collecting the information received.")
+    (home-page "https://github.com/robertdavidgraham/masscan")
+        ;; 'src/siphash24.c' is the SipHash reference implementation, which
+        ;; bears a CC0 Public Domain Dedication.
+    (license license:agpl3+)))

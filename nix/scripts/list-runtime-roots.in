@@ -121,6 +121,7 @@ or the empty list."
                     (lambda args
                       (let ((err (system-error-errno args)))
                         (if (or (= ENOENT err)    ;TOCTTOU race
+                                (= ESRCH err)     ;ditto
                                 (= EACCES err))   ;not running as root
                             '()
                             (apply throw args)))))))

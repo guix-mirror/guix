@@ -50,7 +50,9 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define unifont
   ;; GNU Unifont, <http://gnu.org/s/unifont>.
@@ -75,7 +77,7 @@
                "03vvdfhdmf16121v7xs8is2krwnv15wpkhkf16a4yf8nsfc3f2w1"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-stuff
                    (lambda* (#:key inputs #:allow-other-keys)
                      (substitute* "grub-core/Makefile.in"
@@ -102,7 +104,11 @@
                       (substitute* "Makefile.in"
                         (("grub_cmd_date grub_cmd_set_date grub_cmd_sleep")
                           "grub_cmd_date grub_cmd_sleep"))
-                      #t)))))
+                      #t)))
+       ;; Disable tests on ARM and AARCH64 platforms.
+       #:tests? ,(not (any (cute string-prefix? <> (or (%current-target-system)
+                                                       (%current-system)))
+                           '("arm" "aarch64")))))
     (inputs
      `(("gettext" ,gettext-minimal)
 
@@ -158,8 +164,8 @@ menu to select one of the installed operating systems.")
      `(;; TODO: Tests need a UEFI firmware for qemu. There is one at
        ;; https://github.com/tianocore/edk2/tree/master/OvmfPkg .
        ;; Search for 'OVMF' in "tests/util/grub-shell.in".
-       #:tests? #f
        ,@(substitute-keyword-arguments (package-arguments grub)
+           ((#:tests? _ #f) #f)
            ((#:configure-flags flags ''())
             `(cons "--with-platform=efi" ,flags))
            ((#:phases phases)
@@ -296,7 +302,11 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "08gnl39i4xy3dm8iqwlz2ygx0ml1bgc5kpiys5ll1wvah1j72b04"))))
+                "08gnl39i4xy3dm8iqwlz2ygx0ml1bgc5kpiys5ll1wvah1j72b04"))
+              ;; Fix build and tests on 32 bits platforms.
+              ;; Will probably be fixed in 1.4.6 release.
+              (patches (search-patches "dtc-format-modifier.patch"
+                                       "dtc-32-bits-check.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -323,7 +333,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2017.07")
+    (version "2017.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -331,7 +341,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "1zzywk0fgngm1mfnhkp8d0v57rs51zr1y6rp4p03i6nbibfbyx2k"))))
+                "01bcsah5imy6m3fbjwhqywxg0pfk5fl8ks9ylb7kv3zmrb9qy0ba"))))
     (native-inputs
      `(("bc" ,bc)
        ("dtc" ,dtc)

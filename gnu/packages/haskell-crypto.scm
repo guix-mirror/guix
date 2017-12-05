@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,7 @@
 (define-public ghc-asn1-types
   (package
     (name "ghc-asn1-types")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -41,7 +42,7 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1iif9yrh4mmj249gyvam0zb2vb3jnlz777gahh2z9sx00dsx9rja"))))
+                "05vjchyqiy9n275cygffhn0ma7fz7jx52j0dcdm9qm8h9bziymqc"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-memory" ,ghc-memory)
@@ -56,7 +57,7 @@ format.")
 (define-public ghc-asn1-encoding
   (package
     (name "ghc-asn1-encoding")
-    (version "0.9.3")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -64,7 +65,7 @@ format.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "01ki5msrpccgdbdiaaa5a9zw0icp1hki4hca8qx6hzlp0rcf1mwh"))))
+                "0adgbamyq0mj1l1hdq4zyyllay714bac1wl0rih3fv1z6vykp1hy"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hourglass" ,ghc-hourglass)

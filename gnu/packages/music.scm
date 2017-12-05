@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system scons)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -54,8 +56,11 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
@@ -73,12 +78,14 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux) ; for alsa-utils
   #:use-module (gnu packages lirc)
   #:use-module (gnu packages llvm)
@@ -91,6 +98,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio) ;libsndfile
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -176,6 +184,114 @@
 and play MIDI files with a few clicks in a user-friendly interface offering
 score, keyboard, guitar, drum and controller views.")
     (license license:gpl3+)))
+
+;; We don't use the latest release because it depends on Qt4.  Instead we
+;; download the sources from the tip of the "qt5" branch.
+(define-public clementine
+  (let ((commit "0a59257dc334b8df60a4d7d90b04f1766747efcf")
+        (revision "1"))
+    (package
+      (name "clementine")
+      (version (string-append "1.3.1-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/clementine-player/Clementine.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                   "0cdcj7di7j9jgzc1ihjna1a5df64f9hnmx7b9kh8rlg76hc0l0hi"))
+                (modules '((guix build utils)))
+                (snippet
+                  '(for-each
+                     (lambda (dir)
+                       (delete-file-recursively
+                         (string-append "3rdparty/" dir)))
+                     (list
+                       ;; TODO: The following dependencies are still bundled:
+                       ;; - "qxt": Appears to be unmaintained upstream.
+                       ;; - "qsqlite"
+                       ;; - "qtsingleapplication"
+                       ;; - "qocoa"
+                       ;; - "qtiocompressor"
+                       ;; - "gmock": The tests crash when using our googletest
+                       ;;   package instead of the bundled gmock.
+                       "SPMediaKeyTap"
+                       "fancytabwidget"
+                       "google-breakpad"
+                       "libmygpo-qt"
+                       "libmygpo-qt5"
+                       "libprojectm"
+                       "qtwin"
+                       "sha2" ;; Replaced by openssl.
+                       "taglib"
+                       "tinysvcmdns")))
+                (patches (search-patches "clementine-use-openssl.patch"))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:test-target "clementine_test"
+         #:configure-flags
+         (let ((crypto (assoc-ref %build-inputs "crypto++")))
+           (list "-DENABLE_VISUALISATIONS=OFF" ; requires unpackaged "projectm"
+                 "-DCRYPTOPP_FOUND=TRUE"
+                 (string-append "-DCRYPTOPP_INCLUDE_DIRS=" crypto "/include")
+                 (string-append "-DCRYPTOPP_LIBRARY_DIRS=" crypto "/lib")
+                 (string-append "-DCRYPTOPP_LIBRARIES=" crypto "/lib/libcryptopp.a")
+                 "-DUSE_SYSTEM_SHA2=TRUE"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out             (assoc-ref outputs "out"))
+                     (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+                 (wrap-program (string-append out "/bin/clementine")
+                   `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))
+                 #t))))))
+      (native-inputs
+       `(("gettext" ,gettext-minimal)
+         ("pkg-config" ,pkg-config)
+         ("qtlinguist" ,qttools)))
+      (inputs
+       `(("boost" ,boost)
+         ("chromaprint" ,chromaprint)
+         ("crypto++" ,crypto++)
+         ("fftw" ,fftw)
+         ("glib" ,glib)
+         ("glu" ,glu)
+         ("gstreamer" ,gstreamer)
+         ("gst-plugins-base" ,gst-plugins-base)
+         ("libcdio" ,libcdio)
+         ("libmygpo-qt" ,libmygpo-qt)
+         ("libechonest" ,libechonest)
+         ;; TODO: Package libgpod.
+         ("libmtp" ,libmtp)
+         ("libxml2" ,libxml2)
+         ("openssl" ,openssl)
+         ("protobuf" ,protobuf)
+         ("pulseaudio" ,pulseaudio)
+         ("qtbase" ,qtbase)
+         ("qtx11extras" ,qtx11extras)
+         ("qtwebkit" ,qtwebkit)
+         ("sqlite" ,sqlite-with-fts3)
+         ("sparsehash" ,sparsehash)
+         ("taglib" ,taglib)))
+      (home-page "http://clementine-player.org")
+      (synopsis "Music player and library organizer")
+      (description "Clementine is a multiplatform music player.  It is inspired
+by Amarok 1.4, focusing on a fast and easy-to-use interface for searching and
+playing your music.")
+      (license (list
+                 ;; clementine and qtiocompressor are under GPLv3.
+                 license:gpl3+
+                 ;; gmock is under BSD-3.
+                 license:bsd-3
+                 ;; qxt is under CPL1.0.
+                 license:cpl1.0
+                 ;; qsqlite and qtsingleapplication are under LGPL2.1+.
+                 license:lgpl2.1+
+                 ;; qocoa is under MIT and CC by-sa for the icons.
+                 license:cc-by-sa3.0)))))
 
 (define-public cmus
   (package
@@ -508,19 +624,10 @@ audio and video).")
               (sha256
                (base32
                 "0hmcaywnwzjci3pp4xpvbijnnwvibz7gf9xzcdjbdca910y5728j"))))
-    (build-system gnu-build-system)
+    (build-system scons-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
-       #:phases
-       ;; TODO: Add scons-build-system and use it here.
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (mkdir-p out)
-                      (zero? (system* "scons" (string-append "PREFIX=" out))))))
-         (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
+     `(#:scons-flags (list (string-append "PREFIX=" %output))
+       #:tests? #f)) ;no "check" target
     (inputs
      `(("boost" ,boost)
        ("jack" ,jack-1)
@@ -529,9 +636,7 @@ audio and video).")
        ("liblo" ,liblo)
        ("rubberband" ,rubberband)))
     (native-inputs
-     `(("scons" ,scons)
-       ("python" ,python-2)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://das.nasophon.de/klick/")
     (synopsis "Metronome for JACK")
     (description
@@ -1090,7 +1195,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.8.4")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -1098,7 +1203,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0awk2zx0xa6vl6ah24zz0k2mwsx50hh5g1rh32mp790fp4x7l5s8"))))
+                "0mvrqk6jy7h2wg442ixwm49w7x15rs4066c2ljrz4kvxlzp5z69i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1124,7 +1229,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.8.4")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -1132,7 +1237,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0qqpklzy4wgw9jy0v2810j06712q90bwc69fp7da82536ba058a9"))))
+                "06xqqm1ylmpp2s7xk7xav325gc50kxlvh9vf1343b0n3i8xkgjfg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1159,7 +1264,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.8.4")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -1167,7 +1272,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "107p2xsj066q2bil0xcgqrrn7lawp02wzf7qmlajcbnd79jhsi6i"))))
+                "1gscwybsbaqbnylmgf2baf71cm2g7a0pd11rqmk3cz9hi3lyjric"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -3083,16 +3188,30 @@ are a C compiler and glib.  Full API documentation and examples are included.")
      `(#:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'set-ldflags
-          (lambda* (#:key outputs #:allow-other-keys)
-            (setenv "LDFLAGS"
-                    (string-append
-                     "-Wl,-rpath=\""
-                     (assoc-ref outputs "out") "/lib/lmms"
-                     ":"
-                     (assoc-ref outputs "out") "/lib/lmms/ladspa"
-                     "\"")))))))
+         (add-before 'configure 'set-ldflags
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "LDFLAGS"
+                     (string-append
+                      "-Wl,-rpath=\""
+                      (assoc-ref outputs "out") "/lib/lmms"
+                      ":"
+                      (assoc-ref outputs "out") "/lib/lmms/ladspa"
+                      "\""))
+             #t))
+         (add-before 'configure 'remove-Werror
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("SET\\(WERROR_FLAGS \"\\$\\{WERROR_FLAGS\\} -Werror")
+                "SET(WERROR_FLAGS \"${WERROR_FLAGS}"))
+             #t))
+         (add-before 'reset-gzip-timestamps 'make-manpages-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (map (lambda (file)
+                    (make-file-writable file))
+                  (find-files (string-append (assoc-ref outputs "out")
+                                             "/share/man")
+                              ".*\\.gz$"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -3402,3 +3521,30 @@ the electronic or dubstep genre.")
 designed to make a developer's life easy when trying to use the APIs provided
 by The Echo Nest.")
     (license license:gpl2+)))
+
+(define-public libmygpo-qt
+  (package
+    (name "libmygpo-qt")
+    (version "1.0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://stefan.derkits.at/files/"
+                                  "libmygpo-qt/libmygpo-qt." version ".tar.gz"))
+              (sha256
+               (base32
+                "1wsgh2vjnd52rkvpncj1ycpbp84sj9hh12ija46b42z9mmqf2jm4"))
+              (patches
+               (search-patches "libmygpo-qt-fix-jsoncreatortest.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_WITH_QT4=OFF")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("qt" ,qtbase)))
+    (home-page "http://wiki.gpodder.org/wiki/Libmygpo-qt")
+    (synopsis "Qt/C++ library wrapping the gpodder web service")
+    (description "@code{libmygpo-qt} is a Qt/C++ library wrapping the
+@url{https://gpodder.net} APIs.  It allows applications to discover, manage
+and track podcasts.")
+    (license license:lgpl2.1+)))

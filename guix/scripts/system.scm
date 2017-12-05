@@ -36,6 +36,8 @@
   #:use-module (guix graph)
   #:use-module (guix scripts graph)
   #:use-module (guix build utils)
+  #:use-module (guix progress)
+  #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:use-module (gnu build install)
   #:autoload   (gnu build file-systems)
                  (find-partition-by-label find-partition-by-uuid)
@@ -107,47 +109,54 @@ BODY..., and restore them."
   (store-lift topologically-sorted))
 
 
-(define* (copy-item item target
+(define* (copy-item item references target
                     #:key (log-port (current-error-port)))
-  "Copy ITEM to the store under root directory TARGET and register it."
-  (mlet* %store-monad ((refs (references* item)))
-    (let ((dest  (string-append target item))
-          (state (string-append target "/var/guix")))
-      (format log-port "copying '~a'...~%" item)
+  "Copy ITEM to the store under root directory TARGET and register it with
+REFERENCES as its set of references."
+  (let ((dest  (string-append target item))
+        (state (string-append target "/var/guix")))
+    (format log-port "copying '~a'...~%" item)
 
-      ;; Remove DEST if it exists to make sure that (1) we do not fail badly
-      ;; while trying to overwrite it (see <http://bugs.gnu.org/20722>), and
-      ;; (2) we end up with the right contents.
-      (when (file-exists? dest)
-        (delete-file-recursively dest))
+    ;; Remove DEST if it exists to make sure that (1) we do not fail badly
+    ;; while trying to overwrite it (see <http://bugs.gnu.org/20722>), and
+    ;; (2) we end up with the right contents.
+    (when (file-exists? dest)
+      (delete-file-recursively dest))
 
-      (copy-recursively item dest
-                        #:log (%make-void-port "w"))
+    (copy-recursively item dest
+                      #:log (%make-void-port "w"))
 
-      ;; Register ITEM; as a side-effect, it resets timestamps, etc.
-      ;; Explicitly use "TARGET/var/guix" as the state directory, to avoid
-      ;; reproducing the user's current settings; see
-      ;; <http://bugs.gnu.org/18049>.
-      (unless (register-path item
-                             #:prefix target
-                             #:state-directory state
-                             #:references refs)
-        (leave (G_ "failed to register '~a' under '~a'~%")
-               item target))
-
-      (return #t))))
+    ;; Register ITEM; as a side-effect, it resets timestamps, etc.
+    ;; Explicitly use "TARGET/var/guix" as the state directory, to avoid
+    ;; reproducing the user's current settings; see
+    ;; <http://bugs.gnu.org/18049>.
+    (unless (register-path item
+                           #:prefix target
+                           #:state-directory state
+                           #:references references)
+      (leave (G_ "failed to register '~a' under '~a'~%")
+             item target))))
 
 (define* (copy-closure item target
                        #:key (log-port (current-error-port)))
   "Copy ITEM and all its dependencies to the store under root directory
 TARGET, and register them."
-  (mlet* %store-monad ((refs    (references* item))
-                       (to-copy (topologically-sorted*
-                                 (delete-duplicates (cons item refs)
-                                                    string=?))))
-    (sequence %store-monad
-              (map (cut copy-item <> target #:log-port log-port)
-                   to-copy))))
+  (mlet* %store-monad ((to-copy (topologically-sorted* (list item)))
+                       (refs    (mapm %store-monad references* to-copy)))
+    (define progress-bar
+      (progress-reporter/bar (length to-copy)
+                             (format #f (G_ "copying to '~a'...")
+                                     target)))
+
+    (call-with-progress-reporter progress-bar
+      (lambda (report)
+        (let ((void (%make-void-port "w")))
+          (for-each (lambda (item refs)
+                      (copy-item item refs target #:log-port void)
+                      (report))
+                    to-copy refs))))
+
+    (return *unspecified*)))
 
 (define* (install-bootloader installer-drv
                              #:key
@@ -667,7 +676,8 @@ and TARGET arguments."
     (gexp->file "bootloader-installer"
                 (with-imported-modules '((guix build utils))
                   #~(begin
-                      (use-modules (guix build utils))
+                      (use-modules (guix build utils)
+                                   (ice-9 binary-ports))
                       (#$installer #$bootloader #$device #$target))))))
 
 (define* (perform-action action os
@@ -1095,7 +1105,8 @@ argument list and OPTS is the option alist."
                                          parse-sub-command))
            (args     (option-arguments opts))
            (command  (assoc-ref opts 'action)))
-      (parameterize ((%graft? (assoc-ref opts 'graft?)))
+      (parameterize ((%graft? (assoc-ref opts 'graft?))
+                     (current-terminal-columns (terminal-columns)))
         (process-command command args opts)))))
 
 ;;; Local Variables:

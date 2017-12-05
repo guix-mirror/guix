@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
@@ -63,14 +63,14 @@ to a file.")
 (define-public python-pytzdata
   (package
     (name "python-pytzdata")
-    (version "2017.2")
+    (version "2017.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytzdata" version))
        (sha256
         (base32
-         "1c1az8spm2d3km6qhjy69y4dlj71p6984l48mizr83nh4f0ipld4"))))
+         "1wi3jh39zsa9iiyyhynhj7w5b2p9wdyd0ppavpsrmf3wxvr7cwz8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
@@ -87,14 +87,14 @@ to a file.")
 (define-public python-pytz
   (package
     (name "python-pytz")
-    (version "2017.2")
+    (version "2017.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pytz" version ".zip"))
       (sha256
        (base32
-        "12cmd3j46d2gcw08bspvp6s9icfcvx88zjz52n1bli9dyvl5dh7m"))))
+        "1dw5l527vcafvdqq4wadwl7ikhb2sssz0v0cssibh8890kyczr7s"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

@@ -56,6 +56,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ant)
+  #:use-module (guix build-system scons)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages check)
@@ -1068,10 +1069,7 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                            version ".tar.bz2"))
        (sha256
         (base32 "1k47gbgpp52049andr28y28nbwh9m36bbb0g8p0aka3pqlhjv72l"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("scons" ,scons)
-       ("python" ,python-2)))
+    (build-system scons-build-system)
     (propagated-inputs
      `(("apr" ,apr)
        ("apr-util" ,apr-util)
@@ -1081,13 +1079,15 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
        ;;("gss" ,gss)
        ("zlib" ,zlib)))
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
+     `(#:scons ,scons-python2
+       #:scons-flags (list (string-append "APR=" (assoc-ref %build-inputs "apr"))
+                           (string-append "APU=" (assoc-ref %build-inputs "apr-util"))
+                           (string-append "OPENSSL=" (assoc-ref %build-inputs "openssl"))
+                           ;; (string-append "GSSAPI=" (assoc-ref %build-inputs "gss"))
+                           (string-append "ZLIB=" (assoc-ref %build-inputs "zlib"))
+                           (string-append "PREFIX=" %output))
        #:phases
-       ;; TODO: Add scons-build-system and use it here.
        (modify-phases %standard-phases
-         (delete 'configure)
          (add-after 'unpack 'scons-propagate-environment
                     (lambda _
                       ;; By design, SCons does not, by default, propagate
@@ -1098,21 +1098,6 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                       (substitute* "SConstruct"
                         (("^env = Environment\\(")
                          "env = Environment(ENV=os.environ, "))))
-         (replace 'build
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((out      (assoc-ref outputs "out"))
-                          (apr      (assoc-ref inputs "apr"))
-                          (apr-util (assoc-ref inputs "apr-util"))
-                          (openssl  (assoc-ref inputs "openssl"))
-                          ;;(gss      (assoc-ref inputs "gss"))
-                          (zlib     (assoc-ref inputs "zlib")))
-                      (zero? (system* "scons"
-                                      (string-append "APR=" apr)
-                                      (string-append "APU=" apr-util)
-                                      (string-append "OPENSSL=" openssl)
-                                      ;;(string-append "GSSAPI=" gss)
-                                      (string-append "ZLIB=" zlib)
-                                      (string-append "PREFIX=" out))))))
          (add-before 'check 'disable-broken-tests
            (lambda _
              ;; These tests rely on SSL certificates that expired 2017-04-18.
@@ -1139,9 +1124,7 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                   (substitute* "test/test_context.c"
                     (((string-append "SUITE_ADD_TEST\\(suite, " test "\\);")) "")))
                 broken-tests)
-               #t)))
-         (replace 'check   (lambda _ (zero? (system* "scons" "check"))))
-         (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
+               #t))))))
     (home-page "https://serf.apache.org/")
     (synopsis "High-performance asynchronous HTTP client library")
     (description
@@ -4898,7 +4881,7 @@ used to start services with both privileged and non-privileged port numbers.")
 (define-public tidy-html
   (package
     (name "tidy-html")
-    (version "5.4.0")
+    (version "5.6.0")
     (source
      (origin
        (method url-fetch)
@@ -4907,7 +4890,7 @@ used to start services with both privileged and non-privileged port numbers.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0yhbgbjl45b4sjxwc394cjra6iy02q1pi66p28zy70lr6jvm9mx2"))))
+         "0n29wcgw32rhnraj9j21ibhwi0xagmmcskhbaz8ihxly7nx3p9h8"))))
     (build-system cmake-build-system)
     (outputs '("out"
                "static")) ; 1.0MiB of .a files
@@ -5160,7 +5143,7 @@ command-line arguments or read from stdin.")
 (define-public python-internetarchive
   (package
     (name "python-internetarchive")
-    (version "1.7.1")
+    (version "1.7.4")
     (source
      (origin
        (method url-fetch)
@@ -5169,24 +5152,23 @@ command-line arguments or read from stdin.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1lj4r0y67mwjns2gcjvw0y7m5x0vqir2iv7s4q2y93492azli1qh"))))
+         "0sdbb2ag6vmybi8zmbjszi492a587giaaqxyy1p6gy03cb8mc512"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; 11 tests of 105 fail to mock "requests".
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'check)
          (add-after 'install 'check
-           (lambda* (#:key inputs outputs target (tests? (not target)) #:allow-other-keys)
-             (if tests?
-               (begin
-                 (add-installed-pythonpath inputs outputs)
-                 (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
-                                               ":" (getenv "PATH")))
-                 (zero? (system* "py.test")))
-               (begin
-                 (format #t "test suite not run~%")
-                 #t)))))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
+                                           ":" (getenv "PATH")))
+             (zero? (system* "py.test" "-v" "-k"
+                             (string-append
+                              ;; These tests attempt to make a connection to
+                              ;; an external web service.
+                              "not test_get_item_with_kwargs"
+                              " and not test_ia"))))))))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-jsonpatch" ,python-jsonpatch-0.4)
@@ -5211,6 +5193,58 @@ internetarchive python module for programatic access to archive.org.")
 (define-public python2-internetarchive
   (package-with-python2
    (strip-python2-variant python-internetarchive)))
+
+(define-public python-clf
+  (let ((commit-test-clf "d01d25923c599d3261910f79fb948825b4270d07")) ; 0.5.7
+    (package
+      (name "python-clf")
+      (version "0.5.7")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "clf" version))
+         (sha256
+          (base32
+           "0zlkzqnpz7a4iavsq5vaz0nf5nr7qm5znpg1vlpz6rwnx6hikjdb"))))
+      (build-system python-build-system)
+      (propagated-inputs
+       `(("python-docopt" ,python-docopt)
+         ("python-pygments" ,python-pygments)
+         ("python-requests" ,python-requests)
+         ("python-nose" ,python-nose)
+         ("python-lxml" ,python-lxml)
+         ("python-pyaml" ,python-pyaml)))
+      (inputs
+       `(("test-clf"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append "https://raw.githubusercontent.com"
+                                 "/ncrocfer/clf/" commit-test-clf
+                                 "/test_clf.py"))
+             (sha256
+              (base32
+               "19lr5zdzsmxgkg7wrjq1yzkiahd03wi4k3dskssyhmjls8c10nqd"))))))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'get-tests
+             (lambda _
+               (copy-file (assoc-ref %build-inputs "test-clf") "test_clf.py")))
+           (replace 'check
+             (lambda _
+               (zero? (system* "nosetests"
+                               ;; These tests require internet connection
+                               "--exclude=test_browse"
+                               "--exclude=test_command"
+                               "--exclude=test_search")))))))
+      (home-page "https://github.com/ncrocfer/clf")
+      (synopsis "Search code snippets on @url{https://commandlinefu.com}")
+      (description "@code{clf} is a command line tool for searching code
+snippets on @url{https://commandlinefu.com}.")
+      (license l:expat))))
+
+(define-public python2-clf
+  (package-with-python2 python-clf))
 
 (define-public r-shiny
   (package
@@ -6079,3 +6113,38 @@ based on this library, allowing Perl programmers to easily validate HTML.")
 object.  It's meant as a replacement for @code{HTML::Lint}, which is written
 in Perl but is not nearly as capable as @code{HTML::Tidy}.")
     (license l:artistic2.0)))
+
+(define-public geomyidae
+  (package
+    (name "geomyidae")
+    (version "0.29")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://git.r-36.net/geomyidae/snapshot/"
+                           "geomyidae-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0qxgxp6psfrgfqhndyq2z54nb1qrmvvljddnxdwp207jbz366bja"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:tests? #f                                ;no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (home-page "http://git.r-36.net/geomyidae")
+    (synopsis "Small Gopher server")
+    (description
+     "Geomyidae is a server for distributed hypertext protocol Gopher.  Its
+features include:
+
+@enumerate
+@item Gopher menus (see @file{index.gph} for an example);
+@item directory listings (if no @file{index.gph} was found);
+@item CGI support (@file{.cgi} files are executed);
+@item search support in CGI files;
+@item logging with multiple log levels.
+@end enumerate\n")
+    (license l:expat)))

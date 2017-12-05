@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
+;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1329,3 +1330,53 @@ a specified program, emulating the PC speaker beep using the sound card (default
 or playing a PCM encoded WAVE file.")
     (home-page "https://github.com/dusxmt/nxbelld")
     (license license:gpl3+)))
+
+(define-public xautolock
+  (package
+    (name "xautolock")
+    (version "2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.ibiblio.org/pub/linux/X11/screensavers/"
+                                  name "-" version ".tgz"))
+              (sha256
+               (base32
+                "18jd3k3pvlm5x1adyqw63z2b3f4ixh9mfvz9asvnskk3fm8jgw0i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("imake" ,imake)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxscrnsaver" ,libxscrnsaver)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((imake (assoc-ref inputs "imake"))
+                   (out   (assoc-ref outputs "out")))
+               ;; Generate Makefile
+               (invoke "xmkmf")
+               (substitute* "Makefile"
+                 ;; These imake variables somehow remain undefined
+                 (("DefaultGcc2[[:graph:]]*Opt") "-O2")
+                 ;; Reset a few variable defaults that are set in imake templates
+                 ((imake) out)
+                 (("(MANPATH = )[[:graph:]]*" _ front)
+                  (string-append front out "/share/man")))
+               ;; Old BSD-style 'union wait' is unneeded (defining
+               ;; _USE_BSD did not seem to fix it)
+               (substitute* "src/engine.c"
+                 (("union wait  status") "int status = 0"))
+               #t)))
+         (add-after 'install 'install/man
+           (lambda _
+             (zero? (system* "make" "install.man")))))))
+    (home-page "http://ibiblio.org/pub/Linux/X11/screensavers/")
+    (synopsis "Program launcher for idle X sessions")
+    (description "Xautolock monitors input devices under the X Window
+System, and launches a program of your choice if there is no activity after
+a user-configurable period of time.")
+    (license license:gpl2)))

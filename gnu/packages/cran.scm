@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
@@ -92,13 +94,13 @@ error stream.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.13")
+    (version "0.12.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "1bm84yc48475plgsnnbvzi6nzkixpnfw8ry86ax63f9g524asw55"))))
+        (base32 "0qvyxggddyg87lza45hjl0a2prabdyshkqzkz418vi777zygqa6s"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
@@ -242,14 +244,14 @@ validation and filtering on the values, making options invisible or private.")
 (define-public r-circlize
   (package
     (name "r-circlize")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "circlize" version))
        (sha256
         (base32
-         "1w7i3jgxgq510axglzmw54ma9kq7k4c86i9ccndz10mrwc51fji0"))))
+         "0py82f5v25mi0s4626zbl5br1frdrj3diz2dakar1rz5yn956mdi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-colorspace" ,r-colorspace)
@@ -318,14 +320,14 @@ rows, dropping names) to see if the modified versions are identical.")
 (define-public r-dendextend
   (package
     (name "r-dendextend")
-    (version "1.5.2")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dendextend" version))
        (sha256
         (base32
-         "04jz58apibfrkjcrdmw2hmsav6qpb5cs6qdai81k1v1iznfcya42"))))
+         "0pichh08zi12lpxzc061dmv4smj6lizygd1xymln8wfz18sf7923"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fpc" ,r-fpc)
@@ -600,6 +602,29 @@ print, summary, etc.")
 and other distributions related to the eigenvalues of large Wishart
 matrices.")
     (license license:bsd-3)))
+
+(define-public r-rmpi
+  (package
+    (name "r-rmpi")
+    (version "0.6-6")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "Rmpi" version))
+              (sha256
+               (base32
+                "0fm6z049aaq2c9xagm8n64d9560hg9d8hyb0m359fii672nhkz6q"))))
+    (properties `((upstream-name . "Rmpi")))
+    (build-system r-build-system)
+    (arguments
+     `(#:configure-flags '("--configure-args=\"--with-Rmpi-type=OPENMPI\"")))
+    (inputs
+     `(("openmpi" ,openmpi)))
+    (home-page "http://www.stats.uwo.ca/faculty/yu/Rmpi")
+    (synopsis "R interface to message-passing interface (MPI)")
+    (description
+     "This package provides an interface (wrapper) to MPI APIs.  It also
+provides an interactive R manager and worker environment.")
+    (license license:gpl2+)))
 
 (define-public r-lmoments
   (package
@@ -1059,14 +1084,14 @@ methods.")
 (define-public r-timedate
   (package
     (name "r-timedate")
-    (version "3012.100")
+    (version "3042.101")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "timeDate" version))
        (sha256
         (base32
-         "0cn4h23y2y2bbg62qgm79xx4cvfla5xbpmi9hbdvkvpmm5yfyqk2"))))
+         "0vcckaw1gqz3j4v69r9jn41vlmk5a5c7572xam1nl75ki5v4r3bc"))))
     (properties `((upstream-name . "timeDate")))
     (build-system r-build-system)
     (home-page "https://www.rmetrics.org")
@@ -1183,26 +1208,95 @@ classification and bagging for classification, regression and survival
 problems as well as resampling based estimators of prediction error.")
     (license license:gpl2+)))
 
+(define-public r-psych
+  (package
+    (name "r-psych")
+    (version "1.7.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "psych" version))
+       (sha256
+        (base32
+         "0daismb8pdk392vdy304hqx0m3jx62gx3a0hygjygc125rhfla7k"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-foreign" ,r-foreign)
+       ("r-lattice" ,r-lattice)
+       ("r-mnormt" ,r-mnormt)
+       ("r-nlme" ,r-nlme)))
+    (home-page "http://cran.r-project.org/web/packages/psych/")
+    (synopsis "Procedures for psychological, psychometric, and personality research")
+    (description
+     "This package provides a general purpose toolbox for personality,
+psychometric theory and experimental psychology.  Functions are primarily for
+multivariate analysis and scale construction using factor analysis, principal
+component analysis, cluster analysis and reliability analysis, although others
+provide basic descriptive statistics.  Item Response Theory is done using
+factor analysis of tetrachoric and polychoric correlations.  Functions for
+analyzing data at multiple levels include within and between group statistics,
+including correlations and factor analysis.  Functions for simulating and
+testing particular item and test structures are included.  Several functions
+serve as a useful front end for structural equation modeling.  Graphical
+displays of path diagrams, factor analysis and structural equation models are
+created using basic graphics.")
+    (license license:gpl2+)))
+
+(define-public r-broom
+  (package
+    (name "r-broom")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "broom" version))
+       (sha256
+        (base32
+         "119pc2jnxvm13cvd77c7d14p3bn68f4jm310vj3yfck40101n9if"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-nlme" ,r-nlme)
+       ("r-plyr" ,r-plyr)
+       ("r-psych" ,r-psych)
+       ("r-reshape2" ,r-reshape2)
+       ("r-stringr" ,r-stringr)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "http://github.com/tidyverse/broom")
+    (synopsis "Convert statistical analysis objects into tidy data frames")
+    (description
+     "This package provides tools to convert statistical analysis objects from
+R into tidy data frames, so that they can more easily be combined, reshaped
+and otherwise processed with tools like @code{dplyr}, @code{tidyr} and
+@code{ggplot2}.  The package provides three S3 generics: @code{tidy}, which
+summarizes a model's statistical findings such as coefficients of a
+regression; @code{augment}, which adds columns to the original data such as
+predictions, residuals and cluster assignments; and @code{glance}, which
+provides a one-row summary of model-level statistics.")
+    (license license:expat)))
+
 (define-public r-recipes
   (package
     (name "r-recipes")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "recipes" version))
        (sha256
         (base32
-         "0rydk403qihxmcv3zz323r3ywk4g1v7ibvj452rxhm0z22sqk9kb"))))
+         "0id46c7iaf49miw4kxpidsbg3hdywav43n1lh2zd1vg5946bzg04"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-ddalpha" ,r-ddalpha)
+     `(("r-broom" ,r-broom)
+       ("r-ddalpha" ,r-ddalpha)
        ("r-dimred" ,r-dimred)
        ("r-dplyr" ,r-dplyr)
        ("r-gower" ,r-gower)
        ("r-ipred" ,r-ipred)
        ("r-lubridate" ,r-lubridate)
        ("r-magrittr" ,r-magrittr)
+       ("r-matrix" ,r-matrix)
        ("r-purrr" ,r-purrr)
        ("r-rcpproll" ,r-rcpproll)
        ("r-rlang" ,r-rlang)

@@ -139,8 +139,8 @@ sounds for various system events.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://dist.ng0.infotropique.org/releases/"
-                           "pycanberra/pycanberra-" version ".tar.xz"))
+       (uri (string-append "https://d.n0.is/releases/pycanberra/"
+                           "pycanberra-" version ".tar.xz"))
        (sha256
         (base32
          "16jjf8fcgaprmz6jacsxrh17l1ad891fns38bxv49lg3s3mn1nj2"))))
@@ -152,5 +152,5 @@ sounds for various system events.")
     (synopsis "Ctypes wrapper for the libcanberra API")
     (description
      "Pycanberra is a basic Python wrapper for libcanberra.")
-    (home-page "https://git.ng0.infotropique.org/pycanberra/")
+    (home-page "https://c.n0.is/pycanberra/")
     (license lgpl2.1+)))

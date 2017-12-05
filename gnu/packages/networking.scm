@@ -489,7 +489,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.4.2")
+    (version "2.4.3")
     (source
      (origin
        (method url-fetch)
@@ -497,7 +497,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0zglapd3sz08p2z9x8a5va3jnz17b3n5a1bskf7f2dgx6m3v5b6i"))))
+         "0bpiby916k3k8bm7q8b1dflva6zs0a4ircskrck0d538dfcrb50q"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)
@@ -1536,3 +1536,34 @@ at the IP layer and link layer, as well as a host of supplementary
 functionality.  Using libnet, quick and simple packet assembly applications
 can be whipped up with little effort.")
     (license license:bsd-2)))
+
+(define-public mtr
+  (package
+    (name "mtr")
+    (version "0.92")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://ftp.bitwizard.nl/" name "/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10j3ds3p27jygys4x08kj8fi3zlsgiv72xsfazkah6plwawrv5zj"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libcap" ,libcap)
+       ("ncurses" ,ncurses)))
+    (native-inputs
+     ;; The 0.92 release tarball still requires the ‘autoheader’ tool.
+     `(("autoconf" ,autoconf)))
+    (arguments
+     `(#:tests? #f))                    ; tests require network access
+    (home-page "https://www.bitwizard.nl/mtr/")
+    (synopsis "Network diagnostic tool")
+    (description
+     "@dfn{mtr} (My TraceRoute) combines the functionality of the
+@command{traceroute} and @command{ping} programs in a single network diagnostic
+tool.  @command{mtr} can use several network protocols to detect intermediate
+routers (or @dfn{hops}) between the local host and a user-specified destination.
+It then continually measures the response time and packet loss at each hop, and
+displays the results in real time.")
+    (license license:gpl2+)))

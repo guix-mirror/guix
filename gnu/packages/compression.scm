@@ -1215,6 +1215,64 @@ install: libbitshuffle.so
 compresser/decompresser.")
     (license license:asl2.0)))
 
+(define-public java-snappy-1
+  (package
+    (inherit java-snappy)
+    (version "1.0.3-rc3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xerial/snappy-java/archive/"
+                                  "snappy-java-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08hsxlqidiqck0q57fshwyv3ynyxy18vmhrai9fyc8mz17m7gsa3"))))
+    (arguments
+     `(#:jar-name "snappy.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-binaries
+           (lambda _
+             (delete-file "lib/org/xerial/snappy/OSInfo.class")
+             (delete-file-recursively "src/main/resources/org/xerial/snappy/native")
+             #t))
+         (add-before 'build 'build-jni
+           (lambda _
+             ;; Rebuild one of the binaries we removed earlier
+             (system* "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
+                      "-d" "lib")
+             ;; Link to the dynamic snappy, not the static ones
+             (substitute* "Makefile.common"
+               (("-shared") "-shared -lsnappy"))
+             (substitute* "Makefile"
+               ;; Don't download the sources here.
+               (("\\$\\(SNAPPY_UNPACKED\\) ") "")
+               ((": \\$\\(SNAPPY_UNPACKED\\) ") ":")
+               ;; What we actually want to build
+               (("SNAPPY_OBJ:=.*")
+                "SNAPPY_OBJ:=$(addprefix $(SNAPPY_OUT)/, SnappyNative.o)\n")
+               ;; Since we removed the directory structure in "native" during
+               ;; the previous phase, we need to recreate it.
+               (("NAME\\): \\$\\(SNAPPY_OBJ\\)")
+                "NAME): $(SNAPPY_OBJ)\n\t@mkdir -p $(@D)"))
+             ;; Finally we can run the Makefile to build the dynamic library.
+             (zero? (system* "make" "native"))))
+         ;; Once we have built the shared library, we need to place it in the
+         ;; "build" directory so it can be added to the jar file.
+         (add-after 'build-jni 'copy-jni
+           (lambda _
+             (copy-recursively "src/main/resources/org/xerial/snappy/native"
+                               "build/classes/org/xerial/snappy/native")
+             #t))
+         (add-before 'check 'fix-tests
+           (lambda _
+             (mkdir-p "src/test/resources/org/xerial/snappy/")
+             (copy-recursively "src/test/java/org/xerial/snappy/testdata"
+                               "src/test/resources/org/xerial/snappy/testdata")
+             (install-file "src/test/java/org/xerial/snappy/alice29.txt"
+                           "src/test/resources/org/xerial/snappy/")
+             #t)))))))
+
 (define-public java-iq80-snappy
   (package
     (name "java-iq80-snappy")
@@ -1264,6 +1322,46 @@ compresser/decompresser.")
 Java.  This compression code produces a byte-for-byte exact copy of the output
 created by the original C++ code, and extremely fast.")
     (license license:asl2.0)))
+
+(define-public java-jbzip2
+  (package
+    (name "java-jbzip2")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://storage.googleapis.com/"
+                                  "google-code-archive-source/v2/"
+                                  "code.google.com/jbzip2/"
+                                  "source-archive.zip"))
+              (file-name (string-append name "-" version ".zip"))
+              (sha256
+               (base32
+                "0ncmhlqmrfmj96nqf6p77b9ws35lcfsvpfxzwxi2asissc83z1l3"))))
+    (build-system ant-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-junit" ,java-junit)))
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:jar-name "jbzip2.jar"
+       #:source-dir "tags/release-0.9.1/src"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-encoding-problems
+           (lambda _
+             ;; Some of the files we're patching are
+             ;; ISO-8859-1-encoded, so choose it as the default
+             ;; encoding so the byte encoding is preserved.
+             (with-fluids ((%default-port-encoding #f))
+               (substitute* "tags/release-0.9.1/src/org/itadaki/bzip2/HuffmanAllocator.java"
+                 (("Milidi.") "Milidiu")))
+             #t)))))
+    (home-page "https://code.google.com/archive/p/jbzip2/")
+    (synopsis "Java bzip2 compression/decompression library")
+    (description "Jbzip2 is a Java bzip2 compression/decompression library.
+It can be used as a replacement for the Apache @code{CBZip2InputStream} /
+@code{CBZip2OutputStream} classes.")
+    (license license:expat)))
 
 (define-public p7zip
   (package
@@ -1736,30 +1834,20 @@ manipulate, read, and write Zip archive files.")
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.3.0")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://nih.at/libzip/libzip-" version ".tar.xz"))
+                    "https://libzip.org/download/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wykw0q9dwdzx0gssi2dpgckx9ggr2spzc1amjnff6wi6kz6x4xa"))))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'remove-failing-tests
-           ;; These tests are known to fail on 32-bit architectures.
-           ;; see thread: https://nih.at/listarchive/libzip-discuss/msg00713.html
-           (lambda _
-             (substitute* "regress/Makefile"
-               (("encryption-nonrandom") "#encryption-nonrandom"))
-             #t)))))
+                "11g1hvm2bxa2v5plakfzcwyk5hb5fz4kgrkp38l0xhnv21888xv2"))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
      `(("zlib" ,zlib)))
     (build-system gnu-build-system)
-    (home-page "https://nih.at/libzip/index.html")
+    (home-page "https://libzip.org")
     (synopsis "C library for reading, creating, and modifying zip archives")
     (description "Libzip is a C library for reading, creating, and modifying
 zip archives.  Files can be added from data buffers, files, or compressed data

@@ -483,31 +483,27 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.6.1")
+    (version "2.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1qs1rqfir0nxi0a0dcg60sbbr99hyxk8y1xd7j7jd13l9idx84rh"))
+                "143pk2124liiq1r4ja1s579nbv3hm2scbbfbfclc2pw60r07mcig"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  ;; Remove bundled libraries and dependencies on them.
-                  (substitute* "configure"
-                    (("src/contrib/dnstap/Makefile") ""))
-                  (substitute* "src/Makefile.in"
-                    (("contrib/dnstap ") ""))
+                  ;; Delete bundled libraries.
                   (with-directory-excursion "src/contrib"
-                    (for-each delete-file-recursively
-                              (list "dnstap" "lmdb")))
+                    (delete-file-recursively "lmdb"))
                   #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("gnutls" ,gnutls)
+     `(("fstrm" ,fstrm)
+       ("gnutls" ,gnutls)
        ("jansson" ,jansson)
        ("libcap-ng" ,libcap-ng)
        ("libedit" ,libedit)
@@ -516,6 +512,7 @@ Extensions} (DNSSEC).")
        ("lmdb" ,lmdb)
        ("ncurses" ,ncurses)
        ("nettle" ,nettle)
+       ("protobuf-c" ,protobuf-c)
 
        ;; For ‘pykeymgr’, needed to migrate keys from versions <= 2.4.
        ("python" ,python-2)
@@ -548,6 +545,7 @@ Extensions} (DNSSEC).")
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
              "--with-module-rosedb=yes" ; serve static records from a database
+             "--with-module-dnstap=yes" ; allow detailed query logging
              (string-append "--with-bash-completions="
                             (assoc-ref %outputs "out")
                             "/etc/bash_completion.d"))))
@@ -560,6 +558,11 @@ number of programming techniques to improve speed.  For example, the responder
 is completely lock-free, resulting in a very high response rate.  Other features
 include automatic @dfn{DNS Security Extensions} (DNSSEC) signing, dynamic record
 synthesis, and on-the-fly re-configuration.")
-    (license (list license:expat        ; src/contrib/{hat-trie,murmurhash3}
-                   license:lgpl2.0+     ; parts of scr/contrib/ucw
-                   license:gpl3+))))    ; everything else
+    (license
+     (list
+      ;; src/contrib/{hat-trie,murmurhash3,openbsd},
+      ;; src/dnssec/contrib/vpool.[ch], and parts of libtap/ are ‘MIT’ (expat).
+      license:expat
+      license:lgpl2.0+              ; parts of scr/contrib/ucw
+      license:public-domain         ; src/contrib/fnv and possibly murmurhash3
+      license:gpl3+))))             ; everything else

@@ -30,6 +30,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bootloaders)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages cryptsetup)
@@ -187,13 +188,13 @@ the user's target storage device rather than on the RAM disk."
 (define %installation-services
   ;; List of services of the installation system.
   (let ((motd (plain-file "motd" "
-Welcome to the installation of the Guix System Distribution!
+\x1b[1;37mWelcome to the installation of the Guix System Distribution!\x1b[0m
 
-There is NO WARRANTY, to the extent permitted by law.  In particular, you may
+\x1b[2mThere is NO WARRANTY, to the extent permitted by law.  In particular, you may
 LOSE ALL YOUR DATA as a side effect of the installation process.  Furthermore,
 it is 'beta' software, so it may contain bugs.
 
-You have been warned.  Thanks for being so brave.
+You have been warned.  Thanks for being so brave.\x1b[0m
 ")))
     (define (normal-tty tty)
       (mingetty-service (mingetty-configuration (tty tty)
@@ -244,10 +245,12 @@ You have been warned.  Thanks for being so brave.
           ;; since it takes the installation directory as an argument.
           (cow-store-service)
 
-          ;; Install Unicode support and a suitable font.
+          ;; Install Unicode support and a suitable font.  Use a font that
+          ;; doesn't have more than 256 glyphs so that we can use colors with
+          ;; varying brightness levels (see note in setfont(8)).
           (service console-font-service-type
                    (map (lambda (tty)
-                          (cons tty %default-console-font))
+                          (cons tty "lat9u-16"))
                         '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
 
           ;; To facilitate copy/paste.
@@ -275,15 +278,21 @@ You have been warned.  Thanks for being so brave.
                                               "/bin/sh"))))
 
           ;; Keep a reference to BARE-BONES-OS to make sure it can be
-          ;; installed without downloading/building anything.
-          (service gc-root-service-type (list bare-bones-os)))))
+          ;; installed without downloading/building anything.  Also keep the
+          ;; things needed by 'profile-derivation' to minimize the amount of
+          ;; download.
+          (service gc-root-service-type
+                   (list bare-bones-os
+                         glibc-utf8-locales
+                         texinfo
+                         (canonical-package guile-2.2))))))
 
 (define %issue
   ;; Greeting.
   "
-This is an installation image of the GNU system.  Welcome.
+\x1b[1;37mThis is an installation image of the GNU system.  Welcome.\x1b[0m
 
-Use Alt-F2 for documentation.
+\x1b[1;33mUse Alt-F2 for documentation.\x1b[0m
 ")
 
 (define installation-os

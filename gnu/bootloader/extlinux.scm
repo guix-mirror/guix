@@ -53,7 +53,7 @@ corresponding to old generations of the system."
   APPEND ~a
 ~%"
                 #$label #$label
-                #$kernel #$kernel #$initrd
+                #$kernel (dirname #$kernel) #$initrd
                 (string-join (list #$@kernel-arguments)))))
 
   (define builder
@@ -85,14 +85,6 @@ TIMEOUT ~a~%"
 ;;; Install procedures.
 ;;;
 
-(define dd
-  #~(lambda (bs count if of)
-      (zero? (system* "dd"
-                      (string-append "bs=" (number->string bs))
-                      (string-append "count=" (number->string count))
-                      (string-append "if=" if)
-                      (string-append "of=" of)))))
-
 (define (install-extlinux mbr)
   #~(lambda (bootloader device mount-point)
       (let ((extlinux (string-append bootloader "/sbin/extlinux"))
@@ -101,9 +93,15 @@ TIMEOUT ~a~%"
         (for-each (lambda (file)
                     (install-file file install-dir))
                   (find-files syslinux-dir "\\.c32$"))
-
-        (unless (and (zero? (system* extlinux "--install" install-dir))
-                     (#$dd 440 1 (string-append syslinux-dir "/" #$mbr) device))
+        (unless
+            (and (zero? (system* extlinux "--install" install-dir))
+                 (call-with-input-file (string-append syslinux-dir "/" #$mbr)
+                   (lambda (input)
+                     (let ((bv (get-bytevector-n input 440)))
+                       (call-with-output-file device
+                         (lambda (output)
+                           (put-bytevector output bv))
+                         #:binary #t)))))
           (error "failed to install SYSLINUX")))))
 
 (define install-extlinux-mbr

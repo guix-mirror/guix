@@ -10,9 +10,9 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -67,6 +67,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system r)
+  #:use-module (guix build-system scons)
   #:use-module (srfi srfi-1))
 
 (define-public libpng
@@ -207,25 +208,24 @@ in-memory raw vectors.")
     ;; Any of these GPL versions.
     (license (list license:gpl2 license:gpl3))))
 
-(define-public pngcrunch
+(define-public pngcrush
   (package
-   (name "pngcrunch")
-   (version "1.8.11")
+   (name "pngcrush")
+   (version "1.8.13")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/pmt/pngcrush/"
-                                version "/pngcrush-" version ".tar.xz"))
+                                version "/pngcrush-" version "-nolib.tar.xz"))
             (sha256 (base32
-                     "1c7m316i91jp3h1dj1ppppdv6zilm2njk1wrpqy2zj0fcll06lwd"))))
+                     "0l43c59d6v9l0g07z3q3ywhb8xb3vz74llv3mna0izk9bj6aqkiv"))))
    (build-system gnu-build-system)
    (arguments
-    '(#:make-flags '("-f" "Makefile-nolib")
-      #:tests? #f ; no check target
+    '(#:tests? #f ; no check target
       #:phases
       (modify-phases %standard-phases
         (replace 'configure
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (substitute* "Makefile-nolib"
+            (substitute* "Makefile"
               (("^(PNG(INC|LIB) = )/usr/local/" line vardef)
                (string-append vardef (assoc-ref inputs "libpng") "/"))
               (("^(Z(INC|LIB) = )/usr/local/" line vardef)
@@ -236,11 +236,15 @@ in-memory raw vectors.")
    (inputs
     `(("libpng" ,libpng)
       ("zlib" , zlib)))
-   (home-page "https://pmt.sourceforge.net/pngcrush")
+   (home-page "https://pmt.sourceforge.io/pngcrush")
    (synopsis "Utility to compress PNG files")
    (description "pngcrusqh is an optimizer for PNG (Portable Network Graphics)
 files.  It can compress them as much as 40% losslessly.")
    (license license:zlib)))
+
+(define-public pngcrunch
+  ;; This package used to be wrongfully name "pngcrunch".
+  (deprecated-package "pngcrunch" pngcrush))
 
 (define-public libjpeg
   (package
@@ -787,7 +791,7 @@ multi-dimensional image processing.")
 (define-public libwebp
   (package
     (name "libwebp")
-    (version "0.6.0")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
@@ -796,7 +800,7 @@ multi-dimensional image processing.")
              ".tar.gz"))
        (sha256
         (base32
-         "0h1brwkyxc7lb8lc53aacdks5vc1y9hzngqi41gg7y6l56912a69"))))
+         "1ayq2zq0zbgf5yizbm32zh7p1vb8kibw74am6am1n5cz5mw3ql06"))))
     (build-system gnu-build-system)
     (inputs
      `(("freeglut" ,freeglut)
@@ -1040,10 +1044,9 @@ differences in file encoding, image quality, and other small variations.")
     (home-page "http://steghide.sourceforge.net")
     (synopsis "Image and audio steganography")
     (description
-     "Steghide is a steganography program that is able to hide data in various
-kinds of image- and audio-files.  The color- respectivly sample-frequencies
-are not changed thus making the embedding resistant against first-order
-statistical tests.")
+     "Steghide is a program to hide data in various kinds of image and audio
+files (known as @dfn{steganography}).  Neither color nor sample frequencies are
+changed, making the embedding resistant against first-order statistical tests.")
     (license license:gpl2+)))
 
 (define-public stb-image-for-extempore
@@ -1082,6 +1085,7 @@ installed as @code{stb_image}.")
        (method url-fetch)
        (uri (string-append "http://prdownloads.sourceforge.net/optipng/optipng-"
                            version ".tar.gz"))
+       (patches (search-patches "optipng-CVE-2017-1000229.patch"))
        (sha256
         (base32
          "105yk5qykvhiahzag67gm36s2kplxf6qn5hay02md0nkrcgn6w28"))))
@@ -1191,33 +1195,26 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
               (sha256
                (base32
                 "0mxvxk15xhk2i5vfavjhnkk4j3bnii0gpf8di14rlbpq070hd5rs"))))
-    (build-system python-build-system)
+    (build-system scons-build-system)
     (native-inputs
      `(("boost" ,boost)
        ("gettext" ,gnu-gettext)
-       ("pkg-config" ,pkg-config)
-       ("scons" ,scons)))
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("expat" ,expat)
        ("gtk2" ,gtk+-2)
        ("lua" ,lua-5.2)))
     (arguments
      `(#:tests? #f
+       #:scons ,scons-python2
+       #:scons-flags (list (string-append "DESTDIR=" %output))
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'fix-lua-reference
            (lambda _
              (substitute* "SConscript"
                (("lua5.2") "lua-5.2"))
-             #t))
-         (replace 'build
-           (lambda _
-             (zero? (system* "scons"))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((dest (assoc-ref outputs "out")))
-               (zero? (system* "scons" "install"
-                               (string-append "DESTDIR=" dest)))))))))
+             #t)))))
     (home-page "http://www.gpick.org/")
     (synopsis "Color picker")
     (description "Gpick is an advanced color picker and palette editing tool.")

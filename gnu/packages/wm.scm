@@ -785,8 +785,8 @@ It is inspired by Xmonad and dwm.  Its major features include:
 @item Quick launch menu
 @item Many screen layouts possible with a few simple key strokes
 @item Move/resize floating windows
-@item Extended Window Manager Hints (EWMH) support
-@item Configureable tiling
+@item Extended Window Manager Hints (@dfn{EWMH}) support
+@item Configurable tiling
 @item Adjustable tile gap allows for a true one pixel border
 @item Customizable colors and border width
 @end itemize\n")

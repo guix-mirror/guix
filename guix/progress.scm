@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
+;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,8 +31,13 @@
             progress-reporter?
             call-with-progress-reporter
 
+            start-progress-reporter!
+            stop-progress-reporter!
+            progress-reporter-report!
+
             progress-reporter/silent
             progress-reporter/file
+            progress-reporter/bar
 
             byte-count->string
             current-terminal-columns
@@ -57,6 +63,24 @@ stopped."
   (match reporter
     (($ <progress-reporter> start report stop)
      (dynamic-wind start (lambda () (proc report)) stop))))
+
+(define (start-progress-reporter! reporter)
+  "Low-level procedure to start REPORTER."
+  (match reporter
+    (($ <progress-reporter> start report stop)
+     (start))))
+
+(define (progress-reporter-report! reporter)
+  "Low-level procedure to lead REPORTER to emit a report."
+  (match reporter
+    (($ <progress-reporter> start report stop)
+     (report))))
+
+(define (stop-progress-reporter! reporter)
+  "Low-level procedure to stop REPORTER."
+  (match reporter
+    (($ <progress-reporter> start report stop)
+     (stop))))
 
 (define progress-reporter/silent
   (make-progress-reporter noop noop noop))
@@ -146,12 +170,18 @@ INTERVAL (a time-duration object), otherwise does nothing and returns #f."
 (define* (progress-bar % #:optional (bar-width 20))
   "Return % as a string representing an ASCII-art progress bar.  The total
 width of the bar is BAR-WIDTH."
-  (let* ((fraction (/ % 100))
+  (let* ((bar-width (max 3 (- bar-width 2)))
+         (fraction (/ % 100))
          (filled   (inexact->exact (floor (* fraction bar-width))))
          (empty    (- bar-width filled)))
     (format #f "[~a~a]"
             (make-string filled #\#)
             (make-string empty #\space))))
+
+(define (erase-in-line port)
+  "Write an ANSI erase-in-line sequence to PORT to erase the whole line and
+move the cursor to the beginning of the line."
+  (display "\r\x1b[K" port))
 
 (define* (progress-reporter/file file size
                                  #:optional (log-port (current-output-port))
@@ -176,7 +206,7 @@ ABBREVIATION used to shorten FILE for display."
                                      (byte-count->string throughput)
                                      (seconds->string elapsed)
                                      (progress-bar %) %)))
-            (display "\r\x1b[K" log-port)
+            (erase-in-line log-port)
             (display (string-pad-middle left right
                                         (current-terminal-columns))
                      log-port)
@@ -188,7 +218,7 @@ ABBREVIATION used to shorten FILE for display."
                                      (byte-count->string throughput)
                                      (seconds->string elapsed)
                                      (byte-count->string transferred))))
-            (display "\r\x1b[K" log-port)
+            (erase-in-line log-port)
             (display (string-pad-middle left right
                                         (current-terminal-columns))
                      log-port)
@@ -205,6 +235,39 @@ ABBREVIATION used to shorten FILE for display."
           (rate-limited-render))))
      ;; Don't miss the last report.
      (stop render))))
+
+(define* (progress-reporter/bar total
+                                #:optional
+                                (prefix "")
+                                (port (current-error-port)))
+  "Return a reporter that shows a progress bar every time one of the TOTAL
+tasks is performed.  Write PREFIX at the beginning of the line."
+  (define done 0)
+
+  (define (report-progress)
+    (set! done (+ 1 done))
+    (unless (> done total)
+      (let* ((ratio (* 100. (/ done total))))
+        (erase-in-line port)
+        (if (string-null? prefix)
+            (display (progress-bar ratio (current-terminal-columns)) port)
+            (let ((width (- (current-terminal-columns)
+                            (string-length prefix) 3)))
+              (display prefix port)
+              (display "  " port)
+              (display (progress-bar ratio width) port)))
+        (force-output port))))
+
+  (progress-reporter
+   (start (lambda ()
+            (set! done 0)))
+   (report report-progress)
+   (stop (lambda ()
+           (erase-in-line port)
+           (unless (string-null? prefix)
+             (display prefix port)
+             (newline port))
+           (force-output port)))))
 
 ;; TODO: replace '(@ (guix build utils) dump-port))'.
 (define* (dump-port* in out

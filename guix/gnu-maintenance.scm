@@ -335,9 +335,6 @@ return the corresponding signature URL, or #f it signatures are unavailable."
     (if (version>? (upstream-source-version a) (upstream-source-version b))
         a b))
 
-  (define contains-digit?
-    (cut string-any char-set:digit <>))
-
   (define patch-directory-name?
     ;; Return #t for patch directory names such as 'bash-4.2-patches'.
     (cut string-suffix? "patches" <>))
@@ -361,8 +358,7 @@ return the corresponding signature URL, or #f it signatures are unavailable."
              (result    #f))
     (let* ((entries (ftp-list conn directory))
 
-           ;; Filter out sub-directories that do not contain digits---e.g.,
-           ;; /gnuzilla/lang and /gnupg/patches.  Filter out "w32"
+           ;; Filter out things like /gnupg/patches.  Filter out "w32"
            ;; directories as found on ftp.gnutls.org.
            (subdirs (filter-map (match-lambda
                                   (((? patch-directory-name? dir)
@@ -370,8 +366,8 @@ return the corresponding signature URL, or #f it signatures are unavailable."
                                    #f)
                                   (("w32" 'directory . _)
                                    #f)
-                                  (((? contains-digit? dir) 'directory . _)
-                                   (and (keep-file? dir) dir))
+                                  ((directory 'directory . _)
+                                   directory)
                                   (_ #f))
                                 entries))
 

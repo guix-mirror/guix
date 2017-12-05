@@ -798,7 +798,7 @@ audio/video codec library.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "2.2.6")
+    (version "2.2.8")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -806,7 +806,7 @@ audio/video codec library.")
                    version "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "1a22b913p2227ljz89c4fgjlyln5gcz8z58w32r0wh4srnnd60y4"))))
+               "1v32snw46rkgbdqdy3dssl2y13i8p2cr1cw1i18r6vdmiy24dw4v"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("git" ,git) ; needed for a test
@@ -1142,7 +1142,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.11.15")
+    (version "2017.12.02")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1150,7 +1150,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1s0c0jnil4rnymj2nzjjv75p4lmk4h67kvxvjv2azknhmax7gcc8"))))
+                "1qf5gz00cnxzab3cwh9kxzhs08mddm0nwvb7j5z5xxzhi6wkslha"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1259,7 +1259,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.939")
+    (version "0.4.995")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1268,11 +1268,10 @@ other site that youtube-dl supports.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1amkdfnjn2j4k7jlr7qw9mg5whd7dy6z1flh5cd0n9v3d4m7k0c5"))))
+                "0i89mn8v8znn3csgzfg8dz5vcn3ld66xj02az6137bljhgivjxra"))))
     (build-system python-build-system)
     (arguments
-     ;; no tests
-     '(#:tests? #f))
+     '(#:tests? #f))                    ; no tests
     (inputs
      `(("ffmpeg" ,ffmpeg)))
     (synopsis "Download videos, audios, or images from Web sites")

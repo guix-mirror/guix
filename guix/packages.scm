@@ -609,6 +609,7 @@ specifies modules in scope when evaluating SNIPPET."
       (gexp->derivation name build
                         #:graft? #f
                         #:system system
+                        #:deprecation-warnings #t ;to avoid a rebuild
                         #:guile-for-build guile-for-build))))
 
 (define (transitive-inputs inputs)

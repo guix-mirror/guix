@@ -1116,27 +1116,21 @@ Python 3.3+.")
 (define-public python-pyicu
   (package
     (name "python-pyicu")
-    (version "1.9.5")
+    (version "1.9.8")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "PyICU" version))
       (sha256
        (base32
-        "16rmxy9y0qhqqna2v49i7nzwm09as699rbyvh4raw7w602w55c3k"))))
+        "05nz4p2dpkhwj6y9kik24xbvmfxji39nl0xw0sc0nvp9fgzf6xnd"))))
     (build-system python-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'delete-failing-test
-           (lambda _
-             ;; XXX: These tests require locales that are unavailable
-             ;; in the build environment.
-             (delete-file "test/test_DateTimeParserGenerator.py")
-             #t)))))
     (inputs
      `(("icu4c" ,icu4c)))
-    (home-page "http://pyicu.osafoundation.org/")
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/ovalhub/pyicu")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
@@ -1400,19 +1394,17 @@ existing ones.")
 (define-public scons
   (package
     (name "scons")
-    (version "2.5.1")
+    (version "3.0.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/scons/scons/" version
                                  "/scons-" version ".tar.gz"))
              (sha256
               (base32
-               "1wji1z9jdkhnmm99apx6fhld9cs52rr56aigniyrcsmlwy52298b"))))
+               "0wzid419mlwqw9llrg8gsx4nkzhqy16m4m40r0xnh6cwscw5wir4"))))
     (build-system python-build-system)
     (arguments
-     ;; With Python 3.x, fails to build with a syntax error.
-     `(#:python ,python-2
-       #:use-setuptools? #f                ; still relies on distutils
+     `(#:use-setuptools? #f                ; still relies on distutils
        #:tests? #f))                       ; no 'python setup.py test' command
     (home-page "http://scons.org/")
     (synopsis "Software construction tool written in Python")
@@ -1423,6 +1415,11 @@ functionality similar to autoconf/automake and compiler caches such as ccache.
 In short, SCons is an easier, more reliable and faster way to build
 software.")
     (license license:x11)))
+
+(define-public scons-python2
+  (package
+    (inherit (package-with-python2 scons))
+    (name "scons-python2")))
 
 (define-public python-extras
   (package
@@ -8983,14 +8980,14 @@ collections of data.")
 (define-public python-prompt-toolkit
  (package
   (name "python-prompt-toolkit")
-  (version "1.0.9")
+  (version "1.0.15")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "prompt_toolkit" version ".tar.gz"))
       (sha256
         (base32
-          "172r15k9kwdw2lnajvpz1632dd16nqz1kcal1p0lq5ywdarj6rfd"))))
+          "05v9h5nydljwpj5nm8n804ms0glajwfy1zagrzqrg91wk3qqi1c5"))))
   (build-system python-build-system)
   (arguments
    '(#:tests? #f)) ; The test suite uses some Windows-specific data types.
@@ -11933,3 +11930,87 @@ services.")
 
 (define-public python2-jsonrpclib-pelix
   (package-with-python2 python-jsonrpclib-pelix))
+
+(define-public python-setuptools-scm-git-archive
+  (package
+    (name "python-setuptools-scm-git-archive")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "setuptools_scm_git_archive" version))
+       (sha256
+        (base32
+         "1nii1sz5jq75ilf18bjnr11l9rz1lvdmyk66bxl7q90qan85yhjj"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest-3.0" ,python-pytest-3.0)))
+    (propagated-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/Changaco/setuptools_scm_git_archive/")
+    (synopsis "Setuptools_scm plugin for git archives")
+    (description
+     "The setuptools_scm_git_archive package is a plugin to
+setuptools_scm, which supports obtaining versions from git archives that
+belong to tagged versions.")
+    (license license:expat)))
+
+(define-public python2-setuptools-scm-git-archive
+  (package-with-python2 python-setuptools-scm-git-archive))
+
+(define-public python-pyclipper
+  (package
+    (name "python-pyclipper")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyclipper" version ".zip"))
+       (sha256
+        (base32
+         "1zpmwv3bya3j984y5cf9x9d5108kf6mxldcba68wiq0frv5qrssw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)); 8 Tests fail, 37 succeed
+    (propagated-inputs
+     `(("python-setuptools-scm-git-archive" ,python-setuptools-scm-git-archive)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://github.com/greginvm/pyclipper")
+    (synopsis "Wrapper for Angus Johnson's Clipper library")
+    (description
+     "Pyclipper is a Cython wrapper for the C++ translation of the
+  Angus Johnson's polygon clipping Clipper library (ver. 6.2.1).")
+    (license license:expat)))
+
+(define-public python2-pyclipper
+  (package-with-python2 python-pyclipper))
+
+(define-public python2-booleanoperations
+  (package
+    (name "python2-booleanoperations")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "booleanOperations" version ".zip"))
+       (sha256
+        (base32
+         "1hw42fazdpvsn77glx96hwsj9l17mvx37sc5707s08y5w6fx16mn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python2-pytest-3.0" ,python2-pytest-3.0)
+       ("python2-pytest-runner" ,python2-pytest-runner)))
+    (propagated-inputs
+     `(("python-fonttools" ,python2-fonttools)
+       ("python-pyclipper" ,python2-pyclipper)
+       ("python-ufolib" ,python2-ufolib)))
+    (home-page "https://github.com/typemytype/booleanOperations")
+    (synopsis "Boolean operations on paths")
+    (description
+     "BooleanOperations provides a Python library that enables
+boolean operations on paths.")
+    (license license:expat)))

@@ -1,0 +1,211 @@
+Two patches here backporting fixes from Emacs master.
+
+Upstream status: emailed first patch to latest committer, Robin Templeton
+<robin@igalia.com>, no response.
+
+From dfcb3b6ff318e47b84a28cfc43f50bec42fa3570 Mon Sep 17 00:00:00 2001
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Date: Tue, 7 Nov 2017 18:48:03 +0100
+Subject: [PATCH 1/2] backport: Port jpeg configuration to Solaris 10 with Sun
+ C.
+
+* configure.ac: Check for jpeglib 6b by trying to link it, instead
+of relying on cpp magic that has problems in practice.  Check for
+both jpeglib.h and jerror.h features.  Remove special case for
+mingw32, which should no longer be needed (and if it were needed,
+should now be addressable by hotwiring emacs_cv_jpeglib).
+Fixes: bug#20332
+
+    From fdf532b9c915ad9ba72155646d29d0f530fd72ec Mon Sep 17 00:00:00 2001
+    From: Paul Eggert <address@hidden>
+    Date: Wed, 15 Apr 2015 18:30:01 -0700
+    Subject: [PATCH] Port jpeg configuration to Solaris 10 with Sun C.
+
+    * configure.ac: Check for jpeglib 6b by trying to link it, instead
+    of relying on cpp magic that has problems in practice.  Check for
+    both jpeglib.h and jerror.h features.  Remove special case for
+    mingw32, which should no longer be needed (and if it were needed,
+    should now be addressable by hotwiring emacs_cv_jpeglib).
+    Fixes: bug#20332
+---
+ configure.ac | 72 ++++++++++++++++++++++++++++--------------------------------
+ 1 file changed, 34 insertions(+), 38 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 2445db4886..36fa8eb390 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -3014,44 +3014,40 @@ AC_SUBST(LIBXPM)
+ ### mingw32 doesn't use -ljpeg, since it loads the library dynamically.
+ HAVE_JPEG=no
+ LIBJPEG=
+-if test "${opsys}" = "mingw32"; then
+-  if test "${with_jpeg}" != "no"; then
+-    dnl Checking for jpeglib.h can lose because of a redefinition of
+-    dnl HAVE_STDLIB_H.
+-    AC_CHECK_HEADER(jerror.h, HAVE_JPEG=yes, HAVE_JPEG=no)
+-  fi
+-  AH_TEMPLATE(HAVE_JPEG, [Define to 1 if you have the jpeg library (-ljpeg).])dnl
+-  if test "${HAVE_JPEG}" = "yes"; then
+-    AC_DEFINE(HAVE_JPEG)
+-    AC_EGREP_CPP([version= *(6[2-9]|[7-9][0-9])],
+-        [#include <jpeglib.h>
+-	 version=JPEG_LIB_VERSION
+-],
+-        [AC_DEFINE(HAVE_JPEG)],
+-        [AC_MSG_WARN([libjpeg found, but not version 6b or later])
+-        HAVE_JPEG=no])
+-  fi
+-elif test "${HAVE_X11}" = "yes" || test "${HAVE_W32}" = "yes"; then
+-  if test "${with_jpeg}" != "no"; then
+-    dnl Checking for jpeglib.h can lose because of a redefinition of
+-    dnl  HAVE_STDLIB_H.
+-    AC_CHECK_HEADER(jerror.h,
+-      [AC_CHECK_LIB(jpeg, jpeg_destroy_compress, HAVE_JPEG=yes)])
+-  fi
+-
+-  AH_TEMPLATE(HAVE_JPEG, [Define to 1 if you have the jpeg library (-ljpeg).])dnl
+-  if test "${HAVE_JPEG}" = "yes"; then
+-    AC_DEFINE(HAVE_JPEG)
+-    AC_EGREP_CPP([version= *(6[2-9]|[7-9][0-9])],
+-	[#include <jpeglib.h>
+-	 version=JPEG_LIB_VERSION
+-],
+-	[AC_DEFINE(HAVE_JPEG)],
+-	[AC_MSG_WARN([libjpeg found, but not version 6b or later])
+-	HAVE_JPEG=no])
+-  fi
+-  if test "${HAVE_JPEG}" = "yes"; then
+-    LIBJPEG=-ljpeg
++if test "${with_jpeg}" != "no"; then
++  AC_CACHE_CHECK([for jpeglib 6b or later],
++    [emacs_cv_jpeglib],
++    [OLD_LIBS=$LIBS
++     for emacs_cv_jpeglib in yes -ljpeg no; do
++       case $emacs_cv_jpeglib in
++	 yes) ;;
++         no) break;;
++	 *) LIBS="$LIBS $emacs_cv_jpeglib";;
++       esac
++       AC_LINK_IFELSE(
++	 [AC_LANG_PROGRAM(
++	    [[#undef HAVE_STDLIB_H /* Avoid config.h/jpeglib.h collision.  */
++	      #include <stdio.h> /* jpeglib.h needs FILE and size_t.  */
++	      #include <jpeglib.h>
++	      #include <jerror.h>
++	      char verify[JPEG_LIB_VERSION < 62 ? -1 : 1];
++	      struct jpeg_decompress_struct cinfo;
++	    ]],
++	    [[
++	      jpeg_create_decompress (&cinfo);
++	      WARNMS (&cinfo, JWRN_JPEG_EOF);
++	      jpeg_destroy_decompress (&cinfo);
++	    ]])],
++	 [emacs_link_ok=yes],
++	 [emacs_link_ok=no])
++       LIBS=$OLD_LIBS
++       test $emacs_link_ok = yes && break
++     done])
++  if test "$emacs_cv_jpeglib" != no; then
++    HAVE_JPEG=yes
++    AC_DEFINE([HAVE_JPEG], 1,
++      [Define to 1 if you have the jpeg library (typically -ljpeg).])
++    test "$emacs_cv_jpeglib" != yes && LIBJPEG=$emacs_cv_jpeglib
+   fi
+ fi
+ AC_SUBST(LIBJPEG)
+-- 
+Jan Nieuwenhuizen <janneke@gnu.org> | GNU LilyPond http://lilypond.org
+Freelance IT http://JoyofSource.com | Avatar® http://AvatarAcademy.com
+
+From f761b92d520b72954be28ad66eb82d1a96c785fb Mon Sep 17 00:00:00 2001
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Date: Wed, 8 Nov 2017 14:05:43 +0100
+Subject: [PATCH 2/2] backport fix for #24065: calloc loop when compiling with
+ -O2.
+
+This patch fixes
+
+    EMACSLOADPATH= '../src/bootstrap-emacs' -batch --no-site-file --no-site-lisp -l autoload \
+       --eval "(setq generate-autoload-cookie \";;;###cal-autoload\")" \
+       --eval "(setq generated-autoload-file (expand-file-name
+    (unmsys--file-name
+    \"../../git-checkout/lisp/calendar/cal-loaddefs.el\")))" \
+       -f batch-update-autoloads ../../git-checkout/lisp/calendar
+    make[2]: *** [Makefile:466: ../../git-checkout/lisp/calendar/cal-loaddefs.el] Segmentation fault
+
+in gdb seen as
+
+    in calloc (nmemb=<error reading variable: DWARF-2 expression error:Loop detected (257).>, size=size@entry=1) at gmalloc.c:1510
+
+I did not find malloc-fixing commits from emacs master to cleanly
+cherry-pick, so this patch replaces the relevant part in configure
+(emacs 53da55b8cc45e76b836ebaadd23f46e92d25abce).
+
+* configure.ac: backport system_malloc/hybrid_malloc detection.
+---
+ configure.ac | 29 ++++++++++++++++++++++++++++-
+ 1 file changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 36fa8eb390..3cc1794f37 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1966,7 +1966,25 @@ case "$opsys" in
+   darwin|mingw32|sol2-10) system_malloc=yes ;;
+ esac
+ 
++hybrid_malloc=
++system_malloc=yes
++
++test "$CANNOT_DUMP" = yes ||
++case "$opsys" in
++  ## darwin ld insists on the use of malloc routines in the System framework.
++  darwin | mingw32 | nacl | sol2-10) ;;
++  cygwin) hybrid_malloc=yes
++          system_malloc= ;;
++  *) test "$ac_cv_func_sbrk" = yes && system_malloc=$emacs_cv_sanitize_address;;
++esac
++
++if test "${system_malloc}" != yes && test "${doug_lea_malloc}" != yes \
++   && test "${UNEXEC_OBJ}" = unexelf.o; then
++  hybrid_malloc=yes
++fi
++
+ GMALLOC_OBJ=
++HYBRID_MALLOC=
+ if test "${system_malloc}" = "yes"; then
+   AC_DEFINE([SYSTEM_MALLOC], 1,
+     [Define to 1 to use the system memory allocator, even if it is not
+@@ -1975,6 +1993,14 @@ if test "${system_malloc}" = "yes"; then
+   GNU_MALLOC_reason="
+     (The GNU allocators don't work with this system configuration.)"
+   VMLIMIT_OBJ=
++elif test "$hybrid_malloc" = yes; then
++  AC_DEFINE(HYBRID_MALLOC, 1,
++    [Define to use gmalloc before dumping and the system malloc after.])
++  HYBRID_MALLOC=1
++  GNU_MALLOC=no
++  GNU_MALLOC_reason=" (only before dumping)"
++  GMALLOC_OBJ=gmalloc.o
++  VMLIMIT_OBJ=
+ else
+   test "$doug_lea_malloc" != "yes" && GMALLOC_OBJ=gmalloc.o
+   VMLIMIT_OBJ=vm-limit.o
+@@ -1993,10 +2019,11 @@ else
+        of the main data segment.])
+   fi
+ fi
++AC_SUBST([HYBRID_MALLOC])
+ AC_SUBST(GMALLOC_OBJ)
+ AC_SUBST(VMLIMIT_OBJ)
+ 
+-if test "$doug_lea_malloc" = "yes" ; then
++if test "$doug_lea_malloc" = "yes" && test "$hybrid_malloc" != yes; then
+   if test "$GNU_MALLOC" = yes ; then
+     GNU_MALLOC_reason="
+       (Using Doug Lea's new malloc from the GNU C Library.)"
+-- 
+Jan Nieuwenhuizen <janneke@gnu.org> | GNU LilyPond http://lilypond.org
+Freelance IT http://JoyofSource.com | Avatar® http://AvatarAcademy.com
+

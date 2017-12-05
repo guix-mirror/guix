@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -26,9 +26,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
@@ -72,41 +74,29 @@ endpoints.")
             (uri (string-append "https://www.unix-ag.uni-kl.de/~massar/vpnc/vpnc-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "1128860lis89g1s21hqxvap2nq426c9j4bvgghncc1zj0ays7kj6"))
-            (patches (search-patches "vpnc-script.patch"))))
+                     "1128860lis89g1s21hqxvap2nq426c9j4bvgghncc1zj0ays7kj6"))))
    (build-system gnu-build-system)
    (inputs `(("libgcrypt" ,libgcrypt)
              ("perl" ,perl)
-
-             ;; The following packages provide commands that 'vpnc-script'
-             ;; expects.
-             ("net-tools" ,net-tools)             ;ifconfig, route
-             ("iproute2" ,iproute)))              ;ip
+             ("vpnc-scripts" ,vpnc-scripts)))
    (arguments
     `(#:tests? #f ; there is no check target
       #:phases
       (modify-phases %standard-phases
-        (replace 'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (substitute* "Makefile"
-                (("PREFIX=/usr/local") (string-append "PREFIX=" out)))
-              (substitute* "Makefile"
-                (("ETCDIR=/etc/vpnc") (string-append "ETCDIR=" out
-                                                     "/etc/vpnc"))))))
-        (add-after 'install 'wrap-vpnc-script
+        (add-after 'unpack 'use-store-paths
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; Wrap 'etc/vpnc/vpnc-script' so that it finds the commands it
-            ;; needs.  Assume coreutils/grep/sed are in $PATH.
-            (let ((out (assoc-ref outputs "out")))
-              (wrap-program (string-append out "/etc/vpnc/vpnc-script")
-                `("PATH" ":" prefix
-                  (,(string-append (assoc-ref inputs "net-tools")
-                                   "/sbin")
-                   ,(string-append (assoc-ref inputs "net-tools")
-                                   "/bin")
-                   ,(string-append (assoc-ref inputs "iproute2")
-                                   "/sbin"))))))))))
+            (let ((out          (assoc-ref outputs "out"))
+                  (vpnc-scripts (assoc-ref inputs  "vpnc-scripts")))
+              (substitute* "config.c"
+                (("/etc/vpnc/vpnc-script")
+                 (string-append vpnc-scripts "/etc/vpnc/vpnc-script")))
+              (substitute* "Makefile"
+                (("ETCDIR=.*")
+                 (string-append "ETCDIR=" out "/etc/vpnc\n"))
+                (("PREFIX=.*")
+                 (string-append "PREFIX=" out "\n")))
+              #t)))
+        (delete 'configure))))          ; no configure script
    (synopsis "Client for Cisco VPN concentrators")
    (description
     "vpnc is a VPN client compatible with Cisco's EasyVPN equipment.
@@ -117,6 +107,93 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
    (license license:gpl2+) ; some file are bsd-2, see COPYING
    (home-page "http://www.unix-ag.uni-kl.de/~massar/vpnc/")))
 
+(define-public vpnc-scripts
+  (let ((commit "6f87b0fe7b20d802a0747cc310217920047d58d3"))
+    (package
+      (name "vpnc-scripts")
+      (version (string-append "20161214." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri
+                 (git-reference
+                  (url "git://git.infradead.org/users/dwmw2/vpnc-scripts.git")
+                  (commit commit)))
+                (sha256
+                 (base32
+                  "0pa36w4wlyyvfb66cayhans99wsr2j5si2fvfr7ldfm512ajwn8h"))))
+      (build-system gnu-build-system)
+      (inputs `(("coreutils" ,coreutils)
+                ("grep" ,grep)
+                ("iproute2" ,iproute)    ; for ‘ip’
+                ("net-tools" ,net-tools) ; for ‘ifconfig’, ‘route’
+                ("sed" ,sed)
+                ("which" ,which)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'use-relative-paths
+             ;; Patch the scripts to work with and use relative paths.
+             (lambda* _
+               (for-each (lambda (script)
+                           (substitute* script
+                             (("^PATH=.*") "")
+                             (("(/usr|)/s?bin/") "")
+                             (("\\[ +-x +([^]]+) +\\]" _ command)
+                              (string-append "command -v >/dev/null 2>&1 "
+                                             command))))
+                         (find-files "." "^vpnc-script"))
+               #t))
+           (delete 'configure)          ; no configure script
+           (replace 'build
+             (lambda _
+               (zero? (system* "gcc" "-o" "netunshare" "netunshare.c"))))
+           (replace 'install
+             ;; There is no Makefile; manually install the relevant files.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (etc (string-append out "/etc/vpnc")))
+                 (for-each (lambda (file)
+                             (install-file file etc))
+                           (append (find-files "." "^vpnc-script")
+                                   (list "netunshare"
+                                         "xinetd.netns.conf")))
+                 #t)))
+           (add-after 'install 'wrap-scripts
+             ;; Wrap scripts with paths to their common hard dependencies.
+             ;; Optional dependencies will need to be installed by the user.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (for-each
+                  (lambda (script)
+                    (wrap-program script
+                      `("PATH" ":" prefix
+                        ,(map (lambda (name)
+                                (let ((input (assoc-ref inputs name)))
+                                  (string-append input "/bin:"
+                                                 input "/sbin")))
+                              (list "coreutils"
+                                    "grep"
+                                    "iproute2"
+                                    "net-tools"
+                                    "sed"
+                                    "which")))))
+                  (find-files (string-append out "/etc/vpnc/vpnc-script")
+                              "^vpnc-script"))))))
+         #:tests? #f))                  ; no tests
+      (home-page "http://git.infradead.org/users/dwmw2/vpnc-scripts.git")
+      (synopsis "Network configuration scripts for Cisco VPN clients")
+      (description
+       "This set of scripts configures routing and name services when invoked
+by the VPNC or OpenConnect Cisco @dfn{Virtual Private Network} (VPN) clients.
+
+The default @command{vpnc-script} automatically configures most common
+connections, and provides hooks for performing custom actions at various stages
+of the connection or disconnection process.
+
+Alternative scripts are provided for more complicated set-ups, or to serve as an
+example for writing your own.  For example, @command{vpnc-script-sshd} contains
+the entire VPN in a network namespace accessible only through SSH.")
+      (license license:gpl2+))))
 
 (define-public openconnect
   (package
@@ -132,7 +209,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
    (inputs
     `(("libxml2" ,libxml2)
       ("gnutls" ,gnutls)
-      ("vpnc" ,vpnc)
+      ("vpnc-scripts" ,vpnc-scripts)
       ("zlib" ,zlib)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
@@ -140,7 +217,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
    (arguments
     `(#:configure-flags
       `(,(string-append "--with-vpnc-script="
-                        (assoc-ref %build-inputs "vpnc")
+                        (assoc-ref %build-inputs "vpnc-scripts")
                         "/etc/vpnc/vpnc-script"))))
    (synopsis "Client for Cisco VPN")
    (description

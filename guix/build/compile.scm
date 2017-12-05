@@ -163,7 +163,11 @@ files are for HOST, a GNU triplet such as \"x86_64-linux-gnu\"."
       ;; compile files in parallel.
       (compile #f)
 
-      (n-par-for-each workers build files)
+      ;; XXX: Don't use too many workers to work around the insane memory
+      ;; requirements of the compiler in Guile 2.2.2:
+      ;; <https://lists.gnu.org/archive/html/guile-devel/2017-05/msg00033.html>.
+      (n-par-for-each (min workers 8) build files)
+
       (unless (zero? total)
         (report-compilation #f total total)))))
 

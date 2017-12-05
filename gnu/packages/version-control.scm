@@ -98,6 +98,7 @@
       (uri (string-append "https://launchpad.net/bzr/"
                           (version-major+minor version) "/" version
                           "/+download/bzr-" version ".tar.gz"))
+      (patches (search-patches "bazaar-CVE-2017-14176.patch"))
       (sha256
        (base32
         "1cysix5k3wa6y7jjck3ckq3abls4gvz570s0v0hxv805nwki4i8d"))))
@@ -130,14 +131,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
    ;; to be updated as well.
-   (version "2.15.0")
+   (version "2.15.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0siyxg1ppg6szjp8xp37zfq1fj97kbdxpigi3asmidqhkx41cw8h"))))
+              "0p04linqdywdf7m1hqa904fzqvgzplsxlzdqrn96j1j5gpyr174r"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -149,9 +150,8 @@ as well as the classic centralized workflow.")
                 "mirror://kernel.org/software/scm/git/git-manpages-"
                 version ".tar.xz"))
           (sha256
-
            (base32
-            "0xqwfg9xz5nw3ifaki87ahbz0xk5zmkgqs0ig357pxwh2i20kb92"))))))
+            "0mi609plzqqwx271hr9m5j4syggqx255bbzml6ca9j5fadywysvc"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -187,6 +187,9 @@ as well as the classic centralized workflow.")
                      ;; nars; see <https://bugs.gnu.org/21949>.
                      "NO_INSTALL_HARDLINKS=indeed")
       #:test-target "test"
+
+      ;; Tests fail randomly when parallel: <https://bugs.gnu.org/29512>.
+      #:parallel-tests? #f
 
       ;; The explicit --with-tcltk forces the build system to hardcode the
       ;; absolute file name to 'wish'.
@@ -243,6 +246,13 @@ as well as the classic centralized workflow.")
             ;; FIXME: Some hooks fail with "basename: command not found".
             ;; See 't/trash directory.t9164.../svn-hook.log'.
             (delete-file "t/t9164-git-svn-dcommit-concurrent.sh")
+
+            ;; XXX: These tests fail intermittently for unknown reasons:
+            ;; <https://bugs.gnu.org/29546>.
+            (for-each delete-file
+                      '("t/t9128-git-svn-cmd-branch.sh"
+                        "t/t9167-git-svn-cmd-branch-subproject.sh"
+                        "t/t9141-git-svn-multiple-branches.sh"))
             #t))
         (add-after 'install 'install-shell-completion
           (lambda* (#:key outputs #:allow-other-keys)
@@ -370,7 +380,11 @@ everything from small to very large projects with speed and efficiency.")
               (sha256
                (base32
                 "1b3figbhp5l83vd37vq6j2narrq4yl9pfw6mw0px0dzb1hz3jqka"))
-              (patches (search-patches "libgit2-0.25.1-mtime-0.patch"))))
+              (patches (search-patches "libgit2-0.25.1-mtime-0.patch"))
+
+              ;; Remove bundled software.
+              (snippet '(delete-file-recursively "deps"))
+              (modules '((guix build utils)))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -390,7 +404,7 @@ everything from small to very large projects with speed and efficiency.")
            (lambda _ (zero? (system* "./libgit2_clar" "-v" "-Q")))))))
     (inputs
      `(("libssh2" ,libssh2)
-       ("libcurl" ,curl)
+       ("http-parser" ,http-parser)
        ("python" ,python-wrapper)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

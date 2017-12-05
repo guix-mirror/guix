@@ -580,6 +580,92 @@ utilizing the art assets from the @code{SuperTux} project.")
                    license:gpl2+
                    license:gpl3+))))
 
+(define-public roguebox-adventures
+  (let ((commit "19a2c340b34d5b4e7cc89118c7aedc058babbd93")
+        (revision "1"))
+      (package
+        (name "roguebox-adventures")
+        (version (git-version "2.1.2" revision commit))
+        (source
+         (origin
+           (method git-fetch)
+           (uri
+            (git-reference
+             (url "https://git.postactiv.com/themightyglider/RogueBoxAdventures.git")
+                 (commit commit)))
+           (file-name (git-file-name name version))
+           (sha256
+            (base32
+             "0afmg8fjdcs3sqdp5rc7irgr7riil8jwysfjn1imfxslf1wcx5ah"))))
+        (build-system python-build-system)
+        (arguments
+         '(#:tests? #f ; no check target
+           #:phases
+           (modify-phases %standard-phases
+             ;; no setup.py script
+             (replace 'build
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (data (string-append
+                               out "/share/games/roguebox-adventures")))
+                   ;; Use the correct data directory.
+                   (substitute* '("main.py" "LIB/getch.py" "LIB/getch_gcwz.py")
+                     (("basic_path + os\\.sep + 'DATA'")
+                      (string-append "'" data "'"))
+                     (("^basic_path.*$")
+                      (string-append "basic_path ='" data "'\n")))
+                   (substitute* "LIB/gra_files.py"
+                     (("basic_path = b_path\\.replace\\('/LIB',''\\)")
+                      (string-append "basic_path ='" data "'\n")))
+
+                   ;; The game must save in the user's home directory because
+                   ;; the store is read-only.
+                   (substitute* "main.py"
+                     (("home_save = False") "home_save = True")
+                     (("'icon_small.png'")
+                      (string-append "'" data "/icon_small.png'"))))
+                 #t))
+             (replace 'install
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (bin (string-append out "/bin"))
+                        (data (string-append
+                               out "/share/games/roguebox-adventures"))
+                        (doc (string-append
+                              out "/share/doc/roguebox-adventures")))
+                   (mkdir-p bin)
+                   (mkdir-p doc)
+                   (copy-file "main.py"
+                              (string-append bin "/roguebox-adventures"))
+                   (chmod (string-append bin "/roguebox-adventures") #o555)
+
+                   (for-each (lambda (file)
+                               (copy-recursively file
+                                                 (string-append data "/" file)))
+                             '("AUDIO" "FONT" "GRAPHIC" "LIB" "LICENSE"
+                               "icon_big.png" "icon_small.png"))
+
+                   (copy-recursively "DOC" doc)
+
+                   (wrap-program (string-append bin "/roguebox-adventures")
+                     `("PYTHONPATH" ":" prefix (,(string-append data "/LIB")))))
+                 #t)))))
+        (inputs
+         `(("python-pygame" ,python-pygame)
+           ("python-tmx" ,python-tmx)))
+        (home-page "https://rogueboxadventures.tuxfamily.org")
+        (synopsis "A classical roguelike/sandbox game")
+        (description
+         "RogueBox Adventures is a graphical roguelike with strong influences
+from sandbox games like Minecraft or Terraria.  The main idea of RogueBox
+Adventures is to offer the player a kind of roguelike toy-world.  This world
+can be explored and changed freely.")
+        ;; The GPL3+ is for code, the rest are for art.
+        (license (list license:cc0
+                       license:cc-by3.0
+                       license:gpl3+
+                       license:silofl1.1)))))
+
 (define-public xshogi
   (package
     (name "xshogi")
@@ -722,7 +808,7 @@ fight Morgoth, the Lord of Darkness.")
        (patches (search-patches "pingus-sdl-libs-config.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("scons" ,scons)))
+                     ("scons-python2" ,scons-python2)))
     (inputs `(("sdl" ,sdl)
               ("sdl-image" ,sdl-image)
               ("sdl-mixer" ,sdl-mixer)
@@ -731,15 +817,11 @@ fight Morgoth, the Lord of Darkness.")
               ("libpng" ,libpng)
               ("boost" ,boost)))
     (arguments
-     '(#:tests? #f                      ; no check target
+     '(#:make-flags (list (string-append "PREFIX=" %output))
+       #:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-        (replace 'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (zero? (system* "make" "install"
-                            (string-append "PREFIX="
-                                           (assoc-ref outputs "out")))))))))
+         (delete 'configure)))) ; no configure script
     (home-page "http://pingus.seul.org/welcome.html")
     (synopsis "Lemmings clone")
     (description
@@ -1346,7 +1428,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.6.7")
+    (version "1.6.9")
     (source
      (origin
        (method url-fetch)
@@ -1354,7 +1436,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "13vp5skf95a4fla3dwdk2v48dgnmrvimvp9fgpr1vppb7wfjhbr1"))))
+        (base32 "1d3qbph59d43k10mprqm8h23143yji5mwjkciwynwa4xvsgydpb6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -1461,7 +1543,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
 (define-public supertuxkart
   (package
     (name "supertuxkart")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
@@ -1469,8 +1551,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
                            version "/supertuxkart-" version "-src.tar.xz"))
        (sha256
         (base32
-         "10l2ljmd7mv8f9ylarqmxxryicdnph2qkm3g5maxnsm2k2q0n20b"))
-       (patches (search-patches "supertuxkart-angelscript-ftbfs.patch"))
+         "1c4w47ibj87lgwiqygq8qi7jiz6gklj4dwf5bs5zk15s0rqlw0fq"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
@@ -1495,6 +1576,8 @@ This game is based on the GPL version of the famous game TuxRacer.")
        (list "-DUSE_WIIUSE=0"
              ;; Do not use the bundled zlib
              "-DNO_IRR_COMPILE_WITH_ZLIB_=TRUE"
+             ;; FIXME: needs libopenglrecorder
+             "-DBUILD_RECORDER=0"
              ;; Irrlicht returns an integer instead of a boolean
              "-DCMAKE_C_FLAGS=-fpermissive")
        #:phases
@@ -3035,7 +3118,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
 (define-public higan
   (package
     (name "higan")
-    (version "104")
+    (version "106")
     (source
      (origin
        (method url-fetch)
@@ -3044,7 +3127,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
              version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "18by01ir2mvdi9hq571in1hk18gw2bd0ynq4avfs1qj0qra35fqb"))
+        (base32 "0y42pra0dxzlbkyzcp3r8a39pji2bj3p9fl40425f60af2igr4rw"))
        (patches (search-patches "higan-remove-march-native-flag.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4154,7 +4237,7 @@ emerges from a sewer hole and pulls her below ground.")
 (define-public cdogs-sdl
   (package
     (name "cdogs-sdl")
-    (version "0.6.5")
+    (version "0.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/cxong/cdogs-sdl/"
@@ -4162,7 +4245,7 @@ emerges from a sewer hole and pulls her below ground.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "17llrpdrrwi8h37vjpkxk2asj7h8qdfp2zy28wiwb7cjzribmz3k"))))
+                "08gbx6vqqir48xs6qdfa4kv70gj4j96wzs90pg7qldfasxz34ljm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -4504,7 +4587,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.20.0")
+    (version "0.20.1")
     (source
      (origin
        (method url-fetch)
@@ -4518,7 +4601,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                             version "-nodeps.tar.xz")))
        (sha256
         (base32
-         "0127dgldij2h4m7cf32yy9ndv4vcz03g4km71lmxrsi5mw7ljgpd"))
+         "0cagx7687r5ln7pmzl60akjhjpyqd62z9zhfr2mqfk53wl9jbsbj"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -4603,7 +4686,7 @@ fabulous Orb of Zot.")
        ("sdl2-mixer" ,sdl2-mixer)))
     (native-inputs
      `(,@(package-native-inputs crawl)
-       ;; TODO: Add advpng or pngcrush for additional PNG optimization.
+       ("pngcrush" ,pngcrush)
        ("which" ,which)))
     (synopsis "Graphical roguelike dungeon crawler game")))
 

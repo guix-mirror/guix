@@ -131,7 +131,7 @@
 
 (define-public (system->defconfig system)
   "Some systems (notably powerpc-linux) require a special target for kernel
-defconfig.  Return the appropiate make target if applicable, otherwise return
+defconfig.  Return the appropriate make target if applicable, otherwise return
 \"defconfig\"."
   (cond ((string-prefix? "powerpc-" system) "pmac32_defconfig")
         ((string-prefix? "powerpc64le-" system) "ppc64_defconfig")
@@ -369,8 +369,8 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 (define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
 
-(define %linux-libre-version "4.14")
-(define %linux-libre-hash "0y42cn0lq08njvsfg3b2xyziaga268aj2lx034k40wilha6hkw3h")
+(define %linux-libre-version "4.14.3")
+(define %linux-libre-hash "1hs94lj2bryci4m75bfrhhj9aqrjpq6a57nhxic63zj6xjhi53l7")
 
 ;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
@@ -383,14 +383,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.62"
-                    "00brapsvchkv2q4p6spvjk92524mfcsj5aq5jcjvqhx50fn71y1w"
+  (make-linux-libre "4.9.66"
+                    "0k29i5wnljck4nwkzcjxjfzrddwifj2pb6zxqh7f522j9cw2g4zd"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.98"
-                    "1n34bwz6c122byjyfz6z916v7lx4pgsys0a2kq2zmxcfs9kv60xs"
+  (make-linux-libre "4.4.103"
+                    "1x2pyrjz8myja77nz0zg2k74yrcbiq7g1caqjnafbgc8qwh31fp8"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -3083,7 +3083,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.13.3")
+    (version "4.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3091,7 +3091,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "10yp0b4pwrw5mcd81yn3d0d87fnqpp4si5d25dfhl6n2640dnnw0"))))
+                "1bwirg6hz6gyfj5r3xkj4lfwadvl9pxlccf916fsmdn27fy5q289"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -4273,7 +4273,7 @@ the MTP device as a filesystem.")
 (define-public procenv
   (package
    (name "procenv")
-   (version "0.49")
+   (version "0.50")
    (source
     (origin
      (method url-fetch)
@@ -4281,7 +4281,7 @@ the MTP device as a filesystem.")
                          version ".tar.gz"))
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
-      (base32 "0brzf6185hb76imw107cl21c8lzwiywkxi3jknihrk86bvvicd0d"))))
+      (base32 "0dvscyf47i3j5ay0amncqmqw9kd916689r2pqdvpnsrhp6j46zp1"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--disable-silent-rules")))
    (inputs `(("expat" ,expat) ("libcap" ,libcap) ("check" ,check)

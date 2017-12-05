@@ -378,11 +378,8 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
 GRUB configuration and OS-DRV as the stuff in it."
   (let ((grub-mkrescue (string-append grub "/bin/grub-mkrescue"))
         (target-store  (string-append "/tmp/root" (%store-directory))))
-    (mkdir-p "/tmp/root/var/run")
-    (mkdir-p "/tmp/root/run")
-    (mkdir-p "/tmp/root/mnt")
+    (populate-root-file-system os-drv "/tmp/root")
 
-    (mkdir-p target-store)
     (mount (%store-directory) target-store "" MS_BIND)
 
     (when register-closures?
@@ -399,6 +396,7 @@ GRUB configuration and OS-DRV as the stuff in it."
                           `(,grub-mkrescue "-o" ,target
                             ,(string-append "boot/grub/grub.cfg=" config-file)
                             ,(string-append "gnu/store=" os-drv "/..")
+                            "etc=/tmp/root/etc"
                             "var=/tmp/root/var"
                             "run=/tmp/root/run"
                             ;; /mnt is used as part of the installation

@@ -98,7 +98,10 @@
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system r)
+  #:use-module (guix build-system scons)
+  #:use-module ((guix build utils) #:hide (which))
   #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
@@ -376,35 +379,52 @@ applications.")
 (define-public mongodb
   (package
     (name "mongodb")
-    (version "3.4.9")
+    (version "3.4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mongodb/mongo/archive/r"
                                   version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "0gidwyvh3bdwmk2pccgkqkaln4ysgn8iwa7ihjzllsq0rdg95045"))
+               (base32 "0676lvkljj7a5hdhv78dbykqnqrj9lbn9799mi84b8vbnzsq961r"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each (lambda (dir)
+                              (delete-file-recursively
+                                (string-append "src/third_party/" dir)))
+                            '("pcre-8.41" "scons-2.5.0" "snappy-1.1.3"
+                              "valgrind-3.11.0" "wiredtiger"
+                              "yaml-cpp-0.5.3" "zlib-1.2.8"))))
               (patches
                (list
                 (search-patch "mongodb-support-unknown-linux-distributions.patch")))))
-    (build-system gnu-build-system)
+    (build-system scons-build-system)
     (inputs
      `(("openssl" ,openssl)
        ("pcre" ,pcre)
+        ,@(match (%current-system)
+            ((or "x86_64-linux" "aarch64-linux" "mips64el-linux")
+             `(("wiredtiger" ,wiredtiger)))
+            (_ `()))
        ("yaml-cpp" ,yaml-cpp)
        ("zlib" ,zlib)
-       ("snappy" ,snappy)
-       ("boost" ,boost)))
+       ("snappy" ,snappy)))
     (native-inputs
-     `(("scons" ,scons)
-       ("python" ,python-2)
-       ("valgrind" ,valgrind)
+     `(("valgrind" ,valgrind)
        ("perl" ,perl)))
     (arguments
-     `(#:phases
+     `(#:scons ,scons-python2
+       #:phases
        (let ((common-options
               `(;; "--use-system-tcmalloc" TODO: Missing gperftools
                 "--use-system-pcre"
+                ;; wiredtiger is 64-bit only
+                ,,(if (any (cute string-prefix? <> (or (%current-target-system)
+                                                       (%current-system)))
+                           '("i686-linux" "armhf-linux"))
+                    ``"--wiredtiger=off"
+                    ``"--use-system-wiredtiger")
                 ;; TODO
                 ;; build/opt/mongo/db/fts/unicode/string.o failed: Error 1
                 ;; --use-system-boost
@@ -417,7 +437,6 @@ applications.")
                 ,(format #f "--jobs=~a" (parallel-job-count))
                 "--ssl")))
          (modify-phases %standard-phases
-           (delete 'configure) ; There is no configure phase
            (add-after 'unpack 'scons-propagate-environment
              (lambda _
                ;; Modify the SConstruct file to arrange for
@@ -1763,6 +1782,33 @@ for ODBC.")
 
 (define-public python2-pyodbc-c
   (package-with-python2 python-pyodbc-c))
+
+(define-public python-pyodbc
+  (package
+    (name "python-pyodbc")
+    (version "4.0.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyodbc" version))
+       (sha256
+        (base32
+         "0a83zwz3h1agshnsc6r7al6q83222w8601gpzzzjvjz5m56ghmcn"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (inputs
+     `(("unixodbc" ,unixodbc)))
+    (arguments
+     `(;; No unit tests exist.
+       #:tests? #f))
+    (home-page "https://github.com/mkleehammer/pyodbc")
+    (synopsis "Python ODBC Library")
+    (description "@code{python-pyodbc} provides a Python DB-API driver
+for ODBC.")
+    (license (license:x11-style "file:///LICENSE.TXT"))))
+
+(define-public python2-pyodbc
+  (package-with-python2 python-pyodbc))
 
 (define-public mdbtools
   (package

@@ -587,24 +587,49 @@ from ~a")
                                     (package-home-page package))
                     'home-page)))))
 
+(define %distro-directory
+  (dirname (search-path %load-path "gnu.scm")))
+
 (define (check-patch-file-names package)
   "Emit a warning if the patches requires by PACKAGE are badly named or if the
 patch could not be found."
   (guard (c ((message-condition? c)     ;raised by 'search-patch'
              (emit-warning package (condition-message c)
                            'patch-file-names)))
+    (define patches
+      (or (and=> (package-source package) origin-patches)
+          '()))
+
     (unless (every (match-lambda        ;patch starts with package name?
                      ((? string? patch)
                       (and=> (string-contains (basename patch)
                                               (package-name package))
                              zero?))
                      (_  #f))     ;must be an <origin> or something like that.
-                   (or (and=> (package-source package) origin-patches)
-                       '()))
+                   patches)
       (emit-warning
        package
        (G_ "file names of patches should start with the package name")
-       'patch-file-names))))
+       'patch-file-names))
+
+    ;; Check whether we're reaching tar's maximum file name length.
+    (let ((prefix (string-length %distro-directory))
+          (margin (string-length "guix-0.13.0-10-123456789/"))
+          (max    99))
+      (for-each (match-lambda
+                  ((? string? patch)
+                   (when (> (+ margin (if (string-prefix? %distro-directory
+                                                          patch)
+                                          (- (string-length patch) prefix)
+                                          (string-length patch)))
+                            max)
+                     (emit-warning
+                      package
+                      (format #f (G_ "~a: file name is too long")
+                              (basename patch))
+                      'patch-file-names)))
+                  (_ #f))
+                patches))))
 
 (define (escape-quotes str)
   "Replace any quote character in STR by an escaped quote character."

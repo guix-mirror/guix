@@ -80,11 +80,17 @@ of SHA1 string."
    "-" (string-take sha1 7)))
 
 (define* (copy-to-store store cache-directory #:key url repository)
-  "Copy items in cache-directory to store.  URL and REPOSITORY are used
-to forge store directory name."
+  "Copy CACHE-DIRECTORY recursively to STORE.  URL and REPOSITORY are used to
+create the store directory name."
+  (define (dot-git? file stat)
+    (and (string=? (basename file) ".git")
+         (eq? 'directory (stat:type stat))))
+
   (let* ((commit (repository->head-sha1 repository))
          (name   (url+commit->name url commit)))
-    (values (add-to-store store name #t "sha256" cache-directory) commit)))
+    (values (add-to-store store name #t "sha256" cache-directory
+                          #:select? (negate dot-git?))
+            commit)))
 
 (define (switch-to-ref repository ref)
   "Switch to REPOSITORY's branch, commit or tag specified by REF."

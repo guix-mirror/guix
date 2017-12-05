@@ -23,7 +23,7 @@ Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
-Copyright @copyright{} 2016 Chris Marusich@*
+Copyright @copyright{} 2016, 2017 Chris Marusich@*
 Copyright @copyright{} 2016, 2017 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016 ng0@*
@@ -40,7 +40,10 @@ Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017 Marius Bakke@*
 Copyright @copyright{} 2017 Hartmut Goebel@*
 Copyright @copyright{} 2017 Maxim Cournoyer@*
-Copyright @copyright{} 2017 Tobias Geerinckx-Rice
+Copyright @copyright{} 2017 Tobias Geerinckx-Rice@*
+Copyright @copyright{} 2017 George Clemmer@*
+Copyright @copyright{} 2017 Andy Wingo@*
+Copyright @copyright{} 2017 Arun Isaac
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -130,6 +133,15 @@ Package Management
 * Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
 
+Substitutes
+
+* Official Substitute Server::      One particular source of substitutes.
+* Substitute Server Authorization:: How to enable or disable substitutes.
+* Substitute Authentication::       How Guix verifies substitutes.
+* Proxy Settings::                  How to get substitutes via proxy.
+* Substitution Failure::            What happens when substitution fails.
+* On Trusting Binaries::            How can you trust that binary blob?
+
 Programming Interface
 
 * Defining Packages::           Defining new packages.
@@ -185,7 +197,7 @@ System Installation
 
 * Limitations::                 What you can expect.
 * Hardware Considerations::     Supported hardware.
-* USB Stick Installation::      Preparing the installation medium.
+* USB Stick and DVD Installation::  Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
 * Proceeding with the Installation::  The real thing.
 * Installing GuixSD in a VM::   GuixSD playground.
@@ -225,6 +237,7 @@ Services
 * Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* Certificate Services::        TLS certificates via Let's Encrypt.
 * DNS Services::                DNS daemons.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
@@ -232,6 +245,7 @@ Services
 * Power management Services::   The TLP tool.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
+* Version Control Services::    Providing remote access to Git repositories.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -456,7 +470,7 @@ Source @file{etc/profile} to augment @code{PATH} and other relevant
 environment variables:
 
 @example
-# GUIX_PROFILE=$HOME/.guix-profile \
+# GUIX_PROFILE=$HOME/.guix-profile ; \
   source $GUIX_PROFILE/etc/profile
 @end example
 
@@ -1108,10 +1122,6 @@ Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries
 (@pxref{Substitutes}).
 
-By default substitutes are used, unless the client---such as the
-@command{guix package} command---is explicitly invoked with
-@code{--no-substitutes}.
-
 When the daemon runs with @code{--no-substitutes}, clients can still
 explicitly enable substitution @i{via} the @code{set-build-options}
 remote procedure call (@pxref{The Store}).
@@ -1684,7 +1694,7 @@ Files,,, bash, The GNU Bash Reference Manual}) so that newly-spawned
 shells get all the right environment variable definitions:
 
 @example
-GUIX_PROFILE="$HOME/.guix-profile" \
+GUIX_PROFILE="$HOME/.guix-profile" ; \
 source "$HOME/.guix-profile/etc/profile"
 @end example
 
@@ -2111,7 +2121,6 @@ preserve transformations across upgrades, you should define your own
 package variant in a Guile module and add it to @code{GUIX_PACKAGE_PATH}
 (@pxref{Defining Packages}).
 
-
 @node Substitutes
 @section Substitutes
 
@@ -2119,8 +2128,8 @@ package variant in a Guile module and add it to @code{GUIX_PACKAGE_PATH}
 @cindex pre-built binaries
 Guix supports transparent source/binary deployment, which means that it
 can either build things locally, or download pre-built items from a
-server.  We call these pre-built items @dfn{substitutes}---they are
-substitutes for local build results.  In many cases, downloading a
+server, or both.  We call these pre-built items @dfn{substitutes}---they
+are substitutes for local build results.  In many cases, downloading a
 substitute is much faster than building things locally.
 
 Substitutes can be anything resulting from a derivation build
@@ -2128,8 +2137,22 @@ Substitutes can be anything resulting from a derivation build
 pre-built package binaries, but source tarballs, for instance, which
 also result from derivation builds, can be available as substitutes.
 
-The @code{hydra.gnu.org} server is a front-end to a build farm that
-builds packages from the GNU distribution continuously for some
+@menu
+* Official Substitute Server::      One particular source of substitutes.
+* Substitute Server Authorization:: How to enable or disable substitutes.
+* Substitute Authentication::       How Guix verifies substitutes.
+* Proxy Settings::                  How to get substitutes via proxy.
+* Substitution Failure::            What happens when substitution fails.
+* On Trusting Binaries::            How can you trust that binary blob?
+@end menu
+
+@node Official Substitute Server
+@subsection Official Substitute Server
+
+@cindex hydra
+@cindex build farm
+The @code{mirror.hydra.gnu.org} server is a front-end to an official build farm
+that builds packages from Guix continuously for some
 architectures, and makes them available as substitutes.  This is the
 default source of substitutes; it can be overridden by passing the
 @option{--substitute-urls} option either to @command{guix-daemon}
@@ -2144,8 +2167,19 @@ using HTTP makes all communications visible to an eavesdropper, who
 could use the information gathered to determine, for instance, whether
 your system has unpatched security vulnerabilities.
 
+Substitutes from the official build farm are enabled by default when
+using the Guix System Distribution (@pxref{GNU Distribution}).  However,
+they are disabled by default when using Guix on a foreign distribution,
+unless you have explicitly enabled them via one of the recommended
+installation steps (@pxref{Installation}).  The following paragraphs
+describe how to enable or disable substitutes for the official build
+farm; the same procedure can also be used to enable substitutes for any
+other substitute server.
+
+@node Substitute Server Authorization
+@subsection Substitute Server Authorization
+
 @cindex security
-@cindex digital signatures
 @cindex substitutes, authorization thereof
 @cindex access control list (ACL), for substitutes
 @cindex ACL (access control list), for substitutes
@@ -2156,7 +2190,7 @@ imports, using the @command{guix archive} command (@pxref{Invoking guix
 archive}).  Doing so implies that you trust @code{hydra.gnu.org} to not
 be compromised and to serve genuine substitutes.
 
-This public key is installed along with Guix, in
+The public key for @code{hydra.gnu.org} is installed along with Guix, in
 @code{@var{prefix}/share/guix/hydra.gnu.org.pub}, where @var{prefix} is
 the installation prefix of Guix.  If you installed Guix from source,
 make sure you checked the GPG signature of
@@ -2164,8 +2198,19 @@ make sure you checked the GPG signature of
 Then, you can run something like this:
 
 @example
-# guix archive --authorize < hydra.gnu.org.pub
+# guix archive --authorize < @var{prefix}/share/guix/hydra.gnu.org.pub
 @end example
+
+@quotation Note
+Similarly, the @file{berlin.guixsd.org.pub} file contains the public key
+for the project's new build farm, reachable at
+@indicateurl{https://berlin.guixsd.org}.
+
+As of this writing @code{berlin.guixsd.org} is being upgraded so it can
+better scale up, but you might want to give it a try.  It is backed by
+20 x86_64/i686 build nodes and may be able to provide substitutes more
+quickly than @code{mirror.hydra.gnu.org}.
+@end quotation
 
 Once this is in place, the output of a command like @code{guix build}
 should change from something like:
@@ -2185,7 +2230,7 @@ to something like:
 
 @example
 $ guix build emacs --dry-run
-The following files would be downloaded:
+112.3 MB would be downloaded:
    /gnu/store/pk3n22lbq6ydamyymqkkz7i69wiwjiwi-emacs-24.3
    /gnu/store/2ygn4ncnhrpr61rssa6z0d9x22si0va3-libjpeg-8d
    /gnu/store/71yz6lgx4dazma9dwn2mcjxaah9w77jq-cairo-1.12.16
@@ -2197,6 +2242,17 @@ The following files would be downloaded:
 This indicates that substitutes from @code{hydra.gnu.org} are usable and
 will be downloaded, when possible, for future builds.
 
+@cindex substitutes, how to disable
+The substitute mechanism can be disabled globally by running
+@code{guix-daemon} with @code{--no-substitutes} (@pxref{Invoking
+guix-daemon}).  It can also be disabled temporarily by passing the
+@code{--no-substitutes} option to @command{guix package}, @command{guix
+build}, and other command-line tools.
+
+@node Substitute Authentication
+@subsection Substitute Authentication
+
+@cindex digital signatures
 Guix detects and raises an error when attempting to use a substitute
 that has been tampered with.  Likewise, it ignores substitutes that are
 not signed, or that are not signed by one of the keys listed in the ACL.
@@ -2221,6 +2277,16 @@ comes first in the list and can be considered a mirror of
 produce the same binaries, thanks to bit-reproducible builds (see
 below).
 
+When using HTTPS, the server's X.509 certificate is @emph{not} validated
+(in other words, the server is not authenticated), contrary to what
+HTTPS clients such as Web browsers usually do.  This is because Guix
+authenticates substitute information itself, as explained above, which
+is what we care about (whereas X.509 certificates are about
+authenticating bindings between domain names and public keys.)
+
+@node Proxy Settings
+@subsection Proxy Settings
+
 @vindex http_proxy
 Substitutes are downloaded over HTTP or HTTPS.
 The @code{http_proxy} environment
@@ -2230,25 +2296,38 @@ honored for downloads of substitutes.  Note that the value of
 @command{guix package}, and other client commands are run has
 @emph{absolutely no effect}.
 
-When using HTTPS, the server's X.509 certificate is @emph{not} validated
-(in other words, the server is not authenticated), contrary to what
-HTTPS clients such as Web browsers usually do.  This is because Guix
-authenticates substitute information itself, as explained above, which
-is what we care about (whereas X.509 certificates are about
-authenticating bindings between domain names and public keys.)
+@node Substitution Failure
+@subsection Substitution Failure
 
-You can get statistics on the substitutes provided by a server using the
-@command{guix weather} command (@pxref{Invoking guix weather}).
+Even when a substitute for a derivation is available, sometimes the
+substitution attempt will fail.  This can happen for a variety of
+reasons: the substitute server might be offline, the substitute may
+recently have been deleted, the connection might have been interrupted,
+etc.
 
-The substitute mechanism can be disabled globally by running
-@code{guix-daemon} with @code{--no-substitutes} (@pxref{Invoking
-guix-daemon}).  It can also be disabled temporarily by passing the
-@code{--no-substitutes} option to @command{guix package}, @command{guix
-build}, and other command-line tools.
+When substitutes are enabled and a substitute for a derivation is
+available, but the substitution attempt fails, Guix will attempt to
+build the derivation locally depending on whether or not
+@code{--fallback} was given (@pxref{fallback-option,, common build
+option @code{--fallback}}).  Specifically, if @code{--fallback} was
+omitted, then no local build will be performed, and the derivation is
+considered to have failed.  However, if @code{--fallback} was given,
+then Guix will attempt to build the derivation locally, and the success
+or failure of the derivation depends on the success or failure of the
+local build.  Note that when substitutes are disabled or no substitute
+is available for the derivation in question, a local build will
+@emph{always} be performed, regardless of whether or not
+@code{--fallback} was given.
 
+To get an idea of how many substitutes are available right now, you can
+try running the @command{guix weather} command (@pxref{Invoking guix
+weather}).  This command provides statistics on the substitutes provided
+by a server.
 
-@unnumberedsubsec On Trusting Binaries
+@node On Trusting Binaries
+@subsection On Trusting Binaries
 
+@cindex trust, of pre-built binaries
 Today, each individual's control over their own computing is at the
 mercy of institutions, corporations, and groups with enough power and
 determination to subvert the computing infrastructure and exploit its
@@ -2274,7 +2353,6 @@ are genuine by rebuilding them locally (@pxref{build-check,
 In the future, we want Guix to have support to publish and retrieve
 binaries to/from other users, in a peer-to-peer fashion.  If you would
 like to discuss this project, join us on @email{guix-devel@@gnu.org}.
-
 
 @node Packages with Multiple Outputs
 @section Packages with Multiple Outputs
@@ -3802,6 +3880,19 @@ Python package is used to run the script can be specified with the
 @code{#:python} parameter.
 @end defvr
 
+@defvr {Scheme Variable} scons-build-system
+This variable is exported by @code{(guix build-system scons)}.  It
+implements the build procedure used by the SCons software construction
+tool.  This build system runs @code{scons} to build the package,
+@code{scons test} to run tests, and then @code{scons install} to install
+the package.
+
+Additional flags to be passed to @code{scons} can be specified with the
+@code{#:scons-flags} parameter.  The version of Python used to run SCons
+can be specified by selecting the appropriate SCons package with the
+@code{#:scons} parameter.
+@end defvr
+
 @defvr {Scheme Variable} haskell-build-system
 This variable is exported by @code{(guix build-system haskell)}.  It
 implements the Cabal build procedure used by Haskell packages, which
@@ -4813,6 +4904,7 @@ information about monads.)
        [#:disallowed-references #f] @
        [#:leaked-env-vars #f] @
        [#:script-name (string-append @var{name} "-builder")] @
+       [#:deprecation-warnings #f] @
        [#:local-build? #f] [#:substitutable? #t] [#:guile-for-build #f]
 Return a derivation @var{name} that runs @var{exp} (a gexp) with
 @var{guile-for-build} (a derivation) on @var{system}; @var{exp} is
@@ -4852,6 +4944,9 @@ In the latter case, the list denotes store items that the result is allowed to
 refer to.  Any reference to another store item will lead to a build error.
 Similarly for @var{disallowed-references}, which can list items that must not be
 referenced by the outputs.
+
+@var{deprecation-warnings} determines whether to show deprecation warnings while
+compiling modules.  It can be @code{#f}, @code{#t}, or @code{'detailed}.
 
 The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
@@ -5198,9 +5293,10 @@ derivations has failed.
 @itemx -n
 Do not build the derivations.
 
+@anchor{fallback-option}
 @item --fallback
 When substituting a pre-built binary fails, fall back to building
-packages locally.
+packages locally (@pxref{Substitution Failure}).
 
 @item --substitute-urls=@var{urls}
 @anchor{client-substitute-urls}
@@ -7679,8 +7775,7 @@ available.
 @menu
 * Limitations::                 What you can expect.
 * Hardware Considerations::     Supported hardware.
-* USB Stick Installation::      Preparing the installation medium.
-* DVD Installation::            Preparing the installation medium.
+* USB Stick and DVD Installation:: Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
 * Proceeding with the Installation::  The real thing.
 * Installing GuixSD in a VM::   GuixSD playground.
@@ -7717,7 +7812,7 @@ More and more system services are provided (@pxref{Services}), but some
 may be missing.
 
 @item
-More than 5,300 packages are available, but you may
+More than 6,500 packages are available, but you might
 occasionally find that a useful package is missing.
 
 @item
@@ -7766,11 +7861,12 @@ web site.  It contains a catalog of hardware devices with information
 about their support in GNU/Linux.
 
 
-@node USB Stick Installation
-@subsection USB Stick Installation
+@node USB Stick and DVD Installation
+@subsection USB Stick and DVD Installation
 
-An installation image for USB sticks can be downloaded from
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz},
+An ISO-9660 installation image that can be written to a USB stick or
+burnt to a DVD can be downloaded from
+@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz},
 where @var{system} is one of:
 
 @table @code
@@ -7786,8 +7882,8 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz.sig
-$ gpg --verify guixsd-install-@value{VERSION}.@var{system}.xz.sig
+$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ gpg --verify guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
 @end example
 
 If that command fails because you do not have the required public key,
@@ -7803,6 +7899,8 @@ and rerun the @code{gpg --verify} command.
 
 This image contains the tools necessary for an installation.
 It is meant to be copied @emph{as is} to a large-enough USB stick or DVD.
+
+@unnumberedsubsubsec Copying to a USB Stick
 
 To copy the image to a USB stick, follow these steps:
 
@@ -7811,7 +7909,7 @@ To copy the image to a USB stick, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guixsd-install-@value{VERSION}.@var{system}.xz
+xz -d guixsd-install-@value{VERSION}.@var{system}.iso.xz
 @end example
 
 @item
@@ -7820,57 +7918,14 @@ its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=guixsd-install-@value{VERSION}.x86_64 of=/dev/sdX
+dd if=guixsd-install-@value{VERSION}.x86_64-linux.iso of=/dev/sdX
 sync
 @end example
 
 Access to @file{/dev/sdX} usually requires root privileges.
 @end enumerate
 
-Once this is done, you should be able to reboot the system and boot from
-the USB stick.  The latter usually requires you to get in the BIOS or
-UEFI boot menu, where you can choose to boot from the USB stick.
-
-@xref{Installing GuixSD in a VM}, if, instead, you would like to install
-GuixSD in a virtual machine (VM).
-
-@node DVD Installation
-@subsection DVD Installation
-
-An installation image for DVDs can be downloaded from
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz},
-where @var{system} is one of:
-
-@table @code
-@item x86_64-linux
-for a GNU/Linux system on Intel/AMD-compatible 64-bit CPUs;
-
-@item i686-linux
-for a 32-bit GNU/Linux system on Intel-compatible CPUs.
-@end table
-
-@c start duplication of authentication part from ``Binary Installation''
-Make sure to download the associated @file{.sig} file and to verify the
-authenticity of the image against it, along these lines:
-
-@example
-$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.xz.sig
-$ gpg --verify guixsd-install-@value{VERSION}.@var{system}.xz.sig
-@end example
-
-If that command fails because you do not have the required public key,
-then run this command to import it:
-
-@example
-$ gpg --keyserver pgp.mit.edu --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
-@end example
-
-@noindent
-and rerun the @code{gpg --verify} command.
-@c end duplication
-
-This image contains the tools necessary for an installation.
-It is meant to be copied @emph{as is} to a large-enough USB stick or DVD.
+@unnumberedsubsubsec Burning on a DVD
 
 To copy the image to a DVD, follow these steps:
 
@@ -7879,7 +7934,7 @@ To copy the image to a DVD, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guixsd-install-@value{VERSION}.@var{system}.xz
+xz -d guixsd-install-@value{VERSION}.@var{system}.iso.xz
 @end example
 
 @item
@@ -7888,18 +7943,21 @@ its device name.  Assuming that the DVD drive is known as @file{/dev/srX},
 copy the image with:
 
 @example
-growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.x86_64
+growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.x86_64.iso
 @end example
 
 Access to @file{/dev/srX} usually requires root privileges.
 @end enumerate
 
+@unnumberedsubsubsec Booting
+
 Once this is done, you should be able to reboot the system and boot from
-the DVD.  The latter usually requires you to get in the BIOS or
-UEFI boot menu, where you can choose to boot from the DVD.
+the USB stick or DVD.  The latter usually requires you to get in the
+BIOS or UEFI boot menu, where you can choose to boot from the USB stick.
 
 @xref{Installing GuixSD in a VM}, if, instead, you would like to install
 GuixSD in a virtual machine (VM).
+
 
 @node Preparing for Installation
 @subsection Preparing for Installation
@@ -8251,7 +8309,7 @@ disk image, follow these steps:
 @enumerate
 @item
 First, retrieve and decompress the GuixSD installation image as
-described previously (@pxref{USB Stick Installation}).
+described previously (@pxref{USB Stick and DVD Installation}).
 
 @item
 Create a disk image that will hold the installed system.  To make a
@@ -8270,7 +8328,7 @@ Boot the USB installation image in an VM:
 @example
 qemu-system-x86_64 -m 1024 -smp 1 \
   -net user -net nic,model=virtio -boot menu=on \
-  -drive file=guixsd-install-@value{VERSION}.@var{system} \
+  -drive file=guixsd-install-@value{VERSION}.@var{system}.iso \
   -drive file=guixsd.img
 @end example
 
@@ -9329,6 +9387,7 @@ declaration.
 * Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
 * Web Services::                Web servers.
+* Certificate Services::        TLS certificates via Let's Encrypt.
 * DNS Services::                DNS daemons.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
@@ -9336,6 +9395,7 @@ declaration.
 * Power management Services::   The TLP tool.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
+* Version Control Services::    Providing remote access to Git repositories.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -10932,10 +10992,87 @@ Package object of the Open vSwitch.
 
 @cindex X11
 @cindex X Window System
+@cindex login manager
 Support for the X Window graphical display system---specifically
 Xorg---is provided by the @code{(gnu services xorg)} module.  Note that
 there is no @code{xorg-service} procedure.  Instead, the X server is
-started by the @dfn{login manager}, currently SLiM.
+started by the @dfn{login manager}, by default SLiM.
+
+@cindex window manager
+To use X11, you must install at least one @dfn{window manager}---for
+example the @code{windowmaker} or @code{openbox} packages---preferably
+by adding it to the @code{packages} field of your operating system
+definition (@pxref{operating-system Reference, system-wide packages}).
+
+@defvr {Scheme Variable} slim-service-type
+This is the type for the SLiM graphical login manager for X11.
+
+@cindex session types (X11)
+@cindex X11 session types
+SLiM looks for @dfn{session types} described by the @file{.desktop} files in
+@file{/run/current-system/profile/share/xsessions} and allows users to
+choose a session from the log-in screen using @kbd{F1}.  Packages such
+as @code{xfce}, @code{sawfish}, and @code{ratpoison} provide
+@file{.desktop} files; adding them to the system-wide set of packages
+automatically makes them available at the log-in screen.
+
+In addition, @file{~/.xsession} files are honored.  When available,
+@file{~/.xsession} must be an executable that starts a window manager
+and/or other X clients.
+@end defvr
+
+@deftp {Data Type} slim-configuration
+Data type representing the configuration of @code{slim-service-type}.
+
+@table @asis
+@item @code{allow-empty-passwords?} (default: @code{#t})
+Whether to allow logins with empty passwords.
+
+@item @code{auto-login?} (default: @code{#f})
+@itemx @code{default-user} (default: @code{""})
+When @code{auto-login?} is false, SLiM presents a log-in screen.
+
+When @code{auto-login?} is true, SLiM logs in directly as
+@code{default-user}.
+
+@item @code{theme} (default: @code{%default-slim-theme})
+@itemx @code{theme-name} (default: @code{%default-slim-theme-name})
+The graphical theme to use and its name.
+
+@item @code{auto-login-session} (default: @code{#f})
+If true, this must be the name of the executable to start as the default
+session---e.g., @code{(file-append windowmaker "/bin/windowmaker")}.
+
+If false, a session described by one of the available @file{.desktop}
+files in @code{/run/current-system/profile} and @code{~/.guix-profile}
+will be used.
+
+@quotation Note
+You must install at least one window manager in the system profile or in
+your user profile.  Failing to do that, if @code{auto-login-session} is
+false, you will be unable to log in.
+@end quotation
+
+@item @code{startx} (default: @code{(xorg-start-command)})
+The command used to start the X11 graphical server.
+
+@item @code{xauth} (default: @code{xauth})
+The XAuth package to use.
+
+@item @code{shepherd} (default: @code{shepherd})
+The Shepherd package used when invoking @command{halt} and
+@command{reboot}.
+
+@item @code{slim} (default: @code{slim})
+The SLiM package to use.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} %default-theme
+@defvrx {Scheme Variable} %default-theme-name
+The default SLiM theme and its name.
+@end defvr
+
 
 @deftp {Data Type} sddm-configuration
 This is the data type representing the sddm service configuration.
@@ -11030,6 +11167,7 @@ Relogin after logout.
 @end deftp
 
 @cindex login manager
+@cindex X11 login
 @deffn {Scheme Procedure} sddm-service config
 Return a service that spawns the SDDM graphical login manager for config of
 type @code{<sddm-configuration>}.
@@ -11041,68 +11179,42 @@ type @code{<sddm-configuration>}.
 @end example
 @end deffn
 
-@deffn {Scheme Procedure} slim-service [#:allow-empty-passwords? #f] @
-  [#:auto-login? #f] [#:default-user ""] [#:startx] @
-  [#:theme @var{%default-slim-theme}] @
-  [#:theme-name @var{%default-slim-theme-name}]
-Return a service that spawns the SLiM graphical login manager, which in
-turn starts the X display server with @var{startx}, a command as returned by
-@code{xorg-start-command}.
-
-@cindex X session
-
-SLiM automatically looks for session types described by the @file{.desktop}
-files in @file{/run/current-system/profile/share/xsessions} and allows users
-to choose a session from the log-in screen using @kbd{F1}.  Packages such as
-@var{xfce}, @var{sawfish}, and @var{ratpoison} provide @file{.desktop} files;
-adding them to the system-wide set of packages automatically makes them
-available at the log-in screen.
-
-In addition, @file{~/.xsession} files are honored.  When available,
-@file{~/.xsession} must be an executable that starts a window manager
-and/or other X clients.
-
-When @var{allow-empty-passwords?} is true, allow logins with an empty
-password.  When @var{auto-login?} is true, log in automatically as
-@var{default-user}.
-
-If @var{theme} is @code{#f}, use the default log-in theme; otherwise
-@var{theme} must be a gexp denoting the name of a directory containing the
-theme to use.  In that case, @var{theme-name} specifies the name of the
-theme.
-@end deffn
-
-@defvr {Scheme Variable} %default-theme
-@defvrx {Scheme Variable} %default-theme-name
-The G-Expression denoting the default SLiM theme and its name.
-@end defvr
-
 @deffn {Scheme Procedure} xorg-start-command [#:guile] @
-  [#:configuration-file #f] [#:xorg-server @var{xorg-server}]
-Return a derivation that builds a @var{guile} script to start the X server
-from @var{xorg-server}.  @var{configuration-file} is the server configuration
-file or a derivation that builds it; when omitted, the result of
-@code{xorg-configuration-file} is used.
+  [#:modules %default-xorg-modules] @
+  [#:fonts %default-xorg-fonts] @
+  [#:configuration-file (xorg-configuration-file @dots{})] @
+  [#:xorg-server @var{xorg-server}]
+Return a @code{startx} script in which @var{modules}, a list of X module
+packages, and @var{fonts}, a list of X font directories, are available.  See
+@code{xorg-wrapper} for more details on the arguments.  The result should be
+used in place of @code{startx}.
 
 Usually the X server is started by a login manager.
 @end deffn
 
 @deffn {Scheme Procedure} xorg-configuration-file @
+  [#:modules %default-xorg-modules] @
+  [#:fonts %default-xorg-fonts] @
   [#:drivers '()] [#:resolutions '()] [#:extra-config '()]
 Return a configuration file for the Xorg server containing search paths for
 all the common drivers.
 
+@var{modules} must be a list of @dfn{module packages} loaded by the Xorg
+server---e.g., @code{xf86-video-vesa}, @code{xf86-input-keyboard}, and so on.
+@var{fonts} must be a list of font directories to add to the server's
+@dfn{font path}.
+
 @var{drivers} must be either the empty list, in which case Xorg chooses a
 graphics driver automatically, or a list of driver names that will be tried in
-this order---e.g., @code{(\"modesetting\" \"vesa\")}.
+this order---e.g., @code{("modesetting" "vesa")}.
 
 Likewise, when @var{resolutions} is the empty list, Xorg chooses an
 appropriate screen resolution; otherwise, it must be a list of
 resolutions---e.g., @code{((1024 768) (640 480))}.
 
 Last, @var{extra-config} is a list of strings or objects appended to the
-@code{text-file*} argument list.  It is used to pass extra text to be added
-verbatim to the configuration file.
+configuration file.  It is used to pass extra text to be
+added verbatim to the configuration file.
 @end deffn
 
 @deffn {Scheme Procedure} screen-locker-service @var{package} [@var{name}]
@@ -13835,7 +13947,7 @@ record as in this example:
 @example
 (service prosody-service-type
          (prosody-configuration
-          (modules-enabled (cons "groups" %default-modules-enabled))
+          (modules-enabled (cons "groups" "mam" %default-modules-enabled))
           (int-components
            (list
             (int-component-configuration
@@ -13856,10 +13968,15 @@ By default, Prosody does not need much configuration.  Only one
 @code{virtualhosts} field is needed: it specifies the domain you wish
 Prosody to serve.
 
-Prosodyctl will help you generate X.509 certificates and keys:
+You can perform various sanity checks on the generated configuration
+with the @code{prosodyctl check} command.
+
+Prosodyctl will also help you to import certificates from the
+@code{letsencrypt} directory so that the @code{prosody} user can access
+them.  See @url{https://prosody.im/doc/letsencrypt}.
 
 @example
-prosodyctl cert request example.net
+prosodyctl --root cert import /etc/letsencrypt/live
 @end example
 
 The available configuration parameters follow.  Each parameter
@@ -13898,6 +14015,13 @@ paths in order.  See @url{http://prosody.im/doc/plugins_directory}.
 Defaults to @samp{()}.
 @end deftypevr
 
+@deftypevr {@code{prosody-configuration} parameter} file-name certificates
+Every virtual host and component needs a certificate so that clients and
+servers can securely verify its identity.  Prosody will automatically load
+certificates/keys from the directory specified here.
+Defaults to @samp{"/etc/prosody/certs"}.
+@end deftypevr
+
 @deftypevr {@code{prosody-configuration} parameter} string-list admins
 This is a list of accounts that are admins for the server.  Note that you
 must create the accounts separately.  See @url{http://prosody.im/doc/admins} and
@@ -13915,8 +14039,9 @@ Defaults to @samp{#f}.
 @deftypevr {@code{prosody-configuration} parameter} module-list modules-enabled
 This is the list of modules Prosody will load on startup.  It looks for
 @code{mod_modulename.lua} in the plugins folder, so make sure that exists too.
-Documentation on modules can be found at: @url{http://prosody.im/doc/modules}.
-Defaults to @samp{%default-modules-enabled}.
+Documentation on modules can be found at:
+@url{http://prosody.im/doc/modules}.
+Defaults to @samp{("roster" "saslauth" "tls" "dialback" "disco" "carbons" "private" "blocklist" "vcard" "version" "uptime" "time" "ping" "pep" "register" "admin_adhoc")}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} string-list modules-disabled
@@ -13950,14 +14075,12 @@ Available @code{ssl-configuration} fields are:
 This determines what handshake to use.
 @end deftypevr
 
-@deftypevr {@code{ssl-configuration} parameter} file-name key
-Path to your private key file, relative to @code{/etc/prosody}.
-Defaults to @samp{"/etc/prosody/certs/key.pem"}.
+@deftypevr {@code{ssl-configuration} parameter} maybe-file-name key
+Path to your private key file.
 @end deftypevr
 
-@deftypevr {@code{ssl-configuration} parameter} file-name certificate
-Path to your certificate file, relative to @code{/etc/prosody}.
-Defaults to @samp{"/etc/prosody/certs/cert.pem"}.
+@deftypevr {@code{ssl-configuration} parameter} maybe-file-name certificate
+Path to your certificate file.
 @end deftypevr
 
 @deftypevr {@code{ssl-configuration} parameter} file-name capath
@@ -14019,6 +14142,12 @@ See @url{http://prosody.im/doc/modules/mod_tls}.
 Defaults to @samp{#f}.
 @end deftypevr
 
+@deftypevr {@code{prosody-configuration} parameter} string-list disable-sasl-mechanisms
+Set of mechanisms that will never be offered.  See
+@url{https://prosody.im/doc/modules/mod_saslauth}.
+Defaults to @samp{("DIGEST-MD5")}.
+@end deftypevr
+
 @deftypevr {@code{prosody-configuration} parameter} boolean s2s-require-encryption?
 Whether to force all server-to-server connections to be encrypted or not.
 See @url{http://prosody.im/doc/modules/mod_tls}.
@@ -14069,6 +14198,17 @@ File to write pid in.  See @url{http://prosody.im/doc/modules/mod_posix}.
 Defaults to @samp{"/var/run/prosody/prosody.pid"}.
 @end deftypevr
 
+@deftypevr {@code{prosody-configuration} parameter} maybe-non-negative-integer http-max-content-size
+Maximum allowed size of the HTTP body (in bytes).
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} maybe-string http-external-url
+Some modules expose their own URL in various ways.  This URL is built
+from the protocol, host and port used.  If Prosody sits behind a proxy, the
+public URL will be @code{http-external-url} instead.  See
+@url{https://prosody.im/doc/http#external_url}.
+@end deftypevr
+
 @deftypevr {@code{prosody-configuration} parameter} virtualhost-configuration-list virtualhosts
 A host in Prosody is a domain on which user accounts can be created.  For
 example if you want your users to have addresses like
@@ -14085,7 +14225,7 @@ See @url{http://prosody.im/doc/configure#virtual_host_settings}.
 
 Available @code{virtualhost-configuration} fields are:
 
-all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, plus:
+all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{disable-sasl-mechanisms}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, @code{http-max-content-size}, @code{http-external-url}, @code{raw-content}, plus:
 @deftypevr {@code{virtualhost-configuration} parameter} string domain
 Domain you wish Prosody to serve.
 @end deftypevr
@@ -14107,7 +14247,7 @@ Defaults to @samp{()}.
 
 Available @code{int-component-configuration} fields are:
 
-all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, plus:
+all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{disable-sasl-mechanisms}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, @code{http-max-content-size}, @code{http-external-url}, @code{raw-content}, plus:
 @deftypevr {@code{int-component-configuration} parameter} string hostname
 Hostname of the component.
 @end deftypevr
@@ -14160,7 +14300,7 @@ Defaults to @samp{()}.
 
 Available @code{ext-component-configuration} fields are:
 
-all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, plus:
+all these @code{prosody-configuration} fields: @code{admins}, @code{use-libevent?}, @code{modules-enabled}, @code{modules-disabled}, @code{groups-file}, @code{allow-registration?}, @code{ssl}, @code{c2s-require-encryption?}, @code{disable-sasl-mechanisms}, @code{s2s-require-encryption?}, @code{s2s-secure-auth?}, @code{s2s-insecure-domains}, @code{s2s-secure-domains}, @code{authentication}, @code{log}, @code{http-max-content-size}, @code{http-external-url}, @code{raw-content}, plus:
 @deftypevr {@code{ext-component-configuration} parameter} string component-secret
 Password which the component will use to log in.
 @end deftypevr
@@ -14173,11 +14313,16 @@ Hostname of the component.
 
 @deftypevr {@code{prosody-configuration} parameter} non-negative-integer-list component-ports
 Port(s) Prosody listens on for component connections.
+Defaults to @samp{(5347)}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} string component-interface
 Interface Prosody listens on for component connections.
 Defaults to @samp{"127.0.0.1"}.
+@end deftypevr
+
+@deftypevr {@code{prosody-configuration} parameter} maybe-raw-content raw-content
+Raw content that will be added to the configuration file.
 @end deftypevr
 
 It could be that you just want to get a @code{prosody.cfg.lua}
@@ -14941,6 +15086,84 @@ capability also has to be configured on the front-end as well.
 @end table
 @end deftp
 
+@node Certificate Services
+@subsubsection Certificate Services
+
+@cindex Web
+@cindex HTTP, HTTPS
+@cindex Let's Encrypt
+@cindex TLS certificates
+The @code{(gnu services certbot)} module provides a service to
+automatically obtain a valid TLS certificate from the Let's Encrypt
+certificate authority.  These certificates can then be used to serve
+content securely over HTTPS or other TLS-based protocols, with the
+knowledge that the client will be able to verify the server's
+authenticity.
+
+@url{https://letsencrypt.org/, Let's Encrypt} provides the
+@code{certbot} tool to automate the certification process.  This tool
+first securely generates a key on the server.  It then makes a request
+to the Let's Encrypt certificate authority (CA) to sign the key.  The CA
+checks that the request originates from the host in question by using a
+challenge-response protocol, requiring the server to provide its
+response over HTTP.  If that protocol completes successfully, the CA
+signs the key, resulting in a certificate.  That certificate is valid
+for a limited period of time, and therefore to continue to provide TLS
+services, the server needs to periodically ask the CA to renew its
+signature.
+
+The certbot service automates this process: the initial key
+generation, the initial certification request to the Let's Encrypt
+service, the web server challenge/response integration, writing the
+certificate to disk, and the automated periodic renewals.
+
+@defvr {Scheme Variable} certbot-service-type
+A service type for the @code{certbot} Let's Encrypt client.
+@end defvr
+
+@deftp {Data Type} certbot-configuration
+Data type representing the configuration of the @code{certbot} serice.
+This type has the following parameters:
+
+@table @asis
+@item @code{package} (default: @code{certbot})
+The certbot package to use.
+
+@item @code{webroot} (default: @code{/var/www})
+The directory from which to serve the Let's Encrypt challenge/response
+files.
+
+@item @code{hosts} (default: @code{()})
+A list of hosts for which to generate certificates and request
+signatures.
+
+@item @code{default-location} (default: @i{see below})
+The default @code{nginx-location-configuration}.  Because @code{certbot}
+needs to be able to serve challenges and responses, it needs to be able
+to run a web server.  It does so by extending the @code{nginx} web
+service with an @code{nginx-server-configuration} listening on the
+@var{hosts} on port 80, and which has a
+@code{nginx-location-configuration} for the @code{/.well-known/} URI
+path subspace used by Let's Encrypt.  @xref{Web Services}, for more on
+these nginx configuration data types.
+
+Requests to other URL paths will be matched by the
+@code{default-location}, which if present is added to all
+@code{nginx-server-configuration}s.
+
+By default, the @code{default-location} will issue a redirect from
+@code{http://@var{host}/...} to @code{https://@var{host}/...}, leaving
+you to define what to serve on your site via @code{https}.
+
+Pass @code{#f} to not issue a default location.
+@end table
+@end deftp
+
+The public key and its signatures will be written to
+@code{/etc/letsencrypt/live/@var{host}/fullchain.pem}, for each
+@var{host} in the configuration.  The private key is written to
+@code{/etc/letsencrypt/live/@var{host}/privkey.pem}.
+
 
 @node DNS Services
 @subsubsection DNS Services
@@ -15344,6 +15567,7 @@ The list of knot-zone-configuration used by this configuration.
 
 @end table
 @end deftp
+
 
 @node VPN Services
 @subsubsection VPN Services
@@ -17199,6 +17423,147 @@ Defaults to @samp{3}
 @end deftypevr
 
 
+@node Version Control Services
+@subsubsection Version Control Services
+
+The @code{(gnu services version-control)} module provides a service to
+allow remote access to local Git repositories.  There are two options:
+the @code{git-daemon-service}, which provides access to repositories via
+the @code{git://} unsecured TCP-based protocol, or extending the
+@code{nginx} web server to proxy some requests to
+@code{git-http-backend}.
+
+@deffn {Scheme Procedure} git-daemon-service [#:config (git-daemon-configuration)]
+
+Return a service that runs @command{git daemon}, a simple TCP server to
+expose repositories over the Git protocol for anonymous access.
+
+The optional @var{config} argument should be a
+@code{<git-daemon-configuration>} object, by default it allows read-only
+access to exported@footnote{By creating the magic file
+"git-daemon-export-ok" in the repository directory.} repositories under
+@file{/srv/git}.
+
+@end deffn
+
+@deftp {Data Type} git-daemon-configuration
+Data type representing the configuration for @code{git-daemon-service}.
+
+@table @asis
+@item @code{package} (default: @var{git})
+Package object of the Git distributed version control system.
+
+@item @code{export-all?} (default: @var{#f})
+Whether to allow access for all Git repositories, even if they do not
+have the @file{git-daemon-export-ok} file.
+
+@item @code{base-path} (default: @file{/srv/git})
+Whether to remap all the path requests as relative to the given path.
+If you run git daemon with @var{(base-path "/srv/git")} on example.com,
+then if you later try to pull @code{git://example.com/hello.git}, git
+daemon will interpret the path as @code{/srv/git/hello.git}.
+
+@item @code{user-path} (default: @var{#f})
+Whether to allow @code{~user} notation to be used in requests.  When
+specified with empty string, requests to @code{git://host/~alice/foo} is
+taken as a request to access @code{foo} repository in the home directory
+of user @code{alice}.  If @var{(user-path "path")} is specified, the
+same request is taken as a request to access @code{path/foo} repository
+in the home directory of user @code{alice}.
+
+@item @code{listen} (default: @var{'()})
+Whether to listen on specific IP addresses or hostnames, defaults to
+all.
+
+@item @code{port} (default: @var{#f})
+Whether to listen on an alternative port, which defaults to 9418.
+
+@item @code{whitelist} (default: @var{'()})
+If not empty, only allow access to this list of directories.
+
+@item @code{extra-options} (default: @var{'()})
+Extra options will be passed to @code{git daemon}, please run
+@command{man git-daemon} for more information.
+
+@end table
+@end deftp
+
+The @code{git://} protocol lacks authentication.  When you pull from a
+repository fetched via @code{git://}, you don't know that the data you
+receive was modified is really coming from the specified host, and you
+have your connection is subject to eavesdropping.  It's better to use an
+authenticated and encrypted transport, such as @code{https}.  Although Git allows you
+to serve repositories using unsophisticated file-based web servers,
+there is a faster protocol implemented by the @code{git-http-backend}
+program.  This program is the back-end of a proper Git web service.  It
+is designed to sit behind a FastCGI proxy.  @xref{Web Services}, for more
+on running the necessary @code{fcgiwrap} daemon.
+
+Guix has a separate configuration data type for serving Git repositories
+over HTTP.
+
+@deftp {Data Type} git-http-configuration
+Data type representing the configuration for @code{git-http-service}.
+
+@table @asis
+@item @code{package} (default: @var{git})
+Package object of the Git distributed version control system.
+
+@item @code{git-root} (default: @file{/srv/git})
+Directory containing the Git repositories to expose to the world.
+
+@item @code{export-all?} (default: @var{#f})
+Whether to expose access for all Git repositories in @var{git-root},
+even if they do not have the @file{git-daemon-export-ok} file.
+
+@item @code{uri-path} (default: @file{/git/})
+Path prefix for Git access.  With the default @code{/git/} prefix, this
+will map @code{http://@var{server}/git/@var{repo}.git} to
+@code{/srv/git/@var{repo}.git}.  Requests whose URI paths do not begin
+with this prefix are not passed on to this Git instance.
+
+@item @code{fcgiwrap-socket} (default: @code{127.0.0.1:9000})
+The socket on which the @code{fcgiwrap} daemon is listening.  @xref{Web
+Services}.
+@end table
+@end deftp
+
+There is no @code{git-http-service-type}, currently; instead you can
+create an @code{nginx-location-configuration} from a
+@code{git-http-configuration} and then add that location to a web
+server.
+
+@deffn {Scheme Procedure} git-http-nginx-location-configuration @
+       [config=(git-http-configuration)]
+Compute an @code{nginx-location-configuration} that corresponds to the
+given Git http configuration.  An example nginx service definition to
+serve the default @file{/srv/git} over HTTPS might be:
+
+@example
+(service nginx-service-type
+         (nginx-configuration
+          (server-blocks
+           (list
+            (nginx-server-configuration
+             (http-port #f)
+             (server-name "git.my-host.org")
+             (ssl-certificate
+              "/etc/letsencrypt/live/git.my-host.org/fullchain.pem")
+             (ssl-certificate-key
+              "/etc/letsencrypt/live/git.my-host.org/privkey.pem")
+             (locations
+              (list
+               (git-http-nginx-location-configuration
+                (git-http-configuration (uri-path "/"))))))))))
+@end example
+
+This example assumes that you are using Let's Encrypt to get your TLS
+certificate.  @xref{Certificate Services}.  The default @code{certbot}
+service will redirect all HTTP traffic on @code{git.my-host.org} to
+HTTPS.  You will also need to add an @code{fcgiwrap} proxy to your
+system services.  @xref{Web Services}.
+@end deffn
+
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services
 
@@ -17360,66 +17725,6 @@ The following is an example @code{dicod-service} configuration.
                     %dicod-database:gcide))))
 @end example
 
-@subsubsection Version Control
-
-The @code{(gnu services version-control)} module provides the following services:
-
-@subsubheading Git daemon service
-
-@deffn {Scheme Procedure} git-daemon-service [#:config (git-daemon-configuration)]
-
-Return a service that runs @command{git daemon}, a simple TCP server to
-expose repositories over the Git protocol for anonymous access.
-
-The optional @var{config} argument should be a
-@code{<git-daemon-configuration>} object, by default it allows read-only
-access to exported@footnote{By creating the magic file
-"git-daemon-export-ok" in the repository directory.} repositories under
-@file{/srv/git}.
-
-@end deffn
-
-@deftp {Data Type} git-daemon-configuration
-Data type representing the configuration for @code{git-daemon-service}.
-
-@table @asis
-@item @code{package} (default: @var{git})
-Package object of the Git distributed version control system.
-
-@item @code{export-all?} (default: @var{#f})
-Whether to allow access for all Git repositories, even if they do not
-have the @file{git-daemon-export-ok} file.
-
-@item @code{base-path} (default: @file{/srv/git})
-Whether to remap all the path requests as relative to the given path.
-If you run git daemon with @var{(base-path "/srv/git")} on example.com,
-then if you later try to pull @code{git://example.com/hello.git}, git
-daemon will interpret the path as @code{/srv/git/hello.git}.
-
-@item @code{user-path} (default: @var{#f})
-Whether to allow @code{~user} notation to be used in requests.  When
-specified with empty string, requests to @code{git://host/~alice/foo} is
-taken as a request to access @code{foo} repository in the home directory
-of user @code{alice}.  If @var{(user-path "path")} is specified, the
-same request is taken as a request to access @code{path/foo} repository
-in the home directory of user @code{alice}.
-
-@item @code{listen} (default: @var{'()})
-Whether to listen on specific IP addresses or hostnames, defaults to
-all.
-
-@item @code{port} (default: @var{#f})
-Whether to listen on an alternative port, which defaults to 9418.
-
-@item @code{whitelist} (default: @var{'()})
-If not empty, only allow access to this list of directories.
-
-@item @code{extra-options} (default: @var{'()})
-Extra options will be passed to @code{git daemon}, please run
-@command{man git-daemon} for more information.
-
-@end table
-@end deftp
 
 @subsubheading Cgit Service
 
@@ -17957,7 +18262,7 @@ manual}).
 
 @item @code{serial-unit} (default: @code{#f})
 The serial unit used by the bootloader, as an integer from 0 to 3.
-For GRUB it is choosen at run-time; currently GRUB chooses 0, which
+For GRUB, it is chosen at run-time; currently GRUB chooses 0, which
 corresponds to COM1 (@pxref{Serial terminal,,, grub,GNU GRUB manual}).
 
 @item @code{serial-speed} (default: @code{#f})
@@ -19566,16 +19871,14 @@ definition may look like this:
   (let ((commit "c3f29bc928d5900971f65965feaae59e1272a3f7")
         (revision "1"))          ;Guix package revision
     (package
-      (version (string-append "0.9-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.9" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "git://example.org/my-package.git")
                       (commit commit)))
                 (sha256 (base32 "1mbikn@dots{}"))
-                (file-name (string-append "my-package-" version
-                                          "-checkout"))))
+                (file-name (git-file-name name version))))
       ;; @dots{}
       )))
 @end example
@@ -19971,6 +20274,28 @@ reach a fixed point?  That is an interesting question!  The answer is
 unknown, but if you would like to investigate further (and have
 significant computational and storage resources to do so), then let us
 know.
+
+@unnumberedsubsec Reducing the Set of Bootstrap Binaries
+
+Our bootstrap binaries currently include GCC, Guile, etc.  That's a lot
+of binary code!  Why is that a problem?  It's a problem because these
+big chunks of binary code are practically non-auditable, which makes it
+hard to establish what source code produced them.  Every unauditable
+binary also leaves us vulnerable to compiler backdoors as described by
+Ken Thompson in the 1984 paper @emph{Reflections on Trusting Trust}.
+
+This is mitigated by the fact that our bootstrap binaries were generated
+from an earlier Guix revision.  Nevertheless it lacks the level of
+transparency that we get in the rest of the package dependency graph,
+where Guix always gives us a source-to-binary mapping.  Thus, our goal
+is to reduce the set of bootstrap binaries to the bare minimum.
+
+The @uref{http://bootstrappable.org, Bootstrappable.org web site} lists
+on-going projects to do that.  One of these is about replacing the
+bootstrap GCC with a sequence of assemblers, interpreters, and compilers
+of increasing complexity, which could be built from source starting from
+a simple and auditable assembler.  Your help is welcome!
+
 
 @node Porting
 @section Porting to a New Platform

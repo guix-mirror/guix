@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -458,14 +459,14 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.5.5")
+    (version "2.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1i77viqy1afvbr392npk9v54k9zhr9zq2vhv6pliza22b0ymwzz5"))))
+                "162wgzmg4zzqj5cxrsrmkfv1623dc4g8h3fsf1lvjw9i4sc6bbdf"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
@@ -788,6 +789,9 @@ then ported to the GNU / Linux environment.")
         (base32
          "11wnj34rfqxjggmdgf042i49lr6civgbqwv2p7p8bn6k2919vg4r"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DUSE_SHARED_MBEDTLS_LIBRARY=ON")))
     (native-inputs
      `(("perl" ,perl)))
     (synopsis "Small TLS library")

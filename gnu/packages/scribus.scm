@@ -81,7 +81,19 @@
     (arguments
      `(#:tests? #f                      ;no test target
        #:configure-flags
-       '("-DWANT_GRAPHICSMAGICK=1")))
+       '("-DWANT_GRAPHICSMAGICK=1")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Fix "ImportError: No module named _sysconfigdata_nd" where
+             ;; Scribus checks PATH and eventually runs system's Python
+             ;; instead of package's.
+             (let* ((out (assoc-ref outputs "out"))
+                    (py2 (assoc-ref inputs "python")))
+               (wrap-program (string-append out "/bin/scribus")
+                 `("PATH" ":" prefix (,(string-append py2 "/bin")))))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("cairo" ,cairo)

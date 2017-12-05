@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,7 +75,7 @@
 (define-public nss-certs
   (package
     (name "nss-certs")
-    (version "3.34")
+    (version "3.34.1")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -85,7 +86,7 @@
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "1x9acn47iva9j42kxfamgvn99lrnqv47fgn3rz3j6c1ph50rai8d"))))
+                "186x33wsk4mzjz7dzbn8p0py9a0nzkgzpfkdv4rlyy5gghv5vhd3"))))
     (build-system gnu-build-system)
     (outputs '("out"))
     (native-inputs

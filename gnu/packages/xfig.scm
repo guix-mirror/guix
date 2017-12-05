@@ -90,7 +90,7 @@
                         (("XCOMM USEINLINE") "USEINLINE"))
                       ;; The -a argument is required in order to pick up the correct paths
                       ;; to several X header files.
-                      (zero? (system* "xmkmf" "-a"))
+                      (invoke "xmkmf" "-a")
                       ;; Reset some variables that are inherited from imake templates
                       (substitute* "Makefile"
                         ;; These imake variables somehow remain undefined

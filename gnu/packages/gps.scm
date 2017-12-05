@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +26,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xml)
@@ -131,3 +132,31 @@ the photo was taken.  It does this by using the timestamp in the photo and
 finding a data point in the GPS track that matches, or interpolating a point
 between two other data points.")
       (license license:gpl2+))))
+
+(define-public gama
+  (package
+    (name "gama")
+    (version "1.21")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://gnu/gama/gama-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "0yy8czw5dldbw1qj5v2h2wfh397bfx5wd3lrrgs8m1qdf1njnhcq"))))
+    (build-system gnu-build-system)
+    (arguments '(#:parallel-tests? #f)) ; race condition
+    (native-inputs
+     `(("libxml2" ,libxml2)))
+    (inputs
+     `(("expat" ,expat)
+       ("sqlite" ,sqlite)))
+    (home-page "https://www.gnu.org/software/gama")
+    (synopsis "Adjustment of geodetic networks")
+    (description
+     "GNU Gama is a program for the adjustment of geodetic networks.  It is
+useful in measurements where Global Positioning System (GPS) is not available,
+such as underground.  It features the ability to adjust in local Cartesian
+coordinates as well as partial support for adjustments in global coordinate systems.")
+    (license license:gpl3+)))

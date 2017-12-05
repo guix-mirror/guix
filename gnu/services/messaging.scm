@@ -160,7 +160,7 @@
 (define (module-list? val)
   (string-list? val))
 (define (serialize-module-list field-name val)
-  (serialize-string-list field-name (cons "posix" val)))
+  (serialize-string-list field-name val))
 (define-maybe module-list)
 
 (define (file-name? val)
@@ -175,6 +175,12 @@
 (define (serialize-file-name-list field-name val)
   (serialize-string-list field-name val))
 (define-maybe file-name)
+
+(define (raw-content? val)
+  (not (eq? val 'disabled)))
+(define (serialize-raw-content field-name val)
+  (format #t "~a" val))
+(define-maybe raw-content)
 
 (define-configuration mod-muc-configuration
   (name
@@ -203,12 +209,12 @@ just joined the room."))
    "This determines what handshake to use.")
 
   (key
-   (file-name "/etc/prosody/certs/key.pem")
-   "Path to your private key file, relative to @code{/etc/prosody}.")
+   (maybe-file-name 'disabled)
+   "Path to your private key file.")
 
   (certificate
-   (file-name "/etc/prosody/certs/cert.pem")
-   "Path to your certificate file, relative to @code{/etc/prosody}.")
+   (maybe-file-name 'disabled)
+   "Path to your certificate file.")
 
   (capath
    (file-name "/etc/ssl/certs")
@@ -271,7 +277,9 @@ can create such a file with:
     "tls"
     "dialback"
     "disco"
+    "carbons"
     "private"
+    "blocklist"
     "vcard"
     "version"
     "uptime"
@@ -321,6 +329,13 @@ can create such a file with:
 paths in order.  See @url{http://prosody.im/doc/plugins_directory}."
      global)
 
+    (certificates
+     (file-name "/etc/prosody/certs")
+     "Every virtual host and component needs a certificate so that clients and
+servers can securely verify its identity.  Prosody will automatically load
+certificates/keys from the directory specified here."
+     global)
+
     (admins
      (string-list '())
      "This is a list of accounts that are admins for the server.  Note that you
@@ -339,8 +354,8 @@ Example: @code{(admins '(\"user1@@example.com\" \"user2@@example.net\"))}"
      (module-list %default-modules-enabled)
      "This is the list of modules Prosody will load on startup.  It looks for
 @code{mod_modulename.lua} in the plugins folder, so make sure that exists too.
-Documentation on modules can be found at: @url{http://prosody.im/doc/modules}.
-Defaults to @samp{%default-modules-enabled}."
+Documentation on modules can be found at:
+@url{http://prosody.im/doc/modules}."
      common)
 
     (modules-disabled
@@ -374,6 +389,12 @@ using them.  See @url{http://prosody.im/doc/advanced_ssl_config}."
      (boolean #f)
      "Whether to force all client-to-server connections to be encrypted or not.
 See @url{http://prosody.im/doc/modules/mod_tls}."
+     common)
+
+    (disable-sasl-mechanisms
+     (string-list '("DIGEST-MD5"))
+     "Set of mechanisms that will never be offered.  See
+@url{https://prosody.im/doc/modules/mod_saslauth}."
      common)
 
     (s2s-require-encryption?
@@ -426,6 +447,19 @@ by the GuixSD Prosody Service.  See @url{http://prosody.im/doc/logging}."
      (file-name "/var/run/prosody/prosody.pid")
      "File to write pid in.  See @url{http://prosody.im/doc/modules/mod_posix}."
      global)
+
+    (http-max-content-size
+     (maybe-non-negative-integer 'disabled)
+     "Maximum allowed size of the HTTP body (in bytes)."
+     common)
+
+    (http-external-url
+     (maybe-string 'disabled)
+     "Some modules expose their own URL in various ways.  This URL is built
+from the protocol, host and port used.  If Prosody sits behind a proxy, the
+public URL will be @code{http-external-url} instead.  See
+@url{https://prosody.im/doc/http#external_url}."
+     common)
 
     (virtualhosts
      (virtualhost-configuration-list
@@ -511,7 +545,12 @@ See also @url{http://prosody.im/doc/modules/mod_muc}."
     (hostname
      (string (configuration-missing-field 'ext-component 'hostname))
      "Hostname of the component."
-     ext-component)))
+     ext-component)
+
+    (raw-content
+     (maybe-raw-content 'disabled)
+     "Raw content that will be added to the configuration file."
+     common)))
 
 ;; Serialize Virtualhost line first.
 (define (serialize-virtualhost-configuration config)
@@ -683,7 +722,7 @@ See also @url{http://prosody.im/doc/modules/mod_muc}."
                                      (display c))
                                    str))))
             (define (show-default? val)
-              (or (string? default) (number? default) (boolean? default)
+              (or (string? val) (number? val) (boolean? val)
                   (and (list? val) (and-map show-default? val))))
             (format #t "@deftypevr {@code{~a} parameter} ~a ~a\n~a\n"
                     configuration-name field-type field-name field-docs)

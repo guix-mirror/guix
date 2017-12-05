@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
@@ -40,7 +42,9 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
@@ -56,10 +60,15 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
   #:use-module (gnu packages w3m)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
@@ -85,7 +94,8 @@
        ("w3m" ,w3m)
        ("xmlto" ,xmlto)))
     (propagated-inputs
-     `(("xprop" ,xprop) ; for Xfce detecting
+     `(("perl-file-mimeinfo" ,perl-file-mimeinfo) ; for mimeopen fallback
+       ("xprop" ,xprop) ; for Xfce detecting
        ("xset" ,xset))) ; for xdg-screensaver
     (arguments
      `(#:tests? #f   ; no check target
@@ -211,6 +221,7 @@ the freedesktop.org XDG Base Directory specification.")
               (method url-fetch)
               (uri (string-append "https://github.com/elogind/elogind/"
                                   "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1qcxian48z2dj5gfmp7brrngdydqf2jm00f4rjr5sy1myh8fy931"))
@@ -268,7 +279,16 @@ the freedesktop.org XDG Base Directory specification.")
                (substitute* (string-append out "/lib/libelogind.la")
                  (("-lcap")
                   (string-append "-L" libcap "/lib -lcap")))
-               #t))))))
+               #t)))
+         (add-after 'unpack 'remove-uaccess-tag
+           (lambda _
+             ;; systemd supports a "uaccess" built-in tag, but eudev currently
+             ;; doesn't.  This leads to eudev warnings that we'd rather not
+             ;; see, so remove the reference to "uaccess."
+             (substitute* "src/login/73-seat-late.rules.in"
+               (("^TAG==\"uaccess\".*" line)
+                (string-append "# " line "\n")))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -602,7 +622,9 @@ Analysis and Reporting Technology) functionality.")
        ("libatasmart" ,libatasmart)
        ("libgudev" ,libgudev)
        ("polkit" ,polkit)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux)
+       ("cryptsetup" ,cryptsetup)
+       ("parted" ,parted)))
     (outputs '("out"
                "doc"))                            ;5 MiB of gtk-doc HTML
     (arguments
@@ -642,14 +664,22 @@ Analysis and Reporting Technology) functionality.")
                "girdir = $(datadir)/gir-1.0\n")
               (("typelibsdir = .*")
                "typelibsdir = $(libdir)/girepository-1.0\n"))))
-         (add-after 'install 'set-mount-file-name
+         (add-after 'install 'wrap-udisksd
            (lambda* (#:key outputs inputs #:allow-other-keys)
              ;; Tell 'udisksd' where to find the 'mount' command.
              (let ((out   (assoc-ref outputs "out"))
-                   (utils (assoc-ref inputs "util-linux")))
+                   (utils (assoc-ref inputs "util-linux"))
+                   (cryptsetup (assoc-ref inputs "cryptsetup"))
+                   (parted (assoc-ref inputs "parted")))
                (wrap-program (string-append out "/libexec/udisks2/udisksd")
                  `("PATH" ":" prefix
                    (,(string-append utils "/bin") ;for 'mount'
+                    ;; cryptsetup is required for setting encrypted
+                    ;; partitions, e.g. in gnome-disks
+                    ,(string-append cryptsetup "/sbin")
+                    ;; parted is required for managing partitions, e.g. in
+                    ;; gnome-disks
+                    ,(string-append parted "/sbin")
                     "/run/current-system/profile/bin"
                     "/run/current-system/profile/sbin")))
                #t))))))
@@ -1090,3 +1120,110 @@ localization (i.e. translation) of the file names.  Designed to be
 automatically run when a user logs in, xdg-user-dirs can also be run
 manually by a user.")
     (license license:gpl2)))
+
+(define-public perl-file-basedir
+  (package
+    (name "perl-file-basedir")
+    (version "0.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KI/KIMRYAN/"
+                           "File-BaseDir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0aq8d4hsaxqibp36f773y6dfck7zd82v85sp8vhi6pjkg3pmf2hj"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-file-which" ,perl-file-which)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("xdg-user-dirs" ,xdg-user-dirs)))
+    (propagated-inputs
+     `(("perl-ipc-system-simple" ,perl-ipc-system-simple)))
+    (home-page "http://search.cpan.org/dist/File-BaseDir/")
+    (synopsis "Use the Freedesktop.org base directory specification")
+    (description
+     "@code{File::Basedir} can be used to find directories and files as
+specified by the Freedesktop.org Base Directory Specification.  This
+specifications gives a mechanism to locate directories for configuration,
+application data and cache data.")
+    (license license:perl-license)))
+
+(define-public perl-file-desktopentry
+  (package
+    (name "perl-file-desktopentry")
+    (version "0.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
+                           "File-DesktopEntry-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1f1maqix2kbfg2rf008m7mqnvv6nvcf9y6pcgdv2kxp2vbih370n"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (propagated-inputs
+     `(("perl-file-basedir" ,perl-file-basedir)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/~michielb/File-DesktopEntry/")
+    (synopsis "Handle @file{.desktop} files")
+    (description
+     "@code{File::DesktopEntry} parses @file{.desktop} files defined by the
+Freedesktop.org @dfn{Desktop Entry} specification.  It can also run the
+applications define in those files.")
+    (license license:perl-license)))
+
+(define-public perl-file-mimeinfo
+  (package
+    (name "perl-file-mimeinfo")
+    (version "0.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
+                           "File-MimeInfo-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ipbh63bkh1r2gy5g7q4bzhki8j29mm1jkhbv60p9vwsdys5s91a"))))
+    (build-system perl-build-system)
+    ;; If the tests are fixed, add perl-test-pod, perl-test-pod-coverage, and
+    ;; perl-test-tiny as native-inputs.
+    (propagated-inputs
+     `(("shared-mime-info" ,shared-mime-info)
+       ("perl-file-desktopentry" ,perl-file-desktopentry)))
+    (arguments
+     ;; Some tests fail due to requiring the mimetype of perl files to be
+     ;; text/plain when they are actually application/x-perl.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (prog)
+                           (wrap-program (string-append out "/bin/" prog)
+                             `("PERL5LIB" ":" prefix
+                               (,(string-append (getenv "PERL5LIB") ":" out
+                                                "/lib/perl5/site_perl")))))
+                         '("mimeopen" "mimetype")))
+             #t)))))
+    (home-page "http://search.cpan.org/dist/File-MimeInfo/")
+    (synopsis "Determine file type from the file name")
+    (description
+     "@code{File::Mimeinfo} can be used to determine the MIME type of a file.
+It tries to implement the Freedesktop specification for a shared MIME
+database.
+
+This package also contains two related utilities:
+
+@itemize
+@item @command{mimetype} determines a file's MIME type;
+@item @command{mimeopen} opens files in an appropriate program according to
+their MIME type.
+@end itemize")
+    (license license:perl-license)))

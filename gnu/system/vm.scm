@@ -29,6 +29,7 @@
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix modules)
+  #:use-module (guix utils)
 
   #:use-module ((gnu build vm)
                 #:select (qemu-command))
@@ -277,7 +278,8 @@ the image."
      #~(begin
          (use-modules (gnu build vm)
                       (guix build utils)
-                      (srfi srfi-26))
+                      (srfi srfi-26)
+                      (ice-9 binary-ports))
 
          (let ((inputs
                 '#$(append (list qemu parted e2fsprogs dosfstools)
@@ -312,26 +314,35 @@ the image."
                                              graphs)))
                                     (- disk-image-size
                                        (* 50 (expt 2 20)))))
-                  (partitions (list (partition
-                                     (size root-size)
-                                     (label #$file-system-label)
-                                     (uuid #$(and=> file-system-uuid
-                                                    uuid-bytevector))
-                                     (file-system #$file-system-type)
-                                     (flags '(boot))
-                                     (initializer initialize))
-                                    ;; Append a small EFI System Partition for
-                                    ;; use with UEFI bootloaders.
-                                    (partition
-                                     ;; The standalone grub image is about 10MiB, but
-                                     ;; leave some room for custom or multiple images.
-                                     (size (* 40 (expt 2 20)))
-                                     (label "GNU-ESP")             ;cosmetic only
-                                     ;; Use "vfat" here since this property is used
-                                     ;; when mounting. The actual FAT-ness is based
-                                     ;; on filesystem size (16 in this case).
-                                     (file-system "vfat")
-                                     (flags '(esp))))))
+                  (partitions
+                   (append
+                    (list (partition
+                           (size root-size)
+                           (label #$file-system-label)
+                           (uuid #$(and=> file-system-uuid
+                                          uuid-bytevector))
+                           (file-system #$file-system-type)
+                           (flags '(boot))
+                           (initializer initialize)))
+                    ;; Append a small EFI System Partition for use with UEFI
+                    ;; bootloaders if we are not targeting ARM because UEFI
+                    ;; support in U-Boot is experimental.
+                    ;;
+                    ;; FIXME: ‘target-arm32?’ may be not operate on the right
+                    ;; system/target values.  Rewrite using ‘let-system’ when
+                    ;; available.
+                    (if #$(target-arm32?)
+                        '()
+                        (list (partition
+                               ;; The standalone grub image is about 10MiB, but
+                               ;; leave some room for custom or multiple images.
+                               (size (* 40 (expt 2 20)))
+                               (label "GNU-ESP")             ;cosmetic only
+                               ;; Use "vfat" here since this property is used
+                               ;; when mounting. The actual FAT-ness is based
+                               ;; on filesystem size (16 in this case).
+                               (file-system "vfat")
+                               (flags '(esp))))))))
              (initialize-hard-disk "/dev/vda"
                                    #:partitions partitions
                                    #:grub-efi #$grub-efi
@@ -423,7 +434,8 @@ to USB sticks meant to be read-only."
               ;; install QEMU networking or anything like that.  Assume USB
               ;; mass storage devices (usb-storage.ko) are available.
               (initrd (lambda (file-systems . rest)
-                        (apply base-initrd file-systems
+                        (apply (operating-system-initrd os)
+                               file-systems
                                #:volatile-root? #t
                                rest)))
 
@@ -488,7 +500,8 @@ of the GNU system as described by OS."
   (let ((os (operating-system (inherit os)
               ;; Use an initrd with the whole QEMU shebang.
               (initrd (lambda (file-systems . rest)
-                        (apply base-initrd file-systems
+                        (apply (operating-system-initrd os)
+                               file-systems
                                #:virtio? #t
                                rest)))
 
@@ -552,7 +565,13 @@ environment with the store shared with the host.  MAPPINGS is a list of
                 (or (string=? target (%store-prefix))
                     (string=? target "/")
                     (and (eq? 'device (file-system-title fs))
-                         (string-prefix? "/dev/" source)))))
+                         (string-prefix? "/dev/" source))
+
+                    ;; Labels and UUIDs are necessarily invalid in the VM.
+                    (and (file-system-mount? fs)
+                         (or (eq? 'label (file-system-title fs))
+                             (eq? 'uuid (file-system-title fs))
+                             (uuid? source))))))
             (operating-system-file-systems os)))
 
   (define virtual-file-systems
@@ -574,7 +593,8 @@ environment with the store shared with the host.  MAPPINGS is a list of
                   (target "/dev/vda")))
 
     (initrd (lambda (file-systems . rest)
-              (apply base-initrd file-systems
+              (apply (operating-system-initrd os)
+                     file-systems
                      #:volatile-root? #t
                      #:virtio? #t
                      rest)))

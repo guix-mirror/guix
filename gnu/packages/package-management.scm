@@ -64,6 +64,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages acl)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
@@ -86,8 +87,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.13.0")
-        (commit "ff23b47dbee038236386ddc2ed2fff4c77ad3aa1")
-        (revision 9))
+        (commit "3fb6464ba43141b671481ce5ba158b6e6d1badfe")
+        (revision 13))
     (package
       (name "guix")
 
@@ -103,7 +104,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "19y39fm4bjvq4rz3360p8avxpsmflsgrz83l8ig49819a38qs6zm"))
+                  "0nx3nvr3myjhg7zyyrvxfs63ddmb7yv0ndzn1dq4gp2is65n3krr"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -143,6 +144,12 @@
                                     (chmod po #o666))
                                   (find-files "." "\\.po$"))
 
+                        (patch-shebang "build-aux/git-version-gen")
+
+                        (call-with-output-file ".tarball-version"
+                          (lambda (port)
+                            (display ,version port)))
+
                         (zero? (system* "sh" "bootstrap"))))
                     (add-before
                         'configure 'copy-bootstrap-guile
@@ -170,8 +177,7 @@
                         (copy "armhf")
                         (copy "aarch64")
                         #t))
-                    (add-after
-                        'unpack 'disable-container-tests
+                    (add-after 'unpack 'disable-failing-tests
                       ;; XXX FIXME: These tests fail within the build container.
                       (lambda _
                         (substitute* "tests/syscalls.scm"
@@ -193,15 +199,17 @@
                         #t))
                     (add-after 'install 'wrap-program
                       (lambda* (#:key inputs outputs #:allow-other-keys)
-                        ;; Make sure the 'guix' command finds GnuTLS and
-                        ;; Guile-JSON automatically.
+                        ;; Make sure the 'guix' command finds GnuTLS,
+                        ;; Guile-JSON, and Guile-Git automatically.
                         (let* ((out    (assoc-ref outputs "out"))
                                (guile  (assoc-ref inputs "guile"))
                                (json   (assoc-ref inputs "guile-json"))
                                (git    (assoc-ref inputs "guile-git"))
+                               (bs     (assoc-ref inputs
+                                                  "guile-bytestructures"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
-                               (deps   (list json gnutls git ssh))
+                               (deps   (list json gnutls git bs ssh))
                                (effective
                                 (read-line
                                  (open-pipe* OPEN_READ
@@ -502,7 +510,6 @@ transactions from C or Python.")
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (add-before 'unpack 'n (lambda _ #t))
                   ;; setup.py mistakenly requires python-magic from PyPi, even
                   ;; though the Python bindings of `file` are sufficient.
                   ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
@@ -517,8 +524,15 @@ transactions from C or Python.")
                          (string-append "['" (which "xxd") "',")))
                       (substitute* "diffoscope/comparators/elf.py"
                         (("@tool_required\\('readelf'\\)") "")
-                        (("\\['readelf',")
-                         (string-append "['" (which "readelf") "',")))
+                        (("get_tool_name\\('readelf'\\)")
+                         (string-append "'" (which "readelf") "'")))
+                      (substitute* "diffoscope/comparators/directory.py"
+                        (("@tool_required\\('stat'\\)") "")
+                        (("@tool_required\\('getfacl'\\)") "")
+                        (("\\['stat',")
+                         (string-append "['" (which "stat") "',"))
+                        (("\\['getfacl',")
+                         (string-append "['" (which "getfacl") "',")))
                       #t))
                   (add-before 'check 'delete-failing-test
                     (lambda _
@@ -529,6 +543,7 @@ transactions from C or Python.")
               ("python-debian" ,python-debian)
               ("python-libarchive-c" ,python-libarchive-c)
               ("python-tlsh" ,python-tlsh)
+              ("acl" ,acl)                        ;for getfacl
               ("colordiff" ,colordiff)
               ("xxd" ,xxd)
 

@@ -68,7 +68,7 @@
        ("xinput"  ,xinput)))
     (arguments
      `(#:phases
-       (let ((srcdir (string-append "../synergy-" ,version "-stable")))
+       (let ((srcdir (string-append "../synergy-core-" ,version "-stable")))
          (modify-phases %standard-phases
            (add-before 'configure 'unpack-aux-src
              ;; TODO: package and use from system

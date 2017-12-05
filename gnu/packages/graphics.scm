@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -500,7 +501,7 @@ virtual reality, scientific visualization and modeling.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("xvfb" ,xorg-server)))
-    (home-page "http://rapicorn.org")
+    (home-page "https://rapicorn.testbit.org/")
     (synopsis "Toolkit for rapid development of user interfaces")
     (description
      "Rapicorn is a toolkit for rapid development of user interfaces in C++

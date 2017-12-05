@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
+  #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
@@ -2961,7 +2963,7 @@ from high-throughput sequencing assays.")
 (define-public java-htsjdk
   (package
     (name "java-htsjdk")
-    (version "1.129")
+    (version "2.3.0") ; last version without build dependency on gradle
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2970,15 +2972,18 @@ from high-throughput sequencing assays.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0asdk9b8jx2ij7yd6apg9qx03li8q7z3ml0qy2r2qczkra79y6fw"))
+                "1ibhzzxsfc38nqyk9r8zqj6blfc1kh26iirypd4q6n90hs2m6nyq"))
               (modules '((guix build utils)))
-              ;; remove build dependency on git
-              (snippet '(substitute* "build.xml"
-                          (("failifexecutionfails=\"true\"")
-                           "failifexecutionfails=\"false\"")))))
+              (snippet
+               ;; Delete pre-built binaries
+               '(begin
+                  (delete-file-recursively "lib")
+                  (mkdir-p "lib")
+                  #t))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; test require Internet access
+       #:jdk ,icedtea-8
        #:make-flags
        (list (string-append "-Ddist=" (assoc-ref %outputs "out")
                             "/share/java/htsjdk/"))
@@ -2987,6 +2992,15 @@ from high-throughput sequencing assays.")
        (modify-phases %standard-phases
          ;; The build phase also installs the jars
          (delete 'install))))
+    (inputs
+     `(("java-ngs" ,java-ngs)
+       ("java-snappy-1" ,java-snappy-1)
+       ("java-commons-compress" ,java-commons-compress)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ("java-commons-jexl-2" ,java-commons-jexl-2)
+       ("java-xz" ,java-xz)))
+    (native-inputs
+     `(("java-testng" ,java-testng)))
     (home-page "http://samtools.github.io/htsjdk/")
     (synopsis "Java API for high-throughput sequencing data (HTS) formats")
     (description
@@ -2995,6 +3009,198 @@ common file formats, such as SAM and VCF, used for high-throughput
 sequencing (HTS) data.  There are also an number of useful utilities for
 manipulating HTS data.")
     (license license:expat)))
+
+;; This version matches java-htsjdk 2.3.0.  Later versions also require a more
+;; recent version of java-htsjdk, which depends on gradle.
+(define-public java-picard
+  (package
+    (name "java-picard")
+    (version "2.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/broadinstitute/picard.git")
+                    (commit version)))
+              (file-name (string-append "java-picard-" version "-checkout"))
+              (sha256
+               (base32
+                "1ll7mf4r3by92w2nhlmpa591xd1f46xlkwh59mq6fvbb5pdwzvx6"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete pre-built binaries.
+                  (delete-file-recursively "lib")
+                  (mkdir-p "lib")
+                  (substitute* "build.xml"
+                    ;; Remove build-time dependency on git.
+                    (("failifexecutionfails=\"true\"")
+                     "failifexecutionfails=\"false\"")
+                    ;; Use our htsjdk.
+                    (("depends=\"compile-htsjdk, ")
+                     "depends=\"")
+                    (("depends=\"compile-htsjdk-tests, ")
+                     "depends=\"")
+                    ;; Build picard-lib.jar before building picard.jar
+                    (("name=\"picard-jar\" depends=\"" line)
+                     (string-append line "picard-lib-jar, ")))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "picard-jar"
+       #:test-target "test"
+       ;; Tests require jacoco:coverage.
+       #:tests? #f
+       #:make-flags
+       (list (string-append "-Dhtsjdk_lib_dir="
+                            (assoc-ref %build-inputs "java-htsjdk")
+                            "/share/java/htsjdk/")
+             "-Dhtsjdk-classes=dist/tmp"
+             (string-append "-Dhtsjdk-version="
+                            ,(package-version java-htsjdk)))
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-our-htsjdk
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("\\$\\{htsjdk\\}/lib")
+                (string-append (assoc-ref inputs "java-htsjdk")
+                               "/share/java/htsjdk/")))
+             #t))
+         (add-after 'unpack 'make-test-target-independent
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("name=\"test\" depends=\"compile, ")
+                "name=\"test\" depends=\""))
+             #t))
+         (replace 'install (install-jars "dist")))))
+    (inputs
+     `(("java-htsjdk" ,java-htsjdk)
+       ("java-guava" ,java-guava)))
+    (native-inputs
+     `(("java-testng" ,java-testng)))
+    (home-page "http://broadinstitute.github.io/picard/")
+    (synopsis "Tools for manipulating high-throughput sequencing data and formats")
+    (description "Picard is a set of Java command line tools for manipulating
+high-throughput sequencing (HTS) data and formats.  Picard is implemented
+using the HTSJDK Java library to support accessing file formats that are
+commonly used for high-throughput sequencing data such as SAM, BAM, CRAM and
+VCF.")
+    (license license:expat)))
+
+;; This is the last version of Picard to provide net.sf.samtools
+(define-public java-picard-1.113
+  (package (inherit java-picard)
+    (name "java-picard")
+    (version "1.113")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/broadinstitute/picard.git")
+                    (commit version)))
+              (file-name (string-append "java-picard-" version "-checkout"))
+              (sha256
+               (base32
+                "0lkpvin2fz3hhly4l02kk56fqy8lmlgyzr9kmvljk6ry6l1hw973"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete pre-built binaries.
+                  (delete-file-recursively "lib")
+                  (mkdir-p "lib")
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "picard-jar"
+       #:test-target "test"
+       ;; FIXME: the class path at test time is wrong.
+       ;; [testng] Error: A JNI error has occurred, please check your installation and try again
+       ;; [testng] Exception in thread "main" java.lang.NoClassDefFoundError: com/beust/jcommander/ParameterException
+       #:tests? #f
+       #:jdk ,icedtea-8
+       ;; This is only used for tests.
+       #:make-flags
+       (list "-Dsamjdk.intel_deflater_so_path=lib/jni/libIntelDeflater.so")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Do not use bundled ant bzip2.
+         (add-after 'unpack 'use-ant-bzip
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("\\$\\{lib\\}/apache-ant-1.8.2-bzip2.jar")
+                (string-append (assoc-ref inputs "ant")
+                               "/lib/ant.jar")))
+             #t))
+         (add-after 'unpack 'make-test-target-independent
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("name=\"test\" depends=\"compile, ")
+                "name=\"test\" depends=\"compile-tests, ")
+               (("name=\"compile\" depends=\"compile-src, compile-tests\"")
+                "name=\"compile\" depends=\"compile-src\""))
+             #t))
+         (add-after 'unpack 'fix-deflater-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/java/net/sf/samtools/Defaults.java"
+               (("getStringProperty\\(\"intel_deflater_so_path\", null\\)")
+                (string-append "getStringProperty(\"intel_deflater_so_path\", \""
+                               (assoc-ref outputs "out")
+                               "/lib/jni/libIntelDeflater.so"
+                               "\")")))
+             #t))
+         ;; Build the deflater library, because we've previously deleted the
+         ;; pre-built one.  This can only be built with access to the JDK
+         ;; sources.
+         (add-after 'build 'build-jni
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "lib/jni")
+             (mkdir-p "jdk-src")
+             (and (zero? (system* "tar" "--strip-components=1" "-C" "jdk-src"
+                                  "-xf" (assoc-ref inputs "jdk-src")))
+                  (zero? (system* "javah" "-jni"
+                                  "-classpath" "classes"
+                                  "-d" "lib/"
+                                  "net.sf.samtools.util.zip.IntelDeflater"))
+                  (with-directory-excursion "src/c/inteldeflater"
+                    (zero? (system* "gcc" "-I../../../lib" "-I."
+                                    (string-append "-I" (assoc-ref inputs "jdk")
+                                                   "/include/linux")
+                                    "-I../../../jdk-src/src/share/native/common/"
+                                    "-I../../../jdk-src/src/solaris/native/common/"
+                                    "-c" "-O3" "-fPIC" "IntelDeflater.c"))
+                    (zero? (system* "gcc" "-shared"
+                                    "-o" "../../../lib/jni/libIntelDeflater.so"
+                                    "IntelDeflater.o" "-lz" "-lstdc++"))))))
+         ;; We can only build everything else after building the JNI library.
+         (add-after 'build-jni 'build-rest
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* `("ant" "all" ,@make-flags)))))
+         (add-before 'build 'set-JAVA6_HOME
+           (lambda _
+             (setenv "JAVA6_HOME" (getenv "JAVA_HOME"))
+             #t))
+         (replace 'install (install-jars "dist"))
+         (add-after 'install 'install-jni-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((jni (string-append (assoc-ref outputs "out")
+                                       "/lib/jni")))
+               (mkdir-p jni)
+               (install-file "lib/jni/libIntelDeflater.so" jni)
+               #t))))))
+    (inputs
+     `(("java-snappy-1" ,java-snappy-1)
+       ("java-commons-jexl-2" ,java-commons-jexl-2)
+       ("java-cofoja" ,java-cofoja)
+       ("ant" ,ant) ; for bzip2 support at runtime
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("ant-apache-bcel" ,ant-apache-bcel)
+       ("ant-junit" ,ant-junit)
+       ("java-testng" ,java-testng)
+       ("java-commons-bcel" ,java-commons-bcel)
+       ("java-jcommander" ,java-jcommander)
+       ("jdk" ,icedtea-8 "jdk")
+       ("jdk-src" ,(car (assoc-ref (package-native-inputs icedtea-8) "jdk-drop")))))))
 
 (define-public htslib
   (package
@@ -3050,7 +3256,7 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
 (define-public idr
   (package
     (name "idr")
-    (version "2.0.0")
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3059,10 +3265,15 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1k3x44biak00aiv3hpm1yd6nn4hhp7n0qnbs3zh2q9sw7qr1qj5r"))))
+                "1rjdly6daslw66r43g9md8znizlscn1sphycqyldzsidkc4vxqv3"))
+              ;; Delete generated C code.
+              (snippet
+               '(begin (delete-file "idr/inv_cdf.c") #t))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f)) ; FIXME: "ImportError: No module named 'utility'"
+    ;; There is only one test ("test_inv_cdf.py") and it tests features that
+    ;; are no longer part of this package.  It also asserts False, which
+    ;; causes the tests to always fail.
+    (arguments `(#:tests? #f))
     (propagated-inputs
      `(("python-scipy" ,python-scipy)
        ("python-sympy" ,python-sympy)
@@ -3076,12 +3287,12 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
      "The IDR (Irreproducible Discovery Rate) framework is a unified approach
 to measure the reproducibility of findings identified from replicate
 experiments and provide highly stable thresholds based on reproducibility.")
-    (license license:gpl3+)))
+    (license license:gpl2+)))
 
 (define-public jellyfish
   (package
     (name "jellyfish")
-    (version "2.2.4")
+    (version "2.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/gmarcais/Jellyfish/"
@@ -3089,7 +3300,7 @@ experiments and provide highly stable thresholds based on reproducibility.")
                                   "/jellyfish-" version ".tar.gz"))
               (sha256
                (base32
-                "0a6xnynqy2ibfbfz86b9g2m2dgm7f1469pmymkpam333gi3p26nk"))))
+                "1a1iwq9pq54k2m9ypvwl5s0bqfl64gwh9dx5af9i382ajas2016q"))))
     (build-system gnu-build-system)
     (outputs '("out"      ;for library
                "ruby"     ;for Ruby bindings
@@ -3112,7 +3323,10 @@ experiments and provide highly stable thresholds based on reproducibility.")
      `(("bc" ,bc)
        ("time" ,time)
        ("ruby" ,ruby)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("htslib" ,htslib)))
     (synopsis "Tool for fast counting of k-mers in DNA")
     (description
      "Jellyfish is a tool for fast, memory-efficient counting of k-mers in
@@ -3434,9 +3648,14 @@ form of assemblies or reads.")
         (base32
          "1hmvdalz3zj5sqqklg0l4npjdv37cv2hsdi1al9iby2ndxjs1b73"))
        (patches (search-patches "metabat-fix-compilation.patch"))))
-    (build-system gnu-build-system)
+    (build-system scons-build-system)
     (arguments
-     `(#:phases
+     `(#:scons ,scons-python2
+       #:scons-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "BOOST_ROOT=" (assoc-ref %build-inputs "boost")))
+       #:tests? #f ;; Tests are run during the build phase.
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-includes
            (lambda _
@@ -3466,30 +3685,13 @@ form of assemblies or reads.")
                                "/lib'"))
                ;; Do not distribute README.
                (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)") ""))
-             #t))
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (mkdir (assoc-ref outputs "out"))
-             (zero? (system* "scons"
-                             (string-append
-                              "PREFIX="
-                              (assoc-ref outputs "out"))
-                             (string-append
-                              "BOOST_ROOT="
-                              (assoc-ref inputs "boost"))
-                             "install"))))
-         ;; Check and install are carried out during build phase.
-         (delete 'check)
-         (delete 'install))))
+             #t)))))
     (inputs
      `(("zlib" ,zlib)
        ("perl" ,perl)
        ("samtools" ,samtools)
        ("htslib" ,htslib)
        ("boost" ,boost)))
-    (native-inputs
-     `(("scons" ,scons)))
     (home-page "https://bitbucket.org/berkeleylab/metabat")
     (synopsis
      "Reconstruction of single genomes from complex microbial communities")
@@ -5412,14 +5614,14 @@ sequences.")
 (define-public subread
   (package
     (name "subread")
-    (version "1.5.1")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/subread/subread-"
                                   version "/subread-" version "-source.tar.gz"))
               (sha256
                (base32
-                "0gn5zhbvllks0mmdg3qlmsbg91p2mpdc2wixwfqpi85yzfrh8hcy"))))
+                "0ah0n4jx6ksk2m2j7xk385x2qzmk1y4rfc6a4mfrdqrlq721w99i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
@@ -5676,14 +5878,14 @@ data types as well.")
 (define-public r-annotate
   (package
     (name "r-annotate")
-    (version "1.56.0")
+    (version "1.56.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "annotate" version))
        (sha256
         (base32
-         "0wlrp3v2jxw9is98ap39dfi7z97kmw1wv1xi4h7yfh12zpj2r8l0"))))
+         "14c5xd9kasvcwg5gbjys2c1vizxhlqlzxakqc2kml0kw97hmx0rq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -5698,6 +5900,29 @@ data types as well.")
     (synopsis "Annotation for microarrays")
     (description "This package provides R environments for the annotation of
 microarrays.")
+    (license license:artistic2.0)))
+
+(define-public r-copynumber
+  (package
+    (name "r-copynumber")
+    (version "1.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "copynumber" version))
+              (sha256
+               (base32
+                "01kcwzl485yjrkgyg8117b1il957ss0v6rq4bbxf4ksd5fzcjmyx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-s4vectors" ,r-s4vectors)
+       ("r-iranges" ,r-iranges)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-biocgenerics" ,r-biocgenerics)))
+    (home-page "https://bioconductor.org/packages/copynumber")
+    (synopsis "Segmentation of single- and multi-track copy number data")
+    (description
+     "This package segments single- and multi-track copy number data by a
+penalized least squares regression method.")
     (license license:artistic2.0)))
 
 (define-public r-geneplotter
@@ -5755,14 +5980,14 @@ high-throughput sequencing experiments.")
 (define-public r-deseq2
   (package
     (name "r-deseq2")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DESeq2" version))
        (sha256
         (base32
-         "1hcxnkkjfvz4hj8iqidshwsjq7jnl1z7wj63dvcwlx1zx5aichyh"))))
+         "1iyimg1s0x5pdmvl8x08s8h0v019y0nhjzs50chagbpk2x91fsmv"))))
     (properties `((upstream-name . "DESeq2")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5792,14 +6017,14 @@ distribution.")
 (define-public r-dexseq
   (package
     (name "r-dexseq")
-    (version "1.24.0")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DEXSeq" version))
        (sha256
         (base32
-         "0qxwnz2ffhav9slcn095k206cfza9i3i5l7w1154plf08gpy1d1d"))))
+         "1hwckj4ijgpdchbakvh60nmcaz4fwd5yplhn0880z3dnlsrp8ik3"))))
     (properties `((upstream-name . "DEXSeq")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5886,14 +6111,14 @@ the graph algorithms contained in the Boost library.")
 (define-public r-gseabase
   (package
     (name "r-gseabase")
-    (version "1.40.0")
+    (version "1.40.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GSEABase" version))
        (sha256
         (base32
-         "0kpkl6c5lrar6ip7wlhvd5axqlb9lb5l3lgbdb3dlih32c3nz0yq"))))
+         "10cmjxahg2plwacfan6g0k8cwyzya96ypc7m1r79gwqkyykxw5fz"))))
     (properties `((upstream-name . "GSEABase")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6541,14 +6766,14 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-getopt
   (package
     (name "r-getopt")
-    (version "1.20.0")
+    (version "1.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "getopt" version))
        (sha256
         (base32
-         "00f57vgnzmg7cz80rjmjz1556xqcmx8nhrlbbhaq4w7gl2ibl87r"))))
+         "0m463mcvixh54i3ng42n0vxmdlf97dgbfs2sf9wnjm782ddw68hm"))))
     (build-system r-build-system)
     (home-page "https://github.com/trevorld/getopt")
     (synopsis "Command-line option processor for R")
@@ -6768,13 +6993,13 @@ CAGE.")
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
-    (version "1.24.0")
+    (version "1.24.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "VariantAnnotation" version))
               (sha256
                (base32
-                "1lllp2vgyfbrar1yg28ji7am470hfzrzxm1bgdk68xpnrwcgcl25"))))
+                "19wgb2kcqy97pm3xgqc781id9fbmzp1hdwzkkhdzpvyf29w4n29j"))))
     (properties
      `((upstream-name . "VariantAnnotation")))
     (inputs
@@ -6806,13 +7031,13 @@ coding changes and predict coding outcomes.")
 (define-public r-limma
   (package
     (name "r-limma")
-    (version "3.34.0")
+    (version "3.34.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "limma" version))
               (sha256
                (base32
-                "0a15gsaky0hfrkx8wrrmp0labzxpq6m2hrd33zl206wyas8bqzcs"))))
+                "1zyw01z9crm1jc86fva4pqxd9zxfsbsqwjq6ry39gag9pfb7pwcz"))))
     (build-system r-build-system)
     (home-page "http://bioinf.wehi.edu.au/limma")
     (synopsis "Package for linear models for microarray and RNA-seq data")
@@ -7127,13 +7352,13 @@ samples.")
 (define-public r-genomicalignments
   (package
     (name "r-genomicalignments")
-    (version "1.14.0")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicAlignments" version))
               (sha256
                (base32
-                "0sw30lj11wv7ifzypqm04lcah987crqwvj48wz3flaw3biw41zfi"))))
+                "033p6fw46sn7w2yyn14nb9qcnkf30cl0nv6zh014ixflm3iifz39"))))
     (properties
      `((upstream-name . "GenomicAlignments")))
     (build-system r-build-system)
@@ -8098,14 +8323,14 @@ library implementing most of the pipeline's features.")
 (define-public r-mutationalpatterns
   (package
     (name "r-mutationalpatterns")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MutationalPatterns" version))
        (sha256
         (base32
-         "0sqbrswg8ylkjb9q3vqcb5ggwixynwj6hyv2n4sk7snyk61z3fq9"))))
+         "1qhxlfl85ifr30wrsidcn3kca3vs8fd8cmwd82gvgx9ppww8vs06"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -8311,11 +8536,6 @@ of gene-level counts.")
            (lambda* (#:key outputs #:allow-other-keys)
              (system* "tar" "-xzvf"
                       "src/hdf5source/hdf5small.tgz" "-C" "src/" )
-             (substitute* "src/Makevars"
-               (("^.*cd hdf5source &&.*$") "")
-               (("^.*gunzip -dc hdf5small.tgz.*$") "")
-               (("^.*rm -rf hdf5.*$") "")
-               (("^.*mv hdf5source/hdf5 ..*$") ""))
              (substitute* "src/hdf5/configure"
                (("/bin/mv") "mv"))
              #t)))))
@@ -8851,14 +9071,14 @@ trait.")
 (define-public r-maldiquant
   (package
     (name "r-maldiquant")
-    (version "1.16.4")
+    (version "1.17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MALDIquant" version))
        (sha256
         (base32
-         "1pmhsfvd45a44xdiml4zx3zd5fhygqyziqvygahkk9yibnyhv4cv"))))
+         "047s6007ydc38x8wm027mlb4mngz15n0d4238fr8h43wyll5zy0z"))))
     (properties `((upstream-name . "MALDIquant")))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/MALDIquant")
@@ -9132,14 +9352,14 @@ of mass spectrometry based proteomics data.")
 (define-public r-msnid
   (package
     (name "r-msnid")
-    (version "1.11.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MSnID" version))
        (sha256
         (base32
-         "1vi4ngwbayrv2jkfb4pbmdp37xn04y07rh1jcklqfh0fcrm1jdig"))))
+         "1zw508kk4f8brg69674wp18gqkpx2kpya5f6x9cl3qng7v4h5pxx"))))
     (properties `((upstream-name . "MSnID")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9370,14 +9590,14 @@ Shiny-based display methods for Bioconductor objects.")
 (define-public r-annotationhub
   (package
     (name "r-annotationhub")
-    (version "2.10.0")
+    (version "2.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AnnotationHub" version))
        (sha256
         (base32
-         "1arfka3czw8hkv6n2d85bgibq81s2rgkwhmpaxzhy6nw39vv7y8b"))))
+         "14v8g44a6zg9j2rwn9x9y8509k0wr2cw8yccliz24glplb40wva4"))))
     (properties `((upstream-name . "AnnotationHub")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10859,3 +11079,32 @@ contains a few programs for model fitting and phylogenetic tree reconstruction
 using nucleotide or amino-acid sequence data.")
     ;; GPLv3 only
     (license license:gpl3)))
+
+(define-public kallisto
+  (package
+    (name "kallisto")
+    (version "0.43.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/pachterlab/"
+                                  "kallisto/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03j3iqhvq7ya3c91gidly3k3jvgm97vjq4scihrlxh315j696r11"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f))          ; no "check" target
+    (inputs
+     `(("hdf5" ,hdf5)
+       ("zlib" ,zlib)))
+    (home-page "http://pachterlab.github.io/kallisto/")
+    (synopsis "Near-optimal RNA-Seq quantification")
+    (description
+     "Kallisto is a program for quantifying abundances of transcripts from
+RNA-Seq data, or more generally of target sequences using high-throughput
+sequencing reads.  It is based on the novel idea of pseudoalignment for
+rapidly determining the compatibility of reads with targets, without the need
+for alignment.  Pseudoalignment of reads preserves the key information needed
+for quantification, and kallisto is therefore not only fast, but also as
+accurate as existing quantification tools.")
+    (license license:bsd-2)))

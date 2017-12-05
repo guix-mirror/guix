@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages direct-connect)
-  #:use-module (guix build-system python)
+  #:use-module (guix build-system scons)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -44,23 +44,11 @@
        (sha256
         (base32
          "12i92hirmwryl1qy0n3jfrpziwzb82f61xca9jcjwyilx502f0b6"))))
-    (build-system python-build-system)
+    (build-system scons-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f ; no tests
-       #:phases
-       ;; TODO: Add scons-build-system and use it here.
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (mkdir-p out)
-               (zero? (system* "scons" (string-append "PREFIX=" out)
-                               "-j" (number->string (parallel-job-count)))))))
-         (replace 'install
-           (lambda _
-             (zero? (system* "scons" "install")))))))
+     `(#:scons ,scons-python2
+       #:scons-flags (list (string-append "PREFIX=" %output))
+       #:tests? #f)) ; no tests
     (inputs
      `(("boost" ,boost)
        ("bzip2" ,bzip2)
@@ -71,8 +59,7 @@
     (native-inputs
      `(("bazaar" ,bazaar)
        ("gettext-minimal" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)
-       ("scons" ,scons)))
+       ("pkg-config" ,pkg-config)))
     (home-page "https://launchpad.net/linuxdcpp/")
     (synopsis "Direct Connect client")
     (description "LinuxDC++ is a Direct Connect (DC) client.  Direct Connect

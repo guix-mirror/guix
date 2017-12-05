@@ -127,7 +127,19 @@
                (install-file "unix/librecad" bin)
                (mkdir-p share)
                (copy-recursively "unix/resources" share))
-             #t)))))
+             #t))
+         ;; Ensure that icons are found at runtime
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (qt '("qtbase" "qtsvg")))
+               (wrap-program (string-append out "/bin/librecad")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins/"))
+                         qt)))
+               #t))))))
     (inputs
      `(("boost" ,boost)
        ("muparser" ,muparser)

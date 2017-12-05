@@ -5,6 +5,8 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1752,6 +1754,70 @@ IcedTea build harness.")
     (native-inputs
      `(("jdk" ,icedtea-7 "jdk")))))
 
+(define-public ant-apache-bcel
+  (package
+    (inherit ant/java8)
+    (name "ant-apache-bcel")
+    (arguments
+     (substitute-keyword-arguments (package-arguments ant/java8)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'link-bcel
+             (lambda* (#:key inputs #:allow-other-keys)
+               (for-each (lambda (file)
+                           (symlink file
+                                    (string-append "lib/optional/"
+                                                   (basename file))))
+                         (find-files (assoc-ref inputs "java-commons-bcel")
+                                     "\\.jar$"))
+               #t))
+           (add-after 'build 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out   (assoc-ref outputs "out"))
+                      (share (string-append out "/share/java"))
+                      (bin   (string-append out "/bin"))
+                      (lib   (string-append out "/lib")))
+                 (mkdir-p share)
+                 (install-file (string-append lib "/ant-apache-bcel.jar") share)
+                 (delete-file-recursively bin)
+                 (delete-file-recursively lib)
+                 #t)))))))
+    (inputs
+     `(("java-commons-bcel" ,java-commons-bcel)
+       ,@(package-inputs ant/java8)))))
+
+(define-public ant-junit
+  (package
+    (inherit ant/java8)
+    (name "ant-junit")
+    (arguments
+     (substitute-keyword-arguments (package-arguments ant/java8)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'link-junit
+             (lambda* (#:key inputs #:allow-other-keys)
+               (for-each (lambda (file)
+                           (symlink file
+                                    (string-append "lib/optional/"
+                                                   (basename file))))
+                         (find-files (assoc-ref inputs "java-junit")
+                                     "\\.jar$"))
+               #t))
+           (add-after 'build 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out   (assoc-ref outputs "out"))
+                      (share (string-append out "/share/java"))
+                      (bin   (string-append out "/bin"))
+                      (lib   (string-append out "/lib")))
+                 (mkdir-p share)
+                 (install-file (string-append lib "/ant-junit.jar") share)
+                 (delete-file-recursively bin)
+                 (delete-file-recursively lib)
+                 #t)))))))
+    (inputs
+     `(("java-junit" ,java-junit)
+       ,@(package-inputs ant/java8)))))
+
 (define-public clojure
   (let* ((remove-archives '(begin
                              (for-each delete-file
@@ -1892,6 +1958,62 @@ designs.")
                      license:bsd-3
                      license:asl2.0
                      license:cpl1.0)))))
+
+(define-public javacc
+  (package
+    (name "javacc")
+    (version "7.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/javacc/javacc/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append "javacc-" version ".tar.gz"))
+              (sha256
+               (base32
+                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-bundled-libs
+           (lambda _
+             (delete-file-recursively "lib") #t))
+         (replace 'install (install-jars "target")))))
+    (home-page "https://javacc.org/")
+    (synopsis "Java parser generator")
+    (description "Java Compiler Compiler (JavaCC) is the most popular parser
+generator for use with Java applications.  A parser generator is a tool that
+reads a grammar specification and converts it to a Java program that can
+recognize matches to the grammar.  In addition to the parser generator itself,
+JavaCC provides other standard capabilities related to parser generation such
+as tree building (via a tool called JJTree included with JavaCC), actions,
+debugging, etc.")
+    (license license:bsd-3)))
+
+(define-public javacc-4
+  (package (inherit javacc)
+    (version "4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/javacc/javacc.git")
+                    (commit "release_41")))
+              (file-name (string-append "javacc-" version "-checkout"))
+              (sha256
+               (base32
+                "07ysav7j8r1c6h8qxrgqk6lwdp74ly0ad1935lragxml0qqc3ka0"))))
+    ;; Tests fail with
+    ;; /tmp/guix-build-javacc-4.1.drv-0/source/test/javacodeLA/build.xml:60:
+    ;; JAVACODE failed
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-bundled-libs
+           (lambda _
+             (delete-file-recursively "lib") #t))
+         (replace 'install (install-jars "bin/lib")))))))
 
 (define-public java-classpathx-servletapi
   (package
@@ -2358,8 +2480,8 @@ these two libraries to vary independently of one another.")
      `(("java-junit" ,java-junit)))
     (home-page "http://codehaus-plexus.github.io/plexus-classworlds/")
     (synopsis "Java class loader framework")
-    (description "Plexus classworlds replaces the native ClassLoader mechanism
-of Java.  It is especially usefull for dynamic loading of application
+    (description "Plexus classworlds replaces the native @code{ClassLoader}
+mechanism of Java.  It is especially useful for dynamic loading of application
 components.")
     (license license:asl2.0)))
 
@@ -2396,9 +2518,9 @@ components.")
        ("junit" ,java-junit)
        ("guava" ,java-guava)))
     (home-page "https://github.com/codehaus-plexus/plexus-containers")
-    (synopsis "Inversion of controll container")
+    (synopsis "Inversion-of-control container")
     (description "Plexus-default-container is Plexus' inversion-of-control
-(IoC) container.  It is composed of its public API and its default
+(@dfn{IoC}) container.  It is composed of its public API and its default
 implementation.")
     (license license:asl2.0)))
 
@@ -2963,7 +3085,7 @@ available in the Java programming language or Commons Lang.")
     (synopsis "Benchmark harness for the JVM")
     (description "JMH is a Java harness for building, running, and analysing
 nano/micro/milli/macro benchmarks written in Java and other languages
-targetting the JVM.")
+targeting the JVM.")
     ;; GPLv2 only
     (license license:gpl2)))
 
@@ -6061,7 +6183,7 @@ the system under test at the same time.")
 (define-public java-fasterxml-jackson-annotations
   (package
     (name "java-fasterxml-jackson-annotations")
-    (version "2.9.1")
+    (version "2.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6069,7 +6191,7 @@ the system under test at the same time.")
                                   "jackson-annotations-" version ".tar.gz"))
               (sha256
                (base32
-                "005ksgqx2ds3zdmlvbcmmz82y28b1mx0i9bpvprim1jaddbba0bd"))))
+                "0b4wdxjxfbl3gkilylfdbl7fzimfpyih676jiwdf19i4056j8lqw"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-annotations.jar"
@@ -6087,7 +6209,7 @@ not included are ones that require dependency to the Databind package.")
 (define-public java-fasterxml-jackson-core
   (package
     (name "java-fasterxml-jackson-core")
-    (version "2.9.1")
+    (version "2.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6095,7 +6217,7 @@ not included are ones that require dependency to the Databind package.")
                                   "jackson-core-" version ".tar.gz"))
               (sha256
                (base32
-                "1sdfp74zvlh4xr5h5bj87yjlp6kny3i8ai9m0q3xs7f8hvmxpx09"))))
+                "0q2d6qnylyxj5jh0sam1b095b5486f7ipzhxgwcgbm254ls7fqc1"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-core.jar"
@@ -6144,7 +6266,7 @@ not included are ones that require dependency to the Databind package.")
 (define-public java-fasterxml-jackson-databind
   (package
     (name "java-fasterxml-jackson-databind")
-    (version "2.9.1")
+    (version "2.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6152,7 +6274,7 @@ not included are ones that require dependency to the Databind package.")
                                   "jackson-databind-" version ".tar.gz"))
               (sha256
                (base32
-                "02xrbj6g7pzybq8q33xmpf7cxfapk6z6lgxvig7d38fijz400lji"))))
+                "1d5ns8ypqhdy8d94i8q560ip9kka6q8lhnk6q7nfh2g9mr22cc4w"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-databind.jar"
@@ -6187,7 +6309,7 @@ configuration.")
 (define-public java-fasterxml-jackson-modules-base-jaxb
   (package
     (name "java-fasterxml-jackson-modules-base-jaxb")
-    (version "2.9.1")
+    (version "2.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6195,7 +6317,7 @@ configuration.")
                                   "jackson-modules-base-" version ".tar.gz"))
               (sha256
                (base32
-                "0bj2pzvycnj3ysbcfa6xl38dmvnp01mnjfcb9jyhv503fch2iv44"))))
+                "0kc19n5a188g4vpyay44xfb7qcabcbfnwzhx1g84lg0sac8lf0ng"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-modules-base-jaxb.jar"
@@ -6257,7 +6379,7 @@ configuration.")
 (define-public java-fasterxml-jackson-dataformat-yaml
   (package
     (name "java-fasterxml-jackson-dataformat-yaml")
-    (version "2.9.1")
+    (version "2.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6265,7 +6387,7 @@ configuration.")
                                   "jackson-dataformats-text-" version ".tar.gz"))
               (sha256
                (base32
-                "140fwcafv05zbh2ppa6z533dzmfcvzbdxf0dbpbyzqvd84v2vhl2"))))
+                "1x7c7v201jpb8ynjsmmq7jj7hyqzzp39jvpr053ggdndm022yzc7"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-dataformat-yaml.jar"
@@ -6366,7 +6488,7 @@ interface and high-performance Typed Access API.")
 (define-public java-fasterxml-jackson-dataformat-xml
   (package
     (name "java-fasterxml-jackson-dataformat-xml")
-    (version "2.9.1")
+    (version "2.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6374,7 +6496,7 @@ interface and high-performance Typed Access API.")
                                   "jackson-dataformat-xml-" version ".tar.gz"))
               (sha256
                (base32
-                "0x3m9n4kwclcyvxhxjx654qpjza4crphml1q2392qpnbfydx6lnh"))))
+                "1j1qanvcdh6afagr67zqrlypjkf0n6wr1qzpbvkw79lii72j6pbr"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-dataformat-xml.jar"
@@ -6458,6 +6580,62 @@ is expressed as the number of significant digits in the value recording, and
 provides control over value quantization behavior across the value range and
 the subsequent value resolution at any given level.")
     (license license:public-domain)))
+
+(define-public java-cofoja
+  (package
+    (name "java-cofoja")
+    (version "1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/nhatminhle/cofoja.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append "java-cofoja-" version "-checkout"))
+              (sha256
+               (base32
+                "0p7sz8y5xgpi5rx1qwn6587fkd52qr3ha3ybh14gqcyxhikl525w"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "dist"
+       #:test-target "test"
+       #:jdk ,icedtea-8
+       #:make-flags
+       (list "-Ddist.dir=dist")
+       #:modules ((guix build ant-build-system)
+                  (guix build java-utils)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (ice-9 match))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The bulid system ignores the class path the ant-build-system sets
+         ;; up and instead expects to find all dependencies in the "lib"
+         ;; directory.
+         (add-after 'unpack 'create-libdir
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "lib")
+             (for-each
+              (lambda (file)
+                (let ((target (string-append "lib/" (basename file))))
+                  (unless (file-exists? target)
+                    (symlink file target))))
+              (append-map (match-lambda
+                            ((label . dir)
+                             (find-files dir "\\.jar$")))
+                          inputs))
+             #t))
+         (replace 'install (install-jars "dist")))))
+    (inputs
+     `(("java-asm" ,java-asm)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/nhatminhle/cofoja")
+    (synopsis "Contracts for Java")
+    (description "Contracts for Java, or Cofoja for short, is a contract
+programming framework and test tool for Java, which uses annotation processing
+and bytecode instrumentation to provide run-time checking. (In particular,
+this is not a static analysis tool.)")
+    (license license:lgpl3+)))
 
 (define-public java-aopalliance
   (package
@@ -6935,6 +7113,63 @@ In addition to the expression language, MVEL serves as a templating language for
 configuration and string construction.")
     (license license:asl2.0)))
 
+(define-public java-commons-jexl-2
+  (package
+    (name "java-commons-jexl")
+    (version "2.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/jexl/source/"
+                                  "commons-jexl-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1ai7632bwwaxglb0nbpblpr2jw5g20afrsaq372ipkphi3ncy1jz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "commons-jexl-2.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-broken-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "src/test/java/org/apache/commons/jexl2/"
+               (substitute* "ArithmeticTest.java"
+                 (("asserter.assertExpression\\(\"3 / 0\"") "//")
+                 (("asserter.assertExpression\\(\"imanull") "//"))
+               ;; This test fails with "ambiguous method invocation"
+               (delete-file "CacheTest.java")
+               ;; This test doesn't have access to the temp directory
+               (substitute* "ClassCreatorTest.java"
+                 (("java.io.tmpdir") "user.dir"))
+               ;; This test fails in trying to detect whether it can run.
+               (substitute* "ClassCreator.java"
+                 (("boolean canRun =.*") "boolean canRun = false;\n"))
+               ;; ...and these tests depend on it.
+               (delete-file "scripting/JexlScriptEngineOptionalTest.java")
+               (delete-file "scripting/JexlScriptEngineTest.java"))
+             #t))
+         (add-before 'build 'run-javacc
+           (lambda _
+             (with-directory-excursion "src/main/java/org/apache/commons/jexl2/parser/"
+               (and (zero? (system* "java" "jjtree" "Parser.jjt"))
+                    (zero? (system* "java" "javacc" "Parser.jj")))))))))
+    (inputs
+     `(("java-commons-logging-minimal" ,java-commons-logging-minimal)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("javacc" ,javacc-4)))
+    (home-page "https://commons.apache.org/proper/commons-jexl/")
+    (synopsis "Java Expression Language ")
+    (description "JEXL is a library intended to facilitate the implementation
+of dynamic and scripting features in applications and frameworks written in
+Java.  JEXL implements an Expression Language based on some extensions to the
+JSTL Expression Language supporting most of the constructs seen in
+shell-script or ECMAScript.  Its goal is to expose scripting features usable
+by technical operatives or consultants working with enterprise platforms.")
+    (license license:asl2.0)))
+
 (define-public java-lz4
   (package
     (name "java-lz4")
@@ -7066,6 +7301,41 @@ for high performance inter-thread communication that avoids the need for
 message queues or resource locking.")
     (license license:asl2.0)))
 
+(define-public java-commons-bcel
+  (package
+    (name "java-commons-bcel")
+    (version "6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/bcel/source/bcel-"
+                                  version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0j3x1rxd673k07psclk8k13rqh0x0mf2yy5qiwkiw4z3afa568jy"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "bcel.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main/java"
+       #:test-dir "src/test/java"
+       ;; FIXME: Tests require the unpackaged jna.
+       #:tests? #f))
+    (home-page "https://commons.apache.org/proper/commons-bcel/")
+    (synopsis "Byte code engineering library")
+    (description "The Byte Code Engineering Library (Apache Commons BCEL) is
+intended to give users a convenient way to analyze, create, and
+manipulate (binary) Java class files.  Classes are represented by objects
+which contain all the symbolic information of the given class: methods, fields
+and byte code instructions, in particular.
+
+Such objects can be read from an existing file, be transformed by a
+program (e.g. a class loader at run-time) and written to a file again.  An
+even more interesting application is the creation of classes from scratch at
+run-time.  The @dfn{Byte Code Engineering Library} (BCEL) may be also useful
+if you want to learn about the @dfn{Java Virtual Machine} (JVM) and the format
+of Java @code{.class} files.")
+    (license license:asl2.0)))
+
 (define-public java-xerial-core
   (package
     (name "java-xerial-core")
@@ -7094,9 +7364,9 @@ message queues or resource locking.")
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-core)))
     (home-page "https://github.com/xerial/xerial-java")
-    (synopsis "Data managment libraries for Java")
+    (synopsis "Data management libraries for Java")
     (description "Xerial is a set of data management libraries for the Java
-programming language.  The ulitimate goal of the Xerial project is to manage
+programming language.  The ultimate goal of the Xerial project is to manage
 everything as database, including class objects, text format data, data
 streams, etc.")
     (license license:asl2.0)))

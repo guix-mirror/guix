@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;;
@@ -78,11 +78,12 @@ identical, #f otherwise."
 
 (define* (union-build output inputs
                       #:key (log-port (current-error-port))
-                      (create-all-directories? #f))
+                      (create-all-directories? #f)
+                      (symlink symlink))
   "Build in the OUTPUT directory a symlink tree that is the union of all the
-INPUTS.  As a special case, if CREATE-ALL-DIRECTORIES?, creates the
-subdirectories in the output directory to make sure the caller can modify them
-later."
+INPUTS, using SYMLINK to create symlinks.  As a special case, if
+CREATE-ALL-DIRECTORIES?, creates the subdirectories in the output directory to
+make sure the caller can modify them later."
 
   (define (symlink* input output)
     (format log-port "`~a' ~~> `~a'~%" input output)

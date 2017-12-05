@@ -4855,7 +4855,7 @@ an X Window System display.")
 (define-public libxfont
   (package
     (name "libxfont")
-    (version "1.5.3")
+    (version "1.5.4")
     (source
       (origin
         (method url-fetch)
@@ -4865,7 +4865,7 @@ an X Window System display.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1l4k3i3xzqdmaszykh6bb2ah78p6c3z7fak7xzgq2d38s87w31db"))))
+            "0hiji1bvpl78aj3a3141hkk353aich71wv8l5l2z51scfy878zqs"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fontsproto" ,fontsproto)
@@ -4892,6 +4892,7 @@ new API's in libXft, or the legacy API's in libX11.")
   (package
     (inherit libxfont)
     (version "2.0.2")
+    (replacement libxfont2-2.0.3)
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
@@ -4899,6 +4900,23 @@ new API's in libXft, or the legacy API's in libX11.")
               (sha256
                (base32
                 "04f1lswh1ridkycgaivf1hrr77l5ap8smbfr2rqjrm7phwxqs24l"))))))
+
+;; Fixes the following security vulnerabilities:
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-13720
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-13722
+;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-16612
+(define-public libxfont2-2.0.3
+  (package
+    (inherit libxfont2)
+    (version "2.0.3")
+    (source
+     (origin
+       (inherit (package-source libxfont2))
+       (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0klwmimmhm3axpj8pwn5l41lbggh47r5aazhw63zxkbwfgyvg2hf"))))))
 
 (define-public libxi
   (package
@@ -5297,6 +5315,7 @@ draggable titlebars and borders.")
   (package
     (name "libxcursor")
     (version "1.1.14")
+    (replacement libxcursor-1.1.15)
     (source
       (origin
         (method url-fetch)
@@ -5329,6 +5348,18 @@ draggable titlebars and borders.")
     (description "Xorg Cursor management library.")
     (license license:x11)))
 
+;; For CVE-2017-16612.
+(define-public libxcursor-1.1.15
+  (package
+    (inherit libxcursor)
+    (version "1.1.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/lib/libXcursor-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0syzlfvh29037p0vnlc8f3jxz8nl55k65blswsakklkwsc6nfki9"))))))
 
 (define-public libxt
   (package

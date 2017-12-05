@@ -550,7 +550,8 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
     (native-inputs
      `(("intltool" ,intltool)))
     (inputs
-     `(("python2-nbxmpp" ,python2-nbxmpp)
+     `(("python2-axolotl" ,python2-axolotl)
+       ("python2-nbxmpp" ,python2-nbxmpp)
        ("python2-pyopenssl" ,python2-pyopenssl)
        ("python2-gnupg" ,python2-gnupg)
        ("python2-pygtk" ,python2-pygtk)
@@ -634,14 +635,14 @@ a graphical desktop environment like GNOME.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.9.12")
+    (version "0.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "139yxqpinajl32ryrybvilh54ddb1q6s0ajjhlcs4a0rnwia6n8s"))))
+                "1644jy5dk46vahmh6nna36s79k8k668sbi3qamjb4q3c4m3y853l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -707,7 +708,10 @@ a graphical desktop environment like GNOME.")
     (inputs
      `(("libidn" ,libidn)
        ("openssl" ,openssl)
+       ;; Lua 5.1 is still recommended for production usage.
+       ;; See https://prosody.im/doc/packagers.
        ("lua" ,lua-5.1)
+       ("lua5.1-bitop" ,lua5.1-bitop)
        ("lua5.1-expat" ,lua5.1-expat)
        ("lua5.1-socket" ,lua5.1-socket)
        ("lua5.1-filesystem" ,lua5.1-filesystem)
@@ -768,7 +772,7 @@ protocols.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.1.9")
+    (version "0.1.10")
     (source
      (origin
        (method url-fetch)
@@ -777,7 +781,7 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1y30xc1dzq9knww274d4y0m8gridcf5j851rxdri8j2s64p3qqgk"))))
+         "1lbvq9pp1ganjk5lql5lzcn8bcmgfi8y026pb2j2nq8yldqrrjby"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -795,7 +799,7 @@ messenger protocol.")
 (define-public utox
   (package
    (name "utox")
-   (version "0.11.0")
+   (version "0.16.1")
    (source
     (origin
      (method url-fetch)
@@ -804,37 +808,42 @@ messenger protocol.")
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
       (base32
-       "15s4iwjk1s0kihjqn0f07c9618clbphpr827mds3xddkiwnjz37v"))))
+       "14xl72y4w1x2kk0cvkcr9pmywllm0r9w2grjqiknwn95pw6yxz6q"))))
    (build-system cmake-build-system)
    (arguments
-    '(#:tests? #f ; No test phase.
-      #:phases
+    `(#:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'fix-freetype-include
-          (lambda _
-            (substitute* "CMakeLists.txt"
-              (("/usr/include/freetype2")
-               (string-append (assoc-ref %build-inputs "freetype")
-                              "/include/freetype2")))))
-        (add-before 'install 'patch-cmake-find-utox
-          (lambda _
-            (substitute* "../build/cmake_install.cmake"
-              (("/uTox-0.11.0/utox")
-               "/build/utox")))))))
+        (add-before 'build 'patch-absolute-filename-libgtk-3
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "../uTox-0.16.1/src/xlib/gtk.c"
+                         (("libgtk-3.so")
+                         (string-append (assoc-ref inputs "gtk+")
+                                        "/lib/libgtk-3.so")))))
+        (add-after 'install 'wrap-program
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (wrap-program (string-append (assoc-ref outputs "out")
+                                         "/bin/utox")
+            ;; For GtkFileChooserDialog.
+            `("GSETTINGS_SCHEMA_DIR" =
+              (,(string-append (assoc-ref inputs "gtk+")
+                               "/share/glib-2.0/schemas")))))))))
    (inputs
-    ;; TODO: Fix the file chooser dialog; which input does it need?
     `(("dbus" ,dbus)
       ("filteraudio" ,filteraudio)
       ("fontconfig" ,fontconfig)
       ("freetype" ,freetype)
       ("libsodium" ,libsodium)
       ("c-toxcore" ,c-toxcore)
+      ("gtk+" ,gtk+)
       ("libvpx" ,libvpx)
       ("libx11" ,libx11)
       ("libxext" ,libxext)
       ("libxrender" ,libxrender)
       ("openal" ,openal)
       ("v4l-utils" ,v4l-utils)))
+   (native-inputs
+    `(("check" ,check)
+      ("pkg-config" ,pkg-config)))
    (synopsis "Lightweight Tox client")
    (description
     "Utox is a lightweight Tox client.  Tox is a distributed and secure
@@ -845,14 +854,14 @@ instant messenger with audio and video chat capabilities.")
 (define-public qtox
   (package
     (name "qtox")
-    (version "1.12.1")
+    (version "1.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/qTox/qTox/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dwy0abcxzzcybww2xi33cla71a7752cq02qswcks5kbxnf5pck5"))
+                "0dyplmlqhg4zbg7hdzp3iqppn9xgp7pds5k6w6byjcqhb9zv91ca"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -867,6 +876,7 @@ instant messenger with audio and video chat capabilities.")
              #t)))))
     (inputs
      `(("ffmpeg" ,ffmpeg-3.3)
+       ("filteraudio", filteraudio)
        ("glib" ,glib)
        ("gtk+" ,gtk+-2)
        ("libsodium" ,libsodium)

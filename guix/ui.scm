@@ -28,6 +28,7 @@
 (define-module (guix ui)
   #:use-module (guix i18n)
   #:use-module (guix gexp)
+  #:use-module (guix sets)
   #:use-module (guix utils)
   #:use-module (guix store)
   #:use-module (guix config)
@@ -194,7 +195,7 @@ messages."
   (catch #t
     (lambda ()
       ;; XXX: Force a recompilation to avoid ABI issues.
-      (set! %fresh-auto-compile #t)
+      ;; (set! %fresh-auto-compile #t)
       (set! %load-should-auto-compile #t)
 
       (save-module-excursion
@@ -253,8 +254,9 @@ VARIABLE and return it, or #f if none was found."
          (_ #t)))
       (_ #f)))
 
-  (let loop ((modules (list (resolve-module '() #f #f #:ensure #f)))
-             (suggestions '()))
+  (let loop ((modules     (list (resolve-module '() #f #f #:ensure #f)))
+             (suggestions '())
+             (visited     (setq)))
     (match modules
       (()
        ;; Pick the "best" suggestion.
@@ -262,16 +264,19 @@ VARIABLE and return it, or #f if none was found."
          (() #f)
          ((first _ ...) first)))
       ((head tail ...)
-       (let ((next (append tail
-                           (hash-map->list (lambda (name module)
-                                             module)
-                                           (module-submodules head)))))
-         (match (module-local-variable head variable)
-           (#f (loop next suggestions))
-           (_
-            (match (module-name head)
-              (('gnu _ ...) head)                 ;must be that one
-              (_ (loop next (cons head suggestions)))))))))))
+       (if (set-contains? visited head)
+           (loop tail suggestions visited)
+           (let ((visited (set-insert head visited))
+                 (next    (append tail
+                                  (hash-map->list (lambda (name module)
+                                                    module)
+                                                  (module-submodules head)))))
+             (match (module-local-variable head variable)
+               (#f (loop next suggestions visited))
+               (_
+                (match (module-name head)
+                  (('gnu _ ...) head)             ;must be that one
+                  (_ (loop next (cons head suggestions) visited)))))))))))
 
 (define* (display-hint message #:optional (port (current-error-port)))
   "Display MESSAGE, a l10n message possibly containing Texinfo markup, to
@@ -308,7 +313,7 @@ ARGS is the list of arguments received by the 'throw' handler."
        (#f
         (display-hint (G_ "Did you forget a @code{use-modules} form?")))
        (module
-        (display-hint (format #f (G_ "Try adding @code{(use-modules ~a)}.")
+        (display-hint (format #f (G_ "Did you forget @code{(use-modules ~a)}?")
                               (module-name module))))))
     (('srfi-34 obj)
      (if (message-condition? obj)
@@ -545,19 +550,24 @@ interpreted."
                                    (manifest-entry-version parent))
                      (report-parent-entries parent))))
 
-               (report-error (G_ "profile contains conflicting entries for ~a:~a~%")
+               (define (manifest-entry-output* entry)
+                 (match (manifest-entry-output entry)
+                   ("out"   "")
+                   (output (string-append ":" output))))
+
+               (report-error (G_ "profile contains conflicting entries for ~a~a~%")
                              (manifest-entry-name entry)
-                             (manifest-entry-output entry))
-               (report-error (G_ "  first entry: ~a@~a:~a ~a~%")
+                             (manifest-entry-output* entry))
+               (report-error (G_ "  first entry: ~a@~a~a ~a~%")
                              (manifest-entry-name entry)
                              (manifest-entry-version entry)
-                             (manifest-entry-output entry)
+                             (manifest-entry-output* entry)
                              (manifest-entry-item entry))
                (report-parent-entries entry)
-               (report-error (G_ "  second entry: ~a@~a:~a ~a~%")
+               (report-error (G_ "  second entry: ~a@~a~a ~a~%")
                              (manifest-entry-name conflict)
                              (manifest-entry-version conflict)
-                             (manifest-entry-output conflict)
+                             (manifest-entry-output* conflict)
                              (manifest-entry-item conflict))
                (report-parent-entries conflict)
                (exit 1)))
