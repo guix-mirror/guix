@@ -377,7 +377,7 @@ when typing parentheses directly or commenting out code line by line.")
 
 (define-public git-modes
   (package
-    (name "git-modes")
+    (name "emacs-git-modes")
     (version "1.2.6")
     (source (origin
               (method url-fetch)
@@ -395,6 +395,9 @@ when typing parentheses directly or commenting out code line by line.")
      "This package provides Emacs major modes for editing various Git
 configuration files, such as .gitattributes, .gitignore, and .git/config.")
     (license license:gpl3+)))
+
+(define-public git-modes/old-name
+  (deprecated-package "git-modes" git-modes))
 
 (define-public emacs-with-editor
   (package
