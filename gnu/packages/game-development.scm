@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1014,7 +1015,7 @@ of use.")
 (define-public openmw
   (package
     (name "openmw")
-    (version "0.42.0")
+    (version "0.43.0")
     (source
      (origin
        (method url-fetch)
@@ -1023,7 +1024,7 @@ of use.")
                        name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1pla8016lpbg8cgm9kia318a860f26dmiayc72p3zl35mqrc7g7w"))))
+         "11phjx7b3mv4n295xgq25lkcwq0mgr35i5k05hf1h77y6n6jbw64"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
