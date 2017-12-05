@@ -107,9 +107,12 @@ for screen-scraping.")
         (base32
          "08w30rf1i7kbh2j1iajqmj6yhhmglnb8kjggc8kdni3xahhrgcss"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: Tests cannot find
-                               ; Blaze.Bytestring.Builder, which should be
-                               ; provided by ghc-blaze-builder.
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("hspec-discover" ,hspec-discover)))
     (inputs
      `(("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-blaze-builder" ,ghc-blaze-builder)
