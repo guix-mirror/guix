@@ -5296,8 +5296,7 @@ draggable titlebars and borders.")
 (define-public libxcursor
   (package
     (name "libxcursor")
-    (version "1.1.14")
-    (replacement libxcursor-1.1.15)
+    (version "1.1.15")
     (source
       (origin
         (method url-fetch)
@@ -5307,7 +5306,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1prkdicl5y5yx32h1azh6gjfbijvjp415javv8dsakd13jrarilv"))))
+            "0syzlfvh29037p0vnlc8f3jxz8nl55k65blswsakklkwsc6nfki9"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libx11" ,libx11)
@@ -5329,19 +5328,6 @@ draggable titlebars and borders.")
     (synopsis "Xorg Cursor management library")
     (description "Xorg Cursor management library.")
     (license license:x11)))
-
-;; For CVE-2017-16612.
-(define-public libxcursor-1.1.15
-  (package
-    (inherit libxcursor)
-    (version "1.1.15")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://xorg/individual/lib/libXcursor-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "0syzlfvh29037p0vnlc8f3jxz8nl55k65blswsakklkwsc6nfki9"))))))
 
 (define-public libxt
   (package
