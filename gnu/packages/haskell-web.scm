@@ -95,7 +95,7 @@ for screen-scraping.")
 (define-public ghc-http-types
   (package
     (name "ghc-http-types")
-    (version "0.9")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
@@ -105,7 +105,7 @@ for screen-scraping.")
              ".tar.gz"))
        (sha256
         (base32
-         "0ny15jgm5skhs2yx6snr13lrnw19hwjgfygrpsmhib8wqa8cz8cc"))))
+         "08w30rf1i7kbh2j1iajqmj6yhhmglnb8kjggc8kdni3xahhrgcss"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Tests cannot find
                                ; Blaze.Bytestring.Builder, which should be
