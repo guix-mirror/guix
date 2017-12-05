@@ -62,7 +62,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (gpl2 gpl2+ lgpl2.1 lgpl2.1+))
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+ gpl3+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
@@ -687,3 +687,25 @@ mainly implemented in user space.")
     ;; The project is licensed under GPLv2; files in the lib/ directory are
     ;; LGPLv2.1.
     (license (list gpl2 lgpl2.1))))
+
+(define-public qmpbackup
+  (package
+    (name "qmpbackup")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/abbbi/qmpbackup/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "10k9mnb1yrg4gw1rvz4kw4dxc4aajl8gnjrpm3axqkg63qmxj3qn"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://github.com/abbbi/qmpbackup")
+    (synopsis "Backup and restore QEMU machines")
+    (description "qmpbackup is designed to create and restore full and
+incremental backups of running QEMU virtual machines via QMP, the QEMU
+Machine Protocol.")
+    (license gpl3+)))
