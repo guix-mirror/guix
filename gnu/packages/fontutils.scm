@@ -577,7 +577,7 @@ generate bitmaps.")
      `(("python2-fonttools" ,python2-fonttools)))
     (native-inputs
      `(("unzip" ,unzip)
-       ("python2-pytest-3.0" ,python2-pytest-3.0)
+       ("python2-pytest" ,python2-pytest)
        ("python2-pytest-runner" ,python2-pytest-runner)))
     (home-page "https://github.com/unified-font-object/ufoLib")
     (synopsis "Low-level UFO reader and writer")
@@ -602,7 +602,7 @@ files.  UFO is a file format that stores fonts source files.")
      `(#:python ,python-2))
     (native-inputs
      `(("unzip" ,unzip)
-       ("python2-pytest-3.0" ,python2-pytest-3.0)
+       ("python2-pytest" ,python2-pytest)
        ("python2-pytest-runner" ,python2-pytest-runner)))
     (propagated-inputs
      `(("python2-fonttools" ,python2-fonttools)

@@ -11944,7 +11944,7 @@ services.")
          "1nii1sz5jq75ilf18bjnr11l9rz1lvdmyk66bxl7q90qan85yhjj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest-3.0" ,python-pytest-3.0)))
+     `(("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/Changaco/setuptools_scm_git_archive/")
@@ -12002,7 +12002,7 @@ belong to tagged versions.")
      `(#:python ,python-2))
     (native-inputs
      `(("unzip" ,unzip)
-       ("python2-pytest-3.0" ,python2-pytest-3.0)
+       ("python2-pytest" ,python2-pytest)
        ("python2-pytest-runner" ,python2-pytest-runner)))
     (propagated-inputs
      `(("python-fonttools" ,python2-fonttools)
