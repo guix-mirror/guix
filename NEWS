@@ -44,6 +44,7 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** ‘guix system disk-image’ can now creates ISO-9660 images
 *** ‘guix system vm-image’ & co. automatically estimate the image size
 *** ‘guix system vm’ now uses overlayfs instead of unionfs
+*** ‘guix system init’ displays a progress bar while copying files
 *** TeX Live is now also available as a set of small ‘texlive-’ packages
 *** New ‘guix system search’ command to search for services
 *** New services
@@ -81,6 +82,8 @@ murmur, rsync, tailon, sysctl
     (<https://bugs.gnu.org/25958>)
 *** Setuid programs now honor the system timezone
     (<https://bugs.gnu.org/29212>)
+*** ‘guix substitute’ honors substitute expiry time again
+    (<https://lists.gnu.org/archive/html/guix-devel/2017-07/msg00179.html>)
 
 ** Native language support
 
