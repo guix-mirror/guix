@@ -660,6 +660,24 @@
 ;;     (package-cross-derivation %store p "mips64el-linux-gnu"
 ;;                               #:graft? #t)))
 
+;; It doesn't make sense for 'package-grafts' to look at native inputs since,
+;; by definition, they are not referenced at run time.  Make sure
+;; 'package-grafts' respects this.
+(test-equal "package-grafts, grafts of native inputs ignored"
+  '()
+  (let* ((new   (dummy-package "native-dep"
+                  (version "0.1")
+                  (arguments '(#:implicit-inputs? #f))))
+         (ndep  (package (inherit new) (version "0.0")
+                         (replacement new)))
+         (dep   (dummy-package "dep"
+                  (arguments '(#:implicit-inputs? #f))))
+         (dummy (dummy-package "dummy"
+                  (arguments '(#:implicit-inputs? #f))
+                  (native-inputs `(("ndep" ,ndep)))
+                  (inputs `(("dep" ,dep))))))
+    (package-grafts %store dummy)))
+
 (test-assert "package-grafts, indirect grafts"
   (let* ((new   (dummy-package "dep"
                   (arguments '(#:implicit-inputs? #f))))

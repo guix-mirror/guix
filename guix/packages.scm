@@ -1004,7 +1004,21 @@ dependencies; otherwise, restrict to target dependencies."
                   (if (bag-target bag)
                       '()
                       (bag-host-inputs bag))))
-        bag-host-inputs))
+        (lambda (bag)
+          (if (bag-target bag)
+              (bag-host-inputs bag)
+
+              ;; XXX: Currently libc wrongfully ends up in 'build-inputs',
+              ;; even tough it's something that's still referenced at run time
+              ;; and thus conceptually a 'host-inputs'.  Because of that, we
+              ;; re-add it here.
+              (if (assoc-ref (bag-host-inputs bag) "libc")
+                  (bag-host-inputs bag)
+                  (append (let ((libc (assoc-ref (bag-build-inputs bag)
+                                                 "libc")))
+                            (or (and libc `(("libc" ,@libc)))
+                                '()))
+                          (bag-host-inputs bag)))))))
 
   (define nodes
     (match (bag-direct-inputs* bag)
@@ -1038,33 +1052,28 @@ to (see 'graft-derivation'.)"
   (define system (bag-system bag))
   (define target (bag-target bag))
 
-  (define native-grafts
-    (let ((->graft (input-graft store system)))
-      (fold-bag-dependencies (lambda (package grafts)
-                               (match (->graft package)
-                                 (#f    grafts)
-                                 (graft (cons graft grafts))))
-                             '()
-                             bag)))
+  (define (grafts package->graft)
+    (fold-bag-dependencies (lambda (package grafts)
+                             (match (package->graft package)
+                               (#f    grafts)
+                               (graft (cons graft grafts))))
+                           '()
+                           bag
 
-  (define target-grafts
-    (if target
-        (let ((->graft (input-cross-graft store target system)))
-          (fold-bag-dependencies (lambda (package grafts)
-                                   (match (->graft package)
-                                     (#f    grafts)
-                                     (graft (cons graft grafts))))
-                                 '()
-                                 bag
-                                 #:native? #f))
-        '()))
+                           ;; Grafts that apply to native inputs do not matter
+                           ;; since, by definition, native inputs are not
+                           ;; referred to at run time.  Thus, ignore
+                           ;; 'native-inputs' and focus on the others.
+                           #:native? #f))
 
   ;; We can end up with several identical grafts if we stumble upon packages
   ;; that are not 'eq?' but map to the same derivation (this can happen when
   ;; using things like 'package-with-explicit-inputs'.)  Hence the
   ;; 'delete-duplicates' call.
   (delete-duplicates
-   (append native-grafts target-grafts)))
+   (if target
+       (grafts (input-cross-graft store target system))
+       (grafts (input-graft store system)))))
 
 (define* (package-grafts store package
                          #:optional (system (%current-system))
