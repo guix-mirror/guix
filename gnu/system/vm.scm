@@ -175,6 +175,10 @@ made available under the /xchg CIFS share."
                                 #:memory-size #$memory-size
                                 #:make-disk-image? #$make-disk-image?
                                 #:single-file-output? #$single-file-output?
+                                ;; FIXME: ‘target-arm32?’ may not operate on
+                                ;; the right system/target values.  Rewrite
+                                ;; using ‘let-system’ when available.
+                                #:target-arm32? #$(target-arm32?)
                                 #:disk-image-format #$disk-image-format
                                 #:disk-image-size size
                                 #:references-graphs graphs)))))
