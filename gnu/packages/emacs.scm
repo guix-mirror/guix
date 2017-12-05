@@ -4260,7 +4260,7 @@ reproducible research.")
                #t))))))
     (propagated-inputs
      `(("emacs-org" ,emacs-org)))
-    (synopsis "Contributed packages to Org-mode")
+    (synopsis "Contributed packages to Org mode")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
 lists, and project planning with a fast and effective plain-text system.
 
