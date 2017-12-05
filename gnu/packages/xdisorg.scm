@@ -621,13 +621,12 @@ to find buttons, etc, on the screen to click on.")
     (version "5.47")
     (source (origin
              (method url-fetch)
-             (uri (list (string-append
-                          "http://www.tux.org/~bagleyd/xlock/xlockmore-"
-                          version ".tar.xz")
-                        (string-append
-                          "http://www.tux.org/~bagleyd/xlock/xlockmore-old"
-                          "/xlockmore-" version
-                          "/xlockmore-" version ".tar.xz")))
+             (uri (list (string-append "http://sillycycle.com/xlock/"
+                                       name "-" version ".tar.xz")
+                        ;; Previous releases are moved to a subdirectory.
+                        (string-append "http://sillycycle.com/xlock/"
+                                       "recent-releases/"
+                                       name "-" version ".tar.xz")))
              (sha256
               (base32
                "138d79b8zc2hambbr9fnxp3fhihlcljgqns04zf0kv2f53pavqwl"))))
@@ -642,7 +641,7 @@ to find buttons, etc, on the screen to click on.")
        ("libXext" ,libxext)
        ("libXt" ,libxt)
        ("linux-pam" ,linux-pam)))
-    (home-page "http://www.tux.org/~bagleyd/xlockmore.html")
+    (home-page "http://sillycycle.com/xlockmore.html")
     (synopsis "Screen locker for the X Window System")
     (description
      "XLockMore is a classic screen locker and screen saver for the
