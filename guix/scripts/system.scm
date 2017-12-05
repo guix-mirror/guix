@@ -674,9 +674,11 @@ any, are available.  Raise an error if they're not."
 and TARGET arguments."
   (with-monad %store-monad
     (gexp->file "bootloader-installer"
-                (with-imported-modules '((guix build utils))
+                (with-imported-modules '((gnu build bootloader)
+                                         (guix build utils))
                   #~(begin
-                      (use-modules (guix build utils)
+                      (use-modules (gnu build bootloader)
+                                   (guix build utils)
                                    (ice-9 binary-ports))
                       (#$installer #$bootloader #$device #$target))))))
 

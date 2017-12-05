@@ -277,10 +277,12 @@ register INPUTS in the store database of the image so that Guix can be used in
 the image."
   (expression->derivation-in-linux-vm
    name
-   (with-imported-modules (source-module-closure '((gnu build vm)
+   (with-imported-modules (source-module-closure '((gnu build bootloader)
+                                                   (gnu build vm)
                                                    (guix build utils)))
      #~(begin
-         (use-modules (gnu build vm)
+         (use-modules (gnu build bootloader)
+                      (gnu build vm)
                       (guix build utils)
                       (srfi srfi-26)
                       (ice-9 binary-ports))
