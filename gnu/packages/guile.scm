@@ -221,7 +221,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
-    (version "2.2.2")                      ;TODO: Update to 2.2.3 (see below).
+    (version "2.2.3")
     (source (origin
               (method url-fetch)
 
@@ -231,7 +231,7 @@ without requiring the source code to be rewritten.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "1azm25zcmxif0skxfrp11d2wc89nrzpjaann9yxdw6pvjxhs948w"))
+                "11j01agvnci2cx32wwpqs9078856yxmvs15gcsz7ganpkj2ahlw3"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
@@ -250,21 +250,6 @@ without requiring the source code to be rewritten.")
             (variable "GUILE_LOAD_COMPILED_PATH")
             (files '("lib/guile/2.2/site-ccache"
                      "share/guile/site/2.2")))))))
-
-(define-public guile-2.2.3
-  ;; TODO: Make it the new 'guile-2.2' on the next rebuild cycle.
-  (package
-    (inherit guile-2.2)
-    (version "2.2.3")
-    (source (origin (inherit (package-source guile-2.2))
-                    (uri (list (string-append "mirror://gnu/guile/guile-"
-                                              version ".tar.xz")
-                               (string-append
-                                "https://wingolog.org/priv/guile-"
-                                version ".tar.xz")))
-                    (sha256
-                     (base32
-                      "11j01agvnci2cx32wwpqs9078856yxmvs15gcsz7ganpkj2ahlw3"))))))
 
 (define-public guile-2.2/fixed
   ;; A package of Guile 2.2 that's rarely changed.  It is the one used
