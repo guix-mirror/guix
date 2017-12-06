@@ -68,7 +68,7 @@ framework.")
 (define-public ghc-tasty-smallcheck
   (package
     (name "ghc-tasty-smallcheck")
-    (version "0.8.0.1")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
@@ -78,7 +78,7 @@ framework.")
              ".tar.gz"))
        (sha256
         (base32
-         "0yckfbz8na8ccyw2911i3a4hd3fdncclk3ng5343hs5cylw6y4sm"))))
+         "1n66ngzllf3xrlqykwszlkwsi96n5nkm7xbpfq7774vpvfnafjri"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tasty" ,ghc-tasty)
