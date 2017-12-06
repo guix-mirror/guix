@@ -1276,7 +1276,7 @@ module, and nothing else.")
 (define-public perl-sql-abstract
   (package
     (name "perl-sql-abstract")
-    (version "1.81")
+    (version "1.84")
     (source
      (origin
        (method url-fetch)
@@ -1284,7 +1284,7 @@ module, and nothing else.")
                            "SQL-Abstract-" version ".tar.gz"))
        (sha256
         (base32
-         "17sgwq3mvqjhv3b77cnvrq60xgp8harjhlnvpwmxc914rqc5ckaz"))))
+         "0xayvgv6nic61jm3nhg41rzwgm8h83wfyazvpaks0z7asjillpv5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
