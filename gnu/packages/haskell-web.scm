@@ -296,7 +296,7 @@ and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
 (define-public ghc-http-conduit
   (package
     (name  "ghc-http-conduit")
-    (version "2.2.3.1")
+    (version "2.2.4")
     (source
      (origin
        (method url-fetch)
@@ -304,7 +304,7 @@ and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
                            "http-conduit-" version "/" "http-conduit-"
                            version ".tar.gz"))
        (sha256 (base32
-                "03na2nbm9la0shlijvjyb5mpp1prfskk4jmjy8iz707r0731dbjk"))))
+                "1wcl3lpg4v1ylq9j77j9fmf6l9qbmp8dmj3a9829q19q6bbgza7l"))))
     (build-system haskell-build-system)
     ;; FIXME: `httpLbs TLS` in test-suite `test` fails with
     ;; ConnectionFailure getProtocolByName: does not exist (no such protocol
