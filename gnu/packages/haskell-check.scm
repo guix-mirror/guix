@@ -366,7 +366,7 @@ testing Unicode-related software.")
 (define-public ghc-quickcheck-io
   (package
     (name "ghc-quickcheck-io")
-    (version "0.1.2")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
@@ -376,7 +376,7 @@ testing Unicode-related software.")
              ".tar.gz"))
        (sha256
         (base32
-         "1kf1kfw9fsmly0rvzvdf6jvdw10qhkmikyj0wcwciw6wad95w9sh"))))
+         "08k4v7pkgjf30pv5j2dfv1gqv6hclxlniyq2sps8zq4zswcr2xzv"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
