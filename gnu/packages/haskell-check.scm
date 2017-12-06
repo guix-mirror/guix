@@ -455,7 +455,7 @@ reporting and test statistics output.")
 (define-public ghc-test-framework-hunit
   (package
     (name "ghc-test-framework-hunit")
-    (version "0.3.0.1")
+    (version "0.3.0.2")
     (source
      (origin
        (method url-fetch)
@@ -464,7 +464,7 @@ reporting and test statistics output.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1h0h55kf6ff25nbfx1mhliwyknc0glwv3zi78wpzllbjbs7gvyfk"))))
+         "1y0b6vg8nfm43v90lxxcydhi6qlxhfy4vpxbzm5ic2w55bh8xjwm"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
