@@ -122,7 +122,7 @@ Haskell test framework.")
 (define-public ghc-tasty-golden
   (package
     (name "ghc-tasty-golden")
-    (version "2.3.0.2")
+    (version "2.3.1.1")
     (source
      (origin
        (method url-fetch)
@@ -132,7 +132,7 @@ Haskell test framework.")
              ".tar.gz"))
        (sha256
         (base32
-         "0n7nll1sx75n3lffwhgnjrxdn0jz1g0921z9mj193fxqw0wz8axh"))))
+         "0pcf5hsyp5mmbqn7krdm49jxpkjm6rb4j83j28f76h7q55dzm1wy"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-temporary" ,ghc-temporary)
