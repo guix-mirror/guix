@@ -5992,7 +5992,7 @@ Import metadata from @uref{https://www.metacpan.org/, MetaCPAN}@footnote{This
 functionality requires Guile-JSON to be installed.
 @xref{Requirements}.}.
 Information is taken from the JSON-formatted metadata provided through
-@uref{https://api.metacpan.org/, MetaCPAN's API} and includes most
+@uref{https://fastapi.metacpan.org/, MetaCPAN's API} and includes most
 relevant information, such as module dependencies.  License information
 should be checked closely.  If Perl is available in the store, then the
 @code{corelist} utility will be used to filter core modules out of the
