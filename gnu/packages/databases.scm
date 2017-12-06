@@ -1204,7 +1204,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-pg
   (package
     (name "perl-dbd-pg")
-    (version "3.5.3")
+    (version "3.7.0")
     (source
      (origin
        (method url-fetch)
@@ -1212,7 +1212,7 @@ columns, primary keys, unique constraints and relationships.")
                            "DBD-Pg-" version ".tar.gz"))
        (sha256
         (base32
-         "03m9w1cd0yyrbqwkwcl92j1cpmasmm69f3hwvcrlfsi5fnwsk63y"))))
+         "0nb4wmkhq1q9f4g42sxy1m3d0xjqd3plqkxpmzni43ygr5ch8vp3"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-dbi" ,perl-dbi)))
