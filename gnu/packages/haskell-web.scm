@@ -201,7 +201,7 @@ for more user-friendly packages.")
 (define-public ghc-http-client-tls
   (package
     (name "ghc-http-client-tls")
-    (version "0.3.4.1")
+    (version "0.3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -209,7 +209,7 @@ for more user-friendly packages.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1mbwdfn4hs8lcwml2l6xv4n068l9zlasyv6vwb2ylgm030pyv3xh"))))
+                "0n4mi8z77qaggfyq17z79cl304nf1f4h6gag60v4wjwghvmj7yn1"))))
     (build-system haskell-build-system)
     ;; Tests require Internet access
     (arguments `(#:tests? #f))
