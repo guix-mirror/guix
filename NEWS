@@ -20,6 +20,7 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** ‘guix package --search’ sorts results by relevance
 *** ‘guix pull’ now fetches code directly over Git using Guile-Git
 *** Substitutes can be downloaded from servers equivalent to the authorized ones
+*** New ‘guix-daemon’ options: ‘--listen’, ‘--timeout’, ‘--max-silent-time’
 *** New ‘guix weather’ command
 *** ‘guix publish --cache’ now also caches uncompressed items
 *** ‘guix publish’ no longer removes live items from its cache
@@ -82,8 +83,11 @@ murmur, rsync, tailon, sysctl
     (<https://bugs.gnu.org/25958>)
 *** Setuid programs now honor the system timezone
     (<https://bugs.gnu.org/29212>)
+*** Clients honor the daemon’s ‘max-silent-time’
+    (<https://bugs.gnu.org/27157>)
 *** ‘guix substitute’ honors substitute expiry time again
     (<https://lists.gnu.org/archive/html/guix-devel/2017-07/msg00179.html>)
+*** Several portability fixes for aarch64
 
 ** Native language support
 
