@@ -369,8 +369,8 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 (define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
 
-(define %linux-libre-version "4.14.3")
-(define %linux-libre-hash "1hs94lj2bryci4m75bfrhhj9aqrjpq6a57nhxic63zj6xjhi53l7")
+(define %linux-libre-version "4.14.4")
+(define %linux-libre-hash "1hl4n1jpqd05b7qnxbwjmbl2l5cgrh2spqsjq1fnihphmawjd3li")
 
 ;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
