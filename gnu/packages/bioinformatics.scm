@@ -421,31 +421,27 @@ computational cluster.")
 (define-public bedtools
   (package
     (name "bedtools")
-    (version "2.26.0")
+    (version "2.27.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/arq5x/bedtools2/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/arq5x/bedtools2/releases/"
+                                  "download/v" version "/"
+                                  "bedtools-" version ".tar.gz"))
               (sha256
                (base32
-                "0xvri5hnp2iim1cx6mcd5d9f102p5ql41x69rd6106x1c17pinqm"))))
+                "0q6fsiz4s52yzxs6h2vxwq95fsi3n64wkpinkk05mfh4dmhybw74"))))
     (build-system gnu-build-system)
-    (native-inputs `(("python" ,python-2)))
-    (inputs `(("samtools" ,samtools)
-              ("zlib" ,zlib)))
     (arguments
      '(#:test-target "test"
+       #:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-               (for-each (lambda (file)
-                           (install-file file bin))
-                         (find-files "bin" ".*")))
-             #t)))))
+         (delete 'configure))))
+    (native-inputs `(("python" ,python-2)))
+    (inputs
+     `(("samtools" ,samtools)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/arq5x/bedtools2")
     (synopsis "Tools for genome analysis and arithmetic")
     (description
