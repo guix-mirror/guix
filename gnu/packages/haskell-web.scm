@@ -160,7 +160,7 @@ responses coming back.")
 (define-public ghc-http-client
   (package
     (name "ghc-http-client")
-    (version "0.5.6.1")
+    (version "0.5.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -168,7 +168,7 @@ responses coming back.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1v9bdb8dkhb5g6jl9azk86ig7ia8xh9arr64n7s8r94fp0vl6c1c"))))
+                "19cvnnfcjj2m3pgs6ivyjs21rw9wx5ynarh6hvb27a76cscai2fy"))))
     (build-system haskell-build-system)
     ;; Tests require access to the web.
     (arguments `(#:tests? #f))
