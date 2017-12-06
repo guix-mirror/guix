@@ -952,7 +952,8 @@ the 'share/locale' sub-directory of this package.")
                (lambda _
                  (zero? (system* "make" "localedata/install-locales"
                                  "-j" (number->string (parallel-job-count))))))
-             (delete 'install)))
+             (delete 'install)
+             (delete 'move-static-libs)))
          ((#:configure-flags flags)
           `(append ,flags
                    ;; Use $(libdir)/locale/X.Y as is the case by default.
