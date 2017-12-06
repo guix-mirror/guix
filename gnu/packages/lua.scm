@@ -179,6 +179,7 @@ language.")
               (uri (string-append
                     "https://github.com/diegonehab/luasocket/archive/v"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0j8jx8bjicvp9khs26xjya8c495wrpb7parxfnabdqa5nnsxjrwb"))))
