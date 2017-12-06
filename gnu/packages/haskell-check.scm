@@ -85,7 +85,7 @@ framework.")
        ("ghc-smallcheck" ,ghc-smallcheck)
        ("ghc-async" ,ghc-async)
        ("ghc-tagged" ,ghc-tagged)))
-    (home-page "http://documentup.com/feuerbach/tasty")
+    (home-page "https://documentup.com/feuerbach/tasty")
     (synopsis "SmallCheck support for the Tasty test framework")
     (description "This package provides SmallCheck support for the Tasty
 Haskell test framework.")
