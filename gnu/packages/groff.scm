@@ -22,6 +22,7 @@
 (define-module (gnu packages groff)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
@@ -92,32 +93,32 @@ is usually the formatter of \"man\" documentation pages.")
 
        #:configure-flags '("--docdir=/tmp/trash/doc")
 
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'remove-non-essential-programs
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Keep only the programs that man-db needs at run time,
-                      ;; and make sure we don't pull in Perl.
-                      (let ((out  (assoc-ref outputs "out"))
-                            (kept '("eqn" "neqn" "pic" "tbl" "refer"
-                                    "nroff" "groff" "troff" "grotty")))
-                        (for-each (lambda (file)
-                                    (unless (member (basename file) kept)
-                                      (delete-file file)))
-                                  (find-files (string-append out "/bin")))
+       ,@(substitute-keyword-arguments (package-arguments groff)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-after 'install 'remove-non-essential-programs
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Keep only the programs that man-db needs at run time,
+                   ;; and make sure we don't pull in Perl.
+                   (let ((out  (assoc-ref outputs "out"))
+                         (kept '("eqn" "neqn" "pic" "tbl" "refer"
+                                 "nroff" "groff" "troff" "grotty")))
+                     (for-each (lambda (file)
+                                 (unless (member (basename file) kept)
+                                   (delete-file file)))
+                               (find-files (string-append out "/bin")))
 
-                        ;; Remove a bunch of unneeded Perl scripts.
-                        (for-each delete-file (find-files out "\\.pl$"))
-                        (for-each delete-file
-                                  (find-files out "BuildFoundries"))
+                     ;; Remove a bunch of unneeded Perl scripts.
+                     (for-each delete-file (find-files out "\\.pl$"))
+                     (for-each delete-file
+                               (find-files out "BuildFoundries"))
 
-                        ;; Remove ~3 MiB from share/groff/X.Y/font/devBACKEND
-                        ;; corresponding to the unused backends.
-                        (for-each delete-file-recursively
-                                  (find-files out "^dev(dvi|ps|pdf|html|lj4)$"
-                                              #:directories? #t))
-                        #t))))
-
-       ,@(package-arguments groff)))))
+                     ;; Remove ~3 MiB from share/groff/X.Y/font/devBACKEND
+                     ;; corresponding to the unused backends.
+                     (for-each delete-file-recursively
+                               (find-files out "^dev(dvi|ps|pdf|html|lj4)$"
+                                           #:directories? #t))
+                     #t))))))))))
 
 ;; There are no releases, so we take the latest commit.
 (define-public roffit
