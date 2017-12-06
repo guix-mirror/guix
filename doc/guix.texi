@@ -1550,7 +1550,7 @@ features.
 This chapter describes the main features of Guix, as well as the
 package management tools it provides.  Along with the command-line
 interface described below (@pxref{Invoking guix package, @code{guix
-package}}), you may also use Emacs Interface (@pxref{Top,,,
+package}}), you may also use the Emacs-Guix interface (@pxref{Top,,,
 emacs-guix, The Emacs-Guix Reference Manual}), after installing
 @code{emacs-guix} package (run @kbd{M-x guix-help} command to start
 with it):
