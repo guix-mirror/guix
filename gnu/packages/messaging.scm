@@ -875,7 +875,7 @@ instant messenger with audio and video chat capabilities.")
                (("TIMESTAMP") "\"\""))
              #t)))))
     (inputs
-     `(("ffmpeg" ,ffmpeg-3.3)
+     `(("ffmpeg" ,ffmpeg)
        ("filteraudio", filteraudio)
        ("glib" ,glib)
        ("gtk+" ,gtk+-2)
