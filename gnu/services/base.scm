@@ -621,21 +621,23 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
 
 (define (unicode-start tty)
   "Return a gexp to start Unicode support on @var{tty}."
+  (with-imported-modules '((guix build syscalls))
+    #~(let* ((fd (open-fdes #$tty O_RDWR))
+             (termios (tcgetattr fd)))
+        (define (set-utf8-input termios)
+          (set-field termios (termios-input-flags)
+                     (logior (input-flags IUTF8)
+                             (termios-input-flags termios))))
 
-  ;; We have to run 'unicode_start' in a pipe so that when it invokes the
-  ;; 'tty' command, that command returns TTY.
-  #~(begin
-      (let ((pid (primitive-fork)))
-        (case pid
-          ((0)
-           (close-fdes 0)
-           (dup2 (open-fdes #$tty O_RDONLY) 0)
-           (close-fdes 1)
-           (dup2 (open-fdes #$tty O_WRONLY) 1)
-           (execl #$(file-append kbd "/bin/unicode_start")
-                  "unicode_start"))
-          (else
-           (zero? (cdr (waitpid pid))))))))
+        ;; See console_codes(4).
+        (display "\x1b%G" (fdes->outport fd))
+
+        (tcsetattr fd (tcsetattr-action TCSAFLUSH)
+                   (set-utf8-input termios))
+
+        ;; TODO: ioctl(fd, KDSKBMODE, K_UNICODE);
+        (close-fdes fd)
+        #t)))
 
 (define console-keymap-service-type
   (shepherd-service-type
@@ -674,11 +676,29 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
              (requirement (list (symbol-append 'term-
                                                (string->symbol tty))))
 
+             (modules '((guix build syscalls)     ;for 'tcsetattr'
+                        (srfi srfi-9 gnu)))       ;for 'set-field'
              (start #~(lambda _
+                        ;; It could be that mingetty is not fully ready yet,
+                        ;; which we check by calling 'ttyname'.
+                        (let loop ((i 10))
+                          (unless (or (zero? i)
+                                      (call-with-input-file #$device
+                                        (lambda (port)
+                                          (false-if-exception (ttyname port)))))
+                            (usleep 500)
+                            (loop (- i 1))))
+
                         (and #$(unicode-start device)
-                             (zero?
-                              (system* #$(file-append kbd "/bin/setfont")
-                                       "-C" #$device #$font)))))
+                             ;; 'setfont' returns EX_OSERR (71) when an
+                             ;; KDFONTOP ioctl fails, for example.  Like
+                             ;; systemd's vconsole support, let's not treat
+                             ;; this as an error.
+                             (case (status:exit-val
+                                    (system* #$(file-append kbd "/bin/setfont")
+                                             "-C" #$device #$font))
+                               ((0 71) #t)
+                               (else #f)))))
              (stop #~(const #t))
              (respawn? #f)))))
        tty+font))
