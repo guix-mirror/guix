@@ -600,7 +600,8 @@ is part of the GNOME accessibility project.")
               "0n26jm09n03nqbd00d2ij63xrby3vik56sk5yj6w1vy768kr5hb8"))
             (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"
                                      "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
-                                     "gtk2-theme-paths.patch"))))
+                                     "gtk2-theme-paths.patch"
+                                     "gtk2-fix-failing-test.patch"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (propagated-inputs
