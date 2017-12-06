@@ -217,7 +217,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "17.2.5")
+    (version "17.2.6")
     (source
       (origin
         (method url-fetch)
@@ -229,7 +229,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "03q7n4g6ks3wlvlbi0snwn80w6ribqvs80cx5mgv384ygd5r2zvz"))
+          "1pihiymglf3bf6w2vphac65v64hv71wgrj38mckbwc03c8j55n3a"))
         (patches
          (search-patches "mesa-wayland-egl-symbols-check-mips.patch"
                          "mesa-skip-disk-cache-test.patch"))))
