@@ -1100,7 +1100,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                           "OPT_CFLAGS=-Wall -fno-strict-aliasing")
        #:tests? #f  ; no 'check' target.
        #:phases (modify-phases %standard-phases (delete 'configure))))
-    (home-page "http://acpica.org/")
+    (home-page "https://acpica.org/")
     (synopsis "Tools for the development and debug of ACPI tables")
     (description
      "The ACPI Component Architecture (@dfn{ACPICA}) project provides an
