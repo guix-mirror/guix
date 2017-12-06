@@ -1148,7 +1148,7 @@ introspected and examined.")
 (define-public perl-dbix-class-schema-loader
   (package
     (name "perl-dbix-class-schema-loader")
-    (version "0.07046")
+    (version "0.07047")
     (source
      (origin
        (method url-fetch)
@@ -1156,7 +1156,7 @@ introspected and examined.")
                            "DBIx-Class-Schema-Loader-" version ".tar.gz"))
        (sha256
         (base32
-         "08cgn0dx42y9xsxas9np7s55a7qmy4kf6sfmx0jmk4hryvbapml3"))))
+         "06s2q6xj95600sdlfph57spjk2z1gjs4zwq5b7mz7d5izcxgnwb6"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-config-any" ,perl-config-any)
