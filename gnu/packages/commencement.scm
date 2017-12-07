@@ -113,7 +113,8 @@
 
 (define file-boot0
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs (package/inherit file
+   (package-with-explicit-inputs (package
+                                   (inherit file)
                                    (name "file-boot0"))
                                  `(("make" ,gnu-make-boot0)
                                    ,@%bootstrap-inputs)
@@ -140,7 +141,7 @@
 
 (define binutils-boot0
   (package-with-bootstrap-guile
-   (package/inherit binutils
+   (package (inherit binutils)
      (name "binutils-cross-boot0")
      (arguments
       `(#:guile ,%bootstrap-guile

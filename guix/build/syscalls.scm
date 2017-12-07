@@ -119,6 +119,7 @@
             termios-input-speed
             termios-output-speed
             local-flags
+            input-flags
             tcsetattr-action
             tcgetattr
             tcsetattr
@@ -1703,6 +1704,24 @@ given an integer, returns the list of names of the constants that are or'd."
  (define PENDIN #o0040000)
  (define IEXTEN #o0100000)
  (define EXTPROC #o0200000))
+
+(define-bits input-flags
+  input-flags->symbols
+  (define IGNBRK #o0000001)
+  (define BRKINT #o0000002)
+  (define IGNPAR #o0000004)
+  (define PARMRK #o0000010)
+  (define INPCK #o0000020)
+  (define ISTRIP #o0000040)
+  (define INLCR #o0000100)
+  (define IGNCR #o0000200)
+  (define ICRNL #o0000400)
+  (define IUCLC #o0001000)
+  (define IXON #o0002000)
+  (define IXANY #o0004000)
+  (define IXOFF #o0010000)
+  (define IMAXBEL #o0020000)
+  (define IUTF8 #o0040000))
 
 ;; "Actions" values for 'tcsetattr'.
 (define-bits tcsetattr-action
