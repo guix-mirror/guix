@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -139,15 +140,15 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
 (define-public cmst
   (package
     (name "cmst")
-    (version "2017.03.18")
+    (version "2017.09.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/andrew-bibb/cmst/releases/download/cmst-"
-             version "/cmst-" version ".tar.gz"))
+             version "/cmst-" version ".tar.xz"))
        (sha256
-        (base32 "16g9byxr1rkmrnzi6sjplpmkr8h6pqj7418jz30czqviw5qlkqwl"))))
+        (base32 "0dh4639n3l8a19svaagib41hdq5q7x70bnc28dmnwy4jflf38yrm"))))
     (inputs
      `(("qtbase" ,qtbase)))
     (native-inputs
