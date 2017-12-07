@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -133,7 +134,7 @@ Qt-style API for Wayland clients.")
 (define-public sddm
   (package
     (name "sddm")
-    (version "0.16.0")
+    (version "0.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -142,7 +143,7 @@ Qt-style API for Wayland clients.")
                     "sddm-" version ".tar.xz"))
               (sha256
                (base32
-                "0fwf1wsdak5yglykfyq4wbx9g9gi079n8ncjrdynz17hwwiql4z9"))))
+                "0ch6rdppgy2vbzw0c2x9a4c6ry46vx7p6b76d8xbh2nvxh23xv0k"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -161,15 +162,15 @@ Qt-style API for Wayland clients.")
     (arguments
      `(#:configure-flags
        (list
-        ;; Currently doesn't do anything
-        ;; Option added by enable wayland greeters PR
+        ;; This option currently does nothing, but will presumably be enabled
+        ;; if/when <https://github.com/sddm/sddm/pull/616> is merged.
         "-DENABLE_WAYLAND=ON"
         "-DENABLE_PAM=ON"
         ;; Both flags are required for elogind support.
         "-DNO_SYSTEMD=ON" "-DUSE_ELOGIND=ON"
         "-DCONFIG_FILE=/etc/sddm.conf"
-        ;; Set path to /etc/login.defs
-        ;; Alternatively use -DUID_MIN and -DUID_MAX
+        ;; Set path to /etc/login.defs.
+        ;; An alternative would be to use -DUID_MIN and -DUID_MAX.
         (string-append "-DLOGIN_DEFS_PATH="
                        (assoc-ref %build-inputs "shadow")
                        "/etc/login.defs")
@@ -188,14 +189,6 @@ Qt-style API for Wayland clients.")
            (lambda _
              (substitute* "CMakeLists.txt"
                (("/usr/bin/loginctl") (which "loginctl")))
-             #t))
-         (add-before 'configure 'fix-qml-include
-           (lambda _
-             ;; Make sure QtQml is found when building the helper.
-             ;; See <https://github.com/sddm/sddm/pull/918>.
-             (substitute* "src/helper/CMakeLists.txt"
-               (("target_link_libraries\\(sddm-helper")
-                "target_link_libraries(sddm-helper Qt5::Qml"))
              #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)

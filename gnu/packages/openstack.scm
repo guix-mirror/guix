@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -849,14 +849,14 @@ permanence.")
 (define-public python-git-review
   (package
     (name "python-git-review")
-    (version "1.25.0")
+    (version "1.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "git-review" version))
        (sha256
         (base32
-         "07d1jn9ryff5j5ic6qj5pbk10m1ccmpllj0wyalrcms1q9yhlzh8"))))
+         "150b1zvm6favd1ad8yl2bilq7xkr4m1mw9510frh47f8ghfkqz28"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f ; tests require a running Gerrit server

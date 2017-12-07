@@ -173,21 +173,21 @@ language.")
 (define-public lua5.1-socket
   (package
     (name "lua5.1-socket")
-    (version "2.0.2")
+    (version "3.0-rc1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://files.luaforge.net/releases/"
-                                  "luasocket/luasocket/luasocket-"
-                                  version "/luasocket-" version ".tar.gz"))
+              (uri (string-append
+                    "https://github.com/diegonehab/luasocket/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "19ichkbc4rxv00ggz8gyf29jibvc2wq9pqjik0ll326rrxswgnag"))))
+                "0j8jx8bjicvp9khs26xjya8c495wrpb7parxfnabdqa5nnsxjrwb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
        (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "INSTALL_TOP_SHARE=" out "/share/lua/5.1")
-               (string-append "INSTALL_TOP_LIB=" out "/lib/lua/5.1")))
+         (list (string-append "INSTALL_TOP=" out)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)

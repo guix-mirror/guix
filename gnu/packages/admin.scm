@@ -1081,7 +1081,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20150410")
+    (version "20171110")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1089,23 +1089,24 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0q1fjwkyw9x6gsva6fd0zbn7ly4fx0ha4853f416np9kf2irillw"))))
+                "08g83qvhfx04vzb3f3pfpkp0w601v6csjzdv7z1vjzz1k71h7yml"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
     (arguments
      '(#:make-flags (list (string-append "PREFIX=" %output)
+                          "CC=gcc"
                           "HOST=_LINUX"
                           "OPT_CFLAGS=-Wall -fno-strict-aliasing")
        #:tests? #f  ; no 'check' target.
        #:phases (modify-phases %standard-phases (delete 'configure))))
-    (home-page "http://acpica.org/")
+    (home-page "https://acpica.org/")
     (synopsis "Tools for the development and debug of ACPI tables")
     (description
-     "The ACPI Component Architecture (ACPICA) project provides an
+     "The ACPI Component Architecture (@dfn{ACPICA}) project provides an
 OS-independent reference implementation of the Advanced Configuration and
-Power Interface Specification (ACPI).  ACPICA code contains those portions of
-ACPI meant to be directly integrated into the host OS as a kernel-resident
+Power Interface Specification (@dfn{ACPI}).  ACPICA code contains those portions
+of ACPI meant to be directly integrated into the host OS as a kernel-resident
 subsystem, and a small set of tools to assist in developing and debugging ACPI
 tables.  This package contains only the user-space tools needed for ACPI table
 development, not the kernel implementation of ACPI.")

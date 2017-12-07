@@ -47,14 +47,6 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls))
 
-;; Delay to avoid module circularity problems.
-(define ghostscript/cups
-  (delay
-    (package/inherit ghostscript
-      (name "ghostscript-with-cups")
-      (inputs `(("cups" ,cups-minimal)
-                ,@(package-inputs ghostscript))))))
-
 (define-public cups-filters
   (package
     (name "cups-filters")
@@ -147,7 +139,7 @@
        ("fontconfig"   ,fontconfig)
        ("freetype"     ,freetype)
        ("font-dejavu"  ,font-dejavu) ; also needed by test suite
-       ("ghostscript"  ,(force ghostscript/cups))
+       ("ghostscript"  ,ghostscript/cups)
        ("ijs"          ,ijs)
        ("dbus"         ,dbus)
        ("lcms"         ,lcms)

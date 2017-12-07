@@ -28,7 +28,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.40")
+    (version "0.14.41")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -36,7 +36,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "044pjz3x3fgpbsbkzgf72ljpwvvsqfj8fm9cnz7l8293cw2ssq4f"))))
+                "1liarl09grcb0mlw20nlrmir2glxqlykv4l0z0f0gj2w1wk3qz8a"))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
@@ -711,8 +711,8 @@ run-time in Go.")
       (license asl2.0))))
 
 (define-public go-github-com-syndtr-goleveldb
-  (let ((commit "3c5717caf1475fd25964109a0fc640bd150fce43")
-        (revision "0"))
+  (let ((commit "549b6d6b1c0419617182954dd77770f2e2685ed5")
+        (revision "1"))
     (package
       (name "go-github-com-syndtr-goleveldb")
       (version (git-version "0.0.0" revision commit))
@@ -724,7 +724,7 @@ run-time in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0wng25bw885ppiny9rz42kq0a7ddkym5zl0glb8rfk0m8dpvi1dd"))))
+                  "1hs8bsxyjfq9d7000i1jk8bq7p2ab8snz23air13aw5ra2ri36bq"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-github-com-golang-snappy" ,go-github-com-golang-snappy)))
@@ -1506,8 +1506,8 @@ functions for normalizing Unicode strings.")
       (license bsd-3))))
 
 (define-public go-github-com-audriusbutkevicius-pfilter
-  (let ((commit "09b3cfdd04de89f0196caecb0b335d7149a6593a")
-        (revision "0"))
+  (let ((commit "56143fe9cebe95636de1275acf30fcca36a1383d")
+        (revision "1"))
     (package
       (name "go-github-com-audriusbutkevicius-pfilter")
       (version (git-version "0.0.0" revision commit))
@@ -1520,7 +1520,7 @@ functions for normalizing Unicode strings.")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "176g8dmi2i94bxpnpgvj3dv5y9hripi45kbrfvy2bk884hwbp1zq"))))
+            "0slzly2f2fczixavzh6wa69873va29ikxww4lbkvhyi85c4sc5ib"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/AudriusButkevicius/pfilter"))

@@ -1811,7 +1811,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
-    (version "3.0.2")
+    (version "3.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1819,7 +1819,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
                     version "/zynaddsubfx-" version ".tar.bz2"))
               (sha256
                (base32
-                "09mr23lqc51r7gskry5b7hk84pghdpgn1s4vnrzvx7xpa21gvplm"))))
+                "1hfpiqdm337gl4ynkmmp2qss2m5z8mzqzjrbiyg6w1v4js7l9phi"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -2004,14 +2004,14 @@ computer's keyboard.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.8.4")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "17bbjfn94843g5q1h7xh23fwyazpfgg4fw6drrn5wgk2vx7qpkis"))))
+                "0anhsd3gg8cxbf31mn2mimf19ycbbxqvd7ldizk93yq2zfbzzqqa"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; no "check" target
     (inputs

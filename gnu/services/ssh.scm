@@ -304,7 +304,14 @@ The other options should be self-descriptive."
 
   ;; list of user-name/file-like tuples
   (authorized-keys       openssh-authorized-keys
-                         (default '())))
+                         (default '()))
+
+  ;; Boolean
+  ;; XXX: This should really be handled in an orthogonal way, for instance as
+  ;; proposed in <https://bugs.gnu.org/27155>.  Keep it internal/undocumented
+  ;; for now.
+  (%auto-start?          openssh-auto-start?
+                         (default #t)))
 
 (define %openssh-accounts
   (list (user-group (name "sshd") (system? #t))
@@ -445,7 +452,8 @@ of user-name/file-like tuples."
          (provision '(ssh-daemon))
          (start #~(make-forkexec-constructor #$openssh-command
                                              #:pid-file #$pid-file))
-         (stop #~(make-kill-destructor)))))
+         (stop #~(make-kill-destructor))
+         (auto-start? (openssh-auto-start? config)))))
 
 (define (openssh-pam-services config)
   "Return a list of <pam-services> for sshd with CONFIG."

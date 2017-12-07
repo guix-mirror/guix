@@ -120,13 +120,30 @@ person's version identifier."
   ;; XXX: Replace with a Git commit id.
   (date->string (current-date 0) "~Y~m~d.~H"))
 
+(define (matching-guile-2.2)
+  "Return a Guile 2.2 with the same version as the current one or immediately
+older than then current one.  This is so that we do not build ABI-incompatible
+objects.  See <https://bugs.gnu.org/29570>."
+  (let loop ((packages (find-packages-by-name "guile" "2.2"))
+             (best     #f))
+    (match packages
+      (()
+       best)
+      ((head tail ...)
+       (if (string=? (package-version head) (version))
+           head
+           (if best
+               (if (version>? (package-version head) (version))
+                   (loop tail best)
+                   (loop tail head))
+               (loop tail head)))))))
+
 (define (guile-for-build)
   "Return a derivation for Guile 2.0 or 2.2, whichever matches the currently
 running Guile."
   (package->derivation (cond-expand
                          (guile-2.2
-                          (canonical-package
-                           (specification->package "guile@2.2")))
+                          (canonical-package (matching-guile-2.2)))
                          (else
                           (canonical-package
                            (specification->package "guile@2.0"))))))

@@ -34,7 +34,8 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (ice-9 match))
 
 (define-public gnustep-make
   (package
@@ -65,6 +66,7 @@ to easily create cross-compiled binaries.")
   (package
     (name "windowmaker")
     (version "0.95.8")
+    (synopsis "NeXTSTEP-like window manager")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -75,7 +77,10 @@ to easily create cross-compiled binaries.")
                 "12p8kljqgx5hnic0zvs5mxwp7kg21sb6qjagb2qw8ydvf5amrgwx"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 match))
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
            (lambda* (#:key outputs #:allow-other-keys)
@@ -97,14 +102,33 @@ to easily create cross-compiled binaries.")
                (substitute* "src/defaults.c"
                  (("len = strlen\\(text\\) \\+ 40;")
                   (string-append "len = strlen(text) + 107;"))))))
-         (add-after 'install 'wrap
+         (add-after 'install 'install-xsession
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions")))
+               (mkdir-p xsessions)
+               (call-with-output-file
+                   (string-append xsessions "/windowmaker.desktop")
+                 (lambda (port)
+                  (format port "~
+                    [Desktop Entry]~@
+                    Name=Window Maker~@
+                    Comment=~a~@
+                    Exec=~a/bin/wmaker~@
+                    Type=Application~%"
+                          (string-map (match-lambda
+                                        (#\newline #\space)
+                                        (chr chr))
+                                      ,synopsis) %output))))
+             #t))
+         (add-after 'install-xsession 'wrap
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (bin (string-append out "/bin")))
                 ;; In turn, 'wmaker.inst' wants to invoke 'wmmenugen'
                 ;; etc., so make sure everything is in $PATH.
                 (wrap-program (string-append bin "/wmaker.inst")
-                              `("PATH" ":" prefix (,bin)))))))))
+                  `("PATH" ":" prefix (,bin)))))))))
     (inputs
      `(("libxmu" ,libxmu)
        ("libxft" ,libxft)
@@ -117,7 +141,6 @@ to easily create cross-compiled binaries.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://windowmaker.org/")
-    (synopsis "NeXTSTEP-like window manager")
     (description
      "Window Maker is an X11 window manager originally designed to provide
 integration support for the GNUstep Desktop Environment.  In every way

@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -413,7 +414,7 @@ graphical interface.")
 (define-public libcue
   (package
     (name "libcue")
-    (version "2.1.0")
+    (version "2.2.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -422,7 +423,7 @@ graphical interface.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1fradl3dx0pyy9rn1a0gak9gzgg40wax61f2s00zks7rwl0xv398"))))
+               "0y9808vbly1w6i3diaad9csjmmw6iaw572wjjr68ssqamsw193rj"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("bison" ,bison)

@@ -7145,7 +7145,7 @@ Typical applications of Priority Search Queues include:
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
     (home-page "http://iki.fi/matti.niemenmaa/glob/")
     (synopsis "Haskell library matching glob patterns against file paths")
-    (description "This package providesa Haskell library for @dfn{globbing}:
+    (description "This package provides a Haskell library for @dfn{globbing}:
 matching patterns against file paths.")
     (license license:bsd-3)))
 
@@ -7985,14 +7985,14 @@ as well as a convenient Conduit module.")
 (define-public ghc-aws
   (package
     (name "ghc-aws")
-    (version "0.17.1")
+    (version "0.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "aws-" version "/aws-" version ".tar.gz"))
        (sha256 (base32
-                "1q4qh58vj8447a4fl88n3nkpdc4yv293qsh02w6zvszd6ch61yh7"))))
+                "0h7473wkvc5xjzx5fd5k5fp70rjq5gqmn1cpy95mswvvfsq3irxj"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; Tests require AWS credentials.
     (inputs
@@ -8006,7 +8006,7 @@ as well as a convenient Conduit module.")
        ("ghc-cereal" ,ghc-cereal)
        ("ghc-conduit" ,ghc-conduit)
        ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-cryptohash" ,ghc-cryptohash)
+       ("ghc-cryptonite" ,ghc-cryptonite)
        ("ghc-data-default" ,ghc-data-default)
        ("ghc-http-conduit" ,ghc-http-conduit)
        ("ghc-http-types" ,ghc-http-types)

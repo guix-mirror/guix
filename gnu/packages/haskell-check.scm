@@ -68,7 +68,7 @@ framework.")
 (define-public ghc-tasty-smallcheck
   (package
     (name "ghc-tasty-smallcheck")
-    (version "0.8.0.1")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
@@ -78,14 +78,14 @@ framework.")
              ".tar.gz"))
        (sha256
         (base32
-         "0yckfbz8na8ccyw2911i3a4hd3fdncclk3ng5343hs5cylw6y4sm"))))
+         "1n66ngzllf3xrlqykwszlkwsi96n5nkm7xbpfq7774vpvfnafjri"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-smallcheck" ,ghc-smallcheck)
        ("ghc-async" ,ghc-async)
        ("ghc-tagged" ,ghc-tagged)))
-    (home-page "http://documentup.com/feuerbach/tasty")
+    (home-page "https://documentup.com/feuerbach/tasty")
     (synopsis "SmallCheck support for the Tasty test framework")
     (description "This package provides SmallCheck support for the Tasty
 Haskell test framework.")
@@ -122,7 +122,7 @@ Haskell test framework.")
 (define-public ghc-tasty-golden
   (package
     (name "ghc-tasty-golden")
-    (version "2.3.0.2")
+    (version "2.3.1.1")
     (source
      (origin
        (method url-fetch)
@@ -132,7 +132,7 @@ Haskell test framework.")
              ".tar.gz"))
        (sha256
         (base32
-         "0n7nll1sx75n3lffwhgnjrxdn0jz1g0921z9mj193fxqw0wz8axh"))))
+         "0pcf5hsyp5mmbqn7krdm49jxpkjm6rb4j83j28f76h7q55dzm1wy"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-temporary" ,ghc-temporary)
@@ -147,10 +147,10 @@ Haskell test framework.")
      "https://github.com/feuerbach/tasty-golden")
     (synopsis "Golden tests support for tasty")
     (description
-     "This package provides support for 'golden testing'.  A golden test is an
-IO action that writes its result to a file.  To pass the test, this output
-file should be identical to the corresponding 'golden' file, which contains
-the correct result for the test.")
+     "This package provides support for 'golden testing'.  A @dfn{golden test}
+is an IO action that writes its result to a file.  To pass the test, this
+output file should be identical to the corresponding 'golden' file, which
+contains the correct result for the test.")
     (license license:expat)))
 
 ;; This package builds `clock` without tests, since the tests rely on tasty
@@ -284,7 +284,7 @@ test-framework.")
 (define-public ghc-tasty-rerun
   (package
     (name "ghc-tasty-rerun")
-    (version "1.1.7")
+    (version "1.1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -292,7 +292,7 @@ test-framework.")
                     "tasty-rerun-" version ".tar.gz"))
               (sha256
                (base32
-                "18hz1xqinf59mzvd68ygj9333v0a32qxfcas7crn4iniq5zv71kj"))))
+                "0yg8cicfn3qaazvp4rbanzy3dyk95k3y1kkd4bykvkl9v4076788"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
@@ -366,7 +366,7 @@ testing Unicode-related software.")
 (define-public ghc-quickcheck-io
   (package
     (name "ghc-quickcheck-io")
-    (version "0.1.2")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
@@ -376,7 +376,7 @@ testing Unicode-related software.")
              ".tar.gz"))
        (sha256
         (base32
-         "1kf1kfw9fsmly0rvzvdf6jvdw10qhkmikyj0wcwciw6wad95w9sh"))))
+         "08k4v7pkgjf30pv5j2dfv1gqv6hclxlniyq2sps8zq4zswcr2xzv"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
@@ -455,7 +455,7 @@ reporting and test statistics output.")
 (define-public ghc-test-framework-hunit
   (package
     (name "ghc-test-framework-hunit")
-    (version "0.3.0.1")
+    (version "0.3.0.2")
     (source
      (origin
        (method url-fetch)
@@ -464,7 +464,7 @@ reporting and test statistics output.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1h0h55kf6ff25nbfx1mhliwyknc0glwv3zi78wpzllbjbs7gvyfk"))))
+         "1y0b6vg8nfm43v90lxxcydhi6qlxhfy4vpxbzm5ic2w55bh8xjwm"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)

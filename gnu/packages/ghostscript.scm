@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
@@ -258,6 +259,12 @@ output file formats and printers.")
     (name (string-append (package-name ghostscript) "-with-x"))
     (inputs `(("libxext" ,libxext)
               ("libxt" ,libxt)
+              ,@(package-inputs ghostscript)))))
+
+(define-public ghostscript/cups
+  (package/inherit ghostscript
+    (name "ghostscript-with-cups")
+    (inputs `(("cups" ,cups-minimal)
               ,@(package-inputs ghostscript)))))
 
 (define-public ijs

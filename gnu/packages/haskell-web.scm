@@ -95,7 +95,7 @@ for screen-scraping.")
 (define-public ghc-http-types
   (package
     (name "ghc-http-types")
-    (version "0.9")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
@@ -105,11 +105,14 @@ for screen-scraping.")
              ".tar.gz"))
        (sha256
         (base32
-         "0ny15jgm5skhs2yx6snr13lrnw19hwjgfygrpsmhib8wqa8cz8cc"))))
+         "08w30rf1i7kbh2j1iajqmj6yhhmglnb8kjggc8kdni3xahhrgcss"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: Tests cannot find
-                               ; Blaze.Bytestring.Builder, which should be
-                               ; provided by ghc-blaze-builder.
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("hspec-discover" ,hspec-discover)))
     (inputs
      `(("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-blaze-builder" ,ghc-blaze-builder)
@@ -157,7 +160,7 @@ responses coming back.")
 (define-public ghc-http-client
   (package
     (name "ghc-http-client")
-    (version "0.5.6.1")
+    (version "0.5.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -165,7 +168,7 @@ responses coming back.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1v9bdb8dkhb5g6jl9azk86ig7ia8xh9arr64n7s8r94fp0vl6c1c"))))
+                "19cvnnfcjj2m3pgs6ivyjs21rw9wx5ynarh6hvb27a76cscai2fy"))))
     (build-system haskell-build-system)
     ;; Tests require access to the web.
     (arguments `(#:tests? #f))
@@ -198,7 +201,7 @@ for more user-friendly packages.")
 (define-public ghc-http-client-tls
   (package
     (name "ghc-http-client-tls")
-    (version "0.3.4.1")
+    (version "0.3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -206,7 +209,7 @@ for more user-friendly packages.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1mbwdfn4hs8lcwml2l6xv4n068l9zlasyv6vwb2ylgm030pyv3xh"))))
+                "0n4mi8z77qaggfyq17z79cl304nf1f4h6gag60v4wjwghvmj7yn1"))))
     (build-system haskell-build-system)
     ;; Tests require Internet access
     (arguments `(#:tests? #f))
@@ -293,7 +296,7 @@ and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
 (define-public ghc-http-conduit
   (package
     (name  "ghc-http-conduit")
-    (version "2.2.3.1")
+    (version "2.2.4")
     (source
      (origin
        (method url-fetch)
@@ -301,7 +304,7 @@ and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
                            "http-conduit-" version "/" "http-conduit-"
                            version ".tar.gz"))
        (sha256 (base32
-                "03na2nbm9la0shlijvjyb5mpp1prfskk4jmjy8iz707r0731dbjk"))))
+                "1wcl3lpg4v1ylq9j77j9fmf6l9qbmp8dmj3a9829q19q6bbgza7l"))))
     (build-system haskell-build-system)
     ;; FIXME: `httpLbs TLS` in test-suite `test` fails with
     ;; ConnectionFailure getProtocolByName: does not exist (no such protocol

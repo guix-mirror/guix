@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,118 +25,127 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages texinfo)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public guile-xcb
-  (package
-    (name "guile-xcb")
-    (version "1.3")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "http://web.archive.org/web/20150803094848/"
-                                 "http://www.markwitmer.com/dist/guile-xcb-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "04dvbqdrrs67490gn4gkq9zk8mqy3mkls2818ha4p0ckhh0pm149"))))
-    (build-system gnu-build-system)
-    (arguments '(;; Parallel builds fail.
-                 #:parallel-build? #f
-
-                 #:configure-flags (list (string-append
-                                          "--with-guile-site-dir="
-                                          (assoc-ref %outputs "out")
-                                          "/share/guile/site/2.0")
-                                         (string-append
-                                          "--with-guile-site-ccache-dir="
-                                          (assoc-ref %outputs "out")
-                                          "/share/guile/site/2.0"))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)
-              ("xcb" ,xcb-proto)))
-    (home-page "http://www.markwitmer.com/guile-xcb/guile-xcb.html")
-    (synopsis "XCB bindings for Guile")
-    (description
-     "Guile-XCB implements the XCB protocol and provides all the tools
+  (let ((commit "db7d5a393cc37a56f66541b3f33938b40c6f35b3")
+        (revision "1"))
+    (package
+      (name "guile-xcb")
+      (version (git-version "1.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mwitmer/guile-xcb")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "16w4vgzbmnwih4bgfn8rw85ryfvzhc6hyly6bic9sd7hhc82rcnd"))))
+      (build-system gnu-build-system)
+      (arguments '(;; Parallel builds fail.
+                   #:parallel-build? #f
+                   #:configure-flags (list (string-append
+                                            "--with-guile-site-dir="
+                                            (assoc-ref %outputs "out")
+                                            "/share/guile/site/2.2")
+                                           (string-append
+                                            "--with-guile-site-ccache-dir="
+                                            (assoc-ref %outputs "out")
+                                            "/share/guile/site/2.2"))))
+      (native-inputs `(("pkg-config" ,pkg-config)
+                       ("texinfo" ,texinfo)))
+      (inputs `(("guile" ,guile-2.2)
+                ("xcb" ,xcb-proto)))
+      (home-page "https://github.com/mwitmer/guile-xcb")
+      (synopsis "XCB bindings for Guile")
+      (description
+       "Guile-XCB implements the XCB protocol and provides all the tools
 necessary to write X client code in Guile Scheme without any external
 dependencies.")
-    (license gpl3+)))
+      (license gpl3+))))
 
 (define-public guile-wm
-  (package
-    (name "guile-wm")
-    (version "1.0")
-    (synopsis "X11 window manager toolkit in Scheme")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://web.archive.org/web/20161005084324/"
-                                  "http://www.markwitmer.com/dist/guile-wm-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1l9qcz236jxvryndimjy62cf8zxf8i3f8vg3zpqqjhw15j9mdk3r"))))
-    (build-system gnu-build-system)
-    (arguments
-     `( ;; The '.scm' files go to $(datadir), so set that to the
-       ;; standard value.
-       #:configure-flags (list (string-append "--datadir="
-                                              (assoc-ref %outputs "out")
-                                              "/share/guile/site/2.0"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'set-go-directory
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Install .go files to $out/share/guile/site/2.0.
-            (let ((out (assoc-ref outputs "out")))
-              (substitute* "module/Makefile.in"
-                (("^wmdir = .*$")
-                 (string-append "wmdir = " out
-                                "/share/guile/site/2.0\n"))))
-            #t))
-         (add-after 'install 'set-load-path
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Put Guile-XCB's and Guile-WM's modules in the
-             ;; search path of PROG.
-             (let* ((out  (assoc-ref outputs "out"))
-                    (prog (string-append out "/bin/guile-wm"))
-                    (mods (string-append
-                           out "/share/guile/site/2.0"))
-                    (xcb  (string-append
-                           (assoc-ref inputs "guile-xcb")
-                           "/share/guile/site/2.0")))
-               (wrap-program
-                   prog
-                 `("GUILE_LOAD_PATH" ":" prefix (,mods ,xcb))
-                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                   (,mods ,xcb))))
-             #t))
-         (add-after 'install 'install-xsession
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; add a .desktop file to xsessions
-             (let ((xsessions (string-append
-                               %output "/share/xsessions")))
-               (mkdir-p xsessions)
-               (call-with-output-file (string-append
-                                       xsessions "/guile-wm.desktop")
-                 (lambda (port)
-                   (format port
-                          "[Desktop Entry]~@
+  (let ((commit "f3c7b3be719f425ffb87265d34855a73366351be")
+        (revision "1"))
+    (package
+      (name "guile-wm")
+      (version (git-version "1.0" revision commit))
+      (synopsis "X11 window manager toolkit in Scheme")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mwitmer/guile-wm")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "086dijnpl5dpglf70d6f9sizyakr313y7blpdjrmbi687j1x3qcl"))))
+      (build-system gnu-build-system)
+      (arguments
+       `( ;; The '.scm' files go to $(datadir), so set that to the
+         ;; standard value.
+         #:configure-flags (list (string-append "--datadir="
+                                                (assoc-ref %outputs "out")
+                                                "/share/guile/site/2.2"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'set-go-directory
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Install .go files to $out/share/guile/site/2.2.
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "module/Makefile.in"
+                   (("^wmdir = .*$")
+                    (string-append "wmdir = " out
+                                   "/share/guile/site/2.2\n"))))
+               #t))
+           (add-after 'install 'set-load-path
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; Put Guile-XCB's and Guile-WM's modules in the
+               ;; search path of PROG.
+               (let* ((out  (assoc-ref outputs "out"))
+                      (prog (string-append out "/bin/guile-wm"))
+                      (mods (string-append
+                             out "/share/guile/site/2.2"))
+                      (xcb  (string-append
+                             (assoc-ref inputs "guile-xcb")
+                             "/share/guile/site/2.2")))
+                 (wrap-program
+                     prog
+                   `("GUILE_LOAD_PATH" ":" prefix (,mods ,xcb))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                     (,mods ,xcb))))
+               #t))
+           (add-after 'install 'install-xsession
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; add a .desktop file to xsessions
+               (let ((xsessions (string-append
+                                 %output "/share/xsessions")))
+                 (mkdir-p xsessions)
+                 (call-with-output-file (string-append
+                                         xsessions "/guile-wm.desktop")
+                   (lambda (port)
+                     (format port
+                             "[Desktop Entry]~@
                                     Name=~a~@
                                     Comment=~a~@
                                     Exec=~a/bin/guile-wm~@
                                     Type=Application~%"
-                          ,name ,synopsis %output))))
-             #t)))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)
-              ("guile-xcb" ,guile-xcb)))
-    (home-page "http://www.markwitmer.com/guile-xcb/guile-wm.html")
-    (description
-     "Guile-WM is a simple window manager that's completely customizable—you
+                             ,name ,synopsis %output))))
+               #t)))))
+      (native-inputs `(("pkg-config" ,pkg-config)
+                       ("texinfo" ,texinfo)))
+      (inputs `(("guile" ,guile-2.2)
+                ("guile-xcb" ,guile-xcb)))
+      (home-page "https://github.com/mwitmer/guile-wm/releases")
+      (description
+       "Guile-WM is a simple window manager that's completely customizable—you
 have total control of what it does by choosing which modules to include.
 Included with it are a few modules that provide basic TinyWM-like window
 management, some window record-keeping, multi-monitor support, and emacs-like
 keymaps and minibuffer.  At this point, it's just enough to get you started.")
-    (license gpl3+)))
+      (license gpl3+))))
