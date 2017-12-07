@@ -1090,6 +1090,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
+  %D%/packages/patches/valgrind-glibc-compat.patch		\
   %D%/packages/patches/vinagre-revert-1.patch                   \
   %D%/packages/patches/vinagre-revert-2.patch                   \
   %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\

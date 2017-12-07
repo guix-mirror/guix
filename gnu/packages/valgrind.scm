@@ -39,7 +39,8 @@
              (sha256
               (base32
                "18bnrw9b1d55wi1wnl68n25achsp9w48n51n1xw4fwjjnaal7jk7"))
-             (patches (search-patches "valgrind-enable-arm.patch"))))
+             (patches (search-patches "valgrind-enable-arm.patch"
+                                      "valgrind-glibc-compat.patch"))))
     (build-system gnu-build-system)
     (outputs '("doc"                              ;16 MB
                "out"))
