@@ -53,6 +53,7 @@
   ;; Alist of default option values.
   `((system . ,(%current-system))
     (substitutes? . #t)
+    (build-hook? . #t)
     (graft? . #t)
     (verbosity . 0)))
 

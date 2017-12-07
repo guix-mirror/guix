@@ -262,6 +262,7 @@ the image."
   `((format . tarball)
     (system . ,(%current-system))
     (substitutes? . #t)
+    (build-hook? . #t)
     (graft? . #t)
     (verbosity . 0)
     (symlinks . ())

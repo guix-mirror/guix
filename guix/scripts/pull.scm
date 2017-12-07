@@ -89,6 +89,7 @@ Install it by running:
     (ref . (branch . "origin/master"))
     (system . ,(%current-system))
     (substitutes? . #t)
+    (build-hook? . #t)
     (graft? . #t)
     (verbosity . 0)))
 
