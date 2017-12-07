@@ -2731,6 +2731,9 @@ Transport Tycoon Deluxe.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;; no tests available
+       #:configure-flags
+        (list (string-append "-DCMAKE_INSTALL_LIBDIR="
+                       (assoc-ref %outputs "out") "/lib"))
        #:phases
         (modify-phases %standard-phases
           (add-after 'unpack 'fix-usr-share-paths
