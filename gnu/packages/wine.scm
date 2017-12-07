@@ -158,10 +158,13 @@ integrate Windows applications into your desktop.")
     (inherit wine)
     (name "wine64")
     (arguments
-     `(#:configure-flags
+     `(#:make-flags
+       (list "SHELL=bash"
+             (string-append "libdir=" %output "/lib"))
+       #:configure-flags
        (list "--enable-win64"
-             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib64"))
-       ,@(strip-keyword-arguments '(#:configure-flags #:system)
+             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       ,@(strip-keyword-arguments '(#:configure-flags #:make-flags #:system)
                                   (package-arguments wine))))
     (synopsis "Implementation of the Windows API (64-bit version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
