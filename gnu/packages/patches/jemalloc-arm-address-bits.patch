@@ -1,0 +1,39 @@
+From 8cfc9dec37b312a2686f602bbcdd102ca07cca99 Mon Sep 17 00:00:00 2001
+From: David Goldblatt <davidgoldblatt@fb.com>
+Date: Fri, 29 Sep 2017 13:54:08 -0700
+Subject: [PATCH] ARM: Don't extend bit LG_VADDR to compute high address bits.
+
+In userspace ARM on Linux, zero-ing the high bits is the correct way to do this.
+This doesn't fix the fact that we currently set LG_VADDR to 48 on ARM, when in
+fact larger virtual address sizes are coming soon.  We'll cross that bridge when
+we come to it.
+---
+ include/jemalloc/internal/rtree.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/include/jemalloc/internal/rtree.h b/include/jemalloc/internal/rtree.h
+index b5d4db39..4563db23 100644
+--- a/include/jemalloc/internal/rtree.h
++++ b/include/jemalloc/internal/rtree.h
+@@ -178,9 +178,21 @@ rtree_leaf_elm_bits_read(tsdn_t *tsdn, rtree_t *rtree, rtree_leaf_elm_t *elm,
+ 
+ JEMALLOC_ALWAYS_INLINE extent_t *
+ rtree_leaf_elm_bits_extent_get(uintptr_t bits) {
++#    ifdef __aarch64__
++	/*
++	 * aarch64 doesn't sign extend the highest virtual address bit to set
++	 * the higher ones.  Instead, the high bits gets zeroed.
++	 */
++	uintptr_t high_bit_mask = ((uintptr_t)1 << LG_VADDR) - 1;
++	/* Mask off the slab bit. */
++	uintptr_t low_bit_mask = ~(uintptr_t)1;
++	uintptr_t mask = high_bit_mask & low_bit_mask;
++	return (extent_t *)(bits & mask);
++#    else
+ 	/* Restore sign-extended high bits, mask slab bit. */
+ 	return (extent_t *)((uintptr_t)((intptr_t)(bits << RTREE_NHIB) >>
+ 	    RTREE_NHIB) & ~((uintptr_t)0x1));
++#    endif
+ }
+ 
+ JEMALLOC_ALWAYS_INLINE szind_t

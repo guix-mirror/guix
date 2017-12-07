@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (guix build-system gnu))
 
@@ -38,7 +40,8 @@
                     version "/jemalloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1sf3lzgb0y8nnyzmp4zrca3sngdxw3kfh20sna9z03jv74fph528"))))
+                "1sf3lzgb0y8nnyzmp4zrca3sngdxw3kfh20sna9z03jv74fph528"))
+              (patches (search-patches "jemalloc-arm-address-bits.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
