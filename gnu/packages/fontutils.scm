@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -589,14 +590,14 @@ files.  UFO is a file format that stores fonts source files.")
 (define-public python2-defcon
   (package
     (name "python2-defcon")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "defcon" version ".zip"))
        (sha256
         (base32
-         "1f41w54fdjy9izxcwzqa142kd56whqsg9nq5k4508jb6iip84h89"))))
+         "03jlm2gy9lvbwj68kfdm43yaddwd634jwkdg4wf0jxx2s8mwbg22"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
