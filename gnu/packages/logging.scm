@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,7 +85,14 @@ staying as close to their API as is reasonable.")
                       ;; mismatch, so run the whole thing.
                       (delete-file "test-driver")
                       (delete-file "configure")   ;it's read-only
-                      (zero? (system* "autoreconf" "-vfi")))))))
+                      (zero? (system* "autoreconf" "-vfi"))))
+                  (add-before 'check 'disable-signal-tests
+                    (lambda _
+                      ;; See e.g. https://github.com/google/glog/issues/219
+                      ;; and https://github.com/google/glog/issues/256
+                      (substitute* "Makefile"
+                        (("\tsignalhandler_unittest_sh") "\t$(EMPTY)"))
+                      #t)))))
     (synopsis "C++ logging library")
     (description
      "Google glog is a library that implements application-level logging.
