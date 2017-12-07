@@ -564,13 +564,13 @@ generate bitmaps.")
 (define-public python2-ufolib
   (package
     (name "python2-ufolib")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ufoLib" version ".zip"))
        (sha256
-        (base32 "1njin1465qqzshnrvcl5sbv0bsy15gj6fycbw4lmcnwkx5sldgyx"))))
+        (base32 "07qy6mx7z0wi9a30lc2hj5i9q1gnz1n8l40dmjz2c19mj9s6mz9l"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
