@@ -4055,7 +4055,7 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.13")
+    (version "0.9.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/gnumdk/eolie/"
@@ -4063,7 +4063,7 @@ work and the interface is well tested.")
                                   "/eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "1khpc6x40y5gm0a3p5fxiva9p1djijxmsh74xinigddnyqbjqw69"))))
+                "0glydxp1xh85gfidk1l9miqn6qxdbvvk5s3iy0pjlv8nrs3263jd"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
