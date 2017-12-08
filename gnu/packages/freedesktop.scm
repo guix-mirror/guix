@@ -33,6 +33,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages acl)
@@ -67,6 +68,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -141,19 +143,22 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.7.3")
+    (version "1.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "07fbzxddvhjcch43hdxb24sj7ri96zzpcjalvsicmw0i4wnn2v89"))))
-    (build-system gnu-build-system)
+                "09wkc5qqk1k2a68cwfy4x853z8z35wf2qkijh66kacsvc2fjq394"))))
+    (build-system meson-build-system)
+    (arguments '(#:configure-flags '("-Ddocumentation=false")))
     (native-inputs
      `(("cairo" ,cairo)
+       ("check" ,check)
        ("gtk+" ,gtk+)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("valgrind" ,valgrind)))
     (propagated-inputs
      `(("libudev" ,eudev))) ; required by libinput.pc
     (inputs
@@ -172,13 +177,17 @@ other applications that need to directly deal with input devices.")
   (package (inherit libinput)
     (name "libinput-minimal")
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("check" ,check)
+       ("pkg-config" ,pkg-config)
+       ("valgrind" ,valgrind)))
     (inputs
      `(("libevdev" ,libevdev)
        ("mtdev" ,mtdev)))
     (arguments
-      `(#:configure-flags
-        '("--disable-libwacom")))))
+     '(#:configure-flags
+       '("-Dlibwacom=false"
+         "-Ddocumentation=false"
+         "-Ddebug-gui=false"))))) ; requires gtk+@3
 
 (define-public libxdg-basedir
   (package
