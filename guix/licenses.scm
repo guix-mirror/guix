@@ -13,6 +13,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,6 +92,7 @@
             zlib
             fsf-free
             wtfpl2
+            wxwindows3.1+
             fsdg-compatible))
 
 (define-record-type <license>
@@ -580,6 +582,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "WTFPL 2"
            "http://www.wtfpl.net"
            "http://www.wtfpl.net/about/"))
+
+(define wxwindows3.1+
+  (license "wxWindows 3.1+"
+           "https://wxwidgets.org/about/licence"
+           "https://www.gnu.org/licenses/license-list.html#Wxwind"))
 
 (define x11
   (license "X11"
