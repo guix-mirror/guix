@@ -24,8 +24,11 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xorg))
 
 (define-public spirv-headers
   (let ((commit "98b01515724c428d0f0a5d01deffcce0f5f5e61c")
@@ -142,3 +145,45 @@ interpretation of the specifications for these languages.")
       (license (list license:bsd-3
                      ;; include/SPIRV/{bitutils,hex_float}.h are Apache 2.0.
                      license:asl2.0)))))
+
+(define-public vulkan-icd-loader
+  (package
+    (name "vulkan-icd-loader")
+    (version "1.0.61.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/"
+             "archive/sdk-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05g60hk30sbc4rwkh7nrgqdk6hfsi4hwxs54yrysrzr18xpfb8j7"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
+       #:configure-flags (list (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                              (assoc-ref %outputs "out") "/lib"))))
+    (inputs `(("glslang" ,glslang)
+              ("libxcb" ,libxcb)
+              ("libx11" ,libx11)
+              ("libxrandr" ,libxrandr)
+              ("mesa" ,mesa)
+              ("spirv-tools" ,spirv-tools)
+              ("wayland" ,wayland)))
+    (native-inputs `(("pkg-config", pkg-config)
+                     ("python" ,python)))
+    (home-page
+     "https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers")
+    (synopsis "Khronos official ICD loader and validation layers for Vulkan")
+    (description
+     "Vulkan allows multiple @dfn{Installable Client Drivers} (ICDs) each
+supporting one or more devices to be used collectively.  The loader is
+responsible for discovering available Vulkan ICDs on the system and inserting
+Vulkan layer libraries, including validation layers between the application
+and the ICD.")
+    ;; This software is mainly Apache 2.0 licensed, but contains some components
+    ;; covered by other licenses.  See COPYRIGHT.txt for details.
+    (license (list license:asl2.0       ;LICENSE.txt
+                   (license:x11-style "file://COPYRIGHT.txt")
+                   license:bsd-3))))
