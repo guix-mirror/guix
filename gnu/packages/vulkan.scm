@@ -19,9 +19,12 @@
 (define-module (gnu packages vulkan)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
-  #:use-module (gnu packages))
+  #:use-module (gnu packages)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python))
 
 (define-public spirv-headers
   (let ((commit "98b01515724c428d0f0a5d01deffcce0f5f5e61c")
@@ -63,3 +66,35 @@ and for the GLSL.std.450 extended instruction set.
       (license (license:x11-style
                 (string-append "https://github.com/KhronosGroup/SPIRV-Headers/blob/"
                                commit "/LICENSE"))))))
+
+(define-public spirv-tools
+  (package
+    (name "spirv-tools")
+    (version "2017.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/KhronosGroup/SPIRV-Tools/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "009vflaa71a7xhvmm23f4sdbcgdkl1k4facqkwsg6djha2sdpsqq"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                              (assoc-ref %outputs "out")
+                                              "/lib")
+                               (string-append "-DSPIRV-Headers_SOURCE_DIR="
+                                              (assoc-ref %build-inputs
+                                                         "spirv-headers")))))
+    (inputs `(("spirv-headers" ,spirv-headers)))
+    (native-inputs `(("pkg-config", pkg-config)
+                     ("python" ,python)))
+    (home-page "https://github.com/KhronosGroup/SPIRV-Tools")
+    (synopsis "API and commands for processing SPIR-V modules")
+    (description
+     "The SPIR-V Tools project provides an API and commands for processing
+SPIR-V modules.  The project includes an assembler, binary module parser,
+disassembler, validator, and optimizer for SPIR-V.")
+    (license license:asl2.0)))
