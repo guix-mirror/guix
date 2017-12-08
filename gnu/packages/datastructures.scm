@@ -116,3 +116,58 @@ with the number of cores.  liburcu-cds provides efficient data structures
 based on RCU and lock-free algorithms.  These structures include hash tables,
 queues, stacks, and doubly-linked lists.")
     (license license:lgpl2.1+)))
+
+(define-public uthash
+  (package
+    (name "uthash")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://github.com/troydhanson/uthash/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1la82gdlyl7m8ahdjirigwfh7zjgkc24cvydrqcri0vsvm8iv8rl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; nothing to configure
+         (delete 'build)                ; nothing to build
+         (replace 'check
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (with-directory-excursion "tests"
+               (zero? (apply system* "make"
+                             make-flags)))))
+         (replace 'install
+           ;; There is no top-level Makefile to do this for us.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name))
+                    (include (string-append out "/include")))
+               ;; Don't install HTML files: they're just the below .txt files
+               ;; dolled up, can be stale, and regeneration requires asciidoc.
+               (for-each (λ (file) (install-file file doc))
+                         (find-files "doc" "\\.txt$"))
+               (for-each (λ (file) (install-file file include))
+                         (find-files "src" "\\.h$"))
+               #t))))))
+    (home-page "https://troydhanson.github.io/uthash/")
+    (synopsis
+     "Hash tables, lists, and other data structures implemented as C macros")
+    (description
+     "uthash implements a hash table and a few other basic data structures
+as C preprocessor macros.  It aims to be minimalistic and efficient: it's
+around 1,000 lines of code which, being macros, inline automatically.
+
+Unlike function calls with fixed prototypes, macros operate on untyped
+arguments.  Thus, they are able to work with any type of structure and key.
+Any C structure can be stored in a hash table by adding @code{UT_hash_handle}
+to the structure and choosing one or more fields to act as the key.")
+    (license license:bsd-2)))
