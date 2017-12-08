@@ -153,7 +153,6 @@ without requiring the source code to be rewritten.")
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
-             ("readline" ,readline)
              ,@(libiconv-if-needed)
 
              ;; We need Bash when cross-compiling because some of the scripts
@@ -264,6 +263,65 @@ without requiring the source code to be rewritten.")
 
 (define-public guile-next
   (deprecated-package "guile-next" guile-2.2))
+
+(define (make-guile-readline guile)
+  (package
+    (name "guile-readline")
+    (version (package-version guile))
+    (source (package-source guile))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-silent-rules")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'chdir
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (invoke "make" "-C" "libguile" "scmconfig.h")
+                      (invoke "make" "-C" "lib")
+                      (chdir "guile-readline")
+
+                      (substitute* "Makefile"
+                        (("../libguile/libguile-[[:graph:]]+\\.la")
+                         ;; Remove dependency on libguile-X.Y.la.
+                         "")
+                        (("^READLINE_LIBS = (.*)$" _ libs)
+                         ;; Link against the provided libguile.
+                         (string-append "READLINE_LIBS = "
+                                        "-lguile-$(GUILE_EFFECTIVE_VERSION) "
+                                        libs "\n"))
+                        (("\\$\\(top_builddir\\)/meta/build-env")
+                         ;; Use the provided Guile, not the one from
+                         ;; $(builddir).
+                         "")
+
+                        ;; Install modules to the 'site' directories.
+                        (("^moddir = .*$")
+                         "moddir = $(pkgdatadir)/site/$(GUILE_EFFECTIVE_VERSION)\n")
+                        (("^ccachedir = .*$")
+                         "ccachedir = $(pkglibdir)/$(GUILE_EFFECTIVE_VERSION)/site-ccache\n"))
+
+                      ;; Load 'guile-readline.so' from the right place.
+                      (substitute* "ice-9/readline.scm"
+                        (("load-extension \"guile-readline\"")
+                         (format #f "load-extension \
+ (string-append ~s \"/lib/guile/\" (effective-version) \"/extensions/guile-readline\")"
+                                 (assoc-ref outputs "out"))))
+                      #t)))))
+    (home-page (package-home-page guile))
+    (native-inputs (package-native-inputs guile))
+    (inputs
+     `(,@(package-inputs guile)                   ;to placate 'configure'
+       ,@(package-propagated-inputs guile)
+       ("guile" ,guile)
+       ("readline" ,readline)))
+    (synopsis "Line editing support for GNU Guile")
+    (description
+     "This module provides line editing support via the Readline library for
+GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
+@code{activate-readline} procedure to enable it.")
+    (license license:gpl3+)))
+
+(define-public guile-readline
+  (make-guile-readline guile-2.2))
 
 (define (guile-variant-package-name prefix)
   (lambda (name)

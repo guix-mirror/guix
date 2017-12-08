@@ -193,10 +193,14 @@ set debug-file-directory ~/.guix-profile/lib/debug\n")))
       (".zlogin" ,zlogin)
       (".Xdefaults" ,xdefaults)
       (".guile" ,(plain-file "dot-guile"
-                             (string-append
-                              "(use-modules (ice-9 readline))\n\n"
-                              ";; Enable completion at the REPL.\n"
-                              "(activate-readline)\n")))
+                             "(cond ((false-if-exception (resolve-interface '(ice-9 readline)))
+       =>
+       (lambda (module)
+         ;; Enable completion and input history at the REPL.
+         ((module-ref module 'activate-readline))))
+      (else
+       (display \"Consider installing the 'guile-readline' package for
+convenient interactive line editing and input history.\\n\\n\")))\n"))
       (".guile-wm" ,guile-wm)
       (".gdbinit" ,gdbinit))))
 
