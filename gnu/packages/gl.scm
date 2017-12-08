@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
@@ -676,3 +678,36 @@ mixed vector/bitmap output.")
     (license (list license:lgpl2.0+
                    (license:fsf-free "http://www.geuz.org/gl2ps/COPYING.GL2PS"
                                      "GPL-incompatible copyleft license")))))
+
+(define-public virtualgl
+  (package
+    (name "virtualgl")
+    (version "2.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/VirtualGL/virtualgl/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rnid3hwrry9d5d4m7sygq00xxx976rgk00a3557m9r5kxbmy476"))))
+    (arguments
+     `(#:tests? #f ;; no tests are available
+       #:configure-flags (list "-DVGL_USESSL=1" ;; use OpenSSL
+                          (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                         (assoc-ref %outputs "out") "/lib"))))
+    (build-system cmake-build-system)
+    (inputs `(("glu" ,glu)
+              ("libjpeg-turbo" ,libjpeg-turbo)
+              ("mesa" ,mesa)
+              ("openssl" ,openssl)))
+    (native-inputs `(("pkg-config", pkg-config)))
+    (home-page "https://www.virtualgl.org")
+    (synopsis "Redirects 3D commands from an OpenGL application onto a 3D
+graphics card")
+    (description "VirtualGL redirects the 3D rendering commands from OpenGL
+applications to 3D accelerator hardware in a dedicated server and displays the
+rendered output interactively to a thin client located elsewhere on the
+network.")
+    (license license:wxwindows3.1+)))
