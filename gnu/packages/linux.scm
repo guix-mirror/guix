@@ -78,6 +78,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages netpbm)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages perl)
@@ -4501,4 +4502,80 @@ interfaces in parallel environments.")
      "snapscreenshot saves a screenshot of one or more Linux text consoles as a
 Targa (@dfn{.tga}) image.  It can be used by anyone with read access to the
 relevant @file{/dev/vcs*} file(s).")
+    (license license:gpl2)))
+
+(define-public fbcat
+  (package
+    (name "fbcat")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jwilk/fbcat/releases/download/"
+                           version "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1dla1na3nf3s4xy0p6w0v54zipg1x8c14yqsw8w9qjzhchr4caxw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     ;; For building the man pages.
+     `(("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     ;; The ‘fbgrab’ wrapper can use one of several PPM-to-PNG converters.  We
+     ;; choose netpbm simply because it's the smallest.  It still adds ~94 MiB
+     ;; to an otherwise tiny package, so we put ‘fbgrab’ in its own output.
+     `(("pnmtopng" ,netpbm)))
+    (outputs (list "out" "fbgrab"))
+    (arguments
+     `(#:make-flags (list "CC=gcc")
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-docbook-location
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "doc/Makefile"
+               (("http://docbook.sourceforge.net/release/xsl/current")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl))))
+             #t))
+         (delete 'configure)            ; no configure script
+         (add-after 'build 'build-documentation
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* "make" "-C" "doc"
+                           make-flags))))
+         (add-after 'build 'qualify-references
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((pnmtopng (assoc-ref inputs "pnmtopng"))
+                    (out (assoc-ref outputs "out")))
+               (substitute* "fbgrab"
+                 (("fbcat" all)
+                  (string-append out "/bin/" all))
+                 (("pnmtopng" all)
+                  (string-append pnmtopng "/bin/" all)))
+               #t)))
+         (replace 'install
+           ;; The Makefile lacks an ‘install’ target.  Install files manually.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out:fbgrab (assoc-ref outputs "fbgrab")))
+               (install-file "fbcat" (string-append out "/bin"))
+               (install-file "doc/fbcat.1"
+                             (string-append out "/share/man/man1"))
+               (install-file "fbgrab" (string-append out:fbgrab "/bin"))
+               (install-file "doc/fbgrab.1"
+                             (string-append out:fbgrab "/share/man/man1"))
+               #t))))))
+    (home-page "https://jwilk.net/software/fbcat")
+    (synopsis "Take a screenshot of the contents of the Linux framebuffer")
+    (description
+     "fbcat saves the contents of the Linux framebuffer (@file{/dev/fb*}), or
+a dump therof.  It supports a wide range of drivers and pixel formats.
+@command{fbcat} can take screenshots of virtually any application that can be
+made to write its output to the framebuffer, including (but not limited to)
+text-mode or graphical applications that don't use a display server.
+
+Also included is @command{fbgrab}, a wrapper around @command{fbcat} that
+emulates the behaviour of Gunnar Monell's older fbgrab utility.")
     (license license:gpl2)))
