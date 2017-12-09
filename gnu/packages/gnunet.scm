@@ -188,11 +188,10 @@ authentication and support for SSL3 and TLS.")
    (version "7.57.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "https://gnunet.org/sites/default/files/"
-                                name "-" version ".tar.bz2"))
+            (uri (string-append "mirror://gnu/gnunet/" name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1dykh12mc241jnxcd8q5pm1yw9ras53ywyba9f9dy5cq39j2mk9c"))))
+              "0cl2x1jddnhn1z8gd75w6k7lb6pymn5rf2vqgl2vdkbxsz677z07"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ; 1.5 MiB of man3 pages
