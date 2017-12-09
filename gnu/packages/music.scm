@@ -40,6 +40,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -467,6 +468,75 @@ background while you work.")
     (description
      "Hydrogen is an advanced drum machine for GNU/Linux.  Its main goal is to
 enable professional yet simple and intuitive pattern-based drum programming.")
+    (license license:gpl2+)))
+
+(define-public easytag
+  (package
+    (name "easytag")
+    (version "2.4.3")
+    (source (origin
+             (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/easytag/2.4/easytag-"
+                     version ".tar.xz"))
+             (sha256
+              (base32
+               "1mbxnqrw1fwcgraa1bgik25vdzvf97vma5pzknbwbqq5ly9fwlgw"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("glib" ,glib "bin")
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("flac" ,flac)
+       ("gtk+" ,gtk+)
+       ("id3lib" ,id3lib)
+       ("libid3tag" ,libid3tag)
+       ("libvorbis" ,libvorbis)
+       ("opusfile" ,opusfile)
+       ("speex" ,speex)
+       ("taglib" ,taglib)
+       ("wavpack" ,wavpack)
+       ("yelp" ,yelp)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'configure-libid3tag
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; libid3tag does not provide a .pc file and EasyTAG's configure
+             ;; script healivy relies on pkg-config.  Providing a temporary
+             ;; local .pc file is easier than patching the configure script.
+             (let* ((libid3tag (assoc-ref inputs "libid3tag")))
+               (mkdir-p "pkgconfig")
+               (with-output-to-file
+                 "pkgconfig/id3tag.pc"
+                 (lambda _
+                   (format #t
+                     "prefix=~@*~a~@
+                      libdir=${prefix}/lib~@
+                      includedir=${prefix}/include~@
+                      Libs: -L${libdir} -lid3tag -lz~@
+                      Cflags: -I${includedir}~%"
+                     libid3tag)))
+               (setenv "PKG_CONFIG_PATH"
+                 (string-append (getenv "PKG_CONFIG_PATH")
+                   ":" (getcwd) "/pkgconfig")))))
+         (add-after 'unpack 'patch-makefile
+           (lambda _
+             (substitute* "Makefile.in"
+               ;; The Makefile generates a test-desktop-file-validate.sh
+               ;; script with /bin/sh hard-coded.
+               (("/bin/sh") (which "sh"))
+               ;; Don't create 'icon-theme.cache'.
+               (("gtk-update-icon-cache") "true")))))))
+    (home-page "https://wiki.gnome.org/Apps/EasyTAG")
+    (synopsis "Simple application for viewing and editing tags in audio files")
+    (description
+      "EasyTAG is an application for viewing and editing tags in audio files.
+It supports MP3, MP2, MP4/AAC, FLAC, Ogg Opus, Ogg Speex, Ogg Vorbis,
+MusePack, Monkey's Audio, and WavPack files.")
     (license license:gpl2+)))
 
 (define-public extempore
