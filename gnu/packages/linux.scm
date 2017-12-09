@@ -4462,3 +4462,43 @@ interfaces in parallel environments.")
     ;; Only Intel-compatable processors are supported.
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license (list license:bsd-2 license:gpl2)))) ;dual
+
+(define-public snapscreenshot
+  (package
+    (name "snapscreenshot")
+    (version "1.0.14.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://bisqwit.iki.fi/src/arch/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "0gzvqsbf6a2sbd1mqvj1lbm57i2bm5k0cr6ncr821d1f32gw03mk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "BINDIR=" out "/bin")
+               (string-append "MANDIR=" out "/share/man")))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; ./configure is a snarky no-op
+         (add-before 'install 'fix-ownership
+           ;; Install binaries owned by ‘root’ instead of the nonexistent ‘bin’.
+           (lambda _
+             (substitute* "depfun.mak"
+               ((" -o bin -g bin ") " "))
+             #t))
+         (add-before 'install 'create-output-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/share/man/man1"))
+               #t))))))
+    (home-page "http://bisqwit.iki.fi/source/snapscreenshot.html")
+    (synopsis "Take screenshots of one or more Linux text consoles")
+    (description
+     "snapscreenshot saves a screenshot of one or more Linux text consoles as a
+Targa (@dfn{.tga}) image.  It can be used by anyone with read access to the
+relevant @file{/dev/vcs*} file(s).")
+    (license license:gpl2)))
