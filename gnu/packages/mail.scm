@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -2181,7 +2181,7 @@ to access GNU Mailman.")
 (define-public blists
   (package
     (name "blists")
-    (version "1.0")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
@@ -2189,7 +2189,7 @@ to access GNU Mailman.")
                            "blists/blists-" version ".tar.gz"))
        (sha256
         (base32
-         "1gp51kmb8yv8d693wcpdslmwlbw5w2kgz4kxhrcaf7y89w8wy4qd"))))
+         "1xll5wn7py3bbncbwrj172f56nz75c9gwfsa80rwd96ss9gfmp3c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests
