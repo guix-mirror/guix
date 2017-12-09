@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Andersson <christopher@8bits.nu>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -140,10 +140,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-en
   (aspell-dictionary "en" "English"
-                     #:version "2017.01.22-0"
+                     #:version "2017.08.24-0"
                      #:sha256
                      (base32
-                      "1qamzpw1fsnn5n9jpsnnnzqj1a0m0xvsikmkdp5a6pmb7sp3ziwk")))
+                      "0z2vvm1by485cm0sna21cmw6zb771c2l2lnn676zmrwm46q65d89")))
 
 (define-public aspell-dict-eo
   (aspell-dictionary "eo" "Esperanto"
