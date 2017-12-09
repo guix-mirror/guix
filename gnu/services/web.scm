@@ -58,6 +58,7 @@
             nginx-server-configuration-ssl-certificate
             nginx-server-configuration-ssl-certificate-key
             nginx-server-configuration-server-tokens?
+            nginx-server-configuration-raw-content
 
             <nginx-upstream-configuration>
             nginx-upstream-configuration
@@ -152,7 +153,9 @@
   (ssl-certificate-key nginx-server-configuration-ssl-certificate-key
                        (default #f))
   (server-tokens?      nginx-server-configuration-server-tokens?
-                       (default #f)))
+                       (default #f))
+  (raw-content         nginx-server-configuration-raw-content
+                       (default '())))
 
 (define-record-type* <nginx-upstream-configuration>
   nginx-upstream-configuration make-nginx-upstream-configuration
@@ -232,7 +235,8 @@ of index files."
         (index (nginx-server-configuration-index server))
         (try-files (nginx-server-configuration-try-files server))
         (server-tokens? (nginx-server-configuration-server-tokens? server))
-        (locations (nginx-server-configuration-locations server)))
+        (locations (nginx-server-configuration-locations server))
+        (raw-content (nginx-server-configuration-raw-content server)))
     (define-syntax-parameter <> (syntax-rules ()))
     (define-syntax-rule (and/l x tail ...)
       (let ((x* x))
@@ -255,6 +259,7 @@ of index files."
      "\n"
      (map emit-nginx-location-config locations)
      "\n"
+     (map (lambda (x) (list "      " x "\n")) raw-content)
      "    }\n")))
 
 (define (emit-nginx-upstream-config upstream)
