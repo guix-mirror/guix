@@ -102,9 +102,9 @@
   (try-files           nginx-server-configuration-try-files
                        (default '()))
   (ssl-certificate     nginx-server-configuration-ssl-certificate
-                       (default "/etc/nginx/cert.pem"))
+                       (default #f))
   (ssl-certificate-key nginx-server-configuration-ssl-certificate-key
-                       (default "/etc/nginx/key.pem"))
+                       (default #f))
   (server-tokens?      nginx-server-configuration-server-tokens?
                        (default #f)))
 

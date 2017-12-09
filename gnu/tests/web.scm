@@ -45,10 +45,7 @@
   ;; Server blocks.
   (list (nginx-server-configuration
          (root "/srv")
-         (http-port 8042)
-         (https-port #f)
-         (ssl-certificate #f)
-         (ssl-certificate-key #f))))
+         (http-port 8042))))
 
 (define %nginx-os
   ;; Operating system under test.

@@ -14813,10 +14813,7 @@ A simple example configuration is given below.
            (server-blocks
              (list (nginx-server-configuration
                      (server-name '("www.example.com"))
-                     (root "/srv/http/www.example.com")
-                     (https-port #f)
-                     (ssl-certificate #f)
-                     (ssl-certificate-key #f))))))
+                     (root "/srv/http/www.example.com"))))))
 @end example
 
 In addition to adding server blocks to the service configuration
@@ -14826,9 +14823,6 @@ blocks, as in this example:
 @example
 (simple-service 'my-extra-server nginx-service-type
                 (list (nginx-server-configuration
-                        (https-port #f)
-                        (ssl-certificate #f)
-                        (ssl-certificate-key #f)
                         (root "/srv/http/extra-website")
                         (try-files (list "$uri" "$uri/index.html")))))
 @end example
@@ -14873,10 +14867,7 @@ HTTPS.
            (server-blocks
              (list (nginx-server-configuration
                      (server-name '("www.example.com"))
-                     (root "/srv/http/www.example.com")
-                     (https-port #f)
-                     (ssl-certificate #f)
-                     (ssl-certificate-key #f))))))
+                     (root "/srv/http/www.example.com"))))))
 @end example
 
 @item @code{upstream-blocks} (default: @code{'()})
@@ -14899,9 +14890,6 @@ requests with two servers.
       (list (nginx-server-configuration
               (server-name '("www.example.com"))
               (root "/srv/http/www.example.com")
-              (https-port #f)
-              (ssl-certificate #f)
-              (ssl-certificate-key #f)
               (locations
                 (list
                   (nginx-location-configuration
@@ -14965,11 +14953,11 @@ Nginx will send the list of files in the directory.
 A list of files whose existence is checked in the specified order.
 @code{nginx} will use the first file it finds to process the request.
 
-@item @code{ssl-certificate} (default: @code{"/etc/nginx/cert.pem"})
+@item @code{ssl-certificate} (default: @code{#f})
 Where to find the certificate for secure connections.  Set it to @code{#f} if
 you don't have a certificate or you don't want to use HTTPS.
 
-@item @code{ssl-certificate-key} (default: @code{"/etc/nginx/key.pem"})
+@item @code{ssl-certificate-key} (default: @code{#f})
 Where to find the private key for secure connections.  Set it to @code{#f} if
 you don't have a key or you don't want to use HTTPS.
 
