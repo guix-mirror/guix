@@ -466,7 +466,19 @@ BED, GFF/GTF, VCF.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "05vrnr8yp7swfagshzpgqmzk1blnwnq8pq5pckzi1m26w98d63vf"))))))
+                "05vrnr8yp7swfagshzpgqmzk1blnwnq8pq5pckzi1m26w98d63vf"))))
+    (arguments
+     '(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "bin" ".*")))
+             #t)))))))
 
 (define-public ribotaper
   (package
