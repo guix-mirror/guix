@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,7 +48,7 @@
   ;; Server blocks.
   (list (nginx-server-configuration
          (root "/srv")
-         (http-port 8042))))
+         (listen '("8042" "443 ssl")))))
 
 (define %nginx-os
   ;; Operating system under test.
@@ -153,8 +154,7 @@ echo(\"Computed by php:\".((string)(2+3)));
          (root "/srv")
          (locations
           (list (nginx-php-location)))
-         (http-port 8042)
-         (https-port #f)
+         (listen "8042")
          (ssl-certificate #f)
          (ssl-certificate-key #f))))
 

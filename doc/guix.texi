@@ -14938,17 +14938,15 @@ Data type representing the configuration of an nginx server block.
 This type has the following parameters:
 
 @table @asis
-@item @code{http-port} (default: @code{80})
-Nginx will listen for HTTP connection on this port.  Set it at @code{#f} if
-nginx should not listen for HTTP (non secure) connection for this
-@dfn{server block}.
+@item @code{listen} (default: @code{'("80" "443 ssl")})
+Each @code{listen} directive sets the address and port for IP, or the
+path for a UNIX-domain socket on which the server will accept requests.
+Both address and port, or only address or only port can be specified.
+An address may also be a hostname, for example:
 
-@item @code{https-port} (default: @code{443})
-Nginx will listen for HTTPS connection on this port.  Set it at @code{#f} if
-nginx should not listen for HTTPS (secure) connection for this @dfn{server block}.
-
-Note that nginx can listen for HTTP and HTTPS connections in the same
-@dfn{server block}.
+@example
+'("127.0.0.1:8000" "127.0.0.1" "8000" "*:8000" "localhost:8000")
+@end example
 
 @item @code{server-name} (default: @code{(list 'default)})
 A list of server names this server represents. @code{'default} represents the
@@ -17689,7 +17687,7 @@ serve the default @file{/srv/git} over HTTPS might be:
           (server-blocks
            (list
             (nginx-server-configuration
-             (http-port #f)
+             (listen '("443 ssl"))
              (server-name "git.my-host.org")
              (ssl-certificate
               "/etc/letsencrypt/live/git.my-host.org/fullchain.pem")

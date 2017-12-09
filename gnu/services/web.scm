@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,8 +50,7 @@
             <nginx-server-configuration>
             nginx-server-configuration
             nginx-server-configuration?
-            nginx-server-configuration-http-port
-            nginx-server-configuartion-https-port
+            nginx-server-configuration-listen
             nginx-server-configuration-server-name
             nginx-server-configuration-root
             nginx-server-configuration-locations
@@ -135,10 +135,8 @@
 (define-record-type* <nginx-server-configuration>
   nginx-server-configuration make-nginx-server-configuration
   nginx-server-configuration?
-  (http-port           nginx-server-configuration-http-port
-                       (default 80))
-  (https-port          nginx-server-configuration-https-port
-                       (default 443))
+  (listen              nginx-server-configuration-listen
+                       (default '("80" "443 ssl")))
   (server-name         nginx-server-configuration-server-name
                        (default (list 'default)))
   (root                nginx-server-configuration-root
@@ -225,8 +223,7 @@ of index files."
       "      }\n"))))
 
 (define (emit-nginx-server-config server)
-  (let ((http-port (nginx-server-configuration-http-port server))
-        (https-port (nginx-server-configuration-https-port server))
+  (let ((listen (nginx-server-configuration-listen server))
         (server-name (nginx-server-configuration-server-name server))
         (ssl-certificate (nginx-server-configuration-ssl-certificate server))
         (ssl-certificate-key
@@ -245,8 +242,7 @@ of index files."
             '())))
     (list
      "    server {\n"
-     (and/l http-port  "      listen " (number->string <>) ";\n")
-     (and/l https-port "      listen " (number->string <>) " ssl;\n")
+     (map (lambda (directive) (list "      listen " directive ";\n")) listen)
      "      server_name " (config-domain-strings server-name) ";\n"
      (and/l ssl-certificate     "      ssl_certificate " <> ";\n")
      (and/l ssl-certificate-key "      ssl_certificate_key " <> ";\n")

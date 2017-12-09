@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,8 +98,7 @@
      (map
       (lambda (host)
         (nginx-server-configuration
-         (http-port 80)
-         (https-port #f)
+         (listen '("80"))
          (ssl-certificate #f)
          (ssl-certificate-key #f)
          (server-name (list host))
