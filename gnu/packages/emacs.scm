@@ -31,6 +31,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
+;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5956,6 +5957,35 @@ popup.  For example, after enabling the minor mode if you enter C-x and wait
 for the default of 1 second, the minibuffer will expand with all of the
 available key bindings that follow C-x (or as many as space allows given your
 settings).")
+    (license license:gpl3+)))
+
+(define-public emacs-ws-butler
+  (package
+    (name "emacs-ws-butler")
+    (version "0.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lewang/ws-butler.git")
+                    (commit "323b651dd70ee40a25accc940b8f80c3a3185205")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1a4b0lsmwq84qfx51c5xy4fryhb1ysld4fhgw2vr37izf53379sb"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("ert-runner" ,ert-runner)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "ert-runner" "tests")))))))
+    (home-page "https://github.com/lewang/ws-butler")
+    (synopsis "Trim spaces from end of lines")
+    (description
+     "This Emacs package automatically and unobtrusively trims whitespace
+characters from end of lines.")
     (license license:gpl3+)))
 
 (define-public emacs-org-edit-latex
