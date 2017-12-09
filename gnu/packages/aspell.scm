@@ -130,6 +130,14 @@ dictionaries, including personal ones.")
                      (base32
                       "01p92qj66cqb346gk7hjfynaap5sbcn85xz07kjfdq623ghr8v5s")))
 
+(define-public aspell-dict-el
+  (aspell-dictionary "el" "Greek"
+                     #:version "0.08-0"
+                     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "1ljcc30zg2v2h3w5h5jr5im41mw8jbsgvvhdd2cii2yzi8d0zxja")))
+
 (define-public aspell-dict-en
   (aspell-dictionary "en" "English"
                      #:version "2017.01.22-0"
@@ -159,12 +167,19 @@ dictionaries, including personal ones.")
                      (base32
                       "14ffy9mn5jqqpp437kannc3559bfdrpk7r36ljkzjalxa53i0hpr")))
 
-(define-public aspell-dict-ru
-  (aspell-dictionary "ru" "Russian"
-                     #:version "0.99f7-1"
+(define-public aspell-dict-grc
+  (aspell-dictionary "grc" "Ancient Greek"
+                     #:version "0.02-0"
                      #:sha256
                      (base32
-                      "0ip6nq43hcr7vvzbv4lwwmlwgfa60hrhsldh9xy3zg2prv6bcaaw")))
+                      "1zxr8958v37v260fkqd4pg37ns5h5kyqm54hn1hg70wq5cz8h512")))
+
+(define-public aspell-dict-he
+  (aspell-dictionary "he" "Hebrew"
+                     #:version "1.0-0"
+                     #:sha256
+                     (base32
+                      "13bhbghx5b8g0119g3wxd4n8mlf707y41vlf59irxjj0kynankfn")))
 
 (define-public aspell-dict-it
   (aspell-dictionary "it" "Italian"
@@ -181,12 +196,20 @@ dictionaries, including personal ones.")
                      (base32
                       "0ffb87yjsh211hllpc4b9khqqrblial4pzi1h9r3v465z1yhn3j4")))
 
-(define-public aspell-dict-he
-  (aspell-dictionary "he" "Hebrew"
-                     #:version "1.0-0"
+(define-public aspell-dict-pt-br
+  (aspell-dictionary "pt-br" "Brazilian Portuguese"
+                     #:version "20090702-0"
+                     #:prefix "aspell6-"
                      #:sha256
                      (base32
-                      "13bhbghx5b8g0119g3wxd4n8mlf707y41vlf59irxjj0kynankfn")))
+                      "1y09lx9zf2rnp55r16b2vgj953l3538z1vaqgflg9mdvm555bz3p")))
+
+(define-public aspell-dict-ru
+  (aspell-dictionary "ru" "Russian"
+                     #:version "0.99f7-1"
+                     #:sha256
+                     (base32
+                      "0ip6nq43hcr7vvzbv4lwwmlwgfa60hrhsldh9xy3zg2prv6bcaaw")))
 
 (define-public aspell-dict-sv
   (aspell-dictionary "sv" "Swedish"
@@ -195,29 +218,6 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "02jwkjhr32kvyibnyzgx3smbnm576jwdzg3avdf6zxwckhy5fw4v")))
-
-(define-public aspell-dict-el
-  (aspell-dictionary "el" "Greek"
-                     #:version "0.08-0"
-                     #:prefix "aspell6-"
-                     #:sha256
-                     (base32
-                      "1ljcc30zg2v2h3w5h5jr5im41mw8jbsgvvhdd2cii2yzi8d0zxja")))
-
-(define-public aspell-dict-grc
-  (aspell-dictionary "grc" "Ancient Greek"
-                     #:version "0.02-0"
-                     #:sha256
-                     (base32
-                      "1zxr8958v37v260fkqd4pg37ns5h5kyqm54hn1hg70wq5cz8h512")))
-
-(define-public aspell-dict-pt-br
-  (aspell-dictionary "pt-br" "Brazilian Portuguese"
-                     #:version "20090702-0"
-                     #:prefix "aspell6-"
-                     #:sha256
-                     (base32
-                      "1y09lx9zf2rnp55r16b2vgj953l3538z1vaqgflg9mdvm555bz3p")))
 
 
 ;;;
