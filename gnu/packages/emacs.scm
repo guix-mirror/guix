@@ -2997,7 +2997,7 @@ single theme but a set of guidelines with numerous implementations.")
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
-    (version "1.10.1")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3006,7 +3006,7 @@ single theme but a set of guidelines with numerous implementations.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1nwsi6fbbxjq3r22r6knmx71la3g0lmwfb95i9q4k138gn0m2l3i"))))
+                "0q5as813xs8y29i3v2rm97phd6m7xsmmw6hwbvx57gwmi8i1c409"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/Fuco1/smartparens")
