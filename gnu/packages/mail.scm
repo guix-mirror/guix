@@ -2381,3 +2381,28 @@ the GNOME desktop.  It supports both POP3 and IMAP servers as well as the
 mbox, maildir and mh local mailbox formats.  Balsa also supports SMTP and/or
 the use of a local MTA such as Sendmail.")
     (license gpl3+)))
+
+(define-public afew
+  (package
+    (name "afew")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "afew" version))
+       (sha256
+        (base32
+         "121w7bd53xyibllxxbfykjj76n81kn1vgjqd22izyh67y8qyyk5r"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-chardet" ,python-chardet)
+       ("python-notmuch" ,python-notmuch)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/afewmail/afew")
+    (synopsis "Initial tagging script for notmuch mail")
+    (description "afew is an initial tagging script for notmuch mail.  It
+provides automatic tagging each time new mail is registered with notmuch.  It
+can add tags based on email headers or Maildir folders and can handle spam and
+killed threads.")
+    (license isc)))
