@@ -704,15 +704,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-11403+CVE-2017-14103.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-12935.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-12936.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-12937.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-13775.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-13776+CVE-2017-13777.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-14042.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-14165.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-14649.patch	\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
   %D%/packages/patches/grep-gnulib-lock.patch                   \
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
