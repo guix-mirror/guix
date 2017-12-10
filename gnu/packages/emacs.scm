@@ -6330,6 +6330,28 @@ and shell-command prompts that are based on bash completion.")
 let users kill or mark things easily.")
     (license license:gpl3+)))
 
+(define-public emacs-csv-mode
+  (package
+    (name "emacs-csv-mode")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://elpa.gnu.org/packages/csv-mode-"
+                           version ".el"))
+       (sha256
+        (base32
+         "0r4bip0w3h55i8h6sxh06czf294mrhavybz0zypzrjw91m1bi7z6"))))
+    (build-system emacs-build-system)
+    (home-page
+     "http://elpa.gnu.org/packages/csv-mode.html")
+    (synopsis
+     "Major mode for editing comma/char separated values")
+    (description
+     "This Emacs package implements CSV mode, a major mode for editing records
+in a generalized CSV (character-separated values) format.")
+    (license license:gpl3+)))
+
 (define-public emacs-transmission
   (package
     (name "emacs-transmission")
