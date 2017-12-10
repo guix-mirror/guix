@@ -1,7 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,13 +29,13 @@
 (define-public gawk
   (package
    (name "gawk")
-   (version "4.2.0")
+   (version "4.1.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gawk/gawk-" version
                                 ".tar.xz"))
             (sha256
-             (base32 "1wm9lqj77y7xz07zi0n187aqm8zavzxzpm1j53ahxz81q0qwvwyl"))))
+             (base32 "0rn2mmjxm767zliqzd67j7h2ncjn4j0321c60y9fy3grs3i89qak"))))
    (build-system gnu-build-system)
    (arguments
     `(#:parallel-tests? #f                ; test suite fails in parallel
@@ -57,8 +56,7 @@
                              '((substitute* "extension/Makefile.in"
                                  (("^.*: check-for-shared-lib-support" match)
                                   (string-append "### " match))))
-                             '())
-                       #t)))
+                             '()))))
 
                  (add-before 'check 'adjust-test-infrastructure
                    (lambda _
