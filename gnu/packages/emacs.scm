@@ -5084,6 +5084,28 @@ you'd get with @kbd{M-q} using @code{adaptive-fill-mode}, but without
 actually changing the buffer's text.")
     (license license:gpl3+)))
 
+(define-public emacs-diff-hl
+ (package
+  (name "emacs-diff-hl")
+  (version "1.8.4")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "http://elpa.gnu.org/packages/diff-hl-"
+                          version ".tar"))
+      (sha256
+        (base32
+          "0axhidc3cym7a2x4rpxf4745qss9s9ajyg4s9h5b4zn7v7fyp71n"))))
+  (build-system emacs-build-system)
+  (home-page "https://github.com/dgutov/diff-hl")
+  (synopsis
+    "Highlight uncommitted changes using VC")
+  (description
+    "@code{diff-hl-mode} highlights uncommitted changes on the side of the
+window (using the fringe, by default), allows you to jump between
+the hunks and revert them selectively.")
+  (license license:gpl3+)))
+
 (define-public emacs-diminish
   (package
     (name "emacs-diminish")
