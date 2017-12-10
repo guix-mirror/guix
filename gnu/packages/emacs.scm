@@ -1976,6 +1976,26 @@ keep pressing the key until it selects what you want.  There's also
 column by drawing a thin line down the length of the editing window.")
     (license license:gpl3+)))
 
+(define-public emacs-grep-a-lot
+  (package
+    (name "emacs-grep-a-lot")
+    (version "1.0.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ZungBang/emacs-grep-a-lot.git")
+                    (commit "9f9f645b9e308a0d887b66864ff97d0fca1ba4ad")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1f8262mrlinzgnn4m49hbj1hm3c1mvzza24py4b37sasn49546lw"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ZungBang/emacs-grep-a-lot")
+    (synopsis "Enables multiple grep buffers in Emacs")
+    (description
+     "This Emacs package allows managing multiple grep buffers.")
+    (license license:gpl3+)))
+
 (define-public emacs-inf-ruby
   (package
     (name "emacs-inf-ruby")
