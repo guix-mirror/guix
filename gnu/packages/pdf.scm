@@ -77,15 +77,15 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.59.0")
+   (version "0.62.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0hcnghliyr8pr887qza18qfgaclw5jr889g1cjcglkni9jr2dmm3"))))
-   (build-system gnu-build-system)
+              "1ii9ly1pngyvs0aiq2wxpya08hidpl54y7nsb8b1vxnnskgp76jv"))))
+   (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
    (inputs `(("fontconfig" ,fontconfig)
@@ -110,11 +110,12 @@
    (arguments
     `(#:tests? #f ; no test data provided with the tarball
       #:configure-flags
-      '("--enable-xpdf-headers" ; to install header files
-        "--enable-zlib"
-
-        ;; Saves 8 MiB of .a files.
-        "--disable-static")))
+      (let* ((out (assoc-ref %outputs "out"))
+             (lib (string-append out "/lib")))
+        (list "-DENABLE_XPDF_HEADERS=ON" ; to install header files
+              "-DENABLE_ZLIB=ON"
+              (string-append "-DCMAKE_INSTALL_LIBDIR=" lib)
+              (string-append "-DCMAKE_INSTALL_RPATH=" lib)))))
    (synopsis "PDF rendering library")
    (description
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
@@ -133,10 +134,6 @@
    (name "poppler-qt5")
    (inputs `(("qtbase" ,qtbase)
              ,@(package-inputs poppler)))
-   (arguments
-    (substitute-keyword-arguments (package-arguments poppler)
-     ((#:configure-flags flags)
-       `(cons "CXXFLAGS=-std=gnu++11" ,flags))))
    (synopsis "Qt5 frontend for the Poppler PDF rendering library")))
 
 (define-public python-poppler-qt4
