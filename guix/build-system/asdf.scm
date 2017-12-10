@@ -19,6 +19,7 @@
 (define-module (guix build-system asdf)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix memoization)
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix search-paths)
@@ -160,70 +161,69 @@ set up using CL source package conventions."
     (eq? from-build-system (package-build-system pkg)))
 
   (define transform
-    (memoize
-     (lambda (pkg)
-       (define rewrite
-         (match-lambda
-           ((name content . rest)
-            (let* ((is-package? (package? content))
-                   (new-content (if is-package? (transform content) content)))
-              `(,name ,new-content ,@rest)))))
+    (mlambda (pkg)
+      (define rewrite
+        (match-lambda
+          ((name content . rest)
+           (let* ((is-package? (package? content))
+                  (new-content (if is-package? (transform content) content)))
+             `(,name ,new-content ,@rest)))))
 
-       ;; Special considerations for source packages: CL inputs become
-       ;; propagated, and un-handled arguments are removed.
+      ;; Special considerations for source packages: CL inputs become
+      ;; propagated, and un-handled arguments are removed.
 
-       (define new-propagated-inputs
-         (if target-is-source?
-             (map rewrite
-                  (append
-                   (filter (match-lambda
-                             ((_ input . _)
-                              (has-from-build-system? input)))
-                           (append (package-inputs pkg)
-                                   ;; The native inputs might be needed just
-                                   ;; to load the system.
-                                   (package-native-inputs pkg)))
-                   (package-propagated-inputs pkg)))
-
-             (map rewrite (package-propagated-inputs pkg))))
-
-       (define (new-inputs inputs-getter)
-         (if target-is-source?
-             (map rewrite
+      (define new-propagated-inputs
+        (if target-is-source?
+            (map rewrite
+                 (append
                   (filter (match-lambda
                             ((_ input . _)
-                             (not (has-from-build-system? input))))
-                          (inputs-getter pkg)))
-             (map rewrite (inputs-getter pkg))))
+                             (has-from-build-system? input)))
+                          (append (package-inputs pkg)
+                                  ;; The native inputs might be needed just
+                                  ;; to load the system.
+                                  (package-native-inputs pkg)))
+                  (package-propagated-inputs pkg)))
 
-       (define base-arguments
-         (if target-is-source?
-             (strip-keyword-arguments
-              '(#:tests? #:asd-file #:lisp #:asd-system-name #:test-asd-file)
-              (package-arguments pkg))
-             (package-arguments pkg)))
+            (map rewrite (package-propagated-inputs pkg))))
 
-       (cond
-        ((and variant-property
-              (assoc-ref (package-properties pkg) variant-property))
-         => force)
+      (define (new-inputs inputs-getter)
+        (if target-is-source?
+            (map rewrite
+                 (filter (match-lambda
+                           ((_ input . _)
+                            (not (has-from-build-system? input))))
+                         (inputs-getter pkg)))
+            (map rewrite (inputs-getter pkg))))
 
-        ((has-from-build-system? pkg)
-         (package
-           (inherit pkg)
-           (location (package-location pkg))
-           (name (transform-package-name (package-name pkg)))
-           (build-system to-build-system)
-           (arguments
-            (substitute-keyword-arguments base-arguments
-              ((#:phases phases) (list phases-transformer phases))))
-           (inputs (new-inputs package-inputs))
-           (propagated-inputs new-propagated-inputs)
-           (native-inputs (new-inputs package-native-inputs))
-           (outputs (if target-is-source?
-                        '("out")
-                        (package-outputs pkg)))))
-        (else pkg)))))
+      (define base-arguments
+        (if target-is-source?
+            (strip-keyword-arguments
+             '(#:tests? #:asd-file #:lisp #:asd-system-name #:test-asd-file)
+             (package-arguments pkg))
+            (package-arguments pkg)))
+
+      (cond
+       ((and variant-property
+             (assoc-ref (package-properties pkg) variant-property))
+        => force)
+
+       ((has-from-build-system? pkg)
+        (package
+          (inherit pkg)
+          (location (package-location pkg))
+          (name (transform-package-name (package-name pkg)))
+          (build-system to-build-system)
+          (arguments
+           (substitute-keyword-arguments base-arguments
+             ((#:phases phases) (list phases-transformer phases))))
+          (inputs (new-inputs package-inputs))
+          (propagated-inputs new-propagated-inputs)
+          (native-inputs (new-inputs package-native-inputs))
+          (outputs (if target-is-source?
+                       '("out")
+                       (package-outputs pkg)))))
+       (else pkg))))
 
   transform)
 
