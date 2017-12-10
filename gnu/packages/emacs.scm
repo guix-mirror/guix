@@ -2177,6 +2177,43 @@ evaluated in the browser, just like Emacs does with an inferior Lisp process
 in Lisp modes.")
     (license license:unlicense)))
 
+(define-public emacs-string-inflection
+  (package
+    (name "emacs-string-inflection")
+    (version "1.0.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/akicho8/string-inflection")
+                    (commit "a150e7bdda60b7824d3a936750ce23f73b0e4edd")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1k0sm552iawi49v4zis6dbb81d1rzgky9v0dpv7nj31gnb7bmy7k"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("ert-runner" ,ert-runner)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "ert-runner")))))))
+    (home-page "https://github.com/akicho8/string-inflection")
+    (synopsis "Convert symbol names between different naming conventions")
+    (description
+     "This Emacs package provides convenient methods for manipulating the
+naming style of a symbol.  It supports different naming conventions such as:
+
+@enumerate
+@item camel case
+@item Pascal case
+@item all upper case
+@item lower case separated by underscore
+@item etc...
+@end enumerate\n")
+    (license license:gpl2+)))
+
 (define-public emacs-stripe-buffer
   (package
     (name "emacs-stripe-buffer")
