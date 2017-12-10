@@ -94,7 +94,7 @@
              ("libpng" ,libpng)
              ("libtiff" ,libtiff)
              ("lcms" ,lcms)
-             ("openjpeg-1" ,openjpeg-1) ; prefers openjpeg-1
+             ("openjpeg" ,openjpeg)
              ("zlib" ,zlib)
 
              ;; To build poppler-glib (as needed by Evince), we need Cairo and
@@ -114,16 +114,7 @@
         "--enable-zlib"
 
         ;; Saves 8 MiB of .a files.
-        "--disable-static")
-      #:phases
-      (modify-phases %standard-phases
-        (add-before 'configure 'setenv
-          (lambda _
-            (setenv "CPATH"
-                    (string-append (assoc-ref %build-inputs "openjpeg-1")
-                                   "/include/openjpeg-1.5"
-                                   ":" (or (getenv "CPATH") "")))
-            #t)))))
+        "--disable-static")))
    (synopsis "PDF rendering library")
    (description
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
