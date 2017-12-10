@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -944,7 +945,8 @@ SPI, I2C, JTAG.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1r04hg1n3v2jf915qr05la3q9cxy7a5jnh9cc98j04lh6c9p4x85"))))
+                "1r04hg1n3v2jf915qr05la3q9cxy7a5jnh9cc98j04lh6c9p4x85"))
+              (patches (search-patches "picprog-non-intel-support.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
@@ -954,7 +956,8 @@ SPI, I2C, JTAG.")
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "Makefile"
                (("/usr/local") (assoc-ref outputs "out"))
-               ((" -o 0 -g 0 ") " "))
+               ((" -o 0 -g 0 ") " ")
+               (("testport") ""))
              #t))
          (add-before 'install 'mkdir
            (lambda* (#:key outputs #:allow-other-keys)
