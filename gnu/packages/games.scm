@@ -134,6 +134,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
@@ -1443,9 +1444,13 @@ either by Infocom or created using the Inform compiler.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (etc (string-append out "/etc")))
+                    (etc (string-append out "/etc"))
+                    (vulkan (assoc-ref inputs "vulkan-icd-loader")))
+               ;; Hard-code the path to libvulkan.so.
+               (substitute* "gfx/common/vulkan_common.c"
+                 (("libvulkan.so") (string-append vulkan "/lib/libvulkan.so")))
                (substitute* "qb/qb.libs.sh"
                  (("/bin/true") (which "true")))
                ;; The configure script does not yet accept the extra arguments
@@ -1468,6 +1473,7 @@ either by Infocom or created using the Inform compiler.")
        ("python" ,python)
        ("sdl" ,sdl2)
        ("udev" ,eudev)
+       ("vulkan-icd-loader" ,vulkan-icd-loader)
        ("wayland", wayland)
        ("zlib" ,zlib)))
     (native-inputs
