@@ -23,6 +23,7 @@
   #:use-module ((guix licenses) #:select (bsd-2))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (gnu packages perl)
   #:use-module (guix build-system gnu))
 
@@ -62,3 +63,17 @@
      "This library providing a malloc(3) implementation that emphasizes
 fragmentation avoidance and scalable concurrency support.")
     (license bsd-2)))
+
+(define-public jemalloc-4.5.0
+  (package
+    (inherit jemalloc)
+    (version "4.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/jemalloc/jemalloc/releases/download/"
+                    version "/jemalloc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "10373xhpc10pgmai9fkc1z0rs029qlcb3c0qfnvkbwdlcibdh2cl"))))
+    (inputs '())))
