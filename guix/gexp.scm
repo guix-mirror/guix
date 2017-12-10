@@ -343,28 +343,34 @@ This is the declarative counterpart of 'text-file'."
      (text-file name content references))))
 
 (define-record-type <computed-file>
-  (%computed-file name gexp options)
+  (%computed-file name gexp guile options)
   computed-file?
   (name       computed-file-name)                 ;string
   (gexp       computed-file-gexp)                 ;gexp
+  (guile      computed-file-guile)                ;<package>
   (options    computed-file-options))             ;list of arguments
 
 (define* (computed-file name gexp
-                        #:key (options '(#:local-build? #t)))
+                        #:key guile (options '(#:local-build? #t)))
   "Return an object representing the store item NAME, a file or directory
 computed by GEXP.  OPTIONS is a list of additional arguments to pass
 to 'gexp->derivation'.
 
 This is the declarative counterpart of 'gexp->derivation'."
-  (%computed-file name gexp options))
+  (%computed-file name gexp guile options))
 
 (define-gexp-compiler (computed-file-compiler (file <computed-file>)
                                               system target)
   ;; Compile FILE by returning a derivation whose build expression is its
   ;; gexp.
   (match file
-    (($ <computed-file> name gexp options)
-     (apply gexp->derivation name gexp options))))
+    (($ <computed-file> name gexp guile options)
+     (if guile
+         (mlet %store-monad ((guile (lower-object guile system
+                                                  #:target target)))
+           (apply gexp->derivation name gexp #:guile-for-build guile
+                  options))
+         (apply gexp->derivation name gexp options)))))
 
 (define-record-type <program-file>
   (%program-file name gexp guile)
