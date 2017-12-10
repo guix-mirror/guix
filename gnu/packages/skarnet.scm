@@ -47,8 +47,8 @@
                       ;; Sort source files deterministically so that the *.a
                       ;; and *.so files are reproducible.
                       (substitute* "Makefile"
-                        (("\\$\\(ALL_SRCS:%.c=%.o\\)")
-                         "$(sort $(ALL_SRCS:%.c=%.o))"))
+                        (("\\$\\(wildcard src/lib\\*/\\*.c\\)")
+                         "$(sort $(wildcard src/lib*/*.c))"))
                       #t)))))
     (home-page "http://skarnet.org/software/skalibs/")
     (synopsis "Platform abstraction libraries for skarnet.org software")
