@@ -703,7 +703,13 @@ invoking @command{notifymuch} from the post-new hook.")
                 "1fyx20rjpwbf2j1v5fpa5s0rjnwhcgvijzh2qyinp8rlbh1qxmab"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "V=1") ; Verbose test output.
+     `(#:modules ((guix build gnu-build-system)
+                  ((guix build emacs-build-system) #:prefix emacs:)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-build-system)
+                           (guix build emacs-utils))
+       #:make-flags (list "V=1") ; Verbose test output.
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-notmuch-lib.el
                     (lambda _
@@ -715,16 +721,25 @@ invoking @command{notifymuch} from the post-new hook.")
                       (setenv "CC" "gcc")
                       (setenv "CONFIG_SHELL" (which "sh"))
 
-                      (let ((out (assoc-ref outputs "out")))
-                        (zero? (system* "./configure"
-                                        (string-append "--prefix=" out))))))
+                      (let* ((out (assoc-ref outputs "out"))
+                             (elisp
+                              (string-append out "/share/emacs/site-lisp/guix.d/"
+                                             ,name "-" ,version)))
+                        (zero?
+                         (system*
+                          "./configure"
+                          (string-append "--prefix=" out)
+                          (string-append "--emacslispdir=" elisp)
+                          (string-append "--emacsetcdir=" elisp))))))
                   (add-before 'check 'prepare-test-environment
                     (lambda _
                       (setenv "TEST_CC" "gcc")
                       ;; Patch various inline shell invocations.
                       (substitute* (find-files "test" "\\.sh$")
                         (("/bin/sh") (which "sh")))
-                      #t)))))
+                      #t))
+                  (add-after 'install 'make-autoloads
+                    (assoc-ref emacs:%standard-phases 'make-autoloads)))))
     (native-inputs
      `(("bash-completion" ,bash-completion)
        ("emacs" ,emacs-no-x) ; Minimal lacks libxml, needed for some tests.
