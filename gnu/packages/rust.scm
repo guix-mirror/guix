@@ -68,6 +68,12 @@
          "1vnvqwz30hvyjcfr1f602lg43v2vlqjr3yhb5vr8xnrcc07yvjmp")
         ("x86_64-unknown-linux-gnu"
          "1s0866qcy0645bqhsbs3pvk2hi52ps8jzs7x096w0as033h707ml")
+        ("armv7-unknown-linux-gnueabihf"
+         "1ml8fjq2b6j2vn1j314w93pf4wjl97n1mbz609h3i7md0zqscvs1")
+        ("aarch64-unknown-linux-gnu"
+         "1hv4m2m7xjcph39r6baryfg23hjcr4sbsrfnd1lh0wn67k2fc7j9")
+        ("mips64el-unknown-linux-gnuabi64"
+         "0p7fzkfcqg5yvj86v434z351dp7s7pgns8nzxj0fz3hmbfbvlvn9")
         (_ "")))))) ; Catch-all for other systems.
 
 (define %cargo-reference-project-file "/dev/null")
@@ -131,7 +137,6 @@
                (for-each (lambda (file)
                            (system* "patchelf" "--set-interpreter" ld-so file))
                          (list rustc rustdoc))))))))
-    (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "https://www.rust-lang.org")
     (synopsis "Prebuilt rust compiler")
     (description "This package provides a pre-built @command{rustc} compiler,
@@ -171,7 +176,6 @@ which can in turn be used to build the final Rust compiler.")
                         "--set-interpreter" ld-so
                         "--set-rpath" rpath
                         cargo)))))))
-    (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "https://www.rust-lang.org")
     (synopsis "Prebuilt cargo package manager")
     (description "This package provides a pre-built @command{cargo} package
