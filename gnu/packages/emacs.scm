@@ -26,7 +26,7 @@
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -5948,6 +5948,53 @@ running tests easier.")
      "Provides @code{disable-mouse-mode} and @code{global-disable-mouse-mode},
 pair of minor modes which suppress all mouse events by intercepting them and
 running a customisable handler command (@code{ignore} by default). ")
+    (license license:gpl3+)))
+
+(define-public emacs-json-reformat
+  (package
+    (name "emacs-json-reformat")
+    (version "0.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/gongo/json-reformat/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11fbq4scrgr7m0iwnzcrn2g7xvqwm2gf82sa7zy1l0nil7265p28"))
+       (patches (search-patches "emacs-json-reformat-fix-tests.patch"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-undercover" ,emacs-undercover)))
+    (inputs
+     `(("emacs-dash" ,emacs-dash)         ; for tests
+       ("emacs-shut-up" ,emacs-shut-up))) ; for tests
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-L" (string-append
+                                   (assoc-ref inputs "emacs-undercover")
+                                   "/share/emacs/site-lisp/guix.d/undercover-"
+                                   ,(package-version emacs-undercover))
+                             "-L" (string-append
+                                   (assoc-ref inputs "emacs-dash")
+                                   "/share/emacs/site-lisp/guix.d/dash-"
+                                   ,(package-version emacs-dash))
+                             "-L" (string-append
+                                   (assoc-ref inputs "emacs-shut-up")
+                                   "/share/emacs/site-lisp/guix.d/shut-up-"
+                                   ,(package-version emacs-shut-up))
+                             "-l" "test/test-helper.el"
+                             "-l" "test/json-reformat-test.el"
+                             "-f" "ert-run-tests-batch-and-exit"))
+             #t)))))
+    (home-page "https://github.com/gongo/json-reformat")
+    (synopsis "Reformatting tool for JSON")
+    (description "@code{json-reformat} provides a reformatting tool for
+@url{http://json.org/, JSON}.")
     (license license:gpl3+)))
 
 (define-public emacs-json-snatcher

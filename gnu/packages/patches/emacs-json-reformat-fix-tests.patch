@@ -1,0 +1,32 @@
+Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+
+This patch fixes tests for Emacs 25.
+
+Upstream bug URL:
+
+https://github.com/gongo/json-reformat/issues/33
+
+diff --git a/test/json-reformat-test.el b/test/json-reformat-test.el
+index 7de3be1..b4a4dde 100644
+--- a/test/json-reformat-test.el
++++ b/test/json-reformat-test.el
+@@ -58,7 +58,7 @@
+ (ert-deftest json-reformat-test:string-to-string ()
+   (should (string= "\"foobar\"" (json-reformat:string-to-string "foobar")))
+   (should (string= "\"fo\\\"o\\nbar\"" (json-reformat:string-to-string "fo\"o\nbar")))
+-  (should (string= "\"\\u2661\"" (json-reformat:string-to-string "\u2661")))
++  (should (string= "\"♡\"" (json-reformat:string-to-string "\u2661")))
+ 
+   (should (string= "\"^(amq\\\\.gen.*|amq\\\\.default)$\"" (json-reformat:string-to-string "^(amq\\.gen.*|amq\\.default)$")))
+   )
+@@ -148,6 +148,6 @@ bar\"" (json-reformat:string-to-string "fo\"o\nbar")))
+ [{ foo : \"bar\" }, { \"foo\" : \"baz\" }]") ;; At 3 (line)
+         (json-reformat-region (point-min) (point-max)))
+       (should (string=
+-               "JSON parse error [Reason] Bad string format: \"doesn't start with '\\\"'!\" [Position] In buffer, line 3 (char 6)"
++               "JSON parse error [Reason] Bad string format: \"doesn't start with \`\\\"'!\" [Position] In buffer, line 3 (char 6)"
+                message-string))
+       )))
+-- 
+2.15.1
+
