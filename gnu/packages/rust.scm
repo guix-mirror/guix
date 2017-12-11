@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Nikolai Merinov <nikolai.merinov@member.fsf.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,10 +64,11 @@
     (sha256
      (base32
       (match %host-type
-	("i686-unknown-linux-gnu"
+        ("i686-unknown-linux-gnu"
          "1vnvqwz30hvyjcfr1f602lg43v2vlqjr3yhb5vr8xnrcc07yvjmp")
-	("x86_64-unknown-linux-gnu"
-         "1s0866qcy0645bqhsbs3pvk2hi52ps8jzs7x096w0as033h707ml"))))))
+        ("x86_64-unknown-linux-gnu"
+         "1s0866qcy0645bqhsbs3pvk2hi52ps8jzs7x096w0as033h707ml")
+        (_ "")))))) ; Catch-all for other systems.
 
 (define %cargo-reference-project-file "/dev/null")
 (define %cargo-reference-hash
