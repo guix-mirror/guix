@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -26,6 +26,7 @@
   #:use-module (gnu system vm)
   #:use-module (gnu services)
   #:use-module (gnu services version-control)
+  #:use-module (gnu services cgit)
   #:use-module (gnu services web)
   #:use-module (gnu services networking)
   #:use-module (gnu packages version-control)
