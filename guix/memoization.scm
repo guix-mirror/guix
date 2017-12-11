@@ -17,6 +17,9 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix memoization)
+  #:use-module (guix profiling)
+  #:use-module (ice-9 match)
+  #:autoload   (srfi srfi-1) (count)
   #:export (memoize
             mlambda
             mlambdaq))
@@ -58,17 +61,69 @@ already-cached result."
 (define-cache-procedure cached  hash-ref hash-set! call/1 return/1)
 (define-cache-procedure cachedq hashq-ref hashq-set! call/1 return/1)
 
+(define %memoization-tables
+  ;; Map procedures to the underlying hash table.
+  (make-weak-key-hash-table))
+
+(define %make-hash-table*
+  (if (profiled? "memoization")
+      (lambda (proc location)
+        (let ((table (make-hash-table)))
+          (hashq-set! %memoization-tables proc
+                      (cons table location))
+          table))
+      (lambda (proc location)
+        (make-hash-table))))
+
+(define-syntax-rule (make-hash-table* proc)
+  (%make-hash-table* proc (current-source-location)))
+
+(define* (show-memoization-tables #:optional (port (current-error-port)))
+  "Display to PORT statistics about the memoization tables."
+  (define (table<? p1 p2)
+    (match p1
+      ((table1 . _)
+       (match p2
+         ((table2 . _)
+          (< (hash-count (const #t) table1)
+             (hash-count (const #t) table2)))))))
+
+  (define tables
+    (hash-map->list (lambda (key value)
+                      value)
+                    %memoization-tables))
+
+  (match (sort tables (negate table<?))
+    (((tables . locations) ...)
+     (format port "Memoization: ~a tables, ~a non-empty~%"
+             (length tables)
+             (count (lambda (table)
+                      (> (hash-count (const #t) table) 0))
+                    tables))
+     (for-each (lambda (table location)
+                 (let ((size (hash-count (const #t) table)))
+                   (unless (zero? size)
+                     (format port "  ~a:~a:~a: \t~a entries~%"
+                             (assq-ref location 'filename)
+                             (and=> (assq-ref location 'line) 1+)
+                             (assq-ref location 'column)
+                             size))))
+               tables locations))))
+
+(register-profiling-hook! "memoization" show-memoization-tables)
+
 (define (memoize proc)
   "Return a memoizing version of PROC.
 
 This is a generic version of 'mlambda' what works regardless of the arity of
 'proc'.  It is more expensive since the argument list is always allocated, and
 the result is returned via (apply values results)."
-  (let ((cache (make-hash-table)))
-    (lambda args
-      (cached/mv cache args
-                 (lambda ()
-                   (apply proc args))))))
+  (letrec* ((mproc (lambda args
+                     (cached/mv cache args
+                                (lambda ()
+                                  (apply proc args)))))
+            (cache (make-hash-table* mproc)))
+    mproc))
 
 (define-syntax %mlambda
   (syntax-rules ()
@@ -88,19 +143,21 @@ exactly one value."
     ;; allocated.  XXX: We can't really avoid the closure allocation since
     ;; Guile 2.0's compiler will always keep it.
     ((_ cached (arg) body ...)                    ;one argument
-     (let ((cache (make-hash-table))
-           (proc  (lambda (arg) body ...)))
-       (lambda (arg)
-         (cached cache arg (lambda () (proc arg))))))
+     (letrec* ((proc  (lambda (arg) body ...))
+               (mproc (lambda (arg)
+                        (cached cache arg (lambda () (proc arg)))))
+               (cache (make-hash-table* mproc)))
+       mproc))
     ((_ _ (args ...) body ...)                    ;two or more arguments
-     (let ((cache (make-hash-table))
-           (proc  (lambda (args ...) body ...)))
-       (lambda (args ...)
-         ;; XXX: Always use 'cached', which uses 'equal?', to compare the
-         ;; argument lists.
-         (cached cache (list args ...)
-                 (lambda ()
-                   (proc args ...))))))))
+     (letrec* ((proc  (lambda (args ...) body ...))
+               (mproc (lambda (args ...)
+                        ;; XXX: Always use 'cached', which uses 'equal?', to
+                        ;; compare the argument lists.
+                        (cached cache (list args ...)
+                                (lambda ()
+                                  (proc args ...)))))
+               (cache (make-hash-table* mproc)))
+       mproc))))
 
 (define-syntax-rule (mlambda formals body ...)
   "Define a memoizing lambda.  The lambda's arguments are compared with
