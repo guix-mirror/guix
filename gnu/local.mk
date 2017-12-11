@@ -609,6 +609,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/dtc-format-modifier.patch		\
   %D%/packages/patches/dtc-32-bits-check.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
+  %D%/packages/patches/eigen-arm-neon-fixes.patch		\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-disable-failing-tests.patch	\
   %D%/packages/patches/einstein-build.patch			\
