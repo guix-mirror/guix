@@ -161,9 +161,7 @@ libcdio.")
     (inputs
      `(("acl" ,acl)
        ("readline" ,readline)
-       ("bzip2" ,bzip2)
-       ("zlib" ,zlib)
-       ("libcdio" ,libcdio)))
+       ("zlib" ,zlib)))
     (home-page "https://www.gnu.org/software/xorriso/")
     (synopsis "Create, manipulate, burn ISO-9660 file systems")
     (description
