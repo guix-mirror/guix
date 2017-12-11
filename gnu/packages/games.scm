@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
@@ -81,6 +81,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages imagemagick)
@@ -5348,3 +5349,57 @@ elements to achieve a simple goal in the most complex way possible.")
     ;; under various licenses, listed here.
     (license (list license:gpl2 license:public-domain license:expat
                    license:cc-by-sa3.0 license:gpl3+ license:wtfpl2))))
+
+(define-public pioneer
+  (package
+    (name "pioneer")
+    (version "20171001")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/pioneerspacesim/pioneer/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nxhx22swfqq6lfvcnpfm31wig3sjv5pp0rslj79nbxc7nyihh8m"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("assimp" ,assimp)
+       ("curl" ,curl)
+       ("freetype" ,freetype)
+       ("glu" ,glu)
+       ("libpng" ,libpng)
+       ("libsigc++" ,libsigc++)
+       ("libvorbis" ,libvorbis)
+       ("lua" ,lua-5.2)                 ;not compatible with 5.3
+       ("mesa" ,mesa)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-image)))))
+    (arguments
+     `(#:tests? #f                      ;tests are broken
+       #:configure-flags (list "--with-external-liblua"
+                               (string-append "PIONEER_DATA_DIR="
+                                              %output "/share/games/pioneer"))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'bootstrap
+                    (lambda _ (zero? (system* "sh" "bootstrap"))))
+                  (add-before 'bootstrap 'fix-lua-check
+                    (lambda _
+                      (substitute* "configure.ac"
+                        (("lua5.2")
+                         (string-append "lua-" ,(version-major+minor
+                                                 (package-version lua-5.2))))))))))
+    (home-page "http://pioneerspacesim.net")
+    (synopsis "Game of lonely space adventure")
+    (description
+     "Pioneer is a space adventure game set in our galaxy at the turn of the
+31st century.  The game is open-ended, and you are free to eke out whatever
+kind of space-faring existence you can think of.  Look for fame or fortune by
+exploring the millions of star systems.  Turn to a life of crime as a pirate,
+smuggler or bounty hunter.  Forge and break alliances with the various
+factions fighting for power, freedom or self-determination.  The universe is
+whatever you make of it.")
+    (license license:gpl3)))
