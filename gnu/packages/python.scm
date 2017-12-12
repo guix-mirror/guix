@@ -11523,6 +11523,22 @@ related APIs.  The binding is created using the standard @code{ctypes}
 library.")
    (license license:bsd-3)))
 
+(define-public python2-pyopengl-accelerate
+  (package
+    (inherit python2-pyopengl)
+    (name "python2-pyopengl-accelerate")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyOpenGL-accelerate" version))
+       (sha256
+        (base32
+         "0464c1ifzk0k92lyndikmvzjgnx1y25r7bkkc8pnxm4kp1q4czwj"))))
+    (synopsis "Acceleration code for PyOpenGL")
+    (description
+     "This is the Cython-coded accelerator module for PyOpenGL.")))
+
 (define-public python-rencode
   (package
    (name "python-rencode")
