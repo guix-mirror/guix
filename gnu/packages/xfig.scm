@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,105 +24,43 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages groff)
   #:use-module (gnu packages compression))
 
 (define-public xfig
   (package
     (name "xfig")
-    (version "3.2.5c")
+    (version "3.2.6a")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/mcj/mcj-source/xfig."
-                           version ".full.tar.gz"))
+       (uri (string-append "mirror://sourceforge/mcj/"
+                           name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1yd1jclvw5w3ja4jjzr1ysbn8iklh88wq84jn9d1gavrbfbqyqpa"))))
+         "0z1636w27hvgjpq98z40k8h535b4x2xr2whkvr7bibaa89fynym8"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("imake" ,imake)
-       ("makedepend" ,makedepend)
-       ("groff" ,groff)))               ;for creating some doc
+     ;; For tests.
+     `(("desktop-file-utils" ,desktop-file-utils)))
     (inputs
      `(("libxaw3d" ,libxaw3d)
-       ;; Requires libjpeg>=9a, otherwise jmorecfg.h define an enum FALSE that
-       ;; conflicts with the FALSE macro from X11/Intrinsic.h
-       ("libjpeg"  ,libjpeg)
-       ("libpng"   ,libpng)
-       ("libxpm"   ,libxpm)
-       ("libx11"   ,libx11)
-       ("libxmu"   ,libxmu)
-       ("libxt"    ,libxt)
-       ("zlib"     ,zlib)))
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libxpm" ,libxpm)
+       ("libx11" ,libx11)
+       ("libxt" ,libxt)))
     (arguments
-     `(#:tests? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (replace 'configure
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((imake (assoc-ref inputs "imake"))
-                          (out   (assoc-ref outputs "out")))
-                      (substitute* "Imakefile"
-                        (("XCOMM XAPPLOADDIR = /home/user/xfig *")
-                         (string-append "XAPPLOADDIR = " out ,%app-defaults-dir))
-                        (("XCOMM (BINDIR = )[[:graph:]]*" _ front)
-                         (string-append front out "/bin"))
-                        (("(PNGLIBDIR = )[[:graph:]]*" _ front)
-                         (string-append front (assoc-ref inputs "libpng") "/lib"))
-                        (("(PNGINC = -I)[[:graph:]]*" _ front)
-                         (string-append front (assoc-ref inputs "libpng") "/include"))
-                        (("(JPEGLIBDIR = )[[:graph:]]*" _ front)
-                         (string-append front (assoc-ref inputs "libjpeg") "/lib"))
-                        (("(JPEGINC = -I)[[:graph:]]*" _ front)
-                         (string-append front (assoc-ref inputs "libjpeg") "/include"))
-                        (("(ZLIBDIR = )[[:graph:]]*" _ front)
-                         (string-append front (assoc-ref inputs "zlib") "/lib"))
-                        (("(XPMLIBDIR = )[[:graph:]]*" _ front)
-                         (string-append front (assoc-ref inputs "libxpm") "/lib"))
-                        (("(XPMINC = -I)[[:graph:]]*" _ front)
-                         (string-append front (assoc-ref inputs "libxpm") "/include"))
-                        (("(XFIGLIBDIR = )[[:graph:]]*" _ front)
-                         (string-append front out "/lib"))
-                        (("(XFIGDOCDIR = )[[:graph:]]*" _ front)
-                         (string-append front out "/share/doc"))
-                        (("XCOMM USEINLINE") "USEINLINE"))
-                      ;; The -a argument is required in order to pick up the correct paths
-                      ;; to several X header files.
-                      (invoke "xmkmf" "-a")
-                      ;; Reset some variables that are inherited from imake templates
-                      (substitute* "Makefile"
-                        ;; These imake variables somehow remain undefined
-                        (("DefaultGcc2[[:graph:]]*Opt") "-O2")
-                        ;; Reset a few variable defaults that are set in imake templates
-                        ((imake) out)
-                        (("(MANPATH = )[[:graph:]]*" _ front)
-                         (string-append front out "/share/man"))
-                        (("(CONFDIR = )([[:graph:]]*)" _ front default)
-                         (string-append front out default))))
-                    #t))
-         (add-after
-          'install 'install/libs
-          (lambda _
-            (zero? (system* "make" "install.libs"))))
-         (add-after
-          'install 'install/doc
-          (lambda _
-            (begin
-              ;; The Doc/xfig_man.html file is expected by the install.html
-              ;; target, but is not present in the tarball, so generate it.
-              (use-modules (ice-9 popen))
-              (let* ((in  (open-pipe* OPEN_READ
-                                      "groff" "-mandoc" "-Thtml"
-                                      "Doc/xfig.man"))
-                     (out (open-output-file "Doc/xfig_man.html")))
-                (begin
-                  (dump-port in out)
-                  (close-pipe in)
-                  (close-port out)))
-              (zero? (system* "make" "install.doc"))))))))
+         (add-before 'install 'strip-bogus-exec-prefix
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "xfig.desktop"
+               ;; The patch-dot-desktop-files phase requires a relative name.
+               (("Exec=/usr/bin/xfig") "Exec=xfig"))
+             #t)))))
     (home-page "http://mcj.sourceforge.net/")
     (synopsis "Interactive drawing tool")
     (description
