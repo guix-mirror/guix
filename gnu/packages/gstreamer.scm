@@ -402,7 +402,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
        ("python" ,python)))
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
-       ("ffmpeg" ,ffmpeg-3.3)
+       ("ffmpeg" ,ffmpeg)
        ("orc" ,orc)
        ("zlib" ,zlib)))
     (home-page "http://gstreamer.freedesktop.org/")
