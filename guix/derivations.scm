@@ -136,7 +136,7 @@
   (env-vars derivation-builder-environment-vars)  ; list of name/value pairs
   (file-name derivation-file-name))               ; the .drv file name
 
-(define-record-type <derivation-output>
+(define-immutable-record-type <derivation-output>
   (make-derivation-output path hash-algo hash recursive?)
   derivation-output?
   (path       derivation-output-path)             ; store path
@@ -144,7 +144,7 @@
   (hash       derivation-output-hash)             ; bytevector | #f
   (recursive? derivation-output-recursive?))      ; Boolean
 
-(define-record-type <derivation-input>
+(define-immutable-record-type <derivation-input>
   (make-derivation-input path sub-derivations)
   derivation-input?
   (path            derivation-input-path)             ; store path
