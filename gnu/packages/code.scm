@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
@@ -99,14 +99,14 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 (define-public global                             ; a global variable
   (package
     (name "global")
-    (version "6.5.7")
+    (version "6.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/global/global-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0cnd7a7d1pl46yk15q6mnr9i9w3xi8pxgchw4ia9njgr4jjqzh6r"))))
+               "09vm11pkzbqbbhigapi1fvfcrb2gwqffjnc37yc2r7j2falnxa47"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("libltdl" ,libltdl)
