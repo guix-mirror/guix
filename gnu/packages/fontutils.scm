@@ -230,20 +230,21 @@ fonts to/from the WOFF2 format.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (version "2.12.3")
+   (version "2.12.6")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
+            (patches (search-patches "fontconfig-remove-debug-printf.patch"))
             (sha256 (base32
-                     "1ggq6jmz3mlzk4xjs615aqw9h3hq33chjn82bhli26kk09kby95x"))))
+                     "05zh65zni11kgnhg726gjbrd55swspdvhqbcnj5a5xh8gn03036g"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("expat" ,expat)
                         ("freetype" ,freetype)))
    (inputs `(("gs-fonts" ,gs-fonts)))
    (native-inputs
-    `(("gperf" ,gperf) ; Try dropping this for > 2.12.3.
+    `(("gperf" ,gperf)
       ("pkg-config" ,pkg-config)))
    (arguments
     `(#:configure-flags
@@ -262,13 +263,6 @@ fonts to/from the WOFF2 format.")
             "PYTHON=false")
       #:phases
       (modify-phases %standard-phases
-        (add-before 'configure 'regenerate-fcobjshash
-          ;; XXX The pre-generated gperf files are broken.
-          ;; See <https://bugs.freedesktop.org/show_bug.cgi?id=101280>.
-          (lambda _
-            (delete-file "src/fcobjshash.h")
-            (delete-file "src/fcobjshash.gperf")
-            #t))
         (replace 'install
                  (lambda _
                    ;; Don't try to create /var/cache/fontconfig.

@@ -1,0 +1,18 @@
+Fontconfig 2.12.5 and 2.12.6 was released with a stray debugging statement.
+See <https://lists.freedesktop.org/archives/fontconfig/2017-October/006079.html>.
+
+Patch copied from upstream source repository:
+https://cgit.freedesktop.org/fontconfig/commit/?id=b56207a069be2574df455ede0a6ab61f44d5ca2b
+
+diff --git a/fc-query/fc-query.c b/fc-query/fc-query.c
+index 842a8b6..6cd5abd 100644
+--- a/fc-query/fc-query.c
++++ b/fc-query/fc-query.c
+@@ -170,7 +170,6 @@ main (int argc, char **argv)
+ 	    FcPattern *pat;
+ 
+ 	    id = ((instance_num << 16) + face_num);
+-	    printf("id %d\n", id);
+ 	    if (FT_New_Face (ftLibrary, argv[i], id, &face))
+ 	      break;
+ 	    num_faces = face->num_faces;

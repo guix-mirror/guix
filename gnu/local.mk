@@ -636,6 +636,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fltk-xfont-on-demand.patch		\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
+  %D%/packages/patches/fontconfig-remove-debug-printf.patch	\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
   %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
   %D%/packages/patches/freeimage-fix-build-with-gcc-5.patch	\
