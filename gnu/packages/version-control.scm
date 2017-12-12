@@ -539,6 +539,18 @@ collaboration using typical untrusted file hosts or services.")
              (zero? (system*
                      "tar" "--strip-components=1" "-C" "git" "-xf"
                      (assoc-ref inputs "git:src")))))
+         (add-after 'unpack 'patch-absolute-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (quoted-file-name input path)
+               (string-append "\"" input path "\""))
+             (substitute* "ui-snapshot.c"
+               (("\"gzip\"")
+                (quoted-file-name (assoc-ref inputs "gzip") "/bin/gzip"))
+               (("\"bzip2\"")
+                (quoted-file-name (assoc-ref inputs "bzip2") "/bin/bzip2"))
+               (("\"xz\"")
+                (quoted-file-name (assoc-ref inputs "xz") "/bin/xz")))
+             #t))
          (delete 'configure) ; no configure script
          (add-after 'build 'build-man
            (lambda* (#:key make-flags #:allow-other-keys)
@@ -559,7 +571,10 @@ collaboration using typical untrusted file hosts or services.")
                     #t)))))))
     (native-inputs
      ;; For building manpage.
-     `(("asciidoc" ,asciidoc)))
+     `(("asciidoc" ,asciidoc)
+       ("gzip" ,gzip)
+       ("bzip2" ,bzip2)
+       ("xz" ,xz)))
     (inputs
      `(;; Cgit directly accesses some internal Git interfaces that changed in
        ;; Git 2.12.  Try removing this special input and using the source of the
