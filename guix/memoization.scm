@@ -20,9 +20,47 @@
   #:use-module (guix profiling)
   #:use-module (ice-9 match)
   #:autoload   (srfi srfi-1) (count)
+  #:use-module (srfi srfi-9)
   #:export (memoize
             mlambda
             mlambdaq))
+
+;; Data type representation a memoization cache when profiling is on.
+(define-record-type <cache>
+  (make-cache table lookups hits)
+  cache?
+  (table   cache-table)
+  (lookups cache-lookups set-cache-lookups!)
+  (hits    cache-hits    set-cache-hits!))
+
+(define-syntax-rule (define-lookup-procedure proc get)
+  "Define a lookup procedure PROC.  When profiling is turned off, PROC is set
+to GET; when profiling is on, PROC is a wrapper around GET that keeps tracks
+of lookups and cache hits."
+  (define proc
+    (if (profiled? "memoization")
+        (lambda (cache key default)
+          (let ((result (get (cache-table cache) key default)))
+            (set-cache-lookups! cache (+ 1 (cache-lookups cache)))
+            (unless (eq? result default)
+              (set-cache-hits! cache (+ 1 (cache-hits cache))))
+            result))
+        get)))
+
+(define-syntax-rule (define-update-procedure proc put!)
+  "Define an update procedure PROC.  When profiling is turned off, PROC is
+equal to PUT!; when profiling is on, PROC is a wrapper around PUT and unboxes
+the underlying hash table."
+  (define proc
+    (if (profiled? "memoization")
+        (lambda (cache key value)
+          (put! (cache-table cache) key value))
+        put!)))
+
+(define-lookup-procedure cache-ref hash-ref)
+(define-lookup-procedure cacheq-ref hashq-ref)
+(define-update-procedure cache-set! hash-set!)
+(define-update-procedure cacheq-set! hashq-set!)
 
 (define-syntax-rule (call/mv thunk)
   (call-with-values thunk list))
@@ -56,22 +94,24 @@ already-cached result."
      (define-cache-procedure name hash-ref hash-set!
        call/mv return/mv))))
 
-(define-cache-procedure cached/mv  hash-ref hash-set!)
-(define-cache-procedure cachedq/mv hashq-ref hashq-set!)
-(define-cache-procedure cached  hash-ref hash-set! call/1 return/1)
-(define-cache-procedure cachedq hashq-ref hashq-set! call/1 return/1)
+(define-cache-procedure cached/mv  cache-ref cache-set!)
+(define-cache-procedure cachedq/mv cacheq-ref cacheq-set!)
+(define-cache-procedure cached  cache-ref cache-set! call/1 return/1)
+(define-cache-procedure cachedq cacheq-ref cacheq-set! call/1 return/1)
 
 (define %memoization-tables
   ;; Map procedures to the underlying hash table.
   (make-weak-key-hash-table))
 
 (define %make-hash-table*
+  ;; When profiling is off, this is equivalent to 'make-hash-table'.  When
+  ;; profiling is on, return a hash table wrapped in a <cache> object.
   (if (profiled? "memoization")
       (lambda (proc location)
-        (let ((table (make-hash-table)))
+        (let ((cache (make-cache (make-hash-table) 0 0)))
           (hashq-set! %memoization-tables proc
-                      (cons table location))
-          table))
+                      (cons cache location))
+          cache))
       (lambda (proc location)
         (make-hash-table))))
 
@@ -80,35 +120,40 @@ already-cached result."
 
 (define* (show-memoization-tables #:optional (port (current-error-port)))
   "Display to PORT statistics about the memoization tables."
-  (define (table<? p1 p2)
+  (define (cache<? p1 p2)
     (match p1
-      ((table1 . _)
+      ((cache1 . _)
        (match p2
-         ((table2 . _)
-          (< (hash-count (const #t) table1)
-             (hash-count (const #t) table2)))))))
+         ((cache2 . _)
+          (< (hash-count (const #t) (cache-table cache1))
+             (hash-count (const #t) (cache-table cache2))))))))
 
-  (define tables
+  (define caches
     (hash-map->list (lambda (key value)
                       value)
                     %memoization-tables))
 
-  (match (sort tables (negate table<?))
-    (((tables . locations) ...)
+  (match (sort caches (negate cache<?))
+    (((caches . locations) ...)
      (format port "Memoization: ~a tables, ~a non-empty~%"
-             (length tables)
-             (count (lambda (table)
-                      (> (hash-count (const #t) table) 0))
-                    tables))
-     (for-each (lambda (table location)
-                 (let ((size (hash-count (const #t) table)))
+             (length caches)
+             (count (lambda (cache)
+                      (> (hash-count (const #t) (cache-table cache)) 0))
+                    caches))
+     (for-each (lambda (cache location)
+                 (let ((size (hash-count (const #t) (cache-table cache))))
                    (unless (zero? size)
-                     (format port "  ~a:~a:~a: \t~a entries~%"
+                     (format port "  ~a:~a:~a: \t~a entries, ~a lookups, ~a% hits~%"
                              (assq-ref location 'filename)
                              (and=> (assq-ref location 'line) 1+)
                              (assq-ref location 'column)
-                             size))))
-               tables locations))))
+                             size
+                             (cache-lookups cache)
+                             (inexact->exact
+                              (round
+                               (* 100. (/ (cache-hits cache)
+                                          (cache-lookups cache) 1.))))))))
+               caches locations))))
 
 (register-profiling-hook! "memoization" show-memoization-tables)
 
