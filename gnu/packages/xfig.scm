@@ -122,7 +122,7 @@
                   (close-pipe in)
                   (close-port out)))
               (zero? (system* "make" "install.doc"))))))))
-    (home-page "http://xfig.org/")
+    (home-page "http://mcj.sourceforge.net/")
     (synopsis "Interactive drawing tool")
     (description
      "Xfig is an interactive drawing tool which runs under X Window System.
@@ -195,7 +195,7 @@ selected in various ways.  For text, 35 fonts are available.")
          (add-after 'install 'install/doc
            (lambda _
              (zero? (system* "make" "install.man")))))))
-    (home-page "http://www.xfig.org/")
+    (home-page "http://mcj.sourceforge.net/")
     (synopsis "Create portable LaTeX figures")
     (description
      "Transfig creates a makefile to translate figures described in Fig code
