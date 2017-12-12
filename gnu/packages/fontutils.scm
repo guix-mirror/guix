@@ -53,13 +53,13 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.8")
+   (version "2.8.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "02xlj611alpvl3h33hvfw1jyxc1vp9mzwcckkiglkhn3hknh7im3"))))
+                     "0y3xrimgp0k39gwq1vdi7b7wjy0z9fhwmzafisxqfardw015yhz5"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
