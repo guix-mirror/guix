@@ -1864,6 +1864,41 @@ present in modern GPUs.")
 implementation.")
     (license (license:x11-style "file://COPYING"))))
 
+(define-public libvdpau-va-gl
+  (package
+    (name "libvdpau-va-gl")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/i-rinat/libvdpau-va-gl/"
+                            "releases/download/v" version "/libvdpau-va-gl-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "1x2ag1f2fwa4yh1g5spv99w9x1m33hbxlqwyhm205ssq0ra234bx"))
+        (patches (search-patches "libvdpau-va-gl-unbundle.patch"))
+        (modules '((guix build utils)))
+        (snippet '(delete-file-recursively "3rdparty"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f)) ; Tests require a running X11 server, with VA-API support.
+    (native-inputs
+     `(("libvdpau" ,libvdpau)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libva" ,libva)
+       ("mesa" ,mesa)))
+    (home-page "https://github.com/i-rinat/libvdpau-va-gl")
+    (synopsis "VDPAU driver with VA-API/OpenGL backend")
+    (description
+     "Many applications can use VDPAU to accelerate portions of the video
+decoding process and video post-processing to the GPU video hardware.  Since
+there is no VDPAU available on Intel chips, they fall back to different drawing
+techniques.  This driver uses OpenGL under the hood to accelerate drawing and
+scaling and VA-API (if available) to accelerate video decoding.")
+    (license license:expat)))
+
 (define-public recordmydesktop
   (package
     (name "recordmydesktop")

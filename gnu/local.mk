@@ -836,6 +836,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libunistring-gnulib-multi-core.patch	\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libusb-for-axoloti.patch			\
+  %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
   %D%/packages/patches/libxml2-CVE-2016-4658.patch		\
