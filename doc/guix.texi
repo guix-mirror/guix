@@ -18744,6 +18744,14 @@ Build Options}).  In addition, @var{options} can contain one of the
 following:
 
 @table @option
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Consider the operating-system @var{expr} evaluates to.
+This is an alternative to specifying a file which evaluates to an
+operating system.
+This is used to generate the GuixSD installer @pxref{Building the
+Installation Image}).
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system} instead of the host system type.
