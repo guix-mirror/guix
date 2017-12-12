@@ -34,8 +34,36 @@
   #:use-module ((guix utils) #:select (version-major))
   #:use-module ((guix packages) #:select (package-version))
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (ice-9 match)
-  #:export (<nginx-configuration>
+  #:export (<httpd-configuration>
+            httpd-configuration
+            httpd-configuration?
+            httpd-configuration-package
+            httpd-configuration-pid-file
+            httpd-configuration-config
+
+            <httpd-virtualhost>
+            httpd-virtualhost
+            httpd-virtualhost?
+            httpd-virtualhost-addresses-and-ports
+            httpd-virtualhost-contents
+
+            <httpd-config-file>
+            httpd-config-file
+            httpd-config-file?
+            httpd-config-file-modules
+            httpd-config-file-server-root
+            httpd-config-file-server-name
+            httpd-config-file-listen
+            httpd-config-file-pid-file
+            httpd-config-file-error-log
+            httpd-config-file-user
+            httpd-config-file-group
+
+            httpd-service-type
+
+            <nginx-configuration>
             nginx-configuration
             nginx-configuration?
             nginx-configuartion-nginx
@@ -132,6 +160,205 @@
 ;;; Web services.
 ;;;
 ;;; Code:
+
+(define-record-type* <httpd-module>
+  httpd-module make-httpd-module
+  httpd-module?
+  (name httpd-load-module-name)
+  (file httpd-load-module-file))
+
+;; Default modules for the httpd-service-type, taken from etc/httpd/httpd.conf
+;; file in the httpd package.
+(define %default-httpd-modules
+  (map (match-lambda
+         ((name file)
+          (httpd-module
+           (name name)
+           (file file))))
+       '(("authn_file_module" "modules/mod_authn_file.so")
+         ("authn_core_module" "modules/mod_authn_core.so")
+         ("authz_host_module" "modules/mod_authz_host.so")
+         ("authz_groupfile_module" "modules/mod_authz_groupfile.so")
+         ("authz_user_module" "modules/mod_authz_user.so")
+         ("authz_core_module" "modules/mod_authz_core.so")
+         ("access_compat_module" "modules/mod_access_compat.so")
+         ("auth_basic_module" "modules/mod_auth_basic.so")
+         ("reqtimeout_module" "modules/mod_reqtimeout.so")
+         ("filter_module" "modules/mod_filter.so")
+         ("mime_module" "modules/mod_mime.so")
+         ("log_config_module" "modules/mod_log_config.so")
+         ("env_module" "modules/mod_env.so")
+         ("headers_module" "modules/mod_headers.so")
+         ("setenvif_module" "modules/mod_setenvif.so")
+         ("version_module" "modules/mod_version.so")
+         ("unixd_module" "modules/mod_unixd.so")
+         ("status_module" "modules/mod_status.so")
+         ("autoindex_module" "modules/mod_autoindex.so")
+         ("dir_module" "modules/mod_dir.so")
+         ("alias_module" "modules/mod_alias.so"))))
+
+(define-record-type* <httpd-config-file>
+  httpd-config-file make-httpd-config-file
+  httpd-config-file?
+  (modules        httpd-config-file-modules
+                  (default %default-httpd-modules))
+  (server-root    httpd-config-file-server-root
+                  (default httpd))
+  (server-name    httpd-config-file-server-name
+                  (default #f))
+  (document-root  httpd-config-file-document-root
+                  (default "/srv/http"))
+  (listen         httpd-config-file-listen
+                  (default '("80")))
+  (pid-file       httpd-config-file-pid-file
+                  (default "/var/run/httpd"))
+  (error-log      httpd-config-file-error-log
+                  (default "/var/log/httpd/error_log"))
+  (user           httpd-config-file-user
+                  (default "httpd"))
+  (group          httpd-config-file-group
+                  (default "httpd"))
+  (extra-config   httpd-config-file-extra-config
+                  (default
+                    (list "TypesConfig etc/httpd/mime.types"))))
+
+(define-gexp-compiler (httpd-config-file-compiler
+                       (file <httpd-config-file>) system target)
+  (match file
+    (($ <httpd-config-file> load-modules server-root server-name
+                                   document-root listen pid-file error-log
+                                   user group extra-config)
+     (gexp->derivation
+      "httpd.conf"
+      #~(call-with-output-file (ungexp output "out")
+          (lambda (port)
+            (display
+             (string-append
+              (ungexp-splicing
+               `(,@(append-map
+                    (match-lambda
+                      (($ <httpd-module> name module)
+                       `("LoadModule " ,name " " ,module "\n")))
+                    load-modules)
+                 ,@`("ServerRoot " ,server-root "\n")
+                 ,@(if server-name
+                       `("ServerName " ,server-name "\n")
+                       '())
+                 ,@`("DocumentRoot " ,document-root "\n")
+                 ,@(append-map
+                    (lambda (listen-value)
+                      `("Listen " ,listen-value "\n"))
+                    listen)
+                 ,@(if pid-file
+                       `("Pidfile " ,pid-file "\n")
+                       '())
+                 ,@(if error-log
+                       `("ErrorLog " ,error-log "\n")
+                       '())
+                 ,@(if user
+                       `("User " ,user "\n")
+                       '())
+                 ,@(if group
+                       `("Group " ,group "\n")
+                       '())
+                 "\n\n"
+                 ,@extra-config)))
+             port)))
+      #:local-build? #t))))
+
+(define-record-type <httpd-virtualhost>
+  (httpd-virtualhost addresses-and-ports contents)
+  httpd-virtualhost?
+  (addresses-and-ports httpd-virtualhost-addresses-and-ports)
+  (contents            httpd-virtualhost-contents))
+
+(define-record-type* <httpd-configuration>
+  httpd-configuration make-httpd-configuration
+  httpd-configuration?
+  (package  httpd-configuration-package
+            (default httpd))
+  (pid-file httpd-configuration-pid-file
+            (default "/var/run/httpd"))
+  (config   httpd-configuration-config
+            (default (httpd-config-file))))
+
+(define %httpd-accounts
+  (list (user-group (name "httpd") (system? #t))
+        (user-account
+         (name "httpd")
+         (group "httpd")
+         (system? #t)
+         (comment "Apache HTTPD server user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define httpd-shepherd-services
+  (match-lambda
+    (($ <httpd-configuration> package pid-file config)
+     (list (shepherd-service
+            (provision '(httpd))
+            (documentation "The Apache HTTP Server")
+            (requirement '(networking))
+            (start #~(make-forkexec-constructor
+                      `(#$(file-append package "/bin/httpd")
+                        #$@(if config
+                               (list "-f" config)
+                               '()))
+                      #:pid-file #$pid-file))
+            (stop #~(make-kill-destructor)))))))
+
+(define httpd-activation
+  (match-lambda
+    (($ <httpd-configuration> package pid-file config)
+     (match-record
+      config
+      <httpd-config-file>
+      (error-log document-root)
+      #~(begin
+          (use-modules (guix build utils))
+
+          (mkdir-p #$(dirname error-log))
+          (mkdir-p #$document-root))))))
+
+(define (httpd-process-extensions original-config extension-configs)
+  (let ((config (httpd-configuration-config
+                 original-config)))
+    (if (httpd-config-file? config)
+        (httpd-configuration
+         (inherit original-config)
+         (config
+          (httpd-config-file
+           (inherit config)
+           (extra-config
+            (append (httpd-config-file-extra-config config)
+                    (append-map
+                     (match-lambda
+                       (($ <httpd-virtualhost>
+                           addresses-and-ports
+                           contents)
+                        `(,(string-append
+                            "<VirtualHost " addresses-and-ports ">\n")
+                          ,@contents
+                          "\n</VirtualHost>\n"))
+                       ((? string? x)
+                        `("\n" ,x "\n"))
+                       ((? list? x)
+                        `("\n" ,@x "\n")))
+                     extension-configs)))))))))
+
+(define httpd-service-type
+  (service-type (name 'httpd)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          httpd-shepherd-services)
+                       (service-extension activation-service-type
+                                          httpd-activation)
+                       (service-extension account-service-type
+                                          (const %httpd-accounts))))
+                (compose concatenate)
+                (extend httpd-process-extensions)
+                (default-value
+                  (httpd-configuration))))
 
 (define-record-type* <nginx-server-configuration>
   nginx-server-configuration make-nginx-server-configuration

@@ -14954,8 +14954,162 @@ Local accounts with lower values will silently fail to authenticate.
 @cindex web
 @cindex www
 @cindex HTTP
-The @code{(gnu services web)} module provides the nginx web server and
-also a fastcgi wrapper daemon.
+The @code{(gnu services web)} module provides the Apache HTTP Server,
+the nginx web server, and also a fastcgi wrapper daemon.
+
+@subsubheading Apache HTTP Server
+
+@deffn {Scheme Variable} httpd-service-type
+Service type for the @uref{https://httpd.apache.org/,Apache HTTP} server
+(@dfn{httpd}).  The value for this service type is a
+@code{https-configuration} record.
+
+A simple example configuration is given below.
+
+@example
+(service httpd-service-type
+         (httpd-configuration
+           (config
+             (httpd-config-file
+               (server-name "www.example.com")
+               (document-root "/srv/http/www.example.com")))))
+@end example
+
+Other services can also extend the @code{httpd-service-type} to add to
+the configuration.
+
+@example
+(simple-service 'my-extra-server httpd-service-type
+                (list
+                  (httpd-virtualhost
+                    "*:80"
+                    (list (string-append
+                           "ServerName "www.example.com
+                            DocumentRoot \"/srv/http/www.example.com\"")))))
+@end example
+@end deffn
+
+The details for the @code{httpd-configuration}, @code{httpd-module},
+@code{httpd-config-file} and @code{httpd-virtualhost} record types are
+given below.
+
+@deffn {Data Type} httpd-configuration
+This data type represents the configuration for the httpd service.
+
+@table @asis
+@item @code{package} (default: @code{httpd})
+The httpd package to use.
+
+@item @code{pid-file} (default: @code{"/var/run/httpd"})
+The pid file used by the shepherd-service.
+
+@item @code{config} (default: @code{(httpd-config-file)})
+The configuration file to use with the httpd service. The default value
+is a @code{httpd-config-file} record, but this can also be a different
+G-expression that generates a file, for example a @code{plain-file}. A
+file outside of the store can also be specified through a string.
+
+@end table
+@end deffn
+
+@deffn {Data Type} httpd-module
+This data type represents a module for the httpd service.
+
+@table @asis
+@item @code{name}
+The name of the module.
+
+@item @code{file}
+The file for the module. This can be relative to the httpd package being
+used, the absolute location of a file, or a G-expression for a file
+within the store, for example @code{(file-append mod-wsgi
+"/modules/mod_wsgi.so")}.
+
+@end table
+@end deffn
+
+@deffn {Data Type} httpd-config-file
+This data type represents a configuration file for the httpd service.
+
+@table @asis
+@item @code{modules} (default: @code{%default-httpd-modules})
+The modules to load. Additional modules can be added here, or loaded by
+additional configuration.
+
+@item @code{server-root} (default: @code{httpd})
+The @code{ServerRoot} in the configuration file, defaults to the httpd
+package. Directives including @code{Include} and @code{LoadModule} are
+taken as relative to the server root.
+
+@item @code{server-name} (default: @code{#f})
+The @code{ServerName} in the configuration file, used to specify the
+request scheme, hostname and port that the server uses to identify
+itself.
+
+This doesn't need to be set in the server config, and can be specifyed
+in virtual hosts. The default is @code{#f} to not specify a
+@code{ServerName}.
+
+@item @code{document-root} (default: @code{"/srv/http"})
+The @code{DocumentRoot} from which files will be served.
+
+@item @code{listen} (default: @code{'("80")})
+The list of values for the @code{Listen} directives in the config
+file. The value should be a list of strings, when each string can
+specify the port number to listen on, and optionally the IP address and
+protocol to use.
+
+@item @code{pid-file} (default: @code{"/var/run/httpd"})
+The @code{PidFile} to use. This should match the @code{pid-file} set in
+the @code{httpd-configuration} so that the Shepherd service is
+configured correctly.
+
+@item @code{error-log} (default: @code{"/var/log/httpd/error_log"})
+The @code{ErrorLog} to which the server will log errors.
+
+@item @code{user} (default: @code{"httpd"})
+The @code{User} which the server will answer requests as.
+
+@item @code{group} (default: @code{"httpd"})
+The @code{Group} which the server will answer requests as.
+
+@item @code{extra-config} (default: @code{(list "TypesConfig etc/httpd/mime.types")})
+A flat list of strings and G-expressions which will be added to the end
+of the configuration file.
+
+Any values which the service is extended with will be appended to this
+list.
+
+@end table
+@end deffn
+
+@deffn {Data Type} httpd-virtualhost
+This data type represents a virtualhost configuration block for the httpd service.
+
+These should be added to the extra-config for the httpd-service.
+
+@example
+(simple-service 'my-extra-server httpd-service-type
+                (list
+                  (httpd-virtualhost
+                    "*:80"
+                    (list (string-append
+                           "ServerName "www.example.com
+                            DocumentRoot \"/srv/http/www.example.com\"")))))
+@end example
+
+@table @asis
+@item @code{addresses-and-ports}
+The addresses and ports for the @code{VirtualHost} directive.
+
+@item @code{contents}
+The contents of the @code{VirtualHost} directive, this should be a list
+of strings and G-expressions.
+
+@end table
+@end deffn
+
+@subsubheading NGINX
 
 @deffn {Scheme Variable} nginx-service-type
 Service type for the @uref{https://nginx.org/,NGinx} web server.  The

@@ -29,7 +29,8 @@
   #:use-module (gnu services networking)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:export (%test-nginx
+  #:export (%test-httpd
+            %test-nginx
             %test-php-fpm))
 
 (define %index.html-contents
@@ -111,6 +112,29 @@ HTTP-PORT."
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 
   (gexp->derivation (string-append name "-test") test))
+
+
+;;;
+;;; HTTPD
+;;;
+
+(define %httpd-os
+  (simple-operating-system
+   (dhcp-client-service)
+   (service httpd-service-type
+            (httpd-configuration
+             (config
+              (httpd-config-file
+               (listen '("8080"))))))
+   (simple-service 'make-http-root activation-service-type
+                   %make-http-root)))
+
+(define %test-httpd
+  (system-test
+   (name "httpd")
+   (description "Connect to a running HTTPD server.")
+   (value (run-webserver-test name %httpd-os
+                              #:log-file "/var/log/httpd/error_log"))))
 
 
 ;;;
