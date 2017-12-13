@@ -853,7 +853,7 @@ checks for pod coverage of all appropriate files.")
 (define-public perl-test-requires
   (package
     (name "perl-test-requires")
-    (version "0.08")
+    (version "0.10")
     (source
      (origin
        (method url-fetch)
@@ -861,7 +861,7 @@ checks for pod coverage of all appropriate files.")
                            "Test-Requires-" version ".tar.gz"))
        (sha256
         (base32
-         "08c29m0dn34384mmmpqqlbb899zpbkkc01c2lsp31mch1frv9cg7"))))
+         "1d9f481lj12cw1ciil46xq9nq16p6a90nm7yrsalpf8asn8s6s17"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Test-Requires/")
     (synopsis "Checks to see if the module can be loaded")
