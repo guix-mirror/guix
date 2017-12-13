@@ -658,11 +658,8 @@ derivation at FILE."
                                 (make-derivation-input hash sub-drvs))))
                            inputs))
               (drv    (make-derivation outputs
-
-                                       ;; Note: INPUTS is already the result
-                                       ;; of 'coalesce-duplicate-inputs'.
-                                       (sort inputs derivation-input<?)
-
+                                       (sort (coalesce-duplicate-inputs inputs)
+                                             derivation-input<?)
                                        sources
                                        system builder args env-vars
                                        #f)))
