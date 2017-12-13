@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
@@ -371,7 +371,7 @@ compression algorithm is currently LZMA2, which is used inside the .xz
 container format.  With typical files, XZ Utils create 30 % smaller output
 than gzip and 15 % smaller output than bzip2.")
    (license (list license:gpl2+ license:lgpl2.1+)) ; bits of both
-   (home-page "http://tukaani.org/xz/")))
+   (home-page "https://tukaani.org/xz/")))
 
 (define-public lzo
   (package
