@@ -3698,7 +3698,7 @@ instead of bindings to a C library.")
 (define-public ocaml-utop
   (package
     (name "ocaml-utop")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/diml/utop/archive/"
@@ -3706,7 +3706,7 @@ instead of bindings to a C library.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1v22bzw1vgwbbmpvi7lkyp2r59w5mag85rmqplb4fwik78x7k4ss"))))
+                "0rglznh4prcix8spi3f060jz2gngk7x8vkd291fxs10b88aqcpxf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
