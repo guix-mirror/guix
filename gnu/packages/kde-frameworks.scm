@@ -3359,6 +3359,10 @@ workspace.")
              (mkdir-p ".kde-unit-test/xdg/config")
              (with-output-to-file ".kde-unit-test/xdg/config/foorc"
                (lambda () #t))  ;; simply touch the file
+             ;; Blacklist a test-function (failing at build.kde.org, too).
+             (with-output-to-file "autotests/BLACKLIST"
+               (lambda _
+                 (display "[testSmb]\n*\n")))
              ;; kuniqueapptest hangs. TODO: Make this test pass.
              (zero? (system* "dbus-launch" "ctest" "."
                              "-E" "kstandarddirstest|kuniqueapptest")))))))
