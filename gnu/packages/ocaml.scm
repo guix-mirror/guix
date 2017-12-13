@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1250,14 +1251,14 @@ coverage information.")
 (define-public ocaml-bitstring
   (package
     (name "ocaml-bitstring")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/xguerin/bitstring"
                                   "/archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "0miw4banfpmx4kxrckpqr57b1fcmsqdmspyjx6gqjd4kghm4l7xj"))
+                "0vy8ibrxccii1jbsk5q6yh1kxjigqvi7lhhcmizvd5gfhf7mfyc8"))
               (patches (search-patches "ocaml-bitstring-fix-configure.patch"))))
     (build-system ocaml-build-system)
     (native-inputs
