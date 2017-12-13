@@ -3585,7 +3585,7 @@ library is currently designed for Unicode Standard 3.2.")
 (define-public ocaml-jbuilder
   (package
     (name "ocaml-jbuilder")
-    (version "1.0+beta14")
+    (version "1.0+beta16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3594,7 +3594,7 @@ library is currently designed for Unicode Standard 3.2.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "06jdcb4jmmp4wqyf9cm59jzgj0mxkpdzd9q3728gdxc1sz3v1sz0"))))
+                "0gcy52y0mkg450yxwszp3lww303a1154566r8jb4hh5l61dh4dwj"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
