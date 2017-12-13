@@ -38,15 +38,14 @@
 (define-public tcl
   (package
     (name "tcl")
-    (version "8.6.6")
+    (version "8.6.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/tcl/Tcl/"
                                   version "/tcl" version "-src.tar.gz"))
               (sha256
                (base32
-                "01zypqhy57wvh1ikk28bg733sk5kf4q568pq9v6fvcz4h6bl0rd2"))
-              (patches (search-patches "tcl-mkindex-deterministic.patch"))))
+                "19bb09l55alz4jb38961ikd5116q80s51bjvzqy44ckkwf28ysvw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
@@ -137,14 +136,14 @@ X11 GUIs.")
 (define-public tk
   (package
     (name "tk")
-    (version "8.6.6")
+    (version "8.6.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/tcl/Tcl/"
                                  version "/tk" version "-src.tar.gz"))
              (sha256
               (base32
-               "17diivcfcwdhp4v5zi6j9nkxncccjqkivhp363c4wx5lf4d3fb6n"))
+               "1aipcf6qmbgi15av8yrpp2hx6vdwr684r6739p8cgdzrajiy4786"))
              (patches (search-patches "tk-find-library.patch"))))
     (build-system gnu-build-system)
     (arguments
