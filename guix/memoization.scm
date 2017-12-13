@@ -21,7 +21,8 @@
   #:use-module (ice-9 match)
   #:autoload   (srfi srfi-1) (count)
   #:use-module (srfi srfi-9)
-  #:export (memoize
+  #:export (invalidate-memoization!
+            memoize
             mlambda
             mlambdaq))
 
@@ -113,10 +114,20 @@ already-cached result."
                       (cons cache location))
           cache))
       (lambda (proc location)
-        (make-hash-table))))
+        (let ((table (make-hash-table)))
+          (hashq-set! %memoization-tables proc table)
+          table))))
 
 (define-syntax-rule (make-hash-table* proc)
   (%make-hash-table* proc (current-source-location)))
+
+(define (invalidate-memoization! proc)
+  "Invalidate the memoization cache of PROC."
+  (match (hashq-ref %memoization-tables proc)
+    ((? hash-table? table)
+     (hash-clear! table))
+    (((? cache? cache) . _)
+     (hash-clear! (cache-table cache)))))
 
 (define* (show-memoization-tables #:optional (port (current-error-port)))
   "Display to PORT statistics about the memoization tables."
