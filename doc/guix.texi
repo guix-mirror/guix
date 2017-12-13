@@ -15341,7 +15341,7 @@ and one slave, is:
 (operating-system
   ;; ...
   (services (cons* (service knot-service-type
-                     (knot-confifguration
+                     (knot-configuration
                        (remotes (list plop-master))
                        (zones (list master-zone slave-zone))))
                    ;; ...
