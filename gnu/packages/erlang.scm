@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,6 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages fontutils)
@@ -35,7 +36,7 @@
 (define-public erlang
   (package
     (name "erlang")
-    (version "20.1")
+    (version "20.1.7")
     (source (origin
               (method url-fetch)
               ;; The tarball from http://erlang.org/download contains many
@@ -46,7 +47,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0r4g8ag7nlpw06y4c39fgcyccykj2sbyhv5jgp4qmrjci2ydgns8"))
+                "00pmngdyh1h088anmx6fbk085i93ajgk92rz7qsyhfc0lx0sm0a9"))
               (patches (search-patches "erlang-man-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -59,7 +60,7 @@
         ,(origin
            (method url-fetch)
            (uri (string-append "http://erlang.org/download/otp_doc_man_"
-                               version ".tar.gz"))
+                               (version-major+minor version) ".tar.gz"))
            (sha256
             (base32
              "0ikvdpn4z7az6szg176l1r2yxhgs3msa3wgb3gmy45jkz0pzik05"))))))
