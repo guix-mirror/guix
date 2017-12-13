@@ -516,6 +516,24 @@ stopped before 'kill' is called."
                           (call-with-output-file "/dev/urandom"
                             (lambda (urandom)
                               (dump-port seed urandom))))))
+
+                    ;; Try writing from /dev/hwrng into /dev/urandom.
+                    ;; It seems that the file /dev/hwrng always exists, even
+                    ;; when there is no hardware random number generator
+                    ;; available. So, we handle a failed read or any other error
+                    ;; reported by the operating system.
+                    (let ((buf (catch 'system-error
+                                 (lambda ()
+                                   (call-with-input-file "/dev/hwrng"
+                                     (lambda (hwrng)
+                                       (get-bytevector-n hwrng 512))))
+                                 ;; Silence is golden...
+                                 (const #f))))
+                      (when buf
+                        (call-with-output-file "/dev/urandom"
+                          (lambda (urandom)
+                            (put-bytevector urandom buf)))))
+
                     ;; Immediately refresh the seed in case the system doesn't
                     ;; shut down cleanly.
                     (call-with-input-file "/dev/urandom"
