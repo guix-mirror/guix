@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -629,6 +630,32 @@ machine."
       (for-each assert-node-can-import nodes names sockets)
       (for-each assert-node-can-export nodes names sockets))))
 
+(define (check-machine-status machine-file pred)
+  "Print the load of each machine matching PRED in MACHINE-FILE."
+  (define (build-machine=? m1 m2)
+    (and (string=? (build-machine-name m1) (build-machine-name m2))
+         (= (build-machine-port m1) (build-machine-port m2))))
+
+  ;; A given build machine may appear several times (e.g., once for
+  ;; "x86_64-linux" and a second time for "i686-linux"); test them only once.
+  (let ((machines (filter pred
+                          (delete-duplicates (build-machines machine-file)
+                                             build-machine=?))))
+    (info (G_ "getting status of ~a build machines defined in '~a'...~%")
+          (length machines) machine-file)
+    (for-each (lambda (machine)
+                (let* ((node (make-node (open-ssh-session machine)))
+                       (uts (node-eval node '(uname))))
+                  (format #t "~a~%  kernel: ~a ~a~%  architecture: ~a~%\
+  host name: ~a~%  normalized load: ~a~%"
+                          (build-machine-name machine)
+                          (utsname:sysname uts) (utsname:release uts)
+                          (utsname:machine uts)
+                          (utsname:nodename uts)
+                          (parameterize ((current-error-port (%make-void-port "rw+")))
+                                        (machine-load machine)))))
+              machines)))
+
 
 ;;;
 ;;; Entry point.
@@ -691,6 +718,18 @@ machine."
                        (()     (values %machine-file (const #t)))
                        (x      (leave (G_ "wrong number of arguments~%"))))))
          (check-machine-availability (or file %machine-file) pred))))
+    (("status" rest ...)
+     (with-error-handling
+       (let-values (((file pred)
+                     (match rest
+                       ((file regexp)
+                        (values file
+                                (compose (cut string-match regexp <>)
+                                         build-machine-name)))
+                       ((file) (values file (const #t)))
+                       (()     (values %machine-file (const #t)))
+                       (x      (leave (G_ "wrong number of arguments~%"))))))
+         (check-machine-status (or file %machine-file) pred))))
     (("--version")
      (show-version-and-exit "guix offload"))
     (("--help")

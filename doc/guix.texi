@@ -1066,6 +1066,15 @@ regular expression like this:
 # guix offload test machines.scm '\.gnu\.org$'
 @end example
 
+@cindex offload status
+To display the current load of all build hosts, run this command on the
+main node:
+
+@example
+# guix offload status
+@end example
+
+
 @node Invoking guix-daemon
 @section Invoking @command{guix-daemon}
 
