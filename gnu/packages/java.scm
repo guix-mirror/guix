@@ -7473,7 +7473,15 @@ done to the IDE or continuous integration servers which simplifies adoption.")
      `(#:jar-name "java-powermock-modules-junit4.jar"
        #:jdk ,icedtea-8
        #:source-dir "powermock-modules/powermock-module-junit4/src/main/java"
-       #:test-dir "powermock-modules/powermock-module-junit4/src/test"))
+       #:test-dir "powermock-modules/powermock-module-junit4/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-junit-detection
+           (lambda _
+             ;; Our junit version is 4.12-SNAPSHOT
+             (substitute* (find-files "powermock-modules/powermock-module-junit4"
+                                      "PowerMockJUnit4MethodValidator.java")
+               (("4.12") "4.12-SNAPSHOT")))))))
     (inputs
      `(("core" ,java-powermock-core)
        ("reflect" ,java-powermock-reflect)
