@@ -46,15 +46,19 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (version "1.15.2")
+    (version "1.16")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://web.mit.edu/kerberos/dist/krb5/"
-                                  (version-major+minor version)
-                                  "/krb5-" version ".tar.gz"))
+              (uri (list
+                    (string-append "https://web.mit.edu/kerberos/dist/krb5/"
+                                   (version-major+minor version)
+                                   "/krb5-" version ".tar.gz")
+                    (string-append "https://kerberos.org/dist/krb5/"
+                                   (version-major+minor version)
+                                   "/krb5-" version ".tar.gz")))
               (sha256
                (base32
-                "0zn8s7anb10hw3nzwjz7vg10fgmmgvwnibn2zrn3nppjxn9f6f8n"))))
+                "024yjr15ij0qdnay0bcqfpclgfri0qa8iw4r5zdlryxhhdgi5szs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
