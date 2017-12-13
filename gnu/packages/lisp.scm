@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -791,7 +792,7 @@ thin compatibility layer for gray streams.")
 (define-public sbcl-flexi-streams
   (package
     (name "sbcl-flexi-streams")
-    (version "1.0.12")
+    (version "1.0.16")
     (source
      (origin
        (method url-fetch)
@@ -799,7 +800,7 @@ thin compatibility layer for gray streams.")
              "https://github.com/edicl/flexi-streams/archive/v"
              version ".tar.gz"))
        (sha256
-        (base32 "16grnxvs7vqm5s6myf8a5s7vwblzq1kgwj8i7ahz8vwvihm9gzfi"))
+        (base32 "1fb0jrwxr5c3i2lhy7kn30m1n0vggfzwjm1dacx6y5wf9wfsbamw"))
        (file-name (string-append "flexi-streams-" version ".tar.gz"))))
     (build-system asdf-build-system/sbcl)
     (inputs `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
