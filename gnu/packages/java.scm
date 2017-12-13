@@ -7418,7 +7418,13 @@ done to the IDE or continuous integration servers which simplifies adoption.")
        #:source-dir "powermock-core/src/main/java"
        #:test-dir "powermock-core/src/test"
        #:tests? #f; requires powermock-api
-       #:jdk ,icedtea-8))
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "powermock-core/src/main/resources"
+                               "build/classes"))))))
     (inputs
      `(("reflect" ,java-powermock-reflect)
        ("javassist" ,java-jboss-javassist)))
