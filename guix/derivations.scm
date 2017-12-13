@@ -651,7 +651,7 @@ name of each input with that input's hash."
                         #f)))))
 
 (define derivation-hash            ; `hashDerivationModulo' in derivations.cc
-  (mlambda (drv)
+  (lambda (drv)
     "Return the hash of DRV, modulo its fixed-output inputs, as a bytevector."
     (match drv
       (($ <derivation> ((_ . ($ <derivation-output> path
