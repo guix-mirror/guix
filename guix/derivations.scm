@@ -632,6 +632,24 @@ derivation at FILE."
     (bytevector->base16-string
      (derivation-hash (read-derivation-from-file file)))))
 
+(define (derivation/masked-inputs drv)
+  "Assuming DRV is a regular derivation (not fixed-output), replace the file
+name of each input with that input's hash."
+  (match drv
+    (($ <derivation> outputs inputs sources
+                     system builder args env-vars)
+     (let ((inputs (map (match-lambda
+                          (($ <derivation-input> path sub-drvs)
+                           (let ((hash (derivation-path->base16-hash path)))
+                             (make-derivation-input hash sub-drvs))))
+                        inputs)))
+       (make-derivation outputs
+                        (sort (coalesce-duplicate-inputs inputs)
+                              derivation-input<?)
+                        sources
+                        system builder args env-vars
+                        #f)))))
+
 (define derivation-hash            ; `hashDerivationModulo' in derivations.cc
   (mlambda (drv)
     "Return the hash of DRV, modulo its fixed-output inputs, as a bytevector."
@@ -647,27 +665,12 @@ derivation at FILE."
                         (symbol->string hash-algo)
                         ":" (bytevector->base16-string hash)
                         ":" path))))
-      (($ <derivation> outputs inputs sources
-                       system builder args env-vars)
-       ;; A regular derivation: replace the path of each input with that
-       ;; input's hash; return the hash of serialization of the resulting
-       ;; derivation.
-       (let* ((inputs (map (match-lambda
-                             (($ <derivation-input> path sub-drvs)
-                              (let ((hash (derivation-path->base16-hash path)))
-                                (make-derivation-input hash sub-drvs))))
-                           inputs))
-              (drv    (make-derivation outputs
-                                       (sort (coalesce-duplicate-inputs inputs)
-                                             derivation-input<?)
-                                       sources
-                                       system builder args env-vars
-                                       #f)))
+      (_
 
-         ;; XXX: At this point this remains faster than `port-sha256', because
-         ;; the SHA256 port's `write' method gets called for every single
-         ;; character.
-         (sha256 (derivation->bytevector drv)))))))
+       ;; XXX: At this point this remains faster than `port-sha256', because
+       ;; the SHA256 port's `write' method gets called for every single
+       ;; character.
+       (sha256 (derivation->bytevector (derivation/masked-inputs drv)))))))
 
 (define* (derivation store name builder args
                      #:key
