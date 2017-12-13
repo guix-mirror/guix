@@ -48,24 +48,22 @@
                 "19bb09l55alz4jb38961ikd5116q80s51bjvzqy44ckkwf28ysvw"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda _
-                   (chdir "unix"))
-                 (alist-cons-after
-                  'install 'install-private-headers
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Private headers are needed by Expect.
-                    (and (zero? (system* "make"
-                                         "install-private-headers"))
-                         (let ((bin (string-append (assoc-ref outputs "out")
-                                                   "/bin")))
-                           ;; Create a tclsh -> tclsh8.6 symlink.
-                           ;; Programs such as Ghostscript rely on it.
-                           (with-directory-excursion bin
-                             (symlink (car (find-files "." "tclsh"))
-                                      "tclsh")))))
-                  %standard-phases))
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'pre-configure
+                    (lambda _ (chdir "unix") #t))
+                 (add-after 'install 'install-private-headers
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Private headers are needed by Expect.
+                     (and (zero? (system* "make"
+                                          "install-private-headers"))
+                          (let ((bin (string-append (assoc-ref outputs "out")
+                                                    "/bin")))
+                            ;; Create a tclsh -> tclsh8.6 symlink.
+                            ;; Programs such as Ghostscript rely on it.
+                            (with-directory-excursion bin
+                              (symlink (car (find-files "." "tclsh"))
+                                       "tclsh"))
+                            #t)))))
 
        ;; By default, man pages are put in PREFIX/man, but we want them in
        ;; PREFIX/share/man.  The 'validate-documentation-location' phase is
