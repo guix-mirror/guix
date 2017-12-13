@@ -267,6 +267,7 @@ Please upgrade to an intermediate version first, for instance with:
                                   ;; Closure of (guix modules).
                                   (guix modules)
                                   (guix memoization)
+                                  (guix profiling)
                                   (guix sets))
 
                       ;; Arrange so that our own (guix build …) modules are
