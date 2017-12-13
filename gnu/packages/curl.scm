@@ -118,15 +118,7 @@
            ;; The top-level "make check" does "make -C tests quiet-test", which
            ;; is too quiet.  Use the "test" target instead, which is more
            ;; verbose.
-           (zero? (system* "make" "-C" "tests" "test"))))
-        (add-before 'install 'fix-Makefile
-          ;; Fix a regression in 7.55.0 where docs are not installed.
-          ;; https://github.com/curl/curl/commit/a7bbbb7c368c6096802007f61f19a02e9d75285b
-          (lambda _
-            (substitute* "Makefile"
-              (("install-data-hook:\n")
-               "install-data-hook:\n\tcd docs/libcurl && $(MAKE) install\n"))
-            #t)))))
+           (zero? (system* "make" "-C" "tests" "test")))))))
    (synopsis "Command line tool for transferring data with URL syntax")
    (description
     "curl is a command line tool for transferring data with URL syntax,
