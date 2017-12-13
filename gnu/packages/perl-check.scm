@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -637,7 +638,7 @@ the behavior, just the input and the output.")
 (define-public perl-test-mocktime
   (package
     (name "perl-test-mocktime")
-    (version "0.13")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
@@ -645,7 +646,9 @@ the behavior, just the input and the output.")
                            "Test-MockTime-" version ".tar.gz"))
        (sha256
         (base32
-         "0yrqmjg33akannwz2f99rfm7dvvxpzsdj23lsvlvfi4qslrlqfvw"))))
+         "0j6cxmkj52i5xkwg8dg6klm0dh386fzc5v80n5nbdalpvq0h48c8"))))
+    (propagated-inputs
+     `(("perl-time-piece" ,perl-time-piece)))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Test-MockTime/")
     (synopsis "Replaces actual time with simulated time")
