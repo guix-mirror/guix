@@ -83,11 +83,7 @@
     (native-search-paths
      ;; Feh allows overriding the libcurl builtin CA path (unset in Guix)
      ;; with the same variable as the `curl` command line HTTP tool.
-     (list (search-path-specification
-            (variable "CURL_CA_BUNDLE")
-            (file-type 'regular)
-            (separator #f)                         ;single entry
-            (files '("etc/ssl/certs/ca-certificates.crt")))))
+     (package-native-search-paths curl))
     (synopsis "Fast and light imlib2-based image viewer")
     (description
       "feh is an X11 image viewer aimed mostly at console users.

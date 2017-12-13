@@ -66,6 +66,15 @@
        ("groff" ,groff)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)))
+   (native-search-paths
+    ;; Note: This search path is respected by the `curl` command-line tool only.
+    ;; Ideally we would bake this into libcurl itself so other users can benefit,
+    ;; but it's not supported upstream due to thread safety concerns.
+    (list (search-path-specification
+           (variable "CURL_CA_BUNDLE")
+           (file-type 'regular)
+           (separator #f)                         ;single entry
+           (files '("etc/ssl/certs/ca-certificates.crt")))))
    (arguments
     `(#:configure-flags '("--with-gnutls" "--with-gssapi")
       ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
