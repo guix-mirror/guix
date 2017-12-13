@@ -985,7 +985,7 @@ respectively, based on the reference implementation from Google.")
            (lambda _ (chdir "xdelta3")))
          (add-after 'enter-build-directory 'autoconf
            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
-    (home-page "http://xdelta.com")
+    (home-page "http://xdelta.org")
     (synopsis "Delta encoder for binary files")
     (description "xdelta encodes only the differences between two binary files
 using the VCDIFF algorithm and patch file format described in RFC 3284.  It can
