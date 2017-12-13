@@ -9,6 +9,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3917,7 +3918,7 @@ This package contains the complete TeX Live distribution.")
 (define-public perl-text-bibtex
   (package
     (name "perl-text-bibtex")
-    (version "0.77")
+    (version "0.85")
     (source
      (origin
        (method url-fetch)
@@ -3925,7 +3926,7 @@ This package contains the complete TeX Live distribution.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0kkfx8skk763pivz6h2ffy2zdp1lvy6d5sz0kjaj0mdbjffvnnb4"))))
+         "036kxgbn1jf70pfm2lmjlzjwnhbkd888fp5lyvmkjpdd15gla18h"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
