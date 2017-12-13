@@ -1652,14 +1652,14 @@ lets the client choose the concrete timeline.")
 (define-public ocaml-ssl
   (package
     (name "ocaml-ssl")
-    (version "0.5.3")
+    (version "0.5.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/savonet/ocaml-ssl/archive/"
                             version ".tar.gz"))
         (sha256 (base32
-                  "1ds5gzyzpcgwn7h40dmjkll7g990cr82ay05b2a7nrclvv6fdpg8"))))
+                  "15p7652cvzdrlqxc1af11mg07wasxr1fsaj44gcmmh6bmav7wfzq"))))
     (build-system ocaml-build-system)
     (arguments `(#:tests? #f
                  #:make-flags (list "OCAMLFIND_LDCONF=ignore")
