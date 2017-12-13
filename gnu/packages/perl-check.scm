@@ -812,15 +812,15 @@ as flexible as possible to the tester.")
 (define-public perl-test-pod
   (package
     (name "perl-test-pod")
-    (version "1.48")
+    (version "1.51")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/D/DW/DWHEELER/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Test-Pod-" version ".tar.gz"))
        (sha256
         (base32
-         "1hmwwhabyng4jrnll926b4ab73r40w3pfchlrvs0yx6kh6kwwy14"))))
+         "1yvy5mc4j3s2h4aizryvark2nm58g2c6zhw9mlx9wmsavz7d78f1"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Test-Pod/")
