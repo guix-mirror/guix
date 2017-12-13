@@ -90,6 +90,7 @@
             derivation-path->output-paths
             derivation
             raw-derivation
+            invalidate-derivation-caches!
 
             map-derivation
 
@@ -840,6 +841,15 @@ output should not be used."
            (drv* (set-field drv (derivation-file-name) file)))
       (hash-set! %derivation-cache file drv*)
       drv*)))
+
+(define (invalidate-derivation-caches!)
+  "Invalidate internal derivation caches.  This is mostly useful for
+long-running processes that know what they're doing.  Use with care!"
+  ;; Typically this is meant to be used by Cuirass and Hydra, which can clear
+  ;; caches when they start evaluating packages for another architecture.
+  (invalidate-memoization! derivation->bytevector)
+  (invalidate-memoization! derivation-path->base16-hash)
+  (hash-clear! %derivation-cache))
 
 (define* (map-derivation store drv mapping
                          #:key (system (%current-system)))

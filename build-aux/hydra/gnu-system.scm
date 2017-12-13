@@ -334,6 +334,13 @@ valid."
   (parameterize ((%graft? #f))
     ;; Return one job for each package, except bootstrap packages.
     (append-map (lambda (system)
+                  (format (current-error-port)
+                          "evaluating for '~a' (heap size: ~a MiB)...~%"
+                          system
+                          (round
+                           (/ (assoc-ref (gc-stats) 'heap-size)
+                              (expt 2. 20))))
+                  (invalidate-derivation-caches!)
                   (case subset
                     ((all)
                      ;; Build everything, including replacements.
