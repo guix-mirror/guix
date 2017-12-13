@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1074,12 +1075,15 @@ inspired by the SCSH regular expression system.")
                 (compile-file
                  (lambda (in-file out-file)
                    (system* guild "compile" "-o" out-file in-file))))
-           ;; Make installation directories.
-           (mkdir-p module-dir)
-           (mkdir-p doc)
-
            ;; Switch directory for compiling and installing
            (chdir source)
+
+           ;; Install the documentation.
+           (install-file "README.md" doc)
+           (copy-recursively "examples" (string-append doc "/examples"))
+
+           ;; Make installation directories.
+           (mkdir-p module-dir)
 
            ;; copy the source
            (copy-file "gdbm.scm" gdbm.scm-dest)
