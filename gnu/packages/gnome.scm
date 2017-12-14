@@ -6632,7 +6632,7 @@ basically a text box in which notes can be written.")
        (sha256
         (base32
          "0c1q9w5vql0vvg6g0knxfnv4ap19fg5cdrwndi1cj9lsym92c78j"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
        ("glib:bin" ,glib "bin") ; for glib-compile-resources.
