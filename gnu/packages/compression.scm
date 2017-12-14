@@ -1969,3 +1969,29 @@ not compress them.
 Lunzip is intended to be fully compatible with the regular lzip package.")
     (license (list license:bsd-2        ; carg_parser.[ch]
                    license:gpl2+))))    ; everything else
+
+(define-public clzip
+  (package
+    (name "clzip")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.savannah.gnu.org/releases/lzip/"
+                           name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1brvsnpihzj81cf4wk2x5bnr2qldlq0wncpdbzxmzvxapm1cq2yc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "CC=gcc")))
+    (home-page "http://www.nongnu.org/lzip/clzip.html")
+    (synopsis "Small, stand-alone lzip compressor and decompressor")
+    (description
+     "Clzip is a compressor and decompressor for files in the lzip compression
+format (.lz), written as a single small C tool with no dependencies.  This makes
+it well-suited to embedded and other systems without a C++ compiler, or for use
+in other applications like package managers.
+Clzip is intended to be fully compatible with the regular lzip package.")
+    (license (list license:bsd-2        ; carg_parser.[ch], lzd in clzip.texi
+                   license:gpl2+))))
