@@ -511,11 +511,11 @@ Its features include:
       (license bsd-2))))
 
 (define-public s-shell
-  (let ((commit "6604341edb3a775ff94415762af3ee9bd86bfb3c")
-        (revision "1"))
+  (let ((commit "da2e5c20c0c5f477ec3426dc2584889a789b1659")
+        (revision "2"))
     (package
       (name "s-shell")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -525,13 +525,15 @@ Its features include:
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "1075cml6dl15d770j3m12yz90cjacsdslbv3gank1nxd76vmpdcr"))))
+           "0qiny71ww5nhzy4mnc8652hn0mlxyb67h333gbdxp4j4qxsi13q4"))))
       (build-system gnu-build-system)
       (inputs
        `(("linenoise" ,linenoise)))
       (arguments
        `(#:tests? #f
-         #:make-flags (list "CC=gcc")
+         #:make-flags (list "CC=gcc"
+                            (string-append "PREFIX="
+                                           (assoc-ref %outputs "out")))
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'install-directory-fix
