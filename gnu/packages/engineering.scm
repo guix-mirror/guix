@@ -559,10 +559,11 @@ as well as pick-place files.")
     (license license:gpl2+)))
 
 (define-public ao
-  (let ((commit "0bc2354b8dcd1a82a0fd6647706b126045e52734"))
+  (let ((commit "fb288c945aa7e30d9be10a564edad7e1b6a6c1ae")
+        (revision "1"))
     (package
       (name "ao-cad")            ;XXX: really "ao", but it collides with libao
-      (version (string-append "0." (string-take commit 7)))
+      (version (git-version "0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -570,8 +571,9 @@ as well as pick-place files.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0lm7iljklafs8dhlvaab2yhwx4xymrdjrqk9c5xvn59hlvbgl1j5"))
-                (file-name (string-append name "-" version "-checkout"))
+                  "0syplfqiq7ng7md44yriq5cz41jp8q9z3pl2iwkkllds6p9ylyal"))
+                (file-name (git-file-name name version))
+                (patches (search-patches "ao-cad-aarch64-support.patch"))
                 (modules '((guix build utils)))
                 (snippet
                  ;; Remove bundled libraries: Eigen, glm, and catch.  TODO:
@@ -594,6 +596,10 @@ as well as pick-place files.")
 
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'remove-native-compilation
+             (lambda _
+               (substitute* "CMakeLists.txt" (("-march=native") ""))
+               #t))
            (add-before 'build 'add-eigen-to-search-path
              (lambda* (#:key inputs #:allow-other-keys)
                ;; Allow things to find our own Eigen and Catch.
@@ -615,16 +621,12 @@ as well as pick-place files.")
                  (with-directory-excursion ,(string-append "../"
                                                            name "-" version
                                                            "-checkout")
-                   (substitute* "bind/guile/ao/bind.scm"
+                   (substitute* "bind/guile/ao/sys/libao.scm"
                      (("\\(define libao \\(dynamic-link .*$")
                       (string-append "(define libao (dynamic-link \""
                                      out "/lib/libao\")) ;")))
 
-                   (for-each (lambda (file)
-                               (install-file file
-                                             (string-append moddir
-                                                            "/ao")))
-                             (find-files "bind/guile" "\\.scm$"))
+                   (copy-recursively "bind/guile/ao" (string-append moddir "/ao"))
 
                    (substitute* "bin/ao-guile"
                      (("\\(add-to-load-path .*")
