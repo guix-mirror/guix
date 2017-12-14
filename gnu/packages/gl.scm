@@ -296,6 +296,13 @@ also known as DXTn or DXTC) for Mesa.")
          ;; are stuck at OpenGL 2.1 instead of OpenGL 3.0+.
          "--enable-texture-float"
 
+         ;; Enable Vulkan on x86-64.
+         ,@(match (%current-system)
+             ("x86_64-linux"
+              '("--with-vulkan-drivers=intel,radeon"))
+             (_
+              '("")))
+
          ;; Also enable the tests.
          "--enable-gallium-tests"
 
@@ -382,11 +389,11 @@ also known as DXTn or DXTC) for Mesa.")
                          (delete-duplicates inodes))
                #t))))))
     (home-page "https://mesa3d.org/")
-    (synopsis "OpenGL implementation")
-    (description "Mesa is a free implementation of the OpenGL specification -
-a system for rendering interactive 3D graphics.  A variety of device drivers
-allows Mesa to be used in many different environments ranging from software
-emulation to complete hardware acceleration for modern GPUs.")
+    (synopsis "OpenGL and Vulkan implementations")
+    (description "Mesa is a free implementation of the OpenGL and Vulkan
+specifications - systems for rendering interactive 3D graphics.  A variety of
+device drivers allows Mesa to be used in many different environments ranging
+from software emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
 
 (define-public mesa-headers
