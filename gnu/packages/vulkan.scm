@@ -23,6 +23,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python))
 
@@ -98,3 +99,46 @@ and for the GLSL.std.450 extended instruction set.
 SPIR-V modules.  The project includes an assembler, binary module parser,
 disassembler, validator, and optimizer for SPIR-V.")
     (license license:asl2.0)))
+
+(define-public glslang
+  ;; Version 3.0 is too old for vulkan-icd-loader. Use a recent git commit
+  ;; until the next stable version.
+  (let ((commit "471bfed0621162a7513fc24a51e8a1ccc2e640ff")
+        (revision "1"))
+    (package
+      (name "glslang")
+      (version (string-append "3.0-" revision "." (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/KhronosGroup/glslang")
+               (commit commit)))
+         (sha256
+          (base32
+           "0m2vljmrqppp80ghbbwfnayqw2canxlcjhgy6jw9xjdssln0d3pd"))
+         (file-name (string-append name "-" version "-checkout"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f ;; No tests
+         ;; glslang tries to set CMAKE_INSTALL_PREFIX manually. Remove the
+         ;; offending line.
+         #:phases (modify-phases %standard-phases
+                    (add-after 'patch-source-shebangs 'fix-cmakelists
+                      (lambda _
+                        (substitute* "CMakeLists.txt"
+                          (("set.*CMAKE_INSTALL_PREFIX.*") ""))
+                        #t)))))
+      (native-inputs `(("bison" ,bison)
+                       ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/KhronosGroup/glslang")
+      (synopsis "OpenGL and OpenGL ES shader front end and validator")
+      (description
+       "Glslang is the official reference compiler front end for the
+OpenGL@tie{}ES and OpenGL shading languages.  It implements a strict
+interpretation of the specifications for these languages.")
+      ;; Modified BSD license. See "copyright" section of
+      ;; https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/
+      (license (list license:bsd-3
+                     ;; include/SPIRV/{bitutils,hex_float}.h are Apache 2.0.
+                     license:asl2.0)))))
