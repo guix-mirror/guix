@@ -1995,3 +1995,31 @@ in other applications like package managers.
 Clzip is intended to be fully compatible with the regular lzip package.")
     (license (list license:bsd-2        ; carg_parser.[ch], lzd in clzip.texi
                    license:gpl2+))))
+
+(define-public lzlib
+  (package
+    (name "lzlib")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.savannah.gnu.org/releases/lzip/"
+                           name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "13mssf3hrcnmd4ijbqnxfk0zgj1q5lvpxxkm1hmrbl1h73czhwi4"))))
+    (build-system gnu-build-system)
+    ;; The included minilzip binary is only ~16 smaller than the ‘real’ lzip.
+    ;; It's used during the test suite, but don't be tempted to install it.
+    (arguments
+     `(#:configure-flags
+       (list "CC=gcc"
+             "--enable-shared")))       ; only static (.a) is built by default
+    (home-page "http://www.nongnu.org/lzip/lzlib.html")
+    (synopsis "Lzip data compression C library")
+    (description
+     "Lzlib is a C library for in-memory LZMA compression and decompression in
+the lzip format.  It supports integrity checking of the decompressed data, and
+all functions are thread-safe.  The library should never crash, even in case of
+corrupted input.")
+    (license (list license:bsd-2        ; the library itself
+                   license:gpl2+))))    ; main.c (i.e. minilzip used by tests)
