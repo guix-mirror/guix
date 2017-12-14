@@ -1942,3 +1942,30 @@ type by using either Perl modules, or command-line tools on your system.")
     (description "Tukaani-xz is an implementation of xz compression/decompression
 algorithms in Java.")
     (license license:public-domain)))
+
+(define-public lunzip
+  (package
+    (name "lunzip")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.savannah.gnu.org/releases/lzip/"
+                           name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ax3d9cp66z1qb9q7lfzg5bpx9630xrxgq9a5sw569wm0qqgpg2q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "CC=gcc")))
+    (home-page "http://www.nongnu.org/lzip/lunzip.html")
+    (synopsis "Small, stand-alone lzip decompressor")
+    (description
+     "Lunzip is a decompressor for files in the lzip compression format (.lz),
+written as a single small C tool with no dependencies.  This makes it
+well-suited to embedded and other systems without a C++ compiler, or for use in
+applications such as software installers that need only to decompress files,
+not compress them.
+Lunzip is intended to be fully compatible with the regular lzip package.")
+    (license (list license:bsd-2        ; carg_parser.[ch]
+                   license:gpl2+))))    ; everything else
