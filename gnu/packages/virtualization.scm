@@ -36,6 +36,7 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -709,3 +710,46 @@ mainly implemented in user space.")
 incremental backups of running QEMU virtual machines via QMP, the QEMU
 Machine Protocol.")
     (license gpl3+)))
+
+(define-public lookingglass
+  (package
+   (name "lookingglass")
+   (version "a5")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/gnif/LookingGlass/archive/"
+                         version ".tar.gz"))
+     (file-name (string-append name "-" version))
+     (sha256
+      (base32
+       "0lrb821914fp27xaq0spwhbblssz55phiygvdlvcrkifa138v8pf"))))
+   (build-system gnu-build-system)
+   (inputs `(("fontconfig" ,fontconfig)
+             ("glu" ,glu)
+             ("mesa" ,mesa)
+             ("openssl" ,openssl)
+             ("sdl2" ,sdl2)
+             ("sdl2-ttf" ,sdl2-ttf)
+             ("spice-protocol" ,spice-protocol)))
+   (native-inputs `(("pkg-config", pkg-config)))
+   (arguments
+    `(#:tests? #f ;; No tests are available.
+      #:phases (modify-phases %standard-phases
+                 (replace 'configure
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (chdir "client")
+                     #t))
+                 (replace 'install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (install-file "bin/looking-glass-client"
+                                   (string-append (assoc-ref outputs "out")
+                                                  "/bin"))
+                     #t)))))
+   (home-page "https://looking-glass.hostfission.com")
+   (synopsis "KVM Frame Relay (KVMFR) implementation")
+   (description "Looking Glass allows the use of a KVM (Kernel-based Virtual
+Machine) configured for VGA PCI Pass-through without an attached physical
+monitor, keyboard or mouse.  It displays the VM's rendered contents on your main
+monitor/GPU.")
+   (license gpl2+)))
