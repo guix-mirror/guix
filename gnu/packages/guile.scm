@@ -1097,7 +1097,7 @@ inspired by the SCSH regular expression system.")
            ;; compile to the destination
            (compile-file gdbm.scm-dest gdbm.go-dest)))))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (propagated-inputs
      `(("gdbm" ,gdbm)))
     (home-page "https://github.com/ijp/guile-gdbm")
@@ -1107,8 +1107,11 @@ inspired by the SCSH regular expression system.")
 Guile's foreign function interface.")
     (license license:gpl3+)))
 
+(define-public guile2.0-gdbm-ffi
+  (package-for-guile-2.0 guile-gdbm-ffi))
+
 (define-public guile2.2-gdbm-ffi
-  (package-for-guile-2.2 guile-gdbm-ffi))
+  (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
 
 (define-public guile-sqlite3
   (let ((commit "607721fe1174a299e45d457acacf94eefb964071"))
