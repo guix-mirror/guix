@@ -251,13 +251,13 @@ a menu system for providing multiple options to the user.")
 (define-public ruby-hoe
   (package
     (name "ruby-hoe")
-    (version "3.16.0")
+    (version "3.16.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "hoe" version))
               (sha256
                (base32
-                "03r8nsw4n4mnia9iqiqk9kqhvrl96m2i81j4yg8cpnppd8vk7vlb"))))
+                "12q6dn2irsfamdbjpqvs0dwl4i1vl7wflxrcg972h9jw0ds38f3a"))))
     (build-system ruby-build-system)
     (synopsis "Ruby project management helper")
     (description
