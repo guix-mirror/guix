@@ -178,8 +178,8 @@ width of the bar is BAR-WIDTH."
             (make-string filled #\#)
             (make-string empty #\space))))
 
-(define (erase-in-line port)
-  "Write an ANSI erase-in-line sequence to PORT to erase the whole line and
+(define (erase-current-line port)
+  "Write an ANSI erase-current-line sequence to PORT to erase the whole line and
 move the cursor to the beginning of the line."
   (display "\r\x1b[K" port))
 
@@ -206,7 +206,7 @@ ABBREVIATION used to shorten FILE for display."
                                      (byte-count->string throughput)
                                      (seconds->string elapsed)
                                      (progress-bar %) %)))
-            (erase-in-line log-port)
+            (erase-current-line log-port)
             (display (string-pad-middle left right
                                         (current-terminal-columns))
                      log-port)
@@ -218,7 +218,7 @@ ABBREVIATION used to shorten FILE for display."
                                      (byte-count->string throughput)
                                      (seconds->string elapsed)
                                      (byte-count->string transferred))))
-            (erase-in-line log-port)
+            (erase-current-line log-port)
             (display (string-pad-middle left right
                                         (current-terminal-columns))
                      log-port)
@@ -248,7 +248,7 @@ tasks is performed.  Write PREFIX at the beginning of the line."
     (set! done (+ 1 done))
     (unless (> done total)
       (let* ((ratio (* 100. (/ done total))))
-        (erase-in-line port)
+        (erase-current-line port)
         (if (string-null? prefix)
             (display (progress-bar ratio (current-terminal-columns)) port)
             (let ((width (- (current-terminal-columns)
@@ -263,7 +263,7 @@ tasks is performed.  Write PREFIX at the beginning of the line."
             (set! done 0)))
    (report report-progress)
    (stop (lambda ()
-           (erase-in-line port)
+           (erase-current-line port)
            (unless (string-null? prefix)
              (display prefix port)
              (newline port))
