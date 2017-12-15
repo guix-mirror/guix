@@ -1130,7 +1130,20 @@ Python 3.3+.")
     (license license:x11)))
 
 (define-public python2-pyicu
-  (package-with-python2 python-pyicu))
+  (let ((base (package-with-python2
+                (strip-python2-variant python-pyicu))))
+    (package
+      (inherit base)
+      (arguments
+       `(,@(package-arguments base)
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'delete-failing-test
+             (λ _
+               ;; XXX: This fails due to Unicode issues unique to Python 2,
+               ;; it seems: <https://github.com/ovalhub/pyicu/issues/61>.
+               (delete-file "test/test_Script.py")
+               #t))))))))
 
 (define-public python2-dogtail
   ;; Python 2 only, as it leads to "TabError: inconsistent use of tabs and
