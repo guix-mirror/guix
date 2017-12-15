@@ -1122,7 +1122,7 @@ generation of tests in nested combinations of contexts.")
 (define-public perl-test-yaml
   (package
     (name "perl-test-yaml")
-    (version "1.05")
+    (version "1.06")
     (source
      (origin
        (method url-fetch)
@@ -1130,7 +1130,7 @@ generation of tests in nested combinations of contexts.")
                            "Test-YAML-" version ".tar.gz"))
        (sha256
         (base32
-         "079nayc0fp2fwjv8s2yr069bdffln699j6z3lqr5dpx1v2qg82ck"))))
+         "0hxrfs7p9hqkhvv5nhk2hd3kh32smwng4nz47b8xf4iw2q1n2dr7"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-base" ,perl-test-base)))
