@@ -22,8 +22,11 @@
   #:use-module (system repl error-handling)
   #:autoload   (system repl repl) (start-repl)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 ftw)
   #:use-module (guix build utils)
   #:use-module ((guix build syscalls)
@@ -35,6 +38,7 @@
             linux-command-line
             find-long-option
             make-essential-device-nodes
+            make-static-device-nodes
             configure-qemu-networking
 
             bind-mount
@@ -104,6 +108,109 @@ with the given MAJOR number, starting with MINOR."
       (mknod (string-append base (number->string i))
              'block-special #o644 (device-number major (+ minor i)))
       (loop (+ i 1)))))
+
+;; Representation of a /dev node.
+(define-record-type <device-node>
+  (device-node name type major minor module)
+  device-node?
+  (name device-node-name)
+  (type device-node-type)
+  (major device-node-major)
+  (minor device-node-minor)
+  (module device-node-module))
+
+(define (read-static-device-nodes port)
+  "Read from PORT a list of <device-node> written in the format used by
+/lib/modules/*/*.devname files."
+  (let loop ((line (read-line port)))
+    (if (eof-object? line)
+      '()
+      (match (string-split line #\space)
+       (((? (cut string-prefix? "#" <>)) _ ...)
+        (loop (read-line port)))
+       ((module-name device-name device-spec)
+        (let* ((device-parts
+               (string-match "([bc])([0-9][0-9]*):([0-9][0-9]*)"
+                             device-spec))
+               (type-string (match:substring device-parts 1))
+               (type (match type-string
+                      ("c" 'char-special)
+                      ("b" 'block-special)))
+               (major-string (match:substring device-parts 2))
+               (major (string->number major-string 10))
+               (minor-string (match:substring device-parts 3))
+               (minor (string->number minor-string 10)))
+          (cons (device-node device-name type major minor module-name)
+                (loop (read-line port)))))
+       (_
+        (begin
+          (format (current-error-port)
+                  "read-static-device-nodes: ignored devname line '~a'~%" line)
+          (loop (read-line port))))))))
+
+(define* (mkdir-p* dir #:optional (mode #o755))
+  "This is a variant of 'mkdir-p' that works around
+<http://bugs.gnu.org/24659> by passing MODE explicitly in each 'mkdir' call."
+  (define absolute?
+    (string-prefix? "/" dir))
+
+  (define not-slash
+    (char-set-complement (char-set #\/)))
+
+  (let loop ((components (string-tokenize dir not-slash))
+             (root       (if absolute?
+                             ""
+                             ".")))
+    (match components
+      ((head tail ...)
+       (let ((path (string-append root "/" head)))
+         (catch 'system-error
+           (lambda ()
+             (mkdir path mode)
+             (loop tail path))
+           (lambda args
+             (if (= EEXIST (system-error-errno args))
+                 (loop tail path)
+                 (apply throw args))))))
+      (() #t))))
+
+(define (report-system-error name . args)
+  "Report a system error for the file NAME."
+  (let ((errno (system-error-errno args)))
+    (format (current-error-port) "could not create '~a': ~a~%" name
+            (strerror errno))))
+
+;; Catch a system-error, log it and don't die from it.
+(define-syntax-rule (catch-system-error name exp)
+  (catch 'system-error
+    (lambda ()
+      exp)
+    (lambda args
+      (apply report-system-error name args))))
+
+;; Create a device node like the <device-node> passed here on the filesystem.
+(define create-device-node
+  (match-lambda
+    (($ <device-node> xname type major minor module)
+     (let ((name (string-append "/dev/" xname)))
+       (mkdir-p* (dirname name))
+       (catch-system-error name
+         (mknod name type #o600 (device-number major minor)))))))
+
+(define* (make-static-device-nodes linux-release-module-directory)
+  "Create static device nodes required by the given Linux release.
+This is required in order to solve a chicken-or-egg problem:
+The Linux kernel has a feature to autoload modules when a device is first
+accessed.
+And udev has a feature to set the permissions of static nodes correctly
+when it is starting up and also to automatically create nodes when hardware
+is hotplugged. That leaves universal device files which are not linked to
+one specific hardware device. These we have to create."
+  (let ((devname-name (string-append linux-release-module-directory "/"
+                                     "modules.devname")))
+    (for-each create-device-node
+              (call-with-input-file devname-name
+                                    read-static-device-nodes))))
 
 (define* (make-essential-device-nodes #:key (root "/"))
   "Make essential device nodes under ROOT/dev."
