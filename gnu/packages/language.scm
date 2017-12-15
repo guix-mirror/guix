@@ -285,15 +285,15 @@ parameters, returning the stemmed Italian word.")
 (define-public perl-lingua-stem-ru
   (package
     (name "perl-lingua-stem-ru")
-    (version "0.01")
+    (version "0.04")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AL/ALGDR/"
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                            "Lingua-Stem-Ru-" version ".tar.gz"))
        (sha256
         (base32
-         "0pqgg442fkf12ayh9fgmpa8q9x0iqx6s96181r52yn7s7pcs61h6"))))
+         "0a2jmdz7jn32qj5hyiw5kbv8fvlpmws8i00a6xcbkzb48yvwww0j"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Lingua-Stem-Ru")
     (synopsis "Porter's stemming algorithm for Russian")
