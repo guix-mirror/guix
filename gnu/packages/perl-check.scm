@@ -662,7 +662,7 @@ to gmtime,time or localtime.")
 (define-public perl-test-most
   (package
     (name "perl-test-most")
-    (version "0.34")
+    (version "0.35")
     (source
      (origin
        (method url-fetch)
@@ -670,7 +670,7 @@ to gmtime,time or localtime.")
                            "Test-Most-" version ".tar.gz"))
        (sha256
         (base32
-         "0i72aih3pakm8gh73wx1n4dwq8lbx6dvxhla46gsapszws6hr0n2"))))
+         "0zv5dyzq55r28plffibcr7wd00abap0h2zh4s4p8snaiszsad5wq"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-differences" ,perl-test-differences)
