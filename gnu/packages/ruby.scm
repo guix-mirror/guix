@@ -2160,14 +2160,14 @@ rate.")
 (define-public ruby-pry
   (package
     (name "ruby-pry")
-    (version "0.11.1")
+    (version "0.11.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pry" version))
        (sha256
         (base32
-         "0ci461a55sn50rlrmcl97ycf79681glp443a2gzp23rnm7y70fkj"))))
+         "1mh312k3y94sj0pi160wpia0ps8f4kmzvm505i6bvwynfdh7v30g"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
