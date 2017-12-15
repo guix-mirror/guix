@@ -1143,7 +1143,7 @@ support.")
 (define-public perl-test-trailingspace
  (package
   (name "perl-test-trailingspace")
-  (version "0.0300")
+  (version "0.0301")
   (source
     (origin
       (method url-fetch)
@@ -1153,7 +1153,7 @@ support.")
              ".tar.gz"))
       (sha256
         (base32
-          "01slmrcjfq38mpdg3hlb7lnnbgsqbn26958y3hzx0zwrif40pigr"))))
+          "0w2rvsksv7cmf80v632xm2rwxrv933kzz97839yhwynvg9s7b252"))))
   (build-system perl-build-system)
   (native-inputs
     `(("perl-module-build" ,perl-module-build)
