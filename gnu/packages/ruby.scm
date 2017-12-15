@@ -7,6 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2251,14 +2252,14 @@ utilities for Ruby.")
 (define-public ruby-tzinfo
   (package
     (name "ruby-tzinfo")
-    (version "1.2.3")
+    (version "1.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "tzinfo" version))
        (sha256
         (base32
-         "05r81lk7q7275rdq7xipfm0yxgqyd2ggh73xpc98ypngcclqcscl"))))
+         "09dpbrih054mn42flbbcdpzk2727mzfvjrgqb12zdafhx7p9rrzp"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-thread-safe" ,ruby-thread-safe)))
