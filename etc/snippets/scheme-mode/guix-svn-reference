@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: guix-svn-reference
+# key: svn-reference...
+# --
+(svn-reference
+  (url "$1")
+  (revision ${2:svn-revision}))

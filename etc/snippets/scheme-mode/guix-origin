@@ -1,0 +1,23 @@
+# -*- mode: snippet -*-
+# name: guix-origin
+# key: origin...
+# --
+(origin
+ (method ${1:$$(yas-choose-value "url-fetch"
+                                 "url-fetch/tarbomb"
+                                 "url-fetch/zipbomb"
+                                 "cvs-fetch"
+                                 "git-fetch"
+                                 "hg-fetch"
+                                 "svn-fetch")})
+ (uri ${1:$(cond ((equal yas-text "git-fetch") "git-reference...")
+                 ((equal yas-text "svn-fetch") "svn-reference...")
+                 ((equal yas-text "hg-fetch")  "hg-reference...")
+                 ((equal yas-text "cvs-fetch") "cvs-reference...")
+                 (t "(string-append \\"https://\\" version \\".tar.gz\\")"))}$0)
+ ${1:$(cond ((member yas-text '("git-fetch" "svn-fetch" "hg-fetch" "cvs-fetch"))
+             "(file-name (string-append name \\"-\\" version \\"-checkout\\"))")
+            (t ""))}
+ (sha256
+  (base32
+    "$2")))

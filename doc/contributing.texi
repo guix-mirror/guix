@@ -193,6 +193,34 @@ facilities to directly operate on the syntax tree, such as raising an
 s-expression or wrapping it, swallowing or rejecting the following
 s-expression, etc.
 
+@cindex code snippets
+@cindex templates
+@cindex reducing boilerplate
+We also provide templates for common git commit messages and package
+definitions in the @file{etc/snippets} directory.  These templates can
+be used with @url{http://joaotavora.github.io/yasnippet/, YASnippet} to
+expand short trigger strings to interactive text snippets.  You may want
+to add the snippets directory to the @var{yas-snippet-dirs} variable in
+Emacs.
+
+@lisp
+;; @r{Assuming the Guix checkout is in ~/src/guix.}
+(with-eval-after-load 'yasnippet
+  (add-to-list 'yas-snippet-dirs "~/src/guix/etc/snippets"))
+@end lisp
+
+The commit message snippets depend on @url{https://magit.vc/, Magit} to
+display staged files.  When editing a commit message type @code{add}
+followed by @kbd{TAB} to insert a commit message template for adding a
+package; type @code{update} followed by @kbd{TAB} to insert a template
+for updating a package.
+
+The main snippet for @code{scheme-mode} is triggered by typing
+@code{package...} followed by @kbd{TAB}.  This snippet also inserts the
+trigger string @code{origin...}, which can be expanded further.  The
+@code{origin} snippet in turn may insert other trigger strings ending on
+@code{...}, which also can be expanded further.
+
 
 @node Coding Style
 @section Coding Style

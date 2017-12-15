@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: guix-git-reference
+# key: git-reference...
+# --
+(git-reference
+  (url "$1")
+  (commit ${2:commit}))

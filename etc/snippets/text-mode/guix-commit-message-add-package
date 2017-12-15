@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: guix-commit-message-add-package
+# key: add
+# condition: git-commit-mode
+# --
+gnu: Add $1.
+
+* `(car (magit-staged-files))` ($1): New variable.
