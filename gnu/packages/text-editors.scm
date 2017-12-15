@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
-;;; Copyright © 2014 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
