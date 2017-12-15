@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1983,7 +1984,7 @@ time Web content can be enhanced with native controls.")
 (define-public dotherside
   (package
     (name "dotherside")
-    (version "0.5.2")
+    (version "0.6.3")
     (source
      (origin
        (method url-fetch)
@@ -1992,7 +1993,7 @@ time Web content can be enhanced with native controls.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0pqlrvy4ajjir80ra79ka3n0rjj0ir0f0m91cq86iz3nnw8w148z"))))
+         "0azq7qlsrfdwbd6qsi7d3c1knn42qw0r47g43xf7clwbinapswpz"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("qttools" ,qttools)))

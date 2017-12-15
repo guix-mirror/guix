@@ -197,7 +197,7 @@ both ordinal and cardinal numbers, negative numbers, and very large numbers.")
 (define-public perl-lingua-pt-stemmer
   (package
     (name "perl-lingua-pt-stemmer")
-    (version "0.01")
+    (version "0.02")
     (source
      (origin
        (method url-fetch)
@@ -205,7 +205,7 @@ both ordinal and cardinal numbers, negative numbers, and very large numbers.")
                            "Lingua-PT-Stemmer-" version ".tar.gz"))
        (sha256
         (base32
-         "11rqc5pqnkl9c13vy7sihiyas14ci0pj3k6chrgrgjv5sjv2m4a5"))))
+         "17c48sfbgwd2ivlgf59sr6jdhwa3aim8750f8pyzz7xpi8gz0var"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Lingua-PT-Stemmer")
     (synopsis "Portuguese language stemming")
