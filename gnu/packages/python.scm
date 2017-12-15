@@ -1127,6 +1127,7 @@ Python 3.3+.")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
+    (properties `((python2-variant . ,(delay python2-pyicu))))
     (license license:x11)))
 
 (define-public python2-pyicu
