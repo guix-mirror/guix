@@ -982,7 +982,7 @@ a minimum of effort.")
 (define-public perl-test-trap
   (package
     (name "perl-test-trap")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -990,7 +990,7 @@ a minimum of effort.")
                            "Test-Trap-v" version ".tar.gz"))
        (sha256
         (base32
-         "0jq54pkm4s61gk8gzxglix1ff9s0m9vi6bpfv7f63lb9qq4r76rr"))))
+         "1676gqjyk0zig3yyqv053y5j1pajp2af08ffmgx94n414whbhm5c"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
