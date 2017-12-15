@@ -421,7 +421,7 @@ computational cluster.")
 (define-public bedtools
   (package
     (name "bedtools")
-    (version "2.27.0")
+    (version "2.27.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/arq5x/bedtools2/releases/"
@@ -429,7 +429,7 @@ computational cluster.")
                                   "bedtools-" version ".tar.gz"))
               (sha256
                (base32
-                "0q6fsiz4s52yzxs6h2vxwq95fsi3n64wkpinkk05mfh4dmhybw74"))))
+                "1ndg5yknrxl4djx8ddzgk12rrbiidfpmkkg5z3f95jzryfxarhn8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
