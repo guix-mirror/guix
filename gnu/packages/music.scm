@@ -2893,14 +2893,14 @@ adjusts the amount of harmonics.")))
     (name "gx-vintage-fuzz-master-lv2")
     (version "0.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/brummer10/"
-                                  "GxVintageFuzzMaster.lv2/archive/v"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/brummer10/GxVintageFuzzMaster.lv2.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0bdkfj6xi2g4izfw3pmr4i0nqzg8jnkdwc23x9ifxwc6p1kbayzk"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "02jb211z8rw2qr5r1z5mdxlqgiw6cbc319xpqplvn6k21c59mskv"))))
     (home-page "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
     (synopsis "Fuzz effect simulation of the vintage Fuzz Master")
     (description "This package provides the LV2 plugin
