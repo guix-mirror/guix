@@ -3618,3 +3618,34 @@ by The Echo Nest.")
 @url{https://gpodder.net} APIs.  It allows applications to discover, manage
 and track podcasts.")
     (license license:lgpl2.1+)))
+
+(define-public sonivox-eas
+  (package
+    (name "sonivox-eas")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pedrolcl/Linux-SonivoxEas.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0l9gs00p5g4k4qy6i7nv1mfi2n2wnsycwjrgrh9hxzam4irf2mw2"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f)) ; there are no tests
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("drumstick" ,drumstick)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/pedrolcl/Linux-SonivoxEas")
+    (synopsis "MIDI synthesizer library")
+    (description "This project is a real time General MIDI synthesizer based
+on the Sonivox EAS Synthesizer by Google.  It does not need external
+soundfonts, using embedded samples instead.")
+    ;; Sonivox is released under the ASL2.0; the rest of the code is under
+    ;; GPLv2+.
+    (license (list license:gpl2+ license:asl2.0))))
