@@ -2725,16 +2725,6 @@ simulation of an overdrive or distortion pedal for guitars.")
                  (base32
                   "1dzksdfrva666gpi62fd2ni9rhf18sl917f1894qr0b17pbdh9k1"))
                 (file-name (string-append name "-" version "-checkout"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments gx-guvnor-lv2)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'configure
-               (lambda _
-                 (substitute* "Makefile"
-                   (("INSTALL_DIR = .*") "INSTALL_DIR=/lib/lv2\n")
-                   (("install : all") "install :"))
-                 #t))))))
       (home-page "https://github.com/brummer10/GxVBassPreAmp.lv2")
       (synopsis "Simulation of the Vox Venue Bass 100 Pre Amp Section")
       (description "This package provides the LV2 plugin \"GxVBassPreAmp\", a
