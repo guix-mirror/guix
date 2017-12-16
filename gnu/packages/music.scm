@@ -2835,14 +2835,14 @@ saturation effect."))))
     (name "gx-hyperion-lv2")
     (version "0.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/brummer10/"
-                                  "GxHyperion.lv2/archive/v"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/brummer10/GxHyperion.lv2.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1pd7l33a14kq73wavgqq7csw4n3mwjz9d5rxaj0jgsyxd3llp3wh"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1vx79s6s9if117y2g0ppdja2sv2wcny6xcfl3j1z4cipahnildxf"))))
     (home-page "https://github.com/brummer10/GxHyperion.lv2")
     (synopsis "Simulation of the Hyperion Fuzz pedal")
     (description "This package provides the LV2 plugin \"GxHyperion\", a
