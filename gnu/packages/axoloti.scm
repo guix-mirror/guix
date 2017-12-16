@@ -189,7 +189,7 @@
      `(("chibios"
         ,(origin
            (method url-fetch)
-           (uri "mirror://sourceforge/chibios/ChibiOS_RT%20stable/Version%202.6.9/ChibiOS_2.6.9.zip")
+           (uri "mirror://sourceforge/chibios/ChibiOS%20GPL3/Version%202.6.9/ChibiOS_2.6.9.zip")
            (sha256
             (base32
              "0lb5s8pkj80mqhsy47mmq0lqk34s2a2m3xagzihalvabwd0frhlj"))))
