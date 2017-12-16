@@ -2873,14 +2873,14 @@ parallel with a DarkBooster, followed by a volume control.")))
     (name "gx-super-fuzz-lv2")
     (version "0.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/brummer10/"
-                                  "GxSuperFuzz.lv2/archive/v"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/brummer10/GxSuperFuzz.lv2.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0pnivq05f1kji8c5jxsqdzhdfk3xn422v2d1x20x3jfsxnaf115x"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1jlljd9hlgfflbiizq47lv1xbbgjyx3v835mf24zmh1q5zsw4np4"))))
     (home-page "https://github.com/brummer10/GxSuperFuzz.lv2")
     (synopsis "Fuzz effect modelled after the UniVox SuperFuzz")
     (description "This package provides the LV2 plugin \"GxSuperFuzz\", an
