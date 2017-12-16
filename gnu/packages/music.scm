@@ -2677,13 +2677,14 @@ standard MIDI file with the csvmidi program.")
     (name "gx-guvnor-lv2")
     (version "0.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/brummer10/GxGuvnor.lv2/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/brummer10/GxGuvnor.lv2.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0rnfvrvs8qmmldyfmx4llyly33zp68448gx40ywdwj42x0mam92p"))))
+                "1wa5070j40p7f0b3kr259pzm99xb6cf2badr2capayjvgayd6gnm"))))
     (build-system gnu-build-system)
     (arguments
      `(;; The check target is used only to output a warning.
@@ -2695,7 +2696,8 @@ standard MIDI file with the csvmidi program.")
          (replace 'configure
            (lambda _
              (substitute* "Makefile"
-               (("INSTALL_DIR = .*") "INSTALL_DIR=/lib/lv2\n"))
+               (("INSTALL_DIR = .*") "INSTALL_DIR=/lib/lv2\n")
+               (("install : all") "install :"))
              #t)))))
     (inputs
      `(("lv2" ,lv2)))
