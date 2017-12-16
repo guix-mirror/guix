@@ -2816,8 +2816,8 @@ simulation of a push pull transistor fuzz effect with added high octave."))))
 pedal.")))
 
 (define-public gx-saturator-lv2
-  (let ((commit "0b581ac85c515325b9f16e51937cae6e1bf81a0a")
-        (revision "2"))
+  (let ((commit "605330f432c94b6eb3f8203cbe472befae959532")
+        (revision "3"))
     (package (inherit gx-vbass-preamp-lv2)
       (name "gx-saturator-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2828,7 +2828,7 @@ pedal.")))
                       (commit commit)))
                 (sha256
                  (base32
-                  "1cl785pzq8zk55m1rnhfd6qsabci6kpf4pf002gwr91vagyq246z"))
+                  "1w4nvh0rmxrv3s3hmh4fs74f3hc0jn31v00j769j7v68mqr7kawy"))
                 (file-name (string-append name "-" version "-checkout"))))
       (home-page "https://github.com/brummer10/GxSaturator.lv2")
       (synopsis "Saturation effect")
