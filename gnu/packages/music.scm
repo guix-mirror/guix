@@ -3649,3 +3649,40 @@ soundfonts, using embedded samples instead.")
     ;; Sonivox is released under the ASL2.0; the rest of the code is under
     ;; GPLv2+.
     (license (list license:gpl2+ license:asl2.0))))
+
+(define-public whysynth
+  (package
+    (name "whysynth")
+    (version "20170701")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://smbolton.com/whysynth/whysynth-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "02qbn0hbvn1iym4zxv35b201blg31yjpgh71h8db0j5zls2xc0m6"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("dssi" ,dssi)
+       ("liblo" ,liblo)
+       ("fftwf" ,fftwf)
+       ("gtk+" ,gtk+-2)
+       ("ladspa" ,ladspa)
+       ("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://smbolton.com/whysynth.html")
+    (synopsis "DSSI software synthesizer")
+    (description "WhySynth is a versatile softsynth which operates as a plugin
+for the DSSI Soft Synth Interface.  A brief list of features:
+
+@enumerate
+@item 4 oscillators, 2 filters, 3 LFOs, and 5 envelope generators per voice.
+@item 11 oscillator modes: minBLEP, wavecycle, chorused wavecycle,
+  asynchronous granular, three FM modes, waveshaper, noise, PADsynth, and phase
+  distortion.
+@item 10 filter modes.
+@item flexible modulation and mixdown options, plus effects.
+@end enumerate
+")
+    (license license:gpl2+)))
