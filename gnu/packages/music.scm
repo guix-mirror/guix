@@ -2704,8 +2704,9 @@ standard MIDI file with the csvmidi program.")
     (description "This package provides the LV2 plugin \"GxGuvnor\", a
 simulation of an overdrive or distortion pedal for guitars.")
     ;; The LICENSE file says GPLv3 but the license headers in the files say
-    ;; GPLv2 or later.
-    (license license:gpl2+)))
+    ;; GPLv2 or later.  The whole project is released under GPLv3 or later
+    ;; according to https://github.com/brummer10/GxGuvnor.lv2/issues/1
+    (license license:gpl3+)))
 
 (define-public gx-vbass-preamp-lv2
   (let ((commit "0e599abab10c7669dd444e5d06f671c2fc1b9c6c")
