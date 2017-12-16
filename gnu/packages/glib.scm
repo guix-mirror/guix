@@ -547,7 +547,7 @@ useful for C++.")
     (name "python2-pygobject")
     ;; This was the last version to declare the 2.0 platform number, i.e. its
     ;; pkg-config files were named pygobject-2.0.pc
-    (version "2.28.6")
+    (version "2.28.7")
     (source
      (origin
        (method url-fetch)
@@ -556,7 +556,7 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "1f5dfxjnil2glfwxnqr14d2cjfbkghsbsn8n04js2c2icr7iv2pv"))
+         "0nkam61rsn7y3wik3vw46wk5q2cjfh2iph57hl9m39rc8jijb7dv"))
        (patches (search-patches
                  "python2-pygobject-2-gi-info-type-error-domain.patch"))))
     (build-system gnu-build-system)
