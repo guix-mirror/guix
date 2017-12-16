@@ -9897,7 +9897,7 @@ Features:
 (define-public python-dulwich
   (package
     (name "python-dulwich")
-    (version "0.16.3")
+    (version "0.18.6")
     (source
       (origin
         (method url-fetch)
@@ -9905,7 +9905,8 @@ Features:
                             "dulwich-" version ".tar.gz")
                    (pypi-uri "dulwich" version)))
         (sha256
-          (base32 "0fl47vzfgc3w3rmhn8naii905cjqcp0vc68iyvymxp7567hh6als"))))
+          (base32
+           "1aa1xfrxkc3j9s4xi0llhf5gndyi9ryprcxsqfa5fcb8ph34981q"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
