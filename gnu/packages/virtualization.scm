@@ -752,4 +752,6 @@ Machine Protocol.")
 Machine) configured for VGA PCI Pass-through without an attached physical
 monitor, keyboard or mouse.  It displays the VM's rendered contents on your main
 monitor/GPU.")
+   ;; This package requires SSE instructions.
+   (supported-systems '("i686-linux" "x86_64-linux"))
    (license gpl2+)))
