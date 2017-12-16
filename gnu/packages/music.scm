@@ -2853,14 +2853,14 @@ simulation of the Hyperion Fuzz pedal.")))
     (name "gx-voodoo-fuzz-lv2")
     (version "0.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/brummer10/"
-                                  "GxVoodoFuzz.lv2/archive/v"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/brummer10/GxVoodoFuzz.lv2.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0cc8sg7q493bs6pcq4ipqp6czpxv04nh9yvn8kq2x65ni2208n2f"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1v0scphivri1fk4hl20j13f92i48mnx1zsil4hgnadsmm4nsfw43"))))
     (home-page "https://github.com/brummer10/GxVoodoFuzz.lv2")
     (synopsis "Fuzz effect modelled after the Voodoo Lab SuperFuzz")
     (description "This package provides the LV2 plugin \"GxVoodooFuzz\", a
