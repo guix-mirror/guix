@@ -1993,6 +1993,38 @@ and ALSA.")
 into various outputs and to start, stop and configure jackd")
     (license license:gpl2+)))
 
+(define-public qjackrcd
+  (package
+    (name "qjackrcd")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/qjackrcd/stable/"
+                                  "qjackrcd-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xpnhzbwg5c60n5dhwln5p7qm191nvmf23la88zxfqx1jv0mmxxb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "qmake"
+                             (string-append "PREFIX="
+                                            (assoc-ref outputs "out")))))))))
+    (native-inputs
+     `(("qtbase" ,qtbase))) ; for qmake
+    (inputs
+     `(("jack" ,jack-1)
+       ("libsndfile" ,libsndfile)
+       ("qtbase" ,qtbase)))
+    (home-page "https://sourceforge.net/projects/qjackrcd/")
+    (synopsis "Stereo audio recorder for JACK")
+    (description "QJackRcd is a simple graphical stereo recorder for JACK
+supporting silence processing for automatic pause, file splitting, and
+background file post-processing.")
+    (license license:gpl2+)))
 
 (define-public raul
   (package
