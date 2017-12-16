@@ -1,0 +1,68 @@
+Fix a bug in `borg check --repair` that corrupts existing archives:
+
+https://github.com/borgbackup/borg/issues/3444
+
+Patches copied from upstream source repository:
+
+https://github.com/borgbackup/borg/commit/e09892caec8a63d59e909518c4e9c230dbd69774
+https://github.com/borgbackup/borg/commit/a68d28bfa4db30561150c83eb6a0dca5efa4d9e8
+
+From a68d28bfa4db30561150c83eb6a0dca5efa4d9e8 Mon Sep 17 00:00:00 2001
+From: Thomas Waldmann <tw@waldmann-edv.de>
+Date: Sat, 16 Dec 2017 01:11:40 +0100
+Subject: [PATCH 1/2] modify borg check unit test so it "hangs", see #3444
+
+it doesn't infinitely hang, but slows down considerably.
+---
+ src/borg/testsuite/archiver.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/borg/testsuite/archiver.py b/src/borg/testsuite/archiver.py
+index c7def2c7..b3383e97 100644
+--- a/src/borg/testsuite/archiver.py
++++ b/src/borg/testsuite/archiver.py
+@@ -3006,7 +3006,7 @@ def test_missing_file_chunk(self):
+     def test_missing_archive_item_chunk(self):
+         archive, repository = self.open_archive('archive1')
+         with repository:
+-            repository.delete(archive.metadata.items[-5])
++            repository.delete(archive.metadata.items[0])
+             repository.commit()
+         self.cmd('check', self.repository_location, exit_code=1)
+         self.cmd('check', '--repair', self.repository_location, exit_code=0)
+-- 
+2.15.1
+
+
+From e09892caec8a63d59e909518c4e9c230dbd69774 Mon Sep 17 00:00:00 2001
+From: Thomas Waldmann <tw@waldmann-edv.de>
+Date: Sat, 16 Dec 2017 01:16:05 +0100
+Subject: [PATCH 2/2] check --repair: fix malfunctioning validator, fixes #3444
+
+the major problem was the ('path' in item) expression.
+the dict has bytes-typed keys there, so it never succeeded as it
+looked for a str key. this is a 1.1 regression, 1.0 was fine.
+
+the dict -> StableDict change is just for being more specific,
+the check triggered correctly as StableDict subclasses dict,
+it was just a bit too general.
+---
+ src/borg/archive.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/borg/archive.py b/src/borg/archive.py
+index 239d00b7..be086800 100644
+--- a/src/borg/archive.py
++++ b/src/borg/archive.py
+@@ -1457,7 +1457,7 @@ def robust_iterator(archive):
+             """
+             item_keys = frozenset(key.encode() for key in self.manifest.item_keys)
+             required_item_keys = frozenset(key.encode() for key in REQUIRED_ITEM_KEYS)
+-            unpacker = RobustUnpacker(lambda item: isinstance(item, dict) and 'path' in item,
++            unpacker = RobustUnpacker(lambda item: isinstance(item, StableDict) and b'path' in item,
+                                       self.manifest.item_keys)
+             _state = 0
+ 
+-- 
+2.15.1
+

@@ -470,6 +470,7 @@ detection, and lossless compression.")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "borgbackup" version))
+              (patches (search-patches "borg-fix-archive-corruption-bug.patch"))
               (sha256
                (base32
                 "1rvn8b6clzd1r317r9jkvk34r31risi0dxfjc7jffhnwasck4anc"))
