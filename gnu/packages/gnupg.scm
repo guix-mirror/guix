@@ -140,7 +140,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.4.4")
+    (version "2.5.1")
     (source
      (origin
       (method url-fetch)
@@ -148,10 +148,11 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "18bwffjkx9pn0lawbsn6zhd90i7xhjgpf9b0nl5xw9134w1a2scy"))))
+        "0jb4nb4nrjr949gd3lw8lh4v5d6qigxaq6xwy24w5apjnhvnrya7"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("libgpg-error" ,libgpg-error) ("pth" ,pth)))
+     `(("libgpg-error" ,libgpg-error)
+       ("pth" ,pth)))
     (home-page "https://gnupg.org")
     (synopsis
      "IPC library used by GnuPG and related software")
