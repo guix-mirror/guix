@@ -72,7 +72,7 @@
                                (string-concatenate
                                 (map (lambda (host)
                                        (string-append " -d " host))
-                                     #$hosts))))))))))
+                                     '#$hosts))))))))))
 
 (define certbot-activation
   (match-lambda
