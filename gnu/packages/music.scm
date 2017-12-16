@@ -2947,8 +2947,8 @@ slow gear audio effect to produce volume swells."))))
 a simulation of an analog Wah pedal with switchless activation."))))
 
 (define-public mod-utilities
-  (let ((commit "7cdeeac26ae682730740105ece121d4dddb8ba3f")
-        (revision "1"))
+  (let ((commit "80ea3ea9f52fab7f191671f4810bf90fc955a046")
+        (revision "2"))
     (package
       (name "mod-utilities")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2957,17 +2957,19 @@ a simulation of an analog Wah pedal with switchless activation."))))
                 (uri (git-reference
                       (url "https://github.com/moddevices/mod-utilities.git")
                       (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1ilnkbrmwrszxvc21qlb86h29yz7cnc6rcp0jmna1y693ny2qhf4"))
-                (file-name (string-append name "-" version "-checkout"))))
+                  "1v55zmzmlg0ka7341x5lsvb44amy17vk27s669ps1basd1bk5s5v"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; there are no tests
          #:make-flags
          (list (string-append "INSTALL_PATH="
                               (assoc-ref %outputs "out")
-                              "/lib/lv2"))
+                              "/lib/lv2")
+               (string-append "PREFIX=" (assoc-ref %outputs "out"))
+               "CC=gcc")
          #:phases
          (modify-phases %standard-phases
            (delete 'configure))))
