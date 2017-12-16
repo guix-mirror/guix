@@ -2912,8 +2912,8 @@ adjusts the amount of harmonics.")))
 \"GxVintageFuzzMaster\", a simulation of the vintage Fuzz Master pedal.")))
 
 (define-public gx-slow-gear-lv2
-  (let ((commit "cb852e0426f4e6fe077e7f1ede73a4da335cfc5e")
-        (revision "2"))
+  (let ((commit "5d37e775b0feef1d82feee94e2a7a2d7e57efe2d")
+        (revision "3"))
     (package (inherit gx-vbass-preamp-lv2)
       (name "gx-slow-gear-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2924,7 +2924,7 @@ adjusts the amount of harmonics.")))
                       (commit commit)))
                 (sha256
                  (base32
-                  "0dp7afi1r3kzciiyn1hrkz6arsq47ys9sx5g4b7xa9k1dv92ishp"))
+                  "141mz69zkhk3lm54bb6wgpnghb92zm1ig7fv07240cmhydqji1q1"))
                 (file-name (string-append name "-" version "-checkout"))))
       (home-page "https://github.com/brummer10/GxSlowGear.lv2")
       (synopsis "Slow gear audio effect")
