@@ -2796,14 +2796,14 @@ simulation of a push pull transistor fuzz effect with added high octave."))))
     (name "gx-suppa-tone-bender-lv2")
     (version "0.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/brummer10/"
-                                  "GxSuppaToneBender.lv2/archive/v"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/brummer10/GxSuppaToneBender.lv2.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1j90fns87035sfr6bxs4cvqxbyy3pqjhihx1nis8xajn202nl1hx"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "01x6bjmllkmvxfzc5xwdix7w021j26js71awv728cxsmkxgqw0zy"))))
     (home-page "https://github.com/brummer10/GxSuppaToneBender.lv2")
     (synopsis "Simulation of the Vox Suppa Tone Bender pedal")
     (description "This package provides the LV2 plugin
