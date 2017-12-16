@@ -2711,8 +2711,8 @@ simulation of an overdrive or distortion pedal for guitars.")
     (license license:gpl3+)))
 
 (define-public gx-vbass-preamp-lv2
-  (let ((commit "0e599abab10c7669dd444e5d06f671c2fc1b9c6c")
-        (revision "1"))
+  (let ((commit "eb999b0ca0ef4da40a59e458a9ab6e7042b96c99")
+        (revision "2"))
     (package (inherit gx-guvnor-lv2)
       (name "gx-vbass-preamp-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2723,8 +2723,13 @@ simulation of an overdrive or distortion pedal for guitars.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1dzksdfrva666gpi62fd2ni9rhf18sl917f1894qr0b17pbdh9k1"))
+                  "0firap073ldw4nrykkd7jvyyj0jbl1nslxyzjj4kswazp99x7d9h"))
                 (file-name (string-append name "-" version "-checkout"))))
+      (inputs
+       `(("lv2" ,lv2)
+         ("gtk+" ,gtk+-2)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
       (home-page "https://github.com/brummer10/GxVBassPreAmp.lv2")
       (synopsis "Simulation of the Vox Venue Bass 100 Pre Amp Section")
       (description "This package provides the LV2 plugin \"GxVBassPreAmp\", a
@@ -2734,7 +2739,7 @@ Section."))))
 (define-public gx-overdriver-lv2
   (let ((commit "ed71801987449414bf3adaa0dbfac68e8775f1ce")
         (revision "1"))
-    (package (inherit gx-vbass-preamp-lv2)
+    (package (inherit gx-guvnor-lv2)
       (name "gx-overdriver-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
       (source (origin
@@ -2754,7 +2759,7 @@ overdrive effect."))))
 (define-public gx-tone-mender-lv2
   (let ((commit "b6780b4a3e4782b3ed0e5882d6788f178aed138f")
         (revision "1"))
-    (package (inherit gx-vbass-preamp-lv2)
+    (package (inherit gx-guvnor-lv2)
       (name "gx-tone-mender-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
       (source (origin
@@ -2774,7 +2779,7 @@ clean boost effect with a 3-knob tonestack."))))
 (define-public gx-push-pull-lv2
   (let ((commit "7f76ae2068498643ac8671ee0930b13ee3fd8eb5")
         (revision "1"))
-    (package (inherit gx-vbass-preamp-lv2)
+    (package (inherit gx-guvnor-lv2)
       (name "gx-push-pull-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
       (source (origin
@@ -2929,7 +2934,7 @@ slow gear audio effect to produce volume swells."))))
 (define-public gx-switchless-wah-lv2
   (let ((commit "7b08691203314612999f0ce2328cdc1161cd6665")
         (revision "2"))
-    (package (inherit gx-vbass-preamp-lv2)
+    (package (inherit gx-guvnor-lv2)
       (name "gx-switchless-wah-lv2")
       (version (string-append "0-" revision "." (string-take commit 9)))
       (source (origin
