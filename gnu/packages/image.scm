@@ -1123,14 +1123,14 @@ PNG, and performs PNG integrity checks and corrections.")
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" version "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0a5m0psfp5952y5vrcs0nbdz1y9wqzg2ms0xwrx752034wxr964h"))))
+                "08r5b5mywwrxv4axvq80dm31cklz81grczlzlxr2xqa6pgi90j5j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
