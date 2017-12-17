@@ -2045,6 +2045,43 @@ on the library.")
 allows you to send JACK MIDI events (i.e. play) using your PC keyboard.")
     (license license:bsd-2)))
 
+(define-public jack-capture
+  (package
+    (name "jack-capture")
+    (version "0.9.73")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kmatheussen/jack_capture.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0jcqky96q8xgya6wqv1p8pj9fkf2wh7ynl67ah7x5bn3basgfclf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("jack" ,jack-1)
+       ("libogg" ,libogg)
+       ("liblo" ,liblo)
+       ("lame" ,lame)
+       ("libsndfile" ,libsndfile)))
+    (home-page "https://github.com/kmatheussen/jack_capture")
+    (synopsis "Program for recording sound files with JACK")
+    (description "This is a program for recording sound files with JACK.  It
+can connect to any JACK port and record the output into a stereo WAV file.")
+    (license license:gpl2+)))
+
 (define-public cursynth
   (package
     (name "cursynth")
