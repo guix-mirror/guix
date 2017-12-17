@@ -366,6 +366,9 @@ return the corresponding signature URL, or #f it signatures are unavailable."
                                    #f)
                                   (("w32" 'directory . _)
                                    #f)
+                                  (("unstable" 'directory . _)
+                                   ;; As seen at ftp.gnupg.org/gcrypt/pinentry.
+                                   #f)
                                   ((directory 'directory . _)
                                    directory)
                                   (_ #f))
