@@ -244,7 +244,7 @@ a dubious expression is wrong, it will keep silent.
 
 The package provides the command line interface, along with a server
 and a Python library.")
-    (license license:gpl3+)))
+    (license gpl3+)))
 
 (define-public translate-shell
   (package
