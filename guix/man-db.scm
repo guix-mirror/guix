@@ -45,7 +45,7 @@
 ;;; Code:
 
 ;; Load 'gdbm-ffi' at run time to simplify the job of 'imported-modules' & co.
-(module-use! (current-module) (resolve-interface '(gdbm)))
+(module-autoload! (current-module) '(gdbm) '(gdbm-open GDBM_WRCREAT))
 
 (define-record-type <mandb-entry>
   (mandb-entry file-name name section synopsis kind)
