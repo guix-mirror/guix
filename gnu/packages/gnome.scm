@@ -144,6 +144,7 @@
   #:use-module (gnu packages speech)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages vpn)
+  #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -4727,6 +4728,10 @@ to display dialog boxes from the commandline and shell scripts.")
              ;; The following flags are needed for the bundled clutter
              "--enable-x11-backend=yes"
 
+             (string-append "--with-xwayland-path="
+                            (assoc-ref %build-inputs "xorg-server-xwayland")
+                            "/bin/Xwayland")
+
              ;; the remaining flags are needed for the bundled cogl
              "--enable-cogl-gst"
              (string-append "--with-gl-libname="
@@ -4787,6 +4792,7 @@ to display dialog boxes from the commandline and shell scripts.")
        ("startup-notification" ,startup-notification)
        ("upower-glib" ,upower)
        ("xkeyboard-config" ,xkeyboard-config)
+       ("xorg-server-xwayland" ,xorg-server-xwayland)
        ("zenity" ,zenity)))
     (synopsis "Window and compositing manager")
     (home-page "https://www.gnome.org")
