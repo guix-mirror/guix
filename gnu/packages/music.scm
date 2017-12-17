@@ -2108,6 +2108,34 @@ synthesis engine.  Notes and parameter changes may be entered via MIDI or the
 computer's keyboard.")
     (license license:gpl3+)))
 
+(define-public aj-snapshot
+  (package
+    (name "aj-snapshot")
+    (version "0.9.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/aj-snapshot/"
+                                  "aj-snapshot-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0yxccgp9qw2cyqv719wlbq8wfsr5ga8czvwa7bmb8dh5s11n3rn8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("minixml" ,minixml)
+       ("jack" ,jack-1)
+       ("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://aj-snapshot.sourceforge.net/")
+    (synopsis "Snapshot connections between ALSA and JACK clients")
+    (description "Aj-snapshot is a small program that can be used to make
+snapshots of the connections made between JACK and/or ALSA clients.  Because
+JACK can provide both audio and MIDI support to programs, aj-snapshot can
+store both types of connections for JACK.  ALSA, on the other hand, only
+provides routing facilities for MIDI clients.  Aj-snapshot is meant to be used
+from the command line.")
+    (license license:gpl3+)))
+
 (define-public qtractor
   (package
     (name "qtractor")
