@@ -3169,6 +3169,54 @@ customized and extended using either the s7 Scheme implementation (included in
 the Snd sources), Ruby, or Forth.")
     (license (license:non-copyleft "file://COPYING"))))
 
+(define-public noise-repellent
+  (package
+    (name "noise-repellent")
+    (version "0.1.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lucianodato/noise-repellent.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0rd3dlmk3vivjmcr6x2x860y0j1d49c2j95j6ny50v184mwvn11j"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("lv2" ,lv2)
+       ("fftwf" ,fftwf)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/lucianodato/noise-repellent")
+    (synopsis "LV2 plugin for broadband noise reduction")
+    (description "Noise Repellent is an LV2 plugin to reduce noise.  It has
+the following features:
+
+@enumerate
+@item Spectral gating and spectral subtraction suppression rule
+@item Adaptive and manual noise thresholds estimation
+@item Adjustable noise floor
+@item Adjustable offset of thresholds to perform over-subtraction
+@item Time smoothing and a masking estimation to reduce artifacts
+@item Basic onset detector to avoid transients suppression
+@item Whitening of the noise floor to mask artifacts and to recover higher
+  frequencies
+@item Option to listen to the residual signal
+@item Soft bypass
+@item Noise profile saved with the session
+@end enumerate
+")
+    (license license:lgpl3+)))
+
 (define-public cli-visualizer
   (package
     (name "cli-visualizer")
