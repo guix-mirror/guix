@@ -110,19 +110,23 @@ edges."
                                              (text-file "foo" "bar")))))
            (p        (dummy-package "p" (source o)))
            (implicit (map (match-lambda
-                            ((label package) package))
+                            ((label package) package)
+                            ((label package output) package))
                           (standard-packages))))
       (run-with-store %store
         (export-graph (list p) 'port
                       #:node-type %bag-emerged-node-type
                       #:backend backend))
       ;; We should see exactly P and IMPLICIT, with one edge from P to each
-      ;; element of IMPLICIT.  O must not appear among NODES.
+      ;; element of IMPLICIT.  O must not appear among NODES.  Note: IMPLICIT
+      ;; contains "glibc" twice, once for "out" and a second time for
+      ;; "static", hence the 'delete-duplicates' call below.
       (let-values (((nodes edges) (nodes+edges)))
         (and (equal? (match nodes
                        (((labels names) ...)
                         names))
-                     (map package-full-name (cons p implicit)))
+                     (map package-full-name
+                          (cons p (delete-duplicates implicit))))
              (equal? (match edges
                        (((sources destinations) ...)
                         (zip (map store-path-package-name sources)
