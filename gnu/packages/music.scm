@@ -3140,14 +3140,14 @@ develop custom plugins for use in other applications without programming.")
 (define-public qmidiarp
   (package
     (name "qmidiarp")
-    (version "0.6.4")
+    (version "0.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qmidiarp/qmidiarp/"
                                   version "/qmidiarp-" version ".tar.bz2"))
               (sha256
                (base32
-                "1gkfv8ajgf86kbn6j5ilfc1zlz17gdi9yxzywqd6jwff4xlm75hx"))))
+                "043yh1p0rrbj1v840y27529m9260g55gvh1km8az4jxy7mns58r2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
