@@ -157,6 +157,8 @@ the X-Consortium license.")
     (inputs `(("libx11" ,libx11)
               ("mesa" ,mesa)
               ("glu" ,glu)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://ftgl.sourceforge.net")
     (synopsis "Font rendering library for OpenGL applications")
     (description
