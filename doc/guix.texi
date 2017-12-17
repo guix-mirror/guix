@@ -18372,7 +18372,6 @@ system.
 A possibly empty list of @code{menu-entry} objects (see below), denoting
 entries to appear in the bootloader menu, in addition to the current
 system entry and the entry pointing to previous system generations.
-generations.
 
 @item @code{default-entry} (default: @code{0})
 The index of the default boot menu entry.  Index 0 is for the entry of the
