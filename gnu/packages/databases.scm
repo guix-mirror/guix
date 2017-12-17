@@ -298,10 +298,10 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
            (lambda* (#:key outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")
                                           "/bin/es_dump_restore")
-               `("GEM_PATH" ":" prefix (,(string-append
-                                          (getenv "GEM_PATH")
-                                          ":"
-                                          (getenv "GEM_HOME")))))
+               `("GEM_PATH" ":" prefix (,(getenv "GEM_PATH")
+                                        ,(string-append
+                                          (assoc-ref outputs "out")
+                                          "/lib/ruby/vendor_ruby"))))
              #t)))))
     (propagated-inputs
      `(("ruby-httpclient" ,ruby-httpclient)

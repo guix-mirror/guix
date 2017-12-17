@@ -27,8 +27,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
-            ruby-build
-            gem-home))
+            ruby-build))
 
 ;; Commentary:
 ;;
@@ -129,40 +128,48 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
                                          (assoc-ref inputs "ruby"))
                            1))
          (out (assoc-ref outputs "out"))
-         (gem-home (string-append out "/lib/ruby/gems/" ruby-version ".0"))
+         (vendor-dir (string-append out "/lib/ruby/vendor_ruby"))
          (gem-file (first-matching-file "\\.gem$"))
          (gem-file-basename (basename gem-file))
          (gem-name (substring gem-file-basename
                               0
-                              (- (string-length gem-file-basename) 4)))
-         (gem-directory (string-append gem-home "/gems/" gem-name)))
-    (setenv "GEM_HOME" gem-home)
-    (mkdir-p gem-home)
-    (and (apply system* "gem" "install" gem-file
-                "--local" "--ignore-dependencies"
-                ;; Executables should go into /bin, not /lib/ruby/gems.
-                "--bindir" (string-append out "/bin")
-                gem-flags)
+                              (- (string-length gem-file-basename) 4))))
+    (setenv "GEM_VENDOR" vendor-dir)
+    (and (let ((install-succeeded?
+                (zero?
+                 (apply system* "gem" "install" gem-file
+                        "--local" "--ignore-dependencies" "--vendor"
+                        ;; Executables should go into /bin, not
+                        ;; /lib/ruby/gems.
+                        "--bindir" (string-append out "/bin")
+                        gem-flags))))
+           (or install-succeeded?
+               (begin
+                 (simple-format #t "installation failed\n")
+                 (let ((failed-output-dir (string-append (getcwd) "/out")))
+                   (mkdir failed-output-dir)
+                   (copy-recursively out failed-output-dir))
+                 #f)))
          (begin
            ;; Remove the cached gem file as this is unnecessary and contains
            ;; timestamped files rendering builds not reproducible.
-           (let ((cached-gem (string-append gem-home "/cache/" gem-file)))
+           (let ((cached-gem (string-append vendor-dir "/cache/" gem-file)))
              (log-file-deletion cached-gem)
              (delete-file cached-gem))
            ;; For gems with native extensions, several Makefile-related files
            ;; are created that contain timestamps or other elements making
            ;; them not reproducible.  They are unnecessary so we remove them.
-           (if (file-exists? (string-append gem-directory "/ext"))
+           (if (file-exists? (string-append vendor-dir "/ext"))
                (begin
                  (for-each (lambda (file)
                              (log-file-deletion file)
                              (delete-file file))
                            (append
-                            (find-files (string-append gem-home "/doc")
+                            (find-files (string-append vendor-dir "/doc")
                                         "page-Makefile.ri")
-                            (find-files (string-append gem-home "/extensions")
+                            (find-files (string-append vendor-dir "/extensions")
                                         "gem_make.out")
-                            (find-files (string-append gem-directory "/ext")
+                            (find-files (string-append vendor-dir "/ext")
                                         "Makefile")))))
            #t))))
 
@@ -182,13 +189,3 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
 (define* (ruby-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)
   (apply gnu:gnu-build #:inputs inputs #:phases phases args))
-
-(define (gem-home store-path ruby-version)
-  "Return a string to the gem home directory in the store given a STORE-PATH
-and the RUBY-VERSION used to build that ruby package"
-  (string-append
-   store-path
-   "/lib/ruby/gems/"
-   (regexp-substitute #f
-                      (string-match "^[0-9]+\\.[0-9]+" ruby-version)
-                      0 ".0")))
