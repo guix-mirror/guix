@@ -147,16 +147,16 @@ rates.")
                                (string-append "--with-udev-rules-dir="
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))
-       #:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda _
-                   ;; 'tests/lock-autospawn-test.c' wants to create a file
-                   ;; under ~/.config/pulse.
-                   (setenv "HOME" (getcwd))
-                   ;; 'thread-test' needs more time on hydra and on slower
-                   ;; machines, so we set the default timeout to 120 seconds.
-                   (setenv "CK_DEFAULT_TIMEOUT" "120"))
-                 %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                 (add-before 'check 'pre-check
+                   (lambda _
+                     ;; 'tests/lock-autospawn-test.c' wants to create a file
+                     ;; under ~/.config/pulse.
+                     (setenv "HOME" (getcwd))
+                     ;; 'thread-test' needs more time on hydra and on slower
+                     ;; machines, so we set the default timeout to 120 seconds.
+                     (setenv "CK_DEFAULT_TIMEOUT" "120")
+                     #t)))))
     (inputs
      ;; TODO: Add optional inputs (GTK+?).
      `(("alsa-lib" ,alsa-lib)
