@@ -9427,11 +9427,17 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
                (let ((classesdir "tmp-classes"))
                  (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
                  (mkdir classesdir)
-                 (and (zero? (apply system* `("javac" "-d" ,classesdir
-                                              ,@(find-files "java" "\\.java$"))))
-                      (zero? (system* "jar"
-                                      "-cf" "inst/java/ModularityOptimizer.jar"
-                                      "-C" classesdir ".")))))))))
+
+                 (with-output-to-file "manifest"
+                 (lambda _
+                   (display "Manifest-Version: 1.0
+Main-Class: ModularityOptimizer\n")))
+               (and (zero? (apply system* `("javac" "-d" ,classesdir
+                                            ,@(find-files "java" "\\.java$"))))
+                    (zero? (system* "jar"
+                                    "-cmf" "manifest"
+                                    "inst/java/ModularityOptimizer.jar"
+                                    "-C" classesdir ".")))))))))
       (native-inputs
        `(("jdk" ,icedtea "jdk")))
       (propagated-inputs
