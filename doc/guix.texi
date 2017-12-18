@@ -8700,6 +8700,9 @@ also specified.  @xref{Mapped Devices} and @ref{File Systems}.
 @itemx @code{groups} (default: @var{%base-groups})
 List of user accounts and groups.  @xref{User Accounts}.
 
+If the @code{users} list lacks a user account with UID@tie{}0, a
+``root'' account with UID@tie{}0 is automatically added.
+
 @item @code{skeletons} (default: @code{(default-skeletons)})
 A list target file name/file-like object tuples (@pxref{G-Expressions,
 file-like objects}).  These are the skeleton files that will be added to
