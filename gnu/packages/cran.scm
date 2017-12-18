@@ -1642,3 +1642,23 @@ originally inspired by the book \"Visualizing Categorical Data\" by Michael
 Friendly and is now the main support package for a new book, \"Discrete Data
 Analysis with R\" by Michael Friendly and David Meyer (2015).")
     (license license:gpl2)))
+
+(define-public r-ica
+  (package
+    (name "r-ica")
+    (version "1.0-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ica" version))
+       (sha256
+        (base32
+         "1bkl4a72l0k6gm82l3jxnib898z20cw17zg81jj39l9dn65rlmcq"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/ica/")
+    (synopsis "Independent component analysis")
+    (description "This package provides tools for @dfn{Independent Component
+Analysis} (ICA) using various algorithms: FastICA,
+Information-Maximization (Infomax), and @dfn{Joint Approximate Diagonalization
+of Eigenmatrices} (JADE).")
+    (license license:gpl2+)))
