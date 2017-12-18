@@ -518,7 +518,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "0.16.8")
+    (version "0.16.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -526,7 +526,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ckakdjg30fsyjsgyy2573x9nmjivdg76y049l86wns5axw8im26"))))
+                "0v08zdvpqaig0wxpxn1l8rsj3wr3fqvnagn8cnvch17vfqv9gcr1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
