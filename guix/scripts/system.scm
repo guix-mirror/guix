@@ -44,6 +44,7 @@
   #:use-module (gnu system)
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system mapped-devices)
   #:use-module (gnu system linux-container)
   #:use-module (gnu system uuid)
   #:use-module (gnu system vm)
@@ -621,6 +622,22 @@ any, are available.  Raise an error if they're not."
       ;; Better be safe than sorry.
       (exit 1))))
 
+(define (check-mapped-devices mapped-devices)
+  "Check that each of MAPPED-DEVICES is valid according to the 'check'
+procedure of its type."
+  (for-each (lambda (md)
+              (let ((check (mapped-device-kind-check
+                            (mapped-device-type md))))
+                ;; We expect CHECK to raise an exception with a detailed
+                ;; '&message' if something goes wrong, but handle the case
+                ;; where it just returns #f.
+                (unless (check md)
+                  (leave (G_ "~a: invalid '~a' mapped device~%")
+                         (location->string
+                          (source-properties->location
+                           (mapped-device-location md)))))))
+            mapped-devices))
+
 
 ;;;
 ;;; Action.
@@ -710,9 +727,10 @@ output when building a system derivation, such as a disk image."
   ;; Check whether the declared file systems exist.  This is better than
   ;; instantiating a broken configuration.  Assume that we can only check if
   ;; running as root.
-  (when (and (memq action '(init reconfigure))
-             (zero? (getuid)))
-    (check-file-system-availability (operating-system-file-systems os)))
+  (when (memq action '(init reconfigure))
+    (when (zero? (getuid))
+      (check-file-system-availability (operating-system-file-systems os)))
+    (check-mapped-devices (operating-system-mapped-devices os)))
 
   (mlet* %store-monad
       ((sys       (system-derivation-for-action os action
