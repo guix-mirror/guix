@@ -78,6 +78,21 @@ Invoke the garbage collector.\n"))
   (newline)
   (show-bug-report-information))
 
+(define argument->verify-options
+  (let ((not-comma (char-set-complement (char-set #\,)))
+        (validate  (lambda (option)
+                     (unless (memq option '(repair contents))
+                       (leave (G_ "~a: invalid '--verify' option~%")
+                              option)))))
+    (lambda (arg)
+      "Turn ARG into a list of symbols denoting '--verify' options."
+      (if arg
+          (let ((lst (map string->symbol
+                          (string-tokenize arg not-comma))))
+            (for-each validate lst)
+            lst)
+          '()))))
+
 (define %options
   ;; Specification of the command-line options.
   (list (option '(#\h "help") #f #f
@@ -112,16 +127,12 @@ Invoke the garbage collector.\n"))
                   (alist-cons 'action 'optimize
                               (alist-delete 'action result))))
         (option '("verify") #f #t
-                (let ((not-comma (char-set-complement (char-set #\,))))
-                  (lambda (opt name arg result)
-                    (let ((options (if arg
-                                       (map string->symbol
-                                            (string-tokenize arg not-comma))
-                                       '())))
-                      (alist-cons 'action 'verify
-                                  (alist-cons 'verify-options options
-                                              (alist-delete 'action
-                                                            result)))))))
+                (lambda (opt name arg result)
+                  (let ((options (argument->verify-options arg)))
+                    (alist-cons 'action 'verify
+                                (alist-cons 'verify-options options
+                                            (alist-delete 'action
+                                                          result))))))
         (option '("list-dead") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-dead
