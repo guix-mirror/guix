@@ -1727,3 +1727,27 @@ statistics, etc.")
     (description "This package provides an implementation of scatter plots for
 plotting.  a three dimensional point cloud.")
     (license license:gpl2)))
+
+(define-public r-ggridges
+  (package
+    (name "r-ggridges")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggridges" version))
+       (sha256
+        (base32
+         "0kfa3icqdalqdg1klxjrhfl7if35d3wnsiyl86bprw5dyqyh3lh3"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-plyr" ,r-plyr)
+       ("r-scales" ,r-scales)))
+    (home-page "https://github.com/clauswilke/ggridges")
+    (synopsis "Ridgeline plots in ggplot2")
+    (description
+     "Ridgeline plots provide a convenient way of visualizing changes in
+distributions over time or space.  This package enables the creation of such
+plots in @code{ggplot2}.")
+    (license license:gpl2)))
