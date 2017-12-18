@@ -568,8 +568,8 @@ end-to-end encryption support; XML console.")
 (define-public dino
   ;; The only release tarball is for version 0.0, but it is very old and fails
   ;; to build.
-  (let ((commit "2a514d0969f5c25d5e2d14421125a47df6b14974")
-        (revision "2"))
+  (let ((commit "f25fadde2d6c9492b9cafe2cddbcc7b966942e47")
+        (revision "3"))
     (package
       (name "dino")
       (version (string-append "0.0-" revision "." (string-take commit 9)))
@@ -581,7 +581,7 @@ end-to-end encryption support; XML console.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0v9fqikxvamdw7bxbwc4s01x0vf30vl77149y16krijaqnq6kzv0"))))
+                  "1nhzrw3pbpybn9qclckk6z427vbgnqd0y1l63zd1rfw4zw099mzs"))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f ; there are no tests
