@@ -4424,10 +4424,11 @@ libraries, which are often integrated directly into libfabric.")
   (package
     (name "psm")
     (version "3.3.20170428")
+    (home-page "https://github.com/intel/psm")
     (source
      (origin
        (method git-fetch)
-       (uri (git-reference (url "http://github.com/01org/psm")
+       (uri (git-reference (url home-page)
                            (commit "604758e76dc31e68d1de736ccf5ddf16cb22355b")))
        (file-name (string-append "psm-" version ".tar.gz"))
        (sha256
@@ -4453,7 +4454,6 @@ libraries, which are often integrated directly into libfabric.")
                       (substitute* "Makefile"
                         (("/lib64") "/lib"))
                       #t)))))
-    (home-page "https://github.com/01org/psm")
     (synopsis "Intel Performance Scaled Messaging (PSM) Libraries")
     (description
      "The PSM Messaging API, or PSM API, is Intel's low-level user-level
