@@ -156,9 +156,11 @@ the user's target storage device rather than on the RAM disk."
                                                 (string-append #$output "/"
                                                                target)))
                                    '(#$(file "bare-bones.tmpl")
+                                     #$(file "beaglebone-black.tmpl")
                                      #$(file "desktop.tmpl")
                                      #$(file "lightweight-desktop.tmpl"))
                                    '("bare-bones.scm"
+                                     "beaglebone-black.scm"
                                      "desktop.scm"
                                      "lightweight-desktop.scm"))
                          #t))))

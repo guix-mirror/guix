@@ -254,6 +254,7 @@ AUX_FILES =						\
 # Templates, examples.
 EXAMPLES =					\
   gnu/system/examples/bare-bones.tmpl		\
+  gnu/system/examples/beaglebone-black.tmpl	\
   gnu/system/examples/desktop.tmpl		\
   gnu/system/examples/lightweight-desktop.tmpl	\
   gnu/system/examples/vm-image.tmpl
