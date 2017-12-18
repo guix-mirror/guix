@@ -6927,35 +6927,24 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "0.9.304")
+    (version "0.9.306")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/gnumdk/lollypop/"
-                           "releases/download/" version "/"
+       (uri (string-append "https://gitlab.gnome.org/gnumdk/lollypop/uploads/"
+                           "b769805b7063ef9807e4e832e7e87ad2/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "070y6wf1180hbl1ix8al7fmc6y06jb5m14h73g509g4xbwlk62g8"))))
-    ;; TODO: Use meson-build-system
-    (build-system glib-or-gtk-build-system)
+         "0c49v6793bywvh295xbii9yq21hh3qpmxwbgp9i71kj6r9grvhan"))))
+    (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
-                           ,@%glib-or-gtk-build-system-modules)
+                           ,@%meson-build-system-modules)
+       #:glib-or-gtk? #t
        #:tests? #f ; no test suite
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; remove post-install script, we update the caches later
-               (substitute* "meson.build"
-                 (("meson.add_install_script\\('meson_post_install.py'\\)") ""))
-               (zero?
-                 (system* "meson" "builddir" (string-append "--prefix=" out))))))
-         (replace 'install
-           (lambda _ (zero? (system* "ninja" "-C" "builddir" "install"))))
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out               (assoc-ref outputs "out"))
@@ -6968,16 +6957,15 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
-       ("ninja" ,ninja)
+       ("glib:bin" ,glib "bin")         ; For glib-compile-resources
+       ("gtk+:bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("gtk+" ,gtk+)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)
-       ("meson" ,meson)
        ("python" ,python)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-gst" ,python-gst)
