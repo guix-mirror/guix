@@ -34,11 +34,13 @@
             mapped-device-source
             mapped-device-target
             mapped-device-type
+            mapped-device-location
 
             mapped-device-kind
             mapped-device-kind?
             mapped-device-kind-open
             mapped-device-kind-close
+            mapped-device-kind-check
 
             device-mapping-service-type
             device-mapping-service
@@ -58,14 +60,18 @@
   mapped-device?
   (source    mapped-device-source)                ;string | list of strings
   (target    mapped-device-target)                ;string
-  (type      mapped-device-type))                 ;<mapped-device-kind>
+  (type      mapped-device-type)                  ;<mapped-device-kind>
+  (location  mapped-device-location
+             (default (current-source-location)) (innate)))
 
 (define-record-type* <mapped-device-type> mapped-device-kind
   make-mapped-device-kind
   mapped-device-kind?
   (open      mapped-device-kind-open)             ;source target -> gexp
   (close     mapped-device-kind-close             ;source target -> gexp
-             (default (const #~(const #f)))))
+             (default (const #~(const #f))))
+  (check     mapped-device-kind-check             ;source -> Boolean
+             (default (const #t))))
 
 
 ;;;
