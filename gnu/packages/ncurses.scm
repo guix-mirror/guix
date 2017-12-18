@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
@@ -73,8 +73,8 @@
                                          configure-flags)
                                    configure-flags))))))
            (apply-rollup-patch-phase
-            '(lambda* (#:key inputs #:allow-other-keys)
-               (copy-file (assoc-ref inputs "rollup-patch")
+            '(lambda* (#:key inputs native-inputs #:allow-other-keys)
+               (copy-file (assoc-ref (or native-inputs inputs) "rollup-patch")
                           (string-append (getcwd) "/rollup-patch.sh.bz2"))
                (and (zero? (system* "bzip2" "-d" "rollup-patch.sh.bz2"))
                     (zero? (system* "sh" "rollup-patch.sh")))))
