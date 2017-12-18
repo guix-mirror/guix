@@ -7598,6 +7598,35 @@ alternative when librabbitmq is not available.")
                    #:tests? #f
                    ,@(package-arguments amqp))))))
 
+(define-public python-txamqp
+  (package
+    (name "python-txamqp")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "txAMQP" version))
+       (sha256
+        (base32
+         "1r43a66dd547mz40ikymm8y3d480cidy560fj81qc0jk4lncgmmr"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-twisted" ,python-twisted)))
+    (home-page "https://github.com/txamqp/txamqp")
+    (synopsis "Communicate with AMQP peers and brokers using Twisted")
+    (description
+     "This package provides a Python library for communicating with AMQP peers
+and brokers using the asynchronous networking framework Twisted.  It contains
+all the necessary code to connect, send and receive messages to/from an
+AMQP-compliant peer or broker (Qpid, OpenAMQ, RabbitMQ) using Twisted.  It
+also includes support for using Thrift RPC over AMQP in Twisted
+applications.")
+    (license license:asl2.0)))
+
+(define-public python2-txamqp
+  (package-with-python2 python-txamqp))
+
 (define-public python-kombu
   (package
     (name "python-kombu")
