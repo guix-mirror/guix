@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
@@ -156,3 +158,28 @@ HTTP.  Features:
 @item Supports IPv6.
 @end itemize")
     (license license:gpl2)))
+
+(define-public python-whisper
+  (package
+    (name "python-whisper")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "whisper" version))
+       (sha256
+        (base32
+         "1v1bi3fl1i6p4z4ki692bykrkw6907dn3mfq0151f70lvi3zpns3"))))
+    (build-system python-build-system)
+    (home-page "http://graphiteapp.org/")
+    (synopsis "Fixed size round-robin style database for Graphite")
+    (description "Whisper is one of three components within the Graphite
+project.  Whisper is a fixed-size database, similar in design and purpose to
+RRD (round-robin-database).  It provides fast, reliable storage of numeric
+data over time.  Whisper allows for higher resolution (seconds per point) of
+recent data to degrade into lower resolutions for long-term retention of
+historical data.")
+    (license license:asl2.0)))
+
+(define-public python2-whisper
+  (package-with-python2 python-whisper))
