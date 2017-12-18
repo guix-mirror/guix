@@ -1685,3 +1685,27 @@ series.  Common DTW variants covered include local (slope) and global (window)
 constraints, subsequence matches, arbitrary distance definitions,
 normalizations, minimum variance matching, and so on.")
     (license license:gpl2+)))
+
+(define-public r-sdmtools
+  (package
+    (name "r-sdmtools")
+    (version "1.1-221")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SDMTools" version))
+       (sha256
+        (base32
+         "1kacrpamshv7wz83yn45sfbw4m9c44xrrngzcklnwx8gcxx2knm6"))))
+    (properties `((upstream-name . "SDMTools")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-r-utils" ,r-r-utils)))
+    (home-page "http://www.rforge.net/SDMTools/")
+    (synopsis "Species distribution modelling tools")
+    (description "This packages provides a set of tools for post processing
+the outcomes of species distribution modeling exercises.  It includes novel
+methods for comparing models and tracking changes in distributions through
+time.  It further includes methods for visualizing outcomes, selecting
+thresholds, calculating measures of accuracy and landscape fragmentation
+statistics, etc.")
+    (license license:gpl3+)))
