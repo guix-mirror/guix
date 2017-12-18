@@ -1709,3 +1709,21 @@ time.  It further includes methods for visualizing outcomes, selecting
 thresholds, calculating measures of accuracy and landscape fragmentation
 statistics, etc.")
     (license license:gpl3+)))
+
+(define-public r-scatterplot3d
+  (package
+    (name "r-scatterplot3d")
+    (version "0.3-40")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "scatterplot3d" version))
+       (sha256
+        (base32
+         "0ababcj87kx7860mica9y2ydlhskxmgj9n46crx036cila512jc2"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/scatterplot3d/")
+    (synopsis "3D scatter plot")
+    (description "This package provides an implementation of scatter plots for
+plotting.  a three dimensional point cloud.")
+    (license license:gpl2)))
