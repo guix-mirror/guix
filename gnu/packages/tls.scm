@@ -255,7 +255,7 @@ required structures.")
   (package
    (name "openssl")
    (version "1.0.2l")
-   (replacement openssl-1.0.2m)
+   (replacement openssl-1.0.2n)
    (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -398,12 +398,12 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
-;; Fixes CVE-2017-3735 and CVE-2017-3736.
+;; Fixes CVE-2017-3735, CVE-2017-3736, CVE-2017-3737, and CVE-2017-3738.
 ;; See <https://www.openssl.org/news/cl102.txt>.
-(define-public openssl-1.0.2m
+(define-public openssl-1.0.2n
   (package
     (inherit openssl)
-    (version "1.0.2m")
+    (version "1.0.2n")
     (source (origin
               (inherit (package-source openssl))
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -415,7 +415,7 @@ required structures.")
                                         "/openssl-" version ".tar.gz")))
               (sha256
                (base32
-                "03vvlfnxx4lhxc83ikfdl6jqph4h52y7lb7li03va6dkqrgg2vwc"))))))
+                "1zm82pyq5a9jm10q6iv7d3dih3xwjds4x30fqph3k317byvsn2rp"))))))
 
 (define-public openssl-next
   (package
