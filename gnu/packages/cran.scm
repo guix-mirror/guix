@@ -1751,3 +1751,25 @@ plotting.  a three dimensional point cloud.")
 distributions over time or space.  This package enables the creation of such
 plots in @code{ggplot2}.")
     (license license:gpl2)))
+
+(define-public r-ggjoy
+  (package
+    (name "r-ggjoy")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggjoy" version))
+       (sha256
+        (base32
+         "1s24zn7gmk52bvjjhanxby7rxbnc2yfl0nx5nv7x7z0zja8gg7nb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-ggridges" ,r-ggridges)))
+    (home-page "https://github.com/clauswilke/ggjoy")
+    (synopsis "Joyplots in ggplot2")
+    (description "Joyplots provide a convenient way of visualizing changes in
+distributions over time or space.  This package enables the creation of such
+plots in @code{ggplot2}.")
+    (license license:gpl2)))
