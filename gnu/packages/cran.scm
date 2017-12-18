@@ -1662,3 +1662,26 @@ Analysis} (ICA) using various algorithms: FastICA,
 Information-Maximization (Infomax), and @dfn{Joint Approximate Diagonalization
 of Eigenmatrices} (JADE).")
     (license license:gpl2+)))
+
+(define-public r-dtw
+  (package
+    (name "r-dtw")
+    (version "1.18-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dtw" version))
+       (sha256
+        (base32
+         "1b91vahba09cqlb8b1ry4dlv4rbldb4s2p6w52gmyw31vxdv5nnr"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-proxy" ,r-proxy)))
+    (home-page "http://dtw.r-forge.r-project.org/")
+    (synopsis "Dynamic Time Warping Algorithms")
+    (description "This package provides a comprehensive implementation of
+@dfn{dynamic time warping} (DTW) algorithms in R.  DTW computes the
+optimal (least cumulative distance) alignment between points of two time
+series.  Common DTW variants covered include local (slope) and global (window)
+constraints, subsequence matches, arbitrary distance definitions,
+normalizations, minimum variance matching, and so on.")
+    (license license:gpl2+)))
