@@ -31,7 +31,8 @@
   #:use-module (gnu packages gd)
   #:use-module (gnu packages image)
   #:use-module (gnu packages mail)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python))
 
 (define-public nagios
   (package
@@ -183,3 +184,34 @@ historical data.")
 
 (define-public python2-whisper
   (package-with-python2 python-whisper))
+
+(define-public python2-carbon
+  (package
+    (name "python2-carbon")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "carbon" version))
+       (sha256
+        (base32
+         "142smpmgbnjinvfb6s4ijazish4vfgzyd8zcmdkh55y051fkixkn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2   ; only supports Python 2
+       #:phases
+       (modify-phases %standard-phases
+         ;; Don't install to /opt
+         (add-after 'unpack 'do-not-install-to-/opt
+           (lambda _ (setenv "GRAPHITE_NO_PREFIX" "1") #t)))))
+    (propagated-inputs
+     `(("python2-whisper" ,python2-whisper)
+       ("python2-configparser" ,python2-configparser)
+       ("python2-txamqp" ,python2-txamqp)))
+    (home-page "http://graphiteapp.org/")
+    (synopsis "Backend data caching and persistence daemon for Graphite")
+    (description "Carbon is a backend data caching and persistence daemon for
+Graphite.  Carbon is responsible for receiving metrics over the network,
+caching them in memory for \"hot queries\" from the Graphite-Web application,
+and persisting them to disk using the Whisper time-series library.")
+    (license license:asl2.0)))
