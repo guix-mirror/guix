@@ -4983,7 +4983,7 @@ highlights quasi-quoted expressions.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "46.0")
+    (version "47.0")
     (source
      (origin
        (method url-fetch)
@@ -4992,11 +4992,7 @@ highlights quasi-quoted expressions.")
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
         (base32
-         "15x4yfp3wl2fxm1nkx6pz3clw6zyw3argcsqxgcx6pa28sivlg2n"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Delete the bundled byte-compiled elisp files.
-        '(for-each delete-file (find-files "lisp" "\\.elc$")))))
+         "0xbcc266x752y68s3g096m161irzvsqym3axzqn8rb276a8x55n7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
@@ -5006,6 +5002,7 @@ highlights quasi-quoted expressions.")
          (replace 'configure
            (lambda _
              ;; Configure Emacspeak according to etc/install.org.
+             (setenv "SHELL" (which "sh"))
              (zero? (system* "make" "config"))))
          (add-after 'build 'build-espeak
            (lambda _
