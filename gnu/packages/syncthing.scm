@@ -1506,8 +1506,8 @@ functions for normalizing Unicode strings.")
       (license bsd-3))))
 
 (define-public go-github-com-audriusbutkevicius-pfilter
-  (let ((commit "56143fe9cebe95636de1275acf30fcca36a1383d")
-        (revision "1"))
+  (let ((commit "9dca34a5b530bfc9843fa8aa2ff08ff9821032cb")
+        (revision "2"))
     (package
       (name "go-github-com-audriusbutkevicius-pfilter")
       (version (git-version "0.0.0" revision commit))
@@ -1520,7 +1520,7 @@ functions for normalizing Unicode strings.")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "0slzly2f2fczixavzh6wa69873va29ikxww4lbkvhyi85c4sc5ib"))))
+            "0i4qbnwba49db27fb1y792gcvhb0m744i9q4zgwjbypqmy3bj2a5"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/AudriusButkevicius/pfilter"))
