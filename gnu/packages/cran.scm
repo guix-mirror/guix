@@ -1464,6 +1464,29 @@ distribution with mean equal to @code{mean} and standard deviation equal to
 functions, as well as a random generation function.")
     (license license:gpl2)))
 
+(define-public r-rsolnp
+  (package
+    (name "r-rsolnp")
+    (version "1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rsolnp" version))
+       (sha256
+        (base32
+         "0w7nkj6igr0gi7r7jg950lsx7dj6aipgxi6vbjsf5f5yc9h7fhii"))))
+    (properties `((upstream-name . "Rsolnp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-truncnorm" ,r-truncnorm)))
+    (home-page "http://cran.r-project.org/web/packages/Rsolnp/")
+    (synopsis "General non-linear optimization")
+    (description "The Rsolnp package implements a general non-linear augmented
+Lagrange multiplier method solver, a @dfn{sequential quadratic
+programming} (SQP) based solver).")
+    ;; Any version of the GPL.
+    (license license:gpl2+)))
+
 (define-public r-hardyweinberg
   (package
     (name "r-hardyweinberg")
