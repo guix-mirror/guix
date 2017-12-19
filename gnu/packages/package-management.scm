@@ -776,14 +776,14 @@ written entirely in Python.")))
 (define-public gwl
   (package
     (name "gwl")
-    (version "0.1.0")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.guixwl.org/releases/gwl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1x4swwp7kmhd57j3scii5c4h8swkcvab2r6mz7wxwwbx300wcqpy"))))
+                "06pm967mq1wyggx7l0nfapw5s0k5qc5r9lawk2v3db868br779a7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
