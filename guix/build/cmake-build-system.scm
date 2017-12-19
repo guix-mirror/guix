@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,8 @@
                                              build-type))
                         '())
                   ,(string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                  ;; ensure that the libraries are installed into /lib
+                  "-DCMAKE_INSTALL_LIBDIR=lib"
                   ;; add input libraries to rpath
                   "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
                   ;; add (other) libraries of the project itself to rpath
