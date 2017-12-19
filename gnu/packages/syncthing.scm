@@ -1531,8 +1531,8 @@ virtual connections from a single physical connection.")
       (license expat))))
 
 (define-public go-github-com-ccding-go-stun
-  (let ((commit "04a4eed61c57ecc9903f8983d1d2c17b88d2e9e1")
-        (revision "0"))
+  (let ((commit "d9bbe8f8fa7bf7ed03e6cfc6a2796bb36139e1f4")
+        (revision "1"))
     (package
       (name "go-github-com-ccding-go-stun")
       (version (git-version "0.0.0" revision commit))
@@ -1545,7 +1545,7 @@ virtual connections from a single physical connection.")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "09fgmkvm0vzinl3ifrixyyxk2c9hbahrja7i0ir400harzq3my10"))))
+            "04a4q69cmw6snlx54wikyj1y6gk94qzm9xv9als17inmj8z60xv7"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/ccding/go-stun"))
