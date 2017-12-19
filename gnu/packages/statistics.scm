@@ -2923,14 +2923,14 @@ standard R subsetting and Kronecker products.")
 (define-public r-iterators
   (package
     (name "r-iterators")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "iterators" version))
        (sha256
         (base32
-         "1f057pabs7ss9h1n244can26qsi5n2k3salrdk0b0vkphlrs4kmf"))))
+         "16sycjq912ix52fjxjhcwiaqr0yj1v5iqmrvjljd3z857031w06y"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/iterators")
     (synopsis "Iterator construct for R")
