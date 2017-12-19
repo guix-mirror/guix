@@ -388,7 +388,14 @@ regular expression object can be specified.")
                             (assoc-ref %outputs "out") "/share/antiword"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Ensure that mapping files can be found in the actual package
+             ;; data directory.
+             (substitute* "antiword.h"
+               (("/usr/share/antiword")
+                (string-append (assoc-ref outputs "out") "/share/antiword")))
+             #t))
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
              (zero? (apply system* "make" `("global_install" ,@make-flags))))))))
