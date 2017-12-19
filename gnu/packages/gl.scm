@@ -742,9 +742,7 @@ mixed vector/bitmap output.")
          "0rnid3hwrry9d5d4m7sygq00xxx976rgk00a3557m9r5kxbmy476"))))
     (arguments
      `(#:tests? #f ;; no tests are available
-       #:configure-flags (list "-DVGL_USESSL=1" ;; use OpenSSL
-                          (string-append "-DCMAKE_INSTALL_LIBDIR="
-                                         (assoc-ref %outputs "out") "/lib"))))
+       #:configure-flags (list "-DVGL_USESSL=1"))) ;; use OpenSSL
     (build-system cmake-build-system)
     (inputs `(("glu" ,glu)
               ("libjpeg-turbo" ,libjpeg-turbo)

@@ -693,8 +693,6 @@ language.")
                                (string-take commit 7))
                "-DCMAKE_BUILD_TYPE=Release"
                "-DKICAD_SKIP_BOOST=ON"; Use our system's boost library.
-               (string-append "-DCMAKE_INSTALL_LIBDIR="
-                              (assoc-ref %outputs "out") "/lib")
                "-DKICAD_SCRIPTING=ON"
                "-DKICAD_SCRIPTING_MODULES=ON"
                "-DKICAD_SCRIPTING_WXPYTHON=ON"

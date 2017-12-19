@@ -10724,10 +10724,7 @@ programs for inferring phylogenies (evolutionary trees).")
     (arguments
      `(;; FIXME: Some tests fail because they produce warnings, others fail
        ;; because the PYTHONPATH does not include the modeller's directory.
-       #:tests? #f
-       ;; Do not place libraries in an architecture-specific directory.
-       #:configure-flags
-       (list "-DCMAKE_INSTALL_LIBDIR=lib")))
+       #:tests? #f))
     (inputs
      `(("boost" ,boost)
        ("gsl" ,gsl)

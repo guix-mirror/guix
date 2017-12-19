@@ -542,11 +542,7 @@ and a QP solver.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     ;; Recent releases defaults to "lib64" on 64bit.
-     `(#:configure-flags (list (string-append "-DCMAKE_INSTALL_LIBDIR="
-                                              (assoc-ref %outputs "out")
-                                              "/lib"))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-asserts
            (lambda _

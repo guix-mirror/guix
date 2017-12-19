@@ -3348,9 +3348,6 @@ The package provides additional NTFS tools.")
        ;; to do the same for consistency. They also recommend using the
        ;; "Release" build type.
        #:configure-flags (list "-GNinja"
-                               ;; Defaults to "lib64" on 64-bit archs.
-                               (string-append "-DCMAKE_INSTALL_LIBDIR="
-                                              (assoc-ref %outputs "out") "/lib")
                                "-DCMAKE_BUILD_TYPE=Release")
        #:phases
        (modify-phases %standard-phases

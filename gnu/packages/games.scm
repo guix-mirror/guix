@@ -2778,9 +2778,6 @@ Transport Tycoon Deluxe.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;; no tests available
-       #:configure-flags
-        (list (string-append "-DCMAKE_INSTALL_LIBDIR="
-                       (assoc-ref %outputs "out") "/lib"))
        #:phases
         (modify-phases %standard-phases
           (add-after 'unpack 'fix-usr-share-paths
@@ -3285,13 +3282,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
      `(#:tests? #f                      ;no "test" target
        #:configure-flags
        (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
-             "-DUSE_LIBZIP=OFF"         ;use "zlib" instead
-             ;; Validate RUNPATH phase fails ("error: depends on
-             ;; 'libmgba.so.0.6', which cannot be found in RUNPATH") without
-             ;; the following S-exp.
-             (string-append "-DCMAKE_INSTALL_LIBDIR="
-                            (assoc-ref %outputs "out")
-                            "/lib"))))
+             "-DUSE_LIBZIP=OFF")))      ;use "zlib" instead
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ffmpeg" ,ffmpeg)
               ("imagemagick" ,imagemagick)

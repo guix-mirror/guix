@@ -98,8 +98,6 @@ licences similar to the Modified BSD licence."))))
     (arguments
      `(#:configure-flags
        (list "-DMIA_CREATE_NIPYPE_INTERFACES=0"
-             (string-append "-DCMAKE_INSTALL_LIBDIR="
-                            (assoc-ref %outputs "out") "/lib")
              "-DCMAKE_CXX_FLAGS=-fpermissive")))
     (inputs
      `(("boost" ,boost)

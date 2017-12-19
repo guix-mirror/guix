@@ -463,12 +463,6 @@ large scale eigenvalue problems.")
               ("python" ,python-2)))
     (arguments
      `(#:configure-flags (list
-                          ;; Install to PREFIX/lib (the default is
-                          ;; PREFIX/lib64).
-                          (string-append "-DCMAKE_INSTALL_LIBDIR="
-                                         (assoc-ref %outputs "out")
-                                         "/lib")
-
                           "-DBUILD_SHARED_LIBS:BOOL=YES"
                           "-DLAPACKE=ON"
 
@@ -1962,8 +1956,7 @@ void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
     (arguments
      `(#:configure-flags '("-Denable_blaslib:BOOL=NO" ;do not use internal cblas
                            "-DTPL_BLAS_LIBRARIES=openblas"
-                           "-DBUILD_SHARED_LIBS:BOOL=YES"
-                           "-DCMAKE_INSTALL_LIBDIR=lib")))
+                           "-DBUILD_SHARED_LIBS:BOOL=YES")))
     (home-page "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/")
     (synopsis "Supernodal direct solver for sparse linear systems")
     (description
@@ -3571,11 +3564,7 @@ as equations, scalars, vectors, and matrices.")
              "-DINSTALL_PYTHON_BINDINGS=true"
              (string-append "-DCMAKE_INSTALL_PYTHON_PKG_DIR="
                             %output
-                            "/lib/python2.7/site-packages")
-             (string-append "-DCMAKE_INSTALL_LIBDIR="
-                            %output
-                            "/lib"))
-
+                            "/lib/python2.7/site-packages"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'bootstrap

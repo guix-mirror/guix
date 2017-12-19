@@ -99,10 +99,6 @@ human.")
         (base32
          "0wrl8kxb16wzdgfjj057yv18cfg0b8z8lxp1fl2q8fkdgr7phm9g"))))
     (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags
-       (list (string-append "-DCMAKE_INSTALL_LIBDIR="
-                            (assoc-ref %outputs "out") "/lib"))))
     (inputs
      `(("libgcrypt" ,libgcrypt)
        ("libxi" ,libxi)

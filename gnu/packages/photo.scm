@@ -337,7 +337,7 @@ photographic equipment.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
-       #:configure-flags '("-DCMAKE_INSTALL_LIBDIR=lib" "-DBINARY_PACKAGE_BUILD=On")
+       #:configure-flags '("-DBINARY_PACKAGE_BUILD=On")
        #:make-flags
        (list
         (string-append "CPATH=" (assoc-ref %build-inputs "ilmbase")

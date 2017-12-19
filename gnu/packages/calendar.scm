@@ -56,9 +56,6 @@
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; test suite appears broken
-       #:configure-flags
-       (list (string-append "-DCMAKE_INSTALL_LIBDIR="
-                            (assoc-ref %outputs "out") "/lib"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths

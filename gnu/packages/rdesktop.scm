@@ -112,8 +112,7 @@ to remotely control a user's Windows desktop.")
          ("openssl" ,openssl)))
       (arguments
        `(#:configure-flags
-         (list "-DCMAKE_INSTALL_LIBDIR=lib"
-               "-DCMAKE_BUILD_TYPE=RELEASE"
+         (list "-DCMAKE_BUILD_TYPE=RELEASE"
                "-DWITH_JPEG=ON"
                ,@(if (string-prefix? "x86_64"
                                      (or (%current-target-system)
