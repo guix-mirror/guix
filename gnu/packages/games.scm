@@ -2509,6 +2509,7 @@ emulation community.  It provides highly accurate emulation.")
                 (uri (git-reference
                       (url "https://github.com/Aloshi/EmulationStation.git")
                       (commit commit))) ; no version tag
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "0cm0sq2wri2l9cvab1l0g02za59q7klj0h3p028vr96n6njj4w9v"))))
