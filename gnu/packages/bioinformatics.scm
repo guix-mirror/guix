@@ -10168,14 +10168,14 @@ defining LD blocks.")
 (define-public r-gqtlstats
   (package
     (name "r-gqtlstats")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gQTLstats" version))
        (sha256
         (base32
-         "1cbdqawxzgna8rrgj3siph5sw4d2pb57qc0gn6ibfkhyk45f8gdv"))))
+         "0gvq1sf2zjbkk431x40z6wql3c1rpclnnwa2f1hvykb8mmw70kmq"))))
     (properties `((upstream-name . "gQTLstats")))
     (build-system r-build-system)
     (propagated-inputs
