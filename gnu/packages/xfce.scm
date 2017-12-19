@@ -492,7 +492,10 @@ your system in categories, so you can quickly find and launch them.")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
-       (list (string-append "--with-xsession-prefix=" %output))))
+       (list (string-append "--with-xsession-prefix=" %output))
+       ;; Disable icon cache update.
+       #:make-flags
+       '("gtk_update_icon_cache=true")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
