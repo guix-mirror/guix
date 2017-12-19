@@ -1817,3 +1817,25 @@ plots in @code{ggplot2}.")
 distributions over time or space.  This package enables the creation of such
 plots in @code{ggplot2}.")
     (license license:gpl2)))
+
+(define-public r-cli
+  (package
+    (name "r-cli")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cli" version))
+       (sha256
+        (base32
+         "07as3dr7vwx02p3qgzlmxz1dlrd3x3lysrzp222ip9jcjpydp8wg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-crayon" ,r-crayon)))
+    (home-page "https://github.com/r-lib/cli#readme")
+    (synopsis "Helpers for developing command line interfaces")
+    (description "This package provides a suite of tools designed to build
+attractive command line interfaces (CLIs).  It includes tools for drawing
+rules, boxes, trees, and Unicode symbols with ASCII alternatives.")
+    (license license:expat)))
