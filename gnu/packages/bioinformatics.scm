@@ -5857,14 +5857,14 @@ information as possible.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.4-4")
+    (version "2.4-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "1n57dzv2aid6iqd9fkqik401sidqanhzsawyak94qbiyh6dbd1x9"))))
+         "0cyyvn3xsjn24w590jn6z4xajafv7yzvj6c51vqi9q6m8v5831ya"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
