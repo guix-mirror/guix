@@ -145,18 +145,19 @@ the low-level development kit for the Yubico YubiKey authentication device.")
 (define-public pcsc-lite
   (package
     (name "pcsc-lite")
-    (version "1.8.22")
+    (version "1.8.23")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://alioth.debian.org/frs/download.php/file/4225/"
+                    "https://alioth.debian.org/frs/download.php/file/4235/"
                     "pcsc-lite-" version ".tar.bz2"))
               (sha256
                (base32
-                "01flkdyqs7kr6c63dv2qg8dwir3v9jlr9rzlw7vafrivxmhqydba"))))
+                "1jc9ws5ra6v3plwraqixin0w0wfxj64drahrbkyrrwzghqjjc9ss"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-usbdropdir=/var/lib/pcsc/drivers")))
+     `(#:configure-flags '("--enable-usbdropdir=/var/lib/pcsc/drivers"
+                           "--disable-libsystemd")))
     (native-inputs
      `(("perl" ,perl)                   ; for pod2man
        ("pkg-config" ,pkg-config)))
@@ -169,7 +170,6 @@ the low-level development kit for the Yubico YubiKey authentication device.")
 readers using the SCard API.  pcsc-lite is used to connect to the PC/SC daemon
 from a client application and provide access to the desired reader.")
     (license (list license:bsd-3                ; pcsc-lite
-                   license:expat                ; src/sd-daemon.[ch]
                    license:isc                  ; src/strlcat.c src/strlcpy.c
                    license:gpl3+))))            ; src/spy/*
 
