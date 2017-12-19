@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,15 @@
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1hm1q04hz15509f0p9bflw4d6jzfvpm1d36dxjwihk1wzakn5ypc"))))
+              "1hm1q04hz15509f0p9bflw4d6jzfvpm1d36dxjwihk1wzakn5ypc"))
+            (patches (search-patches "rsync-CVE-2017-16548.patch"
+                                     "rsync-CVE-2017-17433.patch"
+                                     "rsync-CVE-2017-17433-fix-tests.patch"
+                                     "rsync-CVE-2017-17434-pt1.patch"
+                                     "rsync-CVE-2017-17434-pt2.patch"
+                                     ))
+            ))
+   (properties `((lint-hidden-cve . ("CVE-2017-15994")))) ; introduced after 3.1.2
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)
              ("acl" ,acl)))

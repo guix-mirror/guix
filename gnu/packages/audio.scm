@@ -222,7 +222,7 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
        (modify-phases %standard-phases
          (add-after
           'unpack 'set-rpath-in-LDFLAGS
-          ,(ardour-rpath-phase (version-prefix version 1))))
+          ,(ardour-rpath-phase (version-major version))))
        #:test-target "test"
        #:python ,python-2))
     (inputs
@@ -1993,6 +1993,38 @@ and ALSA.")
 into various outputs and to start, stop and configure jackd")
     (license license:gpl2+)))
 
+(define-public qjackrcd
+  (package
+    (name "qjackrcd")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/qjackrcd/stable/"
+                                  "qjackrcd-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xpnhzbwg5c60n5dhwln5p7qm191nvmf23la88zxfqx1jv0mmxxb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* "qmake"
+                             (string-append "PREFIX="
+                                            (assoc-ref outputs "out")))))))))
+    (native-inputs
+     `(("qtbase" ,qtbase))) ; for qmake
+    (inputs
+     `(("jack" ,jack-1)
+       ("libsndfile" ,libsndfile)
+       ("qtbase" ,qtbase)))
+    (home-page "https://sourceforge.net/projects/qjackrcd/")
+    (synopsis "Stereo audio recorder for JACK")
+    (description "QJackRcd is a simple graphical stereo recorder for JACK
+supporting silence processing for automatic pause, file splitting, and
+background file post-processing.")
+    (license license:gpl2+)))
 
 (define-public raul
   (package
@@ -3136,3 +3168,106 @@ on the ALSA software PCM plugin.")
 customized and extended using either the s7 Scheme implementation (included in
 the Snd sources), Ruby, or Forth.")
     (license (license:non-copyleft "file://COPYING"))))
+
+(define-public noise-repellent
+  (package
+    (name "noise-repellent")
+    (version "0.1.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lucianodato/noise-repellent.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0rd3dlmk3vivjmcr6x2x860y0j1d49c2j95j6ny50v184mwvn11j"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("lv2" ,lv2)
+       ("fftwf" ,fftwf)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/lucianodato/noise-repellent")
+    (synopsis "LV2 plugin for broadband noise reduction")
+    (description "Noise Repellent is an LV2 plugin to reduce noise.  It has
+the following features:
+
+@enumerate
+@item Spectral gating and spectral subtraction suppression rule
+@item Adaptive and manual noise thresholds estimation
+@item Adjustable noise floor
+@item Adjustable offset of thresholds to perform over-subtraction
+@item Time smoothing and a masking estimation to reduce artifacts
+@item Basic onset detector to avoid transients suppression
+@item Whitening of the noise floor to mask artifacts and to recover higher
+  frequencies
+@item Option to listen to the residual signal
+@item Soft bypass
+@item Noise profile saved with the session
+@end enumerate
+")
+    (license license:lgpl3+)))
+
+(define-public cli-visualizer
+  (package
+    (name "cli-visualizer")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dpayne/cli-visualizer/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07zkm87f2fr8kc6531zrkya7q81sdanm6813y2f54mg13g41y6hi"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("googletest" ,googletest)
+       ("ncurses" ,ncurses)
+       ("pulseaudio" ,pulseaudio)))
+    (arguments
+     '(#:test-target "test"
+       #:make-flags
+       (list (string-append "PREFIX=" %output "/bin/") "ENABLE_PULSE=1")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-sudo
+           (lambda _
+             (substitute* "install.sh" (("sudo") ""))
+             #t))
+         (add-before 'check 'set-check-environment
+           (lambda _
+             (setenv "CXX" "g++")
+             (setenv "CC" "gcc")
+             #t))
+         (add-before 'install 'make-prefix
+           (lambda _
+             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin"))
+             #t))
+         (add-after 'install 'data
+           (lambda _
+             (for-each (lambda (file)
+                         (install-file file
+                                       (string-append (assoc-ref %outputs "out")
+                                                      "/share/doc")))
+                       (find-files "examples"))
+             #t)))))
+    (home-page "https://github.com/dpayne/cli-visualizer/")
+    (synopsis "Command-line audio visualizer")
+    (description "@code{cli-visualizer} displays fast-Fourier
+transforms (FFTs) of the sound being played, as well as other graphical
+representations.")
+    (license license:expat)))

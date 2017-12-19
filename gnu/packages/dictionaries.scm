@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
@@ -205,6 +206,45 @@ work, such as sentence length and other readability measures.")
 It comes with a German-English dictionary with approximately 270,000 entries.")
     (home-page  "http://www-user.tu-chemnitz.de/~fri/ding/")
     (license gpl2+)))
+
+(define-public grammalecte
+  (package
+    (name "grammalecte")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://www.dicollecte.org/grammalecte/zip/"
+                           "Grammalecte-fr-v" version ".zip"))
+       (sha256
+        (base32
+         "0bl342i7nqbg8swk3fxashg9liyp3jdnix59pndhy41cpm1xln4i"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-setup.py
+           ;; FIXME: "setup.py" contains a typo in 0.6.1 release. The
+           ;; issue was reported and fixed upstream
+           ;; (https://dicollecte.org/thread.php?prj=fr&t=674). This
+           ;; phase can be removed in next release.
+           (lambda _
+             (substitute* "setup.py"
+               (("server_options\\.") "grammalecte-server-options."))
+             #t)))))
+    (home-page "https://www.dicollecte.org")
+    (synopsis  "French spelling and grammar checker")
+    (description "Grammalecte is a grammar checker dedicated to the French
+language, derived from Lightproof.
+
+Grammalecte aims at helping to write a proper French without distracting users
+with false positives.  This grammar checker follows the principle: the less
+false positives, the better; if it cannot know with a good chance if
+a dubious expression is wrong, it will keep silent.
+
+The package provides the command line interface, along with a server
+and a Python library.")
+    (license gpl3+)))
 
 (define-public translate-shell
   (package

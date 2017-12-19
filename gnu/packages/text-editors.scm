@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages xml))
@@ -47,17 +49,19 @@
 (define-public vis
   (package
     (name "vis")
-    (version "0.3")
+    (version "0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martanne/"
                                   name "/archive/v" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "0xvhkj4j8pcmpnsx7f93d6n2f068xnl7wacfs97vr0agxwrfvn5y"))))
+               (base32
+                "1iclfsc9vn40fqfiz56vrw6dmr4x8q9gvav0b53kkpc6zcfa86zi"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests.
+     `(#:test-target "test"
+       #:tests? #f                  ; no releases; snapshots are missing tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-binary
@@ -80,7 +84,8 @@
     (inputs `(("lua", lua)
               ("ncurses", ncurses)
               ("libtermkey", libtermkey)
-              ("lua-lpeg", lua-lpeg)))
+              ("lua-lpeg", lua-lpeg)
+              ("tre" ,tre)))
     (synopsis "Vim-like text editor")
     (description
      "Vis aims to be a modern, legacy free, simple yet efficient vim-like text

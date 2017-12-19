@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,7 +115,7 @@ be output in text, PostScript, PDF or HTML.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
-                                  (version-prefix version 1) "/R-"
+                                  (version-major version) "/R-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -2942,14 +2943,14 @@ data.")
 (define-public r-foreach
   (package
     (name "r-foreach")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "foreach" version))
        (sha256
         (base32
-         "10aqsd3rxz03s1qdb6gsb1cj89mj4vmh491zfpin4skj1xvkzw0y"))))
+         "0j2yj0rn0d5nbzz9nq5rqqgnxhp9pbd92q4klsarl2xpsn8119y0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-codetools" ,r-codetools)
@@ -2993,14 +2994,14 @@ using the parallel package.")
 (define-public r-domc
   (package
     (name "r-domc")
-    (version "1.3.4")
+    (version "1.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "doMC" version))
        (sha256
         (base32
-         "0y47jl6g4f83r14pj8bafdzq1phj7bxy5dwyz3k43d2rr8phk8bn"))))
+         "1vfrykvfvsyq12mypd266867ml1dcwc3rj5k9c3wrn5bddcm88kr"))))
     (properties `((upstream-name . "doMC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5121,14 +5122,14 @@ to Applied regression, Second Edition, Sage, 2011.")
 (define-public r-caret
   (package
     (name "r-caret")
-    (version "6.0-77")
+    (version "6.0-78")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "caret" version))
        (sha256
         (base32
-         "05c504567s2nppzfgi36mhszbym2pr80nf50dgxcxfx030721v5y"))))
+         "0h1nxzii2h80aslp1zsjczrlfmaks44sskabk4yq9c5rafc7ka6y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreach" ,r-foreach)

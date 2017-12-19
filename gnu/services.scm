@@ -392,7 +392,8 @@ boot."
                      (mkdir "/tmp")
                      (chmod "/tmp" #o1777)
                      (mkdir "/var/run")
-                     (chmod "/var/run" #o755))))))))
+                     (chmod "/var/run" #o755)
+                     (delete-file-recursively "/run/udev/watch.old"))))))))
 
 (define cleanup-service-type
   ;; Service that cleans things up in /tmp and similar.

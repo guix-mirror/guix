@@ -502,6 +502,26 @@ interpreted."
           (x
            (leave (G_ "unknown unit: ~a~%") unit)))))))
 
+(define (display-collision-resolution-hint collision)
+  "Display hints on how to resolve COLLISION, a &profile-collistion-error."
+  (define (top-most-entry entry)
+    (let loop ((entry entry))
+      (match (force (manifest-entry-parent entry))
+        (#f entry)
+        (parent (loop parent)))))
+
+  (let* ((first  (profile-collision-error-entry collision))
+         (second (profile-collision-error-conflict collision))
+         (name1  (manifest-entry-name (top-most-entry first)))
+         (name2  (manifest-entry-name (top-most-entry second))))
+    (if (string=? name1 name2)
+        (display-hint (format #f (G_ "You cannot have two different versions
+or variants of @code{~a} in the same profile.")
+                              name1))
+        (display-hint (format #f (G_ "Try upgrading both @code{~a} and @code{~a},
+or remove one of them from the profile.")
+                              name1 name2)))))
+
 (define (call-with-error-handling thunk)
   "Call THUNK within a user-friendly error handler."
   (define (port-filename* port)
@@ -570,6 +590,7 @@ interpreted."
                              (manifest-entry-output* conflict)
                              (manifest-entry-item conflict))
                (report-parent-entries conflict)
+               (display-collision-resolution-hint c)
                (exit 1)))
             ((nar-error? c)
              (let ((file (nar-error-file c))
@@ -600,7 +621,8 @@ directories:~{ ~a~}~%")
              (format (current-error-port)
                      (G_ "~a: error: ~a~%")
                      (location->string (error-location c))
-                     (gettext (condition-message c) %gettext-domain)))
+                     (gettext (condition-message c) %gettext-domain))
+             (exit 1))
             ((message-condition? c)
              ;; Normally '&message' error conditions have an i18n'd message.
              (leave (G_ "~a~%")

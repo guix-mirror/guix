@@ -360,7 +360,8 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
   ;; Alist of default option values.
   `((verbosity . 0)
     (graft? . #t)
-    (substitutes? . #t)))
+    (substitutes? . #t)
+    (build-hook? . #t)))
 
 (define (show-help)
   (display (G_ "Usage: guix package [OPTION]...

@@ -1134,10 +1134,24 @@ Python 3.3+.")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
+    (properties `((python2-variant . ,(delay python2-pyicu))))
     (license license:x11)))
 
 (define-public python2-pyicu
-  (package-with-python2 python-pyicu))
+  (let ((base (package-with-python2
+                (strip-python2-variant python-pyicu))))
+    (package
+      (inherit base)
+      (arguments
+       `(,@(package-arguments base)
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'delete-failing-test
+             (λ _
+               ;; XXX: This fails due to Unicode issues unique to Python 2,
+               ;; it seems: <https://github.com/ovalhub/pyicu/issues/61>.
+               (delete-file "test/test_Script.py")
+               #t))))))))
 
 (define-public python2-dogtail
   ;; Python 2 only, as it leads to "TabError: inconsistent use of tabs and
@@ -9954,7 +9968,7 @@ Features:
 (define-public python-dulwich
   (package
     (name "python-dulwich")
-    (version "0.16.3")
+    (version "0.18.6")
     (source
       (origin
         (method url-fetch)
@@ -9962,7 +9976,8 @@ Features:
                             "dulwich-" version ".tar.gz")
                    (pypi-uri "dulwich" version)))
         (sha256
-          (base32 "0fl47vzfgc3w3rmhn8naii905cjqcp0vc68iyvymxp7567hh6als"))))
+          (base32
+           "1aa1xfrxkc3j9s4xi0llhf5gndyi9ryprcxsqfa5fcb8ph34981q"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -11593,6 +11608,22 @@ functionality like full case-folding for case-insensitive matches in Unicode.")
 related APIs.  The binding is created using the standard @code{ctypes}
 library.")
    (license license:bsd-3)))
+
+(define-public python2-pyopengl-accelerate
+  (package
+    (inherit python2-pyopengl)
+    (name "python2-pyopengl-accelerate")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyOpenGL-accelerate" version))
+       (sha256
+        (base32
+         "0464c1ifzk0k92lyndikmvzjgnx1y25r7bkkc8pnxm4kp1q4czwj"))))
+    (synopsis "Acceleration code for PyOpenGL")
+    (description
+     "This is the Cython-coded accelerator module for PyOpenGL.")))
 
 (define-public python-rencode
   (package

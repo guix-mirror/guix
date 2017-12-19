@@ -450,7 +450,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.2.18")
+    (version "5.2.19")
     (source
      (origin
        (method url-fetch)
@@ -458,7 +458,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "1mcpgj18n1xppvlhjqzpj05yr5z48bym9bd88k10fwgkmwk0spf3"))))
+         "0b16w48c17k35lhd95qcl2kjq2rahk8znkg3w467rf3kzmsa4fbc"))))
     (build-system gnu-build-system)
     ;; TODO: unbundle mkpasswd binary + its po files.
     (arguments
@@ -471,13 +471,14 @@ and up to 1 Mbit/s downstream.")
          (add-before 'build 'setenv
            (lambda _
              (setenv "HAVE_ICONV" "1")
-             (setenv "HAVE_LIBIDN" "1")
              #t)))))
     (inputs
+     ;; TODO: Switch to libidn2 when >= 2.0.3 is ungrafted in master.
      `(("libidn" ,libidn)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (synopsis "Improved whois client")
     (description "This whois client is intelligent and can
 automatically select the appropriate whois server for most queries.
@@ -710,7 +711,7 @@ allows for heavy scripting.")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.13")
+  (version "1.14")
   (source
     (origin
       (method url-fetch)
@@ -720,7 +721,7 @@ allows for heavy scripting.")
              ".tar.gz"))
       (sha256
         (base32
-          "0dlca65l45mqs7l58fg838bj3as5kmnbs1zy8vg9cbsz6rindivy"))))
+          "1z4r092qv0ify033dld5jayk8gs0bc7pl130dvb8ab7b9rcqmhw3"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))

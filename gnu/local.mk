@@ -490,6 +490,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/vm.scm				\
 						\
   %D%/build/activation.scm			\
+  %D%/build/bootloader.scm			\
   %D%/build/cross-toolchain.scm			\
   %D%/build/file-systems.scm			\
   %D%/build/install.scm				\
@@ -557,6 +558,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-ld-new-dtags.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
+  %D%/packages/patches/borg-fix-archive-corruption-bug.patch	\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
@@ -607,6 +609,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/dtc-format-modifier.patch		\
   %D%/packages/patches/dtc-32-bits-check.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
+  %D%/packages/patches/eigen-arm-neon-fixes.patch		\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-disable-failing-tests.patch	\
   %D%/packages/patches/einstein-build.patch			\
@@ -701,15 +704,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-11403+CVE-2017-14103.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-12935.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-12936.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-12937.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-13775.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-13776+CVE-2017-13777.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-14042.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-14165.patch	\
-  %D%/packages/patches/graphicsmagick-CVE-2017-14649.patch	\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groff-source-date-epoch.patch		\
@@ -760,6 +754,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
   %D%/packages/patches/java-powermock-fix-java-files.patch		\
+  %D%/packages/patches/jemalloc-arm-address-bits.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
@@ -826,6 +821,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libusb-for-axoloti.patch			\
+  %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
@@ -942,6 +938,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/perl-module-pluggable-search.patch	\
   %D%/packages/patches/perl-reproducible-build-date.patch	\
   %D%/packages/patches/perl-www-curl-remove-symbol.patch	\
+  %D%/packages/patches/picprog-non-intel-support.patch		\
   %D%/packages/patches/pidgin-add-search-path.patch		\
   %D%/packages/patches/pinball-const-fix.patch			\
   %D%/packages/patches/pinball-cstddef.patch			\
@@ -994,6 +991,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
+  %D%/packages/patches/python-scikit-learn-fix-test-non-determinism.patch	\
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
   %D%/packages/patches/python-pandas-skip-failing-tests.patch	\
@@ -1008,9 +1006,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/qemu-CVE-2017-15038.patch		\
-  %D%/packages/patches/qemu-CVE-2017-15118.patch		\
-  %D%/packages/patches/qemu-CVE-2017-15119.patch		\
-  %D%/packages/patches/qemu-CVE-2017-15268.patch		\
   %D%/packages/patches/qemu-CVE-2017-15289.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
@@ -1028,6 +1023,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
   %D%/packages/patches/rsem-makefile.patch			\
+  %D%/packages/patches/rsync-CVE-2017-16548.patch			\
+  %D%/packages/patches/rsync-CVE-2017-17433.patch			\
+  %D%/packages/patches/rsync-CVE-2017-17433-fix-tests.patch			\
+  %D%/packages/patches/rsync-CVE-2017-17434-pt1.patch			\
+  %D%/packages/patches/rsync-CVE-2017-17434-pt2.patch			\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-concurrent-test-arm.patch		\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
@@ -1053,7 +1053,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/synfigstudio-fix-ui-with-gtk3.patch 	\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
-  %D%/packages/patches/t1lib-CVE-2011-1552+CVE-2011-1553+CVE-2011-1554.patch		\
+  %D%/packages/patches/t1lib-CVE-2011-1552+.patch		\
   %D%/packages/patches/tar-CVE-2016-6321.patch			\
   %D%/packages/patches/tar-skip-unreliable-tests.patch		\
   %D%/packages/patches/tclxml-3.2-install.patch			\

@@ -76,7 +76,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.20.11")
+    (version "0.20.12")
     (source (origin
               (method url-fetch)
               (uri
@@ -85,7 +85,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "1g0lwm8p98q2hxa9vd6jx61s7d3r665s2bmz6ipkv9ijmyfps8p9"))))
+                "02gpfkki61c24hphaas9pb29wpvd0pbmwdqrpn8wi1gv103aqng1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

@@ -28,14 +28,14 @@
 (define-public miniupnpc
   (package
     (name "miniupnpc")
-    (version "2.0.20171102")
+    (version "2.0.20171212")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://miniupnp.tuxfamily.org/files/"
                            name "-" version ".tar.gz"))
        (sha256
-        (base32 "1m1552kkdxkyyb5gyykp0j8falxwf1424cm55y50q9l10l11g18l"))))
+        (base32 "0za7pr6hrr3ajkifirhhxfn3hlhl06f622g8hnj5h8y18sp3bwff"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -59,7 +59,8 @@
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "external-ip.sh"
                (("upnpc")
-                (string-append (assoc-ref outputs "out") "/bin/upnpc"))))))))
+                (string-append (assoc-ref outputs "out") "/bin/upnpc")))
+             #t)))))
     (home-page "http://miniupnp.free.fr/")
     (synopsis "UPnP protocol client library")
     (description

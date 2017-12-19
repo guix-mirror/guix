@@ -90,6 +90,7 @@
             derivation-path->output-paths
             derivation
             raw-derivation
+            invalidate-derivation-caches!
 
             map-derivation
 
@@ -136,7 +137,7 @@
   (env-vars derivation-builder-environment-vars)  ; list of name/value pairs
   (file-name derivation-file-name))               ; the .drv file name
 
-(define-record-type <derivation-output>
+(define-immutable-record-type <derivation-output>
   (make-derivation-output path hash-algo hash recursive?)
   derivation-output?
   (path       derivation-output-path)             ; store path
@@ -144,7 +145,7 @@
   (hash       derivation-output-hash)             ; bytevector | #f
   (recursive? derivation-output-recursive?))      ; Boolean
 
-(define-record-type <derivation-input>
+(define-immutable-record-type <derivation-input>
   (make-derivation-input path sub-derivations)
   derivation-input?
   (path            derivation-input-path)             ; store path
@@ -632,8 +633,26 @@ derivation at FILE."
     (bytevector->base16-string
      (derivation-hash (read-derivation-from-file file)))))
 
+(define (derivation/masked-inputs drv)
+  "Assuming DRV is a regular derivation (not fixed-output), replace the file
+name of each input with that input's hash."
+  (match drv
+    (($ <derivation> outputs inputs sources
+                     system builder args env-vars)
+     (let ((inputs (map (match-lambda
+                          (($ <derivation-input> path sub-drvs)
+                           (let ((hash (derivation-path->base16-hash path)))
+                             (make-derivation-input hash sub-drvs))))
+                        inputs)))
+       (make-derivation outputs
+                        (sort (coalesce-duplicate-inputs inputs)
+                              derivation-input<?)
+                        sources
+                        system builder args env-vars
+                        #f)))))
+
 (define derivation-hash            ; `hashDerivationModulo' in derivations.cc
-  (mlambda (drv)
+  (lambda (drv)
     "Return the hash of DRV, modulo its fixed-output inputs, as a bytevector."
     (match drv
       (($ <derivation> ((_ . ($ <derivation-output> path
@@ -647,27 +666,12 @@ derivation at FILE."
                         (symbol->string hash-algo)
                         ":" (bytevector->base16-string hash)
                         ":" path))))
-      (($ <derivation> outputs inputs sources
-                       system builder args env-vars)
-       ;; A regular derivation: replace the path of each input with that
-       ;; input's hash; return the hash of serialization of the resulting
-       ;; derivation.
-       (let* ((inputs (map (match-lambda
-                             (($ <derivation-input> path sub-drvs)
-                              (let ((hash (derivation-path->base16-hash path)))
-                                (make-derivation-input hash sub-drvs))))
-                           inputs))
-              (drv    (make-derivation outputs
-                                       (sort (coalesce-duplicate-inputs inputs)
-                                             derivation-input<?)
-                                       sources
-                                       system builder args env-vars
-                                       #f)))
+      (_
 
-         ;; XXX: At this point this remains faster than `port-sha256', because
-         ;; the SHA256 port's `write' method gets called for every single
-         ;; character.
-         (sha256 (derivation->bytevector drv)))))))
+       ;; XXX: At this point this remains faster than `port-sha256', because
+       ;; the SHA256 port's `write' method gets called for every single
+       ;; character.
+       (sha256 (derivation->bytevector (derivation/masked-inputs drv)))))))
 
 (define* (derivation store name builder args
                      #:key
@@ -837,6 +841,15 @@ output should not be used."
            (drv* (set-field drv (derivation-file-name) file)))
       (hash-set! %derivation-cache file drv*)
       drv*)))
+
+(define (invalidate-derivation-caches!)
+  "Invalidate internal derivation caches.  This is mostly useful for
+long-running processes that know what they're doing.  Use with care!"
+  ;; Typically this is meant to be used by Cuirass and Hydra, which can clear
+  ;; caches when they start evaluating packages for another architecture.
+  (invalidate-memoization! derivation->bytevector)
+  (invalidate-memoization! derivation-path->base16-hash)
+  (hash-clear! %derivation-cache))
 
 (define* (map-derivation store drv mapping
                          #:key (system (%current-system)))

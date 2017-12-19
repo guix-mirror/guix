@@ -1,0 +1,54 @@
+;; This is an operating system configuration template
+;; for a "bare bones" setup on BeagleBone Black board.
+
+(use-modules (gnu) (gnu bootloader u-boot))
+(use-service-modules networking)
+(use-package-modules bootloaders screen ssh)
+
+(operating-system
+  (host-name "komputilo")
+  (timezone "Europe/Berlin")
+  (locale "en_US.utf8")
+
+  ;; Assuming /dev/mmcblk1 is the eMMC, and "my-root" is
+  ;; the label of the target root file system.
+  (bootloader (bootloader-configuration
+               (bootloader u-boot-beaglebone-black-bootloader)
+               (target "/dev/mmcblk1")))
+  (file-systems (cons (file-system
+                        (device "my-root")
+                        (title 'label)
+                        (mount-point "/")
+                        (type "ext4"))
+                      %base-file-systems))
+
+  ;; This is where user accounts are specified.  The "root"
+  ;; account is implicit, and is initially created with the
+  ;; empty password.
+  (users (cons (user-account
+                (name "alice")
+                (comment "Bob's sister")
+                (group "users")
+
+                ;; Adding the account to the "wheel" group
+                ;; makes it a sudoer.  Adding it to "audio"
+                ;; and "video" allows the user to play sound
+                ;; and access the webcam.
+                (supplementary-groups '("wheel"
+                                        "audio" "video"))
+                (home-directory "/home/alice"))
+               %base-user-accounts))
+
+  ;; Globally-installed packages.
+  (packages (cons* screen openssh %base-packages))
+
+  (services (cons* (dhcp-client-service)
+                   ;; mingetty does not work on serial lines.
+                   ;; Use agetty with board-specific serial parameters.
+                   (agetty-service
+                    (agetty-configuration
+                     (extra-options '("-L"))
+                     (baud-rate "115200")
+                     (term "vt100")
+                     (tty "ttyO0")))
+                   %base-services)))

@@ -8,8 +8,8 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
@@ -44,6 +44,8 @@
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
@@ -68,6 +70,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages suckless)
   #:use-module (guix download)
   #:use-module (guix git-download))
@@ -334,6 +337,118 @@ subscribe to events.")
 and locate windows on all your workspaces, using an interactive dmenu
 prompt.")
       (license (license:non-copyleft "http://www.wtfpl.net/txt/copying/")))))
+
+(define-public i3lock-color
+  (package
+    (name "i3lock-color")
+    (version "2.10.1c")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/PandorasFox/i3lock-color/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "119xvdm4r6irqk0mar80hx6s8ydw26y35h7712rd7nbg7pb7i053"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;No tests included.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vfi")))))))
+    (inputs
+     `(("xcb-util-image" ,xcb-util-image)
+       ("xcb-util" ,xcb-util)
+       ("libxcb" ,libxcb)
+       ("linux-pam" ,linux-pam)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libev" ,libev)
+       ("cairo" ,cairo)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+        ("automake" ,automake)))
+    (home-page "https://github.com/PandorasFox/i3lock-color")
+    (synopsis "Screen locker with color configuration support")
+    (description
+     "i3lock-color is a simpler X11 screen locker derived from i3lock.
+Features include:
+
+@enumerate
+@item forking process, the locked screen is preserved when you suspend to RAM;
+@item specify background color or image to be displayed in the lock screen;
+@item many additional color options.
+@end enumerate")
+    (license license:bsd-3)))
+
+(define-public i3lock-fancy
+  (package
+    (name "i3lock-fancy")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/meskarune/i3lock-fancy/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "020m7mnfq5cvir7p9v3hkb7cvb4cai33wppxl2zdwscwwjnchc5y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;No tests included
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (icons (string-append out "/share/i3lock-fancy/icons/"))
+                    (wmctrl (string-append (assoc-ref inputs "wmctrl")
+                                           "/bin/wmctrl"))
+                    (mconvert (string-append (assoc-ref inputs "imagemagick")
+                                             "/bin/convert"))
+                    (mimport (string-append (assoc-ref inputs "imagemagick")
+                                            "/bin/import"))
+                    (awk (string-append (assoc-ref inputs "gawk")
+                                        "/bin/gawk")))
+
+               (substitute* "lock"
+                 (("$(which wmctrl)") wmctrl)
+                 (("convert") mconvert)
+                 (("shot=\\(import") (string-append "shot=\(" mimport))
+                 (("awk -F") (string-append awk " -F"))
+                 ((" awk") awk)
+                 (("\\$scriptpath/icons/") icons))
+               #t)))
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (icons (string-append out "/share/i3lock-fancy/icons/")))
+
+               (install-file "lock" bin)
+               (rename-file (string-append bin "/lock")
+                            (string-append bin "/i3lock-fancy"))
+               (copy-recursively "icons" icons)
+               #t))))))
+    (native-inputs
+     `(("imagemagick" ,imagemagick)
+       ("wmctrl" ,wmctrl)
+       ("gawk" ,gawk)))
+    (home-page "https://github.com/meskarune/i3lock-fancy")
+    (synopsis "Screen locker with screenshot function")
+    (description
+     "@code{i3lock-fancy} is a Bash script that takes a screenshot of
+the desktop, blurs the background and adds a lock icon and text.
+It requires @code{i3lock-color} or @code{i3lock} and can optionally
+be passed any screenshot util like @code{scrot}.
+This screen locker can be used with any window manager or
+desktop environment.")
+    (license license:expat)))
 
 (define-public xmonad
   (package

@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -231,7 +232,7 @@ access to exported repositories under @file{/srv/git}."
                "fastcgi_param HTTP_HOST $server_name;"
                "fastcgi_pass 127.0.0.1:9000;")))))
     (try-files (list "$uri" "@cgit"))
-    (https-port #f)
+    (listen '("80"))
     (ssl-certificate #f)
     (ssl-certificate-key #f))))
 

@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1117,12 +1118,15 @@ inspired by the SCSH regular expression system.")
                 (compile-file
                  (lambda (in-file out-file)
                    (system* guild "compile" "-o" out-file in-file))))
-           ;; Make installation directories.
-           (mkdir-p module-dir)
-           (mkdir-p doc)
-
            ;; Switch directory for compiling and installing
            (chdir source)
+
+           ;; Install the documentation.
+           (install-file "README.md" doc)
+           (copy-recursively "examples" (string-append doc "/examples"))
+
+           ;; Make installation directories.
+           (mkdir-p module-dir)
 
            ;; copy the source
            (copy-file "gdbm.scm" gdbm.scm-dest)
@@ -1136,7 +1140,7 @@ inspired by the SCSH regular expression system.")
            ;; compile to the destination
            (compile-file gdbm.scm-dest gdbm.go-dest)))))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (propagated-inputs
      `(("gdbm" ,gdbm)))
     (home-page "https://github.com/ijp/guile-gdbm")
@@ -1146,8 +1150,11 @@ inspired by the SCSH regular expression system.")
 Guile's foreign function interface.")
     (license license:gpl3+)))
 
+(define-public guile2.0-gdbm-ffi
+  (package-for-guile-2.0 guile-gdbm-ffi))
+
 (define-public guile2.2-gdbm-ffi
-  (package-for-guile-2.2 guile-gdbm-ffi))
+  (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
 
 (define-public guile-sqlite3
   (let ((commit "607721fe1174a299e45d457acacf94eefb964071"))

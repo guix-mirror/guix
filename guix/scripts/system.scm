@@ -674,9 +674,11 @@ any, are available.  Raise an error if they're not."
 and TARGET arguments."
   (with-monad %store-monad
     (gexp->file "bootloader-installer"
-                (with-imported-modules '((guix build utils))
+                (with-imported-modules '((gnu build bootloader)
+                                         (guix build utils))
                   #~(begin
-                      (use-modules (guix build utils)
+                      (use-modules (gnu build bootloader)
+                                   (guix build utils)
                                    (ice-9 binary-ports))
                       (#$installer #$bootloader #$device #$target))))))
 
@@ -856,6 +858,9 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
   -d, --derivation       return the derivation of the given system"))
   (display (G_ "
+  -e, --expression=EXPR  consider the operating-system EXPR evaluates to
+                         instead of reading FILE, when applicable"))
+  (display (G_ "
       --on-error=STRATEGY
                          apply STRATEGY when an error occurs while reading FILE"))
   (display (G_ "
@@ -893,6 +898,9 @@ Some ACTIONS support additional ARGS.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix system")))
+         (option '(#\e "expression") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'expression arg result)))
          (option '(#\d "derivation") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'derivations-only? #t result)))
@@ -942,8 +950,8 @@ Some ACTIONS support additional ARGS.\n"))
   ;; Alist of default option values.
   `((system . ,(%current-system))
     (substitutes? . #t)
-    (graft? . #t)
     (build-hook? . #t)
+    (graft? . #t)
     (verbosity . 0)
     (file-system-type . "ext4")
     (image-size . guess)
@@ -962,11 +970,19 @@ resulting from command-line parsing."
   (let* ((file        (match args
                         (() #f)
                         ((x . _) x)))
+         (expr        (assoc-ref opts 'expression))
          (system      (assoc-ref opts 'system))
-         (os          (if file
-                          (load* file %user-module
-                                 #:on-error (assoc-ref opts 'on-error))
-                          (leave (G_ "no configuration file specified~%"))))
+         (os          (cond
+                       ((and expr file)
+                        (leave
+                         (G_ "both file and expression cannot be specified~%")))
+                       (expr
+                        (read/eval expr))
+                       (file
+                        (load* file %user-module
+                                    #:on-error (assoc-ref opts 'on-error)))
+                       (else
+                        (leave (G_ "no configuration specified~%")))))
 
          (dry?        (assoc-ref opts 'dry-run?))
          (bootloader? (assoc-ref opts 'install-bootloader?))
@@ -1077,7 +1093,8 @@ argument list and OPTS is the option alist."
     ;; Extract the plain arguments from OPTS.
     (let* ((args   (reverse (filter-map (match-pair 'argument) opts)))
            (count  (length args))
-           (action (assoc-ref opts 'action)))
+           (action (assoc-ref opts 'action))
+           (expr   (assoc-ref opts 'expression)))
       (define (fail)
         (leave (G_ "wrong number of arguments for action '~a'~%")
                action))
@@ -1091,7 +1108,8 @@ argument list and OPTS is the option alist."
 
       (case action
         ((build container vm vm-image disk-image reconfigure)
-         (unless (= count 1)
+         (unless (or (= count 1)
+                     (and expr (= count 0)))
            (fail)))
         ((init)
          (unless (= count 2)

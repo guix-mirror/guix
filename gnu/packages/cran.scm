@@ -1642,3 +1642,134 @@ originally inspired by the book \"Visualizing Categorical Data\" by Michael
 Friendly and is now the main support package for a new book, \"Discrete Data
 Analysis with R\" by Michael Friendly and David Meyer (2015).")
     (license license:gpl2)))
+
+(define-public r-ica
+  (package
+    (name "r-ica")
+    (version "1.0-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ica" version))
+       (sha256
+        (base32
+         "1bkl4a72l0k6gm82l3jxnib898z20cw17zg81jj39l9dn65rlmcq"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/ica/")
+    (synopsis "Independent component analysis")
+    (description "This package provides tools for @dfn{Independent Component
+Analysis} (ICA) using various algorithms: FastICA,
+Information-Maximization (Infomax), and @dfn{Joint Approximate Diagonalization
+of Eigenmatrices} (JADE).")
+    (license license:gpl2+)))
+
+(define-public r-dtw
+  (package
+    (name "r-dtw")
+    (version "1.18-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dtw" version))
+       (sha256
+        (base32
+         "1b91vahba09cqlb8b1ry4dlv4rbldb4s2p6w52gmyw31vxdv5nnr"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-proxy" ,r-proxy)))
+    (home-page "http://dtw.r-forge.r-project.org/")
+    (synopsis "Dynamic Time Warping Algorithms")
+    (description "This package provides a comprehensive implementation of
+@dfn{dynamic time warping} (DTW) algorithms in R.  DTW computes the
+optimal (least cumulative distance) alignment between points of two time
+series.  Common DTW variants covered include local (slope) and global (window)
+constraints, subsequence matches, arbitrary distance definitions,
+normalizations, minimum variance matching, and so on.")
+    (license license:gpl2+)))
+
+(define-public r-sdmtools
+  (package
+    (name "r-sdmtools")
+    (version "1.1-221")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SDMTools" version))
+       (sha256
+        (base32
+         "1kacrpamshv7wz83yn45sfbw4m9c44xrrngzcklnwx8gcxx2knm6"))))
+    (properties `((upstream-name . "SDMTools")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-r-utils" ,r-r-utils)))
+    (home-page "http://www.rforge.net/SDMTools/")
+    (synopsis "Species distribution modelling tools")
+    (description "This packages provides a set of tools for post processing
+the outcomes of species distribution modeling exercises.  It includes novel
+methods for comparing models and tracking changes in distributions through
+time.  It further includes methods for visualizing outcomes, selecting
+thresholds, calculating measures of accuracy and landscape fragmentation
+statistics, etc.")
+    (license license:gpl3+)))
+
+(define-public r-scatterplot3d
+  (package
+    (name "r-scatterplot3d")
+    (version "0.3-40")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "scatterplot3d" version))
+       (sha256
+        (base32
+         "0ababcj87kx7860mica9y2ydlhskxmgj9n46crx036cila512jc2"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/scatterplot3d/")
+    (synopsis "3D scatter plot")
+    (description "This package provides an implementation of scatter plots for
+plotting.  a three dimensional point cloud.")
+    (license license:gpl2)))
+
+(define-public r-ggridges
+  (package
+    (name "r-ggridges")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggridges" version))
+       (sha256
+        (base32
+         "0kfa3icqdalqdg1klxjrhfl7if35d3wnsiyl86bprw5dyqyh3lh3"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-plyr" ,r-plyr)
+       ("r-scales" ,r-scales)))
+    (home-page "https://github.com/clauswilke/ggridges")
+    (synopsis "Ridgeline plots in ggplot2")
+    (description
+     "Ridgeline plots provide a convenient way of visualizing changes in
+distributions over time or space.  This package enables the creation of such
+plots in @code{ggplot2}.")
+    (license license:gpl2)))
+
+(define-public r-ggjoy
+  (package
+    (name "r-ggjoy")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggjoy" version))
+       (sha256
+        (base32
+         "1s24zn7gmk52bvjjhanxby7rxbnc2yfl0nx5nv7x7z0zja8gg7nb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-ggridges" ,r-ggridges)))
+    (home-page "https://github.com/clauswilke/ggjoy")
+    (synopsis "Joyplots in ggplot2")
+    (description "Joyplots provide a convenient way of visualizing changes in
+distributions over time or space.  This package enables the creation of such
+plots in @code{ggplot2}.")
+    (license license:gpl2)))

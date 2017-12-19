@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,14 +30,14 @@
 (define-public polyml
   (package
     (name "polyml")
-    (version "5.7")
+    (version "5.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/polyml/polyml/archive/v"
                            version ".tar.gz"))
        (sha256
-        (base32 "0ycjl746h0m22w9nsdssjl47d56jih12gpkdg3yw65gakj70sd0r"))
+        (base32 "0a3hcv80p9j0fny6726kvgmzjzdmak9xw7f7rv8sxv96nhjdi3fi"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs

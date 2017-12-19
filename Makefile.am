@@ -34,7 +34,8 @@ nodist_noinst_SCRIPTS =				\
 
 # Modules that are not compiled but are installed nonetheless, such as
 # build-side modules with unusual dependencies.
-MODULES_NOT_COMPILED =
+MODULES_NOT_COMPILED =				\
+  guix/man-db.scm
 
 include gnu/local.mk
 
@@ -102,6 +103,7 @@ MODULES =					\
   guix/http-client.scm				\
   guix/gnupg.scm				\
   guix/elf.scm					\
+  guix/profiling.scm				\
   guix/store.scm				\
   guix/cvs-download.scm				\
   guix/svn-download.scm				\
@@ -252,6 +254,7 @@ AUX_FILES =						\
 # Templates, examples.
 EXAMPLES =					\
   gnu/system/examples/bare-bones.tmpl		\
+  gnu/system/examples/beaglebone-black.tmpl	\
   gnu/system/examples/desktop.tmpl		\
   gnu/system/examples/lightweight-desktop.tmpl	\
   gnu/system/examples/vm-image.tmpl

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -175,6 +175,10 @@ made available under the /xchg CIFS share."
                                 #:memory-size #$memory-size
                                 #:make-disk-image? #$make-disk-image?
                                 #:single-file-output? #$single-file-output?
+                                ;; FIXME: ‘target-arm32?’ may not operate on
+                                ;; the right system/target values.  Rewrite
+                                ;; using ‘let-system’ when available.
+                                #:target-arm32? #$(target-arm32?)
                                 #:disk-image-format #$disk-image-format
                                 #:disk-image-size size
                                 #:references-graphs graphs)))))
@@ -273,10 +277,12 @@ register INPUTS in the store database of the image so that Guix can be used in
 the image."
   (expression->derivation-in-linux-vm
    name
-   (with-imported-modules (source-module-closure '((gnu build vm)
+   (with-imported-modules (source-module-closure '((gnu build bootloader)
+                                                   (gnu build vm)
                                                    (guix build utils)))
      #~(begin
-         (use-modules (gnu build vm)
+         (use-modules (gnu build bootloader)
+                      (gnu build vm)
                       (guix build utils)
                       (srfi srfi-26)
                       (ice-9 binary-ports))
@@ -548,7 +554,7 @@ of the GNU system as described by OS."
        (device (file-system->mount-tag source))
        (type "9p")
        (flags (if writable? '() '(read-only)))
-       (options (string-append "trans=virtio"))
+       (options "trans=virtio,cache=loose")
        (check? #f)
        (create-mount-point? #t)))))
 
@@ -660,6 +666,8 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
 
      "-no-reboot"
      "-net nic,model=virtio"
+     "-object" "rng-random,filename=/dev/urandom,id=guixsd-vm-rng"
+     "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
 
      #$@(map virtfs-option shared-fs)
      "-vga std"

@@ -247,6 +247,7 @@ required structures.")
   (package
    (name "openssl")
    (version "1.0.2m")
+   (replacement openssl-1.0.2n)
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -389,6 +390,25 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
+
+;; Fixes CVE-2017-3735, CVE-2017-3736, CVE-2017-3737, and CVE-2017-3738.
+;; See <https://www.openssl.org/news/cl102.txt>.
+(define-public openssl-1.0.2n
+  (package
+    (inherit openssl)
+    (version "1.0.2n")
+    (source (origin
+              (inherit (package-source openssl))
+              (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/old/"
+                                        (string-trim-right version char-set:letter)
+                                        "/openssl-" version ".tar.gz")))
+              (sha256
+               (base32
+                "1zm82pyq5a9jm10q6iv7d3dih3xwjds4x30fqph3k317byvsn2rp"))))))
 
 (define-public openssl-next
   (package
@@ -681,7 +701,7 @@ OpenSSL libraries).")
 (define-public perl-crypt-openssl-bignum
  (package
   (name "perl-crypt-openssl-bignum")
-  (version "0.08")
+  (version "0.09")
   (source
     (origin
       (method url-fetch)
@@ -691,7 +711,7 @@ OpenSSL libraries).")
              ".tar.gz"))
       (sha256
         (base32
-          "0gamn4dff1bz77nswacy1dlpn9fkwahzw7yvvik4nbwwy2s63hc8"))))
+          "1p22znbajq91lbk2k3yg12ig7hy5b4vy8igxwqkmbm4nhgxp4ki3"))))
   (build-system perl-build-system)
   (inputs `(("openssl" ,openssl)))
   (arguments perl-crypt-arguments)

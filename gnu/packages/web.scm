@@ -145,6 +145,36 @@ and its related documentation.")
     (license l:asl2.0)
     (home-page "https://httpd.apache.org/")))
 
+(define-public mod-wsgi
+  (package
+    (name "mod-wsgi")
+    (version "4.5.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/GrahamDumpleton/mod_wsgi/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0n1yhmrfp8mjbsngmyjl937c6rc0069p6wdi1lknrbn1q42hzw6q"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;; TODO: Can't figure out if there are tests
+       #:make-flags (list
+                     (string-append "DESTDIR="
+                                    (assoc-ref %outputs "out"))
+                     "LIBEXECDIR=/modules")))
+    (inputs
+     `(("httpd" ,httpd)
+       ("python" ,python-wrapper)))
+    (synopsis "Apache HTTPD module for Python WSGI applications")
+    (description
+     "The mod_wsgi module for the Apache HTTPD Server adds support for running
+applications that support the Python @acronym{WSGI, Web Server Gateway
+Interface} specification.")
+    (license l:asl2.0)
+    (home-page "https://modwsgi.readthedocs.io/")))
+
 (define-public nginx
   (package
     (name "nginx")

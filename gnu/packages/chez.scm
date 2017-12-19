@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,14 +62,14 @@
 (define-public chez-scheme
   (package
     (name "chez-scheme")
-    (version "9.4")
+    (version "9.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/cisco/ChezScheme/archive/"
                            "v" version ".tar.gz"))
        (sha256
-        (base32 "0lprmpsjg2plc6ykgkz482zyvhkzv6gd0vnar71ph21h6zknyklz"))
+        (base32 "135991hspq0grf26pvl2lkwhp92yz204h6rgiwyym0x6v0xzknd1"))
        (file-name (string-append "chez-scheme-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs
@@ -104,7 +105,15 @@
          (add-after 'unpack 'patch-processor-detection
            (lambda _ (substitute* "configure"
                        (("uname -a") "uname -m"))
-             #t))
+                   #t))
+         (add-after 'unpack 'patch-broken-documentation
+           (lambda _
+             ;; Work around an oversight in the 9.5 release tarball that causes
+             ;; building the documentation to fail. This should be fixed in the
+             ;; next one; see <https://github.com/cisco/ChezScheme/issues/209>.
+             (substitute* "csug/copyright.stex"
+               (("\\\\INSERTREVISIONMONTHSPACEYEAR" )
+                "October 2017"))))     ; tarball release date
          ;; Adapt the custom 'configure' script.
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)

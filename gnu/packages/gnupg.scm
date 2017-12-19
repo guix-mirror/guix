@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -736,7 +736,10 @@ including tools for signing keys, keyring analysis, and party preparation.
     (description
      "Pinentry provides a console that allows users to enter a passphrase when
 @code{gpg} is run and needs it.")
-    (license license:gpl2+)))
+    (license license:gpl2+)
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/pinentry")
+                  (upstream-name . "pinentry")))))
 
 (define-public pinentry-gtk2
   (package

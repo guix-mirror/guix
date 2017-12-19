@@ -7890,6 +7890,28 @@ six-element array, and return the corresponding time(2) value in seconds since
 the system epoch.")
     (license (package-license perl))))
 
+(define-public perl-time-piece
+  (package
+    (name "perl-time-piece")
+    (version "1.3203")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/E/ES/ESAYM/Time-Piece-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0hbg99v8xqy3nx6nrjpwh1w6xwqpfflz0djkbdd72kvf8zvglwb9"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Time-Piece/")
+    (synopsis "Object-Oriented time objects")
+    (description
+     "This module replaces the standard @code{localtime} and @code{gmtime}
+functions with implementations that return objects.  It does so in a
+backwards-compatible manner, so that using these functions as documented will
+still work as expected.")
+    (license perl-license)))
+
 (define-public perl-timedate
   (package
     (name "perl-timedate")

@@ -421,7 +421,7 @@ computational cluster.")
 (define-public bedtools
   (package
     (name "bedtools")
-    (version "2.27.0")
+    (version "2.27.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/arq5x/bedtools2/releases/"
@@ -429,7 +429,7 @@ computational cluster.")
                                   "bedtools-" version ".tar.gz"))
               (sha256
                (base32
-                "0q6fsiz4s52yzxs6h2vxwq95fsi3n64wkpinkk05mfh4dmhybw74"))))
+                "1ndg5yknrxl4djx8ddzgk12rrbiidfpmkkg5z3f95jzryfxarhn8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -466,7 +466,19 @@ BED, GFF/GTF, VCF.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "05vrnr8yp7swfagshzpgqmzk1blnwnq8pq5pckzi1m26w98d63vf"))))))
+                "05vrnr8yp7swfagshzpgqmzk1blnwnq8pq5pckzi1m26w98d63vf"))))
+    (arguments
+     '(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "bin" ".*")))
+             #t)))))))
 
 (define-public ribotaper
   (package
@@ -2061,7 +2073,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.13")
+    (version "0.9.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2070,7 +2082,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1pi5ncqwmynqpmmp3j3lhnqrjhj34sr6wpmsgrpkv3wyxx22fv86"))))
+                "07li3chjdna0wjyh680j3bhwiqh1fbfq9dy9jxxs82mc0rw0m1yy"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -2905,7 +2917,7 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
        (method url-fetch)
        (uri (string-append
              "http://eddylab.org/software/hmmer"
-             (version-prefix version 1) "/"
+             (version-major version) "/"
              version "/hmmer-" version ".tar.gz"))
        (sha256
         (base32
@@ -9385,83 +9397,89 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
     (license license:artistic2.0)))
 
 (define-public r-seurat
-  ;; Source releases are only made for new x.0 versions.  All newer versions
-  ;; are only released as pre-built binaries.  At the time of this writing the
-  ;; latest binary release is 1.4.0.12, which is equivalent to this commit.
-  (let ((commit "fccb77d1452c35ee47e47ebf8e87bddb59f3b08d")
-        (revision "1"))
-    (package
-      (name "r-seurat")
-      (version (string-append "1.4.0.12-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/satijalab/seurat")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "101wq3aqrdmbfi3lqmq4iivk9iwbf10d4z216ss25hf7n9091cyl"))
-                ;; Delete pre-built jar.
-                (snippet
-                 '(begin (delete-file "inst/java/ModularityOptimizer.jar")
-                         #t))))
-      (build-system r-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'build-jar
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((classesdir "tmp-classes"))
-                 (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
-                 (mkdir classesdir)
-                 (and (zero? (apply system* `("javac" "-d" ,classesdir
-                                              ,@(find-files "java" "\\.java$"))))
-                      (zero? (system* "jar"
-                                      "-cf" "inst/java/ModularityOptimizer.jar"
-                                      "-C" classesdir ".")))))))))
-      (native-inputs
-       `(("jdk" ,icedtea "jdk")))
-      (propagated-inputs
-       `(("r-ape" ,r-ape)
-         ("r-caret" ,r-caret)
-         ("r-cowplot" ,r-cowplot)
-         ("r-dplyr" ,r-dplyr)
-         ("r-fastica" ,r-fastica)
-         ("r-fnn" ,r-fnn)
-         ("r-fpc" ,r-fpc)
-         ("r-gdata" ,r-gdata)
-         ("r-ggplot2" ,r-ggplot2)
-         ("r-gplots" ,r-gplots)
-         ("r-gridextra" ,r-gridextra)
-         ("r-igraph" ,r-igraph)
-         ("r-irlba" ,r-irlba)
-         ("r-lars" ,r-lars)
-         ("r-mixtools" ,r-mixtools)
-         ("r-pbapply" ,r-pbapply)
-         ("r-plyr" ,r-plyr)
-         ("r-ranger" ,r-ranger)
-         ("r-rcolorbrewer" ,r-rcolorbrewer)
-         ("r-rcpp" ,r-rcpp)
-         ("r-rcppeigen" ,r-rcppeigen)
-         ("r-rcppprogress" ,r-rcppprogress)
-         ("r-reshape2" ,r-reshape2)
-         ("r-rocr" ,r-rocr)
-         ("r-rtsne" ,r-rtsne)
-         ("r-stringr" ,r-stringr)
-         ("r-tclust" ,r-tclust)
-         ("r-tsne" ,r-tsne)
-         ("r-vgam" ,r-vgam)))
-      (home-page "http://www.satijalab.org/seurat")
-      (synopsis "Seurat is an R toolkit for single cell genomics")
-      (description
-       "This package is an R package designed for QC, analysis, and
+  (package
+    (name "r-seurat")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "Seurat" version))
+              (sha256
+               (base32
+                "1hqaq6bciikrsyw157w8fn4jw885air7xbkxrmism93rp4qx483x"))
+              ;; Delete pre-built jar.
+              (snippet
+               '(begin (delete-file "inst/java/ModularityOptimizer.jar")
+                       #t))))
+    (properties `((upstream-name . "Seurat")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'build-jar
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((classesdir "tmp-classes"))
+               (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
+               (mkdir classesdir)
+               (with-output-to-file "manifest"
+                 (lambda _
+                   (display "Manifest-Version: 1.0
+Main-Class: ModularityOptimizer\n")))
+               (and (zero? (apply system* `("javac" "-d" ,classesdir
+                                            ,@(find-files "java" "\\.java$"))))
+                    (zero? (system* "jar"
+                                    "-cmf" "manifest"
+                                    "inst/java/ModularityOptimizer.jar"
+                                    "-C" classesdir  ".")))))))))
+    (native-inputs
+     `(("jdk" ,icedtea "jdk")))
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-caret" ,r-caret)
+       ("r-cowplot" ,r-cowplot)
+       ("r-diffusionmap" ,r-diffusionmap)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dtw" ,r-dtw)
+       ("r-fnn" ,r-fnn)
+       ("r-fpc" ,r-fpc)
+       ("r-gdata" ,r-gdata)
+       ("r-ggjoy" ,r-ggjoy)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gplots" ,r-gplots)
+       ("r-gridextra" ,r-gridextra)
+       ("r-hmisc" ,r-hmisc)
+       ("r-ica" ,r-ica)
+       ("r-igraph" ,r-igraph)
+       ("r-irlba" ,r-irlba)
+       ("r-lars" ,r-lars)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-mixtools" ,r-mixtools)
+       ("r-nmf" ,r-nmf)
+       ("r-pbapply" ,r-pbapply)
+       ("r-plotly" ,r-plotly)
+       ("r-ranger" ,r-ranger)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppprogress" ,r-rcppprogress)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rocr" ,r-rocr)
+       ("r-rtsne" ,r-rtsne)
+       ("r-sdmtools" ,r-sdmtools)
+       ("r-stringr" ,r-stringr)
+       ("r-tclust" ,r-tclust)
+       ("r-tidyr" ,r-tidyr)
+       ("r-tsne" ,r-tsne)
+       ("r-vgam" ,r-vgam)))
+    (home-page "http://www.satijalab.org/seurat")
+    (synopsis "Seurat is an R toolkit for single cell genomics")
+    (description
+     "This package is an R package designed for QC, analysis, and
 exploration of single cell RNA-seq data.  It easily enables widely-used
 analytical techniques, including the identification of highly variable genes,
 dimensionality reduction; PCA, ICA, t-SNE, standard unsupervised clustering
 algorithms; density clustering, hierarchical clustering, k-means, and the
 discovery of differentially expressed genes and markers.")
-      (license license:gpl3))))
+    (license license:gpl3)))
 
 (define-public r-aroma-light
   (package

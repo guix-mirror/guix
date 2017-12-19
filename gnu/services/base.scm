@@ -1727,6 +1727,17 @@ item of @var{packages}."
                     (setenv "EUDEV_RULES_DIRECTORY"
                             #$(file-append rules "/lib/udev/rules.d"))
 
+                    (let* ((kernel-release
+                            (utsname:release (uname)))
+                           (linux-module-directory
+                            (getenv "LINUX_MODULE_DIRECTORY"))
+                           (directory
+                            (string-append linux-module-directory "/"
+                                           kernel-release))
+                           (old-umask (umask #o022)))
+                      (make-static-device-nodes directory)
+                      (umask old-umask))
+
                     (let ((pid (primitive-fork)))
                       (case pid
                         ((0)
@@ -1750,7 +1761,10 @@ item of @var{packages}."
          ;; When halting the system, 'udev' is actually killed by
          ;; 'user-processes', i.e., before its own 'stop' method was called.
          ;; Thus, make sure it is not respawned.
-         (respawn? #f)))))))
+         (respawn? #f)
+         ;; We need additional modules.
+         (modules `((gnu build linux-boot)
+                    ,@%default-modules))))))))
 
 (define udev-service-type
   (service-type (name 'udev)

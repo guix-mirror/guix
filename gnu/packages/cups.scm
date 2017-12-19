@@ -370,14 +370,19 @@ device-specific programs to convert and print many types of files.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.17.10")
+    (version "3.17.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "0v27hg856b5z2rilczcbfgz8ksxn0n810g1glac3mxkj8qbl8wqg"))))
+                "0xda7x7xxjvzn1l0adlvbwcw21crq1r3r79bkf94q3m5i6abx49g"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Fix type mismatch.
+               '(substitute* "prnt/hpcups/genPCLm.cpp"
+                  (("boolean") "bool")))))
     (build-system gnu-build-system)
     (home-page "http://hplipopensource.com/")
     (synopsis "HP Printer Drivers")
@@ -437,11 +442,11 @@ device-specific programs to convert and print many types of files.")
                           (("/usr/include/libusb-1.0")
                            (string-append (assoc-ref inputs "libusb")
                                           "/include/libusb-1.0"))
-                          (("^\tinstall-dist_hplip_stateDATA")
-                           ;; Remove dependencies on
-                           ;; 'install-dist_hplip_stateDATA' so we don't bail
-                           ;; out while trying to create /var/lib/hplip.
-                           "\t")
+                          (("hplip_statedir =.*$")
+                           ;; Don't bail out while trying to create
+                           ;; /var/lib/hplip.  We can safely change its value
+                           ;; here because it's hard-coded in the code anyway.
+                           "hplip_statedir = $(prefix)\n")
                           (("hplip_confdir = /etc/hp")
                            ;; This is only used for installing the default config.
                            (string-append "hplip_confdir = " out
@@ -470,12 +475,14 @@ device-specific programs to convert and print many types of files.")
               ("cups-minimal" ,cups-minimal)
               ("libusb" ,libusb)
               ("sane-backends" ,sane-backends-minimal)
+              ("zlib" ,zlib)
               ("dbus" ,dbus)
               ("python-wrapper" ,python-wrapper)
               ("python" ,python)
               ;; TODO: Make hp-setup find python-dbus.
               ("python-dbus" ,python-dbus)))
-    (native-inputs `(("pkg-config" ,pkg-config)))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("perl" ,perl)))))
 
 (define-public foomatic-filters
   (package

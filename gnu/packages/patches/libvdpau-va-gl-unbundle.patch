@@ -1,0 +1,35 @@
+From 18e3ff648356cf06a39372aa4a4bbf2732d9d0f4 Mon Sep 17 00:00:00 2001
+From: Efraim Flashner <efraim@flashner.co.il>
+Date: Tue, 12 Dec 2017 21:36:44 +0200
+Subject: [PATCH] don't use bundled libvdpau headers
+
+---
+ CMakeLists.txt | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0484179..e950707 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -9,16 +9,17 @@ find_package(PkgConfig REQUIRED)
+ find_package(X11 REQUIRED)
+ pkg_check_modules(LIBVA      libva-x11  REQUIRED)
+ pkg_check_modules(LIBGL      gl         REQUIRED)
++pkg_check_modules(LIBVDPAU   vdpau      REQUIRED)
+ 
+ set(DRIVER_NAME "vdpau_va_gl" CACHE STRING "driver name")
+ set(LIB_SUFFIX "" CACHE STRING "library path suffix (if needed)")
+ set(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/vdpau" CACHE PATH "library installation path")
+ 
+ include_directories (
+-    3rdparty
+     ${X11_INCLUDE_DIRS}
+     ${LIBVA_INCLUDE_DIRS}
+     ${LIBGL_INCLUDE_DIRS}
++    ${LIBVDPAU_INCLUDE_DIRS}
+     ${GENERATED_INCLUDE_DIRS}
+     ${CMAKE_BINARY_DIR}
+ )
+-- 
+2.15.1
+

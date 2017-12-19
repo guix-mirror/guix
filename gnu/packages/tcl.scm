@@ -86,7 +86,7 @@
 (define-public expect
   (package
     (name "expect")
-    (version "5.45")
+    (version "5.45.3")
     (source
      (origin
       (method url-fetch)
@@ -94,7 +94,7 @@
                           version "/expect" version ".tar.gz"))
       (sha256
        (base32
-        "0h60bifxj876afz4im35rmnbnxjx4lbdqp2ja3k30fwa8a8cm3dj"))))
+        "1s9ba7m0bmg6brn4x030y2xg7hqara1fr4hlrrllm54mf5xp2865"))))
     (build-system gnu-build-system)
     (inputs
      `(;; TODO: Add these optional dependencies.

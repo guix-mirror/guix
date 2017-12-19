@@ -197,9 +197,12 @@ repack them.  This is necessary to ensure that archives are reproducible."
            ;; first.
            (with-directory-excursion dir
              (let* ((files (find-files "." ".*" #:directories? #t))
+                    ;; To ensure that the reference scanner can detect all
+                    ;; store references in the jars we disable compression
+                    ;; with the "-0" option.
                     (command (if (file-exists? manifest)
-                                 `("zip" "-X" ,jar ,manifest ,@files)
-                                 `("zip" "-X" ,jar ,@files))))
+                                 `("zip" "-0" "-X" ,jar ,manifest ,@files)
+                                 `("zip" "-0" "-X" ,jar ,@files))))
                (unless (zero? (apply system* command))
                  (error "'zip' failed"))))
            (utime jar 0 0)

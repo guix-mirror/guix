@@ -39,6 +39,9 @@ do
     if guix gc $option whatever; then false; else true; fi
 done
 
+# This should fail.
+if guix gc --verify=foo; then false; else true; fi
+
 # Check the references of a .drv.
 drv="`guix build guile-bootstrap -d`"
 out="`guix build guile-bootstrap`"

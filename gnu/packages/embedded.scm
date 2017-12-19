@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -932,3 +933,40 @@ int fast_build_block_buffer"))
 MPSSE (Multi-Protocol Synchronous Serial Engine) adapter by FTDI that can do
 SPI, I2C, JTAG.")
     (license license:gpl2+)))
+
+(define-public picprog
+  (package
+    (name "picprog")
+    (version "1.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.iki.fi/hyvatti/pic/picprog-"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1r04hg1n3v2jf915qr05la3q9cxy7a5jnh9cc98j04lh6c9p4x85"))
+              (patches (search-patches "picprog-non-intel-support.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests exist.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr/local") (assoc-ref outputs "out"))
+               ((" -o 0 -g 0 ") " ")
+               (("testport") ""))
+             #t))
+         (add-before 'install 'mkdir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir-p (string-append out "/man/man1"))
+               #t)))
+         (delete 'configure))))
+    (synopsis "Programs Microchip's PIC microcontrollers")
+    (description "This program programs Microchip's PIC microcontrollers.")
+    (home-page "http://hyvatti.iki.fi/~jaakko/pic/picprog.html")
+    (license license:gpl3+)))

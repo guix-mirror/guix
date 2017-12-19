@@ -21,17 +21,34 @@
   #:use-module (gnu bootloader extlinux)
   #:use-module (gnu bootloader)
   #:use-module (gnu system)
+  #:use-module (gnu build bootloader)
   #:use-module (gnu packages bootloaders)
   #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix utils)
-  #:export (u-boot-bootloader))
+  #:export (u-boot-bootloader
+            u-boot-beaglebone-black-bootloader))
 
 (define install-u-boot
   #~(lambda (bootloader device mount-point)
       (if bootloader
         (error "Failed to install U-Boot"))))
+
+(define install-beaglebone-black-u-boot
+  ;; http://wiki.beyondlogic.org/index.php?title=BeagleBoneBlack_Upgrading_uBoot
+  ;; This first stage bootloader called MLO (U-Boot SPL) is expected at
+  ;; 0x20000 by BBB ROM code. The second stage bootloader will be loaded by
+  ;; the MLO and is expected at 0x60000.  Write both first stage ("MLO") and
+  ;; second stage ("u-boot.img") images, read in BOOTLOADER directory, to the
+  ;; specified DEVICE.
+  #~(lambda (bootloader device mount-point)
+      (let ((mlo (string-append bootloader "/libexec/MLO"))
+            (u-boot (string-append bootloader "/libexec/u-boot.img")))
+        (write-file-on-device mlo (* 256 512)
+                              device (* 256 512))
+        (write-file-on-device u-boot (* 1024 512)
+                              device (* 768 512)))))
 
 
 
@@ -45,3 +62,9 @@
    (name 'u-boot)
    (package #f)
    (installer install-u-boot)))
+
+(define u-boot-beaglebone-black-bootloader
+  (bootloader
+   (inherit u-boot-bootloader)
+   (package u-boot-beagle-bone-black)
+   (installer install-beaglebone-black-u-boot)))

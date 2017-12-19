@@ -164,7 +164,7 @@ script.")
 (define-public graphicsmagick
   (package
     (name "graphicsmagick")
-    (version "1.3.26")
+    (version "1.3.27")
     (source (origin
               (method url-fetch)
               (uri
@@ -176,17 +176,7 @@ script.")
                                  "/GraphicsMagick-" version ".tar.xz")))
               (sha256
                (base32
-                "122zgs96dqrys62mnh8x5yvfff6km4d3yrnvaxzg3mg5sprib87v"))
-              (patches
-               (search-patches "graphicsmagick-CVE-2017-11403+CVE-2017-14103.patch"
-                               "graphicsmagick-CVE-2017-12935.patch"
-                               "graphicsmagick-CVE-2017-12936.patch"
-                               "graphicsmagick-CVE-2017-12937.patch"
-                               "graphicsmagick-CVE-2017-13775.patch"
-                               "graphicsmagick-CVE-2017-13776+CVE-2017-13777.patch"
-                               "graphicsmagick-CVE-2017-14042.patch"
-                               "graphicsmagick-CVE-2017-14165.patch"
-                               "graphicsmagick-CVE-2017-14649.patch"))))
+                "0rq35p3rml10cxz2z4s7xcfsilhhk19mmy094g3ivz0fg797hcnh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

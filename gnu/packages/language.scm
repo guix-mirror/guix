@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +52,7 @@ manipulating such numbers.")
 (define-public perl-lingua-en-inflect
   (package
     (name "perl-lingua-en-inflect")
-    (version "1.901")
+    (version "1.903")
     (source
      (origin
        (method url-fetch)
@@ -59,7 +60,7 @@ manipulating such numbers.")
                            "Lingua-EN-Inflect-" version ".tar.gz"))
        (sha256
         (base32
-         "0mcwlgf6hkh4zm3s1x899f25xj4hyzrc2vssiwfxysqja36yf5ys"))))
+         "0j8d1f1wvmgc11d71pc8xp8fv5a1nb2yfw1dgd19xhscn1klpvzw"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Lingua-EN-Inflect")
@@ -284,15 +285,15 @@ parameters, returning the stemmed Italian word.")
 (define-public perl-lingua-stem-ru
   (package
     (name "perl-lingua-stem-ru")
-    (version "0.01")
+    (version "0.04")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AL/ALGDR/"
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                            "Lingua-Stem-Ru-" version ".tar.gz"))
        (sha256
         (base32
-         "0pqgg442fkf12ayh9fgmpa8q9x0iqx6s96181r52yn7s7pcs61h6"))))
+         "0a2jmdz7jn32qj5hyiw5kbv8fvlpmws8i00a6xcbkzb48yvwww0j"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Lingua-Stem-Ru")
     (synopsis "Porter's stemming algorithm for Russian")

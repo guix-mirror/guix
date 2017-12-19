@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,16 +35,15 @@
 (define-public fvwm
   (package
     (name "fvwm")
-    (version "2.6.6")
+    (version "2.6.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/fvwmorg/fvwm/releases/download/"
-                    "version-" (string-join (string-split version #\.) "_")
-                    "/" name "-" version ".tar.gz"))
+                    version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0b6w0vk6cpqaz0ws3vl4by0mycv33r42a0m806j2h8avy9ghipn5"))))
+                "0wzghjgy65pkn31rgl14fngizw7nbkzbxsfa670xmrndpmd4sr81"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)

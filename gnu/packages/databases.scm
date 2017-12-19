@@ -1280,7 +1280,7 @@ module, and nothing else.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
                            "SQL-Abstract-" version ".tar.gz"))
        (sha256
         (base32

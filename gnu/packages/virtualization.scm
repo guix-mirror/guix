@@ -36,6 +36,7 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -62,7 +63,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (gpl2 gpl2+ lgpl2.1 lgpl2.1+))
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+ gpl3+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
@@ -80,19 +81,16 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.10.1")
+    (version "2.10.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
              (patches (search-patches "qemu-CVE-2017-15038.patch"
-                                      "qemu-CVE-2017-15118.patch"
-                                      "qemu-CVE-2017-15119.patch"
-                                      "qemu-CVE-2017-15268.patch"
                                       "qemu-CVE-2017-15289.patch"))
              (sha256
               (base32
-               "1ahwl7r18iw2ds0q3c51nlivqsan9hcgnc8bbf9pv366iy81mm8x"))))
+               "17w21spvaxaidi2am5lpsln8yjpyp2zi3s3gc6nsxj5arlgamzgw"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -687,3 +685,70 @@ mainly implemented in user space.")
     ;; The project is licensed under GPLv2; files in the lib/ directory are
     ;; LGPLv2.1.
     (license (list gpl2 lgpl2.1))))
+
+(define-public qmpbackup
+  (package
+    (name "qmpbackup")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/abbbi/qmpbackup/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "10k9mnb1yrg4gw1rvz4kw4dxc4aajl8gnjrpm3axqkg63qmxj3qn"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://github.com/abbbi/qmpbackup")
+    (synopsis "Backup and restore QEMU machines")
+    (description "qmpbackup is designed to create and restore full and
+incremental backups of running QEMU virtual machines via QMP, the QEMU
+Machine Protocol.")
+    (license gpl3+)))
+
+(define-public lookingglass
+  (package
+   (name "lookingglass")
+   (version "a5")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/gnif/LookingGlass/archive/"
+                         version ".tar.gz"))
+     (file-name (string-append name "-" version))
+     (sha256
+      (base32
+       "0lrb821914fp27xaq0spwhbblssz55phiygvdlvcrkifa138v8pf"))))
+   (build-system gnu-build-system)
+   (inputs `(("fontconfig" ,fontconfig)
+             ("glu" ,glu)
+             ("mesa" ,mesa)
+             ("openssl" ,openssl)
+             ("sdl2" ,sdl2)
+             ("sdl2-ttf" ,sdl2-ttf)
+             ("spice-protocol" ,spice-protocol)))
+   (native-inputs `(("pkg-config", pkg-config)))
+   (arguments
+    `(#:tests? #f ;; No tests are available.
+      #:phases (modify-phases %standard-phases
+                 (replace 'configure
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (chdir "client")
+                     #t))
+                 (replace 'install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (install-file "bin/looking-glass-client"
+                                   (string-append (assoc-ref outputs "out")
+                                                  "/bin"))
+                     #t)))))
+   (home-page "https://looking-glass.hostfission.com")
+   (synopsis "KVM Frame Relay (KVMFR) implementation")
+   (description "Looking Glass allows the use of a KVM (Kernel-based Virtual
+Machine) configured for VGA PCI Pass-through without an attached physical
+monitor, keyboard or mouse.  It displays the VM's rendered contents on your main
+monitor/GPU.")
+   ;; This package requires SSE instructions.
+   (supported-systems '("i686-linux" "x86_64-linux"))
+   (license gpl2+)))

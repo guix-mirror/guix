@@ -178,6 +178,7 @@ COMMAND or an interactive shell in that environment.\n"))
 (define %default-options
   `((system . ,(%current-system))
     (substitutes? . #t)
+    (build-hook? . #t)
     (graft? . #t)
     (verbosity . 0)))
 

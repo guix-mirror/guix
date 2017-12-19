@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -577,27 +578,34 @@ cosine/ sine transforms or DCT/DST).")
 (define-public eigen
   (package
     (name "eigen")
-    (version "3.2.9")
+    (version "3.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1zs5b210mq7nyanky07li6456rrd0xv2nxf6sl2lhkzdq5p067jd"))
+                "19m4406jvqnwh7kpcvx1lfx2vdc5zwia5q9ayv89bimg1gmln9fx"))
               (file-name (string-append name "-" version ".tar.bz2"))
+	      (patches (search-patches "eigen-arm-neon-fixes.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; There are 3 test failures in the "unsupported" directory,
                ;; but maintainers say it's a known issue and it's unsupported
                ;; anyway, so just skip them.
-               '(substitute* "CMakeLists.txt"
-                  (("add_subdirectory\\(unsupported\\)")
-                   "# Do not build the tests for unsupported features.\n")
-                  ;; Work around
-                  ;; <http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1114>.
-                  (("\"include/eigen3\"")
-                   "\"${CMAKE_INSTALL_PREFIX}/include/eigen3\"")))))
+               '(begin
+		  (substitute* "CMakeLists.txt"
+                    (("add_subdirectory\\(unsupported\\)")
+                     "# Do not build the tests for unsupported features.\n")
+                    ;; Work around
+                    ;; <http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1114>.
+                    (("\"include/eigen3\"")
+                     "\"${CMAKE_INSTALL_PREFIX}/include/eigen3\""))
+		  (substitute* "test/bdcsvd.cpp"
+                    ;; See
+                    ;; https://bitbucket.org/eigen/eigen/commits/ea8c22ce6920e982d15245ee41d0531a46a28e5d
+                    ((".*svd_preallocate[^\n]*" &)
+                     (string-append "//" & " // Not supported by BDCSVD")))))))
     (build-system cmake-build-system)
     (arguments
      '(;; Turn off debugging symbols to save space.
@@ -608,6 +616,7 @@ cosine/ sine transforms or DCT/DST).")
                     (lambda _
                       (let* ((cores  (parallel-job-count))
                              (dash-j (format #f "-j~a" cores)))
+			(setenv "EIGEN_SEED" "1") ;for reproducibility
                         ;; First build the tests, in parallel.  See
                         ;; <http://eigen.tuxfamily.org/index.php?title=Tests>.
                         (and (zero? (system* "make" "buildtests" dash-j))

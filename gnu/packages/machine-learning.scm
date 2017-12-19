@@ -621,7 +621,9 @@ computing environments.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "18n8775kyfwbvcjjjzda9c5sqy4737c0hrmj6qj1ps2jmlqzair9"))))
+         "18n8775kyfwbvcjjjzda9c5sqy4737c0hrmj6qj1ps2jmlqzair9"))
+       (patches (search-patches
+                "python-scikit-learn-fix-test-non-determinism.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

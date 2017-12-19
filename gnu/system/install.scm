@@ -22,6 +22,7 @@
 
 (define-module (gnu system install)
   #:use-module (gnu)
+  #:use-module (gnu bootloader u-boot)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -42,7 +43,8 @@
   #:use-module (gnu packages nvi)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
-  #:export (installation-os))
+  #:export (installation-os
+            beaglebone-black-installation-os))
 
 ;;; Commentary:
 ;;;
@@ -154,9 +156,11 @@ the user's target storage device rather than on the RAM disk."
                                                 (string-append #$output "/"
                                                                target)))
                                    '(#$(file "bare-bones.tmpl")
+                                     #$(file "beaglebone-black.tmpl")
                                      #$(file "desktop.tmpl")
                                      #$(file "lightweight-desktop.tmpl"))
                                    '("bare-bones.scm"
+                                     "beaglebone-black.scm"
                                      "desktop.scm"
                                      "lightweight-desktop.scm"))
                          #t))))
@@ -372,7 +376,30 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                      nvi                          ;:wq!
                      %base-packages))))
 
-;; Return it here so 'guix system' can consume it directly.
+(define beaglebone-black-installation-os
+  (operating-system
+    (inherit installation-os)
+    (bootloader (bootloader-configuration
+                 (bootloader u-boot-beaglebone-black-bootloader)
+                 (target "/dev/sda")))
+    (kernel linux-libre)
+    (initrd (lambda (fs . rest)
+              (apply base-initrd fs
+                     ;; This module is required to mount the sd card.
+                     #:extra-modules (list "omap_hsmmc")
+                     rest)))
+    (services (append
+               ;; mingetty does not work on serial lines.
+               ;; Use agetty with board-specific serial parameters.
+               (list (agetty-service
+                      (agetty-configuration
+                       (extra-options '("-L"))
+                       (baud-rate "115200")
+                       (term "vt100")
+                       (tty "ttyO0"))))
+               (operating-system-user-services installation-os)))))
+
+;; Return the default os here so 'guix system' can consume it directly.
 installation-os
 
 ;;; install.scm ends here

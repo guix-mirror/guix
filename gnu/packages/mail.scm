@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -240,14 +240,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.9.1")
+    (version "1.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "1c8vv4anl555a03pbnwf8wnf0d8pcnd4p35y3q8f5ikkcflq76vl"))
+               "15kqxpx8bykqbyw4q33hkz0j2f65v6cl21sl5li2vw5vaaim5qd2"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -279,7 +279,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20171027")
+    (version "20171208")
     (source
      (origin
        (method url-fetch)
@@ -287,7 +287,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "10z523cy3s6syh0mwpsncl87wrvyzsk99y7nzicwvx6y3hmdw01d"))))
+         "0dfp7m794ws6vg029zx7wrrjrscrnmi8cvbzqzgxafl97bbjipwz"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -693,17 +693,23 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.25.2")
+    (version "0.25.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ai6vbs9wzwfz7jcphgqsqpcbq137l34xhmcli4h5c8n82fvmdp4"))))
+                "1fyx20rjpwbf2j1v5fpa5s0rjnwhcgvijzh2qyinp8rlbh1qxmab"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "V=1") ; Verbose test output.
+     `(#:modules ((guix build gnu-build-system)
+                  ((guix build emacs-build-system) #:prefix emacs:)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-build-system)
+                           (guix build emacs-utils))
+       #:make-flags (list "V=1") ; Verbose test output.
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-notmuch-lib.el
                     (lambda _
@@ -715,16 +721,25 @@ invoking @command{notifymuch} from the post-new hook.")
                       (setenv "CC" "gcc")
                       (setenv "CONFIG_SHELL" (which "sh"))
 
-                      (let ((out (assoc-ref outputs "out")))
-                        (zero? (system* "./configure"
-                                        (string-append "--prefix=" out))))))
+                      (let* ((out (assoc-ref outputs "out"))
+                             (elisp
+                              (string-append out "/share/emacs/site-lisp/guix.d/"
+                                             ,name "-" ,version)))
+                        (zero?
+                         (system*
+                          "./configure"
+                          (string-append "--prefix=" out)
+                          (string-append "--emacslispdir=" elisp)
+                          (string-append "--emacsetcdir=" elisp))))))
                   (add-before 'check 'prepare-test-environment
                     (lambda _
                       (setenv "TEST_CC" "gcc")
                       ;; Patch various inline shell invocations.
                       (substitute* (find-files "test" "\\.sh$")
                         (("/bin/sh") (which "sh")))
-                      #t)))))
+                      #t))
+                  (add-after 'install 'make-autoloads
+                    (assoc-ref emacs:%standard-phases 'make-autoloads)))))
     (native-inputs
      `(("bash-completion" ,bash-completion)
        ("emacs" ,emacs-no-x) ; Minimal lacks libxml, needed for some tests.
@@ -928,7 +943,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.15.1")
+    (version "3.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -936,7 +951,7 @@ compresses it.")
                     ".tar.xz"))
               (sha256
                (base32
-                "0hlm2jipyr4z6izlrpvabpz4ivh49i13avnm848kr1nv68pkq2cd"))))
+                "1awpr3s7n8bq8p3w10a4j6lg5bizjxyiqp4rqzc2j8cn7lyi64n2"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -2181,7 +2196,7 @@ to access GNU Mailman.")
 (define-public blists
   (package
     (name "blists")
-    (version "1.0")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
@@ -2189,7 +2204,7 @@ to access GNU Mailman.")
                            "blists/blists-" version ".tar.gz"))
        (sha256
         (base32
-         "1gp51kmb8yv8d693wcpdslmwlbw5w2kgz4kxhrcaf7y89w8wy4qd"))))
+         "1xll5wn7py3bbncbwrj172f56nz75c9gwfsa80rwd96ss9gfmp3c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests
@@ -2381,3 +2396,28 @@ the GNOME desktop.  It supports both POP3 and IMAP servers as well as the
 mbox, maildir and mh local mailbox formats.  Balsa also supports SMTP and/or
 the use of a local MTA such as Sendmail.")
     (license gpl3+)))
+
+(define-public afew
+  (package
+    (name "afew")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "afew" version))
+       (sha256
+        (base32
+         "121w7bd53xyibllxxbfykjj76n81kn1vgjqd22izyh67y8qyyk5r"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-chardet" ,python-chardet)
+       ("python-notmuch" ,python-notmuch)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/afewmail/afew")
+    (synopsis "Initial tagging script for notmuch mail")
+    (description "afew is an initial tagging script for notmuch mail.  It
+provides automatic tagging each time new mail is registered with notmuch.  It
+can add tags based on email headers or Maildir folders and can handle spam and
+killed threads.")
+    (license isc)))

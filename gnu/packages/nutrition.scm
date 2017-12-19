@@ -52,11 +52,18 @@
     (inputs
      `(("pygtk"             ,python2-pygtk)
        ("sqlalchemy"        ,python2-sqlalchemy)
+       ("python-lxml"       ,python2-lxml)
        ("python-pillow"     ,python2-pillow)
        ("elib.intl"         ,python2-elib.intl)))
     (arguments
      `(#:python ,python-2               ;exception and print syntax
-       #:tests? #f))                    ;tests look bitrotted
+       #:tests? #f                      ;tests look bitrotted
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (system* "python" "setup.py" "install" "--prefix"
+                             (assoc-ref %outputs "out"))))))))
     (home-page "http://thinkle.github.io/gourmet/")
     (synopsis "Recipe organizer")
     (description

@@ -26,6 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
@@ -38,6 +39,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -49,6 +51,7 @@
   #:use-module (gnu packages samba)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
@@ -73,10 +76,12 @@
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
        ("cups" ,cups)
+       ("eudev" ,eudev)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glu" ,glu)
        ("gnutls" ,gnutls)
+       ("gst-plugins-base" ,gst-plugins-base)
        ("lcms" ,lcms)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
@@ -85,6 +90,7 @@
        ("libldap" ,openldap)
        ("libnetapi" ,samba)
        ("libsane" ,sane-backends)
+       ("libpcap" ,libpcap)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg)
        ("libtiff" ,libtiff)
@@ -102,6 +108,7 @@
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
        ("unixodbc" ,unixodbc)
+       ("v4l-utils" ,v4l-utils)
        ("zlib" ,zlib)))
     (arguments
      `(;; Force a 32-bit build (under the assumption that this package is
@@ -151,10 +158,13 @@ integrate Windows applications into your desktop.")
     (inherit wine)
     (name "wine64")
     (arguments
-     `(#:configure-flags
+     `(#:make-flags
+       (list "SHELL=bash"
+             (string-append "libdir=" %output "/lib"))
+       #:configure-flags
        (list "--enable-win64"
-             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib64"))
-       ,@(strip-keyword-arguments '(#:configure-flags #:system)
+             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       ,@(strip-keyword-arguments '(#:configure-flags #:make-flags #:system)
                                   (package-arguments wine))))
     (synopsis "Implementation of the Windows API (64-bit version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))

@@ -43,7 +43,8 @@ Copyright @copyright{} 2017 Maxim Cournoyer@*
 Copyright @copyright{} 2017 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
-Copyright @copyright{} 2017 Arun Isaac
+Copyright @copyright{} 2017 Arun Isaac@*
+Copyright @copyright{} 2017 nee
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1065,6 +1066,15 @@ regular expression like this:
 # guix offload test machines.scm '\.gnu\.org$'
 @end example
 
+@cindex offload status
+To display the current load of all build hosts, run this command on the
+main node:
+
+@example
+# guix offload status
+@end example
+
+
 @node Invoking guix-daemon
 @section Invoking @command{guix-daemon}
 
@@ -1550,7 +1560,7 @@ features.
 This chapter describes the main features of Guix, as well as the
 package management tools it provides.  Along with the command-line
 interface described below (@pxref{Invoking guix package, @code{guix
-package}}), you may also use Emacs Interface (@pxref{Top,,,
+package}}), you may also use the Emacs-Guix interface (@pxref{Top,,,
 emacs-guix, The Emacs-Guix Reference Manual}), after installing
 @code{emacs-guix} package (run @kbd{M-x guix-help} command to start
 with it):
@@ -8690,6 +8700,9 @@ also specified.  @xref{Mapped Devices} and @ref{File Systems}.
 @itemx @code{groups} (default: @var{%base-groups})
 List of user accounts and groups.  @xref{User Accounts}.
 
+If the @code{users} list lacks a user account with UID@tie{}0, a
+``root'' account with UID@tie{}0 is automatically added.
+
 @item @code{skeletons} (default: @code{(default-skeletons)})
 A list target file name/file-like object tuples (@pxref{G-Expressions,
 file-like objects}).  These are the skeleton files that will be added to
@@ -14813,10 +14826,7 @@ A simple example configuration is given below.
            (server-blocks
              (list (nginx-server-configuration
                      (server-name '("www.example.com"))
-                     (root "/srv/http/www.example.com")
-                     (https-port #f)
-                     (ssl-certificate #f)
-                     (ssl-certificate-key #f))))))
+                     (root "/srv/http/www.example.com"))))))
 @end example
 
 In addition to adding server blocks to the service configuration
@@ -14826,9 +14836,6 @@ blocks, as in this example:
 @example
 (simple-service 'my-extra-server nginx-service-type
                 (list (nginx-server-configuration
-                        (https-port #f)
-                        (ssl-certificate #f)
-                        (ssl-certificate-key #f)
                         (root "/srv/http/extra-website")
                         (try-files (list "$uri" "$uri/index.html")))))
 @end example
@@ -14873,10 +14880,7 @@ HTTPS.
            (server-blocks
              (list (nginx-server-configuration
                      (server-name '("www.example.com"))
-                     (root "/srv/http/www.example.com")
-                     (https-port #f)
-                     (ssl-certificate #f)
-                     (ssl-certificate-key #f))))))
+                     (root "/srv/http/www.example.com"))))))
 @end example
 
 @item @code{upstream-blocks} (default: @code{'()})
@@ -14899,9 +14903,6 @@ requests with two servers.
       (list (nginx-server-configuration
               (server-name '("www.example.com"))
               (root "/srv/http/www.example.com")
-              (https-port #f)
-              (ssl-certificate #f)
-              (ssl-certificate-key #f)
               (locations
                 (list
                   (nginx-location-configuration
@@ -14925,6 +14926,13 @@ This can be useful if you have an existing configuration file, or it's
 not possible to do what is required through the other parts of the
 nginx-configuration record.
 
+@item @code{server-names-hash-bucket-size} (default: @code{#f})
+Bucket size for the server names hash tables, defaults to @code{#f} to
+use the size of the processors cache line.
+
+@item @code{server-names-hash-bucket-max-size} (default: @code{#f})
+Maximum bucket size for the server names hash tables.
+
 @end table
 @end deffn
 
@@ -14933,17 +14941,15 @@ Data type representing the configuration of an nginx server block.
 This type has the following parameters:
 
 @table @asis
-@item @code{http-port} (default: @code{80})
-Nginx will listen for HTTP connection on this port.  Set it at @code{#f} if
-nginx should not listen for HTTP (non secure) connection for this
-@dfn{server block}.
+@item @code{listen} (default: @code{'("80" "443 ssl")})
+Each @code{listen} directive sets the address and port for IP, or the
+path for a UNIX-domain socket on which the server will accept requests.
+Both address and port, or only address or only port can be specified.
+An address may also be a hostname, for example:
 
-@item @code{https-port} (default: @code{443})
-Nginx will listen for HTTPS connection on this port.  Set it at @code{#f} if
-nginx should not listen for HTTPS (secure) connection for this @dfn{server block}.
-
-Note that nginx can listen for HTTP and HTTPS connections in the same
-@dfn{server block}.
+@example
+'("127.0.0.1:8000" "127.0.0.1" "8000" "*:8000" "localhost:8000")
+@end example
 
 @item @code{server-name} (default: @code{(list 'default)})
 A list of server names this server represents. @code{'default} represents the
@@ -14965,16 +14971,19 @@ Nginx will send the list of files in the directory.
 A list of files whose existence is checked in the specified order.
 @code{nginx} will use the first file it finds to process the request.
 
-@item @code{ssl-certificate} (default: @code{"/etc/nginx/cert.pem"})
+@item @code{ssl-certificate} (default: @code{#f})
 Where to find the certificate for secure connections.  Set it to @code{#f} if
 you don't have a certificate or you don't want to use HTTPS.
 
-@item @code{ssl-certificate-key} (default: @code{"/etc/nginx/key.pem"})
+@item @code{ssl-certificate-key} (default: @code{#f})
 Where to find the private key for secure connections.  Set it to @code{#f} if
 you don't have a key or you don't want to use HTTPS.
 
 @item @code{server-tokens?} (default: @code{#f})
 Whether the server should add its configuration to response.
+
+@item @code{raw-content} (default: @code{'()})
+A list of raw lines added to the server block.
 
 @end table
 @end deftp
@@ -15085,6 +15094,145 @@ local user.  To enable this capability on the back-end., run
 capability also has to be configured on the front-end as well.
 @end table
 @end deftp
+
+@cindex php-fpm
+PHP-FPM (FastCGI Process Manager) is an alternative PHP FastCGI implementation
+with some additional features useful for sites of any size.
+
+These features include:
+@itemize @bullet
+@item Adaptive process spawning
+@item Basic statistics (similar to Apache's mod_status)
+@item Advanced process management with graceful stop/start
+@item Ability to start workers with different uid/gid/chroot/environment
+and different php.ini (replaces safe_mode)
+@item Stdout & stderr logging
+@item Emergency restart in case of accidental opcode cache destruction
+@item Accelerated upload support
+@item Support for a "slowlog"
+@item Enhancements to FastCGI, such as fastcgi_finish_request() -
+a special function to finish request & flush all data while continuing to do
+something time-consuming (video converting, stats processing, etc.)
+@end itemize
+... and much more.
+
+@defvr {Scheme Variable} php-fpm-service-type
+A Service type for @code{php-fpm}.
+@end defvr
+
+@deftp {Data Type} php-fpm-configuration
+Data Type for php-fpm service configuration.
+@table @asis
+@item @code{php} (default: @code{php})
+The php package to use.
+@item @code{socket} (default: @code{(string-append "/var/run/php" (version-major (package-version php)) "-fpm.sock")})
+The address on which to accept FastCGI requests.  Valid syntaxes are:
+@table @asis
+@item @code{"ip.add.re.ss:port"}
+Listen on a TCP socket to a specific address on a specific port.
+@item @code{"port"}
+Listen on a TCP socket to all addresses on a specific port.
+@item @code{"/path/to/unix/socket"}
+Listen on a unix socket.
+@end table
+
+@item @code{user} (default: @code{php-fpm})
+User who will own the php worker processes.
+@item @code{group} (default: @code{php-fpm})
+Group of the worker processes.
+@item @code{socket-user} (default: @code{php-fpm})
+User who can speak to the php-fpm socket.
+@item @code{socket-group} (default: @code{php-fpm})
+Group that can speak to the php-fpm socket.
+@item @code{pid-file} (default: @code{(string-append "/var/run/php" (version-major (package-version php)) "-fpm.pid")})
+The process id of the php-fpm process is written to this file
+once the service has started.
+@item @code{log-file} (default: @code{(string-append "/var/log/php" (version-major (package-version php)) "-fpm.log")})
+Log for the php-fpm master process.
+@item @code{process-manager} (default: @code{(php-fpm-dynamic-process-manager-configuration)})
+Detailed settings for the php-fpm process manager.
+Must be either:
+@table @asis
+@item @code{<php-fpm-dynamic-process-manager-configuration>}
+@item @code{<php-fpm-static-process-manager-configuration>}
+@item @code{<php-fpm-on-demand-process-manager-configuration>}
+@end table
+@item @code{display-errors} (default @code{#f})
+Determines wether php errors and warning should be sent to clients
+and displayed in their browsers.
+This is useful for local php development, but a security risk for public sites,
+as error messages can reveal passwords and personal data.
+@item @code{workers-logfile} (default @code{(string-append "/var/log/php" (version-major (package-version php)) "-fpm.www.log")})
+This file will log the @code{stderr} outputs of php worker processes.
+Can be set to @code{#f} to disable logging.
+@item @code{file} (default @code{#f})
+An optional override of the whole configuration.
+You can use the @code{mixed-text-file} function or an absolute filepath for it.
+@end table
+@end deftp
+
+@deftp {Data type} php-fpm-dynamic-process-manager-configuration
+Data Type for the @code{dynamic} php-fpm process manager.  With the
+@code{dynamic} process manager, spare worker processes are kept around
+based on it's configured limits.
+@table @asis
+@item @code{max-children} (default: @code{5})
+Maximum of worker processes.
+@item @code{start-servers} (default: @code{2})
+How many worker processes should be started on start-up.
+@item @code{min-spare-servers} (default: @code{1})
+How many spare worker processes should be kept around at minimum.
+@item @code{max-spare-servers} (default: @code{3})
+How many spare worker processes should be kept around at maximum.
+@end table
+@end deftp
+
+@deftp {Data type} php-fpm-static-process-manager-configuration
+Data Type for the @code{static} php-fpm process manager.  With the
+@code{static} process manager, an unchanging number of worker processes
+are created.
+@table @asis
+@item @code{max-children} (default: @code{5})
+Maximum of worker processes.
+@end table
+@end deftp
+
+@deftp {Data type} php-fpm-on-demand-process-manager-configuration
+Data Type for the @code{on-demand} php-fpm process manager.  With the
+@code{on-demand} process manager, worker processes are only created as
+requests arrive.
+@table @asis
+@item @code{max-children} (default: @code{5})
+Maximum of worker processes.
+@item @code{process-idle-timeout} (default: @code{10})
+The time in seconds after which a process with no requests is killed.
+@end table
+@end deftp
+
+
+@deffn {Scheme Procedure} nginx-php-fpm-location @
+       [#:nginx-package nginx] @
+       [socket (string-append "/var/run/php" @
+                              (version-major (package-version php)) @
+                              "-fpm.sock")]
+A helper function to quickly add php to an @code{nginx-server-configuration}.
+@end deffn
+
+A simple services setup for nginx with php can look like this:
+@example
+(services (cons* (dhcp-client-service)
+                 (service php-fpm-service-type)
+                 (service nginx-service-type
+                          (nginx-server-configuration
+                           (server-name '("example.com"))
+                           (root "/srv/http/")
+                           (locations
+                            (list (nginx-php-location)))
+                           (https-port #f)
+                           (ssl-certificate #f)
+                           (ssl-certificate-key #f)))
+                 %base-services))
+@end example
 
 @node Certificate Services
 @subsubsection Certificate Services
@@ -15206,7 +15354,7 @@ and one slave, is:
 (operating-system
   ;; ...
   (services (cons* (service knot-service-type
-                     (knot-confifguration
+                     (knot-configuration
                        (remotes (list plop-master))
                        (zones (list master-zone slave-zone))))
                    ;; ...
@@ -17545,7 +17693,7 @@ serve the default @file{/srv/git} over HTTPS might be:
           (server-blocks
            (list
             (nginx-server-configuration
-             (http-port #f)
+             (listen '("443 ssl"))
              (server-name "git.my-host.org")
              (ssl-certificate
               "/etc/letsencrypt/live/git.my-host.org/fullchain.pem")
@@ -18228,7 +18376,6 @@ system.
 A possibly empty list of @code{menu-entry} objects (see below), denoting
 entries to appear in the bootloader menu, in addition to the current
 system entry and the entry pointing to previous system generations.
-generations.
 
 @item @code{default-entry} (default: @code{0})
 The index of the default boot menu entry.  Index 0 is for the entry of the
@@ -18609,6 +18756,14 @@ Build Options}).  In addition, @var{options} can contain one of the
 following:
 
 @table @option
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Consider the operating-system @var{expr} evaluates to.
+This is an alternative to specifying a file which evaluates to an
+operating system.
+This is used to generate the GuixSD installer @pxref{Building the
+Installation Image}).
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system} instead of the host system type.

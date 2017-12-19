@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -881,10 +882,16 @@ the NIST server non-fatal."
                                      (or (and=> (package-source package)
                                                 origin-patches)
                                          '())))
+              (known-safe (or (assq-ref (package-properties package)
+                                        'lint-hidden-cve)
+                              '()))
               (unpatched (remove (lambda (vuln)
-                                   (find (cute string-contains
-                                           <> (vulnerability-id vuln))
-                                         patches))
+                                   (let ((id (vulnerability-id vuln)))
+                                     (or
+                                       (find (cute string-contains
+                                                   <> id)
+                                             patches)
+                                       (member id known-safe))))
                                  vulnerabilities)))
          (unless (null? unpatched)
            (emit-warning package

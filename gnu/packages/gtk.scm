@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2017 Roel Janssen <roel@gnu.org>
+;;; Coypright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -380,7 +381,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "3.24.4")
+   (version "3.24.6")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -388,7 +389,7 @@ printing and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "14x738xrz9q8qz13xd7dys748ryxyq2srbqyaa9r7n47h2av2zr0"))))
+               "1261fwjpwn3qizmvjns9z3k3a264j3ql5anyvmisfwywpkzbv9ks"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,7 +71,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.43.0")
+    (version "0.44.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -78,7 +79,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0h3k0m45004ay1hzz9r66fkl1kwizaigxahyrlabyw0d1slyq4y5"))))
+                "06r8limj38mv884s5riiz6lpzw37cvhbf9jd0smzcbi7fwmv3yah"))))
     (build-system python-build-system)
     (inputs `(("ninja", ninja)))
     (propagated-inputs `(("python" ,python)))

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: guix-cvs-reference
+# key: cvs-reference...
+# --
+(cvs-reference
+  (root-directory "${1:root-directory}")
+  (module "${2:module}")
+  (revision "${3:revision}"))

@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,6 +99,10 @@ human.")
         (base32
          "0wrl8kxb16wzdgfjj057yv18cfg0b8z8lxp1fl2q8fkdgr7phm9g"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            (assoc-ref %outputs "out") "/lib"))))
     (inputs
      `(("libgcrypt" ,libgcrypt)
        ("libxi" ,libxi)

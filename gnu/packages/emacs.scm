@@ -31,6 +31,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
+;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -377,7 +378,7 @@ when typing parentheses directly or commenting out code line by line.")
 
 (define-public git-modes
   (package
-    (name "git-modes")
+    (name "emacs-git-modes")
     (version "1.2.6")
     (source (origin
               (method url-fetch)
@@ -395,6 +396,9 @@ when typing parentheses directly or commenting out code line by line.")
      "This package provides Emacs major modes for editing various Git
 configuration files, such as .gitattributes, .gitignore, and .git/config.")
     (license license:gpl3+)))
+
+(define-public git-modes/old-name
+  (deprecated-package "git-modes" git-modes))
 
 (define-public emacs-with-editor
   (package
@@ -1972,6 +1976,26 @@ keep pressing the key until it selects what you want.  There's also
 column by drawing a thin line down the length of the editing window.")
     (license license:gpl3+)))
 
+(define-public emacs-grep-a-lot
+  (package
+    (name "emacs-grep-a-lot")
+    (version "1.0.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ZungBang/emacs-grep-a-lot.git")
+                    (commit "9f9f645b9e308a0d887b66864ff97d0fca1ba4ad")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1f8262mrlinzgnn4m49hbj1hm3c1mvzza24py4b37sasn49546lw"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ZungBang/emacs-grep-a-lot")
+    (synopsis "Enables multiple grep buffers in Emacs")
+    (description
+     "This Emacs package allows managing multiple grep buffers.")
+    (license license:gpl3+)))
+
 (define-public emacs-inf-ruby
   (package
     (name "emacs-inf-ruby")
@@ -2153,6 +2177,43 @@ evaluated in the browser, just like Emacs does with an inferior Lisp process
 in Lisp modes.")
     (license license:unlicense)))
 
+(define-public emacs-string-inflection
+  (package
+    (name "emacs-string-inflection")
+    (version "1.0.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/akicho8/string-inflection")
+                    (commit "a150e7bdda60b7824d3a936750ce23f73b0e4edd")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1k0sm552iawi49v4zis6dbb81d1rzgky9v0dpv7nj31gnb7bmy7k"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("ert-runner" ,ert-runner)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "ert-runner")))))))
+    (home-page "https://github.com/akicho8/string-inflection")
+    (synopsis "Convert symbol names between different naming conventions")
+    (description
+     "This Emacs package provides convenient methods for manipulating the
+naming style of a symbol.  It supports different naming conventions such as:
+
+@enumerate
+@item camel case
+@item Pascal case
+@item all upper case
+@item lower case separated by underscore
+@item etc...
+@end enumerate\n")
+    (license license:gpl2+)))
+
 (define-public emacs-stripe-buffer
   (package
     (name "emacs-stripe-buffer")
@@ -2194,6 +2255,31 @@ tables.")
      "This Emacs package hides and/or highlights minor modes in the
 mode-line.")
     (license license:gpl2+)))
+
+(define-public emacs-robe
+  (package
+    (name "emacs-robe")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dgutov/robe/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vp45y99fwj88z04ah4yppz4z568qcib646az6m9az5ar0f203br"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-inf-ruby" ,emacs-inf-ruby)))
+    (home-page "https://github.com/dgutov/robe")
+    (synopsis "Ruby code assistance tool for Emacs")
+    (description
+     "Robe can provide information on loaded classes and modules in Ruby code,
+as well as where methods are defined.  This allows the user to jump to method
+definitions, modules and classes, display method documentation and provide
+method and constant name completion.")
+    (license license:gpl3+)))
 
 (define-public emacs-rspec
   (package
@@ -2969,7 +3055,7 @@ single theme but a set of guidelines with numerous implementations.")
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
-    (version "1.10.1")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2978,7 +3064,7 @@ single theme but a set of guidelines with numerous implementations.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1nwsi6fbbxjq3r22r6knmx71la3g0lmwfb95i9q4k138gn0m2l3i"))))
+                "0q5as813xs8y29i3v2rm97phd6m7xsmmw6hwbvx57gwmi8i1c409"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/Fuco1/smartparens")
@@ -4897,7 +4983,7 @@ highlights quasi-quoted expressions.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "46.0")
+    (version "47.0")
     (source
      (origin
        (method url-fetch)
@@ -4906,11 +4992,7 @@ highlights quasi-quoted expressions.")
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
         (base32
-         "15x4yfp3wl2fxm1nkx6pz3clw6zyw3argcsqxgcx6pa28sivlg2n"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Delete the bundled byte-compiled elisp files.
-        '(for-each delete-file (find-files "lisp" "\\.elc$")))))
+         "0xbcc266x752y68s3g096m161irzvsqym3axzqn8rb276a8x55n7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
@@ -4920,6 +5002,7 @@ highlights quasi-quoted expressions.")
          (replace 'configure
            (lambda _
              ;; Configure Emacspeak according to etc/install.org.
+             (setenv "SHELL" (which "sh"))
              (zero? (system* "make" "config"))))
          (add-after 'build 'build-espeak
            (lambda _
@@ -4997,6 +5080,28 @@ single-long-line paragraphs get word-wrapped in a way similar to what
 you'd get with @kbd{M-q} using @code{adaptive-fill-mode}, but without
 actually changing the buffer's text.")
     (license license:gpl3+)))
+
+(define-public emacs-diff-hl
+ (package
+  (name "emacs-diff-hl")
+  (version "1.8.4")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "http://elpa.gnu.org/packages/diff-hl-"
+                          version ".tar"))
+      (sha256
+        (base32
+          "0axhidc3cym7a2x4rpxf4745qss9s9ajyg4s9h5b4zn7v7fyp71n"))))
+  (build-system emacs-build-system)
+  (home-page "https://github.com/dgutov/diff-hl")
+  (synopsis
+    "Highlight uncommitted changes using VC")
+  (description
+    "@code{diff-hl-mode} highlights uncommitted changes on the side of the
+window (using the fringe, by default), allows you to jump between
+the hunks and revert them selectively.")
+  (license license:gpl3+)))
 
 (define-public emacs-diminish
   (package
@@ -5386,7 +5491,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.15")
+    (version "0.16")
     (synopsis "Emacs X window manager")
     (source (origin
               (method url-fetch)
@@ -5394,7 +5499,7 @@ It should enable you to implement low-level X11 applications.")
                                   version ".tar"))
               (sha256
                (base32
-                "1y7nqry9y0a99bsdqkk9f554vczfw4sz6raadw3138835qy697jg"))))
+                "0c4w5k9lzqj8yzhdqipdb4fs7ld2qklc6s137104jnfdvmrwcv2i"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
@@ -5930,6 +6035,35 @@ available key bindings that follow C-x (or as many as space allows given your
 settings).")
     (license license:gpl3+)))
 
+(define-public emacs-ws-butler
+  (package
+    (name "emacs-ws-butler")
+    (version "0.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lewang/ws-butler.git")
+                    (commit "323b651dd70ee40a25accc940b8f80c3a3185205")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1a4b0lsmwq84qfx51c5xy4fryhb1ysld4fhgw2vr37izf53379sb"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("ert-runner" ,ert-runner)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda _
+             (zero? (system* "ert-runner" "tests")))))))
+    (home-page "https://github.com/lewang/ws-butler")
+    (synopsis "Trim spaces from end of lines")
+    (description
+     "This Emacs package automatically and unobtrusively trims whitespace
+characters from end of lines.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-edit-latex
   (package
     (name "emacs-org-edit-latex")
@@ -6270,6 +6404,28 @@ and shell-command prompts that are based on bash completion.")
     (description
      "This package provides commands @code{easy-kill} and @code{easy-mark} to
 let users kill or mark things easily.")
+    (license license:gpl3+)))
+
+(define-public emacs-csv-mode
+  (package
+    (name "emacs-csv-mode")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://elpa.gnu.org/packages/csv-mode-"
+                           version ".el"))
+       (sha256
+        (base32
+         "0r4bip0w3h55i8h6sxh06czf294mrhavybz0zypzrjw91m1bi7z6"))))
+    (build-system emacs-build-system)
+    (home-page
+     "http://elpa.gnu.org/packages/csv-mode.html")
+    (synopsis
+     "Major mode for editing comma/char separated values")
+    (description
+     "This Emacs package implements CSV mode, a major mode for editing records
+in a generalized CSV (character-separated values) format.")
     (license license:gpl3+)))
 
 (define-public emacs-transmission

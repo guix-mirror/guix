@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,8 +79,7 @@
                "fastcgi_param HTTP_HOST $server_name;"
                "fastcgi_pass 127.0.0.1:9000;")))))
     (try-files (list "$uri" "@cgit"))
-    (http-port 19418)
-    (https-port #f)
+    (listen '("19418"))
     (ssl-certificate #f)
     (ssl-certificate-key #f))))
 
@@ -211,8 +211,7 @@ HTTP-PORT."
    (server-blocks
     (list
      (nginx-server-configuration
-      (http-port 19418)
-      (https-port #f)
+      (listen '("19418"))
       (ssl-certificate #f)
       (ssl-certificate-key #f)
       (locations

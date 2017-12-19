@@ -78,6 +78,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages netpbm)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages perl)
@@ -369,8 +370,8 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 (define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
 
-(define %linux-libre-version "4.14.4")
-(define %linux-libre-hash "1hl4n1jpqd05b7qnxbwjmbl2l5cgrh2spqsjq1fnihphmawjd3li")
+(define %linux-libre-version "4.14.6")
+(define %linux-libre-hash "0q6dl2shkj5dkf0wgzgfyaq0axk97w05j618xi619y9xqph4ql79")
 
 ;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
@@ -383,20 +384,20 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.67"
-                    "1fr8h4g3j4ns0x33i36kgsgb175cdz9v530gx8sxcrbkd10i9i07"
+  (make-linux-libre "4.9.69"
+                    "0xkqbh8fpx47appszjbxzljr6vr0wyk0fphlkynpcrmingk4b98j"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.104"
-                    "1971hphyqbzh80frkbidbqwhgk21r5p2a42bihjcd5kh3pssn4zl"
+  (make-linux-libre "4.4.105"
+                    "177qvci7wfrc23vi11bnyayfivxf6d8hankgrzv26jr3z6j0rall"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.46"
-                    "0bg1vplfksgsnxqdxdp2n0b5lv2j299nv52s8hpja5ckp396jkhk"
+  (make-linux-libre "4.1.48"
+                    "13ii6ixcm46hzk1ns6n4hrrv4dyc0n3wvj2qhmxi178akdcgbn8a"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -4333,10 +4334,11 @@ libraries, which are often integrated directly into libfabric.")
   (package
     (name "psm")
     (version "3.3.20170428")
+    (home-page "https://github.com/intel/psm")
     (source
      (origin
        (method git-fetch)
-       (uri (git-reference (url "http://github.com/01org/psm")
+       (uri (git-reference (url home-page)
                            (commit "604758e76dc31e68d1de736ccf5ddf16cb22355b")))
        (file-name (string-append "psm-" version ".tar.gz"))
        (sha256
@@ -4362,7 +4364,6 @@ libraries, which are often integrated directly into libfabric.")
                       (substitute* "Makefile"
                         (("/lib64") "/lib"))
                       #t)))))
-    (home-page "https://github.com/01org/psm")
     (synopsis "Intel Performance Scaled Messaging (PSM) Libraries")
     (description
      "The PSM Messaging API, or PSM API, is Intel's low-level user-level
@@ -4372,3 +4373,119 @@ interfaces in parallel environments.")
     ;; Only Intel-compatable processors are supported.
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license (list license:bsd-2 license:gpl2)))) ;dual
+
+(define-public snapscreenshot
+  (package
+    (name "snapscreenshot")
+    (version "1.0.14.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://bisqwit.iki.fi/src/arch/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "0gzvqsbf6a2sbd1mqvj1lbm57i2bm5k0cr6ncr821d1f32gw03mk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "BINDIR=" out "/bin")
+               (string-append "MANDIR=" out "/share/man")))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; ./configure is a snarky no-op
+         (add-before 'install 'fix-ownership
+           ;; Install binaries owned by ‘root’ instead of the nonexistent ‘bin’.
+           (lambda _
+             (substitute* "depfun.mak"
+               ((" -o bin -g bin ") " "))
+             #t))
+         (add-before 'install 'create-output-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/share/man/man1"))
+               #t))))))
+    (home-page "http://bisqwit.iki.fi/source/snapscreenshot.html")
+    (synopsis "Take screenshots of one or more Linux text consoles")
+    (description
+     "snapscreenshot saves a screenshot of one or more Linux text consoles as a
+Targa (@dfn{.tga}) image.  It can be used by anyone with read access to the
+relevant @file{/dev/vcs*} file(s).")
+    (license license:gpl2)))
+
+(define-public fbcat
+  (package
+    (name "fbcat")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jwilk/fbcat/releases/download/"
+                           version "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1dla1na3nf3s4xy0p6w0v54zipg1x8c14yqsw8w9qjzhchr4caxw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     ;; For building the man pages.
+     `(("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     ;; The ‘fbgrab’ wrapper can use one of several PPM-to-PNG converters.  We
+     ;; choose netpbm simply because it's the smallest.  It still adds ~94 MiB
+     ;; to an otherwise tiny package, so we put ‘fbgrab’ in its own output.
+     `(("pnmtopng" ,netpbm)))
+    (outputs (list "out" "fbgrab"))
+    (arguments
+     `(#:make-flags (list "CC=gcc")
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-docbook-location
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "doc/Makefile"
+               (("http://docbook.sourceforge.net/release/xsl/current")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl))))
+             #t))
+         (delete 'configure)            ; no configure script
+         (add-after 'build 'build-documentation
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* "make" "-C" "doc"
+                           make-flags))))
+         (add-after 'build 'qualify-references
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((pnmtopng (assoc-ref inputs "pnmtopng"))
+                    (out (assoc-ref outputs "out")))
+               (substitute* "fbgrab"
+                 (("fbcat" all)
+                  (string-append out "/bin/" all))
+                 (("pnmtopng" all)
+                  (string-append pnmtopng "/bin/" all)))
+               #t)))
+         (replace 'install
+           ;; The Makefile lacks an ‘install’ target.  Install files manually.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out:fbgrab (assoc-ref outputs "fbgrab")))
+               (install-file "fbcat" (string-append out "/bin"))
+               (install-file "doc/fbcat.1"
+                             (string-append out "/share/man/man1"))
+               (install-file "fbgrab" (string-append out:fbgrab "/bin"))
+               (install-file "doc/fbgrab.1"
+                             (string-append out:fbgrab "/share/man/man1"))
+               #t))))))
+    (home-page "https://jwilk.net/software/fbcat")
+    (synopsis "Take a screenshot of the contents of the Linux framebuffer")
+    (description
+     "fbcat saves the contents of the Linux framebuffer (@file{/dev/fb*}), or
+a dump therof.  It supports a wide range of drivers and pixel formats.
+@command{fbcat} can take screenshots of virtually any application that can be
+made to write its output to the framebuffer, including (but not limited to)
+text-mode or graphical applications that don't use a display server.
+
+Also included is @command{fbgrab}, a wrapper around @command{fbcat} that
+emulates the behaviour of Gunnar Monell's older fbgrab utility.")
+    (license license:gpl2)))

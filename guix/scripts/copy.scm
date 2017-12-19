@@ -150,6 +150,7 @@ Copy ITEMS to or from the specified host over SSH.\n"))
 (define %default-options
   `((system . ,(%current-system))
     (substitutes? . #t)
+    (build-hook? . #t)
     (graft? . #t)
     (verbosity . 0)))
 

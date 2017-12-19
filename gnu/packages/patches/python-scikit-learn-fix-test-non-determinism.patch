@@ -1,0 +1,25 @@
+This patch stops a test sometimes failing because of non-determinism.  See
+https://github.com/scikit-learn/scikit-learn/pull/9542
+
+From ff9f6db6e8b59c2b3528c8137ed4054f57c1d7c4 Mon Sep 17 00:00:00 2001
+From: Hanmin Qin <qinhanmin2005@sina.com>
+Date: Sun, 13 Aug 2017 22:13:49 +0800
+Subject: [PATCH] add random_state
+
+---
+ sklearn/tests/test_kernel_ridge.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sklearn/tests/test_kernel_ridge.py b/sklearn/tests/test_kernel_ridge.py
+index 4750a096ac6..979875870b6 100644
+--- a/sklearn/tests/test_kernel_ridge.py
++++ b/sklearn/tests/test_kernel_ridge.py
+@@ -10,7 +10,7 @@
+ from sklearn.utils.testing import assert_array_almost_equal
+ 
+ 
+-X, y = make_regression(n_features=10)
++X, y = make_regression(n_features=10, random_state=0)
+ Xcsr = sp.csr_matrix(X)
+ Xcsc = sp.csc_matrix(X)
+ Y = np.array([y, y]).T

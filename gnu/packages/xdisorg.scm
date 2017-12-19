@@ -858,14 +858,14 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "0.25")
+    (version "0.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/linuxwacom/libwacom/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1k20w2fkql3yr0dpdg51jjwzv7d4kp53ajmpyhcjxa08s0n8dl19"))))
+                "0xpvkjvzaj9blcmw8ha46616bzfivj99kwzvr91clxd6iaf11r63"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -890,7 +890,7 @@ Wacom tablet applet.")
 (define-public xf86-input-wacom
   (package
     (name "xf86-input-wacom")
-    (version "0.34.2")
+    (version "0.35.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -898,7 +898,7 @@ Wacom tablet applet.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "073bf12ka1mcqvr1sviixb51bsfx37jalrj9xw53f10i2kdvkl9a"))))
+                "0za44snc0zirq65a4lxsmg7blp1bynj6j835hm459x8yx1qhmxjm"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="

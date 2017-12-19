@@ -1,0 +1,34 @@
+# -*- mode: snippet -*-
+# name: guix-package
+# key: package...
+# --
+(define-public $1
+  (package
+    (name "$1")
+    (version "$2")
+    (source origin...$0)
+    (build-system ${3:$$(yas-choose-value "ant-build-system"
+                                          "asdf-build-system"
+                                          "cargo-build-system"
+                                          "cmake-build-system"
+                                          "dub-build-system"
+                                          "emacs-build-system"
+                                          "font-build-system"
+                                          "glib-or-gtk-build-system"
+                                          "gnu-build-system"
+                                          "go-build-system"
+                                          "haskell-build-system"
+                                          "meson-build-system"
+                                          "minify-build-system"
+                                          "ocaml-build-system"
+                                          "perl-build-system"
+                                          "python-build-system"
+                                          "r-build-system"
+                                          "ruby-build-system"
+                                          "texlive-build-system"
+                                          "trivial-build-system"
+                                          "waf-build-system")})
+    (home-page "$4")
+    (synopsis "$5")
+    (description "$6")
+    (license $7)))

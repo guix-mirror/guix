@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -701,6 +702,20 @@
                             (dummy-origin
                              (patches
                               (list "/a/b/pi-CVE-2015-1234.patch"))))))))))
+
+(test-assert "cve: known safe from vulnerability"
+  (mock ((guix scripts lint) package-vulnerabilities
+         (lambda (package)
+           (list (make-struct (@@ (guix cve) <vulnerability>) 0
+                              "CVE-2015-1234"
+                              (list (cons (package-name package)
+                                          (package-version package)))))))
+        (string-null?
+         (with-warnings
+           (check-vulnerabilities
+            (dummy-package "pi"
+                           (version "3.14")
+                           (properties `((lint-hidden-cve . ("CVE-2015-1234"))))))))))
 
 (test-assert "cve: vulnerability fixed in replacement version"
   (mock ((guix scripts lint) package-vulnerabilities

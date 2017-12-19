@@ -50,6 +50,7 @@
 (define-public ruby
   (package
     (name "ruby")
+    (replacement ruby-2.4.3)
     (version "2.4.2")
     (source
      (origin
@@ -103,10 +104,11 @@ a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
 
-(define-public ruby-2.3
+(define-public ruby-2.4.3
   (package
     (inherit ruby)
-    (version "2.3.5")
+    (name "ruby")
+    (version "2.4.3")
     (source
      (origin
        (method url-fetch)
@@ -115,7 +117,26 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "1npzcnq5kh0f9y88w5gj4v6ln8csr91361k3r43dmhlhn6mpsfkx"))
+         "0l9bv67dgsphk42lmiskhrnh47hbyj6rfg2rcjx22xivpx07srr3"))
+       (modules '((guix build utils)))
+       (snippet `(begin
+                   ;; Remove bundled libffi
+                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
+                   #t))))))
+
+(define-public ruby-2.3
+  (package
+    (inherit ruby)
+    (version "2.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0mlz0mk7yyxia37k8fdv8m8a72h61nfbns28430h796l4an6kng0"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -124,7 +145,7 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.2
   (package (inherit ruby)
-    (version "2.2.8")
+    (version "2.2.9")
     (source
      (origin
        (method url-fetch)
@@ -133,7 +154,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "1c31slidv2bdnnir3qfmdjs193b5s2ycb9pnf1lc55kk0cazrsip"))))))
+         "0p18xykx8dm5mmlx5n5243z67lj4vbvwr70bnc5x12am22ql8fri"))))))
 
 (define-public ruby-2.1
   (package (inherit ruby)

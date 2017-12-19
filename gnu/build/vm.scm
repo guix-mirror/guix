@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -77,6 +77,7 @@
                            linux initrd
                            make-disk-image?
                            single-file-output?
+                           target-arm32?
                            (disk-image-size (* 100 (expt 2 20)))
                            (disk-image-format "qcow2")
                            (references-graphs '()))
@@ -91,6 +92,31 @@ access it via /dev/hda.
 
 REFERENCES-GRAPHS can specify a list of reference-graph files as produced by
 the #:references-graphs parameter of 'derivation'."
+
+  (define arch-specific-flags
+    `(;; On ARM, a machine has to be specified. Use "virt" machine to avoid
+      ;; hardware limits imposed by other machines.
+      ,@(if target-arm32? '("-M" "virt") '())
+
+      ;; Only enable kvm if we see /dev/kvm exists.  This allows users without
+      ;; hardware virtualization to still use these commands.  KVM support is
+      ;; still buggy on some ARM32 boards. Do not use it even if available.
+      ,@(if (and (file-exists? "/dev/kvm")
+                 (not target-arm32?))
+            '("-enable-kvm")
+            '())
+      "-append"
+      ;; The serial port name differs between emulated architectures/machines.
+      ,@(if target-arm32?
+            `(,(string-append "console=ttyAMA0 --load=" builder))
+            `(,(string-append "console=ttyS0 --load=" builder)))
+      ;; NIC is not supported on ARM "virt" machine, so use a user mode
+      ;; network stack instead.
+      ,@(if target-arm32?
+            '("-device" "virtio-net-pci,netdev=mynet"
+              "-netdev" "user,id=mynet")
+            '("-net" "nic,model=virtio"))))
+
   (when make-disk-image?
     (format #t "creating ~a image of ~,2f MiB...~%"
             disk-image-format (/ disk-image-size (expt 2 20)))
@@ -113,7 +139,8 @@ the #:references-graphs parameter of 'derivation'."
   (unless (zero?
            (apply system* qemu "-nographic" "-no-reboot"
                   "-m" (number->string memory-size)
-                  "-net" "nic,model=virtio"
+                  "-object" "rng-random,filename=/dev/urandom,id=guixsd-vm-rng"
+                  "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
                   "-virtfs"
                   (string-append "local,id=store_dev,path="
                                  (%store-directory)
@@ -127,15 +154,12 @@ the #:references-graphs parameter of 'derivation'."
                                            builder)
                   (append
                    (if make-disk-image?
-                       `("-drive" ,(string-append "file=" output
-                                                  ",if=virtio"))
+                       `("-device" "virtio-blk,drive=myhd"
+                         "-drive" ,(string-append "if=none,file=" output
+                                                  ",format=" disk-image-format
+                                                  ",id=myhd"))
                        '())
-                   ;; Only enable kvm if we see /dev/kvm exists.
-                   ;; This allows users without hardware virtualization to still
-                   ;; use these commands.
-                   (if (file-exists? "/dev/kvm")
-                       '("-enable-kvm")
-                       '()))))
+                   arch-specific-flags)))
     (error "qemu failed" qemu))
 
   ;; When MAKE-DISK-IMAGE? is true, the image is in OUTPUT already.

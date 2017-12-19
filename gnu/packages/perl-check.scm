@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -637,7 +638,7 @@ the behavior, just the input and the output.")
 (define-public perl-test-mocktime
   (package
     (name "perl-test-mocktime")
-    (version "0.13")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
@@ -645,7 +646,9 @@ the behavior, just the input and the output.")
                            "Test-MockTime-" version ".tar.gz"))
        (sha256
         (base32
-         "0yrqmjg33akannwz2f99rfm7dvvxpzsdj23lsvlvfi4qslrlqfvw"))))
+         "0j6cxmkj52i5xkwg8dg6klm0dh386fzc5v80n5nbdalpvq0h48c8"))))
+    (propagated-inputs
+     `(("perl-time-piece" ,perl-time-piece)))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Test-MockTime/")
     (synopsis "Replaces actual time with simulated time")
@@ -659,7 +662,7 @@ to gmtime,time or localtime.")
 (define-public perl-test-most
   (package
     (name "perl-test-most")
-    (version "0.34")
+    (version "0.35")
     (source
      (origin
        (method url-fetch)
@@ -667,7 +670,7 @@ to gmtime,time or localtime.")
                            "Test-Most-" version ".tar.gz"))
        (sha256
         (base32
-         "0i72aih3pakm8gh73wx1n4dwq8lbx6dvxhla46gsapszws6hr0n2"))))
+         "0zv5dyzq55r28plffibcr7wd00abap0h2zh4s4p8snaiszsad5wq"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-differences" ,perl-test-differences)
@@ -809,15 +812,15 @@ as flexible as possible to the tester.")
 (define-public perl-test-pod
   (package
     (name "perl-test-pod")
-    (version "1.48")
+    (version "1.51")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/D/DW/DWHEELER/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Test-Pod-" version ".tar.gz"))
        (sha256
         (base32
-         "1hmwwhabyng4jrnll926b4ab73r40w3pfchlrvs0yx6kh6kwwy14"))))
+         "1yvy5mc4j3s2h4aizryvark2nm58g2c6zhw9mlx9wmsavz7d78f1"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Test-Pod/")
@@ -850,7 +853,7 @@ checks for pod coverage of all appropriate files.")
 (define-public perl-test-requires
   (package
     (name "perl-test-requires")
-    (version "0.08")
+    (version "0.10")
     (source
      (origin
        (method url-fetch)
@@ -858,7 +861,7 @@ checks for pod coverage of all appropriate files.")
                            "Test-Requires-" version ".tar.gz"))
        (sha256
         (base32
-         "08c29m0dn34384mmmpqqlbb899zpbkkc01c2lsp31mch1frv9cg7"))))
+         "1d9f481lj12cw1ciil46xq9nq16p6a90nm7yrsalpf8asn8s6s17"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Test-Requires/")
     (synopsis "Checks to see if the module can be loaded")
@@ -913,14 +916,14 @@ makes fork(2) safe to use in test cases.")
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
-    (version "1.302078")
+    (version "1.302120")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                                   "Test-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "05acl24kmz3dgr2nayy162yaf0kz92h1j5vkiavyv6mdh2lz6ixb"))))
+                "0v1l0hfza9zlw3qj5l2mrzljy1sk02h3yqcb4kixdb2d5l4n08y8"))))
     (build-system perl-build-system)
     (synopsis "Basic utilities for writing tests")
     (description
@@ -979,7 +982,7 @@ a minimum of effort.")
 (define-public perl-test-trap
   (package
     (name "perl-test-trap")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -987,7 +990,7 @@ a minimum of effort.")
                            "Test-Trap-v" version ".tar.gz"))
        (sha256
         (base32
-         "0jq54pkm4s61gk8gzxglix1ff9s0m9vi6bpfv7f63lb9qq4r76rr"))))
+         "1676gqjyk0zig3yyqv053y5j1pajp2af08ffmgx94n414whbhm5c"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -1119,7 +1122,7 @@ generation of tests in nested combinations of contexts.")
 (define-public perl-test-yaml
   (package
     (name "perl-test-yaml")
-    (version "1.05")
+    (version "1.06")
     (source
      (origin
        (method url-fetch)
@@ -1127,7 +1130,7 @@ generation of tests in nested combinations of contexts.")
                            "Test-YAML-" version ".tar.gz"))
        (sha256
         (base32
-         "079nayc0fp2fwjv8s2yr069bdffln699j6z3lqr5dpx1v2qg82ck"))))
+         "0hxrfs7p9hqkhvv5nhk2hd3kh32smwng4nz47b8xf4iw2q1n2dr7"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-base" ,perl-test-base)))
@@ -1140,7 +1143,7 @@ support.")
 (define-public perl-test-trailingspace
  (package
   (name "perl-test-trailingspace")
-  (version "0.0300")
+  (version "0.0301")
   (source
     (origin
       (method url-fetch)
@@ -1150,7 +1153,7 @@ support.")
              ".tar.gz"))
       (sha256
         (base32
-          "01slmrcjfq38mpdg3hlb7lnnbgsqbn26958y3hzx0zwrif40pigr"))))
+          "0w2rvsksv7cmf80v632xm2rwxrv933kzz97839yhwynvg9s7b252"))))
   (build-system perl-build-system)
   (native-inputs
     `(("perl-module-build" ,perl-module-build)
