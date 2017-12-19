@@ -1502,20 +1502,23 @@ R packages that praise their users.")
 (define-public r-testthat
   (package
     (name "r-testthat")
-    (version "1.0.2")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "testthat" version))
               (sha256
                (base32
-                "0pj1r01x4ny4capr83dfa19hi5i2sjjxky99schzip8zrq5dzxqf"))))
+                "155l53kb69jga5d8c5nvdwqlvlgfmk4vzyyl4d0108j53jnlgh1v"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-digest" ,r-digest)
+     `(("r-cli" ,r-cli)
        ("r-crayon" ,r-crayon)
+       ("r-digest" ,r-digest)
        ("r-magrittr" ,r-magrittr)
        ("r-praise" ,r-praise)
-       ("r-r6" ,r-r6)))
+       ("r-r6" ,r-r6)
+       ("r-rlang" ,r-rlang)
+       ("r-withr" ,r-withr)))
     (home-page "https://github.com/hadley/testthat")
     (synopsis "Unit testing for R")
     (description
