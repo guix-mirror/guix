@@ -81,19 +81,16 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.10.1")
+    (version "2.10.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
              (patches (search-patches "qemu-CVE-2017-15038.patch"
-                                      "qemu-CVE-2017-15118.patch"
-                                      "qemu-CVE-2017-15119.patch"
-                                      "qemu-CVE-2017-15268.patch"
                                       "qemu-CVE-2017-15289.patch"))
              (sha256
               (base32
-               "1ahwl7r18iw2ds0q3c51nlivqsan9hcgnc8bbf9pv366iy81mm8x"))))
+               "17w21spvaxaidi2am5lpsln8yjpyp2zi3s3gc6nsxj5arlgamzgw"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
