@@ -1444,6 +1444,26 @@ imputations.")
     ;; Any of these two versions.
     (license (list license:gpl2 license:gpl3))))
 
+(define-public r-truncnorm
+  (package
+    (name "r-truncnorm")
+    (version "1.0-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "truncnorm" version))
+       (sha256
+        (base32
+         "1qac05z50618y4bw1d7yznsli1bv82s0g8h37iacrjrdkv87bmy7"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/truncnorm/")
+    (synopsis "Truncated normal distribution")
+    (description "This package provides functions for the truncated normal
+distribution with mean equal to @code{mean} and standard deviation equal to
+@code{sd}.  It includes density, distribution, quantile, and expected value
+functions, as well as a random generation function.")
+    (license license:gpl2)))
+
 (define-public r-hardyweinberg
   (package
     (name "r-hardyweinberg")
