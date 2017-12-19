@@ -32,7 +32,7 @@
 (define-public icu4c
   (package
    (name "icu4c")
-   (version "60.1")
+   (version "60.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -42,7 +42,7 @@
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
             (sha256
-             (base32 "09g2bvmmww8qs9p8p47avzazbibx8yqvswkr8rd02b7kzg4adxgq"))))
+             (base32 "065l3n0q9wqaw8dz20x82srshhm6i987fr9ync5xf9mr6n7ylwzh"))))
    (build-system gnu-build-system)
    (inputs
     `(("perl" ,perl)))
