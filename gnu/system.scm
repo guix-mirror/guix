@@ -449,7 +449,7 @@ a container or that of a \"bare metal\" system."
          (other-fs  (non-boot-file-system-service os))
          (unmount   (user-unmount-service known-fs))
          (swaps     (swap-services os))
-         (procs     (user-processes-service))
+         (procs     (service user-processes-service-type))
          (host-name (host-name-service (operating-system-host-name os)))
          (entries   (operating-system-directory-base-entries
                      os #:container? container?)))
