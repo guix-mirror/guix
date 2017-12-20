@@ -529,7 +529,7 @@ in KNOWN-MOUNT-POINTS when it is stopped."
   (list (shepherd-service
          (documentation "Preserve entropy across reboots for /dev/urandom.")
          (provision '(urandom-seed))
-         (requirement '(user-processes))
+         (requirement '(file-systems))
          (start #~(lambda _
                     ;; On boot, write random seed into /dev/urandom.
                     (when (file-exists? #$%random-seed-file)
@@ -590,7 +590,13 @@ in KNOWN-MOUNT-POINTS when it is stopped."
   (service-type (name 'urandom-seed)
                 (extensions
                  (list (service-extension shepherd-root-service-type
-                                          urandom-seed-shepherd-service)))
+                                          urandom-seed-shepherd-service)
+
+                       ;; Have 'user-processes' depend on 'urandom-seed'.
+                       ;; This ensures that user processes and daemons don't
+                       ;; start until we have seeded the PRNG.
+                       (service-extension user-processes-service-type
+                                          (const '(urandom-seed)))))
                 (description
                  "Seed the @file{/dev/urandom} pseudo-random number
 generator (RNG) with the value recorded when the system was last shut
