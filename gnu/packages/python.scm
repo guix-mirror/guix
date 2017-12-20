@@ -2619,12 +2619,12 @@ between language specification and implementation aspects.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-        (add-before 'build 'set-environment-variables
-         (lambda* (#:key inputs #:allow-other-keys)
-          (call-with-output-file "site.cfg"
-            (lambda (port)
-              (format port
-                      "[openblas]
+         (add-before 'build 'configure-blas-lapack
+           (lambda* (#:key inputs #:allow-other-keys)
+             (call-with-output-file "site.cfg"
+               (lambda (port)
+                 (format port
+                         "[openblas]
 libraries = openblas
 library_dirs = ~a/lib
 include_dirs = ~a/include
@@ -2635,30 +2635,33 @@ lapack_libs = lapack
 library_dirs = ~a/lib
 include_dirs = ~a/include
 "
-                      (assoc-ref inputs "openblas")
-                      (assoc-ref inputs "openblas")
-                      (assoc-ref inputs "lapack")
-                      (assoc-ref inputs "lapack"))))
-          ;; Make /gnu/store/...-bash-.../bin/sh the default shell, instead of
-          ;; /bin/sh.
-          (substitute* "numpy/distutils/exec_command.py"
-            (("(os.environ.get\\('SHELL', ')(/bin/sh'\\))" match match-start match-end)
-            (string-append match-start (assoc-ref inputs "bash") match-end)))
-          ;; Use "gcc" executable, not "cc".
-          (substitute* "numpy/distutils/system_info.py"
-            (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
-             "c = distutils.ccompiler.new_compiler(); c.set_executables(compiler='gcc',compiler_so='gcc',linker_exe='gcc',linker_so='gcc -shared')"))
-          #t))
-        ;; Tests can only be run after the library has been installed and not
-        ;; within the source directory.
-        (delete 'check)
-        (add-after 'install 'check
-         (lambda* (#:key outputs inputs #:allow-other-keys)
-           ;; Make installed package available for running the tests
-           (add-installed-pythonpath inputs outputs)
-           (with-directory-excursion "/tmp"
-             (zero? (system* "python" "-c"
-                             "import numpy; numpy.test(verbose=2)"))))))))
+                         (assoc-ref inputs "openblas")
+                         (assoc-ref inputs "openblas")
+                         (assoc-ref inputs "lapack")
+                         (assoc-ref inputs "lapack"))))
+             #t))
+         (add-before 'build 'fix-executable-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Make /gnu/store/...-bash-.../bin/sh the default shell,
+             ;; instead of /bin/sh.
+             (substitute* "numpy/distutils/exec_command.py"
+               (("(os.environ.get\\('SHELL', ')(/bin/sh'\\))" match match-start match-end)
+                (string-append match-start (assoc-ref inputs "bash") match-end)))
+             ;; Use "gcc" executable, not "cc".
+             (substitute* "numpy/distutils/system_info.py"
+               (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
+                "c = distutils.ccompiler.new_compiler(); c.set_executables(compiler='gcc',compiler_so='gcc',linker_exe='gcc',linker_so='gcc -shared')"))
+             #t))
+         ;; Tests can only be run after the library has been installed and not
+         ;; within the source directory.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; Make installed package available for running the tests
+             (add-installed-pythonpath inputs outputs)
+             (with-directory-excursion "/tmp"
+               (zero? (system* "python" "-c"
+                               "import numpy; numpy.test(verbose=2)"))))))))
     (home-page "http://www.numpy.org/")
     (synopsis "Fundamental package for scientific computing with Python")
     (description "NumPy is the fundamental package for scientific computing
