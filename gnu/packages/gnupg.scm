@@ -385,10 +385,14 @@ libskba (working with X.509 certificates and CMS data).")
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
      `(("libgpg-error" ,libgpg-error)))
     (inputs
-     `(("gnupg" ,gnupg-2.0)
+     `(("gnupg" ,gnupg)
        ("libassuan" ,libassuan)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list (string-append "--enable-fixed-path="
+                            (assoc-ref %build-inputs "gnupg")
+                            "/bin"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-cmake-file
            (lambda _
