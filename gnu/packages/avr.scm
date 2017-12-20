@@ -158,7 +158,7 @@ C++.")
     (native-inputs
      `(("unzip" ,unzip)
        ("xxd" ,xxd)))
-    (home-page "http://microscheme.org/")
+    (home-page "https://github.com/ryansuchocki/microscheme/")
     (synopsis "Scheme subset for Atmel microcontrollers")
     (description
      "Microscheme, or @code{(ms)} for short, is a functional programming
