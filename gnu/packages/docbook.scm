@@ -136,6 +136,8 @@ by no means limited to these applications.)  This package provides XML DTDs.")
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/docbook/docbook-xsl/"
                                   version "/docbook-xsl-" version ".tar.bz2"))
+              ;; Note: If removing all patches, the XZ dependency is no longer needed.
+              (patches (search-patches "docbook-xsl-nonrecursive-string-subst.patch"))
               (sha256
                (base32
                 "0s59lihif2fr7rznckxr2kfyrvkirv76r1zvidp9b5mj28p4apvj"))))
@@ -145,11 +147,12 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                    (use-modules (guix build utils))
 
                    (let* ((bzip2  (assoc-ref %build-inputs "bzip2"))
+                          (xz     (assoc-ref %build-inputs "xz"))
                           (tar    (assoc-ref %build-inputs "tar"))
                           (source (assoc-ref %build-inputs "source"))
                           (out    (assoc-ref %outputs "out"))
                           (xsl    (string-append out "/xml/xsl")))
-                     (setenv "PATH" (string-append bzip2 "/bin"))
+                     (setenv "PATH" (string-append bzip2 "/bin" ":" xz "/bin"))
                      (system* (string-append tar "/bin/tar") "xvf" source)
 
                      (mkdir-p xsl)
@@ -162,6 +165,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                                        name-version "/")))))
                  #:modules ((guix build utils))))
     (native-inputs `(("bzip2" ,bzip2)
+                     ("xz" ,xz)
                      ("tar" ,tar)))
     (home-page "http://docbook.org")
     (synopsis "DocBook XSL style sheets for document authoring")
