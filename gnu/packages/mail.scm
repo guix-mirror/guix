@@ -1049,7 +1049,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.89.1")
+    (version "4.90")
     (source
      (origin
        (method url-fetch)
@@ -1059,7 +1059,7 @@ delivery.")
                                  version ".tar.bz2")))
        (sha256
         (base32
-         "133sjkcm9wlhpcxflr5v865varc1995bqa1y3vjs1w6zc34kp18w"))))
+         "1cmx2648zhpsc4pznky7qsqbjazd3wn4gpslbl30j56cv1m6rb3x"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
