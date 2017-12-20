@@ -80,8 +80,8 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                   (map (lambda (var tool)
                          (string-append (string-append var "_FOR_TARGET")
                                         "=" target "-" tool))
-                       '("CC"  "CXX" "LD" "AR" "NM" "RANLIB" "STRIP")
-                       '("gcc" "g++" "ld" "ar" "nm" "ranlib" "strip"))
+                       '("CC"  "CXX" "LD" "AR" "NM" "OBJDUMP" "RANLIB" "STRIP")
+                       '("gcc" "g++" "ld" "ar" "nm" "objdump" "ranlib" "strip"))
                   '()))))
          (libdir
           (let ((base '(or (assoc-ref outputs "lib")
@@ -396,7 +396,19 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
                                        "gcc-5-source-date-epoch-2.patch"
-                                       "gcc-fix-texi2pod.patch"))))
+                                       "gcc-fix-texi2pod.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Fix 'libcc1/configure' error when cross-compiling GCC.
+               ;; Without that, 'libcc1/configure' wrongfully determines that
+               ;; '-rdynamic' support is missing because $gcc_cv_objdump is
+               ;; empty:
+               ;;
+               ;;   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67590
+               ;;   http://cgit.openembedded.org/openembedded-core/commit/?id=f6e47aa9b12f9ab61530c40e0343f451699d9077
+               '(substitute* "libcc1/configure"
+                  (("\\$gcc_cv_objdump -T")
+                   "$OBJDUMP_FOR_TARGET -T")))))
     (inputs
      `(("isl" ,isl)
        ,@(package-inputs gcc-4.7)))))
