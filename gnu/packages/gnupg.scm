@@ -341,7 +341,8 @@ libskba (working with X.509 certificates and CMS data).")
                 ;; Keep the old name around to ease transition.
                 (symlink "gpgv" "gpgv2")
                 (symlink "gpg" "gpg2")
-                #t)))))))))
+                #t)))))))
+   (properties `((superseded . ,gnupg)))))
 
 (define-public gnupg-1
   (package (inherit gnupg)
