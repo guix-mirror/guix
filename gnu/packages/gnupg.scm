@@ -492,9 +492,10 @@ distributed separately.")
            (lambda _
              (zero? (system* "make" "check")))))))
     (build-system python-build-system)
+    (native-inputs
+     `(("gnupg" ,gnupg-1)))
     (inputs
-     `(("gnupg" ,gnupg-2.0)
-       ("gpgme" ,gpgme)))
+     `(("gpgme" ,gpgme)))
     (home-page "https://launchpad.net/pygpgme")
     (synopsis "Python module for working with OpenPGP messages")
     (description
