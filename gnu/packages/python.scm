@@ -2694,6 +2694,49 @@ capabilities.")
 (define-public python2-numpy-next
   (package-with-python2 python-numpy-next))
 
+;; NOTE: NumPy 1.8 is packaged only for Python 2 because it is of
+;; interest only for legacy code going back to NumPy's predecessor
+;; Numeric.
+(define-public python2-numpy-1.8
+  (package (inherit python2-numpy)
+    (version "1.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/numpy/numpy/archive/v" version ".tar.gz"))
+       (file-name (string-append "python2-numpy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sc20gz1b17xnyrkp5frca3ql5qfalpv916hfg2kqxpwr6jg0f1g"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python2-numpy)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'configure-blas-lapack
+             (lambda* (#:key inputs #:allow-other-keys)
+               (call-with-output-file "site.cfg"
+                 (lambda (port)
+                   (format port
+                           "[openblas]
+libraries = openblas,lapack
+library_dirs = ~a/lib:~a/lib
+include_dirs = ~a/include:~a/include
+"
+                           (assoc-ref inputs "openblas")
+                           (assoc-ref inputs "lapack")
+                           (assoc-ref inputs "openblas")
+                           (assoc-ref inputs "lapack"))))
+               #t))))))
+    (description "NumPy is the fundamental package for scientific computing
+with Python.  It contains among other things: a powerful N-dimensional array
+object, sophisticated (broadcasting) functions, tools for integrating C/C++
+and Fortran code, useful linear algebra, Fourier transform, and random number
+capabilities.  Version 1.8 is the last one to contain the numpy.oldnumeric API
+that includes the compatibility layer numpy.oldnumeric with NumPy's predecessor
+Numeric.")
+    (license license:bsd-3)))
+
 (define-public python-munch
   (package
     (name "python-munch")
