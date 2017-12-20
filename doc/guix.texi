@@ -10031,12 +10031,12 @@ well as in the @var{groups} field of the @var{operating-system} record.
 @end example
 @end deffn
 
-@deffn {Scheme Procedure} urandom-seed-service
+@defvr {Scheme Variable} urandom-seed-service-type
 Save some entropy in @var{%random-seed-file} to seed @file{/dev/urandom}
 when rebooting.  It also tries to seed @file{/dev/urandom} from
 @file{/dev/hwrng} while booting, if @file{/dev/hwrng} exists and is
 readable.
-@end deffn
+@end defvr
 
 @defvr {Scheme Variable} %random-seed-file
 This is the name of the file where some random bytes are saved by

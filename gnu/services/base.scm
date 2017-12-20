@@ -597,12 +597,13 @@ in KNOWN-MOUNT-POINTS when it is stopped."
                        ;; start until we have seeded the PRNG.
                        (service-extension user-processes-service-type
                                           (const '(urandom-seed)))))
+                (default-value #f)
                 (description
                  "Seed the @file{/dev/urandom} pseudo-random number
 generator (RNG) with the value recorded when the system was last shut
 down.")))
 
-(define (urandom-seed-service)
+(define (urandom-seed-service)                    ;deprecated
   (service urandom-seed-service-type #f))
 
 
@@ -1984,7 +1985,7 @@ This service is not part of @var{%base-services}."
                                           (ip "127.0.0.1")
                                           (provision '(loopback)))))
         (syslog-service)
-        (urandom-seed-service)
+        (service urandom-seed-service-type)
         (guix-service)
         (nscd-service)
 
