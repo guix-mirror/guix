@@ -238,7 +238,8 @@ differences.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1mivg0fy3a6fcn535ln8nkgfj6vxh5hsxxs5h6692wxmsjyyh8fn"))))
+              "1mivg0fy3a6fcn535ln8nkgfj6vxh5hsxxs5h6692wxmsjyyh8fn"))
+            (patches (search-patches "diffutils-getopt.patch"))))
    (build-system gnu-build-system)
    (synopsis "Comparing and merging files")
    (description
