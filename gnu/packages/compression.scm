@@ -1609,7 +1609,13 @@ or junctions, and always follows hard links.")
          (delete 'configure))           ; no configure script
        #:make-flags
        (list "CC=gcc"
-             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             ;; Skip auto-detection of, and creating a dependency on, the build
+             ;; environment's ‘xz’ for what amounts to a dubious feature anyway.
+             "HAVE_LZMA=0"
+             ;; Not currently detected, but be explicit & avoid surprises later.
+             "HAVE_LZ4=0"
+             "HAVE_ZLIB=0")
        #:test-target "test"))
     (home-page "http://zstd.net/")
     (synopsis "Zstandard real-time compression algorithm")
