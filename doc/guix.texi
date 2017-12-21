@@ -4210,6 +4210,14 @@ paths}.  Derivations paths can be passed to the @code{build-derivations}
 procedure to perform the build actions they prescribe (@pxref{The
 Store}).
 
+@cindex fixed-output derivations
+Operations such as file downloads and version-control checkouts for
+which the expected content hash is known in advance are modeled as
+@dfn{fixed-output derivations}.  Unlike regular derivations, the outputs
+of a fixed-output derivation are independent of its inputs---e.g., a
+source code download produces the same result regardless of the download
+method and tools being used.
+
 The @code{(guix derivations)} module provides a representation of
 derivations as Scheme objects, along with procedures to create and
 otherwise manipulate derivations.  The lowest-level primitive to create
