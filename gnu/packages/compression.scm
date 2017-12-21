@@ -1615,8 +1615,7 @@ or junctions, and always follows hard links.")
              "HAVE_LZMA=0"
              ;; Not currently detected, but be explicit & avoid surprises later.
              "HAVE_LZ4=0"
-             "HAVE_ZLIB=0")
-       #:test-target "test"))
+             "HAVE_ZLIB=0")))
     (home-page "http://zstd.net/")
     (synopsis "Zstandard real-time compression algorithm")
     (description "Zstandard (@command{zstd}) is a lossless compression algorithm
