@@ -188,12 +188,16 @@ project (but it is usable outside of the Gnome platform).")
 (define-public libxslt
   (package
     (name "libxslt")
+    (replacement libxslt/fixed)
     (version "1.1.29")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxslt/libxslt-"
                                  version ".tar.gz"))
-             (patches (search-patches "libxslt-CVE-2016-4738.patch"))
+             ;; XXX Oops, the patches field is redefined below, which means the
+             ;; patch for CVE-2016-4738 was not used. Fixed in the definition of
+             ;; libxslt/fixed below.
+             ;(patches (search-patches "libxslt-CVE-2016-4738.patch"))
              (sha256
               (base32
                "1klh81xbm9ppzgqk339097i39b7fnpmlj8lzn8bpczl3aww6x5xm"))
@@ -209,6 +213,15 @@ project (but it is usable outside of the Gnome platform).")
      "Libxslt is an XSLT C library developed for the GNOME project.  It is
 based on libxml for XML parsing, tree manipulation and XPath support.")
     (license license:x11)))
+
+(define libxslt/fixed
+  (package
+    (inherit libxslt)
+    (source (origin
+              (inherit (package-source libxslt))
+              (patches (search-patches "libxslt-CVE-2016-4738.patch"
+                                       "libxslt-CVE-2017-5029.patch"
+                                       "libxslt-generated-ids.patch"))))))
 
 (define-public perl-graph-readwrite
   (package
