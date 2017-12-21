@@ -555,25 +555,22 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.11")
+    (version "1.12.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://mupdf.com/downloads/archive/"
-                            name "-" version "-source.tar.gz"))
+                            name "-" version "-source.tar.xz"))
+        (patches (search-patches "mupdf-build-with-latest-openjpeg.patch"))
         (sha256
          (base32
-          "02phamcchgsmvjnb3ir7r5sssvx9fcrscn297z73b82n1jl79510"))
-        (patches (search-patches "mupdf-build-with-openjpeg-2.1.patch"
-                                 "mupdf-CVE-2017-14685.patch"
-                                 "mupdf-CVE-2017-14686.patch"
-                                 "mupdf-CVE-2017-14687.patch"
-                                 "mupdf-CVE-2017-15587.patch"))
+          "0b9j0gqbc3jhmx87r6idcsh8lnb30840c3hyx6dk2gdjqqh3hysp"))
         (modules '((guix build utils)))
         (snippet '(delete-file-recursively "thirdparty"))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
+        ("freeglut" ,freeglut)
         ("freetype" ,freetype)
         ("harfbuzz" ,harfbuzz)
         ("jbig2dec" ,jbig2dec)

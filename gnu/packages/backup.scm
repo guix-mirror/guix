@@ -195,7 +195,8 @@ backups (called chunks) to allow easy burning to CD/DVD.")
        (method url-fetch)
        (uri (string-append "http://libarchive.org/downloads/libarchive-"
                            version ".tar.gz"))
-       (patches (search-patches "libarchive-CVE-2017-14166.patch"))
+       (patches (search-patches "libarchive-CVE-2017-14166.patch"
+                                "libarchive-CVE-2017-14502.patch"))
        (sha256
         (base32
          "1km0mzfl6in7l5vz9kl09a88ajx562rw93ng9h2jqavrailvsbgd"))))

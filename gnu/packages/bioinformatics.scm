@@ -5857,14 +5857,14 @@ information as possible.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.4-4")
+    (version "2.4-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "1n57dzv2aid6iqd9fkqik401sidqanhzsawyak94qbiyh6dbd1x9"))))
+         "0cyyvn3xsjn24w590jn6z4xajafv7yzvj6c51vqi9q6m8v5831ya"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -6025,14 +6025,14 @@ distribution.")
 (define-public r-dexseq
   (package
     (name "r-dexseq")
-    (version "1.24.1")
+    (version "1.24.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DEXSeq" version))
        (sha256
         (base32
-         "1hwckj4ijgpdchbakvh60nmcaz4fwd5yplhn0880z3dnlsrp8ik3"))))
+         "18nh8ynxirfwkmc4sawdxgl7w1sl9ny5zpv8zbhv9vi5vgb8pxmj"))))
     (properties `((upstream-name . "DEXSeq")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6703,13 +6703,13 @@ authoring books and technical documents with R Markdown.")
 (define-public r-biocstyle
   (package
    (name "r-biocstyle")
-   (version "2.6.0")
+   (version "2.6.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocStyle" version))
               (sha256
                (base32
-                "05f2j9fx8s5gh4f8qkl6wcz32ghz04wxhqb3xxcn1bj24qd7x1x8"))))
+                "03pp04pkcq99kdv2spzr995h2cxsza7l6w3d4gp4112m06prcybm"))))
     (properties
      `((upstream-name . "BiocStyle")))
     (build-system r-build-system)
@@ -6973,13 +6973,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.20.1")
+    (version "3.20.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "01qnxwr9rmz8r5ga3hvjk632365ga2aygx71mxkk7jiad2pjznsp"))))
+                "0j5s3i33qmld9l7gs1rzpv601zxyqz711x8mq35hml088c8s99w9"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7039,13 +7039,13 @@ coding changes and predict coding outcomes.")
 (define-public r-limma
   (package
     (name "r-limma")
-    (version "3.34.2")
+    (version "3.34.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "limma" version))
               (sha256
                (base32
-                "1zyw01z9crm1jc86fva4pqxd9zxfsbsqwjq6ry39gag9pfb7pwcz"))))
+                "1vcxf9jg8xngxg5kb9bp8rw5sghpnkpj320iq309m2fp41ahsk3f"))))
     (build-system r-build-system)
     (home-page "http://bioinf.wehi.edu.au/limma")
     (synopsis "Package for linear models for microarray and RNA-seq data")
@@ -7172,18 +7172,19 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.34.0")
+    (version "2.34.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "1dn3ysf0vb3mmg2b3380g0j1ajf88x4rh7fddfp990h2xlnsy2cx"))))
+                "0jzv8b86vpvavwnzi5xf7y18xmn72zkabkn2kclg1mgl847cq13k"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-httr" ,r-httr)
        ("r-progress" ,r-progress)
        ("r-rcurl" ,r-rcurl)
        ("r-stringr" ,r-stringr)
@@ -7393,13 +7394,13 @@ alignments.")
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
-    (version "1.38.0")
+    (version "1.38.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rtracklayer" version))
               (sha256
                (base32
-                "12al1ygzy9p4myxa1fd817m28x2fj6f863znk9bw3hp7knbi98dh"))))
+                "1sjn3976f1sqvrq6jq2hgc60ffxgfr3jlklaxfrk3xad5cv2kr2d"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -10168,14 +10169,14 @@ defining LD blocks.")
 (define-public r-gqtlstats
   (package
     (name "r-gqtlstats")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gQTLstats" version))
        (sha256
         (base32
-         "1cbdqawxzgna8rrgj3siph5sw4d2pb57qc0gn6ibfkhyk45f8gdv"))))
+         "0gvq1sf2zjbkk431x40z6wql3c1rpclnnwa2f1hvykb8mmw70kmq"))))
     (properties `((upstream-name . "gQTLstats")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10222,14 +10223,14 @@ family of feature/genome hypotheses.")
 (define-public r-gviz
   (package
     (name "r-gviz")
-    (version "1.22.0")
+    (version "1.22.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Gviz" version))
        (sha256
         (base32
-         "1lrw65a8426wpxw975wjcaiacpp6fqa00nif1yxigyankbfs23c8"))))
+         "173n99mc95sij2vb8n3xd016x7mxhjs961q3l29xkg1lrnnm2sva"))))
     (properties `((upstream-name . "Gviz")))
     (build-system r-build-system)
     (propagated-inputs

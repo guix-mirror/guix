@@ -12045,3 +12045,30 @@ belong to tagged versions.")
      "BooleanOperations provides a Python library that enables
 boolean operations on paths.")
     (license license:expat)))
+
+(define-public python-tempdir
+  (package
+    (name "python-tempdir")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tempdir" version))
+       (sha256
+        (base32
+         "13msyyxqbicr111a294x7fsqbkl6a31fyrqflx3q7k547gnq15k8"))))
+    (build-system python-build-system)
+    (home-page "https://pypi.org/project/tempdir/")
+    (arguments
+     ;; the package has no tests
+     '(#:tests? #f))
+    (synopsis "Python library for managing temporary directories")
+    (description
+     "This library manages temporary directories that are automatically
+deleted with all their contents when they are no longer needed.  It is
+particularly convenient for use in tests.")
+    (license license:expat)))
+
+(define-public python2-tempdir
+  (package-with-python2 python-tempdir))
+

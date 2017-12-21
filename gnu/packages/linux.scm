@@ -370,8 +370,8 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 (define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
 
-(define %linux-libre-version "4.14.6")
-(define %linux-libre-hash "0q6dl2shkj5dkf0wgzgfyaq0axk97w05j618xi619y9xqph4ql79")
+(define %linux-libre-version "4.14.8")
+(define %linux-libre-hash "0y8nggpdgfqfx6dy5k39vj552k5mxamwjn6mldwrhs2aqpsrbwr3")
 
 ;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
@@ -384,14 +384,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.69"
-                    "0xkqbh8fpx47appszjbxzljr6vr0wyk0fphlkynpcrmingk4b98j"
+  (make-linux-libre "4.9.71"
+                    "0z4m77zbndlqy43bgl1xhklpjilbvrhbfbcppc55z3f61qwjf0mc"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.105"
-                    "177qvci7wfrc23vi11bnyayfivxf6d8hankgrzv26jr3z6j0rall"
+  (make-linux-libre "4.4.107"
+                    "0pfzv15c1qj7a77n8cdmsi77yhlbzv35y7qa03j0b96ajwjsclsp"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -3397,16 +3397,30 @@ The following service daemons are also provided:
 (define-public rng-tools
   (package
     (name "rng-tools")
-    (version "5")
+    (version "6.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                "http://downloads.sourceforge.net/sourceforge/gkernel/"
-                "rng-tools-" version ".tar.gz"))
+              (uri (string-append "https://github.com/nhorman/rng-tools/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "13h7lc8wl9khhvkr0i3bl5j9bapf8anhqis1lcnwxg1vc2v058b0"))))
+                "00ywsknjpc9jd9kfmz2syk9l0xkiiwyx5qhl5zvhhc69v6682i31"))))
     (build-system gnu-build-system)
+    (arguments
+     `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
+       #:configure-flags '("--without-nistbeacon")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "sh" "autogen.sh")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libsysfs" ,sysfsutils)))
     (synopsis "Random number generator daemon")
     (description
      "Monitor a hardware random number generator, and supply entropy

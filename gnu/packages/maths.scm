@@ -2482,7 +2482,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "17.05.1")
+    (version "17.10.1")
     (source
      (origin
        (method url-fetch)
@@ -2491,7 +2491,7 @@ point numbers.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0dv0cy0cf46v0cbw32izscpkdmpxg1qhwq1f4cz46kkqd8k4yfbj"))))
+         "0qlzc31cqkwpfgrb9cif9bcnkj3rq487plg4rns7jxv6pq4609v1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

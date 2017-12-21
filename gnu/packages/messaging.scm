@@ -493,14 +493,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.5.5")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbxmpp" version))
        (sha256
         (base32
-         "1gnzrzrdl4nii1sc5x8p5iw2ya5sl70j3nn34abqsny51p2pzmv6"))))
+         "0qvkiscy42nhzhccszi049ws8cnhpxgc13g8naq1rsa5x9zy163c"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -518,7 +518,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "0.16.8")
+    (version "0.16.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -526,7 +526,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ckakdjg30fsyjsgyy2573x9nmjivdg76y049l86wns5axw8im26"))))
+                "0v08zdvpqaig0wxpxn1l8rsj3wr3fqvnagn8cnvch17vfqv9gcr1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -568,8 +568,8 @@ end-to-end encryption support; XML console.")
 (define-public dino
   ;; The only release tarball is for version 0.0, but it is very old and fails
   ;; to build.
-  (let ((commit "2a514d0969f5c25d5e2d14421125a47df6b14974")
-        (revision "2"))
+  (let ((commit "f25fadde2d6c9492b9cafe2cddbcc7b966942e47")
+        (revision "3"))
     (package
       (name "dino")
       (version (string-append "0.0-" revision "." (string-take commit 9)))
@@ -581,7 +581,7 @@ end-to-end encryption support; XML console.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0v9fqikxvamdw7bxbwc4s01x0vf30vl77149y16krijaqnq6kzv0"))))
+                  "1nhzrw3pbpybn9qclckk6z427vbgnqd0y1l63zd1rfw4zw099mzs"))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f ; there are no tests

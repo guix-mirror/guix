@@ -127,7 +127,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.4.4")
+    (version "2.5.1")
     (source
      (origin
       (method url-fetch)
@@ -135,10 +135,11 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "18bwffjkx9pn0lawbsn6zhd90i7xhjgpf9b0nl5xw9134w1a2scy"))))
+        "0jb4nb4nrjr949gd3lw8lh4v5d6qigxaq6xwy24w5apjnhvnrya7"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("libgpg-error" ,libgpg-error) ("pth" ,pth)))
+     `(("libgpg-error" ,libgpg-error)
+       ("pth" ,pth)))
     (home-page "https://gnupg.org")
     (synopsis
      "IPC library used by GnuPG and related software")
@@ -212,14 +213,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.3")
+    (version "2.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1d4482c4pbi0p1k8cc0f9c4q51k56v8navrbz5samxrrs42p3lyb"))))
+                "1v7j8v2ww1knknbrhw3svfrqkmf9ll58iq0dczbsdpqgg1j3w6j0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -327,7 +328,8 @@ libskba (working with X.509 certificates and CMS data).")
                 ;; Keep the old name around to ease transition.
                 (symlink "gpgv" "gpgv2")
                 (symlink "gpg" "gpg2")
-                #t)))))))))
+                #t)))))))
+   (properties `((superseded . ,gnupg)))))
 
 (define-public gnupg-1
   (package (inherit gnupg)
@@ -371,10 +373,14 @@ libskba (working with X.509 certificates and CMS data).")
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
      `(("libgpg-error" ,libgpg-error)))
     (inputs
-     `(("gnupg" ,gnupg-2.0)
+     `(("gnupg" ,gnupg)
        ("libassuan" ,libassuan)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list (string-append "--enable-fixed-path="
+                            (assoc-ref %build-inputs "gnupg")
+                            "/bin"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-cmake-file
            (lambda _
@@ -478,9 +484,10 @@ distributed separately.")
            (lambda _
              (zero? (system* "make" "check")))))))
     (build-system python-build-system)
+    (native-inputs
+     `(("gnupg" ,gnupg-1)))
     (inputs
-     `(("gnupg" ,gnupg-2.0)
-       ("gpgme" ,gpgme)))
+     `(("gpgme" ,gpgme)))
     (home-page "https://launchpad.net/pygpgme")
     (synopsis "Python module for working with OpenPGP messages")
     (description
@@ -714,14 +721,14 @@ including tools for signing keys, keyring analysis, and party preparation.
 (define-public pinentry-tty
   (package
     (name "pinentry-tty")
-    (version "1.0.0")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/pinentry/pinentry-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0ni7g4plq6x78p32al7m8h2zsakvg1rhfz0qbc3kdc7yq7nw4whn"))))
+                "0w35ypl960pczg5kp6km3dyr000m1hf0vpwwlh72jjkjza36c1v8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-pinentry-tty")))

@@ -83,6 +83,7 @@ older or slower computers and embedded systems.")
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
                                   name "-" version ".tar.bz2"))
+              (patches (search-patches "links-CVE-2017-11114.patch"))
               (sha256
                (base32
                 "1f24y83wa1vzzjq5kp857gjqdpnmf8pb29yw7fam0m8wxxw0c3gp"))))

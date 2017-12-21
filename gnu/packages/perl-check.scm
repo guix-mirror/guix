@@ -869,6 +869,30 @@ checks for pod coverage of all appropriate files.")
 If this fails, then rather than failing tests this skips all tests.")
     (license perl-license)))
 
+(define-public perl-test-requiresinternet
+  (package
+    (name "perl-test-requiresinternet")
+    (version "0.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MA/MALLEN/Test-RequiresInternet-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0gl33vpj9bb78pzyijp884b66sbw6jkh1ci0xki8rmf03hmb79xv"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-RequiresInternet/")
+    (synopsis "Easily test network connectivity when running tests")
+    (description
+     "This Perl module is intended to easily test network connectivity to
+non-local Internet resources before functional tests begin.  If the sockets
+cannot connect to the specified hosts and ports, the exception is caught and
+reported, and the tests skipped.")
+    (license perl-license)))
+
 (define-public perl-test-script
   (package
     (name "perl-test-script")

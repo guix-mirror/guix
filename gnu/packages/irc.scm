@@ -153,18 +153,21 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "2.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1ix2izrlr5jx5vl49kz9jbib7cq9mr6i7iyxkcz6xjfrryx2s5x9"))
+                "1l854dramvn9vfba7jpazkjwm4k4i5pshq58vjv6z2mxmcp5hhv9"))
               (patches (search-patches "weechat-python.patch"))))
     (build-system cmake-build-system)
-    (native-inputs `(("gettext" ,gettext-minimal)
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ;; For tests.
+       ("cpputest" ,cpputest)))
     (inputs `(("ncurses" ,ncurses)
               ("libgcrypt" ,libgcrypt "out")
               ("zlib" ,zlib)
@@ -177,15 +180,30 @@ SILC and ICB protocols via plugins.")
               ("perl" ,perl)
               ("tcl" ,tcl)))
     (arguments
-     `(#:tests? #f ; tests require cpputime
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'wrap
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out"))
-                            (py2 (assoc-ref inputs "python")))
-                        (wrap-program (string-append out "/bin/weechat")
-                          `("PATH" ":" prefix (,(string-append py2 "/bin"))))
-                        #t))))))
+     `(#:configure-flags
+       (list "-DENABLE_TESTS=ON")       ; ‘make test’ fails otherwise
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           ;; For reasons best left to the imagination, CppUTest cannot skip
+           ;; more than one single test...  Resort to manual patching instead.
+           ;; See <https://cpputest.github.io/manual.html#command_line>.
+           (λ _
+             ;; Don't test plugin support for languages we don't enable.
+             (substitute* "tests/unit/test-plugins.cpp"
+               ((".*\\$\\{plugin.name\\} == (javascript|php|ruby)" all)
+                (string-append "// SKIP" all)))
+             (substitute* "tests/scripts/test-scripts.cpp"
+               ((".*\\{ \"(jvascript|php|ruby)\", " all) ; sic
+                (string-append "// SKIP" all)))
+             #t))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (py2 (assoc-ref inputs "python")))
+               (wrap-program (string-append out "/bin/weechat")
+                 `("PATH" ":" prefix (,(string-append py2 "/bin"))))
+               #t))))))
     (synopsis "Extensible chat client")
     (description "WeeChat (Wee Enhanced Environment for Chat) is an
 @dfn{Internet Relay Chat} (IRC) client, which is designed to be light and fast.

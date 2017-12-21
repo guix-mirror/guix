@@ -1072,7 +1072,8 @@ Portable Game Notation.")
        (uri (string-append "http://www.techrescue.org/xboing/xboing"
                            version ".tar.gz"))
        (sha256
-        (base32 "16m2si8wmshxpifk861vhpqviqxgcg8bxj6wfw8hpnm4r2w9q0b7"))))
+        (base32 "16m2si8wmshxpifk861vhpqviqxgcg8bxj6wfw8hpnm4r2w9q0b7"))
+       (patches (search-patches "xboing-CVE-2004-0149.patch"))))
     (arguments
      `(#:tests? #f
        #:phases
@@ -2515,6 +2516,7 @@ emulation community.  It provides highly accurate emulation.")
                 (uri (git-reference
                       (url "https://github.com/Aloshi/EmulationStation.git")
                       (commit commit))) ; no version tag
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "0cm0sq2wri2l9cvab1l0g02za59q7klj0h3p028vr96n6njj4w9v"))))
@@ -5136,3 +5138,47 @@ abilities and powers.  With a modern graphical and customisable interface,
 intuitive mouse control, streamlined mechanics and deep, challenging combat,
 Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
     (license license:gpl3+)))
+
+(define-public quakespasm
+  (package
+    (name "quakespasm")
+    (version "0.93.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/quakespasm/Source/quakespasm-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "0b2nz7w4za32pc34r62ql270z692qcjs2pm0i3svkxkvfammhdfq"))))
+    (arguments
+     `(#:tests? #f
+       #:make-flags '("CC=gcc"
+                      "MP3LIB=mpg123"
+                      "USE_CODEC_FLAC=1"
+                      "USE_CODEC_MIKMOD=1"
+                      "USE_SDL2=1"
+                      "-CQuake")
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'unpack 'fix-makefile-paths
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (mkdir-p (string-append out "/bin"))
+                        (substitute* "Quake/Makefile"
+                          (("/usr/local/games")
+                           (string-append out "/bin")))
+                        #t))))))
+    (build-system gnu-build-system)
+    (inputs `(("libmikmod" ,libmikmod)
+              ("libvorbis" ,libvorbis)
+              ("flac" ,flac)
+              ("mesa" ,mesa)
+              ("mpg123" ,mpg123)
+              ("sdl2" ,sdl2)))
+    (synopsis "First person shooter engine for Quake 1")
+    (description "Quakespasm is a modern engine for id software's Quake 1.
+It includes support for 64 bit CPUs, custom music playback, a new sound driver,
+some graphical niceities, and numerous bug-fixes and other improvements.")
+    (home-page "http://quakespasm.sourceforge.net/")
+    (license license:gpl2+)))

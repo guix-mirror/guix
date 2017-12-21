@@ -541,14 +541,14 @@ plot networks.")
 (define-public r-proxy
   (package
     (name "r-proxy")
-    (version "0.4-19")
+    (version "0.4-20")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "proxy" version))
        (sha256
         (base32
-         "0ladwgi70jw2a3adgg2xadw8hz3mm6llsw428c1fcrl305sy49vb"))))
+         "15g6dacdmlbkcnimblscghl23aj732cn6qwbs583r4im9v5nvbla"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/proxy")
     (synopsis "Distance and similarity measures")
@@ -1444,22 +1444,66 @@ imputations.")
     ;; Any of these two versions.
     (license (list license:gpl2 license:gpl3))))
 
+(define-public r-truncnorm
+  (package
+    (name "r-truncnorm")
+    (version "1.0-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "truncnorm" version))
+       (sha256
+        (base32
+         "1qac05z50618y4bw1d7yznsli1bv82s0g8h37iacrjrdkv87bmy7"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/truncnorm/")
+    (synopsis "Truncated normal distribution")
+    (description "This package provides functions for the truncated normal
+distribution with mean equal to @code{mean} and standard deviation equal to
+@code{sd}.  It includes density, distribution, quantile, and expected value
+functions, as well as a random generation function.")
+    (license license:gpl2)))
+
+(define-public r-rsolnp
+  (package
+    (name "r-rsolnp")
+    (version "1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rsolnp" version))
+       (sha256
+        (base32
+         "0w7nkj6igr0gi7r7jg950lsx7dj6aipgxi6vbjsf5f5yc9h7fhii"))))
+    (properties `((upstream-name . "Rsolnp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-truncnorm" ,r-truncnorm)))
+    (home-page "http://cran.r-project.org/web/packages/Rsolnp/")
+    (synopsis "General non-linear optimization")
+    (description "The Rsolnp package implements a general non-linear augmented
+Lagrange multiplier method solver, a @dfn{sequential quadratic
+programming} (SQP) based solver).")
+    ;; Any version of the GPL.
+    (license license:gpl2+)))
+
 (define-public r-hardyweinberg
   (package
     (name "r-hardyweinberg")
-    (version "1.5.8")
+    (version "1.5.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "HardyWeinberg" version))
        (sha256
         (base32
-         "0xbcchmzii0jv0ygr91n72r39j1axraxd2i607b56v4yd5d8sy4k"))))
+         "0qk3lly5qczn61rj0q9xzscppspvk238yjgr4p71pkzkjhiv40jz"))))
     (properties `((upstream-name . "HardyWeinberg")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mice" ,r-mice)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-rcpp" ,r-rcpp)
+       ("r-rsolnp" ,r-rsolnp)))
     (home-page "https://cran.r-project.org/package=HardyWeinberg")
     (synopsis "Statistical tests and graphics for Hardy-Weinberg equilibrium")
     (description
@@ -1620,14 +1664,14 @@ modeling for empirical income distributions.")
 (define-public r-vcd
   (package
     (name "r-vcd")
-    (version "1.4-3")
+    (version "1.4-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vcd" version))
        (sha256
         (base32
-         "05azric2w8mrsdk7y0484cjygcgcmbp96q2v500wvn91fj98kkhp"))))
+         "1lp99h0wvsc61l1dgcqjxdrcgpgw88ak430cdsv43kmm43qssqd5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-colorspace" ,r-colorspace)
@@ -1773,3 +1817,25 @@ plots in @code{ggplot2}.")
 distributions over time or space.  This package enables the creation of such
 plots in @code{ggplot2}.")
     (license license:gpl2)))
+
+(define-public r-cli
+  (package
+    (name "r-cli")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cli" version))
+       (sha256
+        (base32
+         "07as3dr7vwx02p3qgzlmxz1dlrd3x3lysrzp222ip9jcjpydp8wg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-crayon" ,r-crayon)))
+    (home-page "https://github.com/r-lib/cli#readme")
+    (synopsis "Helpers for developing command line interfaces")
+    (description "This package provides a suite of tools designed to build
+attractive command line interfaces (CLIs).  It includes tools for drawing
+rules, boxes, trees, and Unicode symbols with ASCII alternatives.")
+    (license license:expat)))

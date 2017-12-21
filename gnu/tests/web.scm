@@ -154,7 +154,7 @@ echo(\"Computed by php:\".((string)(2+3)));
          (root "/srv")
          (locations
           (list (nginx-php-location)))
-         (listen "8042")
+         (listen '("8042"))
          (ssl-certificate #f)
          (ssl-certificate-key #f))))
 

@@ -88,7 +88,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.2.2")
+    (version "2.2.4")
     (source
      (origin
        (method url-fetch)
@@ -97,7 +97,7 @@ human.")
                            version "-src.tar.xz"))
        (sha256
         (base32
-         "0wrl8kxb16wzdgfjj057yv18cfg0b8z8lxp1fl2q8fkdgr7phm9g"))))
+         "1pfkq1m5vb90kx67vyw70s1hc4ivjsvq2535vm6wdwwsncna6bz5"))))
     (build-system cmake-build-system)
     (inputs
      `(("libgcrypt" ,libgcrypt)

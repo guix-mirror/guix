@@ -179,6 +179,15 @@ project (but it is usable outside of the Gnome platform).")
 based on libxml for XML parsing, tree manipulation and XPath support.")
     (license license:x11)))
 
+(define libxslt/fixed
+  (package
+    (inherit libxslt)
+    (source (origin
+              (inherit (package-source libxslt))
+              (patches (search-patches "libxslt-CVE-2016-4738.patch"
+                                       "libxslt-CVE-2017-5029.patch"
+                                       "libxslt-generated-ids.patch"))))))
+
 (define-public perl-graph-readwrite
   (package
     (name "perl-graph-readwrite")

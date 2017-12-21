@@ -278,7 +278,13 @@ and 'interactive' (default)."
                    ((archive-type)
                     (match (and=> (package-source package) origin-uri)
                       ((? string? uri)
-                       (file-extension (basename uri)))
+                       (let ((type (file-extension (basename uri))))
+                         ;; Sometimes we have URLs such as
+                         ;; "https://github.com/…/tarball/v0.1", in which case
+                         ;; we must not consider "1" as the extension.
+                         (and (or (string-contains type "z")
+                                  (string=? type "tar"))
+                              type)))
                       (_
                        "gz")))
                    ((url signature-url)
