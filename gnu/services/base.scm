@@ -529,7 +529,10 @@ in KNOWN-MOUNT-POINTS when it is stopped."
   (list (shepherd-service
          (documentation "Preserve entropy across reboots for /dev/urandom.")
          (provision '(urandom-seed))
-         (requirement '(file-systems))
+
+         ;; Depend on udev so that /dev/hwrng is available.
+         (requirement '(file-systems udev))
+
          (start #~(lambda _
                     ;; On boot, write random seed into /dev/urandom.
                     (when (file-exists? #$%random-seed-file)
