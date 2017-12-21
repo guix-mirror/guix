@@ -415,8 +415,12 @@ is one of `host' or `target'."
            ("cross-binutils" ,(binutils target))))
         ((target)
          (let ((libc (libc target)))
-          `(("cross-libc" ,libc)
-            ("cross-libc:static" ,libc "static"))))))))
+           `(("cross-libc" ,libc)
+
+             ;; MinGW's libc doesn't have a "static" output.
+             ,@(if (member "static" (package-outputs libc))
+                   `(("cross-libc:static" ,libc "static"))
+                   '()))))))))
 
 (define* (gnu-cross-build store name
                           #:key
