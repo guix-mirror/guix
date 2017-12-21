@@ -8730,7 +8730,11 @@ interface to File::Find::Object.")
         (base32 "1lgfr87j4qwqnln0hyyzgik5ixqslzdaksn9m8y824gqbcihc6ic"))))
     (build-system perl-build-system)
     (arguments
-     `(#:disallowed-references (,tzdata-for-tests)
+     `(;; XXX: We'd like to use #:disallowed-references 'perl-build-system'
+       ;; doesn't support it yet.
+       ;;
+       ;; #:disallowed-references (,tzdata-for-tests)
+
        #:phases
        (modify-phases %standard-phases
          ;; This is needed for tests
