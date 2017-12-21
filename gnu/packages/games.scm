@@ -1071,7 +1071,8 @@ Portable Game Notation.")
        (uri (string-append "http://www.techrescue.org/xboing/xboing"
                            version ".tar.gz"))
        (sha256
-        (base32 "16m2si8wmshxpifk861vhpqviqxgcg8bxj6wfw8hpnm4r2w9q0b7"))))
+        (base32 "16m2si8wmshxpifk861vhpqviqxgcg8bxj6wfw8hpnm4r2w9q0b7"))
+       (patches (search-patches "xboing-CVE-2004-0149.patch"))))
     (arguments
      `(#:tests? #f
        #:phases
