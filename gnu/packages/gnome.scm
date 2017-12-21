@@ -395,6 +395,7 @@ access the common Google services, and has full asynchronous support.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "libgxps-CVE-2017-11590.patch"))
               (sha256
                (base32
                 "184r06s8g20cfigg7m169n42jjsc9wmzzlycr4g1fxxhr72r8x9y"))))
