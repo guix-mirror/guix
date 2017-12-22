@@ -3249,8 +3249,21 @@ automatically.")
         (base32
          "14vnigqb5c3yi4q9ysw1fiwdqyqwyklqpb9wnjf81chm7s2mshnr"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info")))
+               (with-directory-excursion "doc"
+                 (unless (zero? (system* "makeinfo" "ivy.texi"))
+                   (error "makeinfo failed"))
+                 (install-file "ivy.info" info))))))))
     (propagated-inputs
      `(("emacs-hydra" ,emacs-hydra)))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
     (home-page "http://oremacs.com/swiper/")
     (synopsis "Incremental vertical completion for Emacs")
     (description
