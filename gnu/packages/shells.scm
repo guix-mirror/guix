@@ -139,10 +139,10 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
 discoverability, and friendliness.  Fish has very user-friendly and powerful
 tab-completion, including descriptions of every completion, completion of
 strings with wildcards, and many completions for specific commands.  It also
-has extensive and discoverable help.  A special help command gives access to
-all the fish documentation in your web browser.  Other features include smart
-terminal handling based on terminfo, an easy to search history, and syntax
-highlighting.")
+has extensive and discoverable help.  A special @command{help} command gives
+access to all the fish documentation in your web browser.  Other features
+include smart terminal handling based on terminfo, an easy to search history,
+and syntax highlighting.")
     (home-page "https://fishshell.com/")
     (license gpl2)))
 
