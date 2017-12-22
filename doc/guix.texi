@@ -5430,14 +5430,20 @@ without having to type in the definitions of package variants
 @table @code
 
 @item --with-source=@var{source}
-Use @var{source} as the source of the corresponding package.
+@itemx --with-source=@var{package}=@var{source}
+@itemx --with-source=@var{package}@@@var{version}=@var{source}
+Use @var{source} as the source of @var{package}, and @var{version} as
+its version number.
 @var{source} must be a file name or a URL, as for @command{guix
 download} (@pxref{Invoking guix download}).
 
-The ``corresponding package'' is taken to be the one specified on the
-command line the name of which matches the base of @var{source}---e.g.,
+When @var{package} is omitted,
+it is taken to be the package name specified on the
+command line that matches the base of @var{source}---e.g.,
 if @var{source} is @code{/src/guile-2.0.10.tar.gz}, the corresponding
-package is @code{guile}.  Likewise, the version string is inferred from
+package is @code{guile}.
+
+Likewise, when @var{version} is omitted, the version string is inferred from
 @var{source}; in the previous example, it is @code{2.0.10}.
 
 This option allows users to try out versions of packages other than the
@@ -5460,7 +5466,7 @@ guix build guile --with-source=../guile-2.0.9.219-e1bb7.tar.xz
 
 @example
 $ git clone git://git.sv.gnu.org/guix.git
-$ guix build guix --with-source=./guix
+$ guix build guix --with-source=guix@@1.0=./guix
 @end example
 
 @item --with-input=@var{package}=@var{replacement}

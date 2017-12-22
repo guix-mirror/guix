@@ -96,6 +96,35 @@
              (string-contains (get-output-string port)
                               "had no effect"))))))
 
+(test-assert "options->transformation, with-source, PKG=URI"
+  (let* ((p (dummy-package "foo"))
+         (s (search-path %load-path "guix.scm"))
+         (f (string-append "foo=" s))
+         (t (options->transformation `((with-source . ,f)))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (not (eq? new p))
+             (string=? (package-name new) (package-name p))
+             (string=? (package-version new)
+                       (package-version p))
+             (string=? (package-source new)
+                       (add-to-store store (basename s) #t
+                                     "sha256" s)))))))
+
+(test-assert "options->transformation, with-source, PKG@VER=URI"
+  (let* ((p (dummy-package "foo"))
+         (s (search-path %load-path "guix.scm"))
+         (f (string-append "foo@42.0=" s))
+         (t (options->transformation `((with-source . ,f)))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (not (eq? new p))
+             (string=? (package-name new) (package-name p))
+             (string=? (package-version new) "42.0")
+             (string=? (package-source new)
+                       (add-to-store store (basename s) #t
+                                     "sha256" s)))))))
+
 (test-assert "options->transformation, with-input"
   (let* ((p (dummy-package "guix.scm"
               (inputs `(("foo" ,(specification->package "coreutils"))
