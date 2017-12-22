@@ -249,7 +249,24 @@ without requiring the source code to be rewritten.")
            (search-path-specification
             (variable "GUILE_LOAD_COMPILED_PATH")
             (files '("lib/guile/2.2/site-ccache"
-                     "share/guile/site/2.2")))))))
+                     "share/guile/site/2.2")))))
+
+    (arguments
+     (if (%current-target-system)
+         (substitute-keyword-arguments (package-arguments guile-2.0)
+           ((#:phases phases '%standard-phases)
+            `(modify-phases ,phases
+               (add-after 'unpack 'sacrifice-elisp-support
+                 (lambda _
+                   ;; Cross-compiling language/elisp/boot.el fails, so
+                   ;; sacrifice it.  See
+                   ;; <https://git.savannah.gnu.org/cgit/guile.git/commit/?h=stable-2.2&id=988aa29238fca862c7e2cb55f15762a69b4c16ce>
+                   ;; for the upstream fix.
+                   (substitute* "module/Makefile.in"
+                     (("language/elisp/boot\\.el")
+                      "\n"))
+                   #t)))))
+         (package-arguments guile-2.0)))))
 
 (define-public guile-2.2/fixed
   ;; A package of Guile 2.2 that's rarely changed.  It is the one used
