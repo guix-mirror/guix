@@ -1500,7 +1500,7 @@ organized in hash table, B+ tree, or fixed-length array.")
                 "0krwnb2zfbhvjaskwl875qzd3y626s84zcciq2mxr5c5riw3yh6s"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-lz4" "--enable-zlib")
+     '(#:configure-flags '("--enable-lz4" "--enable-zlib" "--enable-snappy")
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'disable-test/fops
@@ -1511,7 +1511,8 @@ organized in hash table, B+ tree, or fixed-length array.")
              #t)))))
     (inputs
      `(("lz4" ,lz4)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("snappy" ,snappy)))
     (home-page "http://source.wiredtiger.com/")
     (synopsis "NoSQL data engine")
     (description
