@@ -1335,7 +1335,7 @@ using Unix-domain sockets along with SSH.
 
 When @code{--listen} is omitted, @command{guix-daemon} listens for
 connections on the Unix-domain socket located at
-@file{@var{localstatedir}/daemon-socket/socket}.
+@file{@var{localstatedir}/guix/daemon-socket/socket}.
 @end table
 
 
@@ -1711,7 +1711,7 @@ source "$HOME/.guix-profile/etc/profile"
 In a multi-user setup, user profiles are stored in a place registered as
 a @dfn{garbage-collector root}, which @file{$HOME/.guix-profile} points
 to (@pxref{Invoking guix gc}).  That directory is normally
-@code{@var{localstatedir}/profiles/per-user/@var{user}}, where
+@code{@var{localstatedir}/guix/profiles/per-user/@var{user}}, where
 @var{localstatedir} is the value passed to @code{configure} as
 @code{--localstatedir}, and @var{user} is the user name.  The
 @file{per-user} directory is created when @command{guix-daemon} is
