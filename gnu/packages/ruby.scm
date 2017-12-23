@@ -225,14 +225,14 @@ a focus on simplicity and productivity.")
 (define-public ruby-highline
   (package
     (name "ruby-highline")
-    (version "1.7.8")
+    (version "1.7.10")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "highline" version))
        (sha256
         (base32
-         "1nf5lgdn6ni2lpfdn4gk3gi47fmnca2bdirabbjbz1fk9w4p8lkr"))))
+         "01ib7jp85xjc4gh4jg0wyzllm46hwv8p0w1m4c75pbgi41fps50y"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ;; TODO: NameError: uninitialized constant SPEC
