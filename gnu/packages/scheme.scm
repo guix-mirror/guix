@@ -336,17 +336,14 @@ mashups, office (web agendas, mail clients, ...), etc.")
 (define-public chicken
   (package
     (name "chicken")
-    (version "4.12.0")
+    (version "4.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://code.call-cc.org/releases/"
                                   version "/chicken-" version ".tar.gz"))
               (sha256
                (base32
-                "12b9gaa9lqh39lj1v4wm48f6z8ww3jdkvc5bh9gqqvn6kd2wwnk0"))
-              (patches
-               (search-patches "chicken-CVE-2017-6949.patch"
-                               "chicken-CVE-2017-11343.patch"))))
+                "0hvckhi5gfny3mlva6d7y9pmx7cbwvq0r7mk11k3sdiik9hlkmdd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
