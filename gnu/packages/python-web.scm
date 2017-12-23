@@ -121,7 +121,7 @@ other HTTP libraries.")
        #:tests? #f))
     (propagated-inputs
      `(("python-tornado" ,python-tornado)))
-    (home-page "http://github.com/mrjoes/sockjs-tornado/")
+    (home-page "https://github.com/mrjoes/sockjs-tornado/")
     (synopsis
      "SockJS python server implementation on top of Tornado framework")
     (description
@@ -584,7 +584,7 @@ your Web app.")
     (build-system python-build-system)
     (native-inputs
       `(("python-nose" ,python-nose)))
-    (home-page "http://webob.org/")
+    (home-page "https://webob.org/")
     (synopsis "WSGI request and response object")
     (description
       "WebOb provides wrappers around the WSGI request environment, and an
@@ -607,7 +607,7 @@ object to help create WSGI responses.")
         (base32
          "11p75zpfz3ffhz21nzx9wb23xs993ck5s6hkjcvhswwizni5jynw"))))
     (build-system python-build-system)
-    (home-page "http://pypi.python.org/pypi/zope.event")
+    (home-page "https://pypi.python.org/pypi/zope.event")
     (synopsis "Event publishing system for Python")
     (description "Zope.event provides an event publishing API, intended for
 use by applications which are unaware of any subscribers to their events.  It
@@ -694,7 +694,7 @@ that have uses outside of the Zope framework.")
      `(("python-zope-exceptions" ,python-zope-exceptions)))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
-    (home-page "http://pypi.python.org/pypi/zope.testing")
+    (home-page "https://pypi.python.org/pypi/zope.testing")
     (synopsis "Zope testing helpers")
     (description "Zope.testing provides a number of testing utilities for HTML
 forms, HTTP servers, regular expressions, and more.")
@@ -727,7 +727,7 @@ forms, HTTP servers, regular expressions, and more.")
        ("unzip" ,unzip)))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
-    (home-page "http://pypi.python.org/pypi/zope.testrunner")
+    (home-page "https://pypi.python.org/pypi/zope.testrunner")
     (synopsis "Zope testrunner script")
     (description "Zope.testrunner provides a script for running Python
 tests.")
@@ -757,7 +757,7 @@ tests.")
         (base32
          "1rslyph0klk58dmjjy4j0jxy21k03azksixc3x2xhqbkv97cmzml"))))
     (build-system python-build-system)
-    (home-page "http://pypi.python.org/pypi/zope.i18nmessageid")
+    (home-page "https://pypi.python.org/pypi/zope.i18nmessageid")
     (synopsis "Message identifiers for internationalization")
     (description "Zope.i18nmessageid provides facilities for declaring
 internationalized messages within program source text.")
@@ -789,7 +789,7 @@ internationalized messages within program source text.")
      `(("python-zope-testing" ,python-zope-testing)
        ("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)))
-    (home-page "http://pypi.python.org/pypi/zope.schema")
+    (home-page "https://pypi.python.org/pypi/zope.schema")
     (synopsis "Zope data schemas")
     (description "Zope.scheme provides extensions to zope.interface for
 defining data schemas.")
@@ -816,7 +816,7 @@ defining data schemas.")
     (propagated-inputs
      `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
        ("python-zope-schema" ,python-zope-schema)))
-    (home-page "http://pypi.python.org/pypi/zope.configuration")
+    (home-page "https://pypi.python.org/pypi/zope.configuration")
     (synopsis "Zope Configuration Markup Language")
     (description "Zope.configuration implements ZCML, the Zope Configuration
 Markup Language.")
@@ -842,7 +842,7 @@ Markup Language.")
      '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
-    (home-page "http://pypi.python.org/pypi/zope.proxy")
+    (home-page "https://pypi.python.org/pypi/zope.proxy")
     (synopsis "Generic, transparent proxies")
     (description "Zope.proxy provides generic, transparent proxies for Python.
 Proxies are special objects which serve as mostly-transparent wrappers around
@@ -872,7 +872,7 @@ brokering, etc.) for which the proxy is responsible.")
     (propagated-inputs
      `(("python-zope-proxy" ,python-zope-proxy)
        ("python-zope-schema" ,python-zope-schema)))
-    (home-page "http://pypi.python.org/pypi/zope.location/")
+    (home-page "https://pypi.python.org/pypi/zope.location/")
     (synopsis "Zope location library")
     (description "Zope.location implements the concept of \"locations\" in
 Zope3, which are are special objects that have a structural location.")
@@ -907,7 +907,7 @@ Zope3, which are are special objects that have a structural location.")
        ("python-zope-location" ,python-zope-location)
        ("python-zope-testrunner" ,python-zope-testrunner)
        ("python-zope-testing" ,python-zope-testing)))
-    (home-page "http://pypi.python.org/pypi/zope.security")
+    (home-page "https://pypi.python.org/pypi/zope.security")
     (synopsis "Zope security framework")
     (description "Zope.security provides a generic mechanism to implement
 security policies on Python objects.")
@@ -1971,7 +1971,7 @@ users' sessions over extended periods of time.")
        ("python-pyasn1-modules" ,python-pyasn1-modules)
        ("python-rsa" ,python-rsa)
        ("python-six" ,python-six)))
-    (home-page "http://github.com/google/oauth2client/")
+    (home-page "https://github.com/google/oauth2client/")
     (synopsis "OAuth 2.0 client library")
     (description "@code{python-oauth2client} provides an OAuth 2.0 client
 library for Python")
@@ -2098,7 +2098,7 @@ this it tries to be opinion-free and very extendable.")
   (native-inputs
    `(("python-pytest" ,python-pytest)))
   (home-page
-    "http://github.com/smurfix/flask-script")
+    "https://github.com/smurfix/flask-script")
   (synopsis "Scripting support for Flask")
   (description "The Flask-Script extension provides support for writing
 external scripts in Flask.  This includes running a development server,
@@ -2128,7 +2128,7 @@ itself.")
      ("python-sqlalchemy" ,python-sqlalchemy)
      ("python-flask-script" ,python-flask-script)
      ("python-flask-sqlalchemy" ,python-flask-sqlalchemy)))
-  (home-page "http://github.com/miguelgrinberg/flask-migrate/")
+  (home-page "https://github.com/miguelgrinberg/flask-migrate/")
   (synopsis "SQLAlchemy database migrations for Flask programs using
 Alembic")
   (description "This package contains SQLAlchemy database migration tools
@@ -2219,7 +2219,7 @@ thread-local variable.")
     (build-system python-build-system)
     (native-inputs
      `(("python-flask" ,python-flask)))
-    (home-page "http://github.com/miguelgrinberg/flask-httpauth/")
+    (home-page "https://github.com/miguelgrinberg/flask-httpauth/")
     (synopsis "Basic and Digest HTTP authentication for Flask routes")
     (description "@code{flask_httpauth} provides Basic and Digest HTTP
 authentication for Flask routes.")

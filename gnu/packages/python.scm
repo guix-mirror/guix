@@ -967,7 +967,7 @@ from the Python interpreter, or as a small part of a larger application.")
     (native-inputs
      `(("python-py" ,python-py)
        ("python-pytest" ,python-pytest)))
-    (home-page "http://pypi.python.org/pypi/six/")
+    (home-page "https://pypi.python.org/pypi/six/")
     (synopsis "Python 2 and 3 compatibility utilities")
     (description
      "Six is a Python 2 and 3 compatibility library.  It provides utility
@@ -2804,7 +2804,7 @@ objects.")
      `(("python-colormath" ,python-colormath)))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "http://github.com/jsvine/spectra")
+    (home-page "https://github.com/jsvine/spectra")
     (synopsis "Color scales and color conversion")
     (description
      "This package provides a Python library intended to make color math,
@@ -3525,7 +3525,7 @@ atlas_libs = openblas
                (zero? (system* "python" "-c"
                                "import scipy; scipy.test('full')")))
              #t)))))
-    (home-page "http://www.scipy.org/")
+    (home-page "https://www.scipy.org/")
     (synopsis "The Scipy library provides efficient numerical routines")
     (description "The SciPy library is one of the core packages that make up
 the SciPy stack.  It provides many user-friendly and efficient numerical
@@ -4720,7 +4720,7 @@ libxml2 and libxslt.")
          (replace 'check
            (lambda _ (zero? (system* "./convert-py3k")))))))
     (home-page
-     "http://www.crummy.com/software/BeautifulSoup/bs4/")
+     "https://www.crummy.com/software/BeautifulSoup/bs4/")
     (synopsis
      "Python screen-scraping library")
     (description
@@ -6103,7 +6103,7 @@ a hash value.")
     (arguments
      ;; There are no tests.
      `(#:tests? #f))
-    (home-page "http://pypi.python.org/pypi/termcolor")
+    (home-page "https://pypi.python.org/pypi/termcolor")
     (synopsis "ANSII Color formatting for terminal output")
     (description
      "This package provides ANSII Color formatting for output in terminals.")
@@ -7233,7 +7233,7 @@ text.")
 encryption and decryption, signing and verifying signatures, and key
 generation according to PKCS#1 version 1.5.  It can be used as a Python
 library as well as on the command line.")
-   (home-page "http://stuvel.eu/rsa")
+   (home-page "https://stuvel.eu/rsa")
    (license license:asl2.0)))
 
 (define-public python2-rsa
@@ -7492,7 +7492,7 @@ fast xml and html manipulation.")
        ;; but it could be annoying/difficult.
        ;; We can enable tests for the Python 2 version, though, and do below.
        #:tests? #f))
-    (home-page "http://bitbucket.org/runeh/anyjson/")
+    (home-page "https://bitbucket.org/runeh/anyjson/")
     (synopsis
      "Wraps best available JSON implementation in a common interface")
     (description
@@ -7837,7 +7837,7 @@ useful for solving the Assignment Problem.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://bitbucket.org/mchaput/whoosh")
+    (home-page "https://bitbucket.org/mchaput/whoosh")
     (synopsis "Full text indexing, search, and spell checking library")
     (description
      "Whoosh is a fast, pure-Python full text indexing, search, and spell
@@ -7907,7 +7907,7 @@ anymore.")
      `(#:python ,python-2))
     (native-inputs
      `(("python2-six" ,python2-six)))
-    (home-page "http://pypi.python.org/pypi/pathlib2/")
+    (home-page "https://pypi.python.org/pypi/pathlib2/")
     (synopsis "Object-oriented file system paths - backport of standard
 pathlib module")
     (description "The goal of pathlib2 is to provide a backport of standard
@@ -10037,7 +10037,7 @@ protocols written in pure Python.")
              (zero? (system* "python" "test/test_pbkdf2.py")))))))
     (propagated-inputs
      `(("python-pycrypto" ,python-pycrypto)))  ; optional
-    (home-page "http://www.dlitz.net/software/python-pbkdf2/")
+    (home-page "https://www.dlitz.net/software/python-pbkdf2/")
     (synopsis "Password-based key derivation")
     (description "This module implements the password-based key derivation
 function, PBKDF2, specified in RSA PKCS#5 v2.0.
@@ -10123,7 +10123,7 @@ to ansi-escaped strings suitable for display in a terminal.")
        ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-six" ,python-six)))
-    (home-page "http://github.com/ralphbean/ansi2html")
+    (home-page "https://github.com/ralphbean/ansi2html")
     (synopsis "Convert ANSI-decorated console output to HTML")
     (description
      "@command{ansi2html} is a Python library and command line utility for
@@ -11294,7 +11294,7 @@ applying JSON Patches according to RFC 6902.")
        (base32
         "192pclzs2y0yaywqkrlvd0x73740q310kvqvm6jldhi619mq59wi"))))
     (build-system python-build-system)
-    (home-page "http://pypi.python.org/pypi/rfc3987")
+    (home-page "https://pypi.python.org/pypi/rfc3987")
     (synopsis "Parsing and validation of URIs (RFC 3986) and IRIs (RFC 3987)")
     (description "@code{rfc3987} provides routines for parsing and
 validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
@@ -11315,7 +11315,7 @@ validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
        (base32
         "1bxffaf5yz2cph8ki55vdvdypbwkvn2xr1firlcy62vqbzf1jivq"))))
     (build-system python-build-system)
-    (home-page "http://github.com/syrusakbary/validate_email")
+    (home-page "https://github.com/syrusakbary/validate_email")
     (synopsis "Verifies if an email address is valid and really exists")
     (description "@code{validate_email} can be used to verify if an email
 address is valid and really exists.")
@@ -11478,7 +11478,7 @@ from your Flask project.  It is a fork of Flask-Swagger.")
      `(("python-jsonschema" ,python-jsonschema)
        ("python-six" ,python-six)))
     (home-page
-     "http://github.com/Yelp/swagger_spec_validator")
+     "https://github.com/Yelp/swagger_spec_validator")
     (synopsis "Validation of Swagger specifications")
     (description "@code{swagger_spec_validator} provides a library for
 validating Swagger API specifications.")
