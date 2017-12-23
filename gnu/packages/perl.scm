@@ -6445,16 +6445,16 @@ for a given module is comprehensive.")
 (define-public perl-pod-simple
   (package
     (name "perl-pod-simple")
-    (version "3.31")
+    (version "3.35")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/M/MA/MARCGREEN/"
+              (uri (string-append "mirror://cpan/authors/id/K/KH/KHW/"
                                   "Pod-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "04705pcs31s71vpmnpfdy8ds0q700q4cs2dlyssyrdjbvx3ymq3l"))))
+                "0gg11ibbc02l2aw0bsv4jx0jax8z0apgfy3p5csqnvhlsb6218cr"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Pod-Simple//")
+    (home-page "http://search.cpan.org/dist/Pod-Simple/")
     (synopsis "Parsing library for text in Pod format")
     (description "Pod::Simple is a Perl library for parsing text in
 the Pod (plain old documentation) markup language that is typically
