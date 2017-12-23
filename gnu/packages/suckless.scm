@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2015 Dmitry Bogatov <KAction@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -53,7 +53,7 @@
     (version "1.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://dl.suckless.org/tools/blind-"
+              (uri (string-append "https://dl.suckless.org/tools/blind-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -68,7 +68,7 @@
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
     (synopsis "Command line video editing utilities")
-    (home-page "http://tools.suckless.org/blind/")
+    (home-page "https://tools.suckless.org/blind/")
     (description
      "Blind is a collection of command line video editing utilities.  It uses
 a custom raw video format with a simple container.")
@@ -80,7 +80,7 @@ a custom raw video format with a simple container.")
     (version "6.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://dl.suckless.org/dwm/dwm-"
+             (uri (string-append "https://dl.suckless.org/dwm/dwm-"
                                  version ".tar.gz"))
              (sha256
               (base32 "1zkmwb6df6m254shx06ly90c0q4jl70skk1pvkixpb7hcxhwbxn2"))))
@@ -126,7 +126,7 @@ a custom raw video format with a simple container.")
        ("libx11" ,libx11)
        ("libxft" ,libxft)
        ("libxinerama" ,libxinerama)))
-    (home-page "http://dwm.suckless.org/")
+    (home-page "https://dwm.suckless.org/")
     (synopsis "Dynamic window manager")
     (description
      "dwm is a dynamic window manager for X.  It manages windows in tiled,
@@ -140,7 +140,7 @@ optimising the environment for the application in use and the task performed.")
     (version "4.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://dl.suckless.org/tools/dmenu-"
+              (uri (string-append "https://dl.suckless.org/tools/dmenu-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -160,7 +160,7 @@ optimising the environment for the application in use and the task performed.")
        ("libxft" ,libxft)
        ("libx11" ,libx11)
        ("libxinerama" ,libxinerama)))
-    (home-page "http://tools.suckless.org/dmenu/")
+    (home-page "https://tools.suckless.org/dmenu/")
     (synopsis "Dynamic menu")
     (description
      "A dynamic menu for X, originally designed for dwm.  It manages large
@@ -201,7 +201,7 @@ numbers of user-defined menu items efficiently.")
     (version "1.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://dl.suckless.org/tools/slock-"
+              (uri (string-append "https://dl.suckless.org/tools/slock-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -217,7 +217,7 @@ numbers of user-defined menu items efficiently.")
        ("libxext" ,libxext)
        ("libxinerama" ,libxinerama)
        ("libxrandr" ,libxrandr)))
-    (home-page "http://tools.suckless.org/slock/")
+    (home-page "https://tools.suckless.org/slock/")
     (synopsis "Simple X session lock")
     (description
      "Simple X session lock with trivial feedback on password entry.")
@@ -230,7 +230,7 @@ numbers of user-defined menu items efficiently.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://dl.suckless.org/st/st-"
+       (uri (string-append "https://dl.suckless.org/st/st-"
                            version ".tar.gz"))
        (sha256
         (base32
@@ -254,7 +254,7 @@ numbers of user-defined menu items efficiently.")
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://st.suckless.org/")
+    (home-page "https://st.suckless.org/")
     (synopsis "Simple terminal emulator")
     (description
      "St implements a simple and lightweight terminal emulator.  It
@@ -270,7 +270,7 @@ drawing.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://dl.suckless.org/surf/surf-"
+       (uri (string-append "https://dl.suckless.org/surf/surf-"
                            version ".tar.gz"))
        (sha256
         (base32
@@ -298,7 +298,7 @@ drawing.")
        ("xprop" ,xprop)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://surf.suckless.org/")
+    (home-page "https://surf.suckless.org/")
     (synopsis "Simple web browser")
     (description
      "Surf is a simple web browser based on WebKit/GTK+.  It is able to
@@ -313,7 +313,7 @@ point surf to another URI by setting its XProperties.")
     (version "0.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://dl.suckless.org/tools/sent-"
+              (uri (string-append "https://dl.suckless.org/tools/sent-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -345,7 +345,7 @@ presentations.  Each paragraph represents a slide in the presentation.
 Especially for presentations using the Takahashi method this is very nice and
 allows you to write down the presentation for a quick lightning talk within a
 few minutes.")
-    (home-page "http://tools.suckless.org/sent")
+    (home-page "https://tools.suckless.org/sent")
     (license license:x11)))
 
 (define-public xbattmon
