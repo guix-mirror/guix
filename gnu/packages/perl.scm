@@ -6456,8 +6456,8 @@ for a given module is comprehensive.")
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Pod-Simple/")
     (synopsis "Parsing library for text in Pod format")
-    (description "Pod::Simple is a Perl library for parsing text in
-the Pod (plain old documentation) markup language that is typically
+    (description "@code{Pod::Simple} is a Perl library for parsing text in
+the @dfn{Pod} (plain old documentation) markup language that is typically
 used for writing documentation for Perl and for Perl modules.")
     (license (package-license perl))))
 
