@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright � 2017 Dave Love <me@fx@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2641,7 +2642,6 @@ parts of it.")
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
-             "NO_LAPACK=1"
              ;; Build the library for all supported CPUs.  This allows
              ;; switching CPU targets at runtime with the environment variable
              ;; OPENBLAS_CORETYPE=<type>, where "type" is a supported CPU type.
@@ -2662,11 +2662,21 @@ parts of it.")
                    '("TARGET=ARMV8"))
                   (else '()))))
        ;; no configure script
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'set-extralib
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Get libgfortran found when building in utest.
+             (setenv "FEXTRALIB"
+                     (string-append "-L" (assoc-ref inputs "fortran-lib")
+                                    "/lib"))
+             #t)))))
     (inputs
-     `(("fortran" ,gfortran)))
+     `(("fortran-lib" ,gfortran "lib")))
     (native-inputs
      `(("cunit" ,cunit)
+       ("fortran" ,gfortran)
        ("perl" ,perl)))
     (home-page "http://www.openblas.net/")
     (synopsis "Optimized BLAS library based on GotoBLAS")
