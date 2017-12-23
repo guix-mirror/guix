@@ -1261,7 +1261,7 @@ other site that youtube-dl supports.")
      '(#:tests? #f))                    ; no tests
     (inputs
      `(("ffmpeg" ,ffmpeg)))
-    (synopsis "Download videos, audios, or images from Web sites")
+    (synopsis "Download videos, audio, or images from Web sites")
     (description
      "You-Get is a command-line utility to download media contents (videos,
 audio, images) from the Web.  It can use either mpv or vlc for playback.")
