@@ -266,7 +266,7 @@ maintain, and release projects and includes a dynamic plug-in system allowing
 for easy extensibility.  Hoe ships with plug-ins for all the usual project
 tasks including rdoc generation, testing, packaging, deployment, and
 announcement.")
-    (home-page "http://www.zenspider.com/projects/hoe.html")
+    (home-page "https://www.zenspider.com/projects/hoe.html")
     (license license:expat)))
 
 (define-public ruby-rake-compiler
@@ -509,7 +509,7 @@ expectations and mocks frameworks.")
     (synopsis "Ruby gem bundler")
     (description "Bundler automatically downloads and installs a list of gems
 specified in a \"Gemfile\", as well as their dependencies.")
-    (home-page "http://bundler.io/")
+    (home-page "https://bundler.io/")
     (license license:expat)))
 
 (define-public ruby-builder
@@ -562,7 +562,7 @@ supported: XML Markup and XML Events.")
     (synopsis "Ruby-to-Java bridge using the Java Native Interface")
     (description "RJB is a bridge program that connects Ruby and Java via the
 Java Native Interface.")
-    (home-page "http://www.artonx.org/collabo/backyard/?RubyJavaBridge")
+    (home-page "https://www.artonx.org/collabo/backyard/?RubyJavaBridge")
     (license license:lgpl2.1+)))
 
 (define-public ruby-log4r
@@ -765,7 +765,7 @@ extensions.")
     (synopsis "Ruby bindings for GNOME Libxml2")
     (description "The Libxml-Ruby project provides Ruby language bindings for
 the GNOME Libxml2 XML toolkit.")
-    (home-page "http://xml4r.github.com/libxml-ruby")
+    (home-page "https://xml4r.github.com/libxml-ruby")
     (license license:expat)))
 
 (define-public ruby-xml-simple
@@ -879,7 +879,7 @@ and inspect the environment.")
     (synopsis "Library to perform operations with sequence permutations")
     (description "This package provides a Ruby library to perform different
 operations with permutations of sequences, such as strings and arrays.")
-    (home-page "http://flori.github.io/permutation")
+    (home-page "https://flori.github.io/permutation")
     (license license:gpl2))) ; GPL 2 only
 
 (define-public ruby-shellany
@@ -1252,7 +1252,7 @@ Soundex, Metaphone, Double Metaphone, Porter Stemming.")
      "Gettext is a GNU gettext-like program for Ruby.  The catalog
 file (po-file) used is the same as that used by GNU gettext, allowing you to
 use GNU gettext tools for maintenance.")
-    (home-page "http://ruby-gettext.github.com/")
+    (home-page "https://ruby-gettext.github.com/")
     (license (list license:lgpl3+ license:ruby))))
 
 (define-public ruby-packnga
@@ -1302,7 +1302,7 @@ use GNU gettext tools for maintenance.")
 on xUnit principles.  These were originally designed by Kent Beck, creator of
 extreme programming software development methodology, for Smalltalk's SUnit.
 It allows writing tests, checking results and automated testing in Ruby.")
-    (home-page "http://test-unit.github.io/")
+    (home-page "https://test-unit.github.io/")
     (license (list license:psfl license:ruby))))
 
 (define-public ruby-metaclass
@@ -2178,7 +2178,7 @@ rate.")
     (description "Pry is an IRB alternative and runtime developer console for
 Ruby.  It features syntax highlighting, a plugin architecture, runtime
 invocation, and source and documentation browsing.")
-    (home-page "http://pryrepl.org")
+    (home-page "https://pryrepl.org")
     (license license:expat)))
 
 (define-public ruby-guard
@@ -2266,7 +2266,7 @@ utilities for Ruby.")
     (synopsis "Time zone library for Ruby")
     (description "TZInfo is a Ruby library that provides daylight savings
 aware transformations between times in different time zones.")
-    (home-page "http://tzinfo.github.io")
+    (home-page "https://tzinfo.github.io")
     (license license:expat)))
 
 (define-public ruby-tzinfo-data
@@ -2298,7 +2298,7 @@ aware transformations between times in different time zones.")
     (description
      "This library provides @code{TZInfo::Data}, which contains data from the
 IANA Time Zone database packaged as Ruby modules for use with @code{TZInfo}.")
-    (home-page "http://tzinfo.github.io")
+    (home-page "https://tzinfo.github.io")
     (license license:expat)))
 
 (define-public ruby-rb-inotify
@@ -2530,7 +2530,7 @@ Ruby's large and slower test/unit.")
     (description
      "This Ruby library uses ANSI escape sequences to control the attributes
 of terminal output.")
-    (home-page "http://flori.github.io/term-ansicolor/")
+    (home-page "https://flori.github.io/term-ansicolor/")
     ;; There is no mention of the "or later" clause.
     (license license:gpl2)))
 
@@ -2552,7 +2552,7 @@ of terminal output.")
     (description
      "This library uses the output of the @code{ps} command to create a
 process tree data structure for the current host.")
-    (home-page "http://flori.github.com/pstree")
+    (home-page "https://github.com/flori/pstree")
     ;; There is no mention of the "or later" clause.
     (license license:gpl2)))
 
@@ -2636,7 +2636,7 @@ a native C extension.")
     (synopsis "JSON implementation in pure Ruby")
     (description
      "This package provides a JSON implementation written in pure Ruby.")
-    (home-page "http://flori.github.com/json")
+    (home-page "https://flori.github.com/json")
     (license license:ruby)))
 
 ;; Even though this package only provides bindings for a Mac OSX API it is
@@ -3108,7 +3108,7 @@ differences (added or removed nodes) between two XML/HTML documents.")
 developing web applications in Ruby.  By wrapping HTTP requests and responses,
 it unifies the API for web servers, web frameworks, and software in between
 into a single method call.")
-    (home-page "http://rack.github.io/")
+    (home-page "https://rack.github.io/")
     (license license:expat)))
 
 (define-public ruby-docile
@@ -3237,7 +3237,7 @@ features such as filtering and fine grained logging.")
 language.  It enables the user to generate consistent, usable documentation
 that can be exported to a number of formats very easily, and also supports
 extending for custom Ruby constructs such as custom class level definitions.")
-    (home-page "http://yardoc.org")
+    (home-page "https://yardoc.org")
     (license license:expat)))
 
 (define-public ruby-clap
@@ -3795,7 +3795,7 @@ methods, a @code{Mixin} module for including color methods, a @code{Logger}, a
 @code{ProgressBar}, and a @code{String} subclass.  The library also includes a
 @code{Terminal} module which provides information about the current output
 device.")
-    (home-page "http://rubyworks.github.io/ansi")
+    (home-page "https://rubyworks.github.io/ansi")
     (license license:bsd-2)))
 
 (define-public ruby-systemu
@@ -3890,7 +3890,7 @@ detail to ease debugging.")
      "Rubytest is a testing meta-framework for Ruby.  It can handle any
 compliant test framework and can run tests from multiple frameworks in a
 single pass.")
-    (home-page "http://rubyworks.github.io/rubytest")
+    (home-page "https://rubyworks.github.io/rubytest")
     (license license:bsd-2)))
 
 (define-public ruby-brass
@@ -3918,7 +3918,7 @@ single pass.")
      "BRASS (Bare-Metal Ruby Assertion System Standard) is a basic
 foundational assertions framework for other assertion and test frameworks to
 make use of.")
-    (home-page "http://rubyworks.github.io/brass")
+    (home-page "https://rubyworks.github.io/brass")
     (license license:bsd-2)))
 
 (define-public ruby-qed
@@ -3951,7 +3951,7 @@ make use of.")
 Development} (BDD) utilizing Literate Programming techniques.  QED sits
 somewhere between lower-level testing tools like @code{Test::Unit} and
 requirement specifications systems like Cucumber.")
-    (home-page "http://rubyworks.github.io/qed")
+    (home-page "https://rubyworks.github.io/qed")
     (license license:bsd-2)))
 
 (define-public ruby-ae
@@ -3994,7 +3994,7 @@ requirement specifications systems like Cucumber.")
     (description
      "Assertive Expressive (AE) is an assertions library specifically designed
 for reuse by other test frameworks.")
-    (home-page "http://rubyworks.github.io/ae")
+    (home-page "https://rubyworks.github.io/ae")
     (license license:bsd-2)))
 
 (define-public ruby-lemon
@@ -4024,7 +4024,7 @@ for reuse by other test frameworks.")
      "Lemon is a unit testing framework that enforces highly formal
 case-to-class and unit-to-method test construction.  This enforcement can help
 focus concern on individual units of behavior.")
-    (home-page "http://rubyworks.github.io/lemon")
+    (home-page "https://rubyworks.github.io/lemon")
     (license license:bsd-2)))
 
 (define-public ruby-rubytest-cli
@@ -4048,7 +4048,7 @@ focus concern on individual units of behavior.")
     (description
      "Rubytest CLI is a command-line interface for running tests for
 Rubytest-based test frameworks.  It provides the @code{rubytest} executable.")
-    (home-page "http://rubyworks.github.io/rubytest-cli")
+    (home-page "https://rubyworks.github.io/rubytest-cli")
     (license license:bsd-2)))
 
 (define-public ruby-hashery
@@ -4083,7 +4083,7 @@ Included are the auto-sorting @code{Dictionary} class, the efficient
 defines a CRUD (Create, Read, Update and Delete) model on top of Ruby's
 standard @code{Hash} making it possible to subclass and augment to fit any
 specific use case.")
-    (home-page "http://rubyworks.github.io/hashery")
+    (home-page "https://rubyworks.github.io/hashery")
     (license license:bsd-2)))
 
 (define-public ruby-rc4
