@@ -13072,13 +13072,6 @@ has any connections.
 Defaults to @samp{"15 min"}.
 @end deftypevr
 
-@deftypevr {@code{dovecot-configuration} parameter} non-negative-integer director-doveadm-port
-TCP/IP port that accepts doveadm connections (instead of director
-connections) If you enable this, you'll also need to add
-@samp{inet-listener} for the port.
-Defaults to @samp{0}.
-@end deftypevr
-
 @deftypevr {@code{dovecot-configuration} parameter} string director-username-hash
 How the username is translated before being hashed.  Useful values
 include %Ln if user can log in with or without @@domain, %Ld if mailboxes
@@ -13171,7 +13164,7 @@ Defaults to @samp{"%$: %s"}.
 @deftypevr {@code{dovecot-configuration} parameter} string mail-log-prefix
 Log prefix for mail processes.  See doc/wiki/Variables.txt for list
 of possible variables you can use.
-Defaults to @samp{"\"%s(%u): \""}.
+Defaults to @samp{"\"%s(%u)<%{pid}><%{session}>: \""}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string deliver-log-format
@@ -13516,7 +13509,7 @@ Defaults to @samp{0}.
 
 @deftypevr {@code{dovecot-configuration} parameter} non-negative-integer mdbox-rotate-size
 Maximum dbox file size until it's rotated.
-Defaults to @samp{2000000}.
+Defaults to @samp{10000000}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string mdbox-rotate-interval
@@ -13654,21 +13647,14 @@ x500UniqueIdentifier are the usual choices.  You'll also need to set
 Defaults to @samp{"commonName"}.
 @end deftypevr
 
-@deftypevr {@code{dovecot-configuration} parameter} hours ssl-parameters-regenerate
-How often to regenerate the SSL parameters file.  Generation is
-quite CPU intensive operation.  The value is in hours, 0 disables
-regeneration entirely.
-Defaults to @samp{168}.
-@end deftypevr
-
-@deftypevr {@code{dovecot-configuration} parameter} string ssl-protocols
-SSL protocols to use.
-Defaults to @samp{"!SSLv2"}.
+@deftypevr {@code{dovecot-configuration} parameter} string ssl-min-protocol
+Minimum SSL protocol version to accept.
+Defaults to @samp{"TLSv1"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string ssl-cipher-list
 SSL ciphers to use.
-Defaults to @samp{"ALL:!LOW:!SSLv2:!EXP:!aNULL"}.
+Defaults to @samp{"ALL:!kRSA:!SRP:!kDHd:!DSS:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK:!RC4:!ADH:!LOW@@STRENGTH"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string ssl-crypto-device
@@ -13770,7 +13756,8 @@ total number of bytes read from client
 @item %o
 total number of bytes sent to client.
 @end table
-Defaults to @samp{"in=%i out=%o"}.
+See @file{doc/wiki/Variables.txt} for a list of all the variables you can use.
+Defaults to @samp{"in=%i out=%o deleted=%{deleted} expunged=%{expunged} trashed=%{trashed} hdr_count=%{fetch_hdr_count} hdr_bytes=%{fetch_hdr_bytes} body_count=%{fetch_body_count} body_bytes=%{fetch_body_bytes}"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string imap-capability

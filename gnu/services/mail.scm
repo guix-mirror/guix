@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -745,12 +746,6 @@ allowed too, like 10.0.0.10-10.0.0.30.")
    "How long to redirect users to a specific server after it no longer
 has any connections.")
 
-  (director-doveadm-port
-   (non-negative-integer 0)
-   "TCP/IP port that accepts doveadm connections (instead of director
-connections) If you enable this, you'll also need to add
-@samp{inet-listener} for the port.")
-
   (director-username-hash
    (string "%Lu")
    "How the username is translated before being hashed.  Useful values
@@ -831,7 +826,7 @@ string.")
 string, %$ contains the data we want to log.")
 
   (mail-log-prefix
-   (string "\"%s(%u): \"")
+   (string "\"%s(%u)<%{pid}><%{session}>: \"")
    "Log prefix for mail processes.  See doc/wiki/Variables.txt for list
 of possible variables you can use.")
 
@@ -1145,7 +1140,7 @@ files.  If an index file already exists it's still read, just not
 updated.")
 
   (mdbox-rotate-size
-   (non-negative-integer #e2e6)
+   (non-negative-integer #e10e6)
    "Maximum dbox file size until it's rotated.")
 
   (mdbox-rotate-interval
@@ -1262,18 +1257,12 @@ it, set @samp{auth-ssl-require-client-cert? #t} in auth section.")
 x500UniqueIdentifier are the usual choices.  You'll also need to set
 @samp{auth-ssl-username-from-cert? #t}.")
 
-  (ssl-parameters-regenerate
-   (hours 168)
-   "How often to regenerate the SSL parameters file.  Generation is
-quite CPU intensive operation.  The value is in hours, 0 disables
-regeneration entirely.")
-
-  (ssl-protocols
-   (string "!SSLv2")
-   "SSL protocols to use.")
+  (ssl-min-protocol
+   (string "TLSv1")
+   "Minimum SSL protocol version to accept.")
 
   (ssl-cipher-list
-   (string "ALL:!LOW:!SSLv2:!EXP:!aNULL")
+   (string "ALL:!kRSA:!SRP:!kDHd:!DSS:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK:!RC4:!ADH:!LOW@STRENGTH")
    "SSL ciphers to use.")
 
   (ssl-crypto-device
@@ -1356,14 +1345,15 @@ get \"Too long argument\" or \"IMAP command line too large\" errors
 often.")
 
   (imap-logout-format
-   (string "in=%i out=%o")
+   (string "in=%i out=%o deleted=%{deleted} expunged=%{expunged} trashed=%{trashed} hdr_count=%{fetch_hdr_count} hdr_bytes=%{fetch_hdr_bytes} body_count=%{fetch_body_count} body_bytes=%{fetch_body_bytes}")
    "IMAP logout format string:
 @table @code
 @item %i
 total number of bytes read from client
 @item %o
 total number of bytes sent to client.
-@end table")
+@end table
+See @file{doc/wiki/Variables.txt} for a list of all the variables you can use.")
 
   (imap-capability
    (string "")
