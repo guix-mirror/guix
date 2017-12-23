@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -159,7 +160,7 @@ different programming languages.")
 (define-public fmt
   (package
     (name "fmt")
-    (version "3.0.1")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -167,11 +168,15 @@ different programming languages.")
                     version "/fmt-" version ".zip"))
               (sha256
                (base32
-                "0l4514mk83cjimynci3ghrfdchjy8cya1qa45c1fg2lsj7fg16jc"))))
+                "1swyqw3dn2vx5sw2yh5vk0vrvrkp7fv07cj4272yxl5rrq1byjcx"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://fmtlib.net/latest/")
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            (assoc-ref %outputs "out") "/lib"))))
+    (home-page "http://fmtlib.net/")
     (synopsis "Small and fast C++ formatting library")
     (description
      "@code{fmt} (formerly @code{cppformat}) is a formatting library for C++.
