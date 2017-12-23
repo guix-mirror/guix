@@ -17,7 +17,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -5031,9 +5031,8 @@ at their peak of economic growth and military prowess.
          (modify-phases %standard-phases
            (replace 'configure
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               ;; At this point linenoise is meant to be included,
-               ;; so we have to really copy it into the working directory
-               ;; of s.
+               ;; Linenoise is meant to be included, so we have to
+               ;; copy it into the working directory.
                (let* ((linenoise (assoc-ref inputs "linenoise"))
                       (noisepath (string-append linenoise "/include/linenoise"))
                       (out (assoc-ref outputs "out")))
