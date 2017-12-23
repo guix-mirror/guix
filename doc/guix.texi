@@ -13956,7 +13956,7 @@ definitions for messaging services: currently only Prosody is supported.
 @subsubheading Prosody Service
 
 @deffn {Scheme Variable} prosody-service-type
-This is the type for the @uref{http://prosody.im, Prosody XMPP
+This is the type for the @uref{https://prosody.im, Prosody XMPP
 communication server}.  Its value must be a @code{prosody-configuration}
 record as in this example:
 
@@ -14021,13 +14021,13 @@ The Prosody package.
 
 @deftypevr {@code{prosody-configuration} parameter} file-name data-path
 Location of the Prosody data storage directory.  See
-@url{http://prosody.im/doc/configure}.
+@url{https://prosody.im/doc/configure}.
 Defaults to @samp{"/var/lib/prosody"}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} file-name-list plugin-paths
 Additional plugin directories.  They are searched in all the specified
-paths in order.  See @url{http://prosody.im/doc/plugins_directory}.
+paths in order.  See @url{https://prosody.im/doc/plugins_directory}.
 Defaults to @samp{()}.
 @end deftypevr
 
@@ -14040,15 +14040,15 @@ Defaults to @samp{"/etc/prosody/certs"}.
 
 @deftypevr {@code{prosody-configuration} parameter} string-list admins
 This is a list of accounts that are admins for the server.  Note that you
-must create the accounts separately.  See @url{http://prosody.im/doc/admins} and
-@url{http://prosody.im/doc/creating_accounts}.
+must create the accounts separately.  See @url{https://prosody.im/doc/admins} and
+@url{https://prosody.im/doc/creating_accounts}.
 Example: @code{(admins '("user1@@example.com" "user2@@example.net"))}
 Defaults to @samp{()}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} boolean use-libevent?
 Enable use of libevent for better performance under high load.  See
-@url{http://prosody.im/doc/libevent}.
+@url{https://prosody.im/doc/libevent}.
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -14056,7 +14056,7 @@ Defaults to @samp{#f}.
 This is the list of modules Prosody will load on startup.  It looks for
 @code{mod_modulename.lua} in the plugins folder, so make sure that exists too.
 Documentation on modules can be found at:
-@url{http://prosody.im/doc/modules}.
+@url{https://prosody.im/doc/modules}.
 Defaults to @samp{("roster" "saslauth" "tls" "dialback" "disco" "carbons" "private" "blocklist" "vcard" "version" "uptime" "time" "ping" "pep" "register" "admin_adhoc")}.
 @end deftypevr
 
@@ -14069,13 +14069,13 @@ Defaults to @samp{()}.
 @deftypevr {@code{prosody-configuration} parameter} file-name groups-file
 Path to a text file where the shared groups are defined.  If this path is
 empty then @samp{mod_groups} does nothing.  See
-@url{http://prosody.im/doc/modules/mod_groups}.
+@url{https://prosody.im/doc/modules/mod_groups}.
 Defaults to @samp{"/var/lib/prosody/sharedgroups.txt"}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} boolean allow-registration?
 Disable account creation by default, for security.  See
-@url{http://prosody.im/doc/creating_accounts}.
+@url{https://prosody.im/doc/creating_accounts}.
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -14083,7 +14083,7 @@ Defaults to @samp{#f}.
 These are the SSL/TLS-related settings.  Most of them are disabled so to
 use Prosody's defaults.  If you do not completely understand these options, do
 not add them to your config, it is easy to lower the security of your server
-using them.  See @url{http://prosody.im/doc/advanced_ssl_config}.
+using them.  See @url{https://prosody.im/doc/advanced_ssl_config}.
 
 Available @code{ssl-configuration} fields are:
 
@@ -14154,7 +14154,7 @@ Password for encrypted private keys.
 
 @deftypevr {@code{prosody-configuration} parameter} boolean c2s-require-encryption?
 Whether to force all client-to-server connections to be encrypted or not.
-See @url{http://prosody.im/doc/modules/mod_tls}.
+See @url{https://prosody.im/doc/modules/mod_tls}.
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -14166,7 +14166,7 @@ Defaults to @samp{("DIGEST-MD5")}.
 
 @deftypevr {@code{prosody-configuration} parameter} boolean s2s-require-encryption?
 Whether to force all server-to-server connections to be encrypted or not.
-See @url{http://prosody.im/doc/modules/mod_tls}.
+See @url{https://prosody.im/doc/modules/mod_tls}.
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -14174,7 +14174,7 @@ Defaults to @samp{#f}.
 Whether to require encryption and certificate authentication.  This
 provides ideal security, but requires servers you communicate with to support
 encryption AND present valid, trusted certificates.  See
-@url{http://prosody.im/doc/s2s#security}.
+@url{https://prosody.im/doc/s2s#security}.
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -14182,14 +14182,14 @@ Defaults to @samp{#f}.
 Many servers don't support encryption or have invalid or self-signed
 certificates.  You can list domains here that will not be required to
 authenticate using certificates.  They will be authenticated using DNS.  See
-@url{http://prosody.im/doc/s2s#security}.
+@url{https://prosody.im/doc/s2s#security}.
 Defaults to @samp{()}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} string-list s2s-secure-domains
 Even if you leave @code{s2s-secure-auth?} disabled, you can still require
 valid certificates for some domains by specifying a list here.  See
-@url{http://prosody.im/doc/s2s#security}.
+@url{https://prosody.im/doc/s2s#security}.
 Defaults to @samp{()}.
 @end deftypevr
 
@@ -14197,20 +14197,20 @@ Defaults to @samp{()}.
 Select the authentication backend to use.  The default provider stores
 passwords in plaintext and uses Prosody's configured data storage to store the
 authentication data.  If you do not trust your server please see
-@url{http://prosody.im/doc/modules/mod_auth_internal_hashed} for information
+@url{https://prosody.im/doc/modules/mod_auth_internal_hashed} for information
 about using the hashed backend.  See also
-@url{http://prosody.im/doc/authentication}
+@url{https://prosody.im/doc/authentication}
 Defaults to @samp{"internal_plain"}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} maybe-string log
 Set logging options.  Advanced logging configuration is not yet supported
-by the GuixSD Prosody Service.  See @url{http://prosody.im/doc/logging}.
+by the GuixSD Prosody Service.  See @url{https://prosody.im/doc/logging}.
 Defaults to @samp{"*syslog"}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} file-name pidfile
-File to write pid in.  See @url{http://prosody.im/doc/modules/mod_posix}.
+File to write pid in.  See @url{https://prosody.im/doc/modules/mod_posix}.
 Defaults to @samp{"/var/run/prosody/prosody.pid"}.
 @end deftypevr
 
@@ -14237,7 +14237,7 @@ instance can serve many domains, each one defined as a VirtualHost entry in
 Prosody's configuration.  Conversely a server that hosts a single domain would
 have just one VirtualHost entry.
 
-See @url{http://prosody.im/doc/configure#virtual_host_settings}.
+See @url{https://prosody.im/doc/configure#virtual_host_settings}.
 
 Available @code{virtualhost-configuration} fields are:
 
@@ -14258,7 +14258,7 @@ Internal components are implemented with Prosody-specific plugins.  To add an
 internal component, you simply fill the hostname field, and the plugin you wish
 to use for the component.
 
-See @url{http://prosody.im/doc/components}.
+See @url{https://prosody.im/doc/components}.
 Defaults to @samp{()}.
 
 Available @code{int-component-configuration} fields are:
@@ -14277,10 +14277,10 @@ Multi-user chat (MUC) is Prosody's module for allowing you to create
 hosted chatrooms/conferences for XMPP users.
 
 General information on setting up and using multi-user chatrooms can be found
-in the "Chatrooms" documentation (@url{http://prosody.im/doc/chatrooms}),
+in the "Chatrooms" documentation (@url{https://prosody.im/doc/chatrooms}),
 which you should read if you are new to XMPP chatrooms.
 
-See also @url{http://prosody.im/doc/modules/mod_muc}.
+See also @url{https://prosody.im/doc/modules/mod_muc}.
 
 Available @code{mod-muc-configuration} fields are:
 
@@ -14311,7 +14311,7 @@ Defaults to @samp{20}.
 @deftypevr {@code{prosody-configuration} parameter} ext-component-configuration-list ext-components
 External components use XEP-0114, which most standalone components
 support.  To add an external component, you simply fill the hostname field.  See
-@url{http://prosody.im/doc/components}.
+@url{https://prosody.im/doc/components}.
 Defaults to @samp{()}.
 
 Available @code{ext-component-configuration} fields are:
