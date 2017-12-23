@@ -1678,7 +1678,9 @@ lets the client choose the concrete timeline.")
     (propagated-inputs `(("openssl" ,openssl)))
     (home-page "https://github.com/savonet/ocaml-ssl/")
     (synopsis "OCaml bindings for OpenSSL")
-    (description "OCaml bindings for OpenSSL.")
+    (description
+     "OCaml-SSL is a set of bindings for OpenSSL, a library for communicating
+through Transport Layer Security (@dfn{TLS}) encrypted connections.")
     (license license:lgpl2.1)))
 
 (define-public ocaml-lwt
