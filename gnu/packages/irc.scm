@@ -58,7 +58,9 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public quassel
   (package
@@ -182,6 +184,11 @@ SILC and ICB protocols via plugins.")
     (arguments
      `(#:configure-flags
        (list "-DENABLE_TESTS=ON")       ; ‘make test’ fails otherwise
+       ;; Tests hang indefinately on non-Intel platforms.
+       #:tests? ,(if (any (cute string-prefix? <> (or (%current-target-system)
+                                                      (%current-system)))
+                          '("i686" "x86_64"))
+                   '#t '#f)
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-tests
