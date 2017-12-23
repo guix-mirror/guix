@@ -13164,7 +13164,7 @@ Defaults to @samp{"%$: %s"}.
 @deftypevr {@code{dovecot-configuration} parameter} string mail-log-prefix
 Log prefix for mail processes.  See doc/wiki/Variables.txt for list
 of possible variables you can use.
-Defaults to @samp{"\"%s(%u)<%{pid}><%{session}>: \""}.
+Defaults to @samp{"\"%s(%u)<%@{pid@}><%@{session@}>: \""}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string deliver-log-format
@@ -13757,7 +13757,7 @@ total number of bytes read from client
 total number of bytes sent to client.
 @end table
 See @file{doc/wiki/Variables.txt} for a list of all the variables you can use.
-Defaults to @samp{"in=%i out=%o deleted=%{deleted} expunged=%{expunged} trashed=%{trashed} hdr_count=%{fetch_hdr_count} hdr_bytes=%{fetch_hdr_bytes} body_count=%{fetch_body_count} body_bytes=%{fetch_body_bytes}"}.
+Defaults to @samp{"in=%i out=%o deleted=%@{deleted@} expunged=%@{expunged@} trashed=%@{trashed@} hdr_count=%@{fetch_hdr_count@} hdr_bytes=%@{fetch_hdr_bytes@} body_count=%@{fetch_body_count@} body_bytes=%@{fetch_body_bytes@}"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string imap-capability
