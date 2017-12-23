@@ -5234,3 +5234,63 @@ It includes support for 64 bit CPUs, custom music playback, a new sound driver,
 some graphical niceities, and numerous bug-fixes and other improvements.")
     (home-page "http://quakespasm.sourceforge.net/")
     (license license:gpl2+)))
+
+(define-public yamagi-quake2
+  (package
+    (name "yamagi-quake2")
+    (version "7.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://deponie.yamagi.org/quake2/quake2-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "0psinbg25mysd58k99s1n34w31w5hj1vppb39gdjb0zqi6sl6cps"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags
+       (list "CC=gcc"
+             ;; link openAL instead of using dlopen at runtime
+             "DLOPEN_OPENAL=\"no\""
+             ;; an optional directory where it will look for quake2 data files
+             ;; in addition to the current working directory
+             "WITH_SYSTEMWIDE=yes"
+             "WITH_SYSTEMDIR=\"/opt/quake2\"")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib"))
+               (mkdir-p (string-append out "/bin"))
+               ;; The yamagi-quake2 binary must be in the same directory
+               ;; as it's engine libraries, but symlinking it to /bin is okay
+               ;; https://github.com/yquake2/yquake2/blob/master/stuff/packaging.md
+               (copy-recursively "release"
+                                 (string-append out "/lib/yamagi-quake2"))
+               (symlink (string-append out "/lib/yamagi-quake2/quake2")
+                        (string-append out "/bin/yamagi-quake2"))
+               (symlink (string-append out "/lib/yamagi-quake2/q2ded")
+                        (string-append out "/bin/yamagi-q2ded"))))))))
+    (inputs `(("sdl2" ,sdl2)
+              ("mesa" ,mesa)
+              ("libvorbis" ,libvorbis)
+              ("zlib" ,zlib)
+              ("openal" ,openal)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "First person shooter engine based on quake2")
+    (description "Yamagi Quake II is an enhanced client for id Software's Quake II.
+The main focus is an unchanged single player experience like back in 1997,
+thus the gameplay and the graphics are unaltered.  However the user may use one
+of the unofficial retexturing packs.  In comparison with the official client,
+over 1000 bugs were fixed and an extensive code audit done,
+making Yamagi Quake II one of the most solid Quake II implementations available.")
+    (home-page "https://www.yamagi.org/quake2/")
+    (license (list license:gpl2+         ; game and server
+                   (license:non-copyleft ; info-zip
+                    "file://LICENSE"
+                    "See Info-Zip section.")
+                   license:public-domain)))) ; stb
