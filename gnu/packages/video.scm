@@ -1257,10 +1257,24 @@ other site that youtube-dl supports.")
                (base32
                 "0cdbh5w0chw3dlrwizm91l6sgkkzy7p6h0072dai4xbw5zgld31k"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f))                    ; no tests
     (inputs
-     `(("ffmpeg" ,ffmpeg)))
+     `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'qualify-input-references
+           ;; Explicitly invoke the input ffmpeg, instead of whichever one
+           ;; happens to be in the user's $PATH at run time.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ffmpeg (string-append (assoc-ref inputs "ffmpeg")
+                                          "/bin/ffmpeg")))
+               (substitute* "src/you_get/processor/ffmpeg.py"
+                 ;; Don't blindly replace all occurrences of ‘'ffmpeg'’: the
+                 ;; same string is also used when sniffing ffmpeg's output.
+                 (("(FFMPEG == |\\()'ffmpeg'" _ prefix)
+                  (string-append prefix "'" ffmpeg "'")))
+               #t))))
+       #:tests? #f))                    ; XXX some tests need Internet access
     (synopsis "Download videos, audio, or images from Web sites")
     (description
      "You-Get is a command-line utility to download media contents (videos,
