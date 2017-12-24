@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -608,15 +609,16 @@ monitor it, restarting it as necessary should it die or stop passing traffic.")
 (define-public pdsh
   (package
     (name "pdsh")
-    (version "2.29")
+    (version "2.33")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://storage.googleapis.com/"
-                           "google-code-archive-downloads/v2/code.google.com/"
-                           "pdsh/pdsh-" version ".tar.bz2"))
+       (uri (string-append "https://github.com/chaos/pdsh/"
+                           "releases/download/pdsh-" version
+                           "/pdsh-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1kvzz01fyaxfqmbh53f4ljfsgvxdykh5jyr6fh4f1bw2ywxr1w2p"))))
+        (base32 "0bwlkl9inj66iwvafg00pi3sk9n673phdi0kcc59y9nn55s0hs3k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -625,16 +627,36 @@ monitor it, restarting it as necessary should it die or stop passing traffic.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh
            (lambda _
-             (substitute* '("tests/runtests.sh"
+             (substitute* '("tests/t0006-pdcp.sh"
+                            "tests/t0004-module-loading.sh"
+                            "tests/t2001-ssh.sh"
+                            "tests/t1003-slurm.sh"
+                            "tests/t6036-long-output-lines.sh"
+                            "tests/aggregate-results.sh"
+                            "tests/t2000-exec.sh"
+                            "tests/t0002-internal.sh"
+                            "tests/t1002-dshgroup.sh"
+                            "tests/t5000-dshbak.sh"
+                            "tests/t0001-basic.sh"
+                            "tests/t0005-rcmd_type-and-user.sh"
                             "tests/test-lib.sh"
+                            "tests/t2002-mrsh.sh"
+                            "tests/t0003-wcoll.sh"
                             "tests/test-modules/pcptest.c")
                (("/bin/sh") (which "bash")))
+             #t))
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "tests/t6036-long-output-lines.sh"
+               (("which") (which "which")))
              #t)))))
     (inputs
      `(("openssh" ,openssh)
        ("mit-krb5" ,mit-krb5)
        ("perl" ,perl)))
-    (home-page "https://code.google.com/archive/p/pdsh")
+    (native-inputs
+     `(("which" ,which)))
+    (home-page "https://github.com/chaos/pdsh")
     (synopsis "Parallel distributed shell")
     (description "Pdsh is a an efficient, multithreaded remote shell client
 which executes commands on multiple remote hosts in parallel.  Pdsh implements
