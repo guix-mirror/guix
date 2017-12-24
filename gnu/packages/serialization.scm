@@ -404,8 +404,8 @@ style and key ordering are kept, so you can diff the source.")
     (synopsis "Implementation of the Concise Binary Object Representation")
     (description
      "Python-cbor provides an implementation of the Concise Binary Object
-Representation (CBOR).  CBOR is comparable to JSON, has a superset of JSON's
-ability, but serializes to a binary format which is smaller and faster to
-generate and parse.  The two primary functions are @code{cbor.loads} and
+Representation (@dfn{CBOR}).  CBOR is comparable to JSON, has a superset of
+JSON's ability, but serializes to a binary format which is smaller and faster
+to generate and parse.  The two primary functions are @code{cbor.loads} and
 @code{cbor.dumps}.")
     (license license:asl2.0)))
