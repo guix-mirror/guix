@@ -3739,7 +3739,9 @@ the OleFileIO module from PIL, the Python Image Library.")
        (uri (pypi-uri "Pillow" version))
        (sha256
         (base32
-         "09xmn7rl6840sli2iz1k3fgxfgmri2nqz6vkinmb9mgg8ifp2z59"))))
+         "09xmn7rl6840sli2iz1k3fgxfgmri2nqz6vkinmb9mgg8ifp2z59"))
+       (patch-flags '("-p1" "--binary"))
+       (patches (search-patches "python-pillow-fix-failing-tests.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose"       ,python-nose)))
