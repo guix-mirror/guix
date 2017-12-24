@@ -93,7 +93,7 @@ systems in a FITS image header.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method url-fetch)
@@ -101,17 +101,13 @@ systems in a FITS image header.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1n30zz4kg89ic5h30b7nrxp0bk0ls2m3xnfi81mja56bxxwpihrs"))))
+         "10lxzxyrf30hj3bqdgprvaj9phzdi816khjmr0vmjf8pmsr8bqqr"))))
     (inputs
      `(("cfitsio" ,cfitsio)
        ("gsl" ,gsl)
-       ("libjpeg" ,libjpeg-8)
+       ("libjpeg" ,libjpeg)
        ("wcslib" ,wcslib)))
     (build-system gnu-build-system)
-    (arguments
-     ;; Reduce the number of required type conversions by enabling arithmetic
-     ;; with all the supported types.
-     `(#:configure-flags '("--enable-bin-op-alltypes")))
     (home-page "https://www.gnu.org/software/gnuastro/")
     (synopsis "Astronomy utilities")
     (description "The GNU Astronomy Utilities (Gnuastro) is a suite of
