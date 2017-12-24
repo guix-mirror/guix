@@ -2631,8 +2631,9 @@ a native C extension.")
              (zero? (system* "rake" "gemspec")))))))
     (native-inputs
      `(("bundler" ,bundler)
-       ("ruby-test-unit" ,ruby-test-unit)
-       ("ruby-simplecov" ,ruby-simplecov)))
+       ("ragel" ,ragel)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-test-unit" ,ruby-test-unit)))
     (synopsis "JSON implementation in pure Ruby")
     (description
      "This package provides a JSON implementation written in pure Ruby.")
