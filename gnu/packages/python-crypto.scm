@@ -396,6 +396,26 @@ library.")
 (define-public python2-pyopenssl
   (package-with-python2 python-pyopenssl))
 
+(define-public python-ed25519
+  (package
+    (name "python-ed25519")
+    (version "1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "ed25519" version))
+        (sha256
+          (base32
+            "0ahx1nkxa0xis3cw0h5c4fpgv8mq4znkq7kajly33lc3317bk499"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/warner/python-ed25519")
+    (synopsis "Ed25519 public-key signatures")
+    (description "Ed25519 public-key signatures")
+    (license license:expat)))
+
+(define-public python2-ed25519
+  (package-with-python2 python-ed25519))
+
 (define-public python-axolotl-curve25519
   (package
     (name "python-axolotl-curve25519")
