@@ -889,7 +889,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/newsbeuter-CVE-2017-14500.patch		\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ninja-zero-mtime.patch			\
-  %D%/packages/patches/node-test-http2-server-rst-stream.patch	\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\

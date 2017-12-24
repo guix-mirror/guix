@@ -41,18 +41,14 @@
 (define-public node
   (package
     (name "node")
-    (version "8.9.1")
+    (version "9.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "1qbiz7hgwlirhwpd71c8yzcbwsyi5bjlfp6lxb6v55j6rizinj9j"))
-              ;; See https://github.com/nodejs/node/issues/16688
-              ;; Remove this next update (>8.9.1).
-              (patches
-                (search-patches "node-test-http2-server-rst-stream.patch"))))
+                "19g2pc196rxlj9k5bwhqxdjddvicsx385w7yj6alq9l82lmqycxp"))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO: Purge the bundled copies from the source.
@@ -85,11 +81,24 @@
              ;; test-make-doc needs doc-only target, which is inhibited below
              (for-each delete-file
                        '("test/doctool/test-make-doc.js"))
-             ;; FIXME: This test seems to depends on files that are not
-             ;; available in the bundled v8. See
-             ;; https://github.com/nodejs/node/issues/13344
+             ;; FIXME: These tests depend on being able to install eslint.
+             ;; See https://github.com/nodejs/node/issues/17098.
              (for-each delete-file
-                       '("test/addons-napi/test_general/testInstanceOf.js"))
+                       '("test/parallel/test-eslint-crypto-check.js"
+                         "test/parallel/test-eslint-alphabetize-errors.js"
+                         "test/parallel/test-eslint-buffer-constructor.js"
+                         "test/parallel/test-eslint-documented-errors.js"
+                         "test/parallel/test-eslint-inspector-check.js"
+                         "test/parallel/test-eslint-no-unescaped-regexp-dot.js"
+                         "test/parallel/test-eslint-no-let-in-for-declaration.js"
+                         "test/parallel/test-eslint-prefer-assert-iferror.js"
+                         "test/parallel/test-eslint-prefer-assert-methods.js"
+                         "test/parallel/test-eslint-prefer-common-expectserror.js"
+                         "test/parallel/test-eslint-prefer-common-mustnotcall.js"
+                         "test/parallel/test-eslint-prefer-util-format-errors.js"
+                         "test/parallel/test-eslint-require-buffer.js"
+                         "test/parallel/test-eslint-required-modules.js"))
+
              ;; FIXME: These tests fail in the build container, but they don't
              ;; seem to be indicative of real problems in practice.
              (for-each delete-file
