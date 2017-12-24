@@ -40,6 +40,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -197,6 +198,9 @@ integrate Windows applications into your desktop.")
               (sha256
                (base32
                 "1pjaxj7h3q6y356np908fvsx0bf7yx5crqvgl4hza6gfssdmsr5r"))))
+    (inputs `(("gtk+", gtk+)
+              ("libva", libva)
+              ,@(package-inputs wine)))
     (synopsis "Implementation of the Windows API (staging branch)")
     (description "Wine-Staging is the testing area of Wine.  It
 contains bug fixes and features, which have not been integrated into
