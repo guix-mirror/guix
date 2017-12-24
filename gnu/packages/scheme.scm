@@ -813,8 +813,8 @@ metalinguistic abstraction, recursion, interpreters, and modular programming.")
       (license cc-by-sa4.0))))
 
 (define-public scheme48-rx
-  (let* ((commit "d3231ad13de2b44e3ee173b1c9d09ff165e8b6d5")
-         (revision "1"))
+  (let* ((commit "dd9037f6f9ea01019390614f6b126b7dd293798d")
+         (revision "2"))
     (package
       (name "scheme48-rx")
       (version (string-append "0.0.0-" revision "." (string-take commit 7)))
@@ -826,7 +826,7 @@ metalinguistic abstraction, recursion, interpreters, and modular programming.")
                (commit commit)))
          (sha256
           (base32
-           "1nmziaibgmfi346kzidj6xyad0vm7724qymbzgxvdzyrqji6v6yz"))
+           "1bvriavxw5kf2izjbil3999vr983vkk2xplfpinafr86m40b2cci"))
          (file-name (string-append name "-" version "-checkout"))))
       (build-system trivial-build-system)
       (arguments
