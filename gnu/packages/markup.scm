@@ -211,7 +211,7 @@ implementation.
     (description "CommonMark is a strongly defined, highly compatible
 specification of Markdown.  cmark is the C reference implementation of
 CommonMark.  It provides @code{libcmark} shared library for parsing
-CommonMark to an abstract syntax tree (AST) and rendering the document
+CommonMark to an abstract syntax tree (@dfn{AST}) and rendering the document
 as HTML, groff man, LaTeX, CommonMark, or an XML representation of the
 AST.  The package also provides the command-line program @command{cmark}
 for parsing and rendering CommonMark.")
