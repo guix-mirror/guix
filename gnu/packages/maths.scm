@@ -21,7 +21,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright � 2017 Dave Love <me@fx@gnu.org>
+;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
