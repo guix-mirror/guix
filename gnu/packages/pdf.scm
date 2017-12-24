@@ -713,7 +713,7 @@ using a stylus.")
        #:test-target "tests"))
     (propagated-inputs
      `(("python-pillow" ,python-pillow)))
-    (home-page "http://www.reportlab.com")
+    (home-page "https://www.reportlab.com")
     (synopsis "Python library for generating PDFs and graphics")
     (description "This is the ReportLab PDF Toolkit.  It allows rapid creation
 of rich PDF documents, and also creation of charts in a variety of bitmap and
