@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -759,10 +760,10 @@ engineering.")
       (license gpl2+))))
 
 (define-public sicp
-  (let ((commit "5b52db566968d28a89fbbaf338d207f01cc81cac"))
+  (let ((commit "225c172f9b859902a64a3c5dd5e1f9ac1a7382de"))
     (package
       (name "sicp")
-      (version (string-append "20160220-1." (string-take commit 7)))
+      (version (string-append "20170703-1." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -770,7 +771,7 @@ engineering.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "10h6h7szwlfbshwh18bnl2hvyddj5i7106l79s145l0sjjv15cxb"))
+                  "0bhdrdc1mgdjdsg4jksq9z6x129f3346jbf3zir2a0dfmsj6m10n"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system trivial-build-system)
       (native-inputs `(("gzip" ,gzip)
