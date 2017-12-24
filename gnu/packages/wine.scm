@@ -216,3 +216,20 @@ integrated into the main branch.")
     ;; both GPL3+ and Apache 2 License.
     (license
      (list license:lgpl2.1+ license:silofl1.1 license:gpl3+ license:asl2.0))))
+
+(define-public wine64-staging
+  (package
+    (inherit wine-staging)
+    (name "wine64-staging")
+    (arguments
+     `(#:make-flags
+       (list "SHELL=bash"
+             (string-append "libdir=" %output "/lib"))
+       #:configure-flags
+       (list "--enable-win64"
+             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       ,@(strip-keyword-arguments '(#:configure-flags #:make-flags #:system)
+                                  (package-arguments wine-staging))))
+    (synopsis "Implementation of the Windows API (staging branch, 64-bit
+version)")
+    (supported-systems '("x86_64-linux" "aarch64-linux"))))
