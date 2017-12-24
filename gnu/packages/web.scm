@@ -3844,7 +3844,7 @@ directory.")
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-rcpp" ,r-rcpp)))
-    (home-page "http://cran.r-project.org/web/packages/htmltools")
+    (home-page "https://cran.r-project.org/web/packages/htmltools")
     (synopsis "R tools for HTML")
     (description
      "This package provides tools for HTML generation and output in R.")
@@ -3959,7 +3959,7 @@ callback or connection interfaces.")
         (base32
          "0arjsz854rfkfqhgvpqbm9lfni97dcjs66isdsfvwfd2wz932dbb"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/hwriter")
+    (home-page "https://cran.r-project.org/web/packages/hwriter")
     (synopsis "Output R objects in HTML format")
     (description
      "This package provides easy-to-use and versatile functions to output R
@@ -3978,7 +3978,7 @@ objects in HTML format.")
         (base32
          "1vzjyvf57k1fjizlk28rby65y5lsww5qnfvgnhln74qwda7hvl3p"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/rjson")
+    (home-page "https://cran.r-project.org/web/packages/rjson")
     (synopsis "JSON library for R")
     (description
      "This package provides functions to convert R objects into JSON objects
@@ -5424,7 +5424,7 @@ files).  It currently supports linked brushing and filtering.")
     (properties `((upstream-name . "Rook")))
     (build-system r-build-system)
     (propagated-inputs `(("r-brew" ,r-brew)))
-    (home-page "http://cran.r-project.org/web/packages/Rook")
+    (home-page "https://cran.r-project.org/web/packages/Rook")
     (synopsis "Web server interface for R")
     (description
      "This package contains the Rook specification and convenience software

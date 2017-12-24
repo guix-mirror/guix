@@ -1885,7 +1885,7 @@ sparse system of linear equations A x = b using Guassian elimination.")
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/quadprog")
+    (home-page "https://cran.r-project.org/web/packages/quadprog")
     (synopsis "Functions to solve quadratic programming problems")
     (description
      "This package contains routines and documentation for solving quadratic
@@ -1904,7 +1904,7 @@ programming problems.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)))
-    (home-page "http://cran.r-project.org/web/packages/pracma")
+    (home-page "https://cran.r-project.org/web/packages/pracma")
     (synopsis "Practical numerical math functions")
     (description "This package provides functions for numerical analysis and
 linear algebra, numerical optimization, differential equations, plus some

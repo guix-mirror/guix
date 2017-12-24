@@ -6032,7 +6032,7 @@ guix import cpan Acme::Boolean
 @item cran
 @cindex CRAN
 @cindex Bioconductor
-Import metadata from @uref{http://cran.r-project.org/, CRAN}, the
+Import metadata from @uref{https://cran.r-project.org/, CRAN}, the
 central repository for the @uref{http://r-project.org, GNU@tie{}R
 statistical and graphical environment}.
 
@@ -6403,7 +6403,7 @@ the updater for packages hosted on kernel.org;
 @item elpa
 the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
 @item cran
-the updater for @uref{http://cran.r-project.org/, CRAN} packages;
+the updater for @uref{https://cran.r-project.org/, CRAN} packages;
 @item bioconductor
 the updater for @uref{https://www.bioconductor.org/, Bioconductor} R packages;
 @item cpan

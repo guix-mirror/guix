@@ -6367,7 +6367,7 @@ track.  The database is exposed as a @code{TxDb} object.")
   (propagated-inputs
    `(("r-rcurl" ,r-rcurl)
      ("r-xml" ,r-xml)))
-  (home-page "http://cran.r-project.org/web/packages/SPARQL")
+  (home-page "https://cran.r-project.org/web/packages/SPARQL")
   (synopsis "SPARQL client for R")
   (description "This package provides an interface to use SPARQL to pose
 SELECT or UPDATE queries to an end-point.")
@@ -6601,7 +6601,7 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
     (propagated-inputs
       `(("r-ggplot2" ,r-ggplot2)
         ("r-gridextra" ,r-gridextra)))
-    (home-page "http://cran.r-project.org/web/packages/ACSNMineR")
+    (home-page "https://cran.r-project.org/web/packages/ACSNMineR")
     (synopsis "Gene enrichment analysis")
     (description
      "This package provides tools to compute and represent gene set enrichment
@@ -8497,7 +8497,7 @@ factors bound at the specific regions.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-seqinr" ,r-seqinr)))
-    (home-page "http://cran.r-project.org/web/packages/gkmSVM")
+    (home-page "https://cran.r-project.org/web/packages/gkmSVM")
     (synopsis "Gapped-kmer support vector machine")
     (description
      "This R package provides tools for training gapped-kmer SVM classifiers
@@ -9090,7 +9090,7 @@ trait.")
          "047s6007ydc38x8wm027mlb4mngz15n0d4238fr8h43wyll5zy0z"))))
     (properties `((upstream-name . "MALDIquant")))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/MALDIquant")
+    (home-page "https://cran.r-project.org/web/packages/MALDIquant")
     (synopsis "Quantitative analysis of mass spectrometry data")
     (description
      "This package provides a complete analysis pipeline for matrix-assisted
@@ -9997,7 +9997,7 @@ interval to data view, mismatch pileup, and several splicing summaries.")
     (propagated-inputs
      `(("r-plyr" ,r-plyr)
        ("r-rcurl" ,r-rcurl)))
-    (home-page "http://cran.r-project.org/web/packages/gProfileR/")
+    (home-page "https://cran.r-project.org/web/packages/gProfileR/")
     (synopsis "Interface to the g:Profiler toolkit")
     (description
      "This package provides tools for functional enrichment analysis,
