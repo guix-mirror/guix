@@ -400,17 +400,17 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "6.8")
+    (version "6.11")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://mirror.racket-lang.org/installers/"
                                        version "/racket-" version "-src.tgz")
                         (string-append
                          "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
-                         version "/racket/racket-" version "-src-unix.tgz")))
+                         version "/racket-" version "-src.tgz")))
              (sha256
               (base32
-               "1l9z1a0r5zydr50cklx9xjw3l0pwnf64i10xq7112fl1r89q3qgv"))))
+               "1nk7705x24jjlbqqhj8yvbgqkfscxx3m81bry1g56kjxysjmf3sw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
