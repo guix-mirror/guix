@@ -599,7 +599,7 @@ threads.")
 
     (package
       (name "scmutils")
-      (version "20140302")
+      (version "20160827")
       (source
        (origin
          (method url-fetch/tarbomb)
@@ -611,7 +611,7 @@ threads.")
                              "/scmutils-tarballs/" name "-" version
                              "-x86-64-gnu-linux.tar.gz"))
          (sha256
-          (base32 "10cnbm7nh78m5mrl1di85s29gny81jb1am9zd9f9yx725xb6dnfg"))))
+          (base32 "00ly5m0s4dy5kxravjaqlpii5zcnr6b9nqm0607lr7xcs52i4j8b"))))
       (build-system gnu-build-system)
       (inputs
        `(("mit-scheme" ,mit-scheme)
@@ -626,104 +626,104 @@ threads.")
          #:phases
          (modify-phases %standard-phases
            (replace 'configure
-                    ;; No standard build procedure is used. We set the correct
-                    ;; runtime path in the custom build system.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        ;; Required to find .bci files at runtime.
-                        (with-directory-excursion "scmutils"
-                          (rename-file "src" "scmutils"))
-                        (substitute* "scmutils/scmutils/load.scm"
-                          (("/usr/local/scmutils/")
-                           (string-append out "/lib/mit-scheme-"
-                                          ,(system-suffix) "/")))
-                        #t)))
+             ;; No standard build procedure is used. We set the correct
+             ;; runtime path in the custom build system.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 ;; Required to find .bci files at runtime.
+                 (with-directory-excursion "scmutils"
+                   (rename-file "src" "scmutils"))
+                 (substitute* "scmutils/scmutils/load.scm"
+                   (("/usr/local/scmutils/")
+                    (string-append out "/lib/mit-scheme-"
+                                   ,(system-suffix) "/")))
+                 #t)))
            (replace 'build
-                    ;; Compile the code and build a band.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (make-img (string-append
-                                        "echo '(load \"load\") "
-                                        "(disk-save \"edwin-mechanics.com\")'"
-                                        "| mit-scheme")))
-                        (with-directory-excursion "scmutils/scmutils"
-                          (and (zero? (system "mit-scheme < compile.scm"))
-                               (zero? (system make-img)))))))
+             ;; Compile the code and build a band.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (make-img (string-append
+                                 "echo '(load \"load\") "
+                                 "(disk-save \"edwin-mechanics.com\")'"
+                                 "| mit-scheme")))
+                 (with-directory-excursion "scmutils/scmutils"
+                   (and (zero? (system "mit-scheme < compile.scm"))
+                        (zero? (system make-img)))))))
            (add-before 'install 'fix-directory-names
-                       ;; Correct directory names in the startup script.
-                       (lambda* (#:key inputs outputs #:allow-other-keys)
-                         (let* ((out (assoc-ref outputs "out"))
-                                (scm-root (assoc-ref inputs "mit-scheme")))
-                           (substitute* "bin/mechanics"
-                             (("ROOT=\"\\$\\{SCMUTILS_ROOT:-/.*\\}\"")
-                              (string-append
-                               "ROOT=\"${SCMUTILS_ROOT:-" scm-root "}\"\n"
-                               "LIB=\"${ROOT}/lib/mit-scheme-"
-                               ,(system-suffix) ":"
-                               out "/lib/mit-scheme-" ,(system-suffix) "\""))
-                             (("EDWIN_INFO_DIRECTORY=.*\n") "")
-                             (("SCHEME=.*\n")
-                              (string-append "SCHEME=\"${ROOT}/bin/scheme "
-                                             "--library ${LIB}\"\n"))
-                             (("export EDWIN_INFO_DIRECTORY") ""))
-                           #t)))
+             ;; Correct directory names in the startup script.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (scm-root (assoc-ref inputs "mit-scheme")))
+                 (substitute* "bin/mechanics"
+                   (("ROOT=\"\\$\\{SCMUTILS_ROOT:-/.*\\}\"")
+                    (string-append
+                     "ROOT=\"${SCMUTILS_ROOT:-" scm-root "}\"\n"
+                     "LIB=\"${ROOT}/lib/mit-scheme-"
+                     ,(system-suffix) ":"
+                     out "/lib/mit-scheme-" ,(system-suffix) "\""))
+                   (("EDWIN_INFO_DIRECTORY=.*\n") "")
+                   (("SCHEME=.*\n")
+                    (string-append "SCHEME=\"${ROOT}/bin/scheme "
+                                   "--library ${LIB}\"\n"))
+                   (("export EDWIN_INFO_DIRECTORY") ""))
+                 #t)))
            (add-before 'install 'emacs-tags
-                       ;; Generate Emacs's tags for easy reference to source
-                       ;; code.
-                       (lambda* (#:key inputs outputs #:allow-other-keys)
-                         (with-directory-excursion "scmutils/scmutils"
-                           (zero? (apply system* "etags"
-                                         (find-files "." "\\.scm"))))))
+             ;; Generate Emacs's tags for easy reference to source
+             ;; code.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (with-directory-excursion "scmutils/scmutils"
+                 (zero? (apply system* "etags"
+                               (find-files "." "\\.scm"))))))
            (replace 'install
-                    ;; Copy files to the store.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (define* (copy-files-to-directory files dir
-                                                        #:optional (delete? #f))
-                        (for-each (lambda (f)
-                                    (copy-file f (string-append dir "/" f))
-                                    (when delete? (delete-file f)))
-                                  files))
+             ;; Copy files to the store.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (define* (copy-files-to-directory files dir
+                                                 #:optional (delete? #f))
+                 (for-each (lambda (f)
+                             (copy-file f (string-append dir "/" f))
+                             (when delete? (delete-file f)))
+                           files))
 
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin"))
-                             (doc (string-append out "/share/doc/"
-                                                 ,name "-" ,version))
-                             (lib (string-append out "/lib/mit-scheme-"
-                                                 ,(system-suffix)
-                                                 "/scmutils")))
-                        (for-each mkdir-p (list lib doc bin))
-                        (with-directory-excursion "scmutils/scmutils"
-                          (copy-files-to-directory '("COPYING" "LICENSE")
-                                                   doc #t)
-                          (for-each delete-file (find-files "." "\\.bin"))
-                          (copy-files-to-directory '("edwin-mechanics.com")
-                                                   (string-append lib "/..") #t)
-                          (copy-recursively "." lib))
-                        (with-directory-excursion "bin"
-                          (copy-files-to-directory (find-files ".") bin))
-                        (with-directory-excursion "scmutils/manual"
-                          (copy-files-to-directory (find-files ".") doc))
-                        #t)))
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (doc (string-append out "/share/doc/"
+                                          ,name "-" ,version))
+                      (lib (string-append out "/lib/mit-scheme-"
+                                          ,(system-suffix)
+                                          "/scmutils")))
+                 (for-each mkdir-p (list lib doc bin))
+                 (with-directory-excursion "scmutils/scmutils"
+                   (copy-files-to-directory '("COPYING" "LICENSE")
+                                            doc #t)
+                   (for-each delete-file (find-files "." "\\.bin"))
+                   (copy-files-to-directory '("edwin-mechanics.com")
+                                            (string-append lib "/..") #t)
+                   (copy-recursively "." lib))
+                 (with-directory-excursion "bin"
+                   (copy-files-to-directory (find-files ".") bin))
+                 (with-directory-excursion "scmutils/manual"
+                   (copy-files-to-directory (find-files ".") doc))
+                 #t)))
            (add-after 'install 'emacs-helpers
-                      ;; Add convenience Emacs commands to easily load the
-                      ;; Scmutils band in an MIT-Scheme buffer inside of Emacs
-                      ;; and to easily load code tags.
-                      (lambda* (#:key inputs outputs #:allow-other-keys)
-                        (let* ((out (assoc-ref outputs "out"))
-                               (mit-root (assoc-ref inputs "mit-scheme"))
-                               (emacs-lisp-dir
-                                (string-append out "/share/emacs/site-lisp"
-                                               "/guix.d/" ,name "-" ,version))
-                               (el-file (string-append emacs-lisp-dir
-                                                       "/scmutils.el"))
-                               (lib-relative-path
-                                (string-append "/lib/mit-scheme-"
-                                               ,(system-suffix))))
-                          (mkdir-p emacs-lisp-dir)
-                          (call-with-output-file el-file
-                            (lambda (p)
-                              (format p
-                                      ";;;###autoload
+             ;; Add convenience Emacs commands to easily load the
+             ;; Scmutils band in an MIT-Scheme buffer inside of Emacs
+             ;; and to easily load code tags.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (mit-root (assoc-ref inputs "mit-scheme"))
+                      (emacs-lisp-dir
+                       (string-append out "/share/emacs/site-lisp"
+                                      "/guix.d/" ,name "-" ,version))
+                      (el-file (string-append emacs-lisp-dir
+                                              "/scmutils.el"))
+                      (lib-relative-path
+                       (string-append "/lib/mit-scheme-"
+                                      ,(system-suffix))))
+                 (mkdir-p emacs-lisp-dir)
+                 (call-with-output-file el-file
+                   (lambda (p)
+                     (format p
+                             ";;;###autoload
 (defun scmutils-load ()
   (interactive)
   (require 'xscheme)
