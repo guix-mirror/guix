@@ -12144,3 +12144,36 @@ such as figshare or Zenodo.")
                            '("lib/activepapers/builtins3.py"
                              "lib/activepapers/standardlib3.py"
                              "lib/activepapers/utility3.py")))))))))))
+
+(define-public python-semver
+  (package
+    (name "python-semver")
+    (version "2.7.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "semver" version))
+        (sha256
+          (base32
+            "0hhgqppchv59rqj0yzi1prdg2nfsywqmjsqy2rycyxm0hvxmbyqz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test-requirements
+           (lambda _
+             (substitute* "setup.py"
+               ;; Our Python is new enough.
+               (("'virtualenv<14\\.0\\.0'") "'virtualenv'"))
+             #t)))))
+    (native-inputs
+     `(("python-tox" ,python-tox)
+       ("python-virtualenv" ,python-virtualenv)))
+    (home-page "https://github.com/k-bx/python-semver")
+    (synopsis "Python helper for Semantic Versioning")
+    (description "This package provides a Python library for
+@url{Semantic Versioning, http://semver.org/}.")
+    (license license:bsd-3)))
+
+(define-public python2-semver
+  (package-with-python2 python-semver))
