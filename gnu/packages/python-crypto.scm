@@ -655,3 +655,26 @@ Certificate (DER encoded, PEM encoded), RSA PEM (encoded private key, public
 key), SSH public key, ASC-encoded OpenPGP key, APK Android application, LDIFF
 file, and more.")
     (license license:gpl3)))
+
+(define-public python-ecpy
+  (package
+    (name "python-ecpy")
+    (version "0.8.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "ECPy" version))
+        (sha256
+          (base32
+            "090fqnj8z0xm44jrfpll7j45r68m6kp7mjr7yxzg93j42h3sj285"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-future" ,python-future)))
+    (home-page "https://github.com/ubinity/ECPy")
+    (synopsis "Pure Python Elliptic Curve Library")
+    (description "This package provides a Elliptic Curve Library in pure
+Python.")
+    (license license:asl2.0)))
+
+(define-public python2-ecpy
+  (package-with-python2 python-ecpy))
