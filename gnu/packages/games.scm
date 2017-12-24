@@ -32,6 +32,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5294,3 +5295,56 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
                     "file://LICENSE"
                     "See Info-Zip section.")
                    license:public-domain)))) ; stb
+
+(define-public the-butterfly-effect
+  (package
+    (name "the-butterfly-effect")
+    (version "0.9.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/the-butterfly-effect/tbe/archive/"
+             "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18qkp7fgdvyl3haqqa693mgyic7afsznsxgz98z9wn4csaqxsnby"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; There is no "install" phase.  By default, tbe is installed
+         ;; in the build directory.  Provide our own installation.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share (string-append out "/share")))
+               (install-file "usr/games/tbe" bin)
+               (mkdir-p share)
+               (copy-recursively "usr/share" share)
+               #t))))
+       ;; Test suite requires a running Xorg server. Even when
+       ;; provided, it fails with "D-Bus library appears to be
+       ;; incorrectly set up; failed to read machine uuid: Failed to
+       ;; open "/etc/machine-id": No such file or directory" along
+       ;; with multiple "QPainter:: ... Painter not active" warnings.
+       #:tests? #f))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("gettext-minimal" ,gettext-minimal)
+       ("qttools" ,qttools)))
+    (synopsis "Realistic physics puzzle game")
+    (description "The Butterfly Effect (tbe) is a game that uses
+realistic physics simulations to combine lots of simple mechanical
+elements to achieve a simple goal in the most complex way possible.")
+    (home-page "http://the-butterfly-effect.org/")
+    ;; Main license is GPL2-only.  However, artwork is distributed
+    ;; under various licenses, listed here.
+    (license (list license:gpl2 license:public-domain license:expat
+                   license:cc-by-sa3.0 license:gpl3+ license:wtfpl2))))
