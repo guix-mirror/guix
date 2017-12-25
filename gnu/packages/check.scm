@@ -1213,7 +1213,7 @@ seamlessly into your existing Python unit testing work flow.")
          (base32
           "0z651m3vkbk85y41larnsjxrszkbi58x9gzml3lb6ga7qwcrsg97"))))
     (build-system python-build-system)
-    (home-page "http://llvm.org/")
+    (home-page "https://llvm.org/")
     (synopsis "LLVM Software Testing Tool")
     (description "@code{lit} is a portable tool for executing LLVM and Clang
 style test suites, summarizing their results, and providing indication of
