@@ -802,7 +802,7 @@ engineering.")
                   (every zero?
                          (map (cut system* "gzip" "-9n" <>)
                               (find-files info-dir))))))))
-      (home-page "http://sarabander.github.io/sicp")
+      (home-page "https://sarabander.github.io/sicp")
       (synopsis "Structure and Interpretation of Computer Programs")
       (description "Structure and Interpretation of Computer Programs (SICP) is
 a textbook aiming to teach the principles of computer programming.
