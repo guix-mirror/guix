@@ -2318,18 +2318,19 @@ designed to be easy and intuitive to use.")
 (define-public python-sadisplay
   (package
     (name "python-sadisplay")
-    (version "0.4.6")
+    (version "0.4.8")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "sadisplay" version))
       (sha256
         (base32
-          "0zqad2fl7q26p090qmqgmxbm6iwgf9zij1w8da1g3wdgjj72ql05"))))
+          "01d9lxhmgpb68gy8rd6zj6fcwp84n2qq210n1qsk3qbsir79bzh4"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-sqlalchemy" ,python-sqlalchemy)))
     (native-inputs
+     ;; For tests.
       `(("python-nose" ,python-nose)))
     (home-page "https://bitbucket.org/estin/sadisplay")
     (synopsis "SQLAlchemy schema displayer")
