@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1418,7 +1418,7 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jack-2
   (package (inherit jack-1)
     (name "jack2")
-    (version "1.9.11-RC1")
+    (version "1.9.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/jackaudio/jack2/releases/"
@@ -1427,7 +1427,7 @@ synchronous execution of all clients, and low latency operation.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0ks72xxv8qrpwjc2ksr74rnp178h62g5vdplb2rn4vhkw86yw3kk"))))
+               "0crf4y9a5j9miw8r5ji4l3w5w0y2frrf7xyfsfdgacnw6vwy5vyy"))))
     (build-system waf-build-system)
     (arguments
      `(#:python ,python-2
@@ -1436,15 +1436,6 @@ synchronous execution of all clients, and low latency operation.")
                            "--alsa")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-fast_rand
-           (lambda _
-             (substitute* "common/memops.c"
-               ;; Fixed in upstream commit d3c8e2d8d78899fba40a3e677ed4dbe388d82269
-               (("^inline unsigned int fast_rand" line)
-                (string-append "static " line))
-               ;; Fixed in upstream commit 0279a2d65a36d1378f5bab56d95bf9e99cc8cefb
-               ((" 96314165") " 196314165"))
-             #t))
          (add-before
           'configure 'set-linkflags
           (lambda _
