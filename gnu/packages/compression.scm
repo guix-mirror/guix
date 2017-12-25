@@ -1033,22 +1033,16 @@ well as bzip2.")
 (define-public bitshuffle
   (package
     (name "bitshuffle")
-    (version "0.3.2")
+    (version "0.3.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "bitshuffle" version))
               (sha256
                (base32
-                "01vcjrvsxjvv47y5hf9rps69zwv0vwd4ydhhms2jfs4rpcnlak6v"))))
+                "0ydawb01ghsvmw0lraczhrgvkjj97bpg98f1qqs1cnfp953mdd5v"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'make-required-dir
-           (lambda _
-             (mkdir-p "bitshuffle/plugin")
-             #t)))))
+     `(#:tests? #f))           ; fail: https://github.com/h5py/h5py/issues/769
     (inputs
      `(("numpy" ,python-numpy)
        ("h5py" ,python-h5py)
