@@ -4111,7 +4111,7 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.15.0")
+    (version "0.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4120,7 +4120,7 @@ target will call @code{compile} on it.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0j7qjcslh8mnxrr2m8qrscyq9ry240j5jd9dysbvih126lxisf12"))))
+                "1j5hlmi14ypszv1f9nvq0jjlz7i742flg0ny3055l7i4x089xx6g"))))
     (build-system emacs-build-system)
     (arguments
      '(#:exclude                        ; Don't exclude 'cider-test.el'.
