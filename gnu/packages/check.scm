@@ -1591,24 +1591,15 @@ JSON APIs with Behave.")
 (define-public python-rednose
   (package
     (name "python-rednose")
-    (version "1.2.1")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "rednose" version))
         (sha256
           (base32
-            "0b0bsna217lr1nykyhl5fgjly15zhdvqd4prg4wy1zrgfv7al6m0"))))
+            "11x5nx5b4wdq04s7vj1gcdl07jvvkfb37p0r5lg773gr5rr8mj6h"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-deps
-           (lambda _
-             ;; See <https://github.com/JBKahn/rednose/issues/12>
-             (substitute* "setup.py"
-               (("python-termstyle") "termstyle"))
-             #t)))))
     (propagated-inputs
      `(("python-colorama" ,python-colorama)
        ("python-termstyle" ,python-termstyle)))
