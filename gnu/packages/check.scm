@@ -1204,14 +1204,14 @@ seamlessly into your existing Python unit testing work flow.")
 (define-public python-lit
   (package
     (name "python-lit")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "lit" version))
         (sha256
          (base32
-          "135m2b9cwih85g66rjggavck328z7lj37srgpq3jxszbg0g2b91y"))))
+          "0z651m3vkbk85y41larnsjxrszkbi58x9gzml3lb6ga7qwcrsg97"))))
     (build-system python-build-system)
     (home-page "http://llvm.org/")
     (synopsis "LLVM Software Testing Tool")
