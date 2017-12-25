@@ -1805,14 +1805,14 @@ produce uniform output across heterogeneous networks.")
 (define-public cbatticon
   (package
     (name "cbatticon")
-    (version "1.6.6")
+    (version "1.6.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/valr/"
                                   name "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "1rxlrwd817f2zl4fsc5ha43wjzfidq3yyagq4lgyi150qg36svv3"))
+                "1s2n49ydh7pznnf02fak4yy0wqkgi9ag7yiw1zg1lhp4m0h37hyh"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
