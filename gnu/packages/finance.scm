@@ -533,3 +533,26 @@ Ledger Nano as a hardware SSH/GPG agent.")
 
 (define-public python2-trezor-agent
   (package-with-python2 python-trezor-agent))
+
+(define-public python-mnemonic
+  (package
+    (name "python-mnemonic")
+    (version "0.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mnemonic" version))
+        (sha256
+          (base32
+            "07bzfa5di6nv5xwwcwbypnflpj50wlfczhh6q6hg8w13g5m319q2"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pbkdf2" ,python-pbkdf2)))
+    (home-page "https://github.com/trezor/python-mnemonic")
+    (synopsis "Implementation of Bitcoin BIP-0039")
+    (description "@code{mnemonic} is a library that provides an implementation
+of Bitcoin BIP-0039.")
+    (license license:expat)))
+
+(define-public python2-mnemonic
+  (package-with-python2 python-mnemonic))
