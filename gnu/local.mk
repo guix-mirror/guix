@@ -252,7 +252,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/libunistring.scm			\
   %D%/packages/libusb.scm			\
   %D%/packages/libunwind.scm			\
-  %D%/packages/libupnp.scm			\
   %D%/packages/lighting.scm                     \
   %D%/packages/linux.scm			\
   %D%/packages/lirc.scm				\
