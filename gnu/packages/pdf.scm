@@ -355,7 +355,7 @@ using libarchive.")
 (define-public zathura-ps
   (package
     (name "zathura-ps")
-    (version "0.2.4")
+    (version "0.2.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -363,7 +363,7 @@ using libarchive.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1nxbl0glnzpan78fhdfzhkcd0cikcvrkzf9m56mb0pvnwzlwg7zv"))))
+                "1x4knqja8pw2a5cb3y2209nr3iddj1z8nwasy48v5nprj61fdxqj"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs `(("libspectre" ,libspectre)
