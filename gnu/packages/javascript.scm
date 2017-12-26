@@ -371,16 +371,16 @@ means that these shams cause many ES5 methods to silently fail.")
 (define-public mujs
   (package
     (name "mujs")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "http://git.ghostscript.com/mujs.git")
+                    (url "https://git.ghostscript.com/mujs.git")
                     (commit version)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0ch0s3vqs7agf65gbks32bj44nk1dr2s23ki47b0bhdhzvw9q93j"))))
+                "1angy1higk8bvh69frjhq1m6znhd75fzalaydz5rfzkdfyw52jgy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -388,7 +388,7 @@ means that these shams cause many ES5 methods to silently fail.")
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
                           (string-append "CC=gcc"))
        #:tests? #f)) ; no tests
-    (home-page "http://dev.mujs.com")
+    (home-page "https://artifex.com/mujs/")
     (synopsis "JavaScript interpreter written in C")
     (description "MuJS is a lightweight Javascript interpreter designed for
 embedding in other software to extend them with scripting capabilities.  MuJS
