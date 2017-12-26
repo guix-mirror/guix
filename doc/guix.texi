@@ -1509,7 +1509,7 @@ either in @file{$HOME/.guix-profile/share/emacs/site-lisp/} or in
 sub-directories of
 @file{$HOME/.guix-profile/share/emacs/site-lisp/guix.d/}.  The latter
 directory exists because potentially there may exist thousands of Emacs
-packages and storing all their files in a single directory may be not
+packages and storing all their files in a single directory may not be
 reliable (because of name conflicts).  So we think using a separate
 directory for each package is a good idea.  It is very similar to how
 the Emacs package system organizes the file structure (@pxref{Package
