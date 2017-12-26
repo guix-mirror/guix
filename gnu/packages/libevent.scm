@@ -110,11 +110,11 @@ loop.")
     (home-page "http://software.schmorp.de/pkg/libev.html")
     (synopsis "Event loop loosely modelled after libevent")
     (description
-     "libev is a full-featured and high-performance event loop that
-is loosely modelled after libevent, but without its limitations and
-bugs.  It is used in GNU Virtual Private Ethernet, rxvt-unicode,
-auditd, the Deliantra MORPG Server and Client, and many other
-programs.")
+     "libev provides a full-featured and high-performance event loop that is
+loosely modelled after libevent.  It includes relative timers, absolute timers
+with customized rescheduling, synchronous signals, process status change
+events, event watchers dealing with the event loop itself, file watchers, and
+limited support for fork events.")
     (license
      (list bsd-2 gpl2+))))
 
