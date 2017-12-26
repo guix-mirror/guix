@@ -261,15 +261,15 @@ validation and filtering on the values, making options invisible or private.")
     (home-page "https://github.com/jokergoo/circlize")
     (synopsis "Circular visualization")
     (description
-     "Circular layout is an efficient way for the visualization of huge
-amounts of information.  This package provides an implementation of circular
-layout generation in R as well as an enhancement of available software.  The
-flexibility of the package is based on the usage of low-level graphics
-functions such that self-defined high-level graphics can be easily implemented
-by users for specific purposes.  Together with the seamless connection between
-the powerful computational and visual environment in R, it gives users more
-convenience and freedom to design figures for better understanding complex
-patterns behind multiple dimensional data.")
+     "Circular layout is an efficient way to visualise huge amounts of
+information.  This package provides an implementation of circular layout
+generation in R as well as an enhancement of available software.  Its
+flexibility is based on the usage of low-level graphics functions such that
+self-defined high-level graphics can be easily implemented by users for
+specific purposes.  Together with the seamless connection between the powerful
+computational and visual environment in R, it gives users more convenience and
+freedom to design figures for better understanding complex patterns behind
+multi-dimensional data.")
     (license license:gpl2+)))
 
 (define-public r-powerlaw
