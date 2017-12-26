@@ -2163,7 +2163,7 @@ You might also want to install the following optional dependencies:
        ("python-sqlalchemy" ,python-sqlalchemy)
        ("python-mako" ,python-mako)
        ("python-editor" ,python-editor)))
-    (home-page "http://bitbucket.org/zzzeek/alembic")
+    (home-page "https://bitbucket.org/zzzeek/alembic")
     (synopsis
      "Database migration tool for SQLAlchemy")
     (description

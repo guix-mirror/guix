@@ -1442,7 +1442,7 @@ pytest report.")
     (build-system python-build-system)
     (propagated-inputs
      `(("pytest" ,python-pytest-3.0)))
-    (home-page "http://bitbucket.org/memedough/pytest-capturelog/overview")
+    (home-page "https://bitbucket.org/memedough/pytest-capturelog/overview")
     (synopsis "Pytest plugin to catch log messages")
     (description
      "Python-pytest-catchlog is a pytest plugin to catch log messages.")
