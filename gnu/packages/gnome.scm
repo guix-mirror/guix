@@ -4811,7 +4811,7 @@ window manager.")
 (define-public gnome-online-accounts
   (package
     (name "gnome-online-accounts")
-    (version "3.24.3")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4819,7 +4819,7 @@ window manager.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0m1qf2ffxzmwxa157lrvh3507d5gr3lg4kvj653zhcihjpmmhbi5"))))
+                "1l8p1ghknmkmjpnpl7jr53j66qbzpikickzbmrz0aczyhq6pdy29"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -4835,7 +4835,6 @@ window manager.")
        ("json-glib" ,json-glib)
        ("libsecret" ,libsecret)
        ("rest" ,rest)
-       ("telepathy-glib" ,telepathy-glib)
        ("webkitgtk" ,webkitgtk)))
     (synopsis "Single sign-on framework for GNOME")
     (home-page "https://wiki.gnome.org/Projects/GnomeOnlineAccounts")
