@@ -492,3 +492,44 @@ Monero command line client and daemon.")
      "Monero is a secure, private, untraceable currency.  This package provides the
 Monero GUI client.")
     (license license:bsd-3)))
+
+(define-public python-trezor-agent
+  (package
+    (name "python-trezor-agent")
+    (version "0.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/romanz/trezor-agent/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h8jb147vpjk7mqbl4za0xdh7lblhx07n9dfk80kn2plwnvrry1x"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; Make installed package available for running the tests
+             (add-installed-pythonpath inputs outputs)
+             (invoke "py.test"))))))
+    (propagated-inputs
+     `(("python-ecdsa" ,python-ecdsa)
+       ("python-ed25519" ,python-ed25519)
+       ("python-semver" ,python-semver)
+       ("python-unidecode" ,python-unidecode)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/romanz/trezor-agent")
+    (synopsis "TREZOR SSH and GPG host support")
+    (description
+     "@code{libagent} is a library that allows using TREZOR, Keepkey and
+Ledger Nano as a hardware SSH/GPG agent.")
+    (license license:lgpl3)))
+
+(define-public python2-trezor-agent
+  (package-with-python2 python-trezor-agent))
