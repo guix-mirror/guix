@@ -1247,10 +1247,11 @@ write GNOME applications.")
                (base32
                 "18wss3sak3djip090v2vdbvq1mvkwcspfswc87zbvv3magihan98"))))
     (native-inputs `(("pkg-config" ,pkg-config)
+                     ("check" ,check)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")))
-    (inputs `(("gtk+" ,gtk+)
-              ("check" ,check)))
+    ;; Listed in 'Requires.private' of 'girara.pc'.
+    (propagated-inputs `(("gtk+" ,gtk+)))
     (arguments
      `(#:make-flags
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
