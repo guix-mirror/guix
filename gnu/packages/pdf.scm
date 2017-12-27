@@ -505,9 +505,10 @@ by using the poppler rendering engine.")
                      ;; For tests.
                      ("check" ,check)
                      ("xorg-server" ,xorg-server)))
-    (inputs `(("girara" ,girara)
-              ("sqlite" ,sqlite)
-              ("gtk+" ,gtk+)))
+    (inputs `(("sqlite" ,sqlite)))
+    ;; Listed in 'Requires.private' of 'zathura.pc'.
+    (propagated-inputs `(("cairo" ,cairo)
+                         ("girara" ,girara)))
     (native-search-paths
      (list (search-path-specification
             (variable "ZATHURA_PLUGIN_PATH")
