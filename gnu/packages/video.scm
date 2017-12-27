@@ -1005,7 +1005,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.27.0")
+    (version "0.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1013,7 +1013,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1754371fkva8aqxgbm50jxyvij7mnysq0538bf6zghbmigqqn79l"))
+                "1d2p6k3y9lqx8bpdal4grrj8ljy7pvd8qgdq8004fmr38afmbb7f"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -1024,7 +1024,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("enca" ,enca)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-git)
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("lcms" ,lcms)
@@ -1053,6 +1053,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("rsound" ,rsound)
        ("waf" ,python-waf)
        ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
        ("libxkbcommon", libxkbcommon)
        ("youtube-dl" ,youtube-dl)
        ("zlib" ,zlib)))
