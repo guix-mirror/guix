@@ -1500,7 +1500,7 @@ organized in hash table, B+ tree, or fixed-length array.")
                 "0krwnb2zfbhvjaskwl875qzd3y626s84zcciq2mxr5c5riw3yh6s"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-lz4" "--enable-zlib" "--enable-snappy")
+     '(#:configure-flags '("--enable-lz4" "--with-builtins=snappy,zlib")
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'disable-test/fops
