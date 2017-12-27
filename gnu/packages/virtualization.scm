@@ -52,7 +52,6 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
-  #:use-module (gnu packages samba)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages spice)
@@ -97,10 +96,7 @@
      '(;; Running tests in parallel can occasionally lead to failures, like:
        ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
        #:parallel-tests? #f
-       #:configure-flags (list "--enable-usb-redir" "--enable-opengl"
-                               (string-append "--smbd="
-                                              (assoc-ref %build-inputs "samba")
-                                              "/sbin/smbd"))
+       #:configure-flags '("--enable-usb-redir" "--enable-opengl")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -168,7 +164,6 @@
        ("ncurses" ,ncurses)
        ;; ("pciutils" ,pciutils)
        ("pixman" ,pixman)
-       ("samba" ,samba)
        ("sdl" ,sdl)
        ("spice" ,spice)
        ("usbredir" ,usbredir)
