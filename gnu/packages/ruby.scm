@@ -4467,3 +4467,25 @@ are doing, you can fiddle with every last bit of your email directly.")
 more robust and work for non rails projects.")
     (home-page "http://github.com/danmayer/code_statistics")
     (license license:expat)))
+
+(define-public ruby-rubypants
+  (package
+    (name "ruby-rubypants")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rubypants" version))
+              (sha256
+               (base32
+                "0xpqkslan2wkyal2h9qhplkr5d4sdn7q6csigrhnljjpp8j4qfsh"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; need Codecov
+    (synopsis "Port of the smart-quotes library SmartyPants")
+    (description
+     "RubyPants is a Ruby port of the smart-quotes library SmartyPants.  The
+original SmartyPants is a web publishing plug-in for Movable Type, Blosxom,
+and BBEdit that easily translates plain ASCII punctuation characters into
+smart typographic punctuation HTML entities.")
+    (home-page "https://github.com/jmcnevin/rubypants")
+    (license license:bsd-2)))
