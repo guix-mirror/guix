@@ -356,7 +356,7 @@ documentation.")
          ("libxslt" ,libxslt)
          ("nginx-xslscript" ,nginx-xslscript)))
       (home-page "https://nginx.org")
-      (synopsis "Documentation for nginx web server")
+      (synopsis "Documentation for the nginx web server")
       (description
        "This package provides HTML documentation for the nginx web server.")
       (license l:bsd-2))))
