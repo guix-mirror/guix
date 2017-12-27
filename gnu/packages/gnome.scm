@@ -3669,6 +3669,11 @@ for application developers.")
 
        #:phases
        (modify-phases %standard-phases
+         (add-before
+          'install 'disable-cache-generation
+          (lambda _
+            (setenv "DESTDIR" "/")
+            #t))
          (add-after
           'install 'wrap-totem
           (lambda* (#:key inputs outputs #:allow-other-keys)
