@@ -4489,3 +4489,26 @@ and BBEdit that easily translates plain ASCII punctuation characters into
 smart typographic punctuation HTML entities.")
     (home-page "https://github.com/jmcnevin/rubypants")
     (license license:bsd-2)))
+
+(define-public ruby-org-ruby
+  (package
+    (name "ruby-org-ruby")
+    (version "0.9.12")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "org-ruby" version))
+              (sha256
+               (base32
+                "0x69s7aysfiwlcpd9hkvksfyld34d8kxr62adb59vjvh8hxfrjwk"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no rakefile
+    (propagated-inputs
+     `(("ruby-rubypants" ,ruby-rubypants)))
+    (synopsis "Org-mode parser written in Ruby")
+    (description
+     "Org-ruby is an org-mode parser written in Ruby.  The most significant
+thing this library does today is convert org-mode files to HTML or Textile or
+Markdown.")
+    (home-page "https://github.com/wallyqs/org-ruby")
+    (license license:expat)))
