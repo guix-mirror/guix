@@ -1,11 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
 (define-module (gnu packages code)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -39,7 +41,9 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages autogen)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages autotools))
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages bash))
 
 ;;; Tools to deal with source code: metrics, cross-references, etc.
 
@@ -383,3 +387,39 @@ case.  The extension consists of a set of Perl scripts which build on the
 textual @command{gcov} output to implement the following enhanced
 functionality such as HTML output.")
     (license license:gpl2+)))
+
+(define-public rtags
+  (package
+    (name "rtags")
+    (version "2.16")
+    (home-page "https://github.com/Andersbakken/rtags")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit "8ef7554852541eced514c56d5e39d6073f7a2ef9")
+
+                    ;; FIXME: This fetches bundled copies of Lua, RCT, and
+                    ;; Selene.
+                    (recursive? #t)))
+              (sha256
+               (base32
+                "12r7lsqdmcbs9864a6dpblvifqvmfxhvxippyhfnnm2ai5ra80nc"))
+              (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_TESTING=FALSE"
+                           "-DRTAGS_NO_ELISP_FILES=1")
+       #:tests? #f))
+    (inputs
+     `(("clang" ,clang)
+       ("llvm" ,llvm)
+       ("bash-completion" ,bash-completion)))
+    (synopsis "Indexer for the C language family with Emacs integration")
+    (description
+     "RTags is a client/server application that indexes C/C++ code and keeps a
+persistent file-based database of references, declarations, definitions,
+symbolnames etc.  There’s also limited support for ObjC/ObjC++.  It allows you
+to find symbols by name (including nested class and namespace scope).  Most
+importantly we give you proper follow-symbol and find-references support.")
+    (license license:gpl3+)))
