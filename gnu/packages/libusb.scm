@@ -352,3 +352,64 @@ HID-Class devices.")
     (license (list gpl3
                    bsd-3
                    (non-copyleft "file://LICENSE-orig.txt")))))
+
+(define-public python-hidapi
+  (package
+    (name "python-hidapi")
+    (version "0.7.99.post21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hidapi" version))
+       (sha256
+        (base32
+         "15ws59zdrxahf3k7z5rcrwc4jgv1307anif8ixm2cyb9ask1mgp0"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove bundled libraries.
+        '(begin
+           (delete-file-recursively "hidapi")
+           #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-configuration
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("'/usr/include/libusb-1.0'")
+                (string-append "'" (assoc-ref inputs "libusb")
+                               "/include/libusb-1.0'"))
+               (("'/usr/include/hidapi'")
+                (string-append "'" (assoc-ref inputs "hidapi")
+                               "/include/hidapi'")))
+             #t))
+         ;; XXX Necessary because python-build-system drops the arguments.
+         (replace 'build
+           (lambda _
+             (invoke "python" "setup.py" "build" "--with-system-hidapi")))
+         (replace 'check
+           (lambda _
+             (invoke "python" "setup.py" "test" "--with-system-hidapi")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python" "setup.py" "install" "--with-system-hidapi"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--single-version-externally-managed" "--root=/"))))))
+    (inputs
+     `(("hidapi" ,hidapi)
+       ("libusb" ,libusb)
+       ("eudev" ,eudev)))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (home-page "https://github.com/trezor/cython-hidapi")
+    (synopsis "Cython interface to hidapi")
+    (description "This package provides a Cython interface to @code{hidapi}.")
+    ;; The library can be used under either of these licenses.
+    (license (list gpl3 bsd-3
+                   (non-copyleft
+                    "https://github.com/trezor/cython-hidapi/blob/master/LICENSE-orig.txt"
+                    "You are free to use cython-hidapi code for any purpose.")))))
+
+(define-public python2-hidapi
+  (package-with-python2 python-hidapi))
