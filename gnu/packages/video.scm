@@ -782,6 +782,25 @@ audio/video codec library.")
                     flag))
               ,flags))))))
 
+;; Annoyingly enough, the latest mpv release does not build with the stable
+;; release of ffmpeg. Use a git commit until the situation is fixed.
+(define-public ffmpeg-git
+  (let ((commit "3f887440677328c9cfed97ad81d14051ffa32aae")
+        (revision "1"))
+    (package
+     (inherit ffmpeg)
+     (name "ffmpeg-git")
+     (version (string-append "3.4-" revision "." (string-take commit 9)))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/FFmpeg/FFmpeg.git")
+                    (commit commit)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1b7n3g4m2rbvrwsgbfl8wl91z42g1ld42clwxs8qpl9ny5rwz6sq")))))))
+
 (define-public vlc
   (package
     (name "vlc")
