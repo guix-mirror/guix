@@ -44,6 +44,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -499,7 +500,11 @@ by using the poppler rendering engine.")
                         "zathura-plugindir-environment-variable.patch"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
-                     ("glib:bin" ,glib "bin")))
+                     ("glib:bin" ,glib "bin")
+
+                     ;; For tests.
+                     ("check" ,check)
+                     ("xorg-server" ,xorg-server)))
     (inputs `(("girara" ,girara)
               ("sqlite" ,sqlite)
               ("gtk+" ,gtk+)))
@@ -512,10 +517,19 @@ by using the poppler rendering engine.")
      `(#:make-flags
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
          "CC=gcc" "COLOR=0")
-       #:tests? #f ; Tests fail: "Gtk cannot open display".
        #:test-target "test"
-       #:phases
-       (modify-phases %standard-phases (delete 'configure))))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'check 'start-xserver
+                    ;; Tests require a running X server.
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                            (display ":1"))
+                        (setenv "DISPLAY" display)
+                        ;; Don't fail due to missing '/etc/machine-id'.
+                        (setenv "DBUS_FATAL_WARNINGS" "0")
+                        (zero? (system (string-append xorg-server "/bin/Xvfb "
+                                                      display " &")))))))))
     (home-page "https://pwmt.org/projects/zathura/")
     (synopsis "Lightweight keyboard-driven PDF viewer")
     (description "Zathura is a customizable document viewer.  It provides a
