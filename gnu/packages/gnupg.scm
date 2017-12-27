@@ -382,18 +382,15 @@ libskba (working with X.509 certificates and CMS data).")
        (base32
         "1ssc0gs02r4fasabk7c6v6r865k2j02mpb5g1vkpbmzsigdzwa8v"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("gnupg" ,gnupg)))
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
      `(("libgpg-error" ,libgpg-error)))
     (inputs
-     `(("gnupg" ,gnupg)
-       ("libassuan" ,libassuan)))
+     `(("libassuan" ,libassuan)))
     (arguments
-     `(#:configure-flags
-       (list (string-append "--enable-fixed-path="
-                            (assoc-ref %build-inputs "gnupg")
-                            "/bin"))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-cmake-file
            (lambda _
