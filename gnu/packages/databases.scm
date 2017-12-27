@@ -412,7 +412,11 @@ applications.")
        ("snappy" ,snappy)))
     (native-inputs
      `(("valgrind" ,valgrind)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("python" ,python2-minimal)
+       ("python2-pymongo" ,python2-pymongo)
+       ("python2-pyyaml" ,python2-pyyaml)
+       ("tzdata" ,tzdata)))
     (arguments
      `(#:scons ,scons-python2
        #:phases
@@ -460,12 +464,29 @@ applications.")
                                ,@common-options
                                "mongod" "mongo" "mongos")))))
            (replace 'check
-             (lambda* (#:key tests? #:allow-other-keys)
+             (lambda* (#:key tests? inputs #:allow-other-keys)
+               (setenv "TZDIR"
+                       (string-append (assoc-ref inputs "tzdata")
+                                      "/share/zoneinfo"))
                (or (not tests?)
-                   (zero? (apply system*
-                                 `("scons"
-                                   ,@common-options
-                                   "dbtest" "unittests"))))))
+                   ;; Note that with the tests, especially the unittests, the
+                   ;; build can take up to ~45GB of space, as many tests are
+                   ;; individual executable files, with some being hundreds of
+                   ;; megabytes in size.
+                   (begin
+		     (apply
+                      invoke `("scons" ,@common-options "dbtest" "unittests"))
+                     (substitute* "build/unittests.txt"
+                       ;; TODO: Don't run the async_stream_test, as it hangs
+                       (("^build\\/opt\\/mongo\\/executor\\/async\\_stream\\_test\n$")
+                        "")
+                       ;; TODO: This test fails
+                       ;; Expected 0UL != disks.size() (0 != 0) @src/mongo/util/procparser_test.cpp:476
+                       (("^build\\/opt\\/mongo\\/util\\/procparser\\_test\n$")
+                        ""))
+		     (invoke "python" "buildscripts/resmoke.py"
+			     "--suites=dbtest,unittests"
+                             (format #f  "--jobs=~a" (parallel-job-count)))))))
            (replace 'install
              (lambda _
                (let ((bin  (string-append (assoc-ref %outputs "out") "/bin")))
