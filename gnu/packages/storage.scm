@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,6 +110,10 @@
                "-DWITH_XIO=OFF"
                ;; Use jemalloc instead of tcmalloc.
                "-DALLOCATOR=jemalloc"))
+       ;; FIXME: Some of the tests leak Btrfs subvolumes on Btrfs. See
+       ;; <https://bugs.gnu.org/29674> for details. Disable tests until
+       ;; resolved.
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
