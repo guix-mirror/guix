@@ -615,6 +615,40 @@ TREZOR Hardware Wallet.")
 (define-public python2-trezor
   (package-with-python2 python-trezor))
 
+(define-public python-keepkey
+  (package
+    (name "python-keepkey")
+    (version "4.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "keepkey" version))
+        (sha256
+          (base32
+            "0f4iqqjlqmamw4mhyhik4qlb5bnfd10wbjw9yzgir105wh5fdpnd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (apply invoke "python" (find-files "tests/unit" "\\.py$")))))))
+    (propagated-inputs
+     `(("python-ecdsa" ,python-ecdsa)
+       ("python-hidapi" ,python-hidapi)
+       ("python-mnemonic" ,python-mnemonic)
+       ("python-protobuf" ,python-protobuf)))
+    (home-page "https://github.com/keepkey/python-keepkey")
+    (synopsis "Python library for communicating with KeepKey Hardware Wallet")
+    (description "@code{keepkey} is a Python library for communicating with
+the KeepKey Hardware Wallet.")
+    (license license:lgpl3)))
+
+(define-public python2-keepkey
+  (package-with-python2 python-keepkey))
+
 (define-public ledger-agent
   (package
     (name "ledger-agent")
