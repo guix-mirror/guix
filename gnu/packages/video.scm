@@ -1749,6 +1749,7 @@ from various services and pipes them into a video playing application.")
             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("ffmpeg" ,ffmpeg)
        ("fftw" ,fftw)
        ("libxml2" ,libxml2)
        ("jack" ,jack-1)
