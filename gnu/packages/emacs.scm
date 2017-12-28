@@ -1548,7 +1548,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.3.3")
+    (version "0.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1556,7 +1556,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "0mjb2yb454389ds2kr5rkjkl21r78z4c0f88ivf4g471yzg279mc"))))
+                "152zf9vkafmnnf7by5armg165npznb961csgnvr8iwdj3smvivjf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
