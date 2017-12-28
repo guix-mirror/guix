@@ -639,3 +639,24 @@ Usage for GPG: Initialize using trezor-gpg init \"Foo <foo@example.com>\"
 Then set the environment variable GNUPGHOME to
 \"${HOME}/.gnupg/trezor\".")
     (license license:lgpl3)))
+
+(define-public trezor-agent
+  (package
+    (name "trezor-agent")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trezor_agent" version))
+       (sha256
+        (base32
+         "1i5cdamlf3c0ym600pjklij74p8ifj9cv7xrpnrfl1b8nkadswbz"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-trezor" ,python-trezor)
+       ("python-trezor-agent" ,python-trezor-agent)))
+    (home-page "http://github.com/romanz/trezor-agent")
+    (synopsis "Using Trezor as hardware SSH/GPG agent")
+    (description "This package allows using Trezor as a hardware SSH/GPG
+agent.")
+    (license license:lgpl3)))
