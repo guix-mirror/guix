@@ -41,6 +41,7 @@
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
@@ -556,3 +557,32 @@ of Bitcoin BIP-0039.")
 
 (define-public python2-mnemonic
   (package-with-python2 python-mnemonic))
+
+(define-public python-ledgerblue
+  (package
+    (name "python-ledgerblue")
+    (version "0.1.16")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "ledgerblue" version))
+        (sha256
+          (base32
+            "010mghaqh1cmz3a0ifc3f40mmyplilwlw7kpha2mzyrrff46p9gb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-ecpy" ,python-ecpy)
+       ("python-future" ,python-future)
+       ("python-hidapi" ,python-hidapi)
+       ("python-pillow" ,python-pillow)
+       ("python-protobuf" ,python-protobuf)
+       ("python-pycrypto" ,python-pycrypto)))
+    (home-page "https://github.com/LedgerHQ/blue-loader-python")
+    (synopsis "Python library to communicate with Ledger Blue/Nano S")
+    (description "@code{ledgerblue} is a Python library to communicate with
+Ledger Blue/Nano S.")
+    (license license:asl2.0)))
+
+(define-public python2-ledgerblue
+  (package-with-python2 python-ledgerblue))
+
