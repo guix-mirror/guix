@@ -614,3 +614,28 @@ TREZOR Hardware Wallet.")
 
 (define-public python2-trezor
   (package-with-python2 python-trezor))
+
+(define-public ledger-agent
+  (package
+    (name "ledger-agent")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ledger_agent" version))
+       (sha256
+        (base32
+         "03zj602m2rln9yvr08dswy56vzkbldp8b074ixwzz525dafblr92"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-ledgerblue" ,python-ledgerblue)
+       ("python-trezor-agent" ,python-trezor-agent)))
+    (home-page "http://github.com/romanz/trezor-agent")
+    (synopsis "Ledger as hardware SSH/GPG agent")
+    (description "This package allows using Ledger as hardware SSH/GPG agent.
+
+Usage for SSH: trezor-agent foo@example.com --connect
+Usage for GPG: Initialize using trezor-gpg init \"Foo <foo@example.com>\"
+Then set the environment variable GNUPGHOME to
+\"${HOME}/.gnupg/trezor\".")
+    (license license:lgpl3)))
