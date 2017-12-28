@@ -193,7 +193,7 @@ exec smbd $@")))
                      ("pkg-config" ,pkg-config)
                      ("python" ,python-2) ; incompatible with Python 3 according to error message
                      ("texinfo" ,texinfo)))
-    (home-page "http://www.qemu-project.org")
+    (home-page "https://www.qemu.org")
     (synopsis "Machine emulator and virtualizer")
     (description
      "QEMU is a generic machine emulator and virtualizer.
