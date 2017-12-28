@@ -429,7 +429,8 @@ and every application benefits from this.")
              (chdir "lang/qt")
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ,@(package-native-inputs gpgme)))
     (inputs
      `(("gpgme" ,gpgme)
        ("qtbase" ,qtbase)
