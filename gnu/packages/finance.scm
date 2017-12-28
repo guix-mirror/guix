@@ -694,3 +694,24 @@ Then set the environment variable GNUPGHOME to
     (description "This package allows using Trezor as a hardware SSH/GPG
 agent.")
     (license license:lgpl3)))
+
+(define-public keepkey-agent
+  (package
+    (name "keepkey-agent")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "keepkey_agent" version))
+        (sha256
+          (base32
+            "03779gvlx70i0nnry98i4pl1d92604ix5x6jgdfkrdgzqbh5vj27"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-keepkey" ,python-keepkey)
+       ("python-trezor-agent" ,python-trezor-agent)))
+    (home-page "http://github.com/romanz/trezor-agent")
+    (synopsis "KeepKey as hardware SSH/GPG agent")
+    (description "This package allows using KeepKey as a hardware SSH/GPG
+agent.")
+    (license license:lgpl3)))
