@@ -586,3 +586,31 @@ Ledger Blue/Nano S.")
 (define-public python2-ledgerblue
   (package-with-python2 python-ledgerblue))
 
+(define-public python-trezor
+  (package
+    (name "python-trezor")
+    (version "0.7.16")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "trezor" version))
+        (sha256
+          (base32
+            "055kii56wgwadl5z911s59ya2fnsqzk3n5i19s2hb9sv2by6knvb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-ecdsa" ,python-ecdsa)
+       ("python-hidapi" ,python-hidapi)
+       ("python-mnemonic" ,python-mnemonic)
+       ("python-protobuf" ,python-protobuf)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-pyqt" ,python-pyqt))) ; Tests
+    (home-page "https://github.com/trezor/python-trezor")
+    (synopsis "Python library for communicating with TREZOR Hardware Wallet")
+    (description "@code{trezor} is a Python library for communicating with
+TREZOR Hardware Wallet.")
+    (license license:lgpl3)))
+
+(define-public python2-trezor
+  (package-with-python2 python-trezor))
