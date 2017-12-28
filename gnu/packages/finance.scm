@@ -668,8 +668,8 @@ the KeepKey Hardware Wallet.")
     (synopsis "Ledger as hardware SSH/GPG agent")
     (description "This package allows using Ledger as hardware SSH/GPG agent.
 
-Usage for SSH: trezor-agent foo@example.com --connect
-Usage for GPG: Initialize using trezor-gpg init \"Foo <foo@example.com>\"
+Usage for SSH: trezor-agent foo@@example.com --connect
+Usage for GPG: Initialize using trezor-gpg init \"Foo <foo@@example.com>\"
 Then set the environment variable GNUPGHOME to
 \"${HOME}/.gnupg/trezor\".")
     (license license:lgpl3)))
