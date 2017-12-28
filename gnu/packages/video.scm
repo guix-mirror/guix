@@ -1768,7 +1768,7 @@ broadcasting.  It provides a toolkit for broadcasters, video editors, media
 players, transcoders, web streamers and many more types of applications.  The
 functionality of the system is provided via an assortment of ready to use
 tools, XML authoring components, and an extensible plug-in based API.")
-    (license license:lgpl2.1+)))
+    (license license:gpl3)))
 
 (define-public v4l-utils
   (package
