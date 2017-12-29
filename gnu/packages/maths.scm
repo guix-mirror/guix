@@ -3435,14 +3435,14 @@ supports compressed MAT files, as well as newer (version 7.3) MAT files.")
 (define-public vc
   (package
     (name "vc")
-    (version "1.2.0")
+    (version "1.3.3")
     (source
       (origin (method url-fetch)
               (uri (string-append "https://github.com/VcDevel/Vc/releases/"
                                   "download/" version "/Vc-" version ".tar.gz"))
               (sha256
                (base32
-                "1rh6dhqar3y07n4xqyml0sa0v48qv3ch9dc3yc2in855hlh4vnqi"))))
+                "1zmlpn32jzb38smp3j834llmbix3whsrbw0h397qxysbw792kih8"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
