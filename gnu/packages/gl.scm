@@ -299,6 +299,7 @@ also known as DXTn or DXTC) for Mesa.")
          "--enable-texture-float"
 
          ;; Enable Vulkan on x86-64.
+         ;; TODO: Fix building Mesa with Vulkan drivers enabled on i686-linux.
          ,@(match (%current-system)
              ("x86_64-linux"
               '("--with-vulkan-drivers=intel,radeon"))
