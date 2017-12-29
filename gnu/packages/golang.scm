@@ -428,3 +428,27 @@ Netscape/Mozilla's old-style cookie files.  It also implements a simple cookie
 jar struct to manage the cookies added to the cookie jar.")
       (home-page "https://github.com/aki237/nscjar")
       (license license:expat))))
+
+(define-public go-github-com-davidjpeacock-cli
+  (let ((commit "8ba6f23b6e36d03666a14bd9421f5e3efcb59aca")
+        (revision "0"))
+    (package
+      (name "go-github-com-davidjpeacock-cli")
+      (version (git-version "1.19.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/davidjpeacock/cli.git")
+                       (commit commit)))
+                (sha256
+                 (base32
+                  "01s53ny3p0fdx64rnwcnmjj4xpc5adihnh6islsfq5z1ph2phhnj"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/davidjpeacock/cli"))
+      (synopsis "Build command-line interfaces in Go")
+      (description "@code{cli} is a package for building command line
+interfaces in Go.  The goal is to enable developers to write fast and
+distributable command line applications in an expressive way.")
+      (home-page "https://github.com/davidjpeacock/cli")
+      (license license:expat))))
