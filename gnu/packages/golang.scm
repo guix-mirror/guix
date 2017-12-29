@@ -27,8 +27,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages base)
@@ -377,3 +379,28 @@ sequential processes (CSP) concurrent programming features added.")
     (supported-systems %supported-systems)))
 
 (define-public go go-1.9)
+
+(define-public go-github-com-alsm-ioprogress
+  (let ((commit "063c3725f436e7fba0c8f588547bee21ffec7ac5")
+        (revision "0"))
+    (package
+      (name "go-github-com-alsm-ioprogress")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/alsm/ioprogress.git")
+                       (commit commit)))
+                (sha256
+                 (base32
+                  "10ym5qlq77nynmkxbk767f2hfwyxg2k7hrzph05hvgzv833dhivh"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/alsm/ioprogress"))
+      (synopsis "Textual progress bars in Go")
+      (description "@code{ioprogress} is a Go library with implementations of
+@code{io.Reader} and @code{io.Writer} that draws progress bars.  The primary use
+case for these are for command-line applications but alternate progress bar
+writers can be supplied for alternate environments.")
+      (home-page "https://github.com/alsm/ioprogress")
+      (license license:expat))))
