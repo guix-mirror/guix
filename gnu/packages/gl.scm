@@ -279,7 +279,7 @@ also known as DXTn or DXTC) for Mesa.")
               '("--with-gallium-drivers=freedreno,nouveau,r300,r600,swrast,vc4,virgl"))
              ("aarch64-linux"
               ;; TODO: Fix svga driver for aarch64 and armhf.
-              '("--with-gallium-drivers=freedreno,nouveau,r300,r600,swrast,vc4,virgl"))
+              '("--with-gallium-drivers=freedreno,nouveau,pl111,r300,r600,swrast,vc4,virgl"))
              (_
               '("--with-gallium-drivers=i915,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
