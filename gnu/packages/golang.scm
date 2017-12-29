@@ -404,3 +404,27 @@ case for these are for command-line applications but alternate progress bar
 writers can be supplied for alternate environments.")
       (home-page "https://github.com/alsm/ioprogress")
       (license license:expat))))
+
+(define-public go-github-com-aki237-nscjar
+  (let ((commit "e2df936ddd6050d30dd90c7214c02b5019c42f06")
+        (revision "0"))
+    (package
+      (name "go-github-com-aki237-nscjar")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/aki237/nscjar.git")
+                       (commit commit)))
+                (sha256
+                 (base32
+                  "03y7zzq12qvhsq86lb06sgns8xrkblbn7i7wd886wk3zr5574b96"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/aki237/nscjar"))
+      (synopsis "Handle Netscape / Mozilla cookies")
+      (description "@code{nscjar} is a Go library used to parse and output
+Netscape/Mozilla's old-style cookie files.  It also implements a simple cookie
+jar struct to manage the cookies added to the cookie jar.")
+      (home-page "https://github.com/aki237/nscjar")
+      (license license:expat))))
