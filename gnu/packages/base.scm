@@ -339,7 +339,13 @@ used to apply commands with arbitrarily long arguments.")
                        (("/bin/sh") (which "sh")))
                      (substitute* (find-files "tests" "\\.sh$")
                        (("#!/bin/sh") (which "sh")))
-                     #t)))))
+                     #t)))
+
+      ;; Work around a cross-compilation bug whereby libcoreutils.a would
+      ;; provide '__mktime_internal', which conflicts with the one in libc.a.
+      ,@(if (%current-target-system)
+            `(#:configure-flags '("gl_cv_func_working_mktime=yes"))
+            '())))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils includes all of the basic command-line tools that are
