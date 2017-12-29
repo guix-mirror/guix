@@ -18,6 +18,7 @@
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1115,6 +1116,61 @@ used to transform, query, validate, and edit XML documents.  XPath is used to
 match and extract data, and elements can be added, deleted or modified using
 XSLT and EXSLT.")
    (license license:x11)))
+
+(define-public html-xml-utils
+ (package
+   (name "html-xml-utils")
+   (version "7.4")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+            "https://www.w3.org/Tools/HTML-XML-utils/html-xml-utils-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "04pgrahsfawnzd9pilvirs05pfdgsd7qwvw4dvkb42rgybhw6h95"))))
+   (build-system gnu-build-system)
+   (home-page "https://www.w3.org/Tools/HTML-XML-utils/")
+   (synopsis "Command line utilities to manipulate HTML and XML files")
+   (description "HTML-XML-utils provides a number of simple utilities for
+manipulating and converting HTML and XML files in various ways.  The suite
+consists of the following tools:
+
+@itemize
+ @item @command{asc2xml} convert from @code{UTF-8} to @code{&#nnn;} entities
+ @item @command{xml2asc} convert from @code{&#nnn;} entities to @code{UTF-8}
+ @item @command{hxaddid} add IDs to selected elements
+ @item @command{hxcite} replace bibliographic references by hyperlinks
+ @item @command{hxcite} mkbib - expand references and create bibliography
+ @item @command{hxclean} apply heuristics to correct an HTML file
+ @item @command{hxcopy} copy an HTML file while preserving relative links
+ @item @command{hxcount} count elements and attributes in HTML or XML files
+ @item @command{hxextract} extract selected elements
+ @item @command{hxincl} expand included HTML or XML files
+ @item @command{hxindex} create an alphabetically sorted index
+ @item @command{hxmkbib} create bibliography from a template
+ @item @command{hxmultitoc} create a table of contents for a set of HTML files
+ @item @command{hxname2id} move some @code{ID=} or @code{NAME=} from A
+elements to their parents
+ @item @command{hxnormalize} pretty-print an HTML file
+ @item @command{hxnsxml} convert output of hxxmlns back to normal XML
+ @item @command{hxnum} number section headings in an HTML file
+ @item @command{hxpipe} convert XML to a format easier to parse with Perl or AWK
+ @item @command{hxprintlinks} number links and add table of URLs at end of an HTML file
+ @item @command{hxprune} remove marked elements from an HTML file
+ @item @command{hxref} generate cross-references
+ @item @command{hxselect} extract elements that match a (CSS) selector
+ @item @command{hxtoc} insert a table of contents in an HTML file
+ @item @command{hxuncdata} replace CDATA sections by character entities
+ @item @command{hxunent} replace HTML predefined character entities to @code{UTF-8}
+ @item @command{hxunpipe} convert output of pipe back to XML format
+ @item @command{hxunxmlns} replace \"global names\" by XML Namespace prefixes
+ @item @command{hxwls} list links in an HTML file
+ @item @command{hxxmlns} replace XML Namespace prefixes by \"global names\"
+@end itemize
+")
+   (license license:expat)))
 
 (define-public xlsx2csv
   (package
