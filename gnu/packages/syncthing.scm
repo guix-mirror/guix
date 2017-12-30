@@ -606,11 +606,11 @@ GeoLite2 and GeoIP2 databases in Go.")
     (license isc)))
 
 (define-public go-github-com-oschwald-maxminddb-golang
-  (let ((commit "697da8075d2061aa8ed639346443f5d3e8c80b30")
+  (let ((commit "26fe5ace1c706491c2936119e1dc69c1a9c04d7f")
         (revision "0"))
     (package
       (name "go-github-com-oschwald-maxminddb-golang")
-      (version (git-version "0.2.0" revision commit))
+      (version (git-version "1.2.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -619,7 +619,7 @@ GeoLite2 and GeoIP2 databases in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "00kkxzlvra0kcbkl56wp0dp1yw3cmfjqqlwbqy7bq5r34s7iavq0"))))
+                  "1i6d935f3cv9djpjvc2ibh8aps8jqvg454b9pkwg2h98al759ggk"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
