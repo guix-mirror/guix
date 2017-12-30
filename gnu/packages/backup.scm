@@ -468,18 +468,22 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.3")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "borgbackup" version))
-              (patches (search-patches "borg-fix-archive-corruption-bug.patch"))
-              (sha256
-               (base32
-                "1rvn8b6clzd1r317r9jkvk34r31risi0dxfjc7jffhnwasck4anc"))
-              (modules '((guix build utils)))
-              (snippet
-               '(for-each
-                  delete-file (find-files "borg" "^(c|h|p).*\\.c$")))))
+    (version "1.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "borgbackup" version))
+       (sha256
+        (base32 "1cicqwh85wfp65y00qaq6q4i4jcyy9b66qz5gpl80qc880wab912"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file
+                     (find-files "borg" "^(c|h|p).*\\.c$"))
+           ;; Remove bundled shared libraries.
+           (with-directory-excursion "src/borg/algorithms"
+             (for-each delete-file-recursively
+                       (list "lz4" "zstd")))))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((srfi srfi-26) ; for cut
@@ -490,9 +494,11 @@ detection, and lossless compression.")
          (add-after 'unpack 'set-env
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((openssl (assoc-ref inputs "openssl"))
-                   (lz4 (assoc-ref inputs "lz4")))
+                   (lz4 (assoc-ref inputs "lz4"))
+                   (zstd (assoc-ref inputs "zstd")))
                (setenv "BORG_OPENSSL_PREFIX" openssl)
-               (setenv "BORG_LZ4_PREFIX" lz4)
+               (setenv "BORG_LIBLZ4_PREFIX" lz4)
+               (setenv "BORG_LIBZSTD_PREFIX" zstd)
                (setenv "PYTHON_EGG_CACHE" "/tmp")
                ;; The test 'test_return_codes[python]' fails when
                ;; HOME=/homeless-shelter.
@@ -544,8 +550,8 @@ detection, and lossless compression.")
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-setuptools-scm" ,python-setuptools-scm)
-       ;; Borg 1.0.8's test suite uses 'tmpdir_factory', which was introduced in
-       ;; pytest 2.8.
+       ;; Borg >=1.0.8's test suite uses 'tmpdir_factory', which was introduced
+       ;; in pytest 2.8.
        ("python-pytest" ,python-pytest-3.0)
        ;; For generating the documentation.
        ("python-sphinx" ,python-sphinx)
@@ -555,7 +561,8 @@ detection, and lossless compression.")
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("python-llfuse" ,python-llfuse)
-       ("python-msgpack" ,python-msgpack)))
+       ("python-msgpack" ,python-msgpack)
+       ("zstd" ,zstd)))
     (synopsis "Deduplicated, encrypted, authenticated and compressed backups")
     (description "Borg is a deduplicating backup program.  Optionally, it
 supports compression and authenticated encryption.  The main goal of Borg is to
