@@ -427,8 +427,8 @@ generation features.  This code generation is used to achieve:
       (license bsd-3))))
 
 (define-public go-github-com-golang-groupcache-lru
-  (let ((commit "72d04f9fcdec7d3821820cc4a6f150eae553639a")
-        (revision "0"))
+  (let ((commit "84a468cf14b4376def5d68c722b139b881c450a4")
+        (revision "1"))
     (package
       (name "go-github-com-golang-groupcache-lru")
       (version (git-version "0.0.0" revision commit))
@@ -440,7 +440,7 @@ generation features.  This code generation is used to achieve:
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1l3ryh7bq1f2mhr3sd3x1wav99pd27r8l3ydgqh375wn4x7v5qd6"))))
+                  "1ky1r9qh54yi9zp2769qrjngzndgd8fn7mja2qfac285n06chmcn"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/golang/groupcache/lru"
