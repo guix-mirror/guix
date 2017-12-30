@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
-;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
@@ -191,6 +191,33 @@ Clutter, and more.  Despite the name, it is not currently used by anything
 X11 (yet).")
     (license (license:x11-style "file://COPYING"
                                 "See 'COPYING' in the distribution."))))
+
+(define-public libfakekey
+  (package
+    (name "libfakekey")
+    (version "0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://downloads.yoctoproject.org/releases"
+                            "/matchbox/libfakekey/" version "/libfakekey-"
+                            version ".tar.bz2"))
+        (sha256
+         (base32
+          "1501l0bflcrhqbf12n7a7cqilvr0w4xawxw0vw75p2940nkl4464"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "AM_LDFLAGS=-lX11")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxtst" ,libxtst)
+       ("libx11" ,libx11)))
+    (home-page "https://www.yoctoproject.org/tools-resources/projects/matchbox")
+    (synopsis "X virtual keyboard library")
+    (description
+     "Libfakekey is a virtual keyboard library for X.")
+    (license license:gpl2)))
 
 (define-public xdotool
   (package
