@@ -1230,6 +1230,60 @@ Re-decorates windows on un-maximise.
 can be used as backgrounds in the MATE Desktop environment.")
     (license license:gpl2+)))
 
+(define-public mate-utils
+  (package
+    (name "mate-utils")
+    (version "1.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0wr395dqfigj19ps0d76ycgwfljl9xxgs1a1g5wx6kcz5mvhzn5v"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("libice" ,libice)
+       ("libsm" ,libsm)
+       ("pkg-config" ,pkg-config)
+       ("scrollkeeper" ,scrollkeeper)
+       ("xextpro" ,xextproto)
+       ("xproto" ,xproto)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("atk" ,atk)
+       ("cairo" ,cairo)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("libcanberra" ,libcanberra)
+       ("libgtop" ,libgtop)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("mate-panel" ,mate-panel)
+       ("pango" ,pango)
+       ("zlib" ,zlib)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Utilities for the MATE Desktop")
+    (description
+     "Mate Utilities for the MATE Desktop containing:
+
+@enumerate
+@item mate-system-log
+@item mate-search-tool
+@item mate-dictionary
+@item mate-screenshot
+@item mate-disk-usage-analyzer
+@end enumerate\n")
+    (license (list license:gpl2
+                   license:fdl1.1+
+                   license:lgpl2.1))))
+
 (define-public mate
   (package
     (name "mate")
