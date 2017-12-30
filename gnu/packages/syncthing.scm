@@ -1564,8 +1564,8 @@ and RFC 5389).")
       (license asl2.0))))
 
 (define-public go-github-com-chmduquesne-rollinghash-adler32
-  (let ((commit "043b8fdecc9816f0011a056f6d92f9a091ab63dd")
-        (revision "0"))
+  (let ((commit "3dc7875a1f890f9bcf0619adb5571fc6f7d516bb")
+        (revision "1"))
     (package
       (name "go-github-com-chmduquesne-rollinghash-adler32")
       (version (git-version "0.0.0" revision commit))
@@ -1578,7 +1578,7 @@ and RFC 5389).")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "0pc87laxgydqv03bdirfv32y9k0bdk2cwjxn28yh42nvay9p6y0k"))))
+            "0frl021qdqcdyk9fccw6x1v2byvh0hls4rsrdjih5jgqpc18kx6y"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/chmduquesne/rollinghash/adler32"
