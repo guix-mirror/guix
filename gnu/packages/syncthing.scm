@@ -1705,8 +1705,8 @@ error handling primitives in Go.")
       (license bsd-2))))
 
 (define-public go-golang-org-x-time-rate
-  (let ((commit "f51c12702a4d776e4c1fa9b0fabab841babae631")
-        (revision "0"))
+  (let ((commit "6dc17368e09b0e8634d71cac8168d853e869a0c7")
+        (revision "1"))
     (package
       (name "go-golang-org-x-time-rate")
       (version (git-version "0.0.0" revision commit))
@@ -1718,7 +1718,7 @@ error handling primitives in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "07wc6g2fvafkr6djsscm0jpbpl4135khhb6kpyx1953hi5d1jvyy"))))
+                  "1fx4cf5fpdz00g3c7vxzy92hdcg0vh4yqw00qp5s52j72qixynbk"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/time/rate"
