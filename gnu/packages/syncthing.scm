@@ -579,33 +579,31 @@ architectures.")
       (license asl2.0))))
 
 (define-public go-github-com-oschwald-geoip2-golang
-  (let ((commit "0fd242da7906550802871efe101abfdb1cc550a8")
-        (revision "0"))
-    (package
-      (name "go-github-com-oschwald-geoip2-golang")
-      (version (git-version "0.1.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/oschwald/geoip2-golang")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0kglnix0r5sjkk346ip30l7dwq1gv2g4wjy2cjmgjvb8x778hnww"))))
-      (build-system go-build-system)
-      (propagated-inputs
-       `(("go-github-com-oschwald-maxminddb-golang"
-          ,go-github-com-oschwald-maxminddb-golang)
-         ("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (arguments
-       `(#:import-path "github.com/oschwald/geoip2-golang"
-         #:tests? #f)) ; Requires some unpackaged software and test data
-      (synopsis "MaxMind GeoIP2 reader")
-      (description "This packages provides a library for reading MaxMind
+  (package
+    (name "go-github-com-oschwald-geoip2-golang")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/oschwald/geoip2-golang")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0v698bzs8lb59cqpsa9cf4sl8rdsvnnmaravhbfn6g6i511ppclr"))))
+    (build-system go-build-system)
+    (propagated-inputs
+     `(("go-github-com-oschwald-maxminddb-golang"
+        ,go-github-com-oschwald-maxminddb-golang)
+       ("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+    (arguments
+     `(#:import-path "github.com/oschwald/geoip2-golang"
+       #:tests? #f)) ; Requires some unpackaged software and test data
+    (synopsis "MaxMind GeoIP2 reader")
+    (description "This packages provides a library for reading MaxMind
 GeoLite2 and GeoIP2 databases in Go.")
-      (home-page "https://github.com/oschwald/geoip2-golang")
-      (license isc))))
+    (home-page "https://github.com/oschwald/geoip2-golang")
+    (license isc)))
 
 (define-public go-github-com-oschwald-maxminddb-golang
   (let ((commit "697da8075d2061aa8ed639346443f5d3e8c80b30")
