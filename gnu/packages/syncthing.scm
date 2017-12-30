@@ -527,8 +527,8 @@ finding resources located relative to the executable file.")
       (license bsd-3))))
 
 (define-public go-github-com-lib-pq
-  (let ((commit "2704adc878c21e1329f46f6e56a1c387d788ff94")
-        (revision "0"))
+  (let ((commit "83612a56d3dd153a94a629cd64925371c9adad78")
+        (revision "1"))
     (package
       (name "go-github-com-lib-pq")
       (version (git-version "0.0.0" revision commit))
@@ -540,7 +540,7 @@ finding resources located relative to the executable file.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "160fmvi7bczxw3i3h5s821hv029ph5ld8x3c36b4cz2sr30wp110"))))
+                  "12334yigh284k5cdvb9pgxaq6n78205jcbp75ajz44vvfd4wi6qc"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/lib/pq"
