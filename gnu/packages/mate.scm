@@ -28,6 +28,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
@@ -106,6 +107,44 @@ MATE applications.")
     (description
      "This package contains the default icon theme used by the MATE desktop.")
     (license license:lgpl3+)))
+
+(define-public mate-icon-theme-faenza
+  (package
+    (name "mate-icon-theme-faenza")
+    (version "1.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pub.mate-desktop.org/releases/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0vc3wg9l5yrxm0xmligz4lw2g3nqj1dz8fwv90xvym8pbjds2849"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (invoke "sh" "autogen.sh"))))))
+    (native-inputs
+     `(("autoconf" ,(autoconf-wrapper))
+       ("automake" ,automake)
+       ("intltool" ,intltool)
+       ("icon-naming-utils" ,icon-naming-utils)
+       ("libtool" ,libtool)
+       ("mate-common" ,mate-common)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "MATE desktop environment icon theme faenza")
+    (description
+     "Icon theme using Faenza and Faience icon themes and some
+customized icons for MATE.  Furthermore it includes some icons
+from Mint-X-F and Faenza-Fresh icon packs.")
+    (license license:gpl2+)))
 
 (define-public mate-themes
   (package
