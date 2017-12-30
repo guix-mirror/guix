@@ -1679,8 +1679,8 @@ ordering, such as TCP or KCP, and provides stream-oriented multiplexing.")
       (license expat))))
 
 (define-public go-github-com-pkg-errors
-  (let ((commit "ff09b135c25aae272398c51a07235b90a75aa4f0")
-        (revision "0"))
+  (let ((commit "e881fd58d78e04cf6d0de1217f8707c8cc2249bc")
+        (revision "1"))
     (package
       (name "go-github-com-pkg-errors")
       (version (git-version "0.0.0" revision commit))
@@ -1692,7 +1692,7 @@ ordering, such as TCP or KCP, and provides stream-oriented multiplexing.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0pwl6v3hmc22zp32gkyqykl4kg69xk1mlp0vmhgd1f44difd5fvz"))))
+                  "0vfhj598jp6dzy4pbyjdrqxzb5kppw8ggvfh78g80nz11r34xnzs"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/pkg/errors"))
