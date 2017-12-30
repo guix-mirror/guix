@@ -995,6 +995,38 @@ general use of the MATE Desktop environment.  Topics covered include
 sessions, panels, menus, file management, and preferences.")
     (license (list license:fdl1.1+ license:gpl2+))))
 
+(define-public mate-calc
+  (package
+    (name "mate-calc")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0qfs6kx2nymbn6j3mnzgvk8p54ghc78jslsf4wjqsdq021qyl0ly"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("atk" ,atk)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libxml2" ,libxml2)
+       ("libcanberra" ,libcanberra)
+       ("pango" ,pango)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Calculator for MATE")
+    (description
+     "Mate Calc is the GTK+ calculator application for the MATE Desktop.")
+    (license license:gpl2+)))
+
 (define-public mate
   (package
     (name "mate")
