@@ -1458,8 +1458,8 @@ for low-level interaction with the operating system.")
     (license (package-license go-golang-org-x-text-transform))))
 
 (define-public go-golang-org-x-text-transform
-  (let ((commit "f4b4367115ec2de254587813edaa901bc1c723a8")
-        (revision "0"))
+  (let ((commit "e19ae1496984b1c655b8044a65c0300a3c878dd3")
+        (revision "1"))
     (package
       (name "go-golang-org-x-text-transform")
       (version (git-version "0.0.0" revision commit))
@@ -1472,7 +1472,7 @@ for low-level interaction with the operating system.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1a5m97y7sdxks02p4swg8ffp8bgr95aaf5fhfw511p7h3xg1dm0d"))))
+                  "1cvnnx8nwx5c7gr6ajs7sldhbqh52n7h6fsa3i21l2lhx6xrsh4w"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/text/transform"
@@ -1486,8 +1486,8 @@ between character sets.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-text-unicode-norm
-  (let ((commit "f4b4367115ec2de254587813edaa901bc1c723a8")
-        (revision "0"))
+  (let ((commit "e19ae1496984b1c655b8044a65c0300a3c878dd3")
+        (revision "1"))
     (package
       (name "go-golang-org-x-text-unicode-norm")
       (version (git-version "0.0.0" revision commit))
@@ -1500,7 +1500,7 @@ between character sets.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1a5m97y7sdxks02p4swg8ffp8bgr95aaf5fhfw511p7h3xg1dm0d"))))
+                  "1cvnnx8nwx5c7gr6ajs7sldhbqh52n7h6fsa3i21l2lhx6xrsh4w"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/text/unicode/norm"
