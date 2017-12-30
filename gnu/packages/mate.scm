@@ -35,6 +35,7 @@
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -1334,6 +1335,60 @@ can be used as backgrounds in the MATE Desktop environment.")
     (description
      "Eye of MATE is the Image viewer for the MATE Desktop.")
     (license (list license:gpl2))))
+
+(define-public engrampa
+  (package
+    (name "engrampa")
+    (version "1.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0d98zhqqc7qdnxcf0195kd04xmhijc0w2qrn6q61zd0daiswnv98"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-schemas-compile"
+                               "--disable-run-in-place"
+                               "--enable-magic"
+                               "--enable-packagekit"
+                               (string-append "--with-cajadir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/caja/extensions-2.0/"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "data/Makefile"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("caja" ,caja)
+       ("file" ,file)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("json-glib" ,json-glib)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libsm" ,libsm)
+       ("packagekit" ,packagekit)
+       ("pango" ,pango)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Archive Manager for MATE")
+    (description
+     "Engrampa is the archive manager for the MATE Desktop.")
+    (license license:gpl2)))
 
 (define-public mate
   (package
