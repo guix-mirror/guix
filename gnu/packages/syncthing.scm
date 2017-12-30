@@ -554,8 +554,8 @@ database/sql package.")
       (license expat))))
 
 (define-public go-github-com-minio-sha256-simd
-  (let ((commit "6124d070eb4e7001c244b6ccc282620a5dce44a0")
-        (revision "0"))
+  (let ((commit "ad98a36ba0da87206e3378c556abbfeaeaa98668")
+        (revision "1"))
     (package
       (name "go-github-com-minio-sha256-simd")
       (version (git-version "0.0.0" revision commit))
@@ -567,7 +567,7 @@ database/sql package.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1azrdp7x7vl9ngkxs890blspz0345xhadvssdlb0435hdqa0gkll"))))
+                  "0yfnqn3kqdnlfm54yvc4fr5vpdmwdi2kw571nlkbpmy8ldhsqqfi"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/minio/sha256-simd"))
