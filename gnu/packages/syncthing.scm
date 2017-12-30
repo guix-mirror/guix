@@ -1627,28 +1627,28 @@ over UDP packets.")
       (license expat))))
 
 (define-public go-github-com-templexxx-xor
-  (let ((commit "42f9c041c330b560afb991153bf183c25444bcdc")
-        (revision "0"))
-    (package
-      (name "go-github-com-templexxx-xor")
-      (version (git-version "0.0.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/templexxx/xor.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "0ixzk64nyyzas4lyqxdih824xg5f5vph18vyiibmnflwd61m0i78"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/templexxx/xor"))
-      (synopsis "XOR in Go")
-      (description "This packages provides a Go implementation of XOR.")
-      (home-page "https://github.com/templexxx/xor")
-      (license expat))))
+  (package
+    (name "go-github-com-templexxx-xor")
+    (version "0.1.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/templexxx/xor.git")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0v1maiii0sggmxk9bgpy6pypb40j3hy2328pc4kd5bldkpdb67d5"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/templexxx/xor"))
+    (propagated-inputs
+     `(("go-github-com-templexxx-cpufeat" ,go-github-com-templexxx-cpufeat)))
+    (synopsis "XOR in Go")
+    (description "This packages provides a Go implementation of XOR.")
+    (home-page "https://github.com/templexxx/xor")
+    (license expat)))
 
 (define-public go-github-com-xtaci-smux
   (let ((commit "0f6b9aaecaaf354357adc7def9239011ad276776")
