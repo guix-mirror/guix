@@ -1894,3 +1894,26 @@ Authentication and Privacy Infrastructure).")
 notification library in Go.")
       (home-page "https://github.com/zillode/notify")
       (license expat))))
+
+(define-public go-github-com-klauspost-cpuid
+  (let ((commit "eae9b3e628d72774e13bdf024e78c0802f85a5b9")
+        (revision "0"))
+  (package
+    (name "go-github-com-klauspost-cpuid")
+    (version (git-version "1.1" revision commit))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/klauspost/cpuid.git")
+                     (commit commit)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dgxlsxdfhfapmz1qlvc919m3kcbmfqcfpxk78zl9am5zc3zr689"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/klauspost/cpuid"))
+    (synopsis "CPU feature identification library")
+    (description "This package provides @code{cpuid}, a Go library that provides information about the CPU running the current program")
+    (home-page "https://github.com/klauspost/cpuid")
+    (license expat))))
