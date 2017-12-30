@@ -502,8 +502,8 @@ address of the default LAN gateway.")
       (license bsd-3))))
 
 (define-public go-github-com-kardianos-osext
-  (let ((commit "9d302b58e975387d0b4d9be876622c86cefe64be")
-        (revision "0"))
+  (let ((commit "ae77be60afb1dcacde03767a8c37337fad28ac14")
+        (revision "1"))
     (package
       (name "go-github-com-kardianos-osext")
       (version (git-version "0.0.0" revision commit))
@@ -515,7 +515,7 @@ address of the default LAN gateway.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0r6f727s16g4f66k8c2z1xh8ga1p53hg9g2v95pmhd1i60fhy47a"))))
+                  "056dkgxrqjj5r18bnc3knlpgdz5p3yvp12y4y978hnsfhwaqvbjz"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/kardianos/osext"))
