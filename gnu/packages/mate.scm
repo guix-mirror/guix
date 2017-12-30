@@ -62,6 +62,7 @@
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
 
 (define-public mate-common
@@ -1109,6 +1110,48 @@ sessions, panels, menus, file management, and preferences.")
      "This package contains a collection of graphics files which
 can be used as backgrounds in the MATE Desktop environment.")
     (license license:gpl2+)))
+
+(define-public mate-netbook
+  (package
+    (name "mate-netbook")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0zj4x9qis8dw0irxzb4va1189k8bqbvymxq3h7phnjwvr1m983gf"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libfakekey" ,libfakekey)
+       ("libwnck" ,libwnck)
+       ("libxtst" ,libxtst)
+       ("libx11" ,libx11)
+       ("mate-panel" ,mate-panel)
+       ("xproto" ,xproto)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Tool for MATE on Netbooks")
+    (description
+     "Mate Netbook is a simple window management tool which:
+
+@enumerate
+@item Allows you to set basic rules for a window type, such as maximise|undecorate
+@item Allows exceptions to the rules, based on string matching for window name
+and window class.
+@item Allows 'reversing' of rules when the user manually changes something:
+Re-decorates windows on un-maximise.
+@end enumerate\n")
+    (license license:gpl3+)))
 
 (define-public mate
   (package
