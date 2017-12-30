@@ -712,7 +712,9 @@ application suites.")
                               ;; by gnome-control-center
                               "--enable-wayland-backend"
                               ;; This is necessary to build both backends.
-                              "--enable-x11-backend")
+                              "--enable-x11-backend"
+                              ;; This enables the HTML5 websocket backend.
+                              "--enable-broadway-backend")
       #:phases (modify-phases %standard-phases
         (add-before 'configure 'pre-configure
           (lambda _
