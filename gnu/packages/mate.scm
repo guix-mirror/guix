@@ -1484,6 +1484,40 @@ can be used as backgrounds in the MATE Desktop environment.")
 MATE Desktop to monitor your system resources and usage.")
     (license license:gpl2)))
 
+(define-public mate-polkit
+  (package
+    (name "mate-polkit")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "15vf2hnyjg8zsw3iiwjwi497yygkmvpnn6w1hik7dfw4a621w0gc"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("accountsservice" ,accountsservice)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("polkit" ,polkit)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "DBus specific service for MATE")
+    (description
+     "MATE Polkit is a MATE specific DBUS service that is
+used to bring up authentication dialogs.")
+    (license license:lgpl2.1)))
+
 (define-public mate
   (package
     (name "mate")
