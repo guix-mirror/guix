@@ -1027,6 +1027,29 @@ sessions, panels, menus, file management, and preferences.")
      "Mate Calc is the GTK+ calculator application for the MATE Desktop.")
     (license license:gpl2+)))
 
+(define-public mate-backgrounds
+  (package
+    (name "mate-backgrounds")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "06q8ksjisijps2wn959arywsimhzd3j35mqkr048c26ck24d60zi"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Calculator for MATE")
+    (description
+     "This package contains a collection of graphics files which
+can be used as backgrounds in the MATE Desktop environment.")
+    (license license:gpl2+)))
+
 (define-public mate
   (package
     (name "mate")
