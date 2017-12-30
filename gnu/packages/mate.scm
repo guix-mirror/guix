@@ -27,6 +27,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages attr)
   #:use-module (gnu packages base)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -39,8 +40,10 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages messaging)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages polkit)
@@ -660,6 +663,61 @@ icons on the MATE desktop.  It works on local and remote filesystems.")
     ;; There is a note about a TRADEMARKS_NOTICE file in COPYING which
     ;; does not exist. It is safe to assume that this is of no concern
     ;; for us.
+    (license license:gpl2+)))
+
+(define-public caja-extensions
+  (package
+    (name "caja-extensions")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0hgala7zkfsa60jflq3s4n9yd11dhfdcla40l83cmgc3r1az7cmw"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-sendto"
+                               ;; TODO: package "gupnp" to enable 'upnp', package
+                               ;; "gksu" to enable 'gksu'.
+                               (string-append "--with-sendto-plugins=removable-devices,"
+                                              "caja-burn,emailclient,pidgin,gajim")
+                               "--enable-image-converter"
+                               "--enable-open-terminal" "--enable-share"
+                               "--enable-wallpaper" "--enable-xattr-tags"
+                               (string-append "--with-cajadir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/caja/extensions-2.0/"))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("attr" ,attr)
+       ("brasero" ,brasero)
+       ("caja" ,caja)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("gajim" ,gajim) ;runtime only?
+       ("gtk+" ,gtk+)
+       ("imagemagick" ,imagemagick)
+       ("graphicsmagick" ,graphicsmagick)
+       ("mate-desktop" ,mate-desktop)
+       ("pidgin" ,pidgin) ;runtime only?
+       ("startup-notification" ,startup-notification)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Extensions for the File manager Caja")
+    (description
+     "Caja is the official file manager for the MATE desktop.
+It allows for browsing directories, as well as previewing files and launching
+applications associated with them.  Caja is also responsible for handling the
+icons on the MATE desktop.  It works on local and remote filesystems.")
     (license license:gpl2+)))
 
 (define-public mate-control-center
