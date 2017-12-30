@@ -63,6 +63,27 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public mate-common
+  (package
+    (name "mate-common")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1005laf3z1h8qczm7pmwr40r842665cv6ykhjg7r93vldra48z6p"))))
+    (build-system gnu-build-system)
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Common files for development of MATE packages")
+    (description
+     "Mate Common includes common files and macros used by
+MATE applications.")
+    (license license:gpl3+)))
+
 (define-public mate-icon-theme
   (package
     (name "mate-icon-theme")
