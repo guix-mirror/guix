@@ -1827,8 +1827,8 @@ processor feature detection used by the Go standard libary.")
       (license bsd-3))))
 
 (define-public go-github-com-tjfoc-gmsm-sm4
-  (let ((commit "0f4904804c0f24f1784e10195a4144fcffa86a85")
-        (revision "0"))
+  (let ((commit "98aa888b79d8de04afe0fccf45ed10594efc858b")
+        (revision "1"))
     (package
       (name "go-github-com-tjfoc-gmsm-sm4")
       (version (git-version "0.0.0" revision commit))
@@ -1840,7 +1840,7 @@ processor feature detection used by the Go standard libary.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1k56gx2ky0c5kf4icafd7zr809lliqzx2mn88lb6d52ljfpf77q5"))))
+                  "1ii4imnz3ims2s23pdv0l4ijzxjsvl82h4yzgfqm5y809ph6pjq9"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/tjfoc/gmsm/sm4"
