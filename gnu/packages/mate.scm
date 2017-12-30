@@ -235,6 +235,29 @@ configurations (profiles).")
         (base32
          "0i0xq6041x2qmb26x9bawx0qpfkgjn6x9w3phnm9s7rc4s0z20ll"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-elogind"
+                               "--disable-schemas-compile")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Use elogind instead of systemd.
+             (substitute* "configure"
+               (("libsystemd-login")
+                "libelogind")
+               (("systemd") "elogind"))
+             (substitute* "mate-session/gsm-systemd.c"
+               (("#include <systemd/sd-login.h>")
+                "#include <elogind/sd-login.h>"))
+             ;; Remove uses of the systemd journal.
+             (substitute* "mate-session/main.c"
+               (("#ifdef HAVE_SYSTEMD") "#if 0"))
+             (substitute* "mate-session/gsm-manager.c"
+               (("#ifdef HAVE_SYSTEMD") "#if 0"))
+             (substitute* "mate-session/gsm-autostart-app.c"
+               (("#ifdef HAVE_SYSTEMD") "#if 0"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
@@ -243,6 +266,7 @@ configurations (profiles).")
     (inputs
      `(("gtk+" ,gtk+)
        ("dbus-glib" ,dbus-glib)
+       ("elogind" ,elogind)
        ("libsm" ,libsm)
        ("mate-desktop" ,mate-desktop)))
     (home-page "https://mate-desktop.org/")
