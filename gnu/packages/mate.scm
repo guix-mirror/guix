@@ -1153,6 +1153,83 @@ Re-decorates windows on un-maximise.
 @end enumerate\n")
     (license license:gpl3+)))
 
+(define-public mate-screensaver
+  (package
+    (name "mate-screensaver")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0dfi10faf1fnvrm7c7wnfqg35ygq09ws1vjyv8394jlf0nn39g9j"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; FIXME: There is a permissions problem with screen locking
+       ;; which effectively locks you out completely. Enable locking
+       ;; once this has been fixed.
+       (list "--enable-locking" "--with-kbd-layout-indicator"
+             "--with-xf86gamma-ext" "--enable-pam"
+             "--disable-schemas-compile" "--without-console-kit")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dbus-dir (string-append out "/share/dbus-1/services")))
+             (setenv "SHELL" (which "sh"))
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (substitute* "configure"
+               (("dbus-1") ""))))))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,(autoconf-wrapper))
+       ("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("kbproto" ,kbproto)
+       ("mate-common" ,mate-common)
+       ("pkg-config" ,pkg-config)
+       ("randrproto" ,randrproto)
+       ("renderproto" ,renderproto)
+       ("scrnsaverproto" ,scrnsaverproto)
+       ("which" ,which)
+       ("xextpro" ,xextproto)
+       ("xproto" ,xproto)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("dconf" ,dconf)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("libcanberra" ,libcanberra)
+       ("libglade" ,libglade)
+       ("libmatekbd" ,libmatekbd)
+       ("libnotify" ,libnotify)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxklavier" ,libxklavier)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("libxxf86vm" ,libxxf86vm)
+       ("linux-pam" ,linux-pam)
+       ("mate-desktop" ,mate-desktop)
+       ("mate-menus" ,mate-menus)
+       ("pango" ,pango)
+       ("startup-notification" ,startup-notification)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Screensaver for MATE")
+    (description
+     "MATE backgrounds package contains a collection of graphics files which
+can be used as backgrounds in the MATE Desktop environment.")
+    (license license:gpl2+)))
+
 (define-public mate
   (package
     (name "mate")
