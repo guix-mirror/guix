@@ -177,8 +177,8 @@ XML-RPC over SCGI.")
     (license l:gpl2+)))
 
 (define-public tremc
-  (let ((commit "9755b50e9444566cff02c977edafdbb3e9750cbb")
-        (revision "1"))
+  (let ((commit "e06d08d8d76aa0559593ffc1188f4a90100cdbdb")
+        (revision "2"))
     (package
       (name "tremc")
       (version (git-version "0.9.0" revision commit))
@@ -191,29 +191,18 @@ XML-RPC over SCGI.")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "05259qss5jka5ygwrh7cngyp6cgazbynji5pshgfzrd2d43pyfq5"))))
-      (build-system python-build-system)
+            "17rf74sajcn5fl718rgl2qk5mw5yz9hrh58hbcg4p55wrazzrm1i"))))
+      (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; no test suite
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
          #:phases
          (modify-phases %standard-phases
-           ;; The software is just a Python script that must be
-           ;; copied into place.
-           (delete 'build)
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin"))
-                      (man (string-append out "/share/man/man1"))
-                      ;; FIXME install zsh completions
-                      (completions (string-append out "/etc/bash_completion.d")))
-                 (install-file "tremc" bin)
-                 (install-file "tremc.1" man)
-                 (install-file
-                   (string-append
-                     "completion/bash/"
-                     "transmission-remote-cli-bash-completion.sh")
-                   completions)))))))
+           ;; The software is just a Python script that must be copied into
+           ;; place.
+           (delete 'configure)
+           (delete 'build))))
       (synopsis "Console client for the Transmission BitTorrent daemon")
       (description "Tremc is a console client, with a curses interface, for the
 Transmission BitTorrent daemon.")
