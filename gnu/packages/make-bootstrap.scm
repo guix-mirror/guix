@@ -520,30 +520,31 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                      ,@(alist-delete "bdw-gc"
                                      (package-propagated-inputs guile-2.2))))
                   (arguments
-                   `(;; When `configure' checks for ltdl availability, it
-                     ;; doesn't try to link using libtool, and thus fails
-                     ;; because of a missing -ldl.  Work around that.
-                     #:configure-flags '("LDFLAGS=-ldl")
+                   (substitute-keyword-arguments (package-arguments guile-2.2)
+                     ((#:configure-flags flags '())
+                      ;; When `configure' checks for ltdl availability, it
+                      ;; doesn't try to link using libtool, and thus fails
+                      ;; because of a missing -ldl.  Work around that.
+                      ''("LDFLAGS=-ldl"))
+                     ((#:phases phases '%standard-phases)
+                      `(modify-phases ,phases
+                         (add-before 'configure 'static-guile
+                           (lambda _
+                             (substitute* "libguile/Makefile.in"
+                               ;; Create a statically-linked `guile'
+                               ;; executable.
+                               (("^guile_LDFLAGS =")
+                                "guile_LDFLAGS = -all-static")
 
-                     #:phases (alist-cons-before
-                               'configure 'static-guile
-                               (lambda _
-                                 (substitute* "libguile/Makefile.in"
-                                   ;; Create a statically-linked `guile'
-                                   ;; executable.
-                                   (("^guile_LDFLAGS =")
-                                    "guile_LDFLAGS = -all-static")
-
-                                   ;; Add `-ldl' *after* libguile-2.2.la.
-                                   (("^guile_LDADD =(.*)$" _ ldadd)
-                                    (string-append "guile_LDADD = "
-                                                   (string-trim-right ldadd)
-                                                   " -ldl\n"))))
-                               %standard-phases)
-
-                     ;; There are uses of `dynamic-link' in
-                     ;; {foreign,coverage}.test that don't fly here.
-                     #:tests? #f)))))
+                               ;; Add `-ldl' *after* libguile-2.2.la.
+                               (("^guile_LDADD =(.*)$" _ ldadd)
+                                (string-append "guile_LDADD = "
+                                               (string-trim-right ldadd)
+                                               " -ldl\n")))))))
+                     ((#:tests? _ #f)
+                      ;; There are uses of `dynamic-link' in
+                      ;; {foreign,coverage}.test that don't fly here.
+                      #f))))))
     (package-with-relocatable-glibc (static-package guile))))
 
 (define %guile-static-stripped
