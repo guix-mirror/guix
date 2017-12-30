@@ -5319,6 +5319,29 @@ constructs.")
 configuration of Chinese fonts.")
     (license license:gpl2+)))
 
+(define-public emacs-php-mode
+  (package
+    (name "emacs-php-mode")
+    (version "20171225.342")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://melpa.org/packages/php-mode-"
+                    version ".tar"))
+              (sha256
+               (base32
+                "1zz682f34v4wsm2dyj1gnrnvsrqdq1cy7j8p6cvc398w2fziyg3q"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ejmr/php-mode")
+    (synopsis "Major mode for editing PHP code")
+    (description "@code{php-mode} is a major mode for editing PHP source
+code.  It's an extension of C mode; thus it inherits all C mode's navigation
+functionality.  But it colors according to the PHP grammar and indents
+according to the PEAR coding guidelines.  It also includes a couple handy
+IDE-type features such as documentation search and a source and class
+browser.")
+    (license license:gpl3+)))
+
 (define-public emacs-pos-tip
   (package
     (name "emacs-pos-tip")
