@@ -1443,6 +1443,47 @@ can be used as backgrounds in the MATE Desktop environment.")
      "Pluma is the text editor for the MATE Desktop.")
     (license license:gpl2)))
 
+(define-public mate-system-monitor
+  (package
+    (name "mate-system-monitor")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1wcvrl4lfnjkhywb311p29prf1qiab6iynb6q1fgfsl6za8hsz48"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("glibmm" ,glibmm)
+       ("gtkmm" ,gtkmm)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("libsigc++" ,libsigc++)
+       ("libcanberra" ,libcanberra)
+       ("libxml2" ,libxml2)
+       ("libwnck" ,libwnck)
+       ("libgtop" ,libgtop)
+       ("librsvg" ,librsvg)
+       ("polkit" ,polkit)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "System Monitor for MATE")
+    (description
+     "Mate System Monitor provides a tool for for the
+MATE Desktop to monitor your system resources and usage.")
+    (license license:gpl2)))
+
 (define-public mate
   (package
     (name "mate")
