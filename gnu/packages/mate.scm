@@ -1284,6 +1284,57 @@ can be used as backgrounds in the MATE Desktop environment.")
                    license:fdl1.1+
                    license:lgpl2.1))))
 
+(define-public eom
+  (package
+    (name "eom")
+    (version "1.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "00ns7g7qykakc89lijrw2vwy9x9ijqiyvmnd4sw0j6py90zs8m87"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gtk-doc" ,gtk-doc)
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("atk" ,atk)
+       ("cairo" ,cairo)
+       ("dconf" ,dconf)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("exempi" ,exempi)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libpeas" ,libpeas)
+       ("libxml2" ,libxml2)
+       ("libexif" ,libexif)
+       ("libjpeg" ,libjpeg)
+       ("librsvg" ,librsvg)
+       ("lcms" ,lcms)
+       ("mate-desktop" ,mate-desktop)
+       ("pango" ,pango)
+       ("shared-mime-info" ,shared-mime-info)
+       ("startup-notification" ,startup-notification)
+       ("zlib" ,zlib)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Eye of MATE")
+    (description
+     "Eye of MATE is the Image viewer for the MATE Desktop.")
+    (license (list license:gpl2))))
+
 (define-public mate
   (package
     (name "mate")
