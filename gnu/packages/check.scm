@@ -1213,6 +1213,14 @@ seamlessly into your existing Python unit testing work flow.")
          (base32
           "0z651m3vkbk85y41larnsjxrszkbi58x9gzml3lb6ga7qwcrsg97"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "py.test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://llvm.org/")
     (synopsis "LLVM Software Testing Tool")
     (description "@code{lit} is a portable tool for executing LLVM and Clang
