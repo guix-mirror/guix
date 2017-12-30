@@ -110,7 +110,8 @@
                             (outputs '("out"))
                             (search-paths '())
                             (configure-flags ''())
-                            (make-flags ''())
+                            ;; Disable icon theme cache generation.
+                            (make-flags ''("gtk_update_icon_cache=true"))
                             (out-of-source? #t)
                             (tests? #t)
                             (test-target "check")
