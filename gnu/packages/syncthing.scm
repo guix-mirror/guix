@@ -1244,8 +1244,8 @@ Tiny Encryption Algorithm (XTEA) block cipher.")
     (license (package-license go-golang-org-x-net-ipv4))))
 
 (define-public go-golang-org-x-net-ipv4
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-ipv4")
       (version (git-version "0.0.0" revision commit))
@@ -1257,7 +1257,7 @@ Tiny Encryption Algorithm (XTEA) block cipher.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/ipv4"
@@ -1269,8 +1269,8 @@ socket options for the Internet Protocol version 4.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-net-bpf
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-bpf")
       (version (git-version "0.0.0" revision commit))
@@ -1283,7 +1283,7 @@ socket options for the Internet Protocol version 4.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/bpf"
@@ -1295,8 +1295,8 @@ Packet Filter (BPF) virtual machine.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-net-context
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-context")
       (version (git-version "0.0.0" revision commit))
@@ -1309,7 +1309,7 @@ Packet Filter (BPF) virtual machine.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/context"
@@ -1322,8 +1322,8 @@ request-scoped values across API boundaries and between processes.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-net-internal-iana
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-internal-iana")
       (version (git-version "0.0.0" revision commit))
@@ -1336,7 +1336,7 @@ request-scoped values across API boundaries and between processes.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/internal/iana"
@@ -1348,8 +1348,8 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
       (license bsd-3))))
 
 (define-public go-golang-org-x-net-ipv6
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-ipv6")
       (version (git-version "0.0.0" revision commit))
@@ -1362,7 +1362,7 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/ipv6"
@@ -1374,8 +1374,8 @@ IP-level socket options for the Internet Protocol version 6.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-net-proxy
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-proxy")
       (version (git-version "0.0.0" revision commit))
@@ -1388,7 +1388,7 @@ IP-level socket options for the Internet Protocol version 6.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/proxy"
