@@ -754,6 +754,46 @@ some users; these users may want to investigate other available window managers
 for use with MATE or as a standalone window manager.")
     (license license:gpl2+)))
 
+(define-public mate-user-guide
+  (package
+    (name "mate-user-guide")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0f3b46r9a3cywm7rpj08xlkfnlfr9db58xfcpix8i33qp50fxqmb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-desktop-file
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((yelp (assoc-ref inputs "yelp")))
+               (substitute* "mate-user-guide.desktop.in.in"
+                 (("yelp")
+                  (string-append yelp "/bin/yelp"))))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("gettext" ,gettext-minimal)
+       ("yelp-tools" ,yelp-tools)
+       ("yelp-xsl" ,yelp-xsl)))
+    (inputs
+     `(("yelp" ,yelp)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "User Documentation for Mate software")
+    (description
+     "MATE User Guide is a collection of documentation which details
+general use of the MATE Desktop environment.  Topics covered include
+sessions, panels, menus, file management, and preferences.")
+    (license (list license:fdl1.1+ license:gpl2+))))
+
 (define-public mate
   (package
     (name "mate")
