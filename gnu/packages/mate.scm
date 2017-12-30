@@ -28,27 +28,37 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages djvu)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages messaging)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages tex)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
@@ -609,6 +619,111 @@ several applets.  The applets supplied here include the Workspace Switcher,
 the Window List, the Window Selector, the Notification Area, the Clock and the
 infamous 'Wanda the Fish'.")
     (license (list license:gpl2+ license:lgpl2.0+))))
+
+(define-public atril
+  (package
+    (name "atril")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1wl332v80c0nzz7nw36d1pfmbiibvl3l0i4d25ihg6mg9wbc0145"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "--with-openjpeg="
+                                              (assoc-ref %build-inputs "openjpeg"))
+                               "--enable-introspection"
+                               "--with-gtk=3.0"
+                               "--disable-schemas-compile"
+                               ;; FIXME: Enable build of Caja extensions.
+                               "--disable-caja")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-mathjax-path
+           (lambda _
+             (let* ((mathjax (assoc-ref %build-inputs "js-mathjax"))
+                    (mathjax-path (string-append mathjax
+                                                 "/share/javascript/mathjax")))
+               (substitute* "backend/epub/epub-document.c"
+                 (("/usr/share/javascript/mathjax")
+                  mathjax-path)))
+             #t))
+         (add-after 'unpack 'fix-introspection-install-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* '("configure")
+                 (("\\$\\(\\$PKG_CONFIG --variable=girdir gobject-introspection-1.0\\)")
+                  (string-append "\"" out "/share/gir-1.0/\""))
+                 (("\\$\\(\\$PKG_CONFIG --variable=typelibdir gobject-introspection-1.0\\)")
+                  (string-append out "/lib/girepository-1.0/")))
+               #t)))
+         (add-before 'install 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "data/Makefile"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("yelp-tools" ,yelp-tools)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("xmllint" ,libxml2)
+       ("zlib" ,zlib)))
+    (inputs
+     `(("atk" ,atk)
+       ("cairo" ,cairo)
+       ("caja" ,caja)
+       ("dconf" ,dconf)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("djvulibre" ,djvulibre)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("ghostscript" ,ghostscript)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("js-mathjax" ,js-mathjax)
+       ("libcanberra" ,libcanberra)
+       ("libsecret" ,libsecret)
+       ("libspectre" ,libspectre)
+       ("libtiff" ,libtiff)
+       ("libx11" ,libx11)
+       ("libice" ,libice)
+       ("libsm" ,libsm)
+       ("libgxps" ,libgxps)
+       ("libjpeg" ,libjpeg)
+       ("libxml2" ,libxml2)
+       ("dogtail" ,python2-dogtail)
+       ("shared-mime-info" ,shared-mime-info)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("libgnome-keyring" ,libgnome-keyring)
+       ("libarchive" ,libarchive)
+       ("marco" ,marco)
+       ("nettle" ,nettle)
+       ("openjpeg" ,openjpeg-1)
+       ("pango" ,pango)
+       ;;("texlive" ,texlive)
+       ;; TODO:
+       ;;   Build libkpathsea as a shared library for DVI support.
+       ;; ("libkpathsea" ,texlive-bin)
+       ("poppler" ,poppler)
+       ("webkitgtk" ,webkitgtk)))
+    (home-page "https://mate-desktop.org")
+    (synopsis "Document viewer for Mate")
+    (description
+     "Document viewer for Mate")
+    (license license:gpl2)))
 
 (define-public caja
   (package
