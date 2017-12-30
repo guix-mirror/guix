@@ -1870,8 +1870,8 @@ Authentication and Privacy Infrastructure).")
       (license asl2.0))))
 
 (define-public go-github-com-zillode-notify
-  (let ((commit "54e3093eb7377fd139c4605f475cc78e83610b9d")
-        (revision "0"))
+  (let ((commit "8fff849a2026ce7a59f67ed9747dd9c7adc8bd0b")
+        (revision "1"))
     (package
       (name "go-github-com-zillode-notify")
       (version (git-version "0.0.0" revision commit))
@@ -1883,7 +1883,7 @@ Authentication and Privacy Infrastructure).")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0xmj0bh15hqbzq5qsbi2nb2lihl1pqdh1vwalwmxywnda3w68xj6"))))
+                  "1aazci21y85k1c02dlvdfx926vxb3j4i96fn27s7zxmqjlk7l3ga"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/zillode/notify"))
