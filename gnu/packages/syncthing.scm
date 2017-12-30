@@ -118,8 +118,8 @@
     (inputs
      `(("go-github-com-audriusbutkevicius-cli"
         ,go-github-com-audriusbutkevicius-cli)
-       ("go-github-com-audriusbutkevicius-kcp-go"
-        ,go-github-com-audriusbutkevicius-kcp-go)
+       ("go-github-com-xtaci-kcp-go"
+        ,go-github-com-xtaci-kcp-go)
        ("go-github-com-audriusbutkevicius-go-nat-pmp"
         ,go-github-com-audriusbutkevicius-go-nat-pmp)
        ("go-github-com-audriusbutkevicius-pfilter"
@@ -1581,33 +1581,34 @@ rolling hash.")
       (home-page "https://github.com/chmduquesne/rollinghash")
       (license expat))))
 
-(define-public go-github-com-audriusbutkevicius-kcp-go
-  (let ((commit "8ae5f528469c6ab76110f41eb7a51341b7efb946")
-        (revision "1"))
+(define-public go-github-com-xtaci-kcp-go
+  (let ((commit "86eebd5cadb519b7c9306082c7eb3bcee2c49a7b")
+        (revision "0"))
     (package
-      (name "go-github-com-audriusbutkevicius-kcp-go")
+      (name "go-github-com-xtaci-kcp-go")
       (version (git-version "0.0.0" revision commit))
       (source
         (origin
           (method git-fetch)
           (uri (git-reference
-                 (url "https://github.com/AudriusButkevicius/kcp-go")
+                 (url "https://github.com/xtaci/kcp-go")
                  (commit commit)))
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "1bhg7bfc0r4a7i516xasq3i5ln15lsalm7i53b4nchba6db7mq14"))))
+            "1mdfsya4y04nycfgsk9ghm67zpim5pw78si3f1566xgrv4ghl0ni"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-golang-org-x-net-ipv4" ,go-golang-org-x-net-ipv4)
-         ("go-github-com-templexxx-reedsolomon"
-          ,go-github-com-templexxx-reedsolomon)
+         ("go-github-com-klauspost-reedsolomon"
+          ,go-github-com-klauspost-reedsolomon)
          ("go-github-com-tjfoc-gmsm-sm4" ,go-github-com-tjfoc-gmsm-sm4)
          ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
          ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
          ("go-github-com-templexxx-xor" ,go-github-com-templexxx-xor)))
       (arguments
-       '(#:import-path "github.com/AudriusButkevicius/kcp-go"
+       '(#:import-path "github.com/xtaci/kcp-go"
+         ;; XXX update comment
          ;; 'TestListenerClose' is known to fail. It seems that the test suite
          ;; is not being used upstream:
          ;; https://github.com/AudriusButkevicius/kcp-go/pull/1
