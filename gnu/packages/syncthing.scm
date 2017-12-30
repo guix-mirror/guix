@@ -28,7 +28,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.42")
+    (version "0.14.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -36,7 +36,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0qqcn8j2hng4jl6ndbrjmbiwbl2f305qx5yw7swbvj7s3l7k756i"))))
+                "175xkc4i00axxljc5kgkr30lm1s9hfmz0hrzrsl91rpwpbh500mv"))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
@@ -157,9 +157,9 @@
        ("go-golang-org-x-net-union" ,(go-golang-org-x-net-union))
        ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
        ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
-       ("go-github-com-d4l3k-messagediff"
-        ,go-github-com-d4l3k-messagediff)
-       ("go-github-com-zillode-notify" ,go-github-com-zillode-notify)))
+       ("go-github-com-zillode-notify" ,go-github-com-zillode-notify)
+       ;; For tests
+       ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
     (synopsis "Decentralized continuous filesystem synchronization")
     (description "Syncthing is a peer-to-peer file synchronization tool that
 supports a wide variety of computing platforms.  It uses the Block Exchange
