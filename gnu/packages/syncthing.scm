@@ -1802,30 +1802,6 @@ using sh's word-splitting rules.")
       (home-page "https://github.com/kballard/go-shellquote")
       (license expat))))
 
-(define-public go-github-com-templexxx-reedsolomon
-  (package
-    (name "go-github-com-templexxx-reedsolomon")
-    (version "0.1.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/templexxx/reedsolomon.git")
-                     (commit version)))
-              (sha256
-               (base32
-                "05yfi6dq2mwaw6jf9vq2qhpw8vb9y94b3zi6mpfcpma262rxdkg4"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/templexxx/reedsolomon"))
-    (propagated-inputs
-     `(("go-github-com-templexxx-cpufeat"
-        ,go-github-com-templexxx-cpufeat)))
-    (synopsis "Reed-Solomon Erasure Coding in Go")
-    (description "This package provides and implemenation of Reed-Solomon
-Erasure Coding in Go.")
-    (home-page "https://github.com/templexxx/reedsolomon")
-    (license expat)))
-
 (define-public go-github-com-templexxx-cpufeat
   (let ((commit "3794dfbfb04749f896b521032f69383f24c3687e")
         (revision "0"))
