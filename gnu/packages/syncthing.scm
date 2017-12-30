@@ -1651,11 +1651,11 @@ over UDP packets.")
     (license expat)))
 
 (define-public go-github-com-xtaci-smux
-  (let ((commit "0f6b9aaecaaf354357adc7def9239011ad276776")
+  (let ((commit "c3e18246ff2252a6e9d6b529fcbf22ae5c74c007")
         (revision "0"))
     (package
       (name "go-github-com-xtaci-smux")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "1.0.6" revision commit))
       (source
         (origin
           (method git-fetch)
@@ -1665,7 +1665,7 @@ over UDP packets.")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "0wx9j0id2f5iqvyalhm4i80fr9k25klr7qqj8sd9acwp5vfl5fas"))))
+            "1dfmxd9g31idldhq6n7r998gi4jw51ji3xvkjrzypsw2ypbjx1dz"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-github-com-pkg-errors" ,go-github-com-pkg-errors)))
