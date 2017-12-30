@@ -683,8 +683,8 @@ Metrics library.")
       (license bsd-2))))
 
 (define-public go-github-com-sasha-s-go-deadlock
-  (let ((commit "341000892f3dd25f440e6231e8533eb3688ed7ec")
-        (revision "0"))
+  (let ((commit "03d40e5dbd5488667a13b3c2600b2f7c2886f02f")
+        (revision "1"))
     (package
       (name "go-github-com-sasha-s-go-deadlock")
       (version (git-version "0.1.0" revision commit))
@@ -696,7 +696,7 @@ Metrics library.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1bcdyxwm5qpqynxahwaahbqi7ghgdajmg7b4276pdalkxkxkhsv8"))))
+                  "13p7b7pakd9k1c2k0fs1hfim3c8mivz679977ai6zb01s4aw7gyg"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/sasha-s/go-deadlock"))
