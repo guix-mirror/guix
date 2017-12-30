@@ -35,6 +35,7 @@
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages enchant)
   #:use-module (gnu packages file)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
@@ -48,6 +49,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
@@ -1388,6 +1390,57 @@ can be used as backgrounds in the MATE Desktop environment.")
     (synopsis "Archive Manager for MATE")
     (description
      "Engrampa is the archive manager for the MATE Desktop.")
+    (license license:gpl2)))
+
+(define-public pluma
+  (package
+    (name "pluma")
+    (version "1.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1z0938yiygxipj2a77n9dv8v4253snrc5gbbnarcnim9xba2j3zz"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(; Tests can not succeed.
+       ;; https://github.com/mate-desktop/mate-text-editor/issues/33
+       #:tests? #f))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gtk-doc" ,gtk-doc)
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("atk" ,atk)
+       ("cairo" ,cairo)
+       ("enchant" ,enchant)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("iso-codes" ,iso-codes)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libsm" ,libsm)
+       ("libpeas" ,libpeas)
+       ("libxml2" ,libxml2)
+       ("libice" ,libice)
+       ("packagekit" ,packagekit)
+       ("pango" ,pango)
+       ("python-2" ,python-2)
+       ("scrollkeeper" ,scrollkeeper)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Text Editor for MATE")
+    (description
+     "Pluma is the text editor for the MATE Desktop.")
     (license license:gpl2)))
 
 (define-public mate
