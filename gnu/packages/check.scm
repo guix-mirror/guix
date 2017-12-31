@@ -1766,3 +1766,37 @@ retried.")
 
 (define-public python2-flaky
   (package-with-python2 python-flaky))
+
+(define-public python-pyhamcrest
+  (package
+    (name "python-pyhamcrest")
+    (version "1.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://github.com/hamcrest/PyHamcrest/archive/V"
+                version
+                ".tar.gz"))
+              (file-name
+               (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1lqjajhwf7x7igvvnj5p1cm31y9njy07qby94w18kl6zwbdjqrwy"))))
+    (native-inputs                      ; All native inputs are for tests
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest-3.0)
+       ("python-hypothesis" ,python-hypothesis)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (build-system python-build-system)
+    (home-page "http://hamcrest.org/")
+    (synopsis "Hamcrest matchers for Python")
+    (description
+     "PyHamcrest is a framework for writing matcher objects,
+ allowing you to declaratively define \"match\" rules.")
+    (license license:bsd-3)))
+
+(define-public python2-pyhamcrest
+  (package-with-python2 python-pyhamcrest))
