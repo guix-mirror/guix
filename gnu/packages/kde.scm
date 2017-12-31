@@ -260,7 +260,21 @@ plugins, as well as code to create plugins, or complete applications.")
                             (assoc-ref %build-inputs "libtiff"))
              (string-append "-DCMAKE_CXX_FLAGS=-I"
                             (assoc-ref %build-inputs "ilmbase")
-                            "/include/OpenEXR"))))
+                            "/include/OpenEXR"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Ensure that icons are found at runtime
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (qt '("qtbase" "qtsvg")))
+               (wrap-program (string-append out "/bin/krita")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins/"))
+                         qt)))
+               #t))))))
     (native-inputs
      `(("curl" ,curl)
        ("eigen" ,eigen)
