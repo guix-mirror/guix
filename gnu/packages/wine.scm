@@ -160,16 +160,42 @@ integrate Windows applications into your desktop.")
   (package
     (inherit wine)
     (name "wine64")
+    (inputs `(("wine" ,wine)
+              ,@(package-inputs wine)))
     (arguments
      `(#:make-flags
        (list "SHELL=bash"
-             (string-append "libdir=" %output "/lib"))
+             (string-append "libdir=" %output "/lib/wine64"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'copy-wine32-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (copy-file (string-append (assoc-ref %build-inputs "wine")
+                                       "/bin/wine") (string-append (assoc-ref
+                                       %outputs "out") "/bin/wine"))
+             (copy-file (string-append (assoc-ref %build-inputs "wine")
+                                       "/bin/wine-preloader") (string-append
+                                       (assoc-ref %outputs "out")
+                                       "/bin/wine-preloader"))
+             #t))
+         (add-after 'configure 'patch-dlopen-paths
+           ;; Hardcode dlopened sonames to absolute paths.
+           (lambda _
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-so (lambda (soname)
+                               (search-path library-path soname))))
+               (substitute* "include/config.h"
+                 (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
+                  (format #f "~a\"~a\"" defso (find-so soname))))
+               #t))))
        #:configure-flags
        (list "--enable-win64"
-             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
-       ,@(strip-keyword-arguments '(#:configure-flags #:make-flags #:system)
+             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib/wine64"))
+       ,@(strip-keyword-arguments '(#:configure-flags #:make-flags #:phases
+                                    #:system)
                                   (package-arguments wine))))
-    (synopsis "Implementation of the Windows API (64-bit version)")
+    (synopsis "Implementation of the Windows API (WOW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
 
 ;; TODO: This is wine development version, provided for historical reasons.
