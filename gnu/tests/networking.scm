@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,9 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (gnu packages bash)
-  #:export (%test-inetd))
+  #:use-module (gnu packages networking)
+  #:use-module (gnu services shepherd)
+  #:export (%test-inetd %test-openvswitch))
 
 (define %inetd-os
   ;; Operating system with 2 inetd services.
@@ -135,3 +138,108 @@ port 7, and a dict service on port 2628."
    (name "inetd")
    (description "Connect to a host with an INETD server.")
    (value (run-inetd-test))))
+
+
+;;;
+;;; Open vSwitch
+;;;
+
+(define setup-openvswitch
+  #~(let ((ovs-vsctl (lambda (str)
+                       (zero? (apply system*
+                                     #$(file-append openvswitch "/bin/ovs-vsctl")
+                                     (string-tokenize str)))))
+          (add-native-port (lambda (if)
+                             (string-append "--may-exist add-port br0 " if
+                                            " vlan_mode=native-untagged"
+                                            " -- set Interface " if
+                                            " type=internal"))))
+      (and (ovs-vsctl "--may-exist add-br br0")
+           ;; Connect eth0 as an "untagged" port (no VLANs).
+           (ovs-vsctl "--may-exist add-port br0 eth0 vlan_mode=native-untagged")
+           (ovs-vsctl (add-native-port "ovs0")))))
+
+(define openvswitch-configuration-service
+  (simple-service 'openvswitch-configuration shepherd-root-service-type
+                  (list (shepherd-service
+                         (provision '(openvswitch-configuration))
+                         (requirement '(vswitchd))
+                         (start #~(lambda ()
+                                    #$setup-openvswitch))
+                         (respawn? #f)))))
+
+(define %openvswitch-os
+  (simple-operating-system
+   (static-networking-service "ovs0" "10.1.1.1"
+                              #:netmask "255.255.255.252"
+                              #:requirement '(openvswitch-configuration))
+   (service openvswitch-service-type
+            (openvswitch-configuration
+             (package openvswitch)))
+   openvswitch-configuration-service))
+
+(define (run-openvswitch-test)
+  (define os
+    (marionette-operating-system %openvswitch-os
+                                 #:imported-modules '((gnu services herd))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (ice-9 popen)
+                       (ice-9 rdelim)
+                       (srfi srfi-64))
+
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "openvswitch")
+
+          ;; Make sure the bridge is created.
+          (test-assert "br0 exists"
+            (marionette-eval
+             '(zero? (system* "ovs-vsctl" "br-exists" "br0"))
+             marionette))
+
+          ;; Make sure eth0 is connected to the bridge.
+          (test-equal "eth0 is connected to br0"
+            "br0"
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 popen) (ice-9 rdelim))
+                (let* ((port (open-pipe*
+                              OPEN_READ
+                              (string-append #$openvswitch "/bin/ovs-vsctl")
+                              "port-to-br" "eth0"))
+                       (output (read-line port)))
+                  (close-pipe port)
+                  output))
+             marionette))
+
+          ;; Make sure the virtual interface got a static IP.
+          (test-assert "networking has started on ovs0"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd)
+                             (srfi srfi-1))
+                (live-service-running
+                 (find (lambda (live)
+                         (memq 'networking-ovs0
+                               (live-service-provision live)))
+                       (current-services))))
+             marionette))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "openvswitch-test" test))
+
+(define %test-openvswitch
+  (system-test
+   (name "openvswitch")
+   (description "Test a running OpenvSwitch configuration.")
+   (value (run-openvswitch-test))))

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,7 +43,7 @@
        (sha256
         (base32 "0d1ya7hx4y58n5ivwmdmq2zgh0g2sbv7ykh13n85c1355csd57yx"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/colorspace")
+    (home-page "https://cran.r-project.org/web/packages/colorspace")
     (synopsis "Color space manipulation")
     (description
      "This package carries out a mapping between assorted color spaces
@@ -170,7 +171,7 @@ bindings that call a C++ function.")
          "0ripcib2qz0m7rgr1kiz68nx8f6p408l1ww7j78ljqik7p3g41g7"))))
     (properties `((upstream-name . "AUC")))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/AUC")
+    (home-page "https://cran.r-project.org/web/packages/AUC")
     (synopsis "Compute the area under the curve of selected measures")
     (description
      "This package includes functions to compute the area under the curve of
@@ -195,7 +196,7 @@ is provided.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)))
-    (home-page "http://cran.r-project.org/web/packages/calibrate")
+    (home-page "https://cran.r-project.org/web/packages/calibrate")
     (synopsis "Calibration of scatterplot and biplot axes")
     (description
      "This is a package for drawing calibrated scales with tick marks
@@ -214,7 +215,7 @@ on (non-orthogonal) variable vectors in scatterplots and biplots.")
         (base32
          "1v9xp60p813rnx41vchkh32qmcb4z2zp9l7r1a8a6f8aqylnq3vj"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/shape")
+    (home-page "https://cran.r-project.org/web/packages/shape")
     (synopsis "Functions for plotting graphical shapes")
     (description
      "This package provides functions for plotting graphical shapes such as
@@ -244,14 +245,14 @@ validation and filtering on the values, making options invisible or private.")
 (define-public r-circlize
   (package
     (name "r-circlize")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "circlize" version))
        (sha256
         (base32
-         "0py82f5v25mi0s4626zbl5br1frdrj3diz2dakar1rz5yn956mdi"))))
+         "0pg947gkryygikfbv6admx8gsg02b6g219j6a1sdnqij2908yxna"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-colorspace" ,r-colorspace)
@@ -260,15 +261,15 @@ validation and filtering on the values, making options invisible or private.")
     (home-page "https://github.com/jokergoo/circlize")
     (synopsis "Circular visualization")
     (description
-     "Circular layout is an efficient way for the visualization of huge
-amounts of information.  This package provides an implementation of circular
-layout generation in R as well as an enhancement of available software.  The
-flexibility of the package is based on the usage of low-level graphics
-functions such that self-defined high-level graphics can be easily implemented
-by users for specific purposes.  Together with the seamless connection between
-the powerful computational and visual environment in R, it gives users more
-convenience and freedom to design figures for better understanding complex
-patterns behind multiple dimensional data.")
+     "Circular layout is an efficient way to visualise huge amounts of
+information.  This package provides an implementation of circular layout
+generation in R as well as an enhancement of available software.  Its
+flexibility is based on the usage of low-level graphics functions such that
+self-defined high-level graphics can be easily implemented by users for
+specific purposes.  Together with the seamless connection between the powerful
+computational and visual environment in R, it gives users more convenience and
+freedom to design figures for better understanding complex patterns behind
+multi-dimensional data.")
     (license license:gpl2+)))
 
 (define-public r-powerlaw
@@ -308,7 +309,7 @@ approach is used to estimate the lower cut-off for the scaling region.")
         (base32
          "0k9zms930b5dz9gy8414li21wy0zg9x9vp7301v5cvyfi0g7xzgw"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/compare")
+    (home-page "https://cran.r-project.org/web/packages/compare")
     (synopsis "Comparing objects for differences")
     (description
      "This package provides functions to compare a model object to a
@@ -550,7 +551,7 @@ plot networks.")
         (base32
          "15g6dacdmlbkcnimblscghl23aj732cn6qwbs583r4im9v5nvbla"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/proxy")
+    (home-page "https://cran.r-project.org/web/packages/proxy")
     (synopsis "Distance and similarity measures")
     (description
      "This package provides an extensible framework for the efficient
@@ -572,7 +573,7 @@ most popular ones.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
-    (home-page "http://cran.r-project.org/web/packages/sp")
+    (home-page "https://cran.r-project.org/web/packages/sp")
     (synopsis "Classes and methods for spatial data")
     (description
      "This package provides classes and methods for spatial data; the classes
@@ -595,7 +596,7 @@ print, summary, etc.")
          "1nn25q4kmh9kj975sxkrpa97vh5irqrlqhwsfinbck6h6ia4rsw1"))))
     (properties `((upstream-name . "RMTstat")))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/RMTstat")
+    (home-page "https://cran.r-project.org/web/packages/RMTstat")
     (synopsis "Distributions, statistics and tests derived from random matrix theory")
     (description
      "This package provides functions for working with the Tracy-Widom laws
@@ -710,7 +711,7 @@ or excesses over a high threshold.")
      `(("r-zoo" ,r-zoo)))
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/lmtest")
+    (home-page "https://cran.r-project.org/web/packages/lmtest")
     (synopsis "Testing linear regression models")
     (description
      "This package provides a collection of tests, data sets, and examples for
@@ -730,7 +731,7 @@ tools for inference in parametric models are provided.")
                (base32
                 "0cf9vya9h4znwgp6s1nayqqmh6mwyw7jl0isk1nx4j2ijszxcd7x"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/inline")
+    (home-page "https://cran.r-project.org/web/packages/inline")
     (synopsis "Functions to inline C, C++, Fortran function calls from R")
     (description
      "This package provides functionality to dynamically define R functions
@@ -755,7 +756,7 @@ and S4 methods with inlined C, C++ or Fortran code supporting @code{.C} and
      `(("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
        ("r-numderiv" ,r-numderiv)))
-    (home-page "http://cran.r-project.org/web/packages/bbmle")
+    (home-page "https://cran.r-project.org/web/packages/bbmle")
     (synopsis "Tools for General Maximum Likelihood Estimation")
     (description
      "This package provides methods and functions for fitting maximum
@@ -805,7 +806,7 @@ topics for ecologists (ISBN 978-0-691-12522-0).")
          "13a9ry8xf5j1f2j6imqrxdgxqz3nqp9sj9b4ivyx9sid459irm6m"))))
     (properties `((upstream-name . "lpSolve")))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/lpSolve")
+    (home-page "https://cran.r-project.org/web/packages/lpSolve")
     (synopsis "R interface to Lp_solve to solve linear/integer programs")
     (description
      "Lp_solve is software for solving linear, integer and mixed integer
@@ -832,7 +833,7 @@ transportation problems.")
        ("r-mass" ,r-mass)
        ("r-quadprog" ,r-quadprog)))
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/limSolve")
+    (home-page "https://cran.r-project.org/web/packages/limSolve")
     (synopsis "Solving linear inverse models")
     (description
      "This package provides functions that:
@@ -891,7 +892,7 @@ data).  Weighted versions of MLE, MME and QME are available.")
     (propagated-inputs
      `(("r-boot" ,r-boot)
        ("r-rcpp" ,r-rcpp)))
-    (home-page "http://cran.r-project.org/web/packages/energy")
+    (home-page "https://cran.r-project.org/web/packages/energy")
     (synopsis "Multivariate inference via the energy of data")
     (description
      "This package provides e-statistics (energy) tests and statistics for
@@ -918,7 +919,7 @@ statistics/methods are implemented.")
          "1ffx8wigqqvz2pnh06jjc0fnf4vq9z2rhwk2y3f9aszn18ap3dgw"))))
     (properties `((upstream-name . "SuppDists")))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/SuppDists")
+    (home-page "https://cran.r-project.org/web/packages/SuppDists")
     (synopsis "Supplementary distributions")
     (description
      "This package provides ten distributions supplementing those built into
@@ -944,7 +945,7 @@ George Marsaglia are included.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-suppdists" ,r-suppdists)))
-    (home-page "http://cran.r-project.org/web/packages/kSamples")
+    (home-page "https://cran.r-project.org/web/packages/kSamples")
     (synopsis "K-Sample rank tests and their combinations")
     (description
      "This package provides tools to compares k samples using the
@@ -973,7 +974,7 @@ samples.")
     (propagated-inputs
      `(("r-kernlab" ,r-kernlab)
        ("r-matrix" ,r-matrix)))
-    (home-page "http://cran.r-project.org/web/packages/CVST")
+    (home-page "https://cran.r-project.org/web/packages/CVST")
     (synopsis "Fast cross-validation via sequential testing")
     (description
      "This package implements the fast cross-validation via sequential
@@ -1027,7 +1028,7 @@ variable models.")
      `(("r-cvst" ,r-cvst)
        ("r-kernlab" ,r-kernlab)
        ("r-matrix" ,r-matrix)))
-    (home-page "http://cran.r-project.org/web/packages/DRR")
+    (home-page "https://cran.r-project.org/web/packages/DRR")
     (synopsis "Dimensionality reduction via regression")
     (description
      "This package provides an implementation of dimensionality reduction via
@@ -1051,7 +1052,7 @@ regression using Kernel Ridge Regression.")
        ("r-lava" ,r-lava)
        ("r-rcpp" ,r-rcpp)
        ("r-survival" ,r-survival)))
-    (home-page "http://cran.r-project.org/web/packages/prodlim")
+    (home-page "https://cran.r-project.org/web/packages/prodlim")
     (synopsis "Product-limit estimation for censored event history analysis")
     (description
      "This package provides a fast and user-friendly implementation of
@@ -1123,7 +1124,7 @@ calendar objects.")
        ("r-sfsmisc" ,r-sfsmisc)))
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/ddalpha")
+    (home-page "https://cran.r-project.org/web/packages/ddalpha")
     (synopsis "Depth-Based classification and calculation of data depth")
     (description
      "This package contains procedures for depth-based supervised learning,
@@ -1172,7 +1173,7 @@ Core algorithms are executed in parallel on systems supporting OpenMP.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
-    (home-page "http://cran.r-project.org/web/packages/RcppRoll")
+    (home-page "https://cran.r-project.org/web/packages/RcppRoll")
     (synopsis "Efficient rolling and windowed operations")
     (description
      "This package provides fast and efficient routines for common rolling /
@@ -1200,7 +1201,7 @@ provided.")
        ("r-prodlim" ,r-prodlim)
        ("r-rpart" ,r-rpart)
        ("r-survival" ,r-survival)))
-    (home-page "http://cran.r-project.org/web/packages/ipred")
+    (home-page "https://cran.r-project.org/web/packages/ipred")
     (synopsis "Improved predictors")
     (description
      "This package provides improved predictive models by indirect
@@ -1225,7 +1226,7 @@ problems as well as resampling based estimators of prediction error.")
        ("r-lattice" ,r-lattice)
        ("r-mnormt" ,r-mnormt)
        ("r-nlme" ,r-nlme)))
-    (home-page "http://cran.r-project.org/web/packages/psych/")
+    (home-page "https://cran.r-project.org/web/packages/psych/")
     (synopsis "Procedures for psychological, psychometric, and personality research")
     (description
      "This package provides a general purpose toolbox for personality,
@@ -1456,7 +1457,7 @@ imputations.")
         (base32
          "1qac05z50618y4bw1d7yznsli1bv82s0g8h37iacrjrdkv87bmy7"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/truncnorm/")
+    (home-page "https://cran.r-project.org/web/packages/truncnorm/")
     (synopsis "Truncated normal distribution")
     (description "This package provides functions for the truncated normal
 distribution with mean equal to @code{mean} and standard deviation equal to
@@ -1479,7 +1480,7 @@ functions, as well as a random generation function.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-truncnorm" ,r-truncnorm)))
-    (home-page "http://cran.r-project.org/web/packages/Rsolnp/")
+    (home-page "https://cran.r-project.org/web/packages/Rsolnp/")
     (synopsis "General non-linear optimization")
     (description "The Rsolnp package implements a general non-linear augmented
 Lagrange multiplier method solver, a @dfn{sequential quadratic
@@ -1589,14 +1590,14 @@ training models for classification or ranking.")
 (define-public r-xts
   (package
     (name "r-xts")
-    (version "0.10-0")
+    (version "0.10-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xts" version))
        (sha256
         (base32
-         "1w7lxy3hbf005fvpzbwiznj8jbxi07s4189vbgxisd35l9a4v6q4"))))
+         "1j9ddh9v9081zrqlpylsk13fldilhjdyaw6r6pa726fhgnrsf8a2"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-zoo" ,r-zoo)))
     (native-inputs `(("gfortran" ,gfortran)))
@@ -1654,7 +1655,7 @@ where possible.")
     (propagated-inputs
      `(("r-boot" ,r-boot)
        ("r-mass" ,r-mass)))
-    (home-page "http://cran.r-project.org/web/packages/laeken/")
+    (home-page "https://cran.r-project.org/web/packages/laeken/")
     (synopsis "Estimation of indicators on social exclusion and poverty")
     (description "This package provides tools for the estimation of indicators
 on social exclusion and poverty, as well as an implementation of Pareto tail
@@ -1677,7 +1678,7 @@ modeling for empirical income distributions.")
      `(("r-colorspace" ,r-colorspace)
        ("r-lmtest" ,r-lmtest)
        ("r-mass" ,r-mass)))
-    (home-page "http://cran.r-project.org/web/packages/vcd/")
+    (home-page "https://cran.r-project.org/web/packages/vcd/")
     (synopsis "Visualizing categorical data")
     (description "This package provides visualization techniques, data sets,
 summary and inference procedures aimed particularly at categorical data.
@@ -1699,7 +1700,7 @@ Analysis with R\" by Michael Friendly and David Meyer (2015).")
         (base32
          "1bkl4a72l0k6gm82l3jxnib898z20cw17zg81jj39l9dn65rlmcq"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/ica/")
+    (home-page "https://cran.r-project.org/web/packages/ica/")
     (synopsis "Independent component analysis")
     (description "This package provides tools for @dfn{Independent Component
 Analysis} (ICA) using various algorithms: FastICA,
@@ -1766,7 +1767,7 @@ statistics, etc.")
         (base32
          "0ababcj87kx7860mica9y2ydlhskxmgj9n46crx036cila512jc2"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/scatterplot3d/")
+    (home-page "https://cran.r-project.org/web/packages/scatterplot3d/")
     (synopsis "3D scatter plot")
     (description "This package provides an implementation of scatter plots for
 plotting.  a three dimensional point cloud.")

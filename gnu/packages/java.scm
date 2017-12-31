@@ -2157,7 +2157,7 @@ is implemented.")
           (lambda _ (chdir "..") #t)))))
    (native-inputs
     `(("unzip" ,unzip)))
-   (home-page "http://tukaani.org/xz/java.html")
+   (home-page "https://tukaani.org/xz/java.html")
    (synopsis "Implementation of XZ data compression in pure Java")
    (description "This library aims to be a complete implementation of XZ data
 compression in pure Java.  Single-threaded streamed compression and

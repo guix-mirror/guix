@@ -252,7 +252,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/libunistring.scm			\
   %D%/packages/libusb.scm			\
   %D%/packages/libunwind.scm			\
-  %D%/packages/libupnp.scm			\
   %D%/packages/lighting.scm                     \
   %D%/packages/linux.scm			\
   %D%/packages/lirc.scm				\
@@ -558,7 +557,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-ld-new-dtags.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
-  %D%/packages/patches/borg-fix-archive-corruption-bug.patch	\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
@@ -570,8 +568,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ceph-disable-unittest-throttle.patch	\
   %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
   %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
-  %D%/packages/patches/chicken-CVE-2017-6949.patch		\
-  %D%/packages/patches/chicken-CVE-2017-11343.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
   %D%/packages/patches/clang-libc-search-path.patch		\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
@@ -749,6 +745,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icecat-bug-1348660-pt5.patch		\
   %D%/packages/patches/icecat-bug-1415133.patch			\
+  %D%/packages/patches/icecat-bug-1414945.patch			\
+  %D%/packages/patches/icecat-bug-1424373-pt2.patch		\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
@@ -801,6 +799,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgit2-0.25.1-mtime-0.patch		\
   %D%/packages/patches/libgdata-fix-tests.patch			\
   %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
+  %D%/packages/patches/libgxps-CVE-2017-11590.patch		\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
@@ -988,6 +987,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-networkx2-reproducible-build.patch	\
   %D%/packages/patches/python-nose-timer-drop-ordereddict.patch \
   %D%/packages/patches/python-parse-too-many-fields.patch	\
+  %D%/packages/patches/python-pillow-fix-failing-tests.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
   %D%/packages/patches/python-scikit-learn-fix-test-non-determinism.patch	\
@@ -996,7 +996,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pandas-skip-failing-tests.patch	\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
-  %D%/packages/patches/python-pillow-freetype-2.7-test-failure.patch	\
   %D%/packages/patches/python-pygit2-disable-network-tests.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \

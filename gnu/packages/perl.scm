@@ -5948,6 +5948,29 @@ cycle.  Functions called in the package itself will still be bound by their
 name, but they won't show up as methods on your class or instances.")
     (license (package-license perl))))
 
+(define-public perl-net-dns-native
+  (package
+    (name "perl-net-dns-native")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/O/OL/OLEG/Net-DNS-Native-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "12bsv5jkic3q4arpzk6dda35didkn445v658j87rmi540dpnac85"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Net-DNS-Native/")
+    (synopsis "Non-blocking system DNS resolver")
+    (description
+     "This class provides several methods for host name resolution.  It is
+designed to be used with event loops.  Names are resolved by your system's
+native @code{getaddrinfo(3)} implementation, called in a separate thread to
+avoid blocking the entire application.  Threading overhead is limited by using
+system threads instead of Perl threads.")
+    (license perl-license)))
+
 (define-public perl-net-idn-encode
   (package
     (name "perl-net-idn-encode")
@@ -6422,19 +6445,19 @@ for a given module is comprehensive.")
 (define-public perl-pod-simple
   (package
     (name "perl-pod-simple")
-    (version "3.31")
+    (version "3.35")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/M/MA/MARCGREEN/"
+              (uri (string-append "mirror://cpan/authors/id/K/KH/KHW/"
                                   "Pod-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "04705pcs31s71vpmnpfdy8ds0q700q4cs2dlyssyrdjbvx3ymq3l"))))
+                "0gg11ibbc02l2aw0bsv4jx0jax8z0apgfy3p5csqnvhlsb6218cr"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Pod-Simple//")
+    (home-page "http://search.cpan.org/dist/Pod-Simple/")
     (synopsis "Parsing library for text in Pod format")
-    (description "Pod::Simple is a Perl library for parsing text in
-the Pod (plain old documentation) markup language that is typically
+    (description "@code{Pod::Simple} is a Perl library for parsing text in
+the @dfn{Pod} (plain old documentation) markup language that is typically
 used for writing documentation for Perl and for Perl modules.")
     (license (package-license perl))))
 

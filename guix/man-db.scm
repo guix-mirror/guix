@@ -187,7 +187,8 @@
 
 (define (man-files directory)
   "Return the list of man pages found under DIRECTORY, recursively."
-  (find-files directory "\\.[0-9][a-z]?(\\.gz)?$"))
+  ;; Filter the list to ensure that broken symlinks are excluded.
+  (filter file-exists? (find-files directory "\\.[0-9][a-z]?(\\.gz)?$")))
 
 (define (mandb-entries directory)
   "Return mandb entries for the man pages found under DIRECTORY, recursively."

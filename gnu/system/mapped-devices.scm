@@ -22,23 +22,32 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix modules)
+  #:use-module (guix i18n)
+  #:use-module ((guix utils)
+                #:select (source-properties->location
+                          &error-location))
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system uuid)
+  #:autoload   (gnu build file-systems) (find-partition-by-luks-uuid)
   #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
   #:autoload   (gnu packages linux) (mdadm-static)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:export (mapped-device
             mapped-device?
             mapped-device-source
             mapped-device-target
             mapped-device-type
+            mapped-device-location
 
             mapped-device-kind
             mapped-device-kind?
             mapped-device-kind-open
             mapped-device-kind-close
+            mapped-device-kind-check
 
             device-mapping-service-type
             device-mapping-service
@@ -58,14 +67,18 @@
   mapped-device?
   (source    mapped-device-source)                ;string | list of strings
   (target    mapped-device-target)                ;string
-  (type      mapped-device-type))                 ;<mapped-device-kind>
+  (type      mapped-device-type)                  ;<mapped-device-kind>
+  (location  mapped-device-location
+             (default (current-source-location)) (innate)))
 
 (define-record-type* <mapped-device-type> mapped-device-kind
   make-mapped-device-kind
   mapped-device-kind?
   (open      mapped-device-kind-open)             ;source target -> gexp
   (close     mapped-device-kind-close             ;source target -> gexp
-             (default (const #~(const #f)))))
+             (default (const #~(const #f))))
+  (check     mapped-device-kind-check             ;source -> Boolean
+             (default (const #t))))
 
 
 ;;;
@@ -138,11 +151,26 @@
   #~(zero? (system* #$(file-append cryptsetup-static "/sbin/cryptsetup")
                     "close" #$target)))
 
+(define (check-luks-device md)
+  "Ensure the source of MD is valid."
+  (let ((source (mapped-device-source md)))
+    (or (not (uuid? source))
+        (not (zero? (getuid)))
+        (find-partition-by-luks-uuid (uuid-bytevector source))
+        (raise (condition
+                (&message
+                 (message (format #f (G_ "no LUKS partition with UUID '~a'")
+                                  (uuid->string source))))
+                (&error-location
+                 (location (source-properties->location
+                            (mapped-device-location md)))))))))
+
 (define luks-device-mapping
   ;; The type of LUKS mapped devices.
   (mapped-device-kind
    (open open-luks-device)
-   (close close-luks-device)))
+   (close close-luks-device)
+   (check check-luks-device)))
 
 (define (open-raid-device sources target)
   "Return a gexp that assembles SOURCES (a list of devices) to the RAID device

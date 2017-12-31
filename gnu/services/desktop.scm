@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages mate)
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix store)
@@ -81,6 +83,11 @@
             gnome-desktop-configuration?
             gnome-desktop-service
             gnome-desktop-service-type
+
+            mate-desktop-configuration
+            mate-desktop-configuration?
+            mate-desktop-service
+            mate-desktop-service-type
 
             xfce-desktop-configuration
             xfce-desktop-configuration?
@@ -816,6 +823,32 @@ rules."
   "Return a service that adds the @code{gnome} package to the system profile,
 and extends polkit with the actions from @code{gnome-settings-daemon}."
   (service gnome-desktop-service-type config))
+
+;; MATE Desktop service.
+;; TODO: Add mate-screensaver.
+
+(define-record-type* <mate-desktop-configuration> mate-desktop-configuration
+  make-mate-desktop-configuration
+  mate-desktop-configuration
+  (mate-package mate-package (default mate)))
+
+(define mate-desktop-service-type
+  (service-type
+   (name 'mate-desktop)
+   (extensions
+    (list (service-extension polkit-service-type
+                             (compose list
+                                      (package-direct-input-selector
+                                       "mate-settings-daemon")
+                                      mate-package))
+          (service-extension profile-service-type
+                             (compose list
+                                      mate-package))))))
+
+(define* (mate-desktop-service #:key (config (mate-desktop-configuration)))
+  "Return a service that adds the @code{mate} package to the system profile,
+and extends polkit with the actions from @code{mate-settings-daemon}."
+  (service mate-desktop-service-type config))
 
 
 ;;;

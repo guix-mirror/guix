@@ -27,28 +27,67 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages attr)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages djvu)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages enchant)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages iso-codes)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages messaging)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages tex)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
+
+(define-public mate-common
+  (package
+    (name "mate-common")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1005laf3z1h8qczm7pmwr40r842665cv6ykhjg7r93vldra48z6p"))))
+    (build-system gnu-build-system)
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Common files for development of MATE packages")
+    (description
+     "Mate Common includes common files and macros used by
+MATE applications.")
+    (license license:gpl3+)))
 
 (define-public mate-icon-theme
   (package
@@ -72,6 +111,44 @@
     (description
      "This package contains the default icon theme used by the MATE desktop.")
     (license license:lgpl3+)))
+
+(define-public mate-icon-theme-faenza
+  (package
+    (name "mate-icon-theme-faenza")
+    (version "1.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pub.mate-desktop.org/releases/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0vc3wg9l5yrxm0xmligz4lw2g3nqj1dz8fwv90xvym8pbjds2849"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (invoke "sh" "autogen.sh"))))))
+    (native-inputs
+     `(("autoconf" ,(autoconf-wrapper))
+       ("automake" ,automake)
+       ("intltool" ,intltool)
+       ("icon-naming-utils" ,icon-naming-utils)
+       ("libtool" ,libtool)
+       ("mate-common" ,mate-common)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "MATE desktop environment icon theme faenza")
+    (description
+     "Icon theme using Faenza and Faience icon themes and some
+customized icons for MATE.  Furthermore it includes some icons
+from Mint-X-F and Faenza-Fresh icon packs.")
+    (license license:gpl2+)))
 
 (define-public mate-themes
   (package
@@ -235,6 +312,29 @@ configurations (profiles).")
         (base32
          "0i0xq6041x2qmb26x9bawx0qpfkgjn6x9w3phnm9s7rc4s0z20ll"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-elogind"
+                               "--disable-schemas-compile")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Use elogind instead of systemd.
+             (substitute* "configure"
+               (("libsystemd-login")
+                "libelogind")
+               (("systemd") "elogind"))
+             (substitute* "mate-session/gsm-systemd.c"
+               (("#include <systemd/sd-login.h>")
+                "#include <elogind/sd-login.h>"))
+             ;; Remove uses of the systemd journal.
+             (substitute* "mate-session/main.c"
+               (("#ifdef HAVE_SYSTEMD") "#if 0"))
+             (substitute* "mate-session/gsm-manager.c"
+               (("#ifdef HAVE_SYSTEMD") "#if 0"))
+             (substitute* "mate-session/gsm-autostart-app.c"
+               (("#ifdef HAVE_SYSTEMD") "#if 0"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
@@ -243,6 +343,7 @@ configurations (profiles).")
     (inputs
      `(("gtk+" ,gtk+)
        ("dbus-glib" ,dbus-glib)
+       ("elogind" ,elogind)
        ("libsm" ,libsm)
        ("mate-desktop" ,mate-desktop)))
     (home-page "https://mate-desktop.org/")
@@ -583,6 +684,111 @@ the Window List, the Window Selector, the Notification Area, the Clock and the
 infamous 'Wanda the Fish'.")
     (license (list license:gpl2+ license:lgpl2.0+))))
 
+(define-public atril
+  (package
+    (name "atril")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1wl332v80c0nzz7nw36d1pfmbiibvl3l0i4d25ihg6mg9wbc0145"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "--with-openjpeg="
+                                              (assoc-ref %build-inputs "openjpeg"))
+                               "--enable-introspection"
+                               "--with-gtk=3.0"
+                               "--disable-schemas-compile"
+                               ;; FIXME: Enable build of Caja extensions.
+                               "--disable-caja")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-mathjax-path
+           (lambda _
+             (let* ((mathjax (assoc-ref %build-inputs "js-mathjax"))
+                    (mathjax-path (string-append mathjax
+                                                 "/share/javascript/mathjax")))
+               (substitute* "backend/epub/epub-document.c"
+                 (("/usr/share/javascript/mathjax")
+                  mathjax-path)))
+             #t))
+         (add-after 'unpack 'fix-introspection-install-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* '("configure")
+                 (("\\$\\(\\$PKG_CONFIG --variable=girdir gobject-introspection-1.0\\)")
+                  (string-append "\"" out "/share/gir-1.0/\""))
+                 (("\\$\\(\\$PKG_CONFIG --variable=typelibdir gobject-introspection-1.0\\)")
+                  (string-append out "/lib/girepository-1.0/")))
+               #t)))
+         (add-before 'install 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "data/Makefile"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("yelp-tools" ,yelp-tools)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("xmllint" ,libxml2)
+       ("zlib" ,zlib)))
+    (inputs
+     `(("atk" ,atk)
+       ("cairo" ,cairo)
+       ("caja" ,caja)
+       ("dconf" ,dconf)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("djvulibre" ,djvulibre)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("ghostscript" ,ghostscript)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("js-mathjax" ,js-mathjax)
+       ("libcanberra" ,libcanberra)
+       ("libsecret" ,libsecret)
+       ("libspectre" ,libspectre)
+       ("libtiff" ,libtiff)
+       ("libx11" ,libx11)
+       ("libice" ,libice)
+       ("libsm" ,libsm)
+       ("libgxps" ,libgxps)
+       ("libjpeg" ,libjpeg)
+       ("libxml2" ,libxml2)
+       ("dogtail" ,python2-dogtail)
+       ("shared-mime-info" ,shared-mime-info)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("libgnome-keyring" ,libgnome-keyring)
+       ("libarchive" ,libarchive)
+       ("marco" ,marco)
+       ("nettle" ,nettle)
+       ("openjpeg" ,openjpeg-1)
+       ("pango" ,pango)
+       ;;("texlive" ,texlive)
+       ;; TODO:
+       ;;   Build libkpathsea as a shared library for DVI support.
+       ;; ("libkpathsea" ,texlive-bin)
+       ("poppler" ,poppler)
+       ("webkitgtk" ,webkitgtk)))
+    (home-page "https://mate-desktop.org")
+    (synopsis "Document viewer for Mate")
+    (description
+     "Document viewer for Mate")
+    (license license:gpl2)))
+
 (define-public caja
   (package
     (name "caja")
@@ -626,6 +832,10 @@ infamous 'Wanda the Fish'.")
        ("libxml2" ,libxml2)
        ("mate-desktop" ,mate-desktop)
        ("startup-notification" ,startup-notification)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CAJA_EXTENSIONDIR")
+            (files (list "lib/caja/extensions-2.0/**")))))
     (home-page "https://mate-desktop.org/")
     (synopsis "File manager for the MATE desktop")
     (description
@@ -636,6 +846,61 @@ icons on the MATE desktop.  It works on local and remote filesystems.")
     ;; There is a note about a TRADEMARKS_NOTICE file in COPYING which
     ;; does not exist. It is safe to assume that this is of no concern
     ;; for us.
+    (license license:gpl2+)))
+
+(define-public caja-extensions
+  (package
+    (name "caja-extensions")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0hgala7zkfsa60jflq3s4n9yd11dhfdcla40l83cmgc3r1az7cmw"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-sendto"
+                               ;; TODO: package "gupnp" to enable 'upnp', package
+                               ;; "gksu" to enable 'gksu'.
+                               (string-append "--with-sendto-plugins=removable-devices,"
+                                              "caja-burn,emailclient,pidgin,gajim")
+                               "--enable-image-converter"
+                               "--enable-open-terminal" "--enable-share"
+                               "--enable-wallpaper" "--enable-xattr-tags"
+                               (string-append "--with-cajadir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/caja/extensions-2.0/"))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("attr" ,attr)
+       ("brasero" ,brasero)
+       ("caja" ,caja)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("gajim" ,gajim) ;runtime only?
+       ("gtk+" ,gtk+)
+       ("imagemagick" ,imagemagick)
+       ("graphicsmagick" ,graphicsmagick)
+       ("mate-desktop" ,mate-desktop)
+       ("pidgin" ,pidgin) ;runtime only?
+       ("startup-notification" ,startup-notification)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Extensions for the File manager Caja")
+    (description
+     "Caja is the official file manager for the MATE desktop.
+It allows for browsing directories, as well as previewing files and launching
+applications associated with them.  Caja is also responsible for handling the
+icons on the MATE desktop.  It works on local and remote filesystems.")
     (license license:gpl2+)))
 
 (define-public mate-control-center
@@ -754,6 +1019,505 @@ some users; these users may want to investigate other available window managers
 for use with MATE or as a standalone window manager.")
     (license license:gpl2+)))
 
+(define-public mate-user-guide
+  (package
+    (name "mate-user-guide")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0f3b46r9a3cywm7rpj08xlkfnlfr9db58xfcpix8i33qp50fxqmb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-desktop-file
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((yelp (assoc-ref inputs "yelp")))
+               (substitute* "mate-user-guide.desktop.in.in"
+                 (("yelp")
+                  (string-append yelp "/bin/yelp"))))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("gettext" ,gettext-minimal)
+       ("yelp-tools" ,yelp-tools)
+       ("yelp-xsl" ,yelp-xsl)))
+    (inputs
+     `(("yelp" ,yelp)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "User Documentation for Mate software")
+    (description
+     "MATE User Guide is a collection of documentation which details
+general use of the MATE Desktop environment.  Topics covered include
+sessions, panels, menus, file management, and preferences.")
+    (license (list license:fdl1.1+ license:gpl2+))))
+
+(define-public mate-calc
+  (package
+    (name "mate-calc")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0qfs6kx2nymbn6j3mnzgvk8p54ghc78jslsf4wjqsdq021qyl0ly"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("atk" ,atk)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libxml2" ,libxml2)
+       ("libcanberra" ,libcanberra)
+       ("pango" ,pango)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Calculator for MATE")
+    (description
+     "Mate Calc is the GTK+ calculator application for the MATE Desktop.")
+    (license license:gpl2+)))
+
+(define-public mate-backgrounds
+  (package
+    (name "mate-backgrounds")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "06q8ksjisijps2wn959arywsimhzd3j35mqkr048c26ck24d60zi"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Calculator for MATE")
+    (description
+     "This package contains a collection of graphics files which
+can be used as backgrounds in the MATE Desktop environment.")
+    (license license:gpl2+)))
+
+(define-public mate-netbook
+  (package
+    (name "mate-netbook")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0zj4x9qis8dw0irxzb4va1189k8bqbvymxq3h7phnjwvr1m983gf"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libfakekey" ,libfakekey)
+       ("libwnck" ,libwnck)
+       ("libxtst" ,libxtst)
+       ("libx11" ,libx11)
+       ("mate-panel" ,mate-panel)
+       ("xproto" ,xproto)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Tool for MATE on Netbooks")
+    (description
+     "Mate Netbook is a simple window management tool which:
+
+@enumerate
+@item Allows you to set basic rules for a window type, such as maximise|undecorate
+@item Allows exceptions to the rules, based on string matching for window name
+and window class.
+@item Allows 'reversing' of rules when the user manually changes something:
+Re-decorates windows on un-maximise.
+@end enumerate\n")
+    (license license:gpl3+)))
+
+(define-public mate-screensaver
+  (package
+    (name "mate-screensaver")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0dfi10faf1fnvrm7c7wnfqg35ygq09ws1vjyv8394jlf0nn39g9j"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; FIXME: There is a permissions problem with screen locking
+       ;; which effectively locks you out completely. Enable locking
+       ;; once this has been fixed.
+       (list "--enable-locking" "--with-kbd-layout-indicator"
+             "--with-xf86gamma-ext" "--enable-pam"
+             "--disable-schemas-compile" "--without-console-kit")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dbus-dir (string-append out "/share/dbus-1/services")))
+             (setenv "SHELL" (which "sh"))
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (substitute* "configure"
+               (("dbus-1") ""))))))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,(autoconf-wrapper))
+       ("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("kbproto" ,kbproto)
+       ("mate-common" ,mate-common)
+       ("pkg-config" ,pkg-config)
+       ("randrproto" ,randrproto)
+       ("renderproto" ,renderproto)
+       ("scrnsaverproto" ,scrnsaverproto)
+       ("which" ,which)
+       ("xextpro" ,xextproto)
+       ("xproto" ,xproto)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("dconf" ,dconf)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("libcanberra" ,libcanberra)
+       ("libglade" ,libglade)
+       ("libmatekbd" ,libmatekbd)
+       ("libnotify" ,libnotify)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxklavier" ,libxklavier)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("libxxf86vm" ,libxxf86vm)
+       ("linux-pam" ,linux-pam)
+       ("mate-desktop" ,mate-desktop)
+       ("mate-menus" ,mate-menus)
+       ("pango" ,pango)
+       ("startup-notification" ,startup-notification)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Screensaver for MATE")
+    (description
+     "MATE backgrounds package contains a collection of graphics files which
+can be used as backgrounds in the MATE Desktop environment.")
+    (license license:gpl2+)))
+
+(define-public mate-utils
+  (package
+    (name "mate-utils")
+    (version "1.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0wr395dqfigj19ps0d76ycgwfljl9xxgs1a1g5wx6kcz5mvhzn5v"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("libice" ,libice)
+       ("libsm" ,libsm)
+       ("pkg-config" ,pkg-config)
+       ("scrollkeeper" ,scrollkeeper)
+       ("xextpro" ,xextproto)
+       ("xproto" ,xproto)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("atk" ,atk)
+       ("cairo" ,cairo)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("libcanberra" ,libcanberra)
+       ("libgtop" ,libgtop)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("mate-panel" ,mate-panel)
+       ("pango" ,pango)
+       ("zlib" ,zlib)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Utilities for the MATE Desktop")
+    (description
+     "Mate Utilities for the MATE Desktop containing:
+
+@enumerate
+@item mate-system-log
+@item mate-search-tool
+@item mate-dictionary
+@item mate-screenshot
+@item mate-disk-usage-analyzer
+@end enumerate\n")
+    (license (list license:gpl2
+                   license:fdl1.1+
+                   license:lgpl2.1))))
+
+(define-public eom
+  (package
+    (name "eom")
+    (version "1.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "00ns7g7qykakc89lijrw2vwy9x9ijqiyvmnd4sw0j6py90zs8m87"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gtk-doc" ,gtk-doc)
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("atk" ,atk)
+       ("cairo" ,cairo)
+       ("dconf" ,dconf)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("exempi" ,exempi)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libpeas" ,libpeas)
+       ("libxml2" ,libxml2)
+       ("libexif" ,libexif)
+       ("libjpeg" ,libjpeg)
+       ("librsvg" ,librsvg)
+       ("lcms" ,lcms)
+       ("mate-desktop" ,mate-desktop)
+       ("pango" ,pango)
+       ("shared-mime-info" ,shared-mime-info)
+       ("startup-notification" ,startup-notification)
+       ("zlib" ,zlib)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Eye of MATE")
+    (description
+     "Eye of MATE is the Image viewer for the MATE Desktop.")
+    (license (list license:gpl2))))
+
+(define-public engrampa
+  (package
+    (name "engrampa")
+    (version "1.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0d98zhqqc7qdnxcf0195kd04xmhijc0w2qrn6q61zd0daiswnv98"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-schemas-compile"
+                               "--disable-run-in-place"
+                               "--enable-magic"
+                               "--enable-packagekit"
+                               (string-append "--with-cajadir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/caja/extensions-2.0/"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "data/Makefile"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("caja" ,caja)
+       ("file" ,file)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("json-glib" ,json-glib)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libsm" ,libsm)
+       ("packagekit" ,packagekit)
+       ("pango" ,pango)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Archive Manager for MATE")
+    (description
+     "Engrampa is the archive manager for the MATE Desktop.")
+    (license license:gpl2)))
+
+(define-public pluma
+  (package
+    (name "pluma")
+    (version "1.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1z0938yiygxipj2a77n9dv8v4253snrc5gbbnarcnim9xba2j3zz"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(; Tests can not succeed.
+       ;; https://github.com/mate-desktop/mate-text-editor/issues/33
+       #:tests? #f))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gtk-doc" ,gtk-doc)
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("atk" ,atk)
+       ("cairo" ,cairo)
+       ("enchant" ,enchant)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("iso-codes" ,iso-codes)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libsm" ,libsm)
+       ("libpeas" ,libpeas)
+       ("libxml2" ,libxml2)
+       ("libice" ,libice)
+       ("packagekit" ,packagekit)
+       ("pango" ,pango)
+       ("python-2" ,python-2)
+       ("scrollkeeper" ,scrollkeeper)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "Text Editor for MATE")
+    (description
+     "Pluma is the text editor for the MATE Desktop.")
+    (license license:gpl2)))
+
+(define-public mate-system-monitor
+  (package
+    (name "mate-system-monitor")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1wcvrl4lfnjkhywb311p29prf1qiab6iynb6q1fgfsl6za8hsz48"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("yelp-tools" ,yelp-tools)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("glibmm" ,glibmm)
+       ("gtkmm" ,gtkmm)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("libsigc++" ,libsigc++)
+       ("libcanberra" ,libcanberra)
+       ("libxml2" ,libxml2)
+       ("libwnck" ,libwnck)
+       ("libgtop" ,libgtop)
+       ("librsvg" ,librsvg)
+       ("polkit" ,polkit)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "System Monitor for MATE")
+    (description
+     "Mate System Monitor provides a tool for for the
+MATE Desktop to monitor your system resources and usage.")
+    (license license:gpl2)))
+
+(define-public mate-polkit
+  (package
+    (name "mate-polkit")
+    (version "1.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "15vf2hnyjg8zsw3iiwjwi497yygkmvpnn6w1hik7dfw4a621w0gc"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("accountsservice" ,accountsservice)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("polkit" ,polkit)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "DBus specific service for MATE")
+    (description
+     "MATE Polkit is a MATE specific DBUS service that is
+used to bring up authentication dialogs.")
+    (license license:lgpl2.1)))
+
 (define-public mate
   (package
     (name "mate")
@@ -773,14 +1537,18 @@ for use with MATE or as a standalone window manager.")
     (inputs
      ;; TODO: Add more packages
      `(("at-spi2-core"              ,at-spi2-core)
+       ("atril"                     ,atril)
        ("caja"                      ,caja)
        ("dbus"                      ,dbus)
        ("dconf"                     ,dconf)
        ("desktop-file-utils"        ,desktop-file-utils)
+       ("engrampa"                  ,engrampa)
+       ("eom"                       ,eom)
        ("font-cantarell"            ,font-cantarell)
        ("glib-networking"           ,glib-networking)
        ("gnome-keyring"             ,gnome-keyring)
        ("gvfs"                      ,gvfs)
+       ("hicolor-icon-theme"        ,hicolor-icon-theme)
        ("libmatekbd"                ,libmatekbd)
        ("libmateweather"            ,libmateweather)
        ("libmatemixer"              ,libmatemixer)
@@ -796,6 +1564,15 @@ for use with MATE or as a standalone window manager.")
        ("mate-control-center"       ,mate-control-center)
        ("mate-media"                ,mate-media)
        ("mate-applets"              ,mate-applets)
+       ("mate-user-guide"           ,mate-user-guide)
+       ("mate-calc"                 ,mate-calc)
+       ("mate-backgrounds"          ,mate-backgrounds)
+       ("mate-netbook"              ,mate-netbook)
+       ("mate-utils"                ,mate-utils)
+       ("mate-polkit"               ,mate-polkit)
+       ("mate-system-monitor"       ,mate-system-monitor)
+       ("mate-utils"                ,mate-utils)
+       ("pluma"                     ,pluma)
        ("pinentry-gnome3"           ,pinentry-gnome3)
        ("pulseaudio"                ,pulseaudio)
        ("shared-mime-info"          ,shared-mime-info)

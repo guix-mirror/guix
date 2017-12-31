@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1878,7 +1879,7 @@ sparse system of linear equations A x = b using Guassian elimination.")
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/quadprog")
+    (home-page "https://cran.r-project.org/web/packages/quadprog")
     (synopsis "Functions to solve quadratic programming problems")
     (description
      "This package contains routines and documentation for solving quadratic
@@ -1897,7 +1898,7 @@ programming problems.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)))
-    (home-page "http://cran.r-project.org/web/packages/pracma")
+    (home-page "https://cran.r-project.org/web/packages/pracma")
     (synopsis "Practical numerical math functions")
     (description "This package provides functions for numerical analysis and
 linear algebra, numerical optimization, differential equations, plus some
@@ -2634,7 +2635,6 @@ parts of it.")
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
-             "NO_LAPACK=1"
              ;; Build the library for all supported CPUs.  This allows
              ;; switching CPU targets at runtime with the environment variable
              ;; OPENBLAS_CORETYPE=<type>, where "type" is a supported CPU type.
@@ -2655,11 +2655,21 @@ parts of it.")
                    '("TARGET=ARMV8"))
                   (else '()))))
        ;; no configure script
-       #:phases (alist-delete 'configure %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'set-extralib
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Get libgfortran found when building in utest.
+             (setenv "FEXTRALIB"
+                     (string-append "-L" (assoc-ref inputs "fortran-lib")
+                                    "/lib"))
+             #t)))))
     (inputs
-     `(("fortran" ,gfortran)))
+     `(("fortran-lib" ,gfortran "lib")))
     (native-inputs
      `(("cunit" ,cunit)
+       ("fortran" ,gfortran)
        ("perl" ,perl)))
     (home-page "http://www.openblas.net/")
     (synopsis "Optimized BLAS library based on GotoBLAS")

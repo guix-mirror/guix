@@ -91,11 +91,19 @@
           (grep* "sourceLibrary" "dub.sdl") ; note: format is different!
           (grep* "sourceLibrary" "dub.json"))
     #t
-    (zero? (apply system* `("dub" "build" ,@dub-build-flags)))))
+    (let ((status (zero? (apply system* `("dub" "build" ,@dub-build-flags)))))
+      (substitute* ".dub/dub.json"
+        (("\"lastUpgrade\": \"[^\"]*\"")
+         "\"lastUpgrade\": \"1970-01-01T00:00:00.0000000\""))
+      status)))
 
 (define* (check #:key tests? #:allow-other-keys)
   (if tests?
-    (zero? (system* "dub" "test"))
+    (let ((status (zero? (system* "dub" "test"))))
+      (substitute* ".dub/dub.json"
+        (("\"lastUpgrade\": \"[^\"]*\"")
+         "\"lastUpgrade\": \"1970-01-01T00:00:00.0000000\""))
+      status)
     #t))
 
 (define* (install #:key inputs outputs #:allow-other-keys)

@@ -1548,7 +1548,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.3.3")
+    (version "0.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1556,7 +1556,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "0mjb2yb454389ds2kr5rkjkl21r78z4c0f88ivf4g471yzg279mc"))))
+                "152zf9vkafmnnf7by5armg165npznb961csgnvr8iwdj3smvivjf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3237,19 +3237,33 @@ automatically.")
 (define-public emacs-ivy
   (package
     (name "emacs-ivy")
-    (version "0.9.1")
+    (version "0.10.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/abo-abo/swiper/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abo-abo/swiper.git")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "1abi1rvjarwfxxylpx8qlhck0kbavnj0nmlaaizk9q5zr02xfx1j"))))
+         "14vnigqb5c3yi4q9ysw1fiwdqyqwyklqpb9wnjf81chm7s2mshnr"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info")))
+               (with-directory-excursion "doc"
+                 (unless (zero? (system* "makeinfo" "ivy.texi"))
+                   (error "makeinfo failed"))
+                 (install-file "ivy.info" info))))))))
     (propagated-inputs
      `(("emacs-hydra" ,emacs-hydra)))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
     (home-page "http://oremacs.com/swiper/")
     (synopsis "Incremental vertical completion for Emacs")
     (description
@@ -4097,7 +4111,7 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.15.0")
+    (version "0.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4106,7 +4120,7 @@ target will call @code{compile} on it.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0j7qjcslh8mnxrr2m8qrscyq9ry240j5jd9dysbvih126lxisf12"))))
+                "1j5hlmi14ypszv1f9nvq0jjlz7i742flg0ny3055l7i4x089xx6g"))))
     (build-system emacs-build-system)
     (arguments
      '(#:exclude                        ; Don't exclude 'cider-test.el'.
@@ -4292,14 +4306,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "20171205")
+    (version "20171224")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0a1rm94ci47jf5579sxscily680ysmy3hnxjcs073n45nk76za04"))))
+                "1s995y3aizzaldpqz6jg73w8c9kmdbn30chkslwylg3p98as1jsj"))))
     (build-system emacs-build-system)
     (home-page "http://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4319,7 +4333,7 @@ reproducible research.")
                                   (package-version emacs-org) ".tar"))
               (sha256
                (base32
-                "1y61csa284gy8l0fj0mv67mkm4fsi4lz401987qp6a6z260df4n5"))))
+                "0lamkw5npcm0640c36zqdv8py5rbpr0pk1i4qdmfgrngy64v9f75"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -5304,6 +5318,29 @@ constructs.")
     (description "cnfonts is a Chinese fonts setup tool, allowing for easy
 configuration of Chinese fonts.")
     (license license:gpl2+)))
+
+(define-public emacs-php-mode
+  (package
+    (name "emacs-php-mode")
+    (version "20171225.342")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://melpa.org/packages/php-mode-"
+                    version ".tar"))
+              (sha256
+               (base32
+                "1zz682f34v4wsm2dyj1gnrnvsrqdq1cy7j8p6cvc398w2fziyg3q"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ejmr/php-mode")
+    (synopsis "Major mode for editing PHP code")
+    (description "@code{php-mode} is a major mode for editing PHP source
+code.  It's an extension of C mode; thus it inherits all C mode's navigation
+functionality.  But it colors according to the PHP grammar and indents
+according to the PEAR coding guidelines.  It also includes a couple handy
+IDE-type features such as documentation search and a source and class
+browser.")
+    (license license:gpl3+)))
 
 (define-public emacs-pos-tip
   (package

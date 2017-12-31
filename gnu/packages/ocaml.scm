@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1250,14 +1251,14 @@ coverage information.")
 (define-public ocaml-bitstring
   (package
     (name "ocaml-bitstring")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/xguerin/bitstring"
                                   "/archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "0miw4banfpmx4kxrckpqr57b1fcmsqdmspyjx6gqjd4kghm4l7xj"))
+                "0vy8ibrxccii1jbsk5q6yh1kxjigqvi7lhhcmizvd5gfhf7mfyc8"))
               (patches (search-patches "ocaml-bitstring-fix-configure.patch"))))
     (build-system ocaml-build-system)
     (native-inputs
@@ -1651,14 +1652,14 @@ lets the client choose the concrete timeline.")
 (define-public ocaml-ssl
   (package
     (name "ocaml-ssl")
-    (version "0.5.3")
+    (version "0.5.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/savonet/ocaml-ssl/archive/"
                             version ".tar.gz"))
         (sha256 (base32
-                  "1ds5gzyzpcgwn7h40dmjkll7g990cr82ay05b2a7nrclvv6fdpg8"))))
+                  "15p7652cvzdrlqxc1af11mg07wasxr1fsaj44gcmmh6bmav7wfzq"))))
     (build-system ocaml-build-system)
     (arguments `(#:tests? #f
                  #:make-flags (list "OCAMLFIND_LDCONF=ignore")
@@ -1677,7 +1678,9 @@ lets the client choose the concrete timeline.")
     (propagated-inputs `(("openssl" ,openssl)))
     (home-page "https://github.com/savonet/ocaml-ssl/")
     (synopsis "OCaml bindings for OpenSSL")
-    (description "OCaml bindings for OpenSSL.")
+    (description
+     "OCaml-SSL is a set of bindings for OpenSSL, a library for communicating
+through Transport Layer Security (@dfn{TLS}) encrypted connections.")
     (license license:lgpl2.1)))
 
 (define-public ocaml-lwt
@@ -3582,7 +3585,7 @@ library is currently designed for Unicode Standard 3.2.")
 (define-public ocaml-jbuilder
   (package
     (name "ocaml-jbuilder")
-    (version "1.0+beta14")
+    (version "1.0+beta16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3591,7 +3594,7 @@ library is currently designed for Unicode Standard 3.2.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "06jdcb4jmmp4wqyf9cm59jzgj0mxkpdzd9q3728gdxc1sz3v1sz0"))))
+                "0gcy52y0mkg450yxwszp3lww303a1154566r8jb4hh5l61dh4dwj"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
@@ -3695,7 +3698,7 @@ instead of bindings to a C library.")
 (define-public ocaml-utop
   (package
     (name "ocaml-utop")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/diml/utop/archive/"
@@ -3703,7 +3706,7 @@ instead of bindings to a C library.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1v22bzw1vgwbbmpvi7lkyp2r59w5mag85rmqplb4fwik78x7k4ss"))))
+                "0rglznh4prcix8spi3f060jz2gngk7x8vkd291fxs10b88aqcpxf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

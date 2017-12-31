@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages bash)
@@ -224,7 +225,7 @@ contents and more.")
 (define-public rage
   (package
     (name "rage")
-    (version "0.2.1")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -233,8 +234,8 @@ contents and more.")
                 version ".tar.xz"))
               (sha256
                (base32
-                "06kbgcnbhl9clhdl7k983m4d0n6ggsl4qvizzi1nrp8c7np87fix"))))
-    (build-system gnu-build-system)
+                "0gfzdd4jg78bkmj61yg49w7bzspl5m1nh6agqgs8k7qrq9q26xqy"))))
+    (build-system meson-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -362,15 +363,15 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
 (define-public edi
   (package
     (name "edi")
-    (version "0.5.1")
+    (version "0.6.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://github.com/ajwillia-ms/edi/releases/"
-                            "download/v" version "/edi-" version ".tar.bz2"))
+        (uri (string-append "https://download.enlightenment.org/rel/apps/edi/"
+                            name "-" version ".tar.xz"))
         (sha256
          (base32
-          "0k0ymi9ilhkypqb9pniv365kh3jgbl2g2k0ylvsmisn2jhbqk49a"))))
+          "0iqkah327ms5m7k054hcik2l9v68i4mg9yy52brprfqpd5jk7pw8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -378,11 +379,9 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))
-       #:configure-flags '("--with-tests=coverage")))
+       #:tests? #f)) ; tests require running dbus service
     (native-inputs
-     `(("check" ,check)
-       ("lcov" ,lcov)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("clang" ,clang)
        ("efl" ,efl)))

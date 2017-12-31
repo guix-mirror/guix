@@ -102,7 +102,7 @@ all the files it generates a report.")
         ("python-pbr" ,python-pbr)
         ;; Tests.
         ("python-oslotest" ,python-oslotest)))
-    (home-page "http://www.openstack.org/")
+    (home-page "https://www.openstack.org/")
     (synopsis
       "Find deprecated patterns and strategies in Python code")
     (description
@@ -172,7 +172,7 @@ guidelines}.")
         ("python-pbr" ,python-pbr)
         ("python-sphinx" ,python-sphinx)
         ("python-testtools" ,python-testtools)))
-    (home-page "http://www.openstack.org/")
+    (home-page "https://www.openstack.org/")
     (synopsis "Mock object framework for Python")
     (description
       "Mox3 is an unofficial port of the Google mox framework
@@ -208,7 +208,7 @@ tested on Python version 3.2, 2.7 and 2.6.")
         ("python-testrepository" ,python-testrepository)
         ("python-testscenarios" ,python-testscenarios)
         ("python-testtools" ,python-testtools)))
-    (home-page "http://www.openstack.org/")
+    (home-page "https://www.openstack.org/")
     (synopsis
       "OpenStack Client Configuration Library")
     (description
@@ -408,7 +408,7 @@ common features used in Tempest.")
         ("python-oslotest" ,python-oslotest)
         ("python-oslosphinx" ,python-oslosphinx)
         ("python-sphinx" ,python-sphinx)))
-    (home-page "http://launchpad.net/oslo")
+    (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo context library")
     (description
       "The Oslo context library has helpers to maintain useful information
@@ -443,7 +443,7 @@ pipeline and used by various modules such as logging.")
         ("python-mox3" ,python-mox3)
         ("python-oslotest" ,python-oslotest)
         ("python-testscenarios" ,python-testscenarios)))
-    (home-page "http://launchpad.net/oslo")
+    (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo internationalization (i18n) library")
     (description
       "The oslo.i18n library contain utilities for working with
@@ -485,7 +485,7 @@ in an application or library.")
       ("python-mock" ,python-mock)
       ("python-oslotest" ,python-oslotest)
       ("python-pbr" ,python-pbr)))
-  (home-page "http://launchpad.net/oslo")
+  (home-page "https://launchpad.net/oslo")
   (synopsis "Python logging library of the Oslo project")
   (description
     "The oslo.log (logging) configuration library provides standardized
@@ -524,7 +524,7 @@ handlers and support for context specific logging (like resource id’s etc).")
         ("python-mock" ,python-mock)
         ("python-oslo.i18n" ,python-oslo.i18n)
         ("python-oslotest" ,python-oslotest)))
-    (home-page "http://launchpad.net/oslo")
+    (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo serialization library")
     (description
       "The oslo.serialization library provides support for representing objects
@@ -609,7 +609,7 @@ and building documentation from them.")
         ("python-docutils" ,python-docutils)
         ("python-hacking" ,python-hacking)
         ("python-sphinx" ,python-sphinx)))
-    (home-page "http://www.openstack.org/")
+    (home-page "https://www.openstack.org/")
     (synopsis "OpenStack sphinx extensions and theme")
     (description
       "This package provides themes and extensions for Sphinx documentation
@@ -646,7 +646,7 @@ from the OpenStack project.")
         ("python-testrepository" ,python-testrepository)
         ("python-testscenarios" ,python-testscenarios)
         ("python-testtools" ,python-testtools)))
-    (home-page "http://launchpad.net/oslo")
+    (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo test framework")
     (description
       "The Oslo Test framework provides common fixtures, support for debugging,
@@ -700,7 +700,7 @@ and better support for mocking results.")
         ("python-mock" ,python-mock)
         ("python-mox3" ,python-mox3)
         ("python-testscenarios" ,python-testscenarios)))
-    (home-page "http://launchpad.net/oslo")
+    (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo utility library")
     (description
       "The @code{oslo.utils} library provides support for common utility type
@@ -761,7 +761,7 @@ handling.")
        ("python-requests" ,python-requests)
        ("python-six" ,python-six)
        ("python-stevedore" ,python-stevedore)))
-    (home-page "http://www.openstack.org/")
+    (home-page "https://www.openstack.org/")
     (synopsis "Client Library for OpenStack Identity")
     (description
      "Python-keystoneclient is the identity service used by OpenStack for
@@ -814,7 +814,7 @@ LDAP.")
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-six" ,python-six)))
-    (home-page "http://www.openstack.org/")
+    (home-page "https://www.openstack.org/")
     (synopsis "OpenStack Object Storage API Client Library")
     (description
      "OpenStack Object Storage (code-named Swift) creates redundant, scalable
@@ -879,7 +879,7 @@ permanence.")
     (inputs
      `(("git" ,git)
        ("openssh" ,openssh)))
-    (home-page "http://docs.openstack.org/infra/git-review/")
+    (home-page "https://docs.openstack.org/infra/git-review/")
     (synopsis "Command-line tool for Gerrit")
     (description
      "Git-review is a command-line tool that helps submitting Git branches to

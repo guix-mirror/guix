@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -123,7 +124,7 @@ spying and/or modification by the server.")
 (define-public par2cmdline
   (package
     (name "par2cmdline")
-    (version "0.7.4")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
@@ -131,7 +132,7 @@ spying and/or modification by the server.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0iwwskiag3262mvhinvnbk6n0qh6sh56m86y4d0m285v0jl0y9pa"))))
+                "1jpshmmcr81mxly0md2rr231qz9c8c680bbvcmhh100dg9i4a6s6"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
@@ -453,18 +454,22 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.3")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "borgbackup" version))
-              (patches (search-patches "borg-fix-archive-corruption-bug.patch"))
-              (sha256
-               (base32
-                "1rvn8b6clzd1r317r9jkvk34r31risi0dxfjc7jffhnwasck4anc"))
-              (modules '((guix build utils)))
-              (snippet
-               '(for-each
-                  delete-file (find-files "borg" "^(c|h|p).*\\.c$")))))
+    (version "1.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "borgbackup" version))
+       (sha256
+        (base32 "1cicqwh85wfp65y00qaq6q4i4jcyy9b66qz5gpl80qc880wab912"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file
+                     (find-files "borg" "^(c|h|p).*\\.c$"))
+           ;; Remove bundled shared libraries.
+           (with-directory-excursion "src/borg/algorithms"
+             (for-each delete-file-recursively
+                       (list "lz4" "zstd")))))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((srfi srfi-26) ; for cut
@@ -475,9 +480,11 @@ detection, and lossless compression.")
          (add-after 'unpack 'set-env
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((openssl (assoc-ref inputs "openssl"))
-                   (lz4 (assoc-ref inputs "lz4")))
+                   (lz4 (assoc-ref inputs "lz4"))
+                   (zstd (assoc-ref inputs "zstd")))
                (setenv "BORG_OPENSSL_PREFIX" openssl)
-               (setenv "BORG_LZ4_PREFIX" lz4)
+               (setenv "BORG_LIBLZ4_PREFIX" lz4)
+               (setenv "BORG_LIBZSTD_PREFIX" zstd)
                (setenv "PYTHON_EGG_CACHE" "/tmp")
                ;; The test 'test_return_codes[python]' fails when
                ;; HOME=/homeless-shelter.
@@ -538,7 +545,8 @@ detection, and lossless compression.")
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("python-llfuse" ,python-llfuse)
-       ("python-msgpack" ,python-msgpack)))
+       ("python-msgpack" ,python-msgpack)
+       ("zstd" ,zstd)))
     (synopsis "Deduplicated, encrypted, authenticated and compressed backups")
     (description "Borg is a deduplicating backup program.  Optionally, it
 supports compression and authenticated encryption.  The main goal of Borg is to

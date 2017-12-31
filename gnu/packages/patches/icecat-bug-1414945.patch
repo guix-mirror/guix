@@ -1,0 +1,73 @@
+Based on:
+  https://hg.mozilla.org/releases/mozilla-esr52/raw-rev/d303b3bb88c3
+
+Adapted to apply cleanly to IceCat.
+
+# HG changeset patch
+# User Philip Chimento <philip.chimento@gmail.com>
+# Date 1510012155 28800
+# Node ID d303b3bb88c3345d3a089901e2b6fe883d148e44
+# Parent  0152d097672f7e99504815cf7b06d9f303419fba
+Bug 1414945 - Don't use TimeDuration in static initializer. r=jandem, a=ritu
+
+On Darwin this would cause a race between two static initializers.
+
+diff --git a/js/src/shell/js.cpp b/js/src/shell/js.cpp
+--- a/js/src/shell/js.cpp
++++ b/js/src/shell/js.cpp
+@@ -138,17 +138,17 @@ static const size_t gMaxStackSize = 2 * 
+ #else
+ static const size_t gMaxStackSize = 128 * sizeof(size_t) * 1024;
+ #endif
+ 
+ /*
+  * Limit the timeout to 30 minutes to prevent an overflow on platfoms
+  * that represent the time internally in microseconds using 32-bit int.
+  */
+-static const TimeDuration MAX_TIMEOUT_INTERVAL = TimeDuration::FromSeconds(1800.0);
++static const double MAX_TIMEOUT_SECONDS = 1800.0;
+ 
+ // SharedArrayBuffer and Atomics settings track IceCat.  Choose a custom setting
+ // with --shared-memory={on,off}.
+ #ifndef RELEASE_OR_BETA
+ # define SHARED_MEMORY_DEFAULT 1
+ #else
+ # define SHARED_MEMORY_DEFAULT 0
+ #endif
+@@ -3518,16 +3518,17 @@ Sleep_fn(JSContext* cx, unsigned argc, V
+         if (!ToNumber(cx, args[0], &t_secs))
+             return false;
+         if (mozilla::IsNaN(t_secs)) {
+             JS_ReportErrorASCII(cx, "sleep interval is not a number");
+             return false;
+         }
+ 
+         duration = TimeDuration::FromSeconds(Max(0.0, t_secs));
++        const TimeDuration MAX_TIMEOUT_INTERVAL = TimeDuration::FromSeconds(MAX_TIMEOUT_SECONDS);
+         if (duration > MAX_TIMEOUT_INTERVAL) {
+             JS_ReportErrorASCII(cx, "Excessive sleep interval");
+             return false;
+         }
+     }
+     {
+         LockGuard<Mutex> guard(sc->watchdogLock);
+         TimeStamp toWakeup = TimeStamp::Now() + duration;
+@@ -3675,16 +3676,17 @@ CancelExecution(JSContext* cx)
+ 
+ static bool
+ SetTimeoutValue(JSContext* cx, double t)
+ {
+     if (mozilla::IsNaN(t)) {
+         JS_ReportErrorASCII(cx, "timeout is not a number");
+         return false;
+     }
++    const TimeDuration MAX_TIMEOUT_INTERVAL = TimeDuration::FromSeconds(MAX_TIMEOUT_SECONDS);
+     if (TimeDuration::FromSeconds(t) > MAX_TIMEOUT_INTERVAL) {
+         JS_ReportErrorASCII(cx, "Excessive timeout value");
+         return false;
+     }
+     GetShellContext(cx)->timeoutInterval = t;
+     if (!ScheduleWatchdog(cx, t)) {
+         JS_ReportErrorASCII(cx, "Failed to create the watchdog");
+         return false;
+

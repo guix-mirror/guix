@@ -25,9 +25,12 @@
   #:use-module (guix packages)
   #:use-module (guix grafts)
 
+  #:use-module (guix utils)
+
   ;; Use the procedure that destructures "NAME-VERSION" forms.
-  #:use-module ((guix utils) #:hide (package-name->name+version))
-  #:use-module ((guix build utils) #:select (package-name->name+version))
+  #:use-module ((guix build utils)
+                #:select ((package-name->name+version
+                           . hyphen-package-name->name+version)))
 
   #:use-module (guix monads)
   #:use-module (guix gexp)
@@ -127,33 +130,37 @@ found.  Return #f if no build log was found."
 (define register-root*
   (store-lift register-root))
 
-(define (package-with-source store p uri)
+(define (numeric-extension? file-name)
+  "Return true if FILE-NAME ends with digits."
+  (string-every char-set:hex-digit (file-extension file-name)))
+
+(define (tarball-base-name file-name)
+  "Return the \"base\" of FILE-NAME, removing '.tar.gz' or similar
+extensions."
+  ;; TODO: Factorize.
+  (cond ((not (file-extension file-name))
+         file-name)
+        ((numeric-extension? file-name)
+         file-name)
+        ((string=? (file-extension file-name) "tar")
+         (file-sans-extension file-name))
+        ((file-extension file-name)
+         =>
+         (match-lambda
+           ("scm" file-name)
+           (else  (tarball-base-name (file-sans-extension file-name)))))
+        (else
+         file-name)))
+
+(define* (package-with-source store p uri #:optional version)
   "Return a package based on P but with its source taken from URI.  Extract
 the new package's version number from URI."
-  (define (numeric-extension? file-name)
-    ;; Return true if FILE-NAME ends with digits.
-    (string-every char-set:hex-digit (file-extension file-name)))
-
-  (define (tarball-base-name file-name)
-    ;; Return the "base" of FILE-NAME, removing '.tar.gz' or similar
-    ;; extensions.
-    ;; TODO: Factorize.
-    (cond ((not (file-extension file-name))
-           file-name)
-          ((numeric-extension? file-name)
-           file-name)
-          ((string=? (file-extension file-name) "tar")
-           (file-sans-extension file-name))
-          ((file-extension file-name)
-           (tarball-base-name (file-sans-extension file-name)))
-          (else
-           file-name)))
-
   (let ((base (tarball-base-name (basename uri))))
-    (let-values (((name version)
-                  (package-name->name+version base)))
+    (let-values (((_ version*)
+                  (hyphen-package-name->name+version base)))
       (package (inherit p)
-               (version (or version (package-version p)))
+               (version (or version version*
+                            (package-version p)))
 
                ;; Use #:recursive? #t to allow for directories.
                (source (download-to-store store uri
@@ -173,8 +180,23 @@ the new package's version number from URI."
 matching URIs given in SOURCES."
   (define new-sources
     (map (lambda (uri)
-           (cons (package-name->name+version (basename uri))
-                 uri))
+           (match (string-index uri #\=)
+             (#f
+              ;; Determine the package name and version from URI.
+              (call-with-values
+                  (lambda ()
+                    (hyphen-package-name->name+version
+                     (tarball-base-name (basename uri))))
+                (lambda (name version)
+                  (list name version uri))))
+             (index
+              ;; What's before INDEX is a "PKG@VER" or "PKG" spec.
+              (call-with-values
+                  (lambda ()
+                    (package-name->name+version (string-take uri index)))
+                (lambda (name version)
+                  (list name version
+                        (string-drop uri (+ 1 index))))))))
          sources))
 
   (lambda (store obj)
@@ -182,10 +204,11 @@ matching URIs given in SOURCES."
                (result   '()))
       (match obj
         ((? package? p)
-         (let ((source (assoc-ref sources (package-name p))))
-           (if source
-               (package-with-source store p source)
-               p)))
+         (match (assoc-ref sources (package-name p))
+           ((version source)
+            (package-with-source store p source version))
+           (#f
+            p)))
         (_
          obj)))))
 

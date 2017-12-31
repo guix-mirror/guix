@@ -13,6 +13,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -311,7 +313,7 @@ reading and editing of existing PDF files.")
 (define-public zathura-cb
   (package
     (name "zathura-cb")
-    (version "0.1.6")
+    (version "0.1.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -319,11 +321,10 @@ reading and editing of existing PDF files.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1fim4mpm8l2g3msj1vg70ks3c9lrwllv3yh4jv8l9f8k3r19b3l8"))))
+                "0r4viisycj39kaz4281cmkr7n9w5q96dmlf7nf45n8zq8qy2npw3"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs `(("libarchive" ,libarchive)
-              ("gtk+" ,gtk+)
               ("zathura" ,zathura)))
     (build-system gnu-build-system)
     (arguments
@@ -342,7 +343,7 @@ using libarchive.")
 (define-public zathura-ps
   (package
     (name "zathura-ps")
-    (version "0.2.4")
+    (version "0.2.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -350,11 +351,10 @@ using libarchive.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1nxbl0glnzpan78fhdfzhkcd0cikcvrkzf9m56mb0pvnwzlwg7zv"))))
+                "1x4knqja8pw2a5cb3y2209nr3iddj1z8nwasy48v5nprj61fdxqj"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs `(("libspectre" ,libspectre)
-              ("gtk+" ,gtk+)
               ("zathura" ,zathura)))
     (build-system gnu-build-system)
     (arguments
@@ -373,7 +373,7 @@ using libspectre.")
 (define-public zathura-djvu
   (package
     (name "zathura-djvu")
-    (version "0.2.6")
+    (version "0.2.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -381,12 +381,11 @@ using libspectre.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "0py0ra44f65cg064xzds0qr6vnglj2a5bwhnbwa0dyh2nyizdzmf"))))
+                "1sbfdsyp50qc85xc4458sn4w1rv1qbygdwmcr5kjlfpsmdq98vhd"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs
      `(("djvulibre" ,djvulibre)
-       ("gtk+" ,gtk+)
        ("zathura" ,zathura)))
     (build-system gnu-build-system)
     (arguments
@@ -405,7 +404,7 @@ using the DjVuLibre library.")
 (define-public zathura-pdf-mupdf
   (package
     (name "zathura-pdf-mupdf")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -413,12 +412,11 @@ using the DjVuLibre library.")
                               "/download/zathura-pdf-mupdf-" version ".tar.gz"))
               (sha256
                (base32
-                "06zqn8z6a0hfsx3s1kzqvqzb73afgcl6z5r062sxv7kv570fvffr"))))
+                "0xkajc3is7ncmb2fmymbzfgrran2bz12i7zsm1vvxhxds728h7ck"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("jbig2dec" ,jbig2dec)
+     `(("jbig2dec" ,jbig2dec)
        ("libjpeg" ,libjpeg)
        ("mupdf" ,mupdf)
        ("openjpeg" ,openjpeg)
@@ -440,7 +438,7 @@ by using the @code{mupdf} rendering library.")
 (define-public zathura-pdf-poppler
   (package
     (name "zathura-pdf-poppler")
-    (version "0.2.7")
+    (version "0.2.8")
     (source (origin
               (method url-fetch)
               (uri
@@ -448,14 +446,12 @@ by using the @code{mupdf} rendering library.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1h43sgxpsbrsnn5z19661642plzhpv6b0y3f4kyzshv1rr6lwplq"))))
+                "1m55m7s7f8ng8a7lmcw9z4n5zv7xk4vp9n6fp9j84z6rk2imf7a2"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs
      `(("poppler" ,poppler)
-       ("gtk+" ,gtk+)
-       ("zathura" ,zathura)
-       ("cairo" ,cairo)))
+       ("zathura" ,zathura)))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)
@@ -473,7 +469,7 @@ by using the poppler rendering engine.")
 (define-public zathura
   (package
     (name "zathura")
-    (version "0.3.7")
+    (version "0.3.8")
     (source (origin
               (method url-fetch)
               (uri
@@ -481,14 +477,20 @@ by using the poppler rendering engine.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1w0g74dq4z2vl3f99s2gkaqrb5pskgzig10qhbxj4gq9yj4zzbr2"))
+                "0dz5pky3vmf3s2cp2rv1c099gb1s49p9xlgm3ghyy4pzyxc8bgs6"))
               (patches (search-patches
                         "zathura-plugindir-environment-variable.patch"))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gettext" ,gettext-minimal)))
-    (inputs `(("girara" ,girara)
-              ("sqlite" ,sqlite)
-              ("gtk+" ,gtk+)))
+                     ("gettext" ,gettext-minimal)
+                     ("glib:bin" ,glib "bin")
+
+                     ;; For tests.
+                     ("check" ,check)
+                     ("xorg-server" ,xorg-server)))
+    (inputs `(("sqlite" ,sqlite)))
+    ;; Listed in 'Requires.private' of 'zathura.pc'.
+    (propagated-inputs `(("cairo" ,cairo)
+                         ("girara" ,girara)))
     (native-search-paths
      (list (search-path-specification
             (variable "ZATHURA_PLUGIN_PATH")
@@ -498,10 +500,19 @@ by using the poppler rendering engine.")
      `(#:make-flags
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
          "CC=gcc" "COLOR=0")
-       #:tests? #f ; Tests fail: "Gtk cannot open display".
        #:test-target "test"
-       #:phases
-       (modify-phases %standard-phases (delete 'configure))))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'check 'start-xserver
+                    ;; Tests require a running X server.
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                            (display ":1"))
+                        (setenv "DISPLAY" display)
+                        ;; Don't fail due to missing '/etc/machine-id'.
+                        (setenv "DBUS_FATAL_WARNINGS" "0")
+                        (zero? (system (string-append xorg-server "/bin/Xvfb "
+                                                      display " &")))))))))
     (home-page "https://pwmt.org/projects/zathura/")
     (synopsis "Lightweight keyboard-driven PDF viewer")
     (description "Zathura is a customizable document viewer.  It provides a
@@ -686,13 +697,13 @@ using a stylus.")
 (define-public python-reportlab
   (package
     (name "python-reportlab")
-    (version "3.3.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "reportlab" version))
               (sha256
                (base32
-                "0rz2pg04wnzjjm2f5a8ik9v8s54mv4xrjhv5liqjijqv6awh12gl"))))
+                "0hy304pzsz9lblmk7mrbk2682bi911lxgvzx2kcfpmfzb5gg7sjv"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: There is one test failure, but it does not cause the
@@ -700,7 +711,7 @@ using a stylus.")
        #:test-target "tests"))
     (propagated-inputs
      `(("python-pillow" ,python-pillow)))
-    (home-page "http://www.reportlab.com")
+    (home-page "https://www.reportlab.com")
     (synopsis "Python library for generating PDFs and graphics")
     (description "This is the ReportLab PDF Toolkit.  It allows rapid creation
 of rich PDF documents, and also creation of charts in a variety of bitmap and

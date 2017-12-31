@@ -2891,8 +2891,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "c89905754b929f0421db7ea6d60b8942ccdbd8af")
-        (revision "8"))
+  (let ((commit "af6d8e9e8f546e5cba60e3a62765c2dbd0328e83")
+        (revision "9"))
     (package
       (name "xf86-video-intel")
       (version (string-append "2.99.917-" revision "-"
@@ -2906,7 +2906,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "1xiyxhlq88vvgjavhxdkk933b5q7vm4jn6db144a6sqzifwaj672"))
+           "0f6sbkgykvvdggy8z6y7blf7yharg9vmiixxy190643bjxlnpp2s"))
          (file-name (string-append name "-" version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
@@ -5068,7 +5068,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.19.5")
+    (version "1.19.6")
     (source
       (origin
         (method url-fetch)
@@ -5077,7 +5077,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "0iql4pgsgpyqcrd3256pv227cdadvz01ych61n0d41ixp67gmzqq"))
+          "15y13ihgkggmly5s07vzvpn35gzx1w0hrkbnlcvcy05h3lpm0cm7"))
         (patches
          (list
           ;; See:
@@ -5920,7 +5920,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.2")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -5928,7 +5928,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0gi0i5pbhfzr5j4mbngjxvrk6r4lvigw4w2104znplmmrf1mw6y2"))))
+         "052w92w21ywgip5p90nifn8vxqzg09by4a0ai22znhqm5mqh7qc1"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)

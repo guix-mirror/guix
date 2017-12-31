@@ -279,46 +279,47 @@ TARGET in the other system."
                    ;; parent directory.
                    (dependencies (list parent))))
                '("cpuset" "cpu" "cpuacct" "memory" "devices" "freezer"
-                 "blkio" "perf_event" "hugetlb")))))
+                 "blkio" "perf_event")))))
 
 (define %elogind-file-systems
   ;; We don't use systemd, but these file systems are needed for elogind,
   ;; which was extracted from systemd.
-  (list (file-system
-          (device "none")
-          (mount-point "/run/systemd")
-          (type "tmpfs")
-          (check? #f)
-          (flags '(no-suid no-dev no-exec))
-          (options "mode=0755")
-          (create-mount-point? #t))
-        (file-system
-          (device "none")
-          (mount-point "/run/user")
-          (type "tmpfs")
-          (check? #f)
-          (flags '(no-suid no-dev no-exec))
-          (options "mode=0755")
-          (create-mount-point? #t))
-        ;; Elogind uses cgroups to organize processes, allowing it to map PIDs
-        ;; to sessions.  Elogind's cgroup hierarchy isn't associated with any
-        ;; resource controller ("subsystem").
-        (file-system
-          (device "cgroup")
-          (mount-point "/sys/fs/cgroup/elogind")
-          (type "cgroup")
-          (check? #f)
-          (options "none,name=elogind")
-          (create-mount-point? #t)
-          (dependencies (list (car %control-groups))))))
+  (append
+   (list (file-system
+           (device "none")
+           (mount-point "/run/systemd")
+           (type "tmpfs")
+           (check? #f)
+           (flags '(no-suid no-dev no-exec))
+           (options "mode=0755")
+           (create-mount-point? #t))
+         (file-system
+           (device "none")
+           (mount-point "/run/user")
+           (type "tmpfs")
+           (check? #f)
+           (flags '(no-suid no-dev no-exec))
+           (options "mode=0755")
+           (create-mount-point? #t))
+         ;; Elogind uses cgroups to organize processes, allowing it to map PIDs
+         ;; to sessions.  Elogind's cgroup hierarchy isn't associated with any
+         ;; resource controller ("subsystem").
+         (file-system
+           (device "cgroup")
+           (mount-point "/sys/fs/cgroup/elogind")
+           (type "cgroup")
+           (check? #f)
+           (options "none,name=elogind")
+           (create-mount-point? #t)
+           (dependencies (list (car %control-groups)))))
+   %control-groups))
 
 (define %base-file-systems
   ;; List of basic file systems to be mounted.  Note that /proc and /sys are
   ;; currently mounted by the initrd.
-  (append (list %pseudo-terminal-file-system
-                %shared-memory-file-system
-                %immutable-store)
-          %control-groups))
+  (list %pseudo-terminal-file-system
+        %shared-memory-file-system
+        %immutable-store))
 
 ;; File systems for Linux containers differ from %base-file-systems in that
 ;; they impose additional restrictions such as no-exec or need different

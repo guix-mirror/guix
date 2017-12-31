@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -193,7 +194,7 @@ implementation.
 (define-public cmark
   (package
     (name "cmark")
-    (version "0.28.0")
+    (version "0.28.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/jgm/cmark/archive/"
@@ -201,7 +202,7 @@ implementation.
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "03pypf2mcacfa7lrwz66lh5hydsycc33arp1nx1lljbq98gikkv8"))))
+               "1z71pacl3ni1286c206pl8lazbcd32ackivsg3zibdf1sf2qdjdc"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"))
@@ -210,7 +211,7 @@ implementation.
     (description "CommonMark is a strongly defined, highly compatible
 specification of Markdown.  cmark is the C reference implementation of
 CommonMark.  It provides @code{libcmark} shared library for parsing
-CommonMark to an abstract syntax tree (AST) and rendering the document
+CommonMark to an abstract syntax tree (@dfn{AST}) and rendering the document
 as HTML, groff man, LaTeX, CommonMark, or an XML representation of the
 AST.  The package also provides the command-line program @command{cmark}
 for parsing and rendering CommonMark.")

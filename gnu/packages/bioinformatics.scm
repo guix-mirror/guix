@@ -6367,7 +6367,7 @@ track.  The database is exposed as a @code{TxDb} object.")
   (propagated-inputs
    `(("r-rcurl" ,r-rcurl)
      ("r-xml" ,r-xml)))
-  (home-page "http://cran.r-project.org/web/packages/SPARQL")
+  (home-page "https://cran.r-project.org/web/packages/SPARQL")
   (synopsis "SPARQL client for R")
   (description "This package provides an interface to use SPARQL to pose
 SELECT or UPDATE queries to an end-point.")
@@ -6378,7 +6378,7 @@ SELECT or UPDATE queries to an end-point.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.6.0")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
@@ -6388,7 +6388,7 @@ SELECT or UPDATE queries to an end-point.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rplgpvsdkxw0k371ckxrp6i77jn93ckhslaazwbyd85m83nkynr"))
+         "02khrgh8hm11cgww2f9mqc6886zqli9ss4pd4kfpqzd0d31vbzv5"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
@@ -6601,7 +6601,7 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
     (propagated-inputs
       `(("r-ggplot2" ,r-ggplot2)
         ("r-gridextra" ,r-gridextra)))
-    (home-page "http://cran.r-project.org/web/packages/ACSNMineR")
+    (home-page "https://cran.r-project.org/web/packages/ACSNMineR")
     (synopsis "Gene enrichment analysis")
     (description
      "This package provides tools to compute and represent gene set enrichment
@@ -8332,14 +8332,14 @@ library implementing most of the pipeline's features.")
 (define-public r-mutationalpatterns
   (package
     (name "r-mutationalpatterns")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MutationalPatterns" version))
        (sha256
         (base32
-         "1qhxlfl85ifr30wrsidcn3kca3vs8fd8cmwd82gvgx9ppww8vs06"))))
+         "08ay9h5cqsi8ypb6r0g4rfa5l1g06jgfzl64wmhgz134yqbl7vfv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -8497,7 +8497,7 @@ factors bound at the specific regions.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-seqinr" ,r-seqinr)))
-    (home-page "http://cran.r-project.org/web/packages/gkmSVM")
+    (home-page "https://cran.r-project.org/web/packages/gkmSVM")
     (synopsis "Gapped-kmer support vector machine")
     (description
      "This R package provides tools for training gapped-kmer SVM classifiers
@@ -9090,7 +9090,7 @@ trait.")
          "047s6007ydc38x8wm027mlb4mngz15n0d4238fr8h43wyll5zy0z"))))
     (properties `((upstream-name . "MALDIquant")))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/MALDIquant")
+    (home-page "https://cran.r-project.org/web/packages/MALDIquant")
     (synopsis "Quantitative analysis of mass spectrometry data")
     (description
      "This package provides a complete analysis pipeline for matrix-assisted
@@ -9997,7 +9997,7 @@ interval to data view, mismatch pileup, and several splicing summaries.")
     (propagated-inputs
      `(("r-plyr" ,r-plyr)
        ("r-rcurl" ,r-rcurl)))
-    (home-page "http://cran.r-project.org/web/packages/gProfileR/")
+    (home-page "https://cran.r-project.org/web/packages/gProfileR/")
     (synopsis "Interface to the g:Profiler toolkit")
     (description
      "This package provides tools for functional enrichment analysis,

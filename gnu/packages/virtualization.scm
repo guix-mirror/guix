@@ -96,7 +96,10 @@
      '(;; Running tests in parallel can occasionally lead to failures, like:
        ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
        #:parallel-tests? #f
-       #:configure-flags '("--enable-usb-redir" "--enable-opengl")
+       #:configure-flags (list "--enable-usb-redir" "--enable-opengl"
+                               (string-append "--smbd="
+                                              (assoc-ref %outputs "out")
+                                              "/libexec/samba-wrapper"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -135,6 +138,20 @@
                                       (install-file info infodir))
                                     (find-files "." "\\.info"))
                           #t))))))
+         ;; Create a wrapper for Samba. This allows QEMU to use Samba without
+         ;; pulling it in as an input. Note that you need to explicitly install
+         ;; Samba in your Guix profile for Samba support.
+         (add-after 'install-info 'create-samba-wrapper
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref %outputs "out"))
+                    (libexec (string-append out "/libexec")))
+               (call-with-output-file "samba-wrapper"
+                 (lambda (port)
+                   (format port "#!/bin/sh
+exec smbd $@")))
+               (chmod "samba-wrapper" #o755)
+               (install-file "samba-wrapper" libexec))
+             #t))
          (add-before 'check 'make-gtester-verbose
            (lambda _
              ;; Make GTester verbose to facilitate investigation upon failure.
@@ -176,7 +193,7 @@
                      ("pkg-config" ,pkg-config)
                      ("python" ,python-2) ; incompatible with Python 3 according to error message
                      ("texinfo" ,texinfo)))
-    (home-page "http://www.qemu-project.org")
+    (home-page "https://www.qemu.org")
     (synopsis "Machine emulator and virtualizer")
     (description
      "QEMU is a generic machine emulator and virtualizer.
@@ -711,7 +728,7 @@ Machine Protocol.")
 (define-public lookingglass
   (package
    (name "lookingglass")
-   (version "a5")
+   (version "a9")
    (source
     (origin
      (method url-fetch)
@@ -720,7 +737,7 @@ Machine Protocol.")
      (file-name (string-append name "-" version))
      (sha256
       (base32
-       "0lrb821914fp27xaq0spwhbblssz55phiygvdlvcrkifa138v8pf"))))
+       "015chy4x94x4dd5831d7n0gada8rhahmdx7bdbdhajlzivi3kjcw"))))
    (build-system gnu-build-system)
    (inputs `(("fontconfig" ,fontconfig)
              ("glu" ,glu)

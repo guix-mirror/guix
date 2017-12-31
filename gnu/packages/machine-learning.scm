@@ -492,7 +492,7 @@ in terms of new algorithms.")
        ("r-rcpparmadillo" ,r-rcpparmadillo)))
     (inputs
      `(("armadillo" ,armadillo)))
-    (home-page "http://cran.r-project.org/web/packages/AdaptiveSparsity")
+    (home-page "https://cran.r-project.org/web/packages/AdaptiveSparsity")
     (synopsis "Adaptive sparsity models")
     (description
      "This package implements the Figueiredo machine learning algorithm for
@@ -512,7 +512,7 @@ geometric models.")
         (base32
          "0qnaq9x3j2xc6jrmmd98wc6hkzch487s4p3a9lnc00xvahkhgpmr"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/kernlab")
+    (home-page "https://cran.r-project.org/web/packages/kernlab")
     (synopsis "Kernel-based machine learning tools")
     (description
      "This package provides kernel-based machine learning methods for

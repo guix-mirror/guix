@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -183,3 +185,51 @@ integrate Windows applications into your desktop.")
                (base32
                 "0g6cwjyqwc660w33453aklh3hpc0b8rrb88dryn23ah6wannvagg"))))))
 
+(define-public wine-staging
+  (package
+    (inherit wine)
+    (name "wine-staging")
+    (version "2.21")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/wine-compholio/wine-patched/archive/"
+                    "staging-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pjaxj7h3q6y356np908fvsx0bf7yx5crqvgl4hza6gfssdmsr5r"))))
+    (inputs `(("gtk+", gtk+)
+              ("libva", libva)
+              ,@(package-inputs wine)))
+    (synopsis "Implementation of the Windows API (staging branch)")
+    (description "Wine-Staging is the testing area of Wine.  It
+contains bug fixes and features, which have not been integrated into
+the development branch yet.  The idea of Wine-Staging is to provide
+experimental features faster to end users and to give developers the
+possibility to discuss and improve their patches before they are
+integrated into the main branch.")
+    (home-page "https://wine-staging.com")
+    ;; In addition to the regular Wine license (lgpl2.1+), Wine-Staging
+    ;; provides Liberation and WenQuanYi Micro Hei fonts.  Those use
+    ;; different licenses.  In particular, the latter is licensed under
+    ;; both GPL3+ and Apache 2 License.
+    (license
+     (list license:lgpl2.1+ license:silofl1.1 license:gpl3+ license:asl2.0))))
+
+(define-public wine64-staging
+  (package
+    (inherit wine-staging)
+    (name "wine64-staging")
+    (arguments
+     `(#:make-flags
+       (list "SHELL=bash"
+             (string-append "libdir=" %output "/lib"))
+       #:configure-flags
+       (list "--enable-win64"
+             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       ,@(strip-keyword-arguments '(#:configure-flags #:make-flags #:system)
+                                  (package-arguments wine-staging))))
+    (synopsis "Implementation of the Windows API (staging branch, 64-bit
+version)")
+    (supported-systems '("x86_64-linux" "aarch64-linux"))))

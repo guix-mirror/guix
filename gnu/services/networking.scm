@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
             static-networking-ip
             static-networking-netmask
             static-networking-gateway
+            static-networking-requirement
 
             static-networking-service
             static-networking-service-type
@@ -145,22 +147,21 @@ fe80::1%lo0 apps.facebook.com\n")
            (default #f))
   (provision static-networking-provision
              (default #f))
+  (requirement static-networking-requirement
+               (default '()))
   (name-servers static-networking-name-servers    ;FIXME: doesn't belong here
                 (default '())))
 
 (define static-networking-shepherd-service
   (match-lambda
     (($ <static-networking> interface ip netmask gateway provision
-                            name-servers)
+                            requirement name-servers)
      (let ((loopback? (and provision (memq 'loopback provision))))
        (shepherd-service
 
-        ;; Unless we're providing the loopback interface, wait for udev to be up
-        ;; and running so that INTERFACE is actually usable.
-        (requirement (if loopback? '() '(udev)))
-
         (documentation
          "Bring up the networking interface using a static IP address.")
+        (requirement requirement)
         (provision (or provision
                        (list (symbol-append 'networking-
                                             (string->symbol interface)))))
@@ -263,6 +264,8 @@ network interface.")))
 (define* (static-networking-service interface ip
                                     #:key
                                     netmask gateway provision
+                                    ;; Most interfaces require udev to be usable.
+                                    (requirement '(udev))
                                     (name-servers '()))
   "Return a service that starts @var{interface} with address @var{ip}.  If
 @var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
@@ -277,6 +280,7 @@ to handle."
                   (list (static-networking (interface interface) (ip ip)
                                            (netmask netmask) (gateway gateway)
                                            (provision provision)
+                                           (requirement requirement)
                                            (name-servers name-servers)))))
 
 (define dhcp-client-service-type

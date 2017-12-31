@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
@@ -88,7 +88,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
 (define-public fish
   (package
     (name "fish")
-    (version "2.7.0")
+    (version "2.7.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -100,7 +100,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                                name "-" version ".tar.gz")))
               (sha256
                (base32
-                "1jvvm27hp46w0cia14lfz6161dkz8b935j1m7j38i7rgx75bfxis"))
+                "0nhc3yc5lnnan7zmxqqxm07rdpwjww5ijy45ll2njdc6fnfb2az4"))
               (modules '((guix build utils)))
               ;; Don't try to install /etc/fish/config.fish.
               (snippet
@@ -139,10 +139,10 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
 discoverability, and friendliness.  Fish has very user-friendly and powerful
 tab-completion, including descriptions of every completion, completion of
 strings with wildcards, and many completions for specific commands.  It also
-has extensive and discoverable help.  A special help command gives access to
-all the fish documentation in your web browser.  Other features include smart
-terminal handling based on terminfo, an easy to search history, and syntax
-highlighting.")
+has extensive and discoverable help.  A special @command{help} command gives
+access to all the fish documentation in your web browser.  Other features
+include smart terminal handling based on terminfo, an easy to search history,
+and syntax highlighting.")
     (home-page "https://fishshell.com/")
     (license gpl2)))
 

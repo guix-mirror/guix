@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -336,17 +337,14 @@ mashups, office (web agendas, mail clients, ...), etc.")
 (define-public chicken
   (package
     (name "chicken")
-    (version "4.12.0")
+    (version "4.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://code.call-cc.org/releases/"
                                   version "/chicken-" version ".tar.gz"))
               (sha256
                (base32
-                "12b9gaa9lqh39lj1v4wm48f6z8ww3jdkvc5bh9gqqvn6kd2wwnk0"))
-              (patches
-               (search-patches "chicken-CVE-2017-6949.patch"
-                               "chicken-CVE-2017-11343.patch"))))
+                "0hvckhi5gfny3mlva6d7y9pmx7cbwvq0r7mk11k3sdiik9hlkmdd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -403,17 +401,17 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "6.8")
+    (version "6.11")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://mirror.racket-lang.org/installers/"
                                        version "/racket-" version "-src.tgz")
                         (string-append
                          "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
-                         version "/racket/racket-" version "-src-unix.tgz")))
+                         version "/racket-" version "-src.tgz")))
              (sha256
               (base32
-               "1l9z1a0r5zydr50cklx9xjw3l0pwnf64i10xq7112fl1r89q3qgv"))))
+               "1nk7705x24jjlbqqhj8yvbgqkfscxx3m81bry1g56kjxysjmf3sw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -517,7 +515,7 @@ of libraries.")
 (define-public gambit-c
   (package
     (name "gambit-c")
-    (version "4.8.5")
+    (version "4.8.8")
     (source
      (origin
        (method url-fetch)
@@ -527,7 +525,7 @@ of libraries.")
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "0xwmqzqvk83xyjz48vp36p5vj1415rl3pi3xq7y8i3p8s409a98b"))))
+        (base32 "1plw1id94mpg2c4y6q9z39ndcz1hbxfnp3i08szsg6794rasmgkk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -602,7 +600,7 @@ threads.")
 
     (package
       (name "scmutils")
-      (version "20140302")
+      (version "20160827")
       (source
        (origin
          (method url-fetch/tarbomb)
@@ -614,7 +612,7 @@ threads.")
                              "/scmutils-tarballs/" name "-" version
                              "-x86-64-gnu-linux.tar.gz"))
          (sha256
-          (base32 "10cnbm7nh78m5mrl1di85s29gny81jb1am9zd9f9yx725xb6dnfg"))))
+          (base32 "00ly5m0s4dy5kxravjaqlpii5zcnr6b9nqm0607lr7xcs52i4j8b"))))
       (build-system gnu-build-system)
       (inputs
        `(("mit-scheme" ,mit-scheme)
@@ -629,104 +627,104 @@ threads.")
          #:phases
          (modify-phases %standard-phases
            (replace 'configure
-                    ;; No standard build procedure is used. We set the correct
-                    ;; runtime path in the custom build system.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        ;; Required to find .bci files at runtime.
-                        (with-directory-excursion "scmutils"
-                          (rename-file "src" "scmutils"))
-                        (substitute* "scmutils/scmutils/load.scm"
-                          (("/usr/local/scmutils/")
-                           (string-append out "/lib/mit-scheme-"
-                                          ,(system-suffix) "/")))
-                        #t)))
+             ;; No standard build procedure is used. We set the correct
+             ;; runtime path in the custom build system.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 ;; Required to find .bci files at runtime.
+                 (with-directory-excursion "scmutils"
+                   (rename-file "src" "scmutils"))
+                 (substitute* "scmutils/scmutils/load.scm"
+                   (("/usr/local/scmutils/")
+                    (string-append out "/lib/mit-scheme-"
+                                   ,(system-suffix) "/")))
+                 #t)))
            (replace 'build
-                    ;; Compile the code and build a band.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (make-img (string-append
-                                        "echo '(load \"load\") "
-                                        "(disk-save \"edwin-mechanics.com\")'"
-                                        "| mit-scheme")))
-                        (with-directory-excursion "scmutils/scmutils"
-                          (and (zero? (system "mit-scheme < compile.scm"))
-                               (zero? (system make-img)))))))
+             ;; Compile the code and build a band.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (make-img (string-append
+                                 "echo '(load \"load\") "
+                                 "(disk-save \"edwin-mechanics.com\")'"
+                                 "| mit-scheme")))
+                 (with-directory-excursion "scmutils/scmutils"
+                   (and (zero? (system "mit-scheme < compile.scm"))
+                        (zero? (system make-img)))))))
            (add-before 'install 'fix-directory-names
-                       ;; Correct directory names in the startup script.
-                       (lambda* (#:key inputs outputs #:allow-other-keys)
-                         (let* ((out (assoc-ref outputs "out"))
-                                (scm-root (assoc-ref inputs "mit-scheme")))
-                           (substitute* "bin/mechanics"
-                             (("ROOT=\"\\$\\{SCMUTILS_ROOT:-/.*\\}\"")
-                              (string-append
-                               "ROOT=\"${SCMUTILS_ROOT:-" scm-root "}\"\n"
-                               "LIB=\"${ROOT}/lib/mit-scheme-"
-                               ,(system-suffix) ":"
-                               out "/lib/mit-scheme-" ,(system-suffix) "\""))
-                             (("EDWIN_INFO_DIRECTORY=.*\n") "")
-                             (("SCHEME=.*\n")
-                              (string-append "SCHEME=\"${ROOT}/bin/scheme "
-                                             "--library ${LIB}\"\n"))
-                             (("export EDWIN_INFO_DIRECTORY") ""))
-                           #t)))
+             ;; Correct directory names in the startup script.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (scm-root (assoc-ref inputs "mit-scheme")))
+                 (substitute* "bin/mechanics"
+                   (("ROOT=\"\\$\\{SCMUTILS_ROOT:-/.*\\}\"")
+                    (string-append
+                     "ROOT=\"${SCMUTILS_ROOT:-" scm-root "}\"\n"
+                     "LIB=\"${ROOT}/lib/mit-scheme-"
+                     ,(system-suffix) ":"
+                     out "/lib/mit-scheme-" ,(system-suffix) "\""))
+                   (("EDWIN_INFO_DIRECTORY=.*\n") "")
+                   (("SCHEME=.*\n")
+                    (string-append "SCHEME=\"${ROOT}/bin/scheme "
+                                   "--library ${LIB}\"\n"))
+                   (("export EDWIN_INFO_DIRECTORY") ""))
+                 #t)))
            (add-before 'install 'emacs-tags
-                       ;; Generate Emacs's tags for easy reference to source
-                       ;; code.
-                       (lambda* (#:key inputs outputs #:allow-other-keys)
-                         (with-directory-excursion "scmutils/scmutils"
-                           (zero? (apply system* "etags"
-                                         (find-files "." "\\.scm"))))))
+             ;; Generate Emacs's tags for easy reference to source
+             ;; code.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (with-directory-excursion "scmutils/scmutils"
+                 (zero? (apply system* "etags"
+                               (find-files "." "\\.scm"))))))
            (replace 'install
-                    ;; Copy files to the store.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (define* (copy-files-to-directory files dir
-                                                        #:optional (delete? #f))
-                        (for-each (lambda (f)
-                                    (copy-file f (string-append dir "/" f))
-                                    (when delete? (delete-file f)))
-                                  files))
+             ;; Copy files to the store.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (define* (copy-files-to-directory files dir
+                                                 #:optional (delete? #f))
+                 (for-each (lambda (f)
+                             (copy-file f (string-append dir "/" f))
+                             (when delete? (delete-file f)))
+                           files))
 
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin"))
-                             (doc (string-append out "/share/doc/"
-                                                 ,name "-" ,version))
-                             (lib (string-append out "/lib/mit-scheme-"
-                                                 ,(system-suffix)
-                                                 "/scmutils")))
-                        (for-each mkdir-p (list lib doc bin))
-                        (with-directory-excursion "scmutils/scmutils"
-                          (copy-files-to-directory '("COPYING" "LICENSE")
-                                                   doc #t)
-                          (for-each delete-file (find-files "." "\\.bin"))
-                          (copy-files-to-directory '("edwin-mechanics.com")
-                                                   (string-append lib "/..") #t)
-                          (copy-recursively "." lib))
-                        (with-directory-excursion "bin"
-                          (copy-files-to-directory (find-files ".") bin))
-                        (with-directory-excursion "scmutils/manual"
-                          (copy-files-to-directory (find-files ".") doc))
-                        #t)))
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (doc (string-append out "/share/doc/"
+                                          ,name "-" ,version))
+                      (lib (string-append out "/lib/mit-scheme-"
+                                          ,(system-suffix)
+                                          "/scmutils")))
+                 (for-each mkdir-p (list lib doc bin))
+                 (with-directory-excursion "scmutils/scmutils"
+                   (copy-files-to-directory '("COPYING" "LICENSE")
+                                            doc #t)
+                   (for-each delete-file (find-files "." "\\.bin"))
+                   (copy-files-to-directory '("edwin-mechanics.com")
+                                            (string-append lib "/..") #t)
+                   (copy-recursively "." lib))
+                 (with-directory-excursion "bin"
+                   (copy-files-to-directory (find-files ".") bin))
+                 (with-directory-excursion "scmutils/manual"
+                   (copy-files-to-directory (find-files ".") doc))
+                 #t)))
            (add-after 'install 'emacs-helpers
-                      ;; Add convenience Emacs commands to easily load the
-                      ;; Scmutils band in an MIT-Scheme buffer inside of Emacs
-                      ;; and to easily load code tags.
-                      (lambda* (#:key inputs outputs #:allow-other-keys)
-                        (let* ((out (assoc-ref outputs "out"))
-                               (mit-root (assoc-ref inputs "mit-scheme"))
-                               (emacs-lisp-dir
-                                (string-append out "/share/emacs/site-lisp"
-                                               "/guix.d/" ,name "-" ,version))
-                               (el-file (string-append emacs-lisp-dir
-                                                       "/scmutils.el"))
-                               (lib-relative-path
-                                (string-append "/lib/mit-scheme-"
-                                               ,(system-suffix))))
-                          (mkdir-p emacs-lisp-dir)
-                          (call-with-output-file el-file
-                            (lambda (p)
-                              (format p
-                                      ";;;###autoload
+             ;; Add convenience Emacs commands to easily load the
+             ;; Scmutils band in an MIT-Scheme buffer inside of Emacs
+             ;; and to easily load code tags.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (mit-root (assoc-ref inputs "mit-scheme"))
+                      (emacs-lisp-dir
+                       (string-append out "/share/emacs/site-lisp"
+                                      "/guix.d/" ,name "-" ,version))
+                      (el-file (string-append emacs-lisp-dir
+                                              "/scmutils.el"))
+                      (lib-relative-path
+                       (string-append "/lib/mit-scheme-"
+                                      ,(system-suffix))))
+                 (mkdir-p emacs-lisp-dir)
+                 (call-with-output-file el-file
+                   (lambda (p)
+                     (format p
+                             ";;;###autoload
 (defun scmutils-load ()
   (interactive)
   (require 'xscheme)
@@ -762,10 +760,10 @@ engineering.")
       (license gpl2+))))
 
 (define-public sicp
-  (let ((commit "5b52db566968d28a89fbbaf338d207f01cc81cac"))
+  (let ((commit "225c172f9b859902a64a3c5dd5e1f9ac1a7382de"))
     (package
       (name "sicp")
-      (version (string-append "20160220-1." (string-take commit 7)))
+      (version (string-append "20170703-1." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -773,7 +771,7 @@ engineering.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "10h6h7szwlfbshwh18bnl2hvyddj5i7106l79s145l0sjjv15cxb"))
+                  "0bhdrdc1mgdjdsg4jksq9z6x129f3346jbf3zir2a0dfmsj6m10n"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system trivial-build-system)
       (native-inputs `(("gzip" ,gzip)
@@ -804,7 +802,7 @@ engineering.")
                   (every zero?
                          (map (cut system* "gzip" "-9n" <>)
                               (find-files info-dir))))))))
-      (home-page "http://sarabander.github.io/sicp")
+      (home-page "https://sarabander.github.io/sicp")
       (synopsis "Structure and Interpretation of Computer Programs")
       (description "Structure and Interpretation of Computer Programs (SICP) is
 a textbook aiming to teach the principles of computer programming.
@@ -815,8 +813,8 @@ metalinguistic abstraction, recursion, interpreters, and modular programming.")
       (license cc-by-sa4.0))))
 
 (define-public scheme48-rx
-  (let* ((commit "d3231ad13de2b44e3ee173b1c9d09ff165e8b6d5")
-         (revision "1"))
+  (let* ((commit "dd9037f6f9ea01019390614f6b126b7dd293798d")
+         (revision "2"))
     (package
       (name "scheme48-rx")
       (version (string-append "0.0.0-" revision "." (string-take commit 7)))
@@ -828,7 +826,7 @@ metalinguistic abstraction, recursion, interpreters, and modular programming.")
                (commit commit)))
          (sha256
           (base32
-           "1nmziaibgmfi346kzidj6xyad0vm7724qymbzgxvdzyrqji6v6yz"))
+           "1bvriavxw5kf2izjbil3999vr983vkk2xplfpinafr86m40b2cci"))
          (file-name (string-append name "-" version "-checkout"))))
       (build-system trivial-build-system)
       (arguments
@@ -880,7 +878,7 @@ regular-expression notation.")
                                                    (assoc-ref outputs "out")))))))))
     (native-inputs `(("unzip" ,unzip)
                      ("texinfo" ,texinfo)))
-    (home-page "http://people.csail.mit.edu/jaffer/SLIB/")
+    (home-page "http://people.csail.mit.edu/jaffer/SLIB.html")
     (synopsis "Compatibility and utility library for Scheme")
     (description "SLIB is a portable Scheme library providing compatibility and
 utility functions for all standard Scheme implementations.")

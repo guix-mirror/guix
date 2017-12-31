@@ -396,6 +396,26 @@ library.")
 (define-public python2-pyopenssl
   (package-with-python2 python-pyopenssl))
 
+(define-public python-ed25519
+  (package
+    (name "python-ed25519")
+    (version "1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "ed25519" version))
+        (sha256
+          (base32
+            "0ahx1nkxa0xis3cw0h5c4fpgv8mq4znkq7kajly33lc3317bk499"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/warner/python-ed25519")
+    (synopsis "Ed25519 public-key signatures")
+    (description "Ed25519 public-key signatures")
+    (license license:expat)))
+
+(define-public python2-ed25519
+  (package-with-python2 python-ed25519))
+
 (define-public python-axolotl-curve25519
   (package
     (name "python-axolotl-curve25519")
@@ -635,3 +655,26 @@ Certificate (DER encoded, PEM encoded), RSA PEM (encoded private key, public
 key), SSH public key, ASC-encoded OpenPGP key, APK Android application, LDIFF
 file, and more.")
     (license license:gpl3)))
+
+(define-public python-ecpy
+  (package
+    (name "python-ecpy")
+    (version "0.8.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "ECPy" version))
+        (sha256
+          (base32
+            "090fqnj8z0xm44jrfpll7j45r68m6kp7mjr7yxzg93j42h3sj285"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-future" ,python-future)))
+    (home-page "https://github.com/ubinity/ECPy")
+    (synopsis "Pure Python Elliptic Curve Library")
+    (description "This package provides a Elliptic Curve Library in pure
+Python.")
+    (license license:asl2.0)))
+
+(define-public python2-ecpy
+  (package-with-python2 python-ecpy))

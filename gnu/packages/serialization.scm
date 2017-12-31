@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -360,14 +361,14 @@ However, “Memory efficiency” and “Speed” have not been primary goals.")
 (define-public python-ruamel.yaml
   (package
     (name "python-ruamel.yaml")
-    (version "0.15.33")
+    (version "0.15.35")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ruamel.yaml" version))
        (sha256
         (base32
-         "1s4b0zwn9pkk4xxjhx77giyfddc738drd6vgraw6n2syvj03s31d"))))
+         "0xggyfaj6vprggahf7cq8kp9j79rb7hn8ndk3bxj2sxvwhhliiwd"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -403,8 +404,8 @@ style and key ordering are kept, so you can diff the source.")
     (synopsis "Implementation of the Concise Binary Object Representation")
     (description
      "Python-cbor provides an implementation of the Concise Binary Object
-Representation (CBOR).  CBOR is comparable to JSON, has a superset of JSON's
-ability, but serializes to a binary format which is smaller and faster to
-generate and parse.  The two primary functions are @code{cbor.loads} and
+Representation (@dfn{CBOR}).  CBOR is comparable to JSON, has a superset of
+JSON's ability, but serializes to a binary format which is smaller and faster
+to generate and parse.  The two primary functions are @code{cbor.loads} and
 @code{cbor.dumps}.")
     (license license:asl2.0)))

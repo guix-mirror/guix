@@ -356,7 +356,7 @@ documentation.")
          ("libxslt" ,libxslt)
          ("nginx-xslscript" ,nginx-xslscript)))
       (home-page "https://nginx.org")
-      (synopsis "Documentation for nginx web server")
+      (synopsis "Documentation for the nginx web server")
       (description
        "This package provides HTML documentation for the nginx web server.")
       (license l:bsd-2))))
@@ -2899,7 +2899,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
 (define-public perl-io-socket-ip
   (package
     (name "perl-io-socket-ip")
-    (version "0.36")
+    (version "0.38")
     (source
      (origin
        (method url-fetch)
@@ -2907,7 +2907,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
                            "IO-Socket-IP-" version ".tar.gz"))
        (sha256
         (base32
-         "0ky20hmln6waipzqikizyw04vpszf70fgpshz7ib8zv8480ri456"))))
+         "0scsnahxwnymg80a3k0p0cnr574nk7x9inn9wjniz0iycicclyhb"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/IO-Socket-IP")
@@ -3844,7 +3844,7 @@ directory.")
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-rcpp" ,r-rcpp)))
-    (home-page "http://cran.r-project.org/web/packages/htmltools")
+    (home-page "https://cran.r-project.org/web/packages/htmltools")
     (synopsis "R tools for HTML")
     (description
      "This package provides tools for HTML generation and output in R.")
@@ -3959,7 +3959,7 @@ callback or connection interfaces.")
         (base32
          "0arjsz854rfkfqhgvpqbm9lfni97dcjs66isdsfvwfd2wz932dbb"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/hwriter")
+    (home-page "https://cran.r-project.org/web/packages/hwriter")
     (synopsis "Output R objects in HTML format")
     (description
      "This package provides easy-to-use and versatile functions to output R
@@ -3978,7 +3978,7 @@ objects in HTML format.")
         (base32
          "1vzjyvf57k1fjizlk28rby65y5lsww5qnfvgnhln74qwda7hvl3p"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/rjson")
+    (home-page "https://cran.r-project.org/web/packages/rjson")
     (synopsis "JSON library for R")
     (description
      "This package provides functions to convert R objects into JSON objects
@@ -5424,7 +5424,7 @@ files).  It currently supports linked brushing and filtering.")
     (properties `((upstream-name . "Rook")))
     (build-system r-build-system)
     (propagated-inputs `(("r-brew" ,r-brew)))
-    (home-page "http://cran.r-project.org/web/packages/Rook")
+    (home-page "https://cran.r-project.org/web/packages/Rook")
     (synopsis "Web server interface for R")
     (description
      "This package contains the Rook specification and convenience software

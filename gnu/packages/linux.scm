@@ -370,8 +370,8 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 (define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
 
-(define %linux-libre-version "4.14.8")
-(define %linux-libre-hash "0y8nggpdgfqfx6dy5k39vj552k5mxamwjn6mldwrhs2aqpsrbwr3")
+(define %linux-libre-version "4.14.10")
+(define %linux-libre-hash "05l3r8i34l6b6mlgkia4xvlpc6h9nfwhsb74fy8g9dfbklx51zc8")
 
 ;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
@@ -384,14 +384,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.71"
-                    "0z4m77zbndlqy43bgl1xhklpjilbvrhbfbcppc55z3f61qwjf0mc"
+  (make-linux-libre "4.9.73"
+                    "0a5xgy7g7sb3439brv4hvpb2hjzs22nhibz8vxdmi4sqaqchh9r7"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.107"
-                    "0pfzv15c1qj7a77n8cdmsi77yhlbzv35y7qa03j0b96ajwjsclsp"
+  (make-linux-libre "4.4.108"
+                    "1cwcpp76m4k69lv7h09j3mlgm6jva4bnsykps35ffmbv9sw71wma"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 

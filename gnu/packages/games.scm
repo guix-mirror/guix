@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
@@ -17,7 +17,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -32,6 +32,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,6 +81,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages imagemagick)
@@ -354,6 +356,56 @@ be paired with a compatible game engine (such as @code{prboom-plus}) to be
 played.  Freedoom complements the Doom engine with free levels, artwork, sound
 effects and music to make a completely free game.")
    (license license:bsd-3)))
+
+(define-public meandmyshadow
+  (package
+    (name "meandmyshadow")
+    (version "0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/meandmyshadow/"
+                                  version "/meandmyshadow-" version
+                                  "-src.tar.gz"))
+              (sha256
+               (base32
+                "1dpb7s32b2psj5w3nr5kqibib8nndi86mw8gxp4hmxwrfiisf86d"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-sdl'paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "cmake/Modules/FindSDL_gfx.cmake"
+               (("/usr/local/include/SDL")
+                (string-append (assoc-ref inputs "sdl")
+                               "/include/SDL")))
+             ;; Because SDL provides lib/libX11.so.6 we need to explicitly
+             ;; link with libX11, even though we're using the GL backend.
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{X11_LIBRARIES\\}") "-lX11"))
+             )))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl
+                                sdl-image
+                                sdl-gfx
+                                sdl-mixer
+                                sdl-ttf)))
+       ("libx11" ,libx11) ; needed by sdl's libX11
+       ("libarchive" ,libarchive)
+       ("openssl" ,openssl)
+       ("mesa" ,mesa)
+       ("glu" ,glu)
+       ("curl" ,curl)))
+    (home-page "http://meandmyshadow.sourceforge.net/")
+    (synopsis "Puzzle/platform game")
+    (description "Me and My Shadow is a puzzle/platform game in which you try
+to reach the exit by solving puzzles.  Spikes, moving blocks, fragile blocks
+and much more stand between you and the exit.  Record your moves and let your
+shadow mimic them to reach blocks you couldn't reach alone.")
+    (license license:gpl3+)))
 
 (define-public knights
   (package
@@ -1471,7 +1523,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.6.9")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
@@ -1479,7 +1531,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1d3qbph59d43k10mprqm8h23143yji5mwjkciwynwa4xvsgydpb6"))))
+        (base32 "1waskzf99947yqs40n38s86m41jf5v7prvzf8pzfjxzpgyis8bxk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -4978,9 +5030,8 @@ at their peak of economic growth and military prowess.
          (modify-phases %standard-phases
            (replace 'configure
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               ;; At this point linenoise is meant to be included,
-               ;; so we have to really copy it into the working directory
-               ;; of s.
+               ;; Linenoise is meant to be included, so we have to
+               ;; copy it into the working directory.
                (let* ((linenoise (assoc-ref inputs "linenoise"))
                       (noisepath (string-append linenoise "/include/linenoise"))
                       (out (assoc-ref outputs "out")))
@@ -5182,3 +5233,170 @@ It includes support for 64 bit CPUs, custom music playback, a new sound driver,
 some graphical niceities, and numerous bug-fixes and other improvements.")
     (home-page "http://quakespasm.sourceforge.net/")
     (license license:gpl2+)))
+
+(define-public yamagi-quake2
+  (package
+    (name "yamagi-quake2")
+    (version "7.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://deponie.yamagi.org/quake2/quake2-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "0psinbg25mysd58k99s1n34w31w5hj1vppb39gdjb0zqi6sl6cps"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags
+       (list "CC=gcc"
+             ;; link openAL instead of using dlopen at runtime
+             "DLOPEN_OPENAL=\"no\""
+             ;; an optional directory where it will look for quake2 data files
+             ;; in addition to the current working directory
+             "WITH_SYSTEMWIDE=yes"
+             "WITH_SYSTEMDIR=\"/opt/quake2\"")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib"))
+               (mkdir-p (string-append out "/bin"))
+               ;; The yamagi-quake2 binary must be in the same directory
+               ;; as it's engine libraries, but symlinking it to /bin is okay
+               ;; https://github.com/yquake2/yquake2/blob/master/stuff/packaging.md
+               (copy-recursively "release"
+                                 (string-append out "/lib/yamagi-quake2"))
+               (symlink (string-append out "/lib/yamagi-quake2/quake2")
+                        (string-append out "/bin/yamagi-quake2"))
+               (symlink (string-append out "/lib/yamagi-quake2/q2ded")
+                        (string-append out "/bin/yamagi-q2ded"))))))))
+    (inputs `(("sdl2" ,sdl2)
+              ("mesa" ,mesa)
+              ("libvorbis" ,libvorbis)
+              ("zlib" ,zlib)
+              ("openal" ,openal)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "First person shooter engine based on quake2")
+    (description "Yamagi Quake II is an enhanced client for id Software's Quake II.
+The main focus is an unchanged single player experience like back in 1997,
+thus the gameplay and the graphics are unaltered.  However the user may use one
+of the unofficial retexturing packs.  In comparison with the official client,
+over 1000 bugs were fixed and an extensive code audit done,
+making Yamagi Quake II one of the most solid Quake II implementations available.")
+    (home-page "https://www.yamagi.org/quake2/")
+    (license (list license:gpl2+         ; game and server
+                   (license:non-copyleft ; info-zip
+                    "file://LICENSE"
+                    "See Info-Zip section.")
+                   license:public-domain)))) ; stb
+
+(define-public the-butterfly-effect
+  (package
+    (name "the-butterfly-effect")
+    (version "0.9.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/the-butterfly-effect/tbe/archive/"
+             "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18qkp7fgdvyl3haqqa693mgyic7afsznsxgz98z9wn4csaqxsnby"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; There is no "install" phase.  By default, tbe is installed
+         ;; in the build directory.  Provide our own installation.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share (string-append out "/share")))
+               (install-file "usr/games/tbe" bin)
+               (mkdir-p share)
+               (copy-recursively "usr/share" share)
+               #t))))
+       ;; Test suite requires a running Xorg server. Even when
+       ;; provided, it fails with "D-Bus library appears to be
+       ;; incorrectly set up; failed to read machine uuid: Failed to
+       ;; open "/etc/machine-id": No such file or directory" along
+       ;; with multiple "QPainter:: ... Painter not active" warnings.
+       #:tests? #f))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("gettext-minimal" ,gettext-minimal)
+       ("qttools" ,qttools)))
+    (synopsis "Realistic physics puzzle game")
+    (description "The Butterfly Effect (tbe) is a game that uses
+realistic physics simulations to combine lots of simple mechanical
+elements to achieve a simple goal in the most complex way possible.")
+    (home-page "http://the-butterfly-effect.org/")
+    ;; Main license is GPL2-only.  However, artwork is distributed
+    ;; under various licenses, listed here.
+    (license (list license:gpl2 license:public-domain license:expat
+                   license:cc-by-sa3.0 license:gpl3+ license:wtfpl2))))
+
+(define-public pioneer
+  (package
+    (name "pioneer")
+    (version "20171001")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/pioneerspacesim/pioneer/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nxhx22swfqq6lfvcnpfm31wig3sjv5pp0rslj79nbxc7nyihh8m"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("assimp" ,assimp)
+       ("curl" ,curl)
+       ("freetype" ,freetype)
+       ("glu" ,glu)
+       ("libpng" ,libpng)
+       ("libsigc++" ,libsigc++)
+       ("libvorbis" ,libvorbis)
+       ("lua" ,lua-5.2)                 ;not compatible with 5.3
+       ("mesa" ,mesa)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-image)))))
+    (arguments
+     `(#:tests? #f                      ;tests are broken
+       #:configure-flags (list "--with-external-liblua"
+                               (string-append "PIONEER_DATA_DIR="
+                                              %output "/share/games/pioneer"))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'bootstrap
+                    (lambda _ (zero? (system* "sh" "bootstrap"))))
+                  (add-before 'bootstrap 'fix-lua-check
+                    (lambda _
+                      (substitute* "configure.ac"
+                        (("lua5.2")
+                         (string-append "lua-" ,(version-major+minor
+                                                 (package-version lua-5.2))))))))))
+    (home-page "http://pioneerspacesim.net")
+    (synopsis "Game of lonely space adventure")
+    (description
+     "Pioneer is a space adventure game set in our galaxy at the turn of the
+31st century.  The game is open-ended, and you are free to eke out whatever
+kind of space-faring existence you can think of.  Look for fame or fortune by
+exploring the millions of star systems.  Turn to a life of crime as a pirate,
+smuggler or bounty hunter.  Forge and break alliances with the various
+factions fighting for power, freedom or self-determination.  The universe is
+whatever you make of it.")
+    (license license:gpl3)))

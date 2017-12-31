@@ -974,7 +974,7 @@ from the Python interpreter, or as a small part of a larger application.")
     (native-inputs
      `(("python-py" ,python-py)
        ("python-pytest" ,python-pytest-bootstrap)))
-    (home-page "http://pypi.python.org/pypi/six/")
+    (home-page "https://pypi.python.org/pypi/six/")
     (synopsis "Python 2 and 3 compatibility utilities")
     (description
      "Six is a Python 2 and 3 compatibility library.  It provides utility
@@ -2681,12 +2681,12 @@ between language specification and implementation aspects.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-        (add-before 'build 'set-environment-variables
-         (lambda* (#:key inputs #:allow-other-keys)
-          (call-with-output-file "site.cfg"
-            (lambda (port)
-              (format port
-                      "[openblas]
+         (add-before 'build 'configure-blas-lapack
+           (lambda* (#:key inputs #:allow-other-keys)
+             (call-with-output-file "site.cfg"
+               (lambda (port)
+                 (format port
+                         "[openblas]
 libraries = openblas
 library_dirs = ~a/lib
 include_dirs = ~a/include
@@ -2697,30 +2697,33 @@ lapack_libs = lapack
 library_dirs = ~a/lib
 include_dirs = ~a/include
 "
-                      (assoc-ref inputs "openblas")
-                      (assoc-ref inputs "openblas")
-                      (assoc-ref inputs "lapack")
-                      (assoc-ref inputs "lapack"))))
-          ;; Make /gnu/store/...-bash-.../bin/sh the default shell, instead of
-          ;; /bin/sh.
-          (substitute* "numpy/distutils/exec_command.py"
-            (("(os.environ.get\\('SHELL', ')(/bin/sh'\\))" match match-start match-end)
-            (string-append match-start (assoc-ref inputs "bash") match-end)))
-          ;; Use "gcc" executable, not "cc".
-          (substitute* "numpy/distutils/system_info.py"
-            (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
-             "c = distutils.ccompiler.new_compiler(); c.set_executables(compiler='gcc',compiler_so='gcc',linker_exe='gcc',linker_so='gcc -shared')"))
-          #t))
-        ;; Tests can only be run after the library has been installed and not
-        ;; within the source directory.
-        (delete 'check)
-        (add-after 'install 'check
-         (lambda* (#:key outputs inputs #:allow-other-keys)
-           ;; Make installed package available for running the tests
-           (add-installed-pythonpath inputs outputs)
-           (with-directory-excursion "/tmp"
-             (zero? (system* "python" "-c"
-                             "import numpy; numpy.test(verbose=2)"))))))))
+                         (assoc-ref inputs "openblas")
+                         (assoc-ref inputs "openblas")
+                         (assoc-ref inputs "lapack")
+                         (assoc-ref inputs "lapack"))))
+             #t))
+         (add-before 'build 'fix-executable-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Make /gnu/store/...-bash-.../bin/sh the default shell,
+             ;; instead of /bin/sh.
+             (substitute* "numpy/distutils/exec_command.py"
+               (("(os.environ.get\\('SHELL', ')(/bin/sh'\\))" match match-start match-end)
+                (string-append match-start (assoc-ref inputs "bash") match-end)))
+             ;; Use "gcc" executable, not "cc".
+             (substitute* "numpy/distutils/system_info.py"
+               (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
+                "c = distutils.ccompiler.new_compiler(); c.set_executables(compiler='gcc',compiler_so='gcc',linker_exe='gcc',linker_so='gcc -shared')"))
+             #t))
+         ;; Tests can only be run after the library has been installed and not
+         ;; within the source directory.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; Make installed package available for running the tests
+             (add-installed-pythonpath inputs outputs)
+             (with-directory-excursion "/tmp"
+               (zero? (system* "python" "-c"
+                               "import numpy; numpy.test(verbose=2)"))))))))
     (home-page "http://www.numpy.org/")
     (synopsis "Fundamental package for scientific computing with Python")
     (description "NumPy is the fundamental package for scientific computing
@@ -2752,6 +2755,49 @@ capabilities.")
 
 (define-public python2-numpy-next
   (package-with-python2 python-numpy-next))
+
+;; NOTE: NumPy 1.8 is packaged only for Python 2 because it is of
+;; interest only for legacy code going back to NumPy's predecessor
+;; Numeric.
+(define-public python2-numpy-1.8
+  (package (inherit python2-numpy)
+    (version "1.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/numpy/numpy/archive/v" version ".tar.gz"))
+       (file-name (string-append "python2-numpy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sc20gz1b17xnyrkp5frca3ql5qfalpv916hfg2kqxpwr6jg0f1g"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python2-numpy)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'configure-blas-lapack
+             (lambda* (#:key inputs #:allow-other-keys)
+               (call-with-output-file "site.cfg"
+                 (lambda (port)
+                   (format port
+                           "[openblas]
+libraries = openblas,lapack
+library_dirs = ~a/lib:~a/lib
+include_dirs = ~a/include:~a/include
+"
+                           (assoc-ref inputs "openblas")
+                           (assoc-ref inputs "lapack")
+                           (assoc-ref inputs "openblas")
+                           (assoc-ref inputs "lapack"))))
+               #t))))))
+    (description "NumPy is the fundamental package for scientific computing
+with Python.  It contains among other things: a powerful N-dimensional array
+object, sophisticated (broadcasting) functions, tools for integrating C/C++
+and Fortran code, useful linear algebra, Fourier transform, and random number
+capabilities.  Version 1.8 is the last one to contain the numpy.oldnumeric API
+that includes the compatibility layer numpy.oldnumeric with NumPy's predecessor
+Numeric.")
+    (license license:bsd-3)))
 
 (define-public python-munch
   (package
@@ -2820,7 +2866,7 @@ objects.")
      `(("python-colormath" ,python-colormath)))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page "http://github.com/jsvine/spectra")
+    (home-page "https://github.com/jsvine/spectra")
     (synopsis "Color scales and color conversion")
     (description
      "This package provides a Python library intended to make color math,
@@ -3541,7 +3587,7 @@ atlas_libs = openblas
                (zero? (system* "python" "-c"
                                "import scipy; scipy.test('full')")))
              #t)))))
-    (home-page "http://www.scipy.org/")
+    (home-page "https://www.scipy.org/")
     (synopsis "The Scipy library provides efficient numerical routines")
     (description "The SciPy library is one of the core packages that make up
 the SciPy stack.  It provides many user-friendly and efficient numerical
@@ -3719,18 +3765,45 @@ Python's distutils.")
 services for your Python modules and applications.")
     (license license:lgpl3+)))
 
+(define-public python-olefile
+  (package
+    (name "python-olefile")
+    (version "0.44")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/decalage2/olefile/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wmxbrhyqjry2000zx0zdhqdqxhgi06nz7sbzjlh222q2zjv1gpj"))))
+    (build-system python-build-system)
+    (home-page
+     "https://www.decalage.info/python/olefileio")
+    (synopsis "Read and write Microsoft OLE2 files.")
+    (description
+     "@code{olefile} can parse, read and write Microsoft OLE2 files (Structured
+Storage or Compound Document, Microsoft Office).  It is an improved version of
+the OleFileIO module from PIL, the Python Image Library.")
+    (license license:bsd-3)))
+
+(define-public python2-olefile
+  (package-with-python2 python-olefile))
+
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "3.3.3")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pillow" version))
-       (patches (search-patches "python-pillow-freetype-2.7-test-failure.patch"))
        (sha256
         (base32
-         "0xkv0p1d73gz0a1qaasf0ai4262g8f334j07vd60bjrxs2wr3nmj"))))
+         "09xmn7rl6840sli2iz1k3fgxfgmri2nqz6vkinmb9mgg8ifp2z59"))
+       (patch-flags '("-p1" "--binary"))
+       (patches (search-patches "python-pillow-fix-failing-tests.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose"       ,python-nose)))
@@ -3742,6 +3815,8 @@ services for your Python modules and applications.")
        ("openjpeg" ,openjpeg)
        ("libtiff"  ,libtiff)
        ("libwebp"  ,libwebp)))
+    (propagated-inputs
+     `(("python-olefile" ,python-olefile)))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after
@@ -4709,7 +4784,7 @@ libxml2 and libxslt.")
          (replace 'check
            (lambda _ (zero? (system* "./convert-py3k")))))))
     (home-page
-     "http://www.crummy.com/software/BeautifulSoup/bs4/")
+     "https://www.crummy.com/software/BeautifulSoup/bs4/")
     (synopsis
      "Python screen-scraping library")
     (description
@@ -6101,7 +6176,7 @@ a hash value.")
     (arguments
      ;; There are no tests.
      `(#:tests? #f))
-    (home-page "http://pypi.python.org/pypi/termcolor")
+    (home-page "https://pypi.python.org/pypi/termcolor")
     (synopsis "ANSII Color formatting for terminal output")
     (description
      "This package provides ANSII Color formatting for output in terminals.")
@@ -7231,7 +7306,7 @@ text.")
 encryption and decryption, signing and verifying signatures, and key
 generation according to PKCS#1 version 1.5.  It can be used as a Python
 library as well as on the command line.")
-   (home-page "http://stuvel.eu/rsa")
+   (home-page "https://stuvel.eu/rsa")
    (license license:asl2.0)))
 
 (define-public python2-rsa
@@ -7490,7 +7565,7 @@ fast xml and html manipulation.")
        ;; but it could be annoying/difficult.
        ;; We can enable tests for the Python 2 version, though, and do below.
        #:tests? #f))
-    (home-page "http://bitbucket.org/runeh/anyjson/")
+    (home-page "https://bitbucket.org/runeh/anyjson/")
     (synopsis
      "Wraps best available JSON implementation in a common interface")
     (description
@@ -7835,7 +7910,7 @@ useful for solving the Assignment Problem.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://bitbucket.org/mchaput/whoosh")
+    (home-page "https://bitbucket.org/mchaput/whoosh")
     (synopsis "Full text indexing, search, and spell checking library")
     (description
      "Whoosh is a fast, pure-Python full text indexing, search, and spell
@@ -7905,7 +7980,7 @@ anymore.")
      `(#:python ,python-2))
     (native-inputs
      `(("python2-six" ,python2-six)))
-    (home-page "http://pypi.python.org/pypi/pathlib2/")
+    (home-page "https://pypi.python.org/pypi/pathlib2/")
     (synopsis "Object-oriented file system paths - backport of standard
 pathlib module")
     (description "The goal of pathlib2 is to provide a backport of standard
@@ -10035,7 +10110,7 @@ protocols written in pure Python.")
              (zero? (system* "python" "test/test_pbkdf2.py")))))))
     (propagated-inputs
      `(("python-pycrypto" ,python-pycrypto)))  ; optional
-    (home-page "http://www.dlitz.net/software/python-pbkdf2/")
+    (home-page "https://www.dlitz.net/software/python-pbkdf2/")
     (synopsis "Password-based key derivation")
     (description "This module implements the password-based key derivation
 function, PBKDF2, specified in RSA PKCS#5 v2.0.
@@ -10121,7 +10196,7 @@ to ansi-escaped strings suitable for display in a terminal.")
        ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-six" ,python-six)))
-    (home-page "http://github.com/ralphbean/ansi2html")
+    (home-page "https://github.com/ralphbean/ansi2html")
     (synopsis "Convert ANSI-decorated console output to HTML")
     (description
      "@command{ansi2html} is a Python library and command line utility for
@@ -11292,7 +11367,7 @@ applying JSON Patches according to RFC 6902.")
        (base32
         "192pclzs2y0yaywqkrlvd0x73740q310kvqvm6jldhi619mq59wi"))))
     (build-system python-build-system)
-    (home-page "http://pypi.python.org/pypi/rfc3987")
+    (home-page "https://pypi.python.org/pypi/rfc3987")
     (synopsis "Parsing and validation of URIs (RFC 3986) and IRIs (RFC 3987)")
     (description "@code{rfc3987} provides routines for parsing and
 validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
@@ -11313,7 +11388,7 @@ validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
        (base32
         "1bxffaf5yz2cph8ki55vdvdypbwkvn2xr1firlcy62vqbzf1jivq"))))
     (build-system python-build-system)
-    (home-page "http://github.com/syrusakbary/validate_email")
+    (home-page "https://github.com/syrusakbary/validate_email")
     (synopsis "Verifies if an email address is valid and really exists")
     (description "@code{validate_email} can be used to verify if an email
 address is valid and really exists.")
@@ -11476,7 +11551,7 @@ from your Flask project.  It is a fork of Flask-Swagger.")
      `(("python-jsonschema" ,python-jsonschema)
        ("python-six" ,python-six)))
     (home-page
-     "http://github.com/Yelp/swagger_spec_validator")
+     "https://github.com/Yelp/swagger_spec_validator")
     (synopsis "Validation of Swagger specifications")
     (description "@code{swagger_spec_validator} provides a library for
 validating Swagger API specifications.")
@@ -12072,3 +12147,106 @@ particularly convenient for use in tests.")
 (define-public python2-tempdir
   (package-with-python2 python-tempdir))
 
+(define-public python-activepapers
+  (package
+    (name "python-activepapers")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ActivePapers.Py" version))
+       (sha256
+        (base32
+         "12wkhjh90ffipjzv10swndp2xv9hd7xrxvg6v0n4n3i411pj4xb8"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-1)
+                  (guix build utils)
+                  (guix build python-build-system))
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-python2-code
+           (lambda _
+             (for-each delete-file
+                       '("lib/activepapers/builtins2.py"
+                         "lib/activepapers/standardlib2.py"
+                         "lib/activepapers/utility2.py"))))
+         (replace 'check
+           (lambda _
+             ;; Deactivate the test cases that download files
+             (setenv "NO_NETWORK_ACCESS" "1")
+             ;; For some strange reason, some tests fail if nosetests runs all
+             ;; test modules in a single execution. They pass if each test
+             ;; module is run individually.
+             (for-each (lambda (filename)
+                         (invoke "nosetests"
+                                 (string-append "tests/" filename)))
+                       (scandir "tests"
+                                (lambda (filename)
+                                  (string-suffix? ".py" filename)))))))))
+    (native-inputs
+     `(("python-tempdir" ,python-tempdir)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-h5py" ,python-h5py)))
+    (home-page "http://www.activepapers.org/")
+    (synopsis "Executable papers for scientific computing")
+    (description
+     "ActivePapers is a tool for working with executable papers, which
+combine data, code, and documentation in single-file packages,
+suitable for publication as supplementary material or on repositories
+such as figshare or Zenodo.")
+    (properties `((python2-variant . ,(delay python2-activepapers))))
+    (license license:bsd-3)))
+
+(define-public python2-activepapers
+  (let ((base (package-with-python2
+               (strip-python2-variant python-activepapers))))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'delete-python2-code)
+             (add-after 'unpack 'delete-python3-code
+               (lambda _
+                 (for-each delete-file
+                           '("lib/activepapers/builtins3.py"
+                             "lib/activepapers/standardlib3.py"
+                             "lib/activepapers/utility3.py")))))))))))
+
+(define-public python-semver
+  (package
+    (name "python-semver")
+    (version "2.7.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "semver" version))
+        (sha256
+          (base32
+            "0hhgqppchv59rqj0yzi1prdg2nfsywqmjsqy2rycyxm0hvxmbyqz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test-requirements
+           (lambda _
+             (substitute* "setup.py"
+               ;; Our Python is new enough.
+               (("'virtualenv<14\\.0\\.0'") "'virtualenv'"))
+             #t)))))
+    (native-inputs
+     `(("python-tox" ,python-tox)
+       ("python-virtualenv" ,python-virtualenv)))
+    (home-page "https://github.com/k-bx/python-semver")
+    (synopsis "Python helper for Semantic Versioning")
+    (description "This package provides a Python library for
+@url{Semantic Versioning, http://semver.org/}.")
+    (license license:bsd-3)))
+
+(define-public python2-semver
+  (package-with-python2 python-semver))

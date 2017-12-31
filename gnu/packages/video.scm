@@ -782,6 +782,25 @@ audio/video codec library.")
                     flag))
               ,flags))))))
 
+;; Annoyingly enough, the latest mpv release does not build with the stable
+;; release of ffmpeg. Use a git commit until the situation is fixed.
+(define-public ffmpeg-git
+  (let ((commit "3f887440677328c9cfed97ad81d14051ffa32aae")
+        (revision "1"))
+    (package
+     (inherit ffmpeg)
+     (name "ffmpeg-git")
+     (version (string-append "3.4-" revision "." (string-take commit 9)))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/FFmpeg/FFmpeg.git")
+                    (commit commit)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1b7n3g4m2rbvrwsgbfl8wl91z42g1ld42clwxs8qpl9ny5rwz6sq")))))))
+
 (define-public vlc
   (package
     (name "vlc")
@@ -986,7 +1005,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.27.0")
+    (version "0.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -994,7 +1013,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1754371fkva8aqxgbm50jxyvij7mnysq0538bf6zghbmigqqn79l"))
+                "1d2p6k3y9lqx8bpdal4grrj8ljy7pvd8qgdq8004fmr38afmbb7f"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -1005,7 +1024,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("enca" ,enca)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-git)
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("lcms" ,lcms)
@@ -1034,6 +1053,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("rsound" ,rsound)
        ("waf" ,python-waf)
        ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
        ("libxkbcommon", libxkbcommon)
        ("youtube-dl" ,youtube-dl)
        ("zlib" ,zlib)))
@@ -1129,7 +1149,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2017.12.14")
+    (version "2017.12.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1137,7 +1157,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "01hvsch7ybff0amivl86m6klz156bm3hfh66zz5q8ha2af5j44hj"))))
+                "0cq10ii96lpq3z7l1js0s59sqb4h4yqwdqinl2yf7cdjynvj62xi"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1246,7 +1266,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.995")
+    (version "0.4.1011")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1255,13 +1275,27 @@ other site that youtube-dl supports.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0i89mn8v8znn3csgzfg8dz5vcn3ld66xj02az6137bljhgivjxra"))))
+                "0cdbh5w0chw3dlrwizm91l6sgkkzy7p6h0072dai4xbw5zgld31k"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f))                    ; no tests
     (inputs
-     `(("ffmpeg" ,ffmpeg)))
-    (synopsis "Download videos, audios, or images from Web sites")
+     `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'qualify-input-references
+           ;; Explicitly invoke the input ffmpeg, instead of whichever one
+           ;; happens to be in the user's $PATH at run time.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ffmpeg (string-append (assoc-ref inputs "ffmpeg")
+                                          "/bin/ffmpeg")))
+               (substitute* "src/you_get/processor/ffmpeg.py"
+                 ;; Don't blindly replace all occurrences of ‘'ffmpeg'’: the
+                 ;; same string is also used when sniffing ffmpeg's output.
+                 (("(FFMPEG == |\\()'ffmpeg'" _ prefix)
+                  (string-append prefix "'" ffmpeg "'")))
+               #t))))
+       #:tests? #f))                    ; XXX some tests need Internet access
+    (synopsis "Download videos, audio, or images from Web sites")
     (description
      "You-Get is a command-line utility to download media contents (videos,
 audio, images) from the Web.  It can use either mpv or vlc for playback.")
@@ -1715,6 +1749,7 @@ from various services and pipes them into a video playing application.")
             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("ffmpeg" ,ffmpeg)
        ("fftw" ,fftw)
        ("libxml2" ,libxml2)
        ("jack" ,jack-1)
@@ -1733,7 +1768,7 @@ broadcasting.  It provides a toolkit for broadcasters, video editors, media
 players, transcoders, web streamers and many more types of applications.  The
 functionality of the system is provided via an assortment of ready to use
 tools, XML authoring components, and an extensible plug-in based API.")
-    (license license:lgpl2.1+)))
+    (license license:gpl3)))
 
 (define-public v4l-utils
   (package

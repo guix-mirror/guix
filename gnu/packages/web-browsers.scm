@@ -130,7 +130,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
 (define-public lynx
   (package
     (name "lynx")
-    (version "2.8.9dev.15")
+    (version "2.8.9dev.16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -138,7 +138,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
                     "/lynx" version ".tar.bz2"))
               (sha256
                (base32
-                "16bdr7ai130ps67px8ssxnjxp5j6m4rin3in7jm22fxk0a8p2428"))))
+                "1j0vx871ghkm7fgrafnvd2ml3ywcl8d3gyhq02fhfb851c88lc84"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))
@@ -169,6 +169,10 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
        #:tests? #f  ; no check target
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'set-makefile-shell
+           (lambda _ (substitute* "po/makefile.inn"
+                       (("/bin/sh") (which "sh")))
+                     #t))
          (replace 'install
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
              (zero? (apply system* "make" "install-full" make-flags)))))))

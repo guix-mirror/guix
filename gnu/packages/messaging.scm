@@ -239,7 +239,8 @@ identi.ca and status.net).")
               ("perl-xml-parser" ,perl-xml-parser)
               ("python-2" ,python-2)))
     (arguments
-     `(#:phases
+     `(#:make-flags '("UPDATE_ICON_CACHE=true") ; Disable icon theme generation
+       #:phases
        (modify-phases %standard-phases
          ;; Release 2.12.4 wasn't properly bootstrapped.  Later ones might be!
          (add-after 'unpack 'bootstrap

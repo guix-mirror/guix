@@ -26,7 +26,7 @@ Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017 Chris Marusich@*
 Copyright @copyright{} 2016, 2017 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
-Copyright @copyright{} 2016 ng0@*
+Copyright @copyright{} 2016, 2017 ng0@*
 Copyright @copyright{} 2016, 2017 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
@@ -1335,7 +1335,7 @@ using Unix-domain sockets along with SSH.
 
 When @code{--listen} is omitted, @command{guix-daemon} listens for
 connections on the Unix-domain socket located at
-@file{@var{localstatedir}/daemon-socket/socket}.
+@file{@var{localstatedir}/guix/daemon-socket/socket}.
 @end table
 
 
@@ -1509,7 +1509,7 @@ either in @file{$HOME/.guix-profile/share/emacs/site-lisp/} or in
 sub-directories of
 @file{$HOME/.guix-profile/share/emacs/site-lisp/guix.d/}.  The latter
 directory exists because potentially there may exist thousands of Emacs
-packages and storing all their files in a single directory may be not
+packages and storing all their files in a single directory may not be
 reliable (because of name conflicts).  So we think using a separate
 directory for each package is a good idea.  It is very similar to how
 the Emacs package system organizes the file structure (@pxref{Package
@@ -1711,7 +1711,7 @@ source "$HOME/.guix-profile/etc/profile"
 In a multi-user setup, user profiles are stored in a place registered as
 a @dfn{garbage-collector root}, which @file{$HOME/.guix-profile} points
 to (@pxref{Invoking guix gc}).  That directory is normally
-@code{@var{localstatedir}/profiles/per-user/@var{user}}, where
+@code{@var{localstatedir}/guix/profiles/per-user/@var{user}}, where
 @var{localstatedir} is the value passed to @code{configure} as
 @code{--localstatedir}, and @var{user} is the user name.  The
 @file{per-user} directory is created when @command{guix-daemon} is
@@ -4210,6 +4210,14 @@ paths}.  Derivations paths can be passed to the @code{build-derivations}
 procedure to perform the build actions they prescribe (@pxref{The
 Store}).
 
+@cindex fixed-output derivations
+Operations such as file downloads and version-control checkouts for
+which the expected content hash is known in advance are modeled as
+@dfn{fixed-output derivations}.  Unlike regular derivations, the outputs
+of a fixed-output derivation are independent of its inputs---e.g., a
+source code download produces the same result regardless of the download
+method and tools being used.
+
 The @code{(guix derivations)} module provides a representation of
 derivations as Scheme objects, along with procedures to create and
 otherwise manipulate derivations.  The lowest-level primitive to create
@@ -5422,14 +5430,20 @@ without having to type in the definitions of package variants
 @table @code
 
 @item --with-source=@var{source}
-Use @var{source} as the source of the corresponding package.
+@itemx --with-source=@var{package}=@var{source}
+@itemx --with-source=@var{package}@@@var{version}=@var{source}
+Use @var{source} as the source of @var{package}, and @var{version} as
+its version number.
 @var{source} must be a file name or a URL, as for @command{guix
 download} (@pxref{Invoking guix download}).
 
-The ``corresponding package'' is taken to be the one specified on the
-command line the name of which matches the base of @var{source}---e.g.,
+When @var{package} is omitted,
+it is taken to be the package name specified on the
+command line that matches the base of @var{source}---e.g.,
 if @var{source} is @code{/src/guile-2.0.10.tar.gz}, the corresponding
-package is @code{guile}.  Likewise, the version string is inferred from
+package is @code{guile}.
+
+Likewise, when @var{version} is omitted, the version string is inferred from
 @var{source}; in the previous example, it is @code{2.0.10}.
 
 This option allows users to try out versions of packages other than the
@@ -5452,7 +5466,7 @@ guix build guile --with-source=../guile-2.0.9.219-e1bb7.tar.xz
 
 @example
 $ git clone git://git.sv.gnu.org/guix.git
-$ guix build guix --with-source=./guix
+$ guix build guix --with-source=guix@@1.0=./guix
 @end example
 
 @item --with-input=@var{package}=@var{replacement}
@@ -6018,7 +6032,7 @@ guix import cpan Acme::Boolean
 @item cran
 @cindex CRAN
 @cindex Bioconductor
-Import metadata from @uref{http://cran.r-project.org/, CRAN}, the
+Import metadata from @uref{https://cran.r-project.org/, CRAN}, the
 central repository for the @uref{http://r-project.org, GNU@tie{}R
 statistical and graphical environment}.
 
@@ -6389,7 +6403,7 @@ the updater for packages hosted on kernel.org;
 @item elpa
 the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
 @item cran
-the updater for @uref{http://cran.r-project.org/, CRAN} packages;
+the updater for @uref{https://cran.r-project.org/, CRAN} packages;
 @item bioconductor
 the updater for @uref{https://www.bioconductor.org/, Bioconductor} R packages;
 @item cpan
@@ -10023,12 +10037,12 @@ well as in the @var{groups} field of the @var{operating-system} record.
 @end example
 @end deffn
 
-@deffn {Scheme Procedure} urandom-seed-service
+@defvr {Scheme Variable} urandom-seed-service-type
 Save some entropy in @var{%random-seed-file} to seed @file{/dev/urandom}
 when rebooting.  It also tries to seed @file{/dev/urandom} from
 @file{/dev/hwrng} while booting, if @file{/dev/hwrng} exists and is
 readable.
-@end deffn
+@end defvr
 
 @defvr {Scheme Variable} %random-seed-file
 This is the name of the file where some random bytes are saved by
@@ -10378,9 +10392,12 @@ This is the type for statically-configured network interfaces.
 
 @deffn {Scheme Procedure} static-networking-service @var{interface} @var{ip} @
        [#:netmask #f] [#:gateway #f] [#:name-servers @code{'()}]
+       [#:requirement @code{'(udev)}]
 Return a service that starts @var{interface} with address @var{ip}.  If
 @var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
-it must be a string specifying the default network gateway.
+it must be a string specifying the default network gateway.  @var{requirement}
+can be used to declare a dependency on another service before configuring the
+interface.
 
 This procedure can be called several times, one for each network
 interface of interest.  Behind the scenes what it does is extend
@@ -12089,7 +12106,7 @@ The @code{(gnu services desktop)} module provides services that are
 usually useful in the context of a ``desktop'' setup---that is, on a
 machine running a graphical display server, possibly with graphical user
 interfaces, etc.  It also defines services that provide specific desktop
-environments like GNOME and XFCE.
+environments like GNOME, XFCE or MATE.
 
 To simplify things, the module defines a variable containing the set of
 services that users typically expect on a machine with a graphical
@@ -12114,9 +12131,10 @@ The @var{%desktop-services} variable can be used as the @code{services}
 field of an @code{operating-system} declaration (@pxref{operating-system
 Reference, @code{services}}).
 
-Additionally, the @code{gnome-desktop-service} and
-@code{xfce-desktop-service} procedures can add GNOME and/or XFCE to a
-system.  To ``add GNOME'' means that system-level services like the
+Additionally, the @code{gnome-desktop-service},
+@code{xfce-desktop-service} and @code{mate-desktop-service}
+procedures can add GNOME, XFCE and/or MATE to a system.
+To ``add GNOME'' means that system-level services like the
 backlight adjustment helpers and the power management utilities are
 added to the system, extending @code{polkit} and @code{dbus}
 appropriately, allowing GNOME to operate with elevated privileges on a
@@ -12127,6 +12145,11 @@ not only adds the @code{xfce} metapackage to the system profile, but it
 also gives the Thunar file manager the ability to open a ``root-mode''
 file management window, if the user authenticates using the
 administrator's password via the standard polkit graphical interface.
+To ``add MATE'' means that @code{polkit} and @code{dbus} are extended
+appropriately, allowing MATE to operate with elevated privileges on a
+limited number of special-purpose system interfaces.  Additionally,
+adding a service made by @code{mate-desktop-service} adds the MATE
+metapackage to the system profile.
 
 @deffn {Scheme Procedure} gnome-desktop-service
 Return a service that adds the @code{gnome} package to the system
@@ -12141,9 +12164,15 @@ file system as root from within a user session, after the user has
 authenticated with the administrator's password.
 @end deffn
 
-Because the GNOME and XFCE desktop services pull in so many packages,
+@deffn {Scheme Procedure} mate-desktop-service
+Return a service that adds the @code{mate} package to the system
+profile, and extends polkit with the actions from
+@code{mate-settings-daemon}.
+@end deffn
+
+Because the GNOME, XFCE and MATE desktop services pull in so many packages,
 the default @code{%desktop-services} variable doesn't include either of
-them by default.  To add GNOME or XFCE, just @code{cons} them onto
+them by default.  To add GNOME, XFCE or MATE, just @code{cons} them onto
 @code{%desktop-services} in the @code{services} field of your
 @code{operating-system}:
 
@@ -13058,13 +13087,6 @@ has any connections.
 Defaults to @samp{"15 min"}.
 @end deftypevr
 
-@deftypevr {@code{dovecot-configuration} parameter} non-negative-integer director-doveadm-port
-TCP/IP port that accepts doveadm connections (instead of director
-connections) If you enable this, you'll also need to add
-@samp{inet-listener} for the port.
-Defaults to @samp{0}.
-@end deftypevr
-
 @deftypevr {@code{dovecot-configuration} parameter} string director-username-hash
 How the username is translated before being hashed.  Useful values
 include %Ln if user can log in with or without @@domain, %Ld if mailboxes
@@ -13157,7 +13179,7 @@ Defaults to @samp{"%$: %s"}.
 @deftypevr {@code{dovecot-configuration} parameter} string mail-log-prefix
 Log prefix for mail processes.  See doc/wiki/Variables.txt for list
 of possible variables you can use.
-Defaults to @samp{"\"%s(%u): \""}.
+Defaults to @samp{"\"%s(%u)<%@{pid@}><%@{session@}>: \""}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string deliver-log-format
@@ -13502,7 +13524,7 @@ Defaults to @samp{0}.
 
 @deftypevr {@code{dovecot-configuration} parameter} non-negative-integer mdbox-rotate-size
 Maximum dbox file size until it's rotated.
-Defaults to @samp{2000000}.
+Defaults to @samp{10000000}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string mdbox-rotate-interval
@@ -13640,21 +13662,14 @@ x500UniqueIdentifier are the usual choices.  You'll also need to set
 Defaults to @samp{"commonName"}.
 @end deftypevr
 
-@deftypevr {@code{dovecot-configuration} parameter} hours ssl-parameters-regenerate
-How often to regenerate the SSL parameters file.  Generation is
-quite CPU intensive operation.  The value is in hours, 0 disables
-regeneration entirely.
-Defaults to @samp{168}.
-@end deftypevr
-
-@deftypevr {@code{dovecot-configuration} parameter} string ssl-protocols
-SSL protocols to use.
-Defaults to @samp{"!SSLv2"}.
+@deftypevr {@code{dovecot-configuration} parameter} string ssl-min-protocol
+Minimum SSL protocol version to accept.
+Defaults to @samp{"TLSv1"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string ssl-cipher-list
 SSL ciphers to use.
-Defaults to @samp{"ALL:!LOW:!SSLv2:!EXP:!aNULL"}.
+Defaults to @samp{"ALL:!kRSA:!SRP:!kDHd:!DSS:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK:!RC4:!ADH:!LOW@@STRENGTH"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string ssl-crypto-device
@@ -13756,7 +13771,8 @@ total number of bytes read from client
 @item %o
 total number of bytes sent to client.
 @end table
-Defaults to @samp{"in=%i out=%o"}.
+See @file{doc/wiki/Variables.txt} for a list of all the variables you can use.
+Defaults to @samp{"in=%i out=%o deleted=%@{deleted@} expunged=%@{expunged@} trashed=%@{trashed@} hdr_count=%@{fetch_hdr_count@} hdr_bytes=%@{fetch_hdr_bytes@} body_count=%@{fetch_body_count@} body_bytes=%@{fetch_body_bytes@}"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string imap-capability
@@ -13955,7 +13971,7 @@ definitions for messaging services: currently only Prosody is supported.
 @subsubheading Prosody Service
 
 @deffn {Scheme Variable} prosody-service-type
-This is the type for the @uref{http://prosody.im, Prosody XMPP
+This is the type for the @uref{https://prosody.im, Prosody XMPP
 communication server}.  Its value must be a @code{prosody-configuration}
 record as in this example:
 
@@ -14020,13 +14036,13 @@ The Prosody package.
 
 @deftypevr {@code{prosody-configuration} parameter} file-name data-path
 Location of the Prosody data storage directory.  See
-@url{http://prosody.im/doc/configure}.
+@url{https://prosody.im/doc/configure}.
 Defaults to @samp{"/var/lib/prosody"}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} file-name-list plugin-paths
 Additional plugin directories.  They are searched in all the specified
-paths in order.  See @url{http://prosody.im/doc/plugins_directory}.
+paths in order.  See @url{https://prosody.im/doc/plugins_directory}.
 Defaults to @samp{()}.
 @end deftypevr
 
@@ -14039,15 +14055,15 @@ Defaults to @samp{"/etc/prosody/certs"}.
 
 @deftypevr {@code{prosody-configuration} parameter} string-list admins
 This is a list of accounts that are admins for the server.  Note that you
-must create the accounts separately.  See @url{http://prosody.im/doc/admins} and
-@url{http://prosody.im/doc/creating_accounts}.
+must create the accounts separately.  See @url{https://prosody.im/doc/admins} and
+@url{https://prosody.im/doc/creating_accounts}.
 Example: @code{(admins '("user1@@example.com" "user2@@example.net"))}
 Defaults to @samp{()}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} boolean use-libevent?
 Enable use of libevent for better performance under high load.  See
-@url{http://prosody.im/doc/libevent}.
+@url{https://prosody.im/doc/libevent}.
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -14055,7 +14071,7 @@ Defaults to @samp{#f}.
 This is the list of modules Prosody will load on startup.  It looks for
 @code{mod_modulename.lua} in the plugins folder, so make sure that exists too.
 Documentation on modules can be found at:
-@url{http://prosody.im/doc/modules}.
+@url{https://prosody.im/doc/modules}.
 Defaults to @samp{("roster" "saslauth" "tls" "dialback" "disco" "carbons" "private" "blocklist" "vcard" "version" "uptime" "time" "ping" "pep" "register" "admin_adhoc")}.
 @end deftypevr
 
@@ -14068,13 +14084,13 @@ Defaults to @samp{()}.
 @deftypevr {@code{prosody-configuration} parameter} file-name groups-file
 Path to a text file where the shared groups are defined.  If this path is
 empty then @samp{mod_groups} does nothing.  See
-@url{http://prosody.im/doc/modules/mod_groups}.
+@url{https://prosody.im/doc/modules/mod_groups}.
 Defaults to @samp{"/var/lib/prosody/sharedgroups.txt"}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} boolean allow-registration?
 Disable account creation by default, for security.  See
-@url{http://prosody.im/doc/creating_accounts}.
+@url{https://prosody.im/doc/creating_accounts}.
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -14082,7 +14098,7 @@ Defaults to @samp{#f}.
 These are the SSL/TLS-related settings.  Most of them are disabled so to
 use Prosody's defaults.  If you do not completely understand these options, do
 not add them to your config, it is easy to lower the security of your server
-using them.  See @url{http://prosody.im/doc/advanced_ssl_config}.
+using them.  See @url{https://prosody.im/doc/advanced_ssl_config}.
 
 Available @code{ssl-configuration} fields are:
 
@@ -14153,7 +14169,7 @@ Password for encrypted private keys.
 
 @deftypevr {@code{prosody-configuration} parameter} boolean c2s-require-encryption?
 Whether to force all client-to-server connections to be encrypted or not.
-See @url{http://prosody.im/doc/modules/mod_tls}.
+See @url{https://prosody.im/doc/modules/mod_tls}.
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -14165,7 +14181,7 @@ Defaults to @samp{("DIGEST-MD5")}.
 
 @deftypevr {@code{prosody-configuration} parameter} boolean s2s-require-encryption?
 Whether to force all server-to-server connections to be encrypted or not.
-See @url{http://prosody.im/doc/modules/mod_tls}.
+See @url{https://prosody.im/doc/modules/mod_tls}.
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -14173,7 +14189,7 @@ Defaults to @samp{#f}.
 Whether to require encryption and certificate authentication.  This
 provides ideal security, but requires servers you communicate with to support
 encryption AND present valid, trusted certificates.  See
-@url{http://prosody.im/doc/s2s#security}.
+@url{https://prosody.im/doc/s2s#security}.
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -14181,14 +14197,14 @@ Defaults to @samp{#f}.
 Many servers don't support encryption or have invalid or self-signed
 certificates.  You can list domains here that will not be required to
 authenticate using certificates.  They will be authenticated using DNS.  See
-@url{http://prosody.im/doc/s2s#security}.
+@url{https://prosody.im/doc/s2s#security}.
 Defaults to @samp{()}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} string-list s2s-secure-domains
 Even if you leave @code{s2s-secure-auth?} disabled, you can still require
 valid certificates for some domains by specifying a list here.  See
-@url{http://prosody.im/doc/s2s#security}.
+@url{https://prosody.im/doc/s2s#security}.
 Defaults to @samp{()}.
 @end deftypevr
 
@@ -14196,20 +14212,20 @@ Defaults to @samp{()}.
 Select the authentication backend to use.  The default provider stores
 passwords in plaintext and uses Prosody's configured data storage to store the
 authentication data.  If you do not trust your server please see
-@url{http://prosody.im/doc/modules/mod_auth_internal_hashed} for information
+@url{https://prosody.im/doc/modules/mod_auth_internal_hashed} for information
 about using the hashed backend.  See also
-@url{http://prosody.im/doc/authentication}
+@url{https://prosody.im/doc/authentication}
 Defaults to @samp{"internal_plain"}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} maybe-string log
 Set logging options.  Advanced logging configuration is not yet supported
-by the GuixSD Prosody Service.  See @url{http://prosody.im/doc/logging}.
+by the GuixSD Prosody Service.  See @url{https://prosody.im/doc/logging}.
 Defaults to @samp{"*syslog"}.
 @end deftypevr
 
 @deftypevr {@code{prosody-configuration} parameter} file-name pidfile
-File to write pid in.  See @url{http://prosody.im/doc/modules/mod_posix}.
+File to write pid in.  See @url{https://prosody.im/doc/modules/mod_posix}.
 Defaults to @samp{"/var/run/prosody/prosody.pid"}.
 @end deftypevr
 
@@ -14236,7 +14252,7 @@ instance can serve many domains, each one defined as a VirtualHost entry in
 Prosody's configuration.  Conversely a server that hosts a single domain would
 have just one VirtualHost entry.
 
-See @url{http://prosody.im/doc/configure#virtual_host_settings}.
+See @url{https://prosody.im/doc/configure#virtual_host_settings}.
 
 Available @code{virtualhost-configuration} fields are:
 
@@ -14257,7 +14273,7 @@ Internal components are implemented with Prosody-specific plugins.  To add an
 internal component, you simply fill the hostname field, and the plugin you wish
 to use for the component.
 
-See @url{http://prosody.im/doc/components}.
+See @url{https://prosody.im/doc/components}.
 Defaults to @samp{()}.
 
 Available @code{int-component-configuration} fields are:
@@ -14276,10 +14292,10 @@ Multi-user chat (MUC) is Prosody's module for allowing you to create
 hosted chatrooms/conferences for XMPP users.
 
 General information on setting up and using multi-user chatrooms can be found
-in the "Chatrooms" documentation (@url{http://prosody.im/doc/chatrooms}),
+in the "Chatrooms" documentation (@url{https://prosody.im/doc/chatrooms}),
 which you should read if you are new to XMPP chatrooms.
 
-See also @url{http://prosody.im/doc/modules/mod_muc}.
+See also @url{https://prosody.im/doc/modules/mod_muc}.
 
 Available @code{mod-muc-configuration} fields are:
 
@@ -14310,7 +14326,7 @@ Defaults to @samp{20}.
 @deftypevr {@code{prosody-configuration} parameter} ext-component-configuration-list ext-components
 External components use XEP-0114, which most standalone components
 support.  To add an external component, you simply fill the hostname field.  See
-@url{http://prosody.im/doc/components}.
+@url{https://prosody.im/doc/components}.
 Defaults to @samp{()}.
 
 Available @code{ext-component-configuration} fields are:

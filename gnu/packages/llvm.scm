@@ -76,7 +76,7 @@
                       (setenv "LD_LIBRARY_PATH"
                               (string-append (getcwd) "/lib"))
                       #t)))))
-    (home-page "http://www.llvm.org")
+    (home-page "https://www.llvm.org")
     (synopsis "Optimizing compiler infrastructure")
     (description
      "LLVM is a compiler infrastructure designed for compile-time, link-time,
@@ -116,7 +116,7 @@ of programming tools as well as libraries with equivalent functionality.")
      `(;; Don't use '-g' during the build to save space.
        #:build-type "Release"
        #:tests? #f))                    ; Tests require gtest
-    (home-page "http://compiler-rt.llvm.org")
+    (home-page "https://compiler-rt.llvm.org")
     (synopsis "Runtime library for Clang/LLVM")
     (description
      "The \"clang-runtime\" library provides the implementations of run-time
@@ -125,7 +125,7 @@ and C++ source code to interface with the \"sanitization\" passes of the clang
 compiler.  In LLVM this library is called \"compiler-rt\".")
     (license license:ncsa)
 
-    ;; <http://compiler-rt.llvm.org/> doesn't list MIPS as supported.
+    ;; <https://compiler-rt.llvm.org/> doesn't list MIPS as supported.
     (supported-systems (delete "mips64el-linux" %supported-systems))))
 
 (define* (clang-from-llvm llvm clang-runtime hash
@@ -200,7 +200,7 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
 
-    (home-page "http://clang.llvm.org")
+    (home-page "https://clang.llvm.org")
     (synopsis "C language family frontend for LLVM")
     (description
      "Clang is a compiler front end for the C, C++, Objective-C and

@@ -405,7 +405,8 @@ Apple Keynote documents.  It currently supports Keynote versions 2 to 5.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libxml2" ,libxml2)))
-    (home-page "http://tagoh.bitbucket.org/liblangtag/")
+    ;; As of December 2017, tagoh.bitbucket.org redirects to a hosting advert.
+    (home-page "https://bitbucket.org/tagoh/liblangtag")
     (synopsis "Library to access tags for identifying languages")
     (description "Liblangtag implements an interface to work with tags
 for identifying languages as described in RFC 5646.  It supports the

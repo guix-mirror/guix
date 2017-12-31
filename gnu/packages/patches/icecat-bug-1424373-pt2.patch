@@ -1,0 +1,183 @@
+Based on:
+  https://hg.mozilla.org/releases/mozilla-esr52/raw-rev/19ea736e7e3d
+
+Adapted to apply cleanly to IceCat.
+
+# HG changeset patch
+# User Mike Conley <mconley@mozilla.com>
+# Date 1513892173 18000
+# Node ID 19ea736e7e3d20555ee6633b9d7803c1225979e1
+# Parent  320032aaa06899f5585dcd0288059e5342118714
+Bug 1424373 - Rename crash report submission pref. r=Mossop a=jcristau
+
+diff --git a/browser/app/profile/icecat.js b/browser/app/profile/icecat.js
+--- a/browser/app/profile/icecat.js
++++ b/browser/app/profile/icecat.js
+@@ -1557,15 +1557,15 @@ pref("browser.crashReports.unsubmittedCh
+ pref("browser.crashReports.unsubmittedCheck.enabled", false);
+ #endif
+ 
+ // chancesUntilSuppress is how many times we'll show the unsubmitted
+ // crash report notification across different days and shutdown
+ // without a user choice before we suppress the notification for
+ // some number of days.
+ pref("browser.crashReports.unsubmittedCheck.chancesUntilSuppress", 4);
+-pref("browser.crashReports.unsubmittedCheck.autoSubmit", false);
++pref("browser.crashReports.unsubmittedCheck.autoSubmit2", false);
+ 
+ #ifdef NIGHTLY_BUILD
+ // Enable the (fairly costly) client/server validation on nightly only. The other prefs
+ // controlling validation are located in /services/sync/services-sync.js
+ pref("services.sync.validation.enabled", true);
+ #endif
+diff --git a/browser/base/content/test/tabcrashed/browser_autoSubmitRequest.js b/browser/base/content/test/tabcrashed/browser_autoSubmitRequest.js
+--- a/browser/base/content/test/tabcrashed/browser_autoSubmitRequest.js
++++ b/browser/base/content/test/tabcrashed/browser_autoSubmitRequest.js
+@@ -1,12 +1,12 @@
+ "use strict";
+ 
+ const PAGE = "data:text/html,<html><body>A%20regular,%20everyday,%20normal%20page.";
+-const AUTOSUBMIT_PREF = "browser.crashReports.unsubmittedCheck.autoSubmit";
++const AUTOSUBMIT_PREF = "browser.crashReports.unsubmittedCheck.autoSubmit2";
+ 
+ const {TabStateFlusher} =
+   Cu.import("resource:///modules/sessionstore/TabStateFlusher.jsm", {});
+ 
+ // On debug builds, crashing tabs results in much thinking, which
+ // slows down the test and results in intermittent test timeouts,
+ // so we'll pump up the expected timeout for this test.
+ requestLongerTimeout(2);
+diff --git a/browser/components/preferences/in-content/advanced.xul b/browser/components/preferences/in-content/advanced.xul
+--- a/browser/components/preferences/in-content/advanced.xul
++++ b/browser/components/preferences/in-content/advanced.xul
+@@ -51,18 +51,18 @@
+ #ifdef MOZ_TELEMETRY_REPORTING
+   <preference id="toolkit.telemetry.enabled"
+               name="toolkit.telemetry.enabled"
+               type="bool"/>
+ #endif
+ 
+   <!-- Data Choices tab -->
+ #ifdef MOZ_CRASHREPORTER
+-  <preference id="browser.crashReports.unsubmittedCheck.autoSubmit"
+-              name="browser.crashReports.unsubmittedCheck.autoSubmit"
++  <preference id="browser.crashReports.unsubmittedCheck.autoSubmit2"
++              name="browser.crashReports.unsubmittedCheck.autoSubmit2"
+               type="bool"/>
+ #endif
+ 
+   <!-- Network tab -->
+   <preference id="browser.cache.disk.capacity"
+               name="browser.cache.disk.capacity"
+               type="int"/>
+   <preference id="browser.offline-apps.notify"
+@@ -232,17 +232,17 @@
+           </hbox>
+         </vbox>
+       </groupbox>
+ #endif
+ #ifdef MOZ_CRASHREPORTER
+       <groupbox>
+         <caption>
+           <checkbox id="automaticallySubmitCrashesBox"
+-                    preference="browser.crashReports.unsubmittedCheck.autoSubmit"
++                    preference="browser.crashReports.unsubmittedCheck.autoSubmit2"
+                     label="&alwaysSubmitCrashReports.label;"
+                     accesskey="&alwaysSubmitCrashReports.accesskey;"/>
+         </caption>
+         <hbox class="indent">
+           <label flex="1">&crashReporterDesc2.label;</label>
+           <spacer flex="10"/>
+           <label id="crashReporterLearnMore"
+                  class="text-link">&crashReporterLearnMore.label;</label>
+diff --git a/browser/components/sessionstore/test/browser_background_tab_crash.js b/browser/components/sessionstore/test/browser_background_tab_crash.js
+--- a/browser/components/sessionstore/test/browser_background_tab_crash.js
++++ b/browser/components/sessionstore/test/browser_background_tab_crash.js
+@@ -142,17 +142,17 @@ add_task(function* test_background_crash
+ /**
+  * Tests that if a content process crashes taking down only
+  * background tabs, and the user is configured to send backlogged
+  * crash reports automatically, that the tab crashed page is not
+  * shown.
+  */
+ add_task(function* test_background_crash_autosubmit_backlogged() {
+   yield SpecialPowers.pushPrefEnv({
+-    set: [["browser.crashReports.unsubmittedCheck.autoSubmit", true]],
++    set: [["browser.crashReports.unsubmittedCheck.autoSubmit2", true]],
+   });
+ 
+   yield setupBackgroundTabs(function*([tab1, tab2]) {
+     // Let's crash one of those background tabs now...
+     yield crashBackgroundTabs([tab1, tab2]);
+ 
+     // Selecting the first tab should restore it.
+     let tabRestored = promiseTabRestored(tab1);
+diff --git a/browser/modules/ContentCrashHandlers.jsm b/browser/modules/ContentCrashHandlers.jsm
+--- a/browser/modules/ContentCrashHandlers.jsm
++++ b/browser/modules/ContentCrashHandlers.jsm
+@@ -865,21 +865,21 @@ this.UnsubmittedCrashHandler = {
+     return nb.appendNotification(message, notificationID,
+                                  "chrome://browser/skin/tab-crashed.svg",
+                                  nb.PRIORITY_INFO_HIGH, buttons,
+                                  eventCallback);
+   },
+ 
+   get autoSubmit() {
+     return Services.prefs
+-                   .getBoolPref("browser.crashReports.unsubmittedCheck.autoSubmit");
++                   .getBoolPref("browser.crashReports.unsubmittedCheck.autoSubmit2");
+   },
+ 
+   set autoSubmit(val) {
+-    Services.prefs.setBoolPref("browser.crashReports.unsubmittedCheck.autoSubmit",
++    Services.prefs.setBoolPref("browser.crashReports.unsubmittedCheck.autoSubmit2",
+                                val);
+   },
+ 
+   /**
+    * Attempt to submit reports to the crash report server. Each
+    * report will have the "SubmittedFromInfobar" extra key set
+    * to true.
+    *
+diff --git a/browser/modules/test/browser_UnsubmittedCrashHandler.js b/browser/modules/test/browser_UnsubmittedCrashHandler.js
+--- a/browser/modules/test/browser_UnsubmittedCrashHandler.js
++++ b/browser/modules/test/browser_UnsubmittedCrashHandler.js
+@@ -344,17 +344,17 @@ add_task(function* test_can_submit_sever
+   clearPendingCrashReports();
+ });
+ 
+ /**
+  * Tests that choosing "Send Always" flips the autoSubmit pref
+  * and sends the pending crash reports.
+  */
+ add_task(function* test_can_submit_always() {
+-  let pref = "browser.crashReports.unsubmittedCheck.autoSubmit";
++  let pref = "browser.crashReports.unsubmittedCheck.autoSubmit2";
+   Assert.equal(Services.prefs.getBoolPref(pref), false,
+                "We should not be auto-submitting by default");
+ 
+   let reportIDs = yield createPendingCrashReports(1);
+   let notification =
+     yield UnsubmittedCrashHandler.checkForUnsubmittedCrashReports();
+   Assert.ok(notification, "There should be a notification");
+ 
+@@ -388,17 +388,17 @@ add_task(function* test_can_submit_alway
+ 
+ /**
+  * Tests that if the user has chosen to automatically send
+  * crash reports that no notification is displayed to the
+  * user.
+  */
+ add_task(function* test_can_auto_submit() {
+   yield SpecialPowers.pushPrefEnv({ set: [
+-    ["browser.crashReports.unsubmittedCheck.autoSubmit", true],
++    ["browser.crashReports.unsubmittedCheck.autoSubmit2", true],
+   ]});
+ 
+   let reportIDs = yield createPendingCrashReports(3);
+   let promiseReports = waitForSubmittedReports(reportIDs);
+   let notification =
+     yield UnsubmittedCrashHandler.checkForUnsubmittedCrashReports();
+   Assert.equal(notification, null, "There should be no notification");
+   info("Waiting on reports to be received.");
+

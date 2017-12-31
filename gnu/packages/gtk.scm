@@ -16,6 +16,7 @@
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Coypright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Coypright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Coypright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1240,7 +1241,7 @@ write GNOME applications.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.2.7")
+    (version "0.2.8")
     (source (origin
               (method url-fetch)
               (uri
@@ -1248,19 +1249,31 @@ write GNOME applications.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1r9jbhf9n40zj4ddqv1q5spijpjm683nxg4hr5lnir4a551s7rlq"))))
+                "18wss3sak3djip090v2vdbvq1mvkwcspfswc87zbvv3magihan98"))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gettext" ,gettext-minimal)))
-    (inputs `(("gtk+" ,gtk+)
-              ("check" ,check)))
+                     ("check" ,check)
+                     ("gettext" ,gettext-minimal)
+                     ("glib:bin" ,glib "bin")
+                     ("xorg-server" ,xorg-server)))
+    ;; Listed in 'Requires.private' of 'girara.pc'.
+    (propagated-inputs `(("gtk+" ,gtk+)))
     (arguments
      `(#:make-flags
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
          "COLOR=0" "CC=gcc")
        #:test-target "test"
-       #:tests? #f ; Tests fail with "Gtk cannot open display:"
-       #:phases
-       (modify-phases %standard-phases (delete 'configure))))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'check 'start-xserver
+                    ;; Tests require a running X server.
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                            (display ":1"))
+                        (setenv "DISPLAY" display)
+                        ;; Don't fail due to missing '/etc/machine-id'.
+                        (setenv "DBUS_FATAL_WARNINGS" "0")
+                        (zero? (system (string-append xorg-server "/bin/Xvfb "
+                                                      display " &")))))))))
     (build-system gnu-build-system)
     (home-page "https://pwmt.org/projects/girara/")
     (synopsis "Library for minimalistic gtk+3 user interfaces")

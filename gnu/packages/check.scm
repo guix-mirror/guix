@@ -1162,16 +1162,24 @@ seamlessly into your existing Python unit testing work flow.")
 (define-public python-lit
   (package
     (name "python-lit")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "lit" version))
         (sha256
          (base32
-          "135m2b9cwih85g66rjggavck328z7lj37srgpq3jxszbg0g2b91y"))))
+          "0z651m3vkbk85y41larnsjxrszkbi58x9gzml3lb6ga7qwcrsg97"))))
     (build-system python-build-system)
-    (home-page "http://llvm.org/")
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "py.test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://llvm.org/")
     (synopsis "LLVM Software Testing Tool")
     (description "@code{lit} is a portable tool for executing LLVM and Clang
 style test suites, summarizing their results, and providing indication of
@@ -1400,7 +1408,7 @@ pytest report.")
     (build-system python-build-system)
     (propagated-inputs
      `(("pytest" ,python-pytest)))
-    (home-page "http://bitbucket.org/memedough/pytest-capturelog/overview")
+    (home-page "https://bitbucket.org/memedough/pytest-capturelog/overview")
     (synopsis "Pytest plugin to catch log messages")
     (description
      "Python-pytest-catchlog is a pytest plugin to catch log messages.")
@@ -1549,24 +1557,15 @@ JSON APIs with Behave.")
 (define-public python-rednose
   (package
     (name "python-rednose")
-    (version "1.2.1")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "rednose" version))
         (sha256
           (base32
-            "0b0bsna217lr1nykyhl5fgjly15zhdvqd4prg4wy1zrgfv7al6m0"))))
+            "11x5nx5b4wdq04s7vj1gcdl07jvvkfb37p0r5lg773gr5rr8mj6h"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-deps
-           (lambda _
-             ;; See <https://github.com/JBKahn/rednose/issues/12>
-             (substitute* "setup.py"
-               (("python-termstyle") "termstyle"))
-             #t)))))
     (propagated-inputs
      `(("python-colorama" ,python-colorama)
        ("python-termstyle" ,python-termstyle)))
@@ -1642,14 +1641,14 @@ create data based on random numbers and yet remain repeatable.")
 (define-public python-freezegun
   (package
     (name "python-freezegun")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "freezegun" version))
        (sha256
         (base32
-         "1sf38d3ibv1jhhvr52x7dhrsiyqk1hm165dfv8w8wh0fhmgxg151"))))
+         "1vhf3kgdy7gpy70n3bxa3y1n6aza316137md97z8p5k0gz6wqg3q"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)

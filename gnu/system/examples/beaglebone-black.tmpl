@@ -15,6 +15,11 @@
   (bootloader (bootloader-configuration
                (bootloader u-boot-beaglebone-black-bootloader)
                (target "/dev/mmcblk1")))
+  (initrd (lambda (fs . rest)
+            (apply base-initrd fs
+                   ;; This module is required to mount the sd card.
+                   #:extra-modules (list "omap_hsmmc")
+                   rest)))
   (file-systems (cons (file-system
                         (device "my-root")
                         (title 'label)

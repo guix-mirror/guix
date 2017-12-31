@@ -144,6 +144,7 @@
   #:use-module (gnu packages speech)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages vpn)
+  #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -395,6 +396,7 @@ access the common Google services, and has full asynchronous support.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "libgxps-CVE-2017-11590.patch"))
               (sha256
                (base32
                 "184r06s8g20cfigg7m169n42jjsc9wmzzlycr4g1fxxhr72r8x9y"))))
@@ -880,7 +882,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
 (define-public adwaita-icon-theme
   (package (inherit gnome-icon-theme)
     (name "adwaita-icon-theme")
-    (version "3.26.0")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -888,7 +890,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04i2s6hkgzxgmq85dynmzih8rw5krc5apkks962mhgri37g8bbcw"))))
+                "17fpahgh5dyckgz7rwqvzgnhx53cx9kr2xw0szprc6bnqy977fi8"))))
     (native-inputs
      `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
 
@@ -3673,6 +3675,11 @@ for application developers.")
 
        #:phases
        (modify-phases %standard-phases
+         (add-before
+          'install 'disable-cache-generation
+          (lambda _
+            (setenv "DESTDIR" "/")
+            #t))
          (add-after
           'install 'wrap-totem
           (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -4366,7 +4373,7 @@ classes for commonly used data structures.")
 (define-public gexiv2
   (package
     (name "gexiv2")
-    (version "0.10.6")
+    (version "0.10.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4374,8 +4381,8 @@ classes for commonly used data structures.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09aqsnpah71p9gx0ap2px2dyanrs7jmkkar6q114n9b7js8qh9qk"))))
-    (build-system gnu-build-system)
+                "1f7312zygw77ml37i5qilhfvmjm59dn753ax71rcb2jm1p76vgcb"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
@@ -4732,6 +4739,10 @@ to display dialog boxes from the commandline and shell scripts.")
              ;; The following flags are needed for the bundled clutter
              "--enable-x11-backend=yes"
 
+             (string-append "--with-xwayland-path="
+                            (assoc-ref %build-inputs "xorg-server-xwayland")
+                            "/bin/Xwayland")
+
              ;; the remaining flags are needed for the bundled cogl
              "--enable-cogl-gst"
              (string-append "--with-gl-libname="
@@ -4792,6 +4803,7 @@ to display dialog boxes from the commandline and shell scripts.")
        ("startup-notification" ,startup-notification)
        ("upower-glib" ,upower)
        ("xkeyboard-config" ,xkeyboard-config)
+       ("xorg-server-xwayland" ,xorg-server-xwayland)
        ("zenity" ,zenity)))
     (synopsis "Window and compositing manager")
     (home-page "https://www.gnome.org")
@@ -6921,35 +6933,24 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "0.9.304")
+    (version "0.9.306")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/gnumdk/lollypop/"
-                           "releases/download/" version "/"
+       (uri (string-append "https://gitlab.gnome.org/gnumdk/lollypop/uploads/"
+                           "b769805b7063ef9807e4e832e7e87ad2/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "070y6wf1180hbl1ix8al7fmc6y06jb5m14h73g509g4xbwlk62g8"))))
-    ;; TODO: Use meson-build-system
-    (build-system glib-or-gtk-build-system)
+         "0c49v6793bywvh295xbii9yq21hh3qpmxwbgp9i71kj6r9grvhan"))))
+    (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
-                           ,@%glib-or-gtk-build-system-modules)
+                           ,@%meson-build-system-modules)
+       #:glib-or-gtk? #t
        #:tests? #f ; no test suite
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; remove post-install script, we update the caches later
-               (substitute* "meson.build"
-                 (("meson.add_install_script\\('meson_post_install.py'\\)") ""))
-               (zero?
-                 (system* "meson" "builddir" (string-append "--prefix=" out))))))
-         (replace 'install
-           (lambda _ (zero? (system* "ninja" "-C" "builddir" "install"))))
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out               (assoc-ref outputs "out"))
@@ -6962,16 +6963,15 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
-       ("ninja" ,ninja)
+       ("glib:bin" ,glib "bin")         ; For glib-compile-resources
+       ("gtk+:bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("gtk+" ,gtk+)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)
-       ("meson" ,meson)
        ("python" ,python)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-gst" ,python-gst)
