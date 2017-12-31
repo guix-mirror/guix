@@ -55,7 +55,8 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (ice-9 match))
 
 (define-public wine
   (package
@@ -113,9 +114,13 @@
        ("v4l-utils" ,v4l-utils)
        ("zlib" ,zlib)))
     (arguments
-     `(;; Force a 32-bit build (under the assumption that this package is
-       ;; being used on an IA32-compatible architecture.)
-       #:system "i686-linux"
+     `(;; Force a 32-bit build targeting a similar architecture, i.e.:
+       ;; armhf for armhf/aarch64, i686 for i686/x86_64.
+       #:system ,@(match (%current-system)
+                    ((or "armhf-linux" "aarch64-linux")
+                     `("armhf-linux"))
+                    (_
+                     `("i686-linux")))
 
        ;; XXX: There's a test suite, but it's unclear whether it's supposed to
        ;; pass.
@@ -154,7 +159,7 @@ integrate Windows applications into your desktop.")
 
     ;; It really only supports IA32, but building on x86_64 will have the same
     ;; effect as building on i686 anyway.
-    (supported-systems '("i686-linux" "x86_64-linux"))))
+    (supported-systems (delete "mips64el-linux" %supported-systems))))
 
 (define-public wine64
   (package
