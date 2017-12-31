@@ -65,6 +65,14 @@ where the OS part is overloaded to denote a specific ABI---into GCC
            "--with-mode=thumb"
            "--with-fpu=neon"))
 
+        ((and (string-suffix? "-gnu" target)
+              (not (string-contains target "-linux")))
+         ;; Cross-compilation of libcilkrts in GCC 5.5.0 to GNU/Hurd fails
+         ;; with:
+         ;;   libcilkrts/runtime/os-unix.c:388:2: error: #error "Unknown architecture"
+         ;; Cilk has been removed from GCC 8 anyway.
+         '("--disable-libcilkrts"))
+
         (else
          ;; TODO: Add `arm.*-gnueabi', etc.
          '())))
