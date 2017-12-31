@@ -122,10 +122,11 @@
        #:tests? #f
 
        #:configure-flags
-       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib/wine32"))
 
        #:make-flags
-       (list "SHELL=bash")
+       (list "SHELL=bash"
+             (string-append "libdir=" %output "/lib/wine32"))
 
        #:phases
        (modify-phases %standard-phases
