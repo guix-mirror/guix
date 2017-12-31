@@ -12172,7 +12172,7 @@ profile, and extends polkit with the actions from
 
 Because the GNOME, XFCE and MATE desktop services pull in so many packages,
 the default @code{%desktop-services} variable doesn't include either of
-them by default.  To add GNOME, XFCE orMATE, just @code{cons} them onto
+them by default.  To add GNOME, XFCE or MATE, just @code{cons} them onto
 @code{%desktop-services} in the @code{services} field of your
 @code{operating-system}:
 
