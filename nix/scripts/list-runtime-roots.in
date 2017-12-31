@@ -130,12 +130,13 @@ or the empty list."
                          (< (string->number a) (string->number b))))))
 
 (define canonicalize-store-item
-  (let ((prefix (+ 1 (string-length %store-directory))))
+  (let* ((store  (string-append %store-directory "/"))
+         (prefix (string-length store)))
     (lambda (file)
       "Return #f if FILE is not a store item; otherwise, return the store file
 name without any sub-directory components."
-      (and (string-prefix? %store-directory file)
-           (string-append %store-directory "/"
+      (and (string-prefix? store file)
+           (string-append store
                           (let ((base (string-drop file prefix)))
                             (match (string-index base #\/)
                               (#f    base)
