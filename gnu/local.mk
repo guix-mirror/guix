@@ -674,6 +674,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
   %D%/packages/patches/ghostscript-runpath.patch		\
+  %D%/packages/patches/gimp-CVE-2017-17784.patch		\
+  %D%/packages/patches/gimp-CVE-2017-17785.patch		\
+  %D%/packages/patches/gimp-CVE-2017-17786.patch		\
+  %D%/packages/patches/gimp-CVE-2017-17787.patch		\
+  %D%/packages/patches/gimp-CVE-2017-17789.patch		\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
   %D%/packages/patches/glibc-CVE-2015-5180.patch		\
