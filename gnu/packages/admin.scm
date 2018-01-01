@@ -1413,7 +1413,7 @@ of supported upstream metrics systems simultaneously.")
        ("python2-paramiko" ,python2-paramiko)))
     (arguments
      `(#:python ,python-2)) ; incompatible with Python 3
-    (home-page "http://ansible.com/")
+    (home-page "https://www.ansible.com/")
     (synopsis "Radically simple IT automation")
     (description "Ansible is a radically simple IT automation system.  It
 handles configuration-management, application deployment, cloud provisioning,
