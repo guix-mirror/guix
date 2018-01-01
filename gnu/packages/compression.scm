@@ -1815,9 +1815,9 @@ recreates the stored directory structure by default.")
         (base32
          "0m31qlppg65vh32pwxkwjby02q70abx49d2yk6vfd4585fqb27cx"))))
     (build-system perl-build-system)
-    (synopsis  "Provides an interface to ZIP archive files")
-    (description "The Archive::Zip module allows a Perl program to create,
-manipulate, read, and write Zip archive files.")
+    (synopsis  "Provides an interface to Zip archive files")
+    (description "The @code{Archive::Zip} module allows a Perl program to
+create, manipulate, read, and write Zip archive files.")
     (home-page "http://search.cpan.org/~adamk/Archive-Zip-1.30/")
     (license license:perl-license)))
 
