@@ -35,6 +35,11 @@
   #:use-module (guix build-system perl)
   #:use-module (gnu packages perl))
 
+;;;
+;;; Please: Try to add new module packages in alphabetic order.
+;;;
+
+
 (define-public perl-test2-bundle-extended
   (package
     (name "perl-test2-bundle-extended")
