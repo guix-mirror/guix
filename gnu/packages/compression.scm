@@ -1802,9 +1802,9 @@ recreates the stored directory structure by default.")
      "ZZipLib is a library based on zlib for accessing zip files.")
     (license license:lgpl2.0+)))
 
-(define-public perl-zip
+(define-public perl-archive-zip
   (package
-    (name "perl-zip")
+    (name "perl-archive-zip")
     (version "1.60")
     (source
      (origin
