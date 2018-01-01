@@ -42,6 +42,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config))
@@ -259,26 +260,6 @@ variable ANY_MOOSE to be Moose or Mouse.")
     (synopsis "Configuration files and command line parsing")
     (description "AppConfig is a bundle of Perl5 modules for reading
 configuration files and parsing command line arguments.")
-    (license (package-license perl))))
-
-(define-public perl-archive-zip
-  (package
-    (name "perl-archive-zip")
-    (version "1.30")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://cpan/authors/id/A/AD/ADAMK/Archive-Zip-"
-             version ".tar.gz"))
-       (sha256
-        (base32
-         "0633zah5z9njiqnvy3vh42fjymncmil1jdfb7d18w8xpfzzp5d7q"))))
-    (build-system perl-build-system)
-    (synopsis "Perl API to zip files")
-    (description "The Archive::Zip module allows a Perl program to create,
-manipulate, read, and write Zip archive files.")
-    (home-page "http://search.cpan.org/~phred/Archive-Zip-1.37/lib/Archive/Zip.pm")
     (license (package-license perl))))
 
 (define-public perl-array-utils
