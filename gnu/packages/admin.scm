@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -1387,14 +1387,14 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.4.1.0")
+    (version "2.4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "0spv0kjaicwss4q52s727b6grdizcxpa0bbsfg26pgf5kjrayqfs"))
+         "0n3n9py4s3aykiii31xq8g4wmd6693jvby0424pjrg0bna01apri"))
        (patches (search-patches "ansible-wrap-program-hack.patch"))))
     (build-system python-build-system)
     (native-inputs
@@ -1416,9 +1416,9 @@ of supported upstream metrics systems simultaneously.")
     (home-page "https://www.ansible.com/")
     (synopsis "Radically simple IT automation")
     (description "Ansible is a radically simple IT automation system.  It
-handles configuration-management, application deployment, cloud provisioning,
-ad-hoc task-execution, and multinode orchestration - including trivializing
-things like zero downtime rolling updates with load balancers.")
+handles configuration management, application deployment, cloud provisioning,
+ad hoc task execution, and multinode orchestration---including trivializing
+things like zero-downtime rolling updates with load balancers.")
     (license license:gpl3+)))
 
 (define-public cpulimit
