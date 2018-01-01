@@ -10,7 +10,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -610,6 +610,36 @@ my $object = new MyObject;
 memory_cycle_ok( $object );
 @end example")
     (license artistic2.0)))
+
+(define-public perl-test-mockmodule
+  (package
+    (name "perl-test-mockmodule")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GF/GFRANKS/"
+                           "Test-MockModule-" version ".tar.gz"))
+       (sha256
+        (base32 "0lwh6fvnc16r6d74vvh5h4b5a1spcslpjb3mcqbv23k01lm78wvl"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ;; For tests.
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (propagated-inputs
+     `(("perl-super" ,perl-super)))
+    (home-page "http://search.cpan.org/dist/Test-MockModule/")
+    (synopsis "Override subroutines in a module for unit testing")
+    (description
+     "@code{Test::MockModule} lets you temporarily redefine subroutines in other
+packages for the purposes of unit testing.  A @code{Test::MockModule} object is
+set up to mock subroutines for a given module.  The mocked object remembers the
+original subroutine so it can be easily restored.  This happens automatically
+when all @code{MockModule} objects for the given module go out of scope, or when
+you @code{unmock()} the subroutine.")
+    (license gpl3)))
 
 (define-public perl-test-mockobject
   (package
