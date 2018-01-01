@@ -3256,7 +3256,8 @@ VCF.")
     (synopsis "C library for reading/writing high-throughput sequencing data")
     (description
      "HTSlib is a C library for reading/writing high-throughput sequencing
-data.  It also provides the bgzip, htsfile, and tabix utilities.")
+data.  It also provides the @command{bgzip}, @command{htsfile}, and
+@command{tabix} utilities.")
     ;; Files under cram/ are released under the modified BSD license;
     ;; the rest is released under the Expat license
     (license (list license:expat license:bsd-3))))
