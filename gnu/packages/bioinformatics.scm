@@ -1439,7 +1439,7 @@ multiple sequence alignments.")
 (define-public python-pysam
   (package
     (name "python-pysam")
-    (version "0.11.2.2")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               ;; Test data is missing on PyPi.
@@ -1449,7 +1449,7 @@ multiple sequence alignments.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1cfqdxsqs3xhacns9n0271ck6wkc76px66ddjm91wfw2jxxfklvc"))
+                "0dzap2axin9cbbl0d825w294bpn00zagfm1sigamm4v2pm5bj9lp"))
               (modules '((guix build utils)))
               (snippet
                ;; Drop bundled htslib. TODO: Also remove samtools and bcftools.
