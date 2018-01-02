@@ -234,7 +234,7 @@ integrate Windows applications into your desktop.")
     (inputs `(("gtk+", gtk+)
               ("libva", libva)
               ,@(package-inputs wine)))
-    (synopsis "Implementation of the Windows API (staging branch)")
+    (synopsis "Implementation of the Windows API (staging branch, 32-bit only)")
     (description "Wine-Staging is the testing area of Wine.  It
 contains bug fixes and features, which have not been integrated into
 the development branch yet.  The idea of Wine-Staging is to provide
