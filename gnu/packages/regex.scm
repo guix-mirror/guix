@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,7 @@
 (define-public re2
    (package
      (name "re2")
-     (version "2017-12-01")
+     (version "2018-01-01")
      (source (origin
                (method url-fetch)
                (uri
@@ -38,7 +39,7 @@
                (file-name (string-append name "-" version ".tar.gz"))
                (sha256
                 (base32
-                 "03gv50hv7yaspx3ls8g8l1yj8nszbc3mplhcf4cr95fcsxy7wyb2"))))
+                 "1hhp8gi0lzw1mvnksb112rc9kcz4j9kjic7v6gbgzyfgk43996mr"))))
      (build-system gnu-build-system)
      (arguments
       `(#:modules ((guix build gnu-build-system)
