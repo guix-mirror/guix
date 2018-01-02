@@ -270,6 +270,7 @@ integrated into the main branch.")
        (modify-phases %standard-phases
          (add-after 'install 'copy-wine32-files
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; Copy the 32-bit binaries needed for WoW64.
              (copy-file (string-append (assoc-ref %build-inputs "wine-staging")
                                        "/bin/wine") (string-append (assoc-ref
                                        %outputs "out") "/bin/wine"))
@@ -277,6 +278,12 @@ integrated into the main branch.")
                                        "/bin/wine-preloader") (string-append
                                        (assoc-ref %outputs "out")
                                        "/bin/wine-preloader"))
+             ;; Copy the missing man file for the wine binary from wine-staging.
+             (system (string-append "gunzip < " (string-append (assoc-ref
+                                    %build-inputs "wine-staging")
+                                    "/share/man/man1/wine.1.gz") "> "
+                                    (string-append (assoc-ref %outputs "out")
+                                    "/share/man/man1/wine.1")))
              #t))
          (add-after 'configure 'patch-dlopen-paths
            ;; Hardcode dlopened sonames to absolute paths.
@@ -295,6 +302,6 @@ integrated into the main branch.")
        ,@(strip-keyword-arguments '(#:configure-flags #:make-flags #:phases
                                     #:system)
                                   (package-arguments wine-staging))))
-    (synopsis "Implementation of the Windows API (staging branch, WOW64
+    (synopsis "Implementation of the Windows API (staging branch, WoW64
 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
