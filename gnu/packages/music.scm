@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3834,3 +3835,27 @@ for the DSSI Soft Synth Interface.  A brief list of features:
 @end enumerate
 ")
     (license license:gpl2+)))
+
+(define-public libdiscid
+  (package
+    (name "libdiscid")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://ftp.musicbrainz.org/pub/musicbrainz/libdiscid/libdiscid-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1f9irlj3dpb5gyfdnb1m4skbjvx4d4hwiz2152f83m0d9jn47r7r"))))
+    (arguments `(#:test-target "check"))
+    (build-system cmake-build-system)
+    (home-page "https://musicbrainz.org/doc/libdiscid")
+    (synopsis "Disc id reader library")
+    (description "libdiscid is a C library for creating MusicBrainz and freedb
+disc IDs from audio CDs.  It reads a CD's table of contents (TOC) and generates
+an identifier which can be used to lookup the CD at MusicBrainz.  Additionally,
+it provides a submission URL for adding the disc ID to the database and gathers
+ISRCs and the MCN (=UPC/EAN) from disc.")
+    (license license:lgpl2.1+)))
