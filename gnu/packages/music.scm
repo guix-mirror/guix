@@ -114,6 +114,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
@@ -3858,4 +3859,36 @@ disc IDs from audio CDs.  It reads a CD's table of contents (TOC) and generates
 an identifier which can be used to lookup the CD at MusicBrainz.  Additionally,
 it provides a submission URL for adding the disc ID to the database and gathers
 ISRCs and the MCN (=UPC/EAN) from disc.")
+    (license license:lgpl2.1+)))
+
+(define-public libmusicbrainz
+  (package
+    (name "libmusicbrainz")
+    (version "5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/metabrainz/libmusicbrainz/releases/download/release-"
+             version "/libmusicbrainz-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ikb9igyyk28jm34raxfzkw2qyn4nzzwsymdyprp7cmvi6g2ajb7"))     ))
+    (build-system cmake-build-system)
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                   (replace 'check
+                     (lambda _
+                       (and
+                        ;; requires network connections
+                        ;; (zero? (system* "tests/mbtest"))
+                        (zero? (system* "tests/ctest"))))))))
+    (inputs `(("neon" ,neon)
+              ("libxml2" ,libxml2)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://musicbrainz.org/doc/libmusicbrainz")
+    (synopsis "MusicBrainz client library")
+    (description "The MusicBrainz Client Library (libmusicbrainz), also known as
+mb_client, is a development library geared towards developers who wish to add
+MusicBrainz lookup capabilities to their applications.")
     (license license:lgpl2.1+)))
