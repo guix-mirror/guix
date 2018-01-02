@@ -24,7 +24,7 @@
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2017 nee <nee-git@hidamari.blue>
+;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
@@ -142,6 +142,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages speech)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages vpn)
   #:use-module (gnu packages xorg)
@@ -7074,4 +7075,44 @@ photo-booth-like software, such as Cheese.")
     (description
      "Cheese uses your webcam to take photos and videos.  Cheese can also
 apply fancy special effects and lets you share the fun with others.")
+    (license license:gpl2+)))
+
+(define-public sound-juicer
+  (package
+    (name "sound-juicer")
+    (version "3.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "19qg4xv0f9rkq34lragkmhii1llxsa87llbl28i759b0ks4f6sny"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("iso-codes" ,iso-codes)
+       ("libbrasero-media3" ,brasero)
+       ("libcanberra" ,libcanberra)
+       ("libdiscid" ,libdiscid)
+       ("libmusicbrainz" ,libmusicbrainz)
+       ("neon" ,neon)))
+    (home-page "https://wiki.gnome.org/Apps/SoundJuicer")
+    (synopsis "Audio music cd ripper")
+    (description "Sound Juicer extracts audio from compact discs and convert it
+into audio files that a personal computer or digital audio player can play.
+It supports ripping to any audio codec supported by a GStreamer plugin, such as
+mp3, Ogg Vorbis and FLAC")
     (license license:gpl2+)))
