@@ -175,6 +175,7 @@ integrate Windows applications into your desktop.")
        (modify-phases %standard-phases
          (add-after 'install 'copy-wine32-files
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; Copy the 32-bit binaries needed for WoW64.
              (copy-file (string-append (assoc-ref %build-inputs "wine")
                                        "/bin/wine") (string-append (assoc-ref
                                        %outputs "out") "/bin/wine"))
@@ -182,6 +183,12 @@ integrate Windows applications into your desktop.")
                                        "/bin/wine-preloader") (string-append
                                        (assoc-ref %outputs "out")
                                        "/bin/wine-preloader"))
+             ;; Copy the missing man file for the wine binary from wine.
+             (system (string-append "gunzip < " (string-append (assoc-ref
+                                    %build-inputs "wine")
+                                    "/share/man/man1/wine.1.gz") "> "
+                                    (string-append (assoc-ref %outputs "out")
+                                    "/share/man/man1/wine.1")))
              #t))
          (add-after 'configure 'patch-dlopen-paths
            ;; Hardcode dlopened sonames to absolute paths.
@@ -200,7 +207,7 @@ integrate Windows applications into your desktop.")
        ,@(strip-keyword-arguments '(#:configure-flags #:make-flags #:phases
                                     #:system)
                                   (package-arguments wine))))
-    (synopsis "Implementation of the Windows API (WOW64 version)")
+    (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
 
 ;; TODO: This is wine development version, provided for historical reasons.
