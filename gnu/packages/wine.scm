@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -147,7 +147,7 @@
                   (format #f "~a\"~a\"" defso (find-so soname))))
                #t))))))
     (home-page "https://www.winehq.org/")
-    (synopsis "Implementation of the Windows API")
+    (synopsis "Implementation of the Windows API (32-bit only)")
     (description
      "Wine (originally an acronym for \"Wine Is Not an Emulator\") is a
 compatibility layer capable of running Windows applications.  Instead of
