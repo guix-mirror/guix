@@ -4,6 +4,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,11 @@
             remove-store-references
             wrapper?
             wrap-program
+            wrap-script
+
+            wrap-error?
+            wrap-error-program
+            wrap-error-type
 
             invoke
             invoke-error?
@@ -1042,6 +1048,11 @@ known as `nuke-refs' in Nixpkgs."
                              (put-u8 out (char->integer char))
                              result))))))
 
+(define-condition-type &wrap-error &error
+  wrap-error?
+  (program    wrap-error-program)
+  (type       wrap-error-type))
+
 (define (wrapper? prog)
   "Return #t if PROG is a wrapper as produced by 'wrap-program'."
   (and (file-exists? prog)
@@ -1145,6 +1156,120 @@ with definitions for VARS."
 
         (chmod prog-tmp #o755)
         (rename-file prog-tmp prog))))
+
+(define wrap-script
+  (let ((interpreter-regex
+         (make-regexp
+          (string-append "^#! ?(/[^ ]+/bin/("
+                         (string-join '("python[^ ]*"
+                                        "Rscript"
+                                        "perl"
+                                        "ruby"
+                                        "bash"
+                                        "sh") "|")
+                         "))( ?.*)")))
+        (coding-line-regex
+         (make-regexp
+          ".*#.*coding[=:][[:space:]]*([-a-zA-Z_0-9.]+)")))
+    (lambda* (prog #:key (guile (which "guile")) #:rest vars)
+      "Wrap the script PROG such that VARS are set first.  The format of VARS
+is the same as in the WRAP-PROGRAM procedure.  This procedure differs from
+WRAP-PROGRAM in that it does not create a separate shell script.  Instead,
+PROG is modified directly by prepending a Guile script, which is interpreted
+as a comment in the script's language.
+
+Special encoding comments as supported by Python are recreated on the second
+line.
+
+Note that this procedure can only be used once per file as Guile scripts are
+not supported."
+      (define update-env
+        (match-lambda
+          ((var sep '= rest)
+           `(setenv ,var ,(string-join rest sep)))
+          ((var sep 'prefix rest)
+           `(let ((current (getenv ,var)))
+              (setenv ,var (if current
+                               (string-append ,(string-join rest sep)
+                                              ,sep current)
+                               ,(string-join rest sep)))))
+          ((var sep 'suffix rest)
+           `(let ((current (getenv ,var)))
+              (setenv ,var (if current
+                               (string-append current ,sep
+                                              ,(string-join rest sep))
+                               ,(string-join rest sep)))))
+          ((var '= rest)
+           `(setenv ,var ,(string-join rest ":")))
+          ((var 'prefix rest)
+           `(let ((current (getenv ,var)))
+              (setenv ,var (if current
+                               (string-append ,(string-join rest ":")
+                                              ":" current)
+                               ,(string-join rest ":")))))
+          ((var 'suffix rest)
+           `(let ((current (getenv ,var)))
+              (setenv ,var (if current
+                               (string-append current ":"
+                                              ,(string-join rest ":"))
+                               ,(string-join rest ":")))))))
+      (let-values (((interpreter args coding-line)
+                    (call-with-ascii-input-file prog
+                      (lambda (p)
+                        (let ((first-match
+                               (false-if-exception
+                                (regexp-exec interpreter-regex (read-line p)))))
+                          (values (and first-match (match:substring first-match 1))
+                                  (and first-match (match:substring first-match 3))
+                                  (false-if-exception
+                                   (and=> (regexp-exec coding-line-regex (read-line p))
+                                          (lambda (m) (match:substring m 0))))))))))
+        (if interpreter
+            (let* ((header (format #f "\
+#!~a --no-auto-compile
+#!#; ~a
+#\\-~s
+#\\-~s
+"
+                                   guile
+                                   (or coding-line "Guix wrapper")
+                                   (cons 'begin (map update-env
+                                                     (match vars
+                                                       ((#:guile _ . vars) vars)
+                                                       (_ vars))))
+                                   `(let ((cl (command-line)))
+                                      (apply execl ,interpreter
+                                             (car cl)
+                                             (cons (car cl)
+                                                   (append
+                                                    ',(string-split args #\space)
+                                                    cl))))))
+                   (template (string-append prog ".XXXXXX"))
+                   (out      (mkstemp! template))
+                   (st       (stat prog))
+                   (mode     (stat:mode st)))
+              (with-throw-handler #t
+                (lambda ()
+                  (call-with-ascii-input-file prog
+                    (lambda (p)
+                      (format out header)
+                      (dump-port p out)
+                      (close out)
+                      (chmod template mode)
+                      (rename-file template prog)
+                      (set-file-time prog st))))
+                (lambda (key . args)
+                  (format (current-error-port)
+                          "wrap-script: ~a: error: ~a ~s~%"
+                          prog key args)
+                  (false-if-exception (delete-file template))
+                  (raise (condition
+                          (&wrap-error (program prog)
+                                       (type key))))
+                  #f)))
+            (raise (condition
+                    (&wrap-error (program prog)
+                                 (type 'no-interpreter-found)))))))))
 
 
 ;;;

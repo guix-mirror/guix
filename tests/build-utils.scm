@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -121,5 +122,106 @@
            (for-each delete-file '("foo" ".foo-real")))
          (and (zero? (close-pipe pipe))
               str))))))
+
+(let ((script-contents "\
+#!/anything/cabbage-bash-1.2.3/bin/sh
+
+echo hello world"))
+
+  (test-equal "wrap-script, simple case"
+    (string-append
+     (format #f "\
+#!GUILE --no-auto-compile
+#!#; Guix wrapper
+#\\-~s
+#\\-~s
+"
+             '(begin (let ((current (getenv "GUIX_FOO")))
+                       (setenv "GUIX_FOO"
+                               (if current
+                                   (string-append "/some/path:/some/other/path"
+                                                  ":" current)
+                                   "/some/path:/some/other/path"))))
+             '(let ((cl (command-line)))
+                (apply execl "/anything/cabbage-bash-1.2.3/bin/sh"
+                       (car cl)
+                       (cons (car cl)
+                             (append '("") cl)))))
+     script-contents)
+    (call-with-temporary-directory
+     (lambda (directory)
+       (let ((script-file-name (string-append directory "/foo")))
+         (call-with-output-file script-file-name
+           (lambda (port)
+             (format port script-contents)))
+         (chmod script-file-name #o777)
+
+         (mock ((guix build utils) which (const "GUILE"))
+               (wrap-script script-file-name
+                            `("GUIX_FOO" prefix ("/some/path"
+                                                 "/some/other/path"))))
+         (let ((str (call-with-input-file script-file-name get-string-all)))
+           (with-directory-excursion directory
+             (delete-file "foo"))
+           str))))))
+
+(let ((script-contents "\
+#!/anything/cabbage-bash-1.2.3/bin/python3 -and -args
+# vim:fileencoding=utf-8
+print('hello world')"))
+
+  (test-equal "wrap-script, with encoding declaration"
+    (string-append
+     (format #f "\
+#!MYGUILE --no-auto-compile
+#!#; # vim:fileencoding=utf-8
+#\\-~s
+#\\-~s
+"
+             '(begin (let ((current (getenv "GUIX_FOO")))
+                       (setenv "GUIX_FOO"
+                               (if current
+                                   (string-append "/some/path:/some/other/path"
+                                                  ":" current)
+                                   "/some/path:/some/other/path"))))
+             `(let ((cl (command-line)))
+                (apply execl "/anything/cabbage-bash-1.2.3/bin/python3"
+                       (car cl)
+                       (cons (car cl)
+                             (append '("" "-and" "-args") cl)))))
+     script-contents)
+    (call-with-temporary-directory
+     (lambda (directory)
+       (let ((script-file-name (string-append directory "/foo")))
+         (call-with-output-file script-file-name
+           (lambda (port)
+             (format port script-contents)))
+         (chmod script-file-name #o777)
+
+         (wrap-script script-file-name
+                      #:guile "MYGUILE"
+                      `("GUIX_FOO" prefix ("/some/path"
+                                           "/some/other/path")))
+         (let ((str (call-with-input-file script-file-name get-string-all)))
+           (with-directory-excursion directory
+             (delete-file "foo"))
+           str))))))
+
+(test-assert "wrap-script, raises condition"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (let ((script-file-name (string-append directory "/foo")))
+       (call-with-output-file script-file-name
+         (lambda (port)
+           (format port "This is not a script")))
+       (chmod script-file-name #o777)
+       (catch 'srfi-34
+         (lambda ()
+           (wrap-script script-file-name
+                        #:guile "MYGUILE"
+                        `("GUIX_FOO" prefix ("/some/path"
+                                             "/some/other/path"))))
+         (lambda (type obj)
+           (wrap-error? obj)))))))
 
 (test-end)
