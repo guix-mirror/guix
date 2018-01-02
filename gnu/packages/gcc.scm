@@ -363,7 +363,18 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "08yggr18v373a1ihj0rg2vd6psnic42b518xcgp3r9k81xz1xyr2"))
               (patches (search-patches "gcc-arm-link-spec-fix.patch"
-                                       "gcc-fix-texi2pod.patch"))))
+                                       "gcc-fix-texi2pod.patch"))
+              (modules '((guix build utils)))
+              ;; This is required for building with glibc-2.26.
+              ;; https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81712
+              (snippet
+               '(for-each
+                  (lambda (dir)
+                    (substitute* (string-append "libgcc/config/"
+                                                dir "/linux-unwind.h")
+                      (("struct ucontext") "ucontext_t")))
+                  '("aarch64" "alpha" "bfin" "i386" "m68k"
+                    "pa" "sh" "tilepro" "xtensa")))))
     (supported-systems %supported-systems)
     (inputs
      `(("isl" ,isl-0.11)
