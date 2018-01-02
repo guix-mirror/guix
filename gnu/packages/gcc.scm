@@ -444,10 +444,23 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "1m0lr7938lw5d773dkvwld90hjlcq2282517d1gwvrfzmwgg42w5"))
-              (patches (search-patches "gcc-strmov-store-file-names.patch"
+              (patches (search-patches "gcc-libsanitizer-fix.patch"
+                                       "gcc-strmov-store-file-names.patch"
                                        "gcc-6-source-date-epoch-1.patch"
                                        "gcc-6-source-date-epoch-2.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))))
+                                       "gcc-5.0-libvtv-runpath.patch"))
+              (modules '((guix build utils)))
+              ;; This is required for building with glibc-2.26.
+              ;; This can be removed when gcc-6.5.0 is released.
+              ;; https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81712
+              (snippet
+               '(for-each
+                  (lambda (dir)
+                    (substitute* (string-append "libgcc/config/"
+                                                dir "/linux-unwind.h")
+                      (("struct ucontext") "ucontext_t")))
+                  '("aarch64" "alpha" "bfin" "i386" "m68k" "nios2"
+                    "pa" "sh" "tilepro" "xtensa")))))
     (inputs
      `(("isl" ,isl)
        ,@(package-inputs gcc-4.7)))))
