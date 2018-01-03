@@ -826,7 +826,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtasn1-CVE-2017-10790.patch		\
   %D%/packages/patches/libtheora-config-guess.patch		\
-  %D%/packages/patches/libtirpc-CVE-2017-8779.patch		\
+  %D%/packages/patches/libtirpc-missing-headers.patch		\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libusb-for-axoloti.patch			\
