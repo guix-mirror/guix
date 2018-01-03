@@ -1491,7 +1491,7 @@ repository\" with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "2.2")
+    (version "2.4")
     (source
      (origin
        (method url-fetch)
@@ -1503,11 +1503,9 @@ repository\" with git-annex.")
              (string-append
               "https://www.fossil-scm.org/index.html/uv/"
               "fossil-src-" version ".tar.gz")))
-       (patches (search-patches "fossil-CVE-2017-17459.patch"))
-       (patch-flags '("-p0"))
        (sha256
         (base32
-         "0wfgacfg29dkl0c3l1rp5ji0kraa64gcbg5lh8p4m7mqdqcq53wv"))))
+         "0add35lk2ac4qg29d7ygj7pskv8lfln33f3kgf6x3548msv9hd6j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)                     ;for configuration only
