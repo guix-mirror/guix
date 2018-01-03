@@ -76,8 +76,8 @@ console.  It supports OPML import/exports, HTML rendering, podcast (podbeuter),
 offline reading, searching and storing articles to your filesystem, and many
 more features.  Its user interface is coherent, easy to use, and might look
 common to users of @command{mutt} and @command{slrn}.")
-    (license (list license:gpl2+ ; filter/*
-                   license:x11))))
+    (license (list license:gpl2+        ; filter/*
+                   license:expat))))    ; everything else
 
 (define-public newsboat
   (package
