@@ -263,7 +263,8 @@ plugins, as well as code to create plugins, or complete applications.")
                             "/include/OpenEXR"))
        #:phases
        (modify-phases %standard-phases
-         ;; Ensure that icons are found at runtime
+         ;; Ensure that icons are found at runtime.
+         ;; This works around <https://bugs.gnu.org/22138>.
          (add-after 'install 'wrap-executable
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
