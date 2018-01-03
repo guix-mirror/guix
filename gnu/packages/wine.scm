@@ -271,7 +271,7 @@ integrated into the main branch.")
        (modify-phases %standard-phases
          (add-after 'install 'copy-wine32-binaries
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((wine32 (assoc-ref %build-inputs "wine"))
+             (let* ((wine32 (assoc-ref %build-inputs "wine-staging"))
                     (out (assoc-ref %outputs "out")))
                ;; Copy the 32-bit binaries needed for WoW64.
                (copy-file (string-append wine32 "/bin/wine")
@@ -281,7 +281,7 @@ integrated into the main branch.")
                #t)))
          (add-after 'compress-documentation 'copy-wine32-manpage
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((wine32 (assoc-ref %build-inputs "wine"))
+             (let* ((wine32 (assoc-ref %build-inputs "wine-staging"))
                     (out (assoc-ref %outputs "out")))
                ;; Copy the missing man file for the wine binary from
                ;; wine-staging.
