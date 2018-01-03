@@ -5381,14 +5381,14 @@ plugins that intend to support Flake8 2.x and 3.x simultaneously.")
 (define-public python-mistune
   (package
     (name "python-mistune")
-    (version "0.7.3")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mistune" version))
        (sha256
         (base32
-         "04xpk1zvslhq3xpnf01g3ag0dy9wfv4z28p093r8k49vvxlyil11"))))
+         "06b662p6kf46wh2jsabaqhaq4bz1srh2zxkrnx4yg96azlxw645w"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
