@@ -87,7 +87,8 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
      `(#:configure-flags
        `("--with-systemdsystemunitdir=no" "--enable-warmstarts")))
     (inputs
-     `(("libtirpc" ,libtirpc)))
+     `(("libnsl" ,libnsl)
+       ("libtirpc" ,libtirpc)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://rpcbind.sourceforge.net/")
