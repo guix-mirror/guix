@@ -30,6 +30,7 @@
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
+;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1549,19 +1550,19 @@ trees (LSM), for sustained throughput under random insert workloads.")
 (define-public guile-wiredtiger
   (package
     (name "guile-wiredtiger")
-    (version "20171113.6cbc51da")
+    (version "0.6.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://framagit.org/a-guile-mind/guile-wiredtiger.git")
-                    (commit "6cbc51dab95d28fe31ae025fbdd88f3ecbf2111b")))
+                    (commit "070ed68139d99c279f058a6c293f00292d35dbd7")))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0x3qwpgch5pg0k21kc792h4y6b36a8xd1zkfq8ar2l2mqmpzkzyd"))))
+                "14rna97wsylajzxfif95wnblq85csgcfc666gh5dl0ssgd7x8llh"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f
+     '(#:parallel-tests? #f  ;; tests can't be run in parallel, yet.
        #:configure-flags
        (list (string-append "--with-libwiredtiger-prefix="
                             (assoc-ref %build-inputs "wiredtiger")))
@@ -1570,15 +1571,9 @@ trees (LSM), for sustained throughput under random insert workloads.")
        (modify-phases %standard-phases
          (add-after 'unpack 'bootstrap
            (lambda _
-             (zero? (system* "sh" "bootstrap"))))
-         (add-before 'bootstrap 'remove-bundled-dependencies
-           (lambda _
-             ;; TODO: Remove microkanren.scm when we have a separate package
-             ;; for it.
-             (delete-file "htmlprag.scm")
-             (substitute* "Makefile.am"
-               (("htmlprag\\.scm") ""))
-             #t)))))
+             (invoke "sh" "bootstrap"))))))
+    ;; TODO: Remove microkanren.scm when we have a separate package
+    ;; for it.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -1588,10 +1583,10 @@ trees (LSM), for sustained throughput under random insert workloads.")
        ("guile" ,guile-2.2)))
     (propagated-inputs
      `(("guile-lib" ,guile-lib)))                 ;for (htmlprag)
-    (synopsis "Wired Tiger bindings for GNU Guile")
+    (synopsis "WiredTiger bindings for GNU Guile")
     (description
      "This package provides Guile bindings to the WiredTiger ``NoSQL''
-database.")
+database.  Various higher level database abstractions.")
     (home-page "https://framagit.org/a-guile-mind/guile-wiredtiger")
     (license license:gpl3+)))
 
