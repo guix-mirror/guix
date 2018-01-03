@@ -394,7 +394,7 @@ extracting icontainer icon files.")
    (source
      (origin
        (method url-fetch)
-       (uri (string-append "ftp://download.osgeo.org/libtiff/tiff-"
+       (uri (string-append "http://download.osgeo.org/libtiff/tiff-"
                            version ".tar.gz"))
        (sha256
         (base32
