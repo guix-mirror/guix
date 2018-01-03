@@ -64,7 +64,7 @@
        ("ruby" ,ruby))) ; for tests
     (inputs
      `(("curl" ,curl)
-       ("json-c" ,json-c)
+       ("json-c" ,json-c-0.12)      ; check whether json-c-0.12 can be removed
        ("ncurses" ,ncurses)
        ("stfl" ,stfl)
        ("sqlite" ,sqlite)
