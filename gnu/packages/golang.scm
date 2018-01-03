@@ -27,8 +27,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages base)
@@ -377,3 +379,76 @@ sequential processes (CSP) concurrent programming features added.")
     (supported-systems %supported-systems)))
 
 (define-public go go-1.9)
+
+(define-public go-github-com-alsm-ioprogress
+  (let ((commit "063c3725f436e7fba0c8f588547bee21ffec7ac5")
+        (revision "0"))
+    (package
+      (name "go-github-com-alsm-ioprogress")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/alsm/ioprogress.git")
+                       (commit commit)))
+                (sha256
+                 (base32
+                  "10ym5qlq77nynmkxbk767f2hfwyxg2k7hrzph05hvgzv833dhivh"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/alsm/ioprogress"))
+      (synopsis "Textual progress bars in Go")
+      (description "@code{ioprogress} is a Go library with implementations of
+@code{io.Reader} and @code{io.Writer} that draws progress bars.  The primary use
+case for these are for command-line applications but alternate progress bar
+writers can be supplied for alternate environments.")
+      (home-page "https://github.com/alsm/ioprogress")
+      (license license:expat))))
+
+(define-public go-github-com-aki237-nscjar
+  (let ((commit "e2df936ddd6050d30dd90c7214c02b5019c42f06")
+        (revision "0"))
+    (package
+      (name "go-github-com-aki237-nscjar")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/aki237/nscjar.git")
+                       (commit commit)))
+                (sha256
+                 (base32
+                  "03y7zzq12qvhsq86lb06sgns8xrkblbn7i7wd886wk3zr5574b96"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/aki237/nscjar"))
+      (synopsis "Handle Netscape / Mozilla cookies")
+      (description "@code{nscjar} is a Go library used to parse and output
+Netscape/Mozilla's old-style cookie files.  It also implements a simple cookie
+jar struct to manage the cookies added to the cookie jar.")
+      (home-page "https://github.com/aki237/nscjar")
+      (license license:expat))))
+
+(define-public go-github-com-davidjpeacock-cli
+  (let ((commit "8ba6f23b6e36d03666a14bd9421f5e3efcb59aca")
+        (revision "0"))
+    (package
+      (name "go-github-com-davidjpeacock-cli")
+      (version (git-version "1.19.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/davidjpeacock/cli.git")
+                       (commit commit)))
+                (sha256
+                 (base32
+                  "01s53ny3p0fdx64rnwcnmjj4xpc5adihnh6islsfq5z1ph2phhnj"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/davidjpeacock/cli"))
+      (synopsis "Build command-line interfaces in Go")
+      (description "@code{cli} is a package for building command line
+interfaces in Go.  The goal is to enable developers to write fast and
+distributable command line applications in an expressive way.")
+      (home-page "https://github.com/davidjpeacock/cli")
+      (license license:expat))))

@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Raoul Bonnal <ilpuccio.febo@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -493,6 +493,20 @@ BED, GFF/GTF, VCF.")
                (base32
                 "0ykjbps1y3z3085q94npw8i9x5gldc6shy8vlc08v76zljsm07hv"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executables
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (script)
+                  (wrap-program (string-append out "/bin/" script)
+                    `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))))
+                '("create_annotations_files.bash"
+                  "create_metaplots.bash"
+                  "Ribotaper_ORF_find.sh"
+                  "Ribotaper.sh"))))))))
     (inputs
      `(("bedtools" ,bedtools-2.18)
        ("samtools" ,samtools-0.1)
@@ -1439,7 +1453,7 @@ multiple sequence alignments.")
 (define-public python-pysam
   (package
     (name "python-pysam")
-    (version "0.11.2.2")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               ;; Test data is missing on PyPi.
@@ -1449,7 +1463,7 @@ multiple sequence alignments.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1cfqdxsqs3xhacns9n0271ck6wkc76px66ddjm91wfw2jxxfklvc"))
+                "0dzap2axin9cbbl0d825w294bpn00zagfm1sigamm4v2pm5bj9lp"))
               (modules '((guix build utils)))
               (snippet
                ;; Drop bundled htslib. TODO: Also remove samtools and bcftools.
@@ -3213,7 +3227,7 @@ VCF.")
 (define-public htslib
   (package
     (name "htslib")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3221,7 +3235,7 @@ VCF.")
                     version "/htslib-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bcjmnbwp2bib1z1bkrp95w9v2syzdwdfqww10mkb1hxlmg52ax0"))))
+                "1jsca3hg4rbr6iqq6imkj4lsvgl8g9768bcmny3hlff2w25vx24m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3242,7 +3256,8 @@ VCF.")
     (synopsis "C library for reading/writing high-throughput sequencing data")
     (description
      "HTSlib is a C library for reading/writing high-throughput sequencing
-data.  It also provides the bgzip, htsfile, and tabix utilities.")
+data.  It also provides the @command{bgzip}, @command{htsfile}, and
+@command{tabix} utilities.")
     ;; Files under cram/ are released under the modified BSD license;
     ;; the rest is released under the Expat license
     (license (list license:expat license:bsd-3))))

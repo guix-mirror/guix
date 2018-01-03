@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
@@ -42,6 +42,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config))
@@ -259,26 +260,6 @@ variable ANY_MOOSE to be Moose or Mouse.")
     (synopsis "Configuration files and command line parsing")
     (description "AppConfig is a bundle of Perl5 modules for reading
 configuration files and parsing command line arguments.")
-    (license (package-license perl))))
-
-(define-public perl-archive-zip
-  (package
-    (name "perl-archive-zip")
-    (version "1.30")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://cpan/authors/id/A/AD/ADAMK/Archive-Zip-"
-             version ".tar.gz"))
-       (sha256
-        (base32
-         "0633zah5z9njiqnvy3vh42fjymncmil1jdfb7d18w8xpfzzp5d7q"))))
-    (build-system perl-build-system)
-    (synopsis "Perl API to zip files")
-    (description "The Archive::Zip module allows a Perl program to create,
-manipulate, read, and write Zip archive files.")
-    (home-page "http://search.cpan.org/~phred/Archive-Zip-1.37/lib/Archive/Zip.pm")
     (license (package-license perl))))
 
 (define-public perl-array-utils
@@ -7105,6 +7086,32 @@ return value is the sub.")
 The idea is just to fool caller().  All the really naughty bits of Tcl's
 uplevel() are avoided.")
     (license (package-license perl))))
+
+(define-public perl-super
+  (package
+    (name "perl-super")
+    (version "1.20141117")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CH/CHROMATIC/"
+                           "SUPER-" version ".tar.gz"))
+       (sha256
+        (base32 "1cn05kacg0xfbm1zzksm2yx2pnrzqja4d9163cxv3sdfc1yhwqhs"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-sub-identify" ,perl-sub-identify)))
+    (home-page "http://search.cpan.org/dist/SUPER/")
+    (synopsis "Control superclass method dispatching")
+    (description
+     "When subclassing a class, you may occasionally want to dispatch control to
+the superclass---at least conditionally and temporarily.  This module provides
+nicer equivalents to the native Perl syntax for calling superclasses, along with
+a universal @code{super} method to determine a class' own superclass, and better
+support for run-time mix-ins and roles.")
+    (license perl-license)))
 
 (define-public perl-svg
   (package

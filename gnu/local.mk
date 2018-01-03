@@ -119,6 +119,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/dejagnu.scm			\
   %D%/packages/dico.scm				\
   %D%/packages/dictionaries.scm			\
+  %D%/packages/digest.scm			\
   %D%/packages/direct-connect.scm		\
   %D%/packages/disk.scm				\
   %D%/packages/display-managers.scm		\
@@ -639,6 +640,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
   %D%/packages/patches/fontconfig-remove-debug-printf.patch	\
+  %D%/packages/patches/fossil-CVE-2017-17459.patch		\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
   %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
   %D%/packages/patches/freeimage-fix-build-with-gcc-5.patch	\
@@ -672,6 +674,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
   %D%/packages/patches/ghostscript-runpath.patch		\
+  %D%/packages/patches/gimp-CVE-2017-17784.patch		\
+  %D%/packages/patches/gimp-CVE-2017-17785.patch		\
+  %D%/packages/patches/gimp-CVE-2017-17786.patch		\
+  %D%/packages/patches/gimp-CVE-2017-17787.patch		\
+  %D%/packages/patches/gimp-CVE-2017-17789.patch		\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-respect-datadir.patch		\
   %D%/packages/patches/glib-tests-timer.patch			\
@@ -738,7 +745,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/heimdal-CVE-2017-11103.patch		\
   %D%/packages/patches/hmmer-remove-cpu-specificity.patch	\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
-  %D%/packages/patches/httpd-CVE-2017-9798.patch		\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hydra-disable-darcs-test.patch		\

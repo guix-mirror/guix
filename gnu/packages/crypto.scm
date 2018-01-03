@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
@@ -595,6 +595,13 @@ data on your platform, so the seed itself will be as random as possible.
        (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-native-optimisation
+           ;; This package installs more than just headers.  Ensure that the
+           ;; cryptest.exe binary & static library aren't CPU model specific.
+           (lambda _
+             (substitute* "GNUmakefile"
+               ((" -march=native") ""))
+             #t))
          (delete 'configure))))
     (native-inputs
      `(("unzip" ,unzip)))

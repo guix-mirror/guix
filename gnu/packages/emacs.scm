@@ -6575,3 +6575,28 @@ Feautures:
      "@code{evil-matchit} is a minor mode for jumping between matching tags in
 evil mode using @kbd{%}.  It is a port of @code{matchit} for Vim.")
     (license license:gpl3+)))
+
+(define-public emacs-evil-smartparens
+  (package
+    (name "emacs-evil-smartparens")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/expez/evil-smartparens/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bwzdd3054d407d5j4m3njsbvmc9r8zzp33m32pj3b3irxrl68q0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)
+       ("emacs-smartparens" ,emacs-smartparens)))
+    (home-page "https://github.com/expez/evil-smartparens")
+    (synopsis "Emacs Evil integration for Smartparens")
+    (description "@code{emacs-evil-smartparens} is an Emacs minor mode which
+makes Evil play nice with Smartparens.  Evil is an Emacs minor mode that
+emulates Vim features and provides Vim-like key bindings.")
+    (license license:gpl3+)))

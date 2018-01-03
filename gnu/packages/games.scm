@@ -4919,7 +4919,8 @@ fight against their plot and save his fellow rabbits from slavery.")
        ("python-2" ,python-2)))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:make-flags '("config=release" "verbose=1" "-C" "build/workspaces/gcc")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-bundles
            (lambda _
@@ -4946,17 +4947,12 @@ fight against their plot and save his fellow rabbits from slavery.")
                  (zero? (system* "./update-workspaces.sh"
                                  (string-append "--libdir=" lib)
                                  (string-append "--datadir=" data)
-                                 "--minimal-flags"
                                  ;; TODO: "--with-system-nvtt"
                                  "--with-system-mozjs38"))))))
-         (add-before 'build 'chdir
-           (lambda _
-             (chdir "build/workspaces/gcc")
-             #t))
          (delete 'check)
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (chdir "../../../binaries")
+             (chdir "binaries")
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (lib (string-append out "/lib"))

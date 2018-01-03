@@ -26,10 +26,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gsasl)
   #:use-module (gnu packages libidn)
@@ -131,3 +134,31 @@ tunneling, and so on.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
+
+(define-public kurly
+  (package
+    (name "kurly")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/davidjpeacock/kurly.git")
+                     (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1q192f457sjypgvwq7grrf8gq8w272p3zf1d5ppc20mriqm0mbc3"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/davidjpeacock/kurly"))
+    (inputs
+     `(("go-github-com-alsm-ioprogress" ,go-github-com-alsm-ioprogress)
+       ("go-github-com-aki237-nscjar" ,go-github-com-aki237-nscjar)
+       ("go-github-com-davidjpeacock-cli" ,go-github-com-davidjpeacock-cli)))
+    (synopsis "Command-line HTTP client")
+    (description "kurly is an alternative to the @code{curl} program written in
+Go.  kurly is designed to operate in a similar manner to curl, with select
+features.  Notably, kurly is not aiming for feature parity, but common flags and
+mechanisms particularly within the HTTP(S) realm are to be expected.  kurly does
+not offer a replacement for libcurl.")
+    (home-page "https://github.com/davidjpeacock/kurly")
+    (license license:asl2.0)))

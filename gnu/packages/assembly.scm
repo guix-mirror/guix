@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,14 +35,14 @@
 (define-public nasm
   (package
     (name "nasm")
-    (version "2.13.01")
+    (version "2.13.02")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.nasm.us/pub/nasm/releasebuilds/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0plsvcwxc7q3llr3bz10prwq1gn4ll38aqmv0yzfqcq4iw0160ma"))))
+                "0mqp559rypkv4cz3wb8crkp0s3a3lhcprvypm3vqz0x695gj7hwa"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)  ;for doc and test target
                      ("texinfo" ,texinfo)))

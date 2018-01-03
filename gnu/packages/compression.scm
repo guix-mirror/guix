@@ -10,7 +10,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
@@ -58,6 +58,7 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
@@ -1810,24 +1811,27 @@ recreates the stored directory structure by default.")
      "ZZipLib is a library based on zlib for accessing zip files.")
     (license license:lgpl2.0+)))
 
-(define-public perl-zip
+(define-public perl-archive-zip
   (package
-    (name "perl-zip")
-    (version "1.59")
+    (name "perl-archive-zip")
+    (version "1.60")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/A/AD/ADAMK/Archive-Zip-"
+             "mirror://cpan/authors/id/P/PH/PHRED/Archive-Zip-"
              version ".tar.gz"))
        (sha256
         (base32
-         "0m31qlppg65vh32pwxkwjby02q70abx49d2yk6vfd4585fqb27cx"))))
+         "02y2ylq83hy9kgj57sc0239x65br9sm98c0chsm61s08yc2mpiza"))))
     (build-system perl-build-system)
-    (synopsis  "Provides an interface to ZIP archive files")
-    (description "The Archive::Zip module allows a Perl program to create,
-manipulate, read, and write Zip archive files.")
-    (home-page "http://search.cpan.org/~adamk/Archive-Zip-1.30/")
+    (native-inputs
+     ;; For tests.
+     `(("perl-test-mockmodule" ,perl-test-mockmodule)))
+    (synopsis  "Provides an interface to Zip archive files")
+    (description "The @code{Archive::Zip} module allows a Perl program to
+create, manipulate, read, and write Zip archive files.")
+    (home-page "http://search.cpan.org/dist/Archive-Zip/")
     (license license:perl-license)))
 
 (define-public libzip
