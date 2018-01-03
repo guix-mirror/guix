@@ -214,14 +214,14 @@ many more.")
 (define-public ilmbase
   (package
     (name "ilmbase")
-    (version "2.2.0")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/openexr/ilmbase-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1izddjwbh1grs8080vmaix72z469qy29wrvkphgmqmcm0sv1by7c"))
+                "17k0hq19wplx9s029kjrq6c51x2ryrfmaavcappkd0g67gk0dhna"))
               (patches (search-patches "ilmbase-fix-tests.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.openexr.com/")
