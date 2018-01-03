@@ -23,6 +23,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix build-system gnu))
@@ -95,3 +97,39 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
 universal addresses.")
     (license bsd-3)))
 
+
+(define-public libnsl
+  (package
+    (name "libnsl")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/thkukuk/libnsl/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y6kmxmv1difzvdhx7grqzw0j2v2b74mg4kjb803m8jcgkqqx8m5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (invoke "sh" "autogen.sh"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libtirpc" ,libtirpc)))
+    (synopsis "Public client interface for NIS(YP) and NIS+")
+    (description "Libnsl is the public client interface for the Network
+Information Service / Yellow Pages (NIS/YP) and NIS+.  It includes IPv6 support.
+This library was part of glibc < 2.26, but is now distributed separately.")
+    (home-page "https://github.com/thkukuk/libnsl")
+    ;; The package is distributed under the LGPL 2.1. Some files in
+    ;; 'src/nisplus/' are LGPL 2.1+, and some files in 'src/rpcsvc/' are BSD-3.
+    (license lgpl2.1)))
