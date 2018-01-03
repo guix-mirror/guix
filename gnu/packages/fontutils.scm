@@ -436,6 +436,8 @@ resolution.")
               (sha256
                (base32 "0239zvfan56w7vrppriwy77fzb10ag9llaz15nsraps2a2x6di3v"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("freetype" ,freetype)))
     (home-page "http://www.nongnu.org/m17n/")
