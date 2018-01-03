@@ -173,23 +173,24 @@ integrate Windows applications into your desktop.")
              (string-append "libdir=" %output "/lib/wine64"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'copy-wine32-files
+         (add-after 'install 'copy-wine32-binaries
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Copy the 32-bit binaries needed for WoW64.
-             (copy-file (string-append (assoc-ref %build-inputs "wine")
-                                       "/bin/wine") (string-append (assoc-ref
-                                       %outputs "out") "/bin/wine"))
-             (copy-file (string-append (assoc-ref %build-inputs "wine")
-                                       "/bin/wine-preloader") (string-append
-                                       (assoc-ref %outputs "out")
-                                       "/bin/wine-preloader"))
-             ;; Copy the missing man file for the wine binary from wine.
-             (system (string-append "gunzip < " (string-append (assoc-ref
-                                    %build-inputs "wine")
-                                    "/share/man/man1/wine.1.gz") "> "
-                                    (string-append (assoc-ref %outputs "out")
-                                    "/share/man/man1/wine.1")))
-             #t))
+             (let* ((wine32 (assoc-ref %build-inputs "wine"))
+                    (out (assoc-ref %outputs "out")))
+               ;; Copy the 32-bit binaries needed for WoW64.
+               (copy-file (string-append wine32 "/bin/wine")
+                          (string-append out "/bin/wine"))
+               (copy-file (string-append wine32 "/bin/wine-preloader")
+                          (string-append out "/bin/wine-preloader"))
+               #t)))
+         (add-after 'compress-documentation 'copy-wine32-manpage
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((wine32 (assoc-ref %build-inputs "wine"))
+                    (out (assoc-ref %outputs "out")))
+               ;; Copy the missing man file for the wine binary from wine.
+               (copy-file (string-append wine32 "/share/man/man1/wine.1.gz")
+                          (string-append out "/share/man/man1/wine.1.gz"))
+               #t)))
          (add-after 'configure 'patch-dlopen-paths
            ;; Hardcode dlopened sonames to absolute paths.
            (lambda _
