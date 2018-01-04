@@ -1646,6 +1646,35 @@ you use the most from the command line and allows you to \"jump\" to
 frequently used directories by typing only a small pattern.")
     (license license:gpl3+)))
 
+(define-public fasd
+  (package
+    (name "fasd")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/clvv/fasd.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1awi71jdv3mhjrmar2d4z1i90kn7apd7aq1w31sh6w4yibz9kiyj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))  ;no configuration
+       #:tests? #f                      ;no tests
+       #:make-flags (list (string-append "PREFIX=" %output))))
+    (home-page "https://github.com/clvv/fasd")
+    (synopsis "Quick access to files and directories for shells")
+    (description
+     "Fasd (pronounced similar to \"fast\") is a command-line productivity
+booster.  Fasd offers quick access to files and directories for POSIX shells.
+It is inspired by tools like autojump, z, and v.  Fasd keeps track of files
+and directories you have accessed so that you can quickly reference them in
+the command line.")
+    (license license:x11)))
+
 (define-public iftop
   (package
     (name "iftop")
