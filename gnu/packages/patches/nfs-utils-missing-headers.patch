@@ -1,0 +1,19 @@
+Fix compilation failure with glibc 2.26 caused by missing type
+declarations:
+
+------
+rpc.c: In function ‘nsm_recv_getport’:
+rpc.c:469:13: error: ‘UINT16_MAX’ undeclared (first use in this function)
+  if (port > UINT16_MAX) {
+------
+
+--- a/support/nsm/rpc.c.orig	2016-08-03 20:25:15.000000000 +0200
++++ b/support/nsm/rpc.c	2017-08-26 07:41:11.884000000 +0200
+@@ -40,6 +40,7 @@
+ 
+ #include <time.h>
+ #include <stdbool.h>
++#include <stdint.h>
+ #include <string.h>
+ #include <unistd.h>
+ #include <fcntl.h>

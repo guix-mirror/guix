@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +47,7 @@
              (uri (string-append
                    "mirror://kernel.org/linux/utils/nfs-utils/" version
                    "/nfs-utils-" version ".tar.xz"))
+             (patches (search-patches "nfs-utils-missing-headers.patch"))
              (sha256
               (base32
                "1vqrqzhg9nh2wj1icp7k8v9dibgnn521b45np79nnkmqf16bbbhg"))))
