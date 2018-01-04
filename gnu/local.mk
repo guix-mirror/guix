@@ -709,6 +709,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
+  %D%/packages/patches/gpm-glibc-2.26.patch			\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groff-source-date-epoch.patch		\

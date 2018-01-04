@@ -3045,6 +3045,7 @@ write access to exFAT devices.")
               (uri (string-append
                     "http://www.nico.schottelius.org/software/gpm/archives/gpm-"
                     version ".tar.bz2"))
+              (patches (search-patches "gpm-glibc-2.26.patch"))
               (sha256
                (base32
                 "13d426a8h403ckpc8zyf7s2p5rql0lqbg2bv0454x0pvgbfbf4gh"))))
