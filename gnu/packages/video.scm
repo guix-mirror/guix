@@ -22,6 +22,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1357,6 +1358,12 @@ players, like VLC or MPlayer.")
                (base32
                 "0ayqiq0psq18rcp6f5pz82sxsq66v0kwv0y55dbrcg68plnxy71j"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-libdvdcss=yes")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libdvdcss" ,libdvdcss)))
     (home-page "http://dvdnav.mplayerhq.hu/")
     (synopsis "Library for reading video DVDs")
     (description
