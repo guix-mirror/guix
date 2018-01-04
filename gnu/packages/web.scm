@@ -4765,6 +4765,13 @@ handling many of the web standards in use today.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'patch-perl
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((perl (assoc-ref inputs "perl")))
+               (substitute* "surfraw.IN"
+                 (("perl -e")
+                  (string-append perl "/bin/perl -e")))
+               #t)))
          (add-after 'install 'compress-elvi.1sr
            (lambda* (#:key outputs #:allow-other-keys)
              ;; The manpages of the elvis are symlinks to elvi.1sr.gz
