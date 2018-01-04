@@ -48,7 +48,7 @@
     "The file command is a file type guesser, a command-line tool that tells
 you in words what kind of data a file contains.  It does not rely on filename
 extensions to tell you the type of a file, but looks at the actual contents
-of the file.")
+of the file.  This package provides the libmagic library.")
    (license bsd-2)
    (home-page "http://www.darwinsys.com/file/")))
 
