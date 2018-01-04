@@ -544,11 +544,12 @@ return it; otherwise, return 404."
                                 #:compression compression)))
     (if (file-exists? cached)
         (values `((content-type . (application/octet-stream
-                                   (charset . "ISO-8859-1"))))
-                ;; XXX: We're not returning the actual contents, deferring
-                ;; instead to 'http-write'.  This is a hack to work around
-                ;; <http://bugs.gnu.org/21093>.
-                cached)
+                                   (charset . "ISO-8859-1")))
+                  ;; XXX: We're not returning the actual contents, deferring
+                  ;; instead to 'http-write'.  This is a hack to work around
+                  ;; <http://bugs.gnu.org/21093>.
+                  (x-raw-file . ,cached))
+                #f)
         (not-found request))))
 
 (define (render-content-addressed-file store request
@@ -562,11 +563,12 @@ has the given HASH of type ALGO."
                                      #:recursive? #f)))
         (if (valid-path? store item)
             (values `((content-type . (application/octet-stream
-                                       (charset . "ISO-8859-1"))))
-                    ;; XXX: We're not returning the actual contents, deferring
-                    ;; instead to 'http-write'.  This is a hack to work around
-                    ;; <http://bugs.gnu.org/21093>.
-                    item)
+                                       (charset . "ISO-8859-1")))
+                      ;; XXX: We're not returning the actual contents,
+                      ;; deferring instead to 'http-write'.  This is a hack to
+                      ;; work around <http://bugs.gnu.org/21093>.
+                      (x-raw-file . ,item))
+                    #f)
             (not-found request)))
       (not-found request)))
 
@@ -622,9 +624,9 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
   "Return RESPONSE with a 'content-length' header set to LENGTH."
   (set-field response (response-headers)
              (alist-cons 'content-length length
-                         (alist-delete 'content-length
-                                       (response-headers response)
-                                       eq?))))
+                         (fold alist-delete
+                               (response-headers response)
+                               '(content-length x-raw-file)))))
 
 (define-syntax-rule (swallow-EPIPE exp ...)
   "Swallow EPIPE errors raised by EXP..."
@@ -685,35 +687,37 @@ blocking."
           (swallow-zlib-error
            (close-port port))
           (values)))))
-    (('application/octet-stream . _)
-     ;; Send a raw file in a separate thread.
-     (call-with-new-thread
-      (lambda ()
-        (set-thread-name "publish file")
-        (catch 'system-error
-          (lambda ()
-            (call-with-input-file (utf8->string body)
-              (lambda (input)
-                (let* ((size     (stat:size (stat input)))
-                       (response (write-response (with-content-length response
-                                                                      size)
-                                                 client))
-                       (output   (response-port response)))
-                  (if (file-port? output)
-                      (sendfile output input size)
-                      (dump-port input output))
-                  (close-port output)
-                  (values)))))
-          (lambda args
-            ;; If the file was GC'd behind our back, that's fine.  Likewise if
-            ;; the client closes the connection.
-            (unless (memv (system-error-errno args)
-                          (list ENOENT EPIPE ECONNRESET))
-              (apply throw args))
-            (values))))))
     (_
-     ;; Handle other responses sequentially.
-     (%http-write server client response body))))
+     (match (assoc-ref (response-headers response) 'x-raw-file)
+       ((? string? file)
+        ;; Send a raw file in a separate thread.
+        (call-with-new-thread
+         (lambda ()
+           (set-thread-name "publish file")
+           (catch 'system-error
+             (lambda ()
+               (call-with-input-file file
+                 (lambda (input)
+                   (let* ((size     (stat:size (stat input)))
+                          (response (write-response (with-content-length response
+                                                                         size)
+                                                    client))
+                          (output   (response-port response)))
+                     (if (file-port? output)
+                         (sendfile output input size)
+                         (dump-port input output))
+                     (close-port output)
+                     (values)))))
+             (lambda args
+               ;; If the file was GC'd behind our back, that's fine.  Likewise if
+               ;; the client closes the connection.
+               (unless (memv (system-error-errno args)
+                             (list ENOENT EPIPE ECONNRESET))
+                 (apply throw args))
+               (values))))))
+       (#f
+        ;; Handle other responses sequentially.
+        (%http-write server client response body))))))
 
 (define-server-impl concurrent-http-server
   ;; A variant of Guile's built-in HTTP server that offloads possibly long
