@@ -2660,7 +2660,7 @@ between language specification and implementation aspects.")
 (define-public python-numpy
   (package
     (name "python-numpy")
-    (version "1.12.0")
+    (version "1.13.3")
     (source
      (origin
        (method url-fetch)
@@ -2669,7 +2669,7 @@ between language specification and implementation aspects.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "025d4j4aakcp8w5i5diqh812cbbjgac7jszx1j56ivrbi1i8vv7d"))))
+         "1f25rbn6n4ia87spy18iwc76g36d9mimyl27p2lfaalgx897pf8x"))))
     (build-system python-build-system)
     (inputs
      `(("openblas" ,openblas)
