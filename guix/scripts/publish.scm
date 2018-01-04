@@ -572,6 +572,31 @@ has the given HASH of type ALGO."
             (not-found request)))
       (not-found request)))
 
+(define (render-log-file store request name)
+  "Render the log file for NAME, the base name of a store item.  Don't attempt
+to compress or decompress the log file; just return it as-is."
+  (define (response-headers file)
+    ;; XXX: We're not returning the actual contents, deferring instead to
+    ;; 'http-write'.  This is a hack to work around
+    ;; <http://bugs.gnu.org/21093>.
+    (cond ((string-suffix? ".gz" file)
+           `((content-type . (text/plain (charset . "UTF-8")))
+             (content-encoding . (gzip))
+             (x-raw-file . ,file)))
+          ((string-suffix? ".bz2" file)
+           `((content-type . (application/x-bzip2
+                              (charset . "ISO-8859-1")))
+             (x-raw-file . ,file)))
+          (else                                   ;uncompressed
+           `((content-type . (text/plain (charset . "UTF-8")))
+             (x-raw-file . ,file)))))
+
+  (let ((log (log-file store
+                       (string-append (%store-prefix) "/" name))))
+    (if log
+        (values (response-headers log) log)
+        (not-found request))))
+
 (define (render-home-page request)
   "Render the home page."
   (values `((content-type . (text/html (charset . "UTF-8"))))
@@ -771,6 +796,10 @@ blocking."
              (let ((hash (nix-base32-string->bytevector hash)))
                (render-content-addressed-file store request
                                               name 'sha256 hash))))
+
+          ;; /log/OUTPUT
+          (("log" name)
+           (render-log-file store request name))
 
           ;; Use different URLs depending on the compression type.  This
           ;; guarantees that /nar URLs remain valid even when 'guix publish'

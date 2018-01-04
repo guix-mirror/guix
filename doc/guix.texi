@@ -5676,6 +5676,7 @@ collection as soon as the build completes.  @xref{Invoking guix gc}, for
 more on GC roots.
 
 @item --log-file
+@cindex build logs, access
 Return the build log file names or URLs for the given
 @var{package-or-derivation}, or raise an error if build logs are
 missing.
@@ -7237,6 +7238,22 @@ http://example.org/file/hello-2.10.tar.gz/sha256/0ssi1@dots{}ndq1i
 
 Obviously, these URLs only work for files that are in the store; in
 other cases, they return 404 (``Not Found'').
+
+@cindex build logs, publication
+Build logs are available from @code{/log} URLs like:
+
+@example
+http://example.org/log/gwspk@dots{}-guile-2.2.3
+@end example
+
+@noindent
+When @command{guix-daemon} is configured to save compressed build logs,
+as is the case by default (@pxref{Invoking guix-daemon}), @code{/log}
+URLs return the compressed log as-is, with an appropriate
+@code{Content-Type} and/or @code{Content-Encoding} header.  We recommend
+running @command{guix-daemon} with @code{--log-compression=gzip} since
+Web browsers can automatically decompress it, which is not the case with
+bzip2 compression.
 
 The following options are available:
 

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -438,5 +439,32 @@ FileSize: ~a~%"
                         (string->number
                          (assoc-ref narinfo "FileSize"))
                         (response-code compressed))))))))))
+
+(test-equal "/log/NAME"
+  `(200 #t application/x-bzip2)
+  (let ((drv (run-with-store %store
+               (gexp->derivation "with-log"
+                                 #~(call-with-output-file #$output
+                                     (lambda (port)
+                                       (display "Hello, build log!"
+                                                (current-error-port))
+                                       (display "" port)))))))
+    (build-derivations %store (list drv))
+    (let* ((response (http-get
+                      (publish-uri (string-append "/log/"
+                                                  (basename (derivation->output-path drv))))
+                      #:decode-body? #f))
+           (base     (basename (derivation-file-name drv)))
+           (log      (string-append (dirname %state-directory)
+                                    "/log/guix/drvs/" (string-take base 2)
+                                    "/" (string-drop base 2) ".bz2")))
+      (list (response-code response)
+            (= (response-content-length response) (stat:size (stat log)))
+            (first (response-content-type response))))))
+
+(test-equal "/log/NAME not found"
+  404
+  (let ((uri (publish-uri "/log/does-not-exist")))
+    (response-code (http-get uri))))
 
 (test-end "publish")
