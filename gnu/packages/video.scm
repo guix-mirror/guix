@@ -22,7 +22,6 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -832,7 +831,6 @@ audio/video codec library.")
        ("libcddb" ,libcddb)
        ("libdvbpsi" ,libdvbpsi)
        ("libgcrypt" ,libgcrypt)
-       ("libdvdread" ,libdvdread)
        ("libkate" ,libkate)
        ("libmad" ,libmad)
        ("libogg" ,libogg)
@@ -1361,12 +1359,6 @@ players, like VLC or MPlayer.")
     (build-system gnu-build-system)
     (home-page "http://dvdnav.mplayerhq.hu/")
     (synopsis "Library for reading video DVDs")
-    (arguments
-     `(#:configure-flags '("--with-libdvdcss=yes")))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("libdvdcss" ,libdvdcss)))
     (description
      "Libdvdread provides a simple foundation for reading DVD video
 disks.  It provides the functionality that is required to access many
