@@ -206,8 +206,10 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	settings.logCompression = COMPRESSION_NONE;
       else if (strcmp (arg, "gzip") == 0)
 	settings.logCompression = COMPRESSION_GZIP;
+#if HAVE_BZLIB_H
       else if (strcmp (arg, "bzip2") == 0)
 	settings.logCompression = COMPRESSION_BZIP2;
+#endif
       else
 	{
 	  fprintf (stderr, _("error: %s: unknown compression type\n"), arg);

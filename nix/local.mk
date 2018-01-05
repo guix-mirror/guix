@@ -132,7 +132,7 @@ guix_daemon_CPPFLAGS =				\
   -I$(top_srcdir)/%D%/libstore
 
 guix_daemon_LDADD =				\
-  libstore.a libutil.a libformat.a -lz -lbz2	\
+  libstore.a libutil.a libformat.a -lz		\
   $(SQLITE3_LIBS) $(LIBGCRYPT_LIBS)
 
 guix_daemon_headers =				\
@@ -149,9 +149,15 @@ guix_register_CPPFLAGS =			\
 
 # XXX: Should we start using shared libs?
 guix_register_LDADD =				\
-  libstore.a libutil.a libformat.a -lz -lbz2	\
+  libstore.a libutil.a libformat.a -lz		\
   $(SQLITE3_LIBS) $(LIBGCRYPT_LIBS)
 
+if HAVE_LIBBZ2
+
+guix_daemon_LDADD += -lbz2
+guix_register_LDADD += -lbz2
+
+endif HAVE_LIBBZ2
 
 noinst_HEADERS =						\
   $(libformat_headers) $(libutil_headers) $(libstore_headers)	\

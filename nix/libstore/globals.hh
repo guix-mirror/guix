@@ -1,5 +1,6 @@
 #pragma once
 
+#include "config.h"
 #include "types.hh"
 
 #include <map>
@@ -11,8 +12,10 @@ namespace nix {
 enum CompressionType
 {
     COMPRESSION_NONE = 0,
-    COMPRESSION_GZIP = 1,
-    COMPRESSION_BZIP2 = 2
+    COMPRESSION_GZIP = 1
+#if HAVE_BZLIB_H
+    , COMPRESSION_BZIP2 = 2
+#endif
 };
 
 struct Settings {

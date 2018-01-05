@@ -32,7 +32,10 @@
 #include <grp.h>
 
 #include <zlib.h>
-#include <bzlib.h>
+
+#if HAVE_BZLIB_H
+# include <bzlib.h>
+#endif
 
 /* Includes required for chroot support. */
 #if HAVE_SYS_PARAM_H
@@ -746,7 +749,9 @@ private:
     /* File descriptor for the log file. */
     FILE * fLogFile;
     gzFile   gzLogFile;
+#if HAVE_BZLIB_H
     BZFILE * bzLogFile;
+#endif
     AutoCloseFD fdLogFile;
 
     /* Number of bytes received from the builder's stdout/stderr. */
@@ -895,7 +900,9 @@ DerivationGoal::DerivationGoal(const Path & drvPath, const StringSet & wantedOut
     , retrySubstitution(false)
     , fLogFile(0)
     , gzLogFile(0)
+#if HAVE_BZLIB_H
     , bzLogFile(0)
+#endif
     , useChroot(false)
     , buildMode(buildMode)
 {
@@ -2620,6 +2627,7 @@ Path DerivationGoal::openLogFile()
         return logFileName;
       }
 
+#if HAVE_BZLIB_H
       case COMPRESSION_BZIP2: {
         Path logFileName = (format("%1%/%2%.bz2") % dir % string(baseName, 2)).str();
         AutoCloseFD fd = open(logFileName.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
@@ -2635,6 +2643,7 @@ Path DerivationGoal::openLogFile()
 
         return logFileName;
       }
+#endif
 
       case COMPRESSION_NONE: {
         Path logFileName = (format("%1%/%2%") % dir % string(baseName, 2)).str();
@@ -2657,12 +2666,14 @@ void DerivationGoal::closeLogFile()
 	gzLogFile = NULL;
 	if (err != Z_OK) throw Error(format("cannot close compressed log file (gzip error = %1%)") % err);
     }
+#if HAVE_BZLIB_H
     else if (bzLogFile) {
         int err;
         BZ2_bzWriteClose(&err, bzLogFile, 0, 0, 0);
         bzLogFile = 0;
         if (err != BZ_OK) throw Error(format("cannot close compressed log file (BZip2 error = %1%)") % err);
     }
+#endif
 
     if (fLogFile) {
         fclose(fLogFile);
@@ -2732,10 +2743,12 @@ void DerivationGoal::handleChildOutput(int fd, const string & data)
 		count = gzwrite(gzLogFile, data.data(), data.size());
 		if (count == 0) throw Error(format("cannot write to compressed log file (gzip error = %1%)") % gzerror(gzLogFile, &err));
 	    }
+#if HAVE_BZLIB_H
 	} else if (bzLogFile) {
             int err;
             BZ2_bzWrite(&err, bzLogFile, (unsigned char *) data.data(), data.size());
             if (err != BZ_OK) throw Error(format("cannot write to compressed log file (BZip2 error = %1%)") % err);
+#endif
         } else if (fdLogFile != -1)
             writeFull(fdLogFile, data);
     }
