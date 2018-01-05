@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
@@ -2425,6 +2425,26 @@ country-specific regulations for the wireless spectrum.")
      "Lm-sensors is a hardware health monitoring package for Linux.  It allows
 you to access information from temperature, voltage, and fan speed sensors.
 It works with most newer systems.")
+    (license license:gpl2+)))
+
+(define-public iucode-tool
+  (package
+    (name "iucode-tool")
+    (version "2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gitlab.com/iucode-tool/releases"
+                                  "/raw/latest/iucode-tool_" version ".tar.xz"))
+              (sha256
+               (base32
+                "0w99k1aq1xw148ffk1xykqf60rdbphb1jknw98jcmadq4pwxl44q"))))
+    (build-system gnu-build-system)
+    (home-page "https://gitlab.com/iucode-tool/iucode-tool/wikis/home")
+    (synopsis "Manipulate Intel microcode bundles")
+    (description
+     "@command{iucode_tool} is a utility to work with microcode packages for
+Intel processors.  It can convert between formats, extract specific versions,
+create a firmware image suitable for the Linux kernel, and more.")
     (license license:gpl2+)))
 
 (define-public i2c-tools
