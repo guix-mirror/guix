@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -1987,14 +1987,15 @@ into various outputs and to start, stop and configure jackd")
 (define-public qjackrcd
   (package
     (name "qjackrcd")
-    (version "1.2.0")
+    (version "1.2.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/qjackrcd/stable/"
-                                  "qjackrcd-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/orouits/qjackrcd.git")
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "0xpnhzbwg5c60n5dhwln5p7qm191nvmf23la88zxfqx1jv0mmxxb"))))
+                "1l5iq2mkqd4gn9yr8xbh9qlpp1clcflazychl4vhdbz0bzq4c6al"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
