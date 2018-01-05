@@ -2736,26 +2736,6 @@ capabilities.")
 (define-public python2-numpy
   (package-with-python2 python-numpy))
 
-(define-public python-numpy-next
-  (package (inherit python-numpy)
-    (name "python-numpy-next")
-    (version "1.13.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "numpy" version ".zip"))
-       (sha256
-        (base32
-         "1fsgkhh1vdkhmlz8vmdgxnj9n9yaanckxxzz9s0b4p08fqvjic69"))))
-    (native-inputs
-     `(("unzip" ,unzip)
-       ("python-cython" ,python-cython)
-       ("python-nose" ,python-nose)
-       ("gfortran" ,gfortran)))))
-
-(define-public python2-numpy-next
-  (package-with-python2 python-numpy-next))
-
 ;; NOTE: NumPy 1.8 is packaged only for Python 2 because it is of
 ;; interest only for legacy code going back to NumPy's predecessor
 ;; Numeric.
