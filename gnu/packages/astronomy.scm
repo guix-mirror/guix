@@ -117,15 +117,16 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.16.0")
+    (version "0.17.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/stellarium/"
-                                 "Stellarium-sources/"
-                                 version "/stellarium-" version ".tar.gz"))
+             (uri (string-append "https://github.com/Stellarium/" name
+                                 "/releases/download/v" version
+                                 "/" name "-" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1krxj51lix096xbz64lys166a8zdwhill5vvs7dlxdn14amc8d98"))))
+               "0d6b3fs5aify7i1lwgkcickppnj73cbh24g8qschnfs3ypdf48fc"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -140,19 +141,19 @@ programs for the manipulation and analysis of astronomical data.")
        ("qtbase" ,qtbase) ; Qt MOC is needed at compile time
        ("qttools" ,qttools)))
     (arguments
-      `(#:test-target "tests"
-        #:phases (modify-phases %standard-phases
-                   (add-after 'unpack 'patch-tests
-                     (lambda _
-                       (substitute* "src/tests/testStelSphereGeometry.cpp"
-                         (("Vec3d v[(]0[)]") "Vec3d v(0.0)"))
-                       #t))
-                   (add-before 'check 'set-offscreen-display
-                     (lambda _
-                       ;; make Qt render "offscreen", required for tests
-                       (setenv "QT_QPA_PLATFORM" "offscreen")
-                       (setenv "HOME" "/tmp")
-                       #t)))))
+     `(#:test-target "test"
+       #:configure-flags (list "-DENABLE_TESTING=1"
+                               (string-append
+                                "-DCMAKE_CXX_FLAGS=-isystem "
+                                (assoc-ref %build-inputs "qtserialport")
+                                "/include/qt5"))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'set-offscreen-display
+                    (lambda _
+                      ;; make Qt render "offscreen", required for tests
+                      (setenv "QT_QPA_PLATFORM" "offscreen")
+                      (setenv "HOME" "/tmp")
+                      #t)))))
     (home-page "http://www.stellarium.org/")
     (synopsis "3D sky viewer")
     (description "Stellarium is a planetarium.  It shows a realistic sky in
