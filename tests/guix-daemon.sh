@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -193,3 +193,39 @@ do
     GUIX_DAEMON_SOCKET="$socket" guile -c "$client_code"
     kill "$daemon_pid"
 done
+
+# Log compression.
+
+guix-daemon --listen="$socket" --disable-chroot --debug --log-compression=gzip &
+daemon_pid=$!
+
+stamp="compressed-build-log-test-$$-`date +%H%M%S`"
+client_code="
+  (use-modules (guix) (gnu packages bootstrap))
+
+  (with-store store
+    (run-with-store store
+      (mlet %store-monad ((drv (lower-object
+				(computed-file \"compressed-log-test\"
+					       #~(begin
+						   (display \"$stamp\")
+                                                   (newline)
+						   (mkdir #\$output))
+					       #:guile %bootstrap-guile))))
+	(display (derivation-file-name drv))
+	(newline)
+	(return #t))))
+"
+
+GUIX_DAEMON_SOCKET="$socket"
+export GUIX_DAEMON_SOCKET
+
+drv=`guile -c "$client_code"`
+guix build "$drv"
+
+log=`guix build "$drv" --log-file`
+test -f "$log"
+case "$log" in
+    *.gz) test "`gunzip -c < "$log"`" = "$stamp" ;;
+    *)    false ;;
+esac

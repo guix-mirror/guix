@@ -18,6 +18,12 @@ if test "x$guix_build_daemon" = "xyes"; then
   dnl Use 64-bit file system calls so that we can support files > 2 GiB.
   AC_SYS_LARGEFILE
 
+  dnl Look for zlib, a required dependency.
+  AC_CHECK_LIB([z], [gzdopen], [true],
+    [AC_MSG_ERROR([Guix requires zlib.  See http://www.zlib.net/.])])
+  AC_CHECK_HEADERS([zlib.h], [true],
+    [AC_MSG_ERROR([Guix requires zlib.  See http://www.zlib.net/.])])
+
   dnl Look for libbz2, a required dependency.
   AC_CHECK_LIB([bz2], [BZ2_bzWriteOpen], [true],
     [AC_MSG_ERROR([Guix requires libbz2, which is part of bzip2.  See http://www.bzip.org/.])])

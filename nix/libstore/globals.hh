@@ -8,6 +8,12 @@
 
 namespace nix {
 
+enum CompressionType
+{
+    COMPRESSION_NONE = 0,
+    COMPRESSION_GZIP = 1,
+    COMPRESSION_BZIP2 = 2
+};
 
 struct Settings {
 
@@ -169,7 +175,7 @@ struct Settings {
     bool keepLog;
 
     /* Whether to compress logs. */
-    bool compressLog;
+    enum CompressionType logCompression;
 
     /* Maximum number of bytes a builder can write to stdout/stderr
        before being killed (0 means no limit). */

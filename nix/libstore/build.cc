@@ -31,6 +31,7 @@
 #include <pwd.h>
 #include <grp.h>
 
+#include <zlib.h>
 #include <bzlib.h>
 
 /* Includes required for chroot support. */
@@ -744,6 +745,7 @@ private:
 
     /* File descriptor for the log file. */
     FILE * fLogFile;
+    gzFile   gzLogFile;
     BZFILE * bzLogFile;
     AutoCloseFD fdLogFile;
 
@@ -892,6 +894,7 @@ DerivationGoal::DerivationGoal(const Path & drvPath, const StringSet & wantedOut
     , needRestart(false)
     , retrySubstitution(false)
     , fLogFile(0)
+    , gzLogFile(0)
     , bzLogFile(0)
     , useChroot(false)
     , buildMode(buildMode)
@@ -2599,8 +2602,25 @@ Path DerivationGoal::openLogFile()
     Path dir = (format("%1%/%2%/%3%/") % settings.nixLogDir % drvsLogDir % string(baseName, 0, 2)).str();
     createDirs(dir);
 
-    if (settings.compressLog) {
+    switch (settings.logCompression)
+      {
+      case COMPRESSION_GZIP: {
+        Path logFileName = (format("%1%/%2%.gz") % dir % string(baseName, 2)).str();
+        AutoCloseFD fd = open(logFileName.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
+        if (fd == -1) throw SysError(format("creating log file `%1%'") % logFileName);
+        closeOnExec(fd);
 
+	/* Note: FD will be closed by 'gzclose'.  */
+        if (!(gzLogFile = gzdopen(fd.borrow(), "w")))
+            throw Error(format("cannot open compressed log file `%1%'") % logFileName);
+
+        gzbuffer(gzLogFile, 32768);
+        gzsetparams(gzLogFile, Z_BEST_COMPRESSION, Z_DEFAULT_STRATEGY);
+
+        return logFileName;
+      }
+
+      case COMPRESSION_BZIP2: {
         Path logFileName = (format("%1%/%2%.bz2") % dir % string(baseName, 2)).str();
         AutoCloseFD fd = open(logFileName.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
         if (fd == -1) throw SysError(format("creating log file `%1%'") % logFileName);
@@ -2614,20 +2634,30 @@ Path DerivationGoal::openLogFile()
             throw Error(format("cannot open compressed log file `%1%'") % logFileName);
 
         return logFileName;
+      }
 
-    } else {
+      case COMPRESSION_NONE: {
         Path logFileName = (format("%1%/%2%") % dir % string(baseName, 2)).str();
         fdLogFile = open(logFileName.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0666);
         if (fdLogFile == -1) throw SysError(format("creating log file `%1%'") % logFileName);
         closeOnExec(fdLogFile);
         return logFileName;
+      }
     }
+
+    abort();
 }
 
 
 void DerivationGoal::closeLogFile()
 {
-    if (bzLogFile) {
+    if (gzLogFile) {
+	int err;
+	err = gzclose(gzLogFile);
+	gzLogFile = NULL;
+	if (err != Z_OK) throw Error(format("cannot close compressed log file (gzip error = %1%)") % err);
+    }
+    else if (bzLogFile) {
         int err;
         BZ2_bzWriteClose(&err, bzLogFile, 0, 0, 0);
         bzLogFile = 0;
@@ -2695,7 +2725,14 @@ void DerivationGoal::handleChildOutput(int fd, const string & data)
         }
         if (verbosity >= settings.buildVerbosity)
             writeToStderr(data);
-        if (bzLogFile) {
+
+	if (gzLogFile) {
+	    if (data.size() > 0) {
+		int count, err;
+		count = gzwrite(gzLogFile, data.data(), data.size());
+		if (count == 0) throw Error(format("cannot write to compressed log file (gzip error = %1%)") % gzerror(gzLogFile, &err));
+	    }
+	} else if (bzLogFile) {
             int err;
             BZ2_bzWrite(&err, bzLogFile, (unsigned char *) data.data(), data.size());
             if (err != BZ_OK) throw Error(format("cannot write to compressed log file (BZip2 error = %1%)") % err);
