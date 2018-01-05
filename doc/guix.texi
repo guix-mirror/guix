@@ -605,6 +605,7 @@ Guile,, gnutls-guile, GnuTLS-Guile});
 @c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
 2017 or later;
+@item @url{http://zlib.net, zlib};
 @item @url{http://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 
@@ -626,8 +627,8 @@ Support for build offloading (@pxref{Daemon Offload Setup}) and
 version 0.10.2 or later.
 
 @item
-When @url{http://zlib.net, zlib} is available, @command{guix publish}
-can compress build byproducts (@pxref{Invoking guix publish}).
+When @url{http://www.bzip.org, libbz2} is available,
+@command{guix-daemon} can use it to compress build logs.
 @end itemize
 
 Unless @code{--disable-daemon} was passed to @command{configure}, the
@@ -635,7 +636,6 @@ following packages are also needed:
 
 @itemize
 @item @url{http://sqlite.org, SQLite 3};
-@item @url{http://www.bzip.org, libbz2};
 @item @url{http://gcc.gnu.org, GCC's g++}, with support for the
 C++11 standard.
 @end itemize
