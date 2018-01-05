@@ -1973,6 +1973,7 @@ and ALSA.")
      '(#:tests? #f)) ; no check target
     (inputs
      `(("jack" ,jack-1)
+       ("alsa-lib" ,alsa-lib)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
