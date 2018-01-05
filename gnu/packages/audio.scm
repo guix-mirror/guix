@@ -1960,14 +1960,14 @@ and ALSA.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.4.5")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "1dsavjfzz5bpzc80mvfs940w9f9f47cf4r9cqxnaqrl4xilsa3f5"))))
+                "0lx81dfwanc10vrny1vzi0wx73ph82dlz99ffjzsigj3cqzz6x4s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f)) ; no check target
