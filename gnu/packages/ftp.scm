@@ -190,7 +190,21 @@ as required.")
     (synopsis "Cross-platform C++ library used by Filezilla client")
     (description
      "This package provides some basic functionality to build high-performing,
-platform-independent programs.")
+platform-independent programs.
+
+Some of the highlights include:
+@itemize
+@item
+A type-safe, multi-threaded event system that's simple to use yet efficient.
+@item
+Timers for periodic events.
+@item
+A @code{datetime} class that not only tracks timestamp but also their accuracy,
+which simplifies dealing with timestamps originating from different sources.
+@item
+Simple process handling for spawning child processes with redirected input and
+output.
+@end itemize\n")
     (license gpl2+)))
 
 (define-public filezilla
