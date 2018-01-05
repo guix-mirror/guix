@@ -7166,6 +7166,10 @@ Python at your fingertips, in Lisp form.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
+       ;; The test suite fails with Python > 2.7.13:
+       ;;     import test.support
+       ;; ImportError: No module named support
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh
@@ -7173,15 +7177,7 @@ Python at your fingertips, in Lisp form.")
              (substitute* '("subprocess32.py"
                             "test_subprocess32.py")
                (("/bin/sh") (which "sh")))
-             #t))
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; For some reason this package fails to import
-             ;; _posixsubprocess.so when PYTHONPATH is set to the build
-             ;; directory. Running tests after install is easier.
-             (add-installed-pythonpath inputs outputs)
-             (zero? (system* "python" "test_subprocess32.py")))))))
+             #t)))))
     (home-page "https://github.com/google/python-subprocess32")
     (synopsis "Backport of the subprocess module from Python 3.2")
     (description
