@@ -2599,7 +2599,7 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.4.4")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
@@ -2607,7 +2607,7 @@ interface.")
                            "/qsynth-" version ".tar.gz"))
        (sha256
         (base32
-         "0qhfnikx3xcllkvs60kj6vcf2rwwzh31y41qkk6kwfhzgd219y8f"))))
+         "1sr6vrz8z9r99j9xcix86lgcqldragb2ajmq1bnhr58d99sda584"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" phase
