@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -6599,4 +6599,39 @@ evil mode using @kbd{%}.  It is a port of @code{matchit} for Vim.")
     (description "@code{emacs-evil-smartparens} is an Emacs minor mode which
 makes Evil play nice with Smartparens.  Evil is an Emacs minor mode that
 emulates Vim features and provides Vim-like key bindings.")
+    (license license:gpl3+)))
+
+(define-public emacs-evil-quickscope
+  (package
+    (name "emacs-evil-quickscope")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/blorbx/evil-quickscope/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1r26a412mmar7vbf89zcifswiwpdg30mjzj32xdyqss57aqi83ma"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "emacs" "--batch" "-L"
+                     (string-append (assoc-ref inputs "emacs-evil")
+                                    "/share/emacs/site-lisp/guix.d/evil-"
+                                    ,(package-version emacs-evil))
+                     "-l" "evil-quickscope-tests.el"
+                     "-f" "ert-run-tests-batch-and-exit"))))))
+    (home-page "https://github.com/blorbx/evil-quickscope")
+    (synopsis "Target highlighting for emacs evil-mode f,F,t and T commands")
+    (description "@code{emacs-evil-quickscope} highlights targets for Evil
+mode’s f,F,t,T keys, allowing for quick navigation within a line.  It is a
+port of quick-scope for Vim.  Evil is an Emacs minor mode that emulates Vim
+features and provides Vim-like key bindings.")
     (license license:gpl3+)))

@@ -214,14 +214,14 @@ many more.")
 (define-public ilmbase
   (package
     (name "ilmbase")
-    (version "2.2.0")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/openexr/ilmbase-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1izddjwbh1grs8080vmaix72z469qy29wrvkphgmqmcm0sv1by7c"))
+                "17k0hq19wplx9s029kjrq6c51x2ryrfmaavcappkd0g67gk0dhna"))
               (patches (search-patches "ilmbase-fix-tests.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.openexr.com/")
@@ -305,14 +305,14 @@ graphics.")
 (define-public openexr
   (package
     (name "openexr")
-    (version "2.2.0")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/openexr/openexr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ca2j526n4wlamrxb85y2jrgcv0gf21b3a19rr0gh4rjqkv1581n"))
+                "1kdf2gqznsdinbd5vcmqnif442nyhdf9l7ckc51410qm2gv5m6lg"))
               (modules '((guix build utils)))
               (snippet
                '(begin

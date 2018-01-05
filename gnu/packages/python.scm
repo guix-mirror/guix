@@ -12251,3 +12251,72 @@ such as figshare or Zenodo.")
 
 (define-public python2-semver
   (package-with-python2 python-semver))
+
+(define-public python2-pyro
+  (package
+    (name "python2-pyro")
+    (version "3.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Pyro" version))
+       (file-name (string-append "Pyro-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y75wzdqbjy565rpxaxscav4j8xg060sa90lnmb7aypgaf251v8v"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Pyro is not compatible with Python 3
+     `(#:python ,python-2
+       ;; Pyro has no test cases for automatic execution
+       #:tests? #f))
+    (home-page "http://pythonhosted.org/Pyro/")
+    (synopsis "Distributed object manager for Python")
+    (description "Pyro is a Distributed Object Technology system
+written in Python that is designed to be easy to use.  It resembles
+Java's Remote Method Invocation (RMI).  It has less similarity to CORBA,
+which is a system and language independent Distributed Object Technology
+and has much more to offer than Pyro or RMI.  Pyro 3.x is no
+longer maintained.  New projects should use Pyro4 instead, which
+is the new Pyro version that is actively developed.")
+    (license license:expat)))
+
+(define-public python2-scientific
+  (package
+    (name "python2-scientific")
+    (version "2.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/khinsen/"
+                           "scientificpython/downloads/ScientificPython-"
+                           version ".tar.gz"))
+       (file-name (string-append "ScientificPython-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fc69zhlsn9d2jvbzyjl9ah53vj598h84nkq230c83ahfvgzx5y3"))))
+    (build-system python-build-system)
+    (inputs
+     `(("netcdf" ,netcdf)))
+    (propagated-inputs
+     `(("python-numpy" ,python2-numpy-1.8)
+       ("python-pyro", python2-pyro)))
+    (arguments
+     ;; ScientificPython is not compatible with Python 3
+     `(#:python ,python-2
+       #:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "python" "setup.py" "build"
+                             (string-append "--netcdf_prefix="
+                                            (assoc-ref inputs "netcdf")))))))))
+    (home-page "https://bitbucket.org/khinsen/scientificpython")
+    (synopsis "Python modules for scientific computing")
+    (description "ScientificPython is a collection of Python modules that are
+useful for scientific computing.  Most modules are rather general (Geometry,
+physical units, automatic derivatives, ...) whereas others are more
+domain-specific (e.g. netCDF and PDB support).  The library is currently
+not actively maintained and works only with Python 2 and NumPy < 1.9.")
+    (license license:cecill-c)))

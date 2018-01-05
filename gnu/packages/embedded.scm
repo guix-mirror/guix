@@ -46,6 +46,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
 ;; We must not use the released GCC sources here, because the cross-compiler
@@ -970,3 +971,122 @@ SPI, I2C, JTAG.")
     (description "This program programs Microchip's PIC microcontrollers.")
     (home-page "http://hyvatti.iki.fi/~jaakko/pic/picprog.html")
     (license license:gpl3+)))
+
+(define-public fc-host-tools
+  (package
+    (name "fc-host-tools")
+    (version "7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://ftp.freecalypso.org/pub/GSM/"
+                                  "FreeCalypso/fc-host-tools-r" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0j0qh5m2irgdf4v9n4yhfdfqz9k8q27k0rx9m0xqc0ckbrih8d9r"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests exist.
+       #:make-flags
+       (list (string-append "INSTBIN=" %output "/bin")
+             (string-append "INCLUDE_INSTALL_DIR=" %output "include/rvinterf"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'handle-tarbomb
+           (lambda _
+             (chdir "..") ; url-fetch/tarbomb doesn't work for some reason.
+             #t))
+         (add-after 'handle-tarbomb 'patch-installation-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("Makefile"
+                            "rvinterf/libasync/launchrvif.c"
+                            "loadtools/defpath.c"
+                            "loadtools/Makefile"
+                            "miscutil/c139explore"
+                            "miscutil/pirexplore")
+               (("/opt/freecalypso/loadtools")
+                (string-append (assoc-ref outputs "out") "/lib/freecalypso/loadtools"))
+               (("/opt/freecalypso")
+                (assoc-ref outputs "out")))
+             #t)))))
+    (inputs
+     `(("libx11" ,libx11)))
+    (synopsis "Freecalypso host tools")
+    (description "This package provides some tools for debugging Freecalypso phones.
+
+@enumerate
+@item fc-e1decode: Decodes a binary Melody E1 file into an ASCII source file.
+@item fc-e1gen: Encodes an ASCII Melody E1 file into a binary Melody E1 file.
+@item fc-fr2tch: Converts a GSM 06.10 speech recording from libgsm to hex
+strings of TCH bits to be fed to the GSM 05.03 channel encoder of a TI
+Calypso GSM device.
+@item fc-tch2fr: Converts hex strings of TCH bits to libgsm.
+@item fc-gsm2vm: utility converts a GSM 06.10 speech sample from the libgsm
+source format into a voice memo file that can be uploaded into the FFS of a
+FreeCalypso device and played with the audio_vm_play_start() API or the
+AT@@VMP command that invokes the latter.
+@item fc-rgbconv: Convers RGB 5:6:5 to RGB 8:8:8 and vice versa.
+@item rvinterf: Communicates with a TI Calypso GSM device via RVTMUX.
+@item rvtdump: produces a human-readable dump of all output emitted by a
+TI-based GSM fw on the RVTMUX binary packet interface.
+@item fc-shell: FreeCalypso firmwares have a feature of our own invention
+(not present in any pre-existing ones) to accept AT commands over the RVTMUX
+interface.  It is useful when no second UART is available for a dedicated
+standard AT command interface.  fc-shell is the tool that allows you to send
+AT commands to the firmware in this manner.
+@item fc-memdump: Captures a memory dump from a GSM device.
+@item fc-serterm: Trivial serial terminal.  Escapes binary chars.
+@item fc-fsio: Going through rvinterf, this tool connects to GSM devices and
+allows you to manipulate the device's flash file system.
+@item tiaud-compile: Compiles an audio mode configuration table for TI's
+Audio Service from our own ASCII source format into the binary format for
+uploading into FreeCalypso GSM device FFS with fc-fsio.
+@item tiaud-decomp: Decodes TI's audio mode configuration files read out of
+FFS into our own ASCII format.
+@item tiaud-mkvol: Generates the *.vol binary files which need to accompany
+the main *.cfg ones.
+@item fc-compalram: Allows running programs on the device without writing
+them to flash storage.
+@item fc-xram: Allows running programs on the device without writing them
+to flash storage.
+@item fc-iram: Allows running programs on the device without writing them
+to flash storage.
+@item fc-loadtool: Writes programs to the device's flash storage.
+@item pirffs: Allows listing and extracting FFS content captured as a raw
+flash image from Pirelli phones.
+@item mokoffs: Allows listing and extracting FFS content captured as a raw
+flash image from OpenMoko phones.
+@item tiffs: Allows listing and extracting FFS content captured as a raw
+flash image from TI phones.
+@item c139explore: Run-from-RAM program for C139 phones that
+exercises their peripheral hardware: LCD, keypad backlight, buzzer, vibrator.
+@item pirexplore: Run-from-RAM program for Pirelli DP-L10 phones that
+exercises their peripheral hardware, primarily their LCD.
+@item tfc139: Breaks into Mot C1xx phones via shellcode injection, allowing
+you to reflash locked phones with new firmware with fc-loadtool.
+@item ctracedec: GSM firmwares built in TI's Windows environment have a
+compressed trace misfeature whereby many of the ASCII strings
+in debug trace messages get replaced with numeric indices at
+build time, and these numeric indices are all that gets emitted
+on the RVTMUX serial channel.  This tools decodes these numeric indices
+back to strings in trace output.
+@item fc-cal2text: This utility takes a dump of TI's /gsm/rf flash file system
+directory subtree as input (either extracted in vitro with tiffs
+or read out in vivo with fc-fsio) and converts all RF tables
+found therein into a readable ASCII format.
+@item imei-luhn: Computes or verifies the Luhn check digit of an IMEI number.
+@item fc-dspapidump: Reads and dumps the contents of the DSP API RAM in a
+target Calypso GSM device.
+@item fc-vm2hex: Converts the old-fashioned (non-AMR) voice memo files read
+out of FFS into hex strings.
+@item fc-buzplay: Plays piezoelectic buzzer melodies on an actual
+Calypso device equipped with such a buzzer (Mot C1xx, TI's D-Sample board,
+our planned future HSMBP) by loading a buzplayer agent onto the target and
+feeding melodies to be played to it.
+@item fc-tmsh: TI-based GSM firmwares provide a rich set of Test Mode commands
+that can be issued through the RVTMUX (debug trace) serial channel.
+This program is our test mode shell for sending Test Mode commands to targets
+and displaying decoded target responses.
+@end enumerate")
+    (home-page "https://www.freecalypso.org/")
+    (license license:public-domain)))

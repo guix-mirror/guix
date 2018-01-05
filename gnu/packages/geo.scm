@@ -25,9 +25,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml))
@@ -136,6 +138,55 @@ the OpenStreetMap project.  It can provide directions for walking, bicycling,
 and driving.")
     (home-page "https://wiki.gnome.org/Apps/Maps")
     (license license:gpl2+)))
+
+(define-public libgeotiff
+  (package
+    (name "libgeotiff")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.osgeo.org/geotiff/libgeotiff/libgeotiff-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0vjy3bwfhljjx66p9w999i4mdhsf7vjshx29yc3pn5livf5091xd"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove .csv files, distributed from EPSG under a restricted
+           ;; license. See LICENSE for full license text.
+           (for-each delete-file (find-files "." "\\.csv$"))
+           ;; Now that we have removed the csv files, we need to modify the Makefile.
+           (substitute* "Makefile.in"
+             (("^all-am: .*$")
+              "all-am: Makefile $(LTLIBRARIES) $(HEADERS) geo_config.h\n")
+             (("^install-data-am: .*$")
+              "install-data-am: install-includeHEADERS"))))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libjpeg-turbo" ,libjpeg-turbo)
+       ("libtiff" ,libtiff)
+       ("proj.4" ,proj.4)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-zlib")
+             (string-append "--with-jpeg")
+             (string-append "--with-libtiff=" (assoc-ref %build-inputs "libtiff")))))
+    (synopsis "Library for handling GeoTIFF (geographic enabled TIFF)")
+    (description "libgeotiff is a library on top of libtiff for reading and
+writing GeoTIFF information tags.")
+    (home-page "https://trac.osgeo.org/geotiff/")
+    ;; This is a mixture of various contributions under different licenses.
+    ;; Note that the EPSG database is NOT "free to use" as the LICENSE file
+    ;; states, as its commercial redistribution is restricted. Hence, we have
+    ;; removed it from the package.
+    (license (list license:public-domain
+                   license:x11
+                   license:bsd-3
+                   (license:non-copyleft "file://LICENSE"
+                                         "See LICENSE in the distribution.")))))
 
 (define-public proj.4
   (package
