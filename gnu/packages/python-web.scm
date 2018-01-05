@@ -674,15 +674,14 @@ that have uses outside of the Zope framework.")
 (define-public python-zope-testing
   (package
     (name "python-zope-testing")
-    (version "4.5.0")
+    (version "4.6.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.testing/zope.testing-" version ".tar.gz"))
+       (uri (pypi-uri "zope.testing" version))
        (sha256
         (base32
-         "1yvglxhzvhl45mndvn9gskx2ph30zz1bz7rrlyfs62fv2pvih90s"))
+         "1vvxhjmzl7vw2i1akfj1xbggwn36270ym7f2ic9xwbaswfw1ap56"))
        (modules '((guix build utils)))
        (snippet
         '(begin
