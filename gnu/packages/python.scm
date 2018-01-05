@@ -6808,13 +6808,13 @@ for atomic file system operations.")
 (define-public python-click-threading
   (package
     (name "python-click-threading")
-    (version "0.4.3")
+    (version "0.4.4")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "click-threading" version))
              (sha256
               (base32
-               "0xs4bg2ws0zgyiplk312l049hi23c2zqf1g771rjhh5vr2msk4cg"))))
+               "1rsxc2fbkxlhwhlmxsdjzq3spn284l6rvjfcz9mbb17ibgdgmc5j"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)))
