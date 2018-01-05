@@ -1367,6 +1367,42 @@ effects.")
 effects.")
     (license license:gpl2+)))
 
+(define-public padthv1
+  (package
+    (name "padthv1")
+    (version "0.8.6")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://sourceforge/padthv1/padthv1/" version
+                              "/padthv1-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mikab2f9n5q1sfgnp3sbm1rf3v57k4085lsgh0a5gzga2h4hwxq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:configure-flags
+       '("CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("alsa-lib" ,alsa-lib)
+       ("non-session-manager" ,non-session-manager)
+       ("liblo" ,liblo)
+       ("fftw" ,fftw)
+       ("qtbase" ,qtbase)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://padthv1.sourceforge.net")
+    (synopsis "Polyphonic additive synthesizer")
+    (description
+     "Padthv1 is an old-school polyphonic additive synthesizer with stereo
+effects.  Padthv1 is based on the PADsynth algorithm by Paul Nasca, as a
+special variant of additive synthesis.")
+    (license license:gpl2+)))
+
 (define-public amsynth
   (package
     (name "amsynth")
