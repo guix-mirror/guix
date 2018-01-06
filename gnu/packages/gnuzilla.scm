@@ -510,7 +510,11 @@ security standards.")
         (mozilla-patch "icecat-bug-1412145.patch"        "66cfc3c4047d" "05j8ic4lv2d2ygr6d62rkdlfyg2rpljalwrkkhllinw2dfi3n15b")
         (mozilla-patch "icecat-bug-1399400.patch"        "3236ffdf0ced" "1kvk4qyslaj1ldgs1wpxnf79zajcihzcd1zvbrg990i3hgyn3gk3")
         (mozilla-patch "icecat-bug-1424373-pt1.patch"    "320032aaa068" "1ch282qibprz1q0f2imvynh4sg7gads6sf3ayhjcd62zjncpgyz7")
-        (search-patch  "icecat-bug-1424373-pt2.patch")))
+        (search-patch  "icecat-bug-1424373-pt2.patch")
+        (mozilla-patch "icecat-bug-1412420.patch"        "c2945f1249eb" "18p0344w6grpyfiz8dczfw977p0qy37iqv95whgnrjli2ab51kji")
+        (mozilla-patch "icecat-bug-1395508-pt1.patch"    "263165eacc54" "0518xnd9f4qkn7l0z73kldm9dr33y6hf054ril4f8r2j8s9fy33i")
+        (mozilla-patch "icecat-bug-1395508-pt2.patch"    "58e87d9cc44e" "0j9qwjm25bmhw0sj426yl4fqaa6zknf5cjk0yisdd3895652n5i4")
+        (search-patch  "icecat-bug-1427870-spectre-mitigation.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin
