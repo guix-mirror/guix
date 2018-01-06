@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -326,7 +326,7 @@ advertise it as the maximum validity period (in seconds) via the
 appropriate duration.  NAR-PATH specifies the prefix for nar URLs."
   (let ((store-path (hash-part->path store hash)))
     (if (string-null? store-path)
-        (not-found request)
+        (not-found request #:phrase "")
         (values `((content-type . (application/x-nix-narinfo))
                   ,@(if ttl
                         `((cache-control (max-age . ,ttl)))
@@ -461,7 +461,7 @@ requested using POOL."
                       #:phrase "We're baking it"
                       #:ttl 300))              ;should be available within 5m
           (else
-           (not-found request)))))
+           (not-found request #:phrase "")))))
 
 (define* (bake-narinfo+nar cache item
                            #:key ttl (compression %no-compression)
