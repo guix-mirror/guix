@@ -4361,7 +4361,7 @@ console music players.")
                                             dir "/sbin"))
                            (list ffmpeg chromaprint))))
                  #t)))
-           (add-after 'install-source 'install-scripts
+           (add-after 'install 'install-scripts
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (root (string-append out "/src/gitlab.com/ambrevar/demlo"))

@@ -5791,8 +5791,8 @@ some cases, you will need to unpack the package's source code to a
 different directory structure than the one indicated by the import path,
 and @code{#:unpack-path} should be used in such cases.
 
-Packages that provide Go libraries should be installed along with their
-source code.  The key @code{#:install-source?}, which defaults to
+Packages that provide Go libraries should install their source code into
+the built output.  The key @code{#:install-source?}, which defaults to
 @code{#t}, controls whether or not the source code is installed.  It can
 be set to @code{#f} for packages that only provide executable files.
 @end defvr

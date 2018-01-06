@@ -249,9 +249,11 @@ network attachments.")
      `(#:modules
        ((guix build gnu-build-system)
         ((guix build go-build-system) #:prefix go:)
+        (guix build union)
         (guix build utils))
        #:imported-modules
        (,@%gnu-build-system-modules
+        (guix build union)
         (guix build go-build-system))
        #:phases
        (modify-phases %standard-phases
@@ -412,8 +414,8 @@ network attachments.")
              ;; Make build faster
              (setenv "GOCACHE" "/tmp")
              #t))
-         (add-before 'build 'setup-environment
-           (assoc-ref go:%standard-phases 'setup-environment))
+         (add-before 'build 'setup-go-environment
+           (assoc-ref go:%standard-phases 'setup-go-environment))
          (replace 'build
            (lambda _
              ;; Our LD doesn't like the statically linked relocatable things

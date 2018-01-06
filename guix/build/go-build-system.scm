@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
-;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +19,7 @@
 
 (define-module (guix build go-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
+  #:use-module (guix build union)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -38,24 +39,26 @@
 ;; results. [0]
 
 ;; Go software is developed and built within a particular file system hierarchy
-;; structure called a 'workspace' [1].  This workspace is found by Go
-;; via the GOPATH environment variable.  Typically, all Go source code
-;; and compiled objects are kept in a single workspace, but it is
-;; possible for GOPATH to contain a list of directories, and that is
-;; what we do in this go-build-system. [2]
+;; structure called a 'workspace' [1].  This workspace can be found by Go via
+;; the GOPATH environment variable.  Typically, all Go source code and compiled
+;; objects are kept in a single workspace, but GOPATH may be a list of
+;; directories [2].  In this go-build-system we create a filesystem union of
+;; the Go-language dependencies. Previously, we made GOPATH a list of store
+;; directories, but stopped because Go programs started keeping references to
+;; these directories in Go 1.11:
+;; <https://bugs.gnu.org/33620>.
 ;;
-;; Go software, whether a package or a command, is uniquely named using
-;; an 'import path'.  The import path is based on the URL of the
-;; software's source.  Since most source code is provided over the
-;; internet, the import path is typically a combination of the remote
-;; URL and the source repository's file system structure. For example,
-;; the Go port of the common `du` command is hosted on github.com, at
-;; <https://github.com/calmh/du>.  Thus, the import path is
-;; <github.com/calmh/du>. [3]
+;; Go software, whether a package or a command, is uniquely named using an
+;; 'import path'.  The import path is based on the URL of the software's source.
+;; Because most source code is provided over the internet, the import path is
+;; typically a combination of the remote URL and the source repository's file
+;; system structure. For example, the Go port of the common `du` command is
+;; hosted on github.com, at <https://github.com/calmh/du>.  Thus, the import
+;; path is <github.com/calmh/du>. [3]
 ;;
-;; It may be possible to programatically guess a package's import path
-;; based on the source URL, but we don't try that in this revision of
-;; the go-build-system.
+;; It may be possible to automatically guess a package's import path based on
+;; the source URL, but we don't try that in this revision of the
+;; go-build-system.
 ;;
 ;; Modules of modular Go libraries are named uniquely with their
 ;; file system paths.  For example, the supplemental but "standardized"
@@ -74,6 +77,17 @@
 ;; certain cases, and these issues are currently resolved by creating a
 ;; file system union of the required modules of such libraries.  I think
 ;; this could be improved in future revisions of the go-build-system.
+;;
+;; TODO:
+;; * Avoid copying dependencies into the build environment and / or avoid using
+;; a tmpdir when creating the inputs union.
+;; * Use Go modules [4]
+;; * Re-use compiled packages [5]
+;; * Avoid the go-inputs hack
+;; * Stop needing remove-go-references (-trimpath ? )
+;; * Remove module packages, only offering the full Git repos? This is
+;; more idiomatic, I think, because Go downloads Git repos, not modules.
+;; What are the trade-offs?
 ;;
 ;; [0] `go build`:
 ;; https://golang.org/cmd/go/#hdr-Compile_packages_and_dependencies
@@ -107,18 +121,44 @@
 ;;
 ;; [2] https://golang.org/doc/code.html#GOPATH
 ;; [3] https://golang.org/doc/code.html#ImportPaths
+;; [4] https://golang.org/cmd/go/#hdr-Modules__module_versions__and_more
+;; [5] https://bugs.gnu.org/32919
 ;;
 ;; Code:
 
+(define* (setup-go-environment #:key inputs outputs #:allow-other-keys)
+  "Prepare a Go build environment for INPUTS and OUTPUTS.  Build a filesystem
+union of INPUTS.  Export GOPATH, which helps the compiler find the source code
+of the package being built and its dependencies, and GOBIN, which determines
+where executables (\"commands\") are installed to.  This phase is sometimes used
+by packages that use (guix build-system gnu) but have a handful of Go
+dependencies, so it should be self-contained."
+  ;; Using the current working directory as GOPATH makes it easier for packagers
+  ;; who need to manipulate the unpacked source code.
+  (setenv "GOPATH" (getcwd))
+  (setenv "GOBIN" (string-append (assoc-ref outputs "out") "/bin"))
+  (let ((tmpdir (tmpnam)))
+    (match (go-inputs inputs)
+      (((names . directories) ...)
+       (union-build tmpdir (filter directory-exists? directories)
+                    #:create-all-directories? #t
+                    #:log-port (%make-void-port "w"))))
+    ;; XXX A little dance because (guix build union) doesn't use mkdir-p.
+    (copy-recursively tmpdir
+                      (string-append (getenv "GOPATH"))
+                      #:keep-mtime? #t)
+    (delete-file-recursively tmpdir))
+  #t)
+
 (define* (unpack #:key source import-path unpack-path #:allow-other-keys)
-  "Unpack SOURCE in the UNPACK-PATH, or the IMPORT-PATH is the UNPACK-PATH is
-unset.  When SOURCE is a directory, copy it instead of unpacking."
+  "Relative to $GOPATH, unpack SOURCE in the UNPACK-PATH, or the IMPORT-PATH is
+the UNPACK-PATH is unset.  When SOURCE is a directory, copy it instead of
+unpacking."
   (if (string-null? import-path)
       ((display "WARNING: The Go import path is unset.\n")))
   (if (string-null? unpack-path)
       (set! unpack-path import-path))
-  (mkdir "src")
-  (let ((dest (string-append "src/" unpack-path)))
+  (let ((dest (string-append (getenv "GOPATH") "/src/" unpack-path)))
     (mkdir-p dest)
     (if (file-is-directory? source)
       (begin
@@ -127,15 +167,6 @@ unset.  When SOURCE is a directory, copy it instead of unpacking."
       (if (string-suffix? ".zip" source)
         (invoke "unzip" "-d" dest source)
         (invoke "tar" "-C" dest "-xvf" source)))))
-
-(define* (install-source #:key install-source? outputs #:allow-other-keys)
-  "Install the source code to the output directory."
-  (let* ((out (assoc-ref outputs "out"))
-         (source "src")
-         (dest (string-append out "/" source)))
-    (when install-source?
-      (copy-recursively source dest #:keep-mtime? #t))
-    #t))
 
 (define (go-package? name)
   (string-prefix? "go-" name))
@@ -155,27 +186,6 @@ unset.  When SOURCE is a directory, copy it instead of unpacking."
                 (_ #f))
               inputs))))
 
-(define* (setup-environment #:key inputs outputs #:allow-other-keys)
-  "Export the variables GOPATH and GOBIN, which are based on INPUTS and OUTPUTS,
-respectively."
-  (let ((out (assoc-ref outputs "out")))
-    ;; GOPATH is where Go looks for the source code of the build's dependencies.
-    (set-path-environment-variable "GOPATH"
-                                   ;; XXX Matching "." hints that we could do
-                                   ;; something simpler here...
-                                   (list ".")
-                                   (match (go-inputs inputs)
-                                     (((_ . dir) ...)
-                                      dir)))
-
-    ;; Add the source code of the package being built to GOPATH.
-    (if (getenv "GOPATH")
-      (setenv "GOPATH" (string-append (getcwd) ":" (getenv "GOPATH")))
-      (setenv "GOPATH" (getcwd)))
-    ;; Where to install compiled executable files ('commands' in Go parlance').
-    (setenv "GOBIN" (string-append out "/bin"))
-    #t))
-
 (define* (build #:key import-path #:allow-other-keys)
   "Build the package named by IMPORT-PATH."
   (with-throw-handler
@@ -193,22 +203,26 @@ respectively."
                               "Here are the results of `go env`:\n"))
       (invoke "go" "env"))))
 
+;; Can this also install commands???
 (define* (check #:key tests? import-path #:allow-other-keys)
   "Run the tests for the package named by IMPORT-PATH."
   (when tests?
     (invoke "go" "test" import-path))
   #t)
 
-(define* (install #:key outputs #:allow-other-keys)
-  "Install the compiled libraries. `go install` installs these files to
-$GOPATH/pkg, so we have to copy them into the output directory manually.
-Compiled executable files should have already been installed to the store based
-on $GOBIN in the build phase."
-  ;; TODO: From go-1.10 onward, the pkg folder should not be needed (see
-  ;; https://lists.gnu.org/archive/html/guix-devel/2018-11/msg00208.html).
-  ;; Remove it?
-  (when (file-exists? "pkg")
-    (copy-recursively "pkg" (string-append (assoc-ref outputs "out") "/pkg")))
+(define* (install #:key install-source? outputs import-path unpack-path #:allow-other-keys)
+  "Install the source code of IMPORT-PATH to the primary output directory.
+Compiled executable files (Go \"commands\") should have already been installed
+to the store based on $GOBIN in the build phase.
+XXX We can't make us of compiled libraries (Go \"packages\")."
+  (when install-source?
+    (if (string-null? import-path)
+        ((display "WARNING: The Go import path is unset.\n")))
+    (let* ((out (assoc-ref outputs "out"))
+           (source (string-append (getenv "GOPATH") "/src/" import-path))
+           (dest (string-append out "/src/" import-path)))
+      (mkdir-p dest)
+      (copy-recursively source dest #:keep-mtime? #t)))
   #t)
 
 (define* (remove-store-reference file file-name
@@ -269,9 +283,8 @@ files in OUTPUTS."
     (delete 'bootstrap)
     (delete 'configure)
     (delete 'patch-generated-file-shebangs)
+    (add-before 'unpack 'setup-go-environment setup-go-environment)
     (replace 'unpack unpack)
-    (add-after 'unpack 'install-source install-source)
-    (add-before 'build 'setup-environment setup-environment)
     (replace 'build build)
     (replace 'check check)
     (replace 'install install)
