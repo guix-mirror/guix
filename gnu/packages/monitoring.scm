@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gd)
@@ -121,4 +123,36 @@ etc. via a Web interface.  Features include:
 @item Optional web interface for viewing current network status,
   notification and problem history, log file, etc.
 @end itemize\n")
+    (license license:gpl2)))
+
+(define-public darkstat
+  (package
+    (name "darkstat")
+    (version "3.0.719")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://unix4lyfe.org/darkstat/darkstat-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1mzddlim6dhd7jhr4smh0n2fa511nvyjhlx76b03vx7phnar1bxf"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f))          ; no tests
+    (inputs
+     `(("libpcap" ,libpcap)
+       ("zlib" ,zlib)))
+    (home-page "https://unix4lyfe.org/darkstat/")
+    (synopsis "Network statistics gatherer")
+    (description
+     "@command{darkstat} is a packet sniffer that runs as a background process,
+gathers all sorts of statistics about network usage, and serves them over
+HTTP.  Features:
+
+@itemize
+@item Traffic graphs, reports per host, shows ports for each host.
+@item Embedded web-server with deflate compression.
+@item Asynchronous reverse DNS resolution using a child process.
+@item Small.  Portable.  Single-threaded.  Efficient.
+@item Supports IPv6.
+@end itemize")
     (license license:gpl2)))
