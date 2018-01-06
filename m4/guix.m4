@@ -1,5 +1,5 @@
 dnl GNU Guix --- Functional package management for GNU
-dnl Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+dnl Copyright © 2012, 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 dnl Copyright © 2014 Mark H Weaver <mhw@netris.org>
 dnl Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 dnl
@@ -151,6 +151,26 @@ AC_DEFUN([GUIX_CHECK_UNBUFFERED_CBIP], [
      else
        ac_cv_guix_cbips_support_setvbuf=no
      fi])
+])
+
+dnl GUIX_ASSERT_SYNTAX_OBJECT_EQUAL
+dnl
+dnl Guile 2.2.1 was a brown-paper-bag release where 'equal?' wouldn't work
+dnl for syntax objects, which broke gexps.  Unfortunately Fedora 25 provides it.
+dnl Reject it.
+AC_DEFUN([GUIX_ASSERT_SYNTAX_OBJECT_EQUAL], [
+  AC_CACHE_CHECK([whether 'equal?' works for syntax objects],
+    [ac_cv_guix_syntax_object_equal],
+    [if "$GUILE" -c '(exit (equal? (syntax x) (syntax x)))'
+     then
+       ac_cv_guix_syntax_object_equal=yes
+     else
+       ac_cv_guix_syntax_object_equal=no
+     fi])
+  if test "x$ac_cv_guix_syntax_object_equal" != xyes; then
+    # This bug was present in Guile 2.2.1 only.
+    AC_MSG_ERROR(['equal?' does not work for syntax object; upgrade to Guile 2.2.2 or later.])
+  fi
 ])
 
 dnl GUIX_CHECK_GUILE_SSH

@@ -113,6 +113,10 @@ AM_CONDITIONAL([HAVE_GUILE_JSON], [test "x$have_guile_json" = "xyes"])
 dnl Make sure we have a full-fledged Guile.
 GUIX_ASSERT_GUILE_FEATURES([regex posix socket net-db threads])
 
+dnl Make sure we don't suffer from the bug in 'equal?' wrt. syntax objects
+dnl found in 2.2.1.  See <https://bugs.gnu.org/29903>.
+GUIX_ASSERT_SYNTAX_OBJECT_EQUAL
+
 dnl Decompressors, for use by the substituter and other modules.
 AC_PATH_PROG([GZIP], [gzip])
 AC_PATH_PROG([BZIP2], [bzip2])
