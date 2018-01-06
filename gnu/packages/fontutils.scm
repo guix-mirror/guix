@@ -406,7 +406,8 @@ and returns a sequence of positioned glyphids from the font.")
                           "/potrace-" version ".tar.gz"))
       (sha256
        (base32
-        "17ajildjp14shsy339xarh1lw1p0k60la08ahl638a73mh23kcx9"))))
+        "17ajildjp14shsy339xarh1lw1p0k60la08ahl638a73mh23kcx9"))
+      (patches (search-patches "potrace-tests.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("ghostscript" ,ghostscript))) ;for tests
     (inputs `(("zlib" ,zlib)))
