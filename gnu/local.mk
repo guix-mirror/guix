@@ -460,6 +460,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/mail.scm				\
   %D%/services/mcron.scm			\
   %D%/services/messaging.scm			\
+  %D%/services/monitoring.scm			\
   %D%/services/networking.scm			\
   %D%/services/nfs.scm			\
   %D%/services/shepherd.scm			\

@@ -14727,6 +14727,48 @@ the 2nd element of the pair is the password.
 @end deftp
 
 
+@subsubheading Darkstat Service
+@cindex darkstat
+Darkstat is a packet sniffer that captures network traffic, calculates
+statistics about usage, and serves reports over HTTP.
+
+@defvar {Scheme Variable} darkstat-service-type
+This is the service type for the
+@uref{https://unix4lyfe.org/darkstat/, darkstat}
+service,  its value must be a @code{darkstat-configuration} record as in
+this example:
+
+@example
+(service darkstat-service-type
+         (darkstat-configuration
+           (interface "eno1")))
+@end example
+@end defvar
+
+@deftp {Data Type} darkstat-configuration
+Data type representing the configuration of @command{darkstat}.
+
+@table @asis
+@item @code{package} (default: @code{darkstat})
+The darkstat package to use.
+
+@item @code{interface}
+Capture traffic on the specified network interface.
+
+@item @code{port} (default: @code{"667"})
+Bind the web interface to the specified port.
+
+@item @code{bind-address} (default: @code{"127.0.0.1"})
+Bind the web interface to the specified address.
+
+@item @code{base} (default: @code{"/"})
+Specify the path of the base URL.  This can be useful if
+@command{darkstat} is accessed via a reverse proxy.
+
+@end table
+@end deftp
+
+
 @node Kerberos Services
 @subsubsection Kerberos Services
 @cindex Kerberos
