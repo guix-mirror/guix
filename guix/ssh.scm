@@ -19,6 +19,7 @@
 (define-module (guix ssh)
   #:use-module (guix store)
   #:use-module (guix i18n)
+  #:use-module ((guix utils) #:select (&fix-hint))
   #:use-module (ssh session)
   #:use-module (ssh auth)
   #:use-module (ssh key)
@@ -197,15 +198,36 @@ be read.  When RECURSIVE? is true, the closure of FILES is exported."
   ;; remote store.
   (define export
     `(begin
-       (use-modules (guix))
+       (eval-when (load expand eval)
+         (unless (resolve-module '(guix) #:ensure #f)
+           (write `(module-error))
+           (exit 7)))
 
-       (with-store store
-         (setvbuf (current-output-port) _IONBF)
+       (use-modules (guix) (srfi srfi-1)
+                    (srfi srfi-26) (srfi srfi-34))
 
-         ;; FIXME: Exceptions are silently swallowed.  We should report them
-         ;; somehow.
-         (export-paths store ',files (current-output-port)
-                       #:recursive? ,recursive?))))
+       (guard (c ((nix-connection-error? c)
+                  (write `(connection-error ,(nix-connection-error-file c)
+                                            ,(nix-connection-error-code c))))
+                 ((nix-protocol-error? c)
+                  (write `(protocol-error ,(nix-protocol-error-status c)
+                                          ,(nix-protocol-error-message c))))
+                 (else
+                  (write `(exception))))
+         (with-store store
+           (let* ((files ',files)
+                  (invalid (remove (cut valid-path? store <>)
+                                   files)))
+             (unless (null? invalid)
+               (write `(invalid-items ,invalid))
+               (exit 1))
+
+             (write '(exporting))                 ;we're ready
+             (force-output)
+
+             (setvbuf (current-output-port) _IONBF)
+             (export-paths store files (current-output-port)
+                           #:recursive? ,recursive?))))))
 
   (open-remote-input-pipe session
                           (string-join
@@ -291,6 +313,19 @@ to the length of FILES.)"
                                 #:recursive? recursive?)
           (length files)))            ;XXX: inaccurate when RECURSIVE? is true
 
+(define-syntax raise-error
+  (syntax-rules (=>)
+    ((_ fmt args ... (=> hint-fmt hint-args ...))
+     (raise (condition
+             (&message
+              (message (format #f fmt args ...)))
+             (&fix-hint
+              (hint (format #f hint-fmt hint-args ...))))))
+    ((_ fmt args ...)
+     (raise (condition
+             (&message
+              (message (format #f fmt args ...))))))))
+
 (define* (retrieve-files local files remote
                          #:key recursive? (log-port (current-error-port)))
   "Retrieve FILES from REMOTE and import them using the 'import-paths' RPC on
@@ -298,22 +333,44 @@ LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
   (let-values (((port count)
                 (file-retrieval-port files remote
                                      #:recursive? recursive?)))
-    (format #t (N_ "retrieving ~a store item from '~a'...~%"
-                   "retrieving ~a store items from '~a'...~%" count)
-            count (remote-store-host remote))
-    (when (eof-object? (lookahead-u8 port))
-      ;; The failure could be because one of the requested store items is not
-      ;; valid on REMOTE, or because Guile or Guix is improperly installed.
-      ;; TODO: Improve error reporting.
-      (raise (condition
-              (&message
-               (message
-                (format #f
-                        (G_ "failed to retrieve store items from '~a'")
-                        (remote-store-host remote)))))))
+    (match (read port)                            ;read the initial status
+      (('exporting)
+       (format #t (N_ "retrieving ~a store item from '~a'...~%"
+                      "retrieving ~a store items from '~a'...~%" count)
+               count (remote-store-host remote))
 
-    (let ((result (import-paths local port)))
-      (close-port port)
-      result)))
+       (let ((result (import-paths local port)))
+         (close-port port)
+         result))
+      ((? eof-object?)
+       (raise-error (G_ "failed to start Guile on remote host '~A': exit code ~A")
+                    (remote-store-host remote)
+                    (channel-get-exit-status port)
+                    (=> (G_ "Make sure @command{guile} can be found in
+@code{$PATH} on the remote host.  Run @command{ssh ~A guile --version} to
+check.")
+                        (remote-store-host remote))))
+      (('module-error . _)
+       ;; TRANSLATORS: Leave "Guile" untranslated.
+       (raise-error (G_ "Guile modules not found on remote host '~A'")
+                    (remote-store-host remote)
+                    (=> (G_ "Make sure @code{GUILE_LOAD_PATH} includes Guix'
+own module directory.  Run @command{ssh ~A env | grep GUILE_LOAD_PATH} to
+check.")
+                        (remote-store-host remote))))
+      (('connection-error file code . _)
+       (raise-error (G_ "failed to connect to '~A' on remote host '~A': ~a")
+                    file (remote-store-host remote) (strerror code)))
+      (('invalid-items items . _)
+       (raise-error (N_ "no such item on remote host '~A':~{ ~a~}"
+                        "no such items on remote host '~A':~{ ~a~}"
+                        (length items))
+                    (remote-store-host remote) items))
+      (('protocol-error status message . _)
+       (raise-error (G_ "protocol error on remote host '~A': ~a")
+                    (remote-store-host remote) message))
+      (_
+       (raise-error (G_ "failed to retrieve store items from '~a'")
+                    (remote-store-host remote))))))
 
 ;;; ssh.scm ends here
