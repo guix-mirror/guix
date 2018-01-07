@@ -6914,7 +6914,7 @@ package contains utilities for obtaining services via the Java SE 6
 (define-public java-aqute-bnd-annotation
   (package
     (name "java-aqute-bnd-annotation")
-    (version "3.4.0")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bndtools/bnd/archive/"
@@ -6922,7 +6922,7 @@ package contains utilities for obtaining services via the Java SE 6
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "09vgb6axikbz66zi9falijbnzh1qnp9ysfns123dmzdb01cbza9q"))))
+                "1ggyiq0as0f6cz333a0dh98j72kmvv5pf2s47v9554yh905lfqdl"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-aqute-bnd-annotation.jar"
