@@ -3567,7 +3567,7 @@ studio.")
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("jack-2" ,jack-2)
+       ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("libsamplerate" ,libsamplerate)
        ("libsndfile" ,libsndfile)
