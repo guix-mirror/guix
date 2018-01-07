@@ -623,6 +623,12 @@ directories:~{ ~a~}~%")
                      (location->string (error-location c))
                      (gettext (condition-message c) %gettext-domain))
              (exit 1))
+            ((and (message-condition? c) (fix-hint? c))
+             (format (current-error-port) "~a: error: ~a~%"
+                     (program-name)
+                     (gettext (condition-message c) %gettext-domain))
+             (display-hint (condition-fix-hint c))
+             (exit 1))
             ((message-condition? c)
              ;; Normally '&message' error conditions have an i18n'd message.
              (leave (G_ "~a~%")
