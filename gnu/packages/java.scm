@@ -7,6 +7,8 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2660,23 +2662,31 @@ archives (jar).")
 (define-public java-asm
   (package
     (name "java-asm")
-    (version "5.2")
+    (version "6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.forge.ow2.org/asm/"
                                   "asm-" version ".tar.gz"))
               (sha256
                (base32
-                "0kxvmv5275rnjl7jv0442k3wjnq03ngkb7sghs78avf45pzm4qgr"))))
+                "115l5pqblirdkmzi32dxx7gbcm4jy0s14y5wircr6h8jdr9aix00"))))
     (build-system ant-build-system)
+    (propagated-inputs
+     `(("java-aqute-bndlib" ,java-aqute-bndlib)))
     (arguments
      `(#:build-target "compile"
        ;; The tests require an old version of Janino, which no longer compiles
        ;; with the JDK7.
        #:tests? #f
-       ;; We don't need these extra ant tasks, but the build system asks us to
-       ;; provide a path anyway.
-       #:make-flags (list (string-append "-Dobjectweb.ant.tasks.path=foo"))
+       #:make-flags
+       (list
+        ;; We don't need these extra ant tasks, but the build system asks us to
+        ;; provide a path anyway.
+        "-Dobjectweb.ant.tasks.path=dummy-path"
+        ;; The java-aqute.bndlib JAR file will be put onto the classpath and
+        ;; used during the build automatically by ant-build-system, but
+        ;; java-asm's build.xml fails unless we provide something here.
+        "-Dbiz.aQute.bnd.path=dummy-path")
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'build-jars
