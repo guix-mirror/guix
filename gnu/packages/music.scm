@@ -3496,6 +3496,62 @@ sample library.")
     (home-page "https://musescore.org")
     (license license:gpl2)))
 
+(define-public muse-sequencer
+  (package
+    (name "muse-sequencer")
+    (version "3.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/muse-sequencer/muse.git")
+                    (commit (string-append "muse_"
+                                           (string-map (lambda (c)
+                                                         (if (char=? c #\.)
+                                                             #\_ c)) version)))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1nninz8qyqlxxjdnrm79y3gr3056pga9l2fsqh674jd3cjvafya3"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; there is no test target
+       #:configure-flags
+       (list "-DENABLE_LV2_SUPPLIED=OFF"
+             "-DENABLE_RTAUDIO=OFF"    ; FIXME: not packaged
+             "-DENABLE_INSTPATCH=OFF"  ; FIXME: not packaged
+             "-DENABLE_VST_NATIVE=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "muse3"))))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("lash" ,lash)
+       ("jack" ,jack-1)
+       ("liblo" ,liblo)
+       ("dssi" ,dssi)
+       ("ladspa" ,ladspa)
+       ("lv2" ,lv2)
+       ("lilv" ,lilv)
+       ("sord" ,sord)
+       ("libsndfile" ,libsndfile)
+       ("libsamplerate" ,libsamplerate)
+       ("fluidsynth" ,fluidsynth)
+       ("pcre" ,pcre)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://muse-sequencer.org")
+    (synopsis "MIDI/Audio sequencer")
+    (description "MusE is a MIDI/Audio sequencer with recording and editing
+capabilities.  Its audio sequencer supports the LADSPA, DSSI, and LV2 audio
+plugin formats; the MIDI sequencer provides a piano roll, a drum editor, a
+list view, and a score editor.  MusE aims to be a complete multitrack virtual
+studio.")
+    (license license:gpl2+)))
+
 (define-public dssi
   (package
     (name "dssi")
