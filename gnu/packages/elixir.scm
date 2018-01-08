@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 nee <nee.git@cock.li>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,7 @@
 (define-public elixir
   (package
     (name "elixir")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/elixir-lang/elixir"
@@ -39,7 +40,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0v7z0avs3gir7qdfgysfw88l3z9p5f7p7pjnrnsz5gmmsflvf5vk"))
+                "0acnxfwvkx1m1d0h5z051mz95n35zm468hcvc3wpmn17c15h5ihg"))
               ;; FIXME: 27 tests (out of 4K) had to be disabled as
               ;; they fail in the build environment.  Common failures
               ;; are:
