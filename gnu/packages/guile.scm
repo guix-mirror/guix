@@ -1658,90 +1658,18 @@ is no support for parsing block and inline level HTML.")
 (define-public guile-bytestructures
   (package
     (name "guile-bytestructures")
-    (version "20170402.91d042e")
+    (version "1.0.1")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/TaylanUB/scheme-bytestructures")
-                    (commit "91d042e3427e1d7740b604b6296c616cf2eec13d")))
-              (file-name (string-append name "-" version "-checkout"))
+              (method url-fetch)
+              (uri (string-append "https://github.com/TaylanUB/scheme-bytestructures"
+                                  "/releases/download/v" version
+                                  "/bytestructures-" version ".tar.gz"))
               (sha256
                (base32
-                "04lgh0nk6ddnwgh20hnz4pyhczaik0xbd50kikjsxcwcl46shavb"))
-              (patches (search-patches "guile-bytestructures-name-clash.patch"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils)
-                      (ice-9 ftw)
-                      (ice-9 match)
-                      (ice-9 popen)
-                      (ice-9 rdelim))
-         ;; Unpack.
-         (setenv "PATH"
-                 (string-join (list (assoc-ref %build-inputs "tar")
-                                    (assoc-ref %build-inputs "xz"))
-                              "/bin:" 'suffix))
-         (system* "tar" "xf" (assoc-ref %build-inputs "source"))
-         (match (scandir ".")
-           (("." ".." directory)
-            (chdir directory)))
-
-         (let* ((out (assoc-ref %outputs "out"))
-                (guile (assoc-ref %build-inputs "guile"))
-                (effective (read-line
-                            (open-pipe* OPEN_READ
-                                        (string-append guile "/bin/guile")
-                                        "-c" "(display (effective-version))")))
-                (module-dir (string-append out "/share/guile/site/"
-                                           effective))
-                (object-dir (string-append out "/lib/guile/" effective
-                                           "/site-ccache"))
-                (source (getcwd))
-                (doc (string-append out "/share/doc/scheme-bytestructures"))
-                (sld-files (with-directory-excursion source
-                             (find-files "bytestructures/r7" "\\.exports.sld$")))
-                (scm-files (filter (lambda (path)
-                                     (not (string-prefix? "bytestructures/r7" path)))
-                                   (with-directory-excursion source
-                                     (find-files "bytestructures" "\\.scm$"))))
-                (guild (string-append (assoc-ref %build-inputs "guile")
-                                      "/bin/guild")))
-           ;; Make installation directories.
-           (mkdir-p doc)
-
-           ;; Compile .scm files and install.
-           (chdir source)
-           (setenv "GUILE_AUTO_COMPILE" "0")
-           (for-each (lambda (file)
-                       (let* ((dest-file (string-append module-dir "/"
-                                                        file))
-                              (go-file (string-append object-dir "/"
-                                                      (substring file 0
-                                                                 (string-rindex file #\.))
-                                                      ".go")))
-                         ;; Install source module.
-                         (mkdir-p (dirname dest-file))
-                         (copy-file file dest-file)
-
-                         ;; Install compiled module.
-                         (mkdir-p (dirname go-file))
-                         (unless (zero? (system* guild "compile"
-                                                 "-L" source
-                                                 "-o" go-file
-                                                 file))
-                           (error (format #f "Failed to compile ~s to ~s!"
-                                          file go-file)))))
-                     (append sld-files scm-files))
-
-           ;; Also copy over the README.
-           (install-file "README.md" doc)
-           #t))))
+                "1lnfcy65mqj823lamy2n2vaghdz0g7mj011bgnhmd6hwpnaidnh2"))))
+    (build-system gnu-build-system)
     (native-inputs
-     `(("tar" ,tar)
-       ("xz" ,xz)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.2)))
     (home-page "https://github.com/TaylanUB/scheme-bytestructures")
