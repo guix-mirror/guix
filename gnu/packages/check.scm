@@ -1549,12 +1549,16 @@ backported from Python 2.7 for Python 2.4+.")
               (base32
                "1iypp6z46r19n4xmgx6m1lwmlpfjh8vapq8izigrqlaarvp2y64c"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-pyhamcrest" ,python-pyhamcrest)))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-parse" ,python-parse)
        ("python-parse-type" ,python-parse-type)))
-    (arguments `(#:tests? #f))          ;TODO: tests require nose>=1.3 and
-                                        ;PyHamcrest>=1.8
+    (arguments
+     '(#:test-target "behave_test"))
     (home-page "https://github.com/behave/behave")
     (synopsis "Python behavior-driven development")
     (description
