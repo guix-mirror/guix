@@ -6634,3 +6634,27 @@ mode’s f,F,t,T keys, allowing for quick navigation within a line.  It is a
 port of quick-scope for Vim.  Evil is an Emacs minor mode that emulates Vim
 features and provides Vim-like key bindings.")
     (license license:gpl3+)))
+
+(define-public emacs-bongo
+  (package
+    (name "emacs-bongo")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/dbrock/bongo/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pcsyyrvj7djjjwpaswd1i782hvqvlvs39cy9ns0k795si6xd64d"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dbrock/bongo")
+    (synopsis "Media player for Emacs")
+    (description
+     "This package provides a flexible media player for Emacs.  @code{Bongo}
+supports multiple backends such as @code{vlc}, @code{mpg123},
+@code{ogg123}, @code{speexdec}, @code{timidity}, @code{mikmod} and
+@code{afplay}.")
+    (license license:gpl2+)))
