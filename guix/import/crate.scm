@@ -59,7 +59,9 @@
              (repository (assoc-ref crate "repository"))
              (synopsis (assoc-ref crate "description"))
              (description (assoc-ref crate "description"))
-             (license (string->license (assoc-ref crate "license")))
+             (license (or (and=> (assoc-ref crate "license")
+                                 string->license)
+                          '()))                   ;missing license info
              (path (string-append "/" version "/dependencies"))
              (deps-json (json-fetch (string-append crate-url name path)))
              (deps (assoc-ref deps-json "dependencies"))
