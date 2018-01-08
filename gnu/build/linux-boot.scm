@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -430,7 +430,8 @@ bailing out.~%root contents: ~s~%" (scandir "/"))
                       qemu-guest-networking?
                       volatile-root?
                       pre-mount
-                      (mounts '()))
+                      (mounts '())
+                      (on-error 'debug))
   "This procedure is meant to be called from an initrd.  Boot a system by
 first loading LINUX-MODULES (a list of module names) from
 LINUX-MODULE-DIRECTORY, then setting up QEMU guest networking if
@@ -444,7 +445,10 @@ if any.
 MOUNTS must be a list of <file-system> objects.
 
 When VOLATILE-ROOT? is true, the root file system is writable but any changes
-to it are lost."
+to it are lost.
+
+ON-ERROR is passed to 'call-with-error-handling'; it determines what happens
+upon error."
   (define (root-mount-point? fs)
     (string=? (file-system-mount-point fs) "/"))
 
@@ -517,6 +521,7 @@ to it are lost."
            (begin
              (display "no boot file passed via '--load'\n")
              (display "entering a warm and cozy REPL\n")
-             (start-repl)))))))
+             (start-repl)))))
+   #:on-error on-error))
 
 ;;; linux-initrd.scm ends here
