@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ryan Moe <ryan.moe@gmail.com>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,16 +24,29 @@
   #:use-module (gnu services dbus)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
+  #:use-module (gnu system file-systems)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages virtualization)
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix packages)
+  #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-26)
+  #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
 
   #:export (libvirt-configuration
             libvirt-service-type
-            virtlog-service-type))
+            virtlog-service-type
+
+            %qemu-platforms
+            lookup-qemu-platforms
+            qemu-platform?
+            qemu-platform-name
+
+            qemu-binfmt-configuration
+            qemu-binfmt-configuration?
+            qemu-binfmt-service-type))
 
 (define (uglify-field-name field-name)
   (let ((str (symbol->string field-name)))
@@ -490,3 +504,237 @@ potential infinite waits blocking libvirt."))
   (generate-documentation
    `((libvirt-configuration ,libvirt-configuration-fields))
    'libvirt-configuration))
+
+
+;;;
+;;; Transparent QEMU emulation via binfmt_misc.
+;;;
+
+;; Platforms that QEMU can emulate.
+(define-record-type <qemu-platform>
+  (qemu-platform name family magic mask)
+  qemu-platform?
+  (name     qemu-platform-name)                   ;string
+  (family   qemu-platform-family)                 ;string
+  (magic    qemu-platform-magic)                  ;bytevector
+  (mask     qemu-platform-mask))                  ;bytevector
+
+(define-syntax bv
+  (lambda (s)
+    "Expand the given string into a bytevector."
+    (syntax-case s ()
+      ((_ str)
+       (string? (syntax->datum #'str))
+       (let ((bv (u8-list->bytevector
+                  (map char->integer
+                       (string->list (syntax->datum #'str))))))
+         bv)))))
+
+;;; The platform descriptions below are taken from
+;;; 'scripts/qemu-binfmt-conf.sh' in QEMU.
+
+(define %i386
+  (qemu-platform "i386" "i386"
+                 (bv "\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x03\x00")
+                 (bv "\xff\xff\xff\xff\xff\xfe\xfe\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
+
+(define %i486
+  (qemu-platform "i486" "i386"
+                 (bv "\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x06\x00")
+                 (bv "\xff\xff\xff\xff\xff\xfe\xfe\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
+
+(define %alpha
+  (qemu-platform "alpha" "alpha"
+                 (bv "\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x26\x90")
+                 (bv "\xff\xff\xff\xff\xff\xfe\xfe\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
+
+(define %arm
+  (qemu-platform "arm" "arm"
+                 (bv "\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
+
+(define %armeb
+  (qemu-platform "armeb" "arm"
+                 (bv "\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+(define %sparc
+  (qemu-platform "sparc" "sparc"
+                 (bv "\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x02")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+(define %sparc32plus
+  (qemu-platform "sparc32plus" "sparc"
+                 (bv "\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x12")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+(define %ppc
+  (qemu-platform "ppc" "ppc"
+                 (bv "\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x14")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+(define %ppc64
+  (qemu-platform "ppc64" "ppc"
+                 (bv "\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+(define %ppc64le
+  (qemu-platform "ppc64le" "ppcle"
+                 (bv "\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15\x00")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\x00")))
+
+(define %m68k
+  (qemu-platform "m68k" "m68k"
+                 (bv "\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x04")
+                 (bv "\xff\xff\xff\xff\xff\xff\xfe\xfe\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+;; XXX: We could use the other endianness on a MIPS host.
+(define %mips
+  (qemu-platform "mips" "mips"
+                 (bv "\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x08")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+(define %mipsel
+  (qemu-platform "mipsel" "mips"
+                 (bv "\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x08\x00")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
+
+(define %mipsn32
+  (qemu-platform "mipsn32" "mips"
+                 (bv "\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x08")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+(define %mipsn32el
+  (qemu-platform "mipsn32el" "mips"
+                 (bv "\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x08\x00")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
+
+(define %mips64
+  (qemu-platform "mips64" "mips"
+                 (bv "\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x08")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+(define %mips64el
+  (qemu-platform "mips64el" "mips"
+                 (bv "\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x08\x00")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
+
+(define %sh4
+  (qemu-platform "sh4" "sh4"
+                 (bv "\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x2a\x00")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
+
+(define %sh4eb
+  (qemu-platform "sh4eb" "sh4"
+                 (bv "\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x2a")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+(define %s390x
+  (qemu-platform "s390x" "s390x"
+                 (bv "\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x16")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+(define %aarch64
+  (qemu-platform "aarch64" "arm"
+                 (bv "\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xb7\x00")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff")))
+
+(define %hppa
+  (qemu-platform "hppa" "hppa"
+                 (bv "\x7f\x45\x4c\x46\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x0f")
+                 (bv "\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff")))
+
+(define %qemu-platforms
+  (list %i386 %i486 %alpha %arm %sparc32plus %ppc %ppc64 %ppc64le %m68k
+        %mips %mipsel %mipsn32 %mipsn32el %mips64 %mips64el
+        %sh4 %sh4eb %s390x %aarch64 %hppa))
+
+(define (lookup-qemu-platforms . names)
+  "Return the list of QEMU platforms that match NAMES--a list of names such as
+\"arm\", \"hppa\", etc."
+  (filter (lambda (platform)
+            (member (qemu-platform-name platform) names))
+          %qemu-platforms))
+
+(define-record-type* <qemu-binfmt-configuration>
+  qemu-binfmt-configuration make-qemu-binfmt-configuration
+  qemu-binfmt-configuration?
+  (qemu        qemu-binfmt-configuration-qemu
+               (default qemu))
+  (platforms   qemu-binfmt-configuration-platforms
+               (default '())))                    ;safest default
+
+(define (qemu-platform->binfmt qemu platform)
+  "Return a gexp that evaluates to a binfmt string for PLATFORM, using the
+given QEMU package."
+  (define (bytevector->binfmt-string bv)
+    ;; Return a binfmt-friendly string representing BV.  Hex-encode every
+    ;; character, in particular because the doc notes "that you must escape
+    ;; any NUL bytes; parsing halts at the first one".
+    (string-concatenate
+     (map (lambda (n)
+            (string-append "\\x"
+                           (string-pad (number->string n 16) 2 #\0)))
+          (bytevector->u8-list bv))))
+
+  (match platform
+    (($ <qemu-platform> name family magic mask)
+     ;; See 'Documentation/binfmt_misc.txt' in the kernel.
+     #~(string-append ":qemu-" #$name ":M::"
+                      #$(bytevector->binfmt-string magic)
+                      ":" #$(bytevector->binfmt-string mask)
+                      ":" #$(file-append qemu "/bin/qemu-" name)
+                      ":"                         ;FLAGS go here
+                      ))))
+
+(define %binfmt-mount-point
+  (file-system-mount-point %binary-format-file-system))
+
+(define %binfmt-register-file
+  (string-append %binfmt-mount-point "/register"))
+
+(define qemu-binfmt-shepherd-services
+  (match-lambda
+    (($ <qemu-binfmt-configuration> qemu platforms)
+     (list (shepherd-service
+            (provision '(qemu-binfmt))
+            (documentation "Install binfmt_misc handlers for QEMU.")
+            (requirement '(file-system-/proc/sys/fs/binfmt_misc))
+            (start #~(lambda ()
+                       ;; Register the handlers for all of PLATFORMS.
+                       (for-each (lambda (str)
+                                   (call-with-output-file
+                                       #$%binfmt-register-file
+                                     (lambda (port)
+                                       (display str port))))
+                                 (list
+                                  #$@(map (cut qemu-platform->binfmt qemu
+                                               <>)
+                                          platforms)))
+                       #t))
+            (stop #~(lambda (_)
+                      ;; Unregister the handlers.
+                      (for-each (lambda (name)
+                                  (let ((file (string-append
+                                               #$%binfmt-mount-point
+                                               "/qemu-" name)))
+                                    (call-with-output-file file
+                                      (lambda (port)
+                                        (display "-1" port)))))
+                                '#$(map qemu-platform-name platforms))
+                      #f)))))))
+
+(define qemu-binfmt-service-type
+  ;; TODO: Make a separate binfmt_misc service out of this?
+  (service-type (name 'qemu-binfmt)
+                (extensions
+                 (list (service-extension file-system-service-type
+                                          (const
+                                           (list %binary-format-file-system)))
+                       (service-extension shepherd-root-service-type
+                                          qemu-binfmt-shepherd-services)))
+                (default-value (qemu-binfmt-configuration))
+                (description
+                 "This service supports transparent emulation of binaries
+compiled for other architectures using QEMU and the @code{binfmt_misc}
+functionality of the kernel Linux.")))

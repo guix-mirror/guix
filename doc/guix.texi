@@ -16956,8 +16956,10 @@ an absolute path can be specified here.
 
 @node Virtualization Services
 @subsubsection Virtualization services
+
 The @code{(gnu services virtualization)} module provides services for
-the libvirt and virtlog daemons.
+the libvirt and virtlog daemons, as well as other virtualization-related
+services.
 
 @subsubheading Libvirt daemon
 @code{libvirtd} is the server side daemon component of the libvirt
@@ -17660,6 +17662,61 @@ Defaults to @samp{3}
 
 @end deftypevr
 
+@subsubheading Transparent Emulation with QEMU
+
+@cindex emulation
+@cindex @code{binfmt_misc}
+@code{qemu-binfmt-service-type} provides support for transparent
+emulation of program binaries built for different architectures---e.g.,
+it allows you to transparently execute an ARMv7 program on an x86_64
+machine.  It achieves this by combining the @uref{https://www.qemu.org,
+QEMU} emulator and the @code{binfmt_misc} feature of the kernel Linux.
+
+@defvr {Scheme Variable} qemu-binfmt-service-type
+This is the type of the QEMU/binfmt service for transparent emulation.
+Its value must be a @code{qemu-binfmt-configuration} object, which
+specifies the QEMU package to use as well as the architecture we want to
+emulated:
+
+@example
+(service qemu-binfmt-service-type
+         (qemu-binfmt-configuration
+           (platforms (lookup-qemu-platforms "arm" "aarch64" "ppc"))))
+@end example
+
+In this example, we enable transparent emulation for the ARM and aarch64
+platforms.  Running @code{herd stop qemu-binfmt} turns it off, and
+running @code{herd start qemu-binfmt} turns it back on (@pxref{Invoking
+herd, the @command{herd} command,, shepherd, The GNU Shepherd Manual}).
+@end defvr
+
+@deftp {Data Type} qemu-binfmt-configuration
+This is the configuration for the @code{qemu-binfmt} service.
+
+@table @asis
+@item @code{platforms} (default: @code{'()})
+The list of emulated QEMU platforms.  Each item must be a @dfn{platform
+object} as returned by @code{lookup-qemu-platforms} (see below).
+
+@item @code{qemu} (default: @code{qemu})
+The QEMU package to use.
+@end table
+@end deftp
+
+@deffn {Scheme Procedure} lookup-qemu-platforms @var{platforms}@dots{}
+Return the list of QEMU platform objects corresponding to
+@var{platforms}@dots{}.  @var{platforms} must be a list of strings
+corresponding to platform names, such as @code{"arm"}, @code{"sparc"},
+@code{"mips64el"}, and so on.
+@end deffn
+
+@deffn {Scheme Procedure} qemu-platform? @var{obj}
+Return true if @var{obj} is a platform object.
+@end deffn
+
+@deffn {Scheme Procedure} qemu-platform-name @var{platform}
+Return the name of @var{platform}---a string such as @code{"arm"}.
+@end deffn
 
 @node Version Control Services
 @subsubsection Version Control Services
