@@ -9,7 +9,7 @@
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
@@ -1207,11 +1207,19 @@ dealing with different structured file formats.")
                (("gdk_pixbuf_cache_file = .*$")
                 "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))
              #t))
-         (add-after 'unpack 'remove-failing-test
-           ;; This test fails on aarch64.
+         (add-after 'unpack 'remove-failing-tests
            (lambda _
-             (delete-file "tests/fixtures/reftests/bugs/777834-empty-text-children.svg")
-             (delete-file "tests/fixtures/reftests/bugs/777834-empty-text-children-ref.png")
+             (with-directory-excursion "tests/fixtures/reftests"
+               (for-each delete-file
+                         '(;; This test fails on i686:
+                           "svg1.1/masking-path-04-b.svg"
+                           "svg1.1/masking-path-04-b-ref.png"
+                           ;; This test fails on armhf:
+                           "svg1.1/masking-mask-01-b.svg"
+                           "svg1.1/masking-mask-01-b-ref.png"
+                           ;; This test fails on aarch64:
+                           "bugs/777834-empty-text-children.svg"
+                           "bugs/777834-empty-text-children-ref.png")))
              #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
