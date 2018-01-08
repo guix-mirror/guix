@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -1438,6 +1438,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                     (default 0))
   (timeout          guix-configuration-timeout    ;integer
                     (default 0))
+  (log-compression  guix-configuration-log-compression
+                    (default 'bzip2))
   (extra-options    guix-configuration-extra-options ;list of strings
                     (default '()))
   (log-file         guix-configuration-log-file   ;string
@@ -1452,39 +1454,37 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
 (define (guix-shepherd-service config)
   "Return a <shepherd-service> for the Guix daemon service with CONFIG."
-  (match config
-    (($ <guix-configuration> guix build-group build-accounts
-                             authorize-key? keys
-                             use-substitutes? substitute-urls
-                             max-silent-time timeout
-                             extra-options
-                             log-file http-proxy tmpdir)
-     (list (shepherd-service
-            (documentation "Run the Guix daemon.")
-            (provision '(guix-daemon))
-            (requirement '(user-processes))
-            (start
-             #~(make-forkexec-constructor
-                (list #$(file-append guix "/bin/guix-daemon")
-                      "--build-users-group" #$build-group
-                      "--max-silent-time" #$(number->string max-silent-time)
-                      "--timeout" #$(number->string timeout)
-                      #$@(if use-substitutes?
-                             '()
-                             '("--no-substitutes"))
-                      "--substitute-urls" #$(string-join substitute-urls)
-                      #$@extra-options)
+  (match-record config <guix-configuration>
+    (guix build-group build-accounts authorize-key? authorized-keys
+          use-substitutes? substitute-urls max-silent-time timeout
+          log-compression extra-options log-file http-proxy tmpdir)
+    (list (shepherd-service
+           (documentation "Run the Guix daemon.")
+           (provision '(guix-daemon))
+           (requirement '(user-processes))
+           (start
+            #~(make-forkexec-constructor
+               (list #$(file-append guix "/bin/guix-daemon")
+                     "--build-users-group" #$build-group
+                     "--max-silent-time" #$(number->string max-silent-time)
+                     "--timeout" #$(number->string timeout)
+                     "--log-compression" #$(symbol->string log-compression)
+                     #$@(if use-substitutes?
+                            '()
+                            '("--no-substitutes"))
+                     "--substitute-urls" #$(string-join substitute-urls)
+                     #$@extra-options)
 
-                #:environment-variables
-                (list #$@(if http-proxy
-                             (list (string-append "http_proxy=" http-proxy))
-                             '())
-                      #$@(if tmpdir
-                             (list (string-append "TMPDIR=" tmpdir))
-                             '()))
+               #:environment-variables
+               (list #$@(if http-proxy
+                            (list (string-append "http_proxy=" http-proxy))
+                            '())
+                     #$@(if tmpdir
+                            (list (string-append "TMPDIR=" tmpdir))
+                            '()))
 
-                #:log-file #$log-file))
-            (stop #~(make-kill-destructor)))))))
+               #:log-file #$log-file))
+           (stop #~(make-kill-destructor))))))
 
 (define (guix-accounts config)
   "Return the user accounts and user groups for CONFIG."

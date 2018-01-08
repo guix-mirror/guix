@@ -9929,6 +9929,10 @@ The number of seconds of silence and the number of seconds of activity,
 respectively, after which a build process times out.  A value of zero
 disables the timeout.
 
+@item @code{log-compression} (default: @code{'bzip2})
+The type of compression used for build logs---one of @code{gzip},
+@code{bzip2}, or @code{none}.
+
 @item @code{extra-options} (default: @code{'()})
 List of extra command-line options for @command{guix-daemon}.
 
