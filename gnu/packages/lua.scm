@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
+;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,8 +29,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
@@ -434,3 +438,59 @@ on numbers.")
 
 (define-public lua5.1-bitop
   (make-lua-bitop "lua5.1-bitop" lua-5.1))
+
+(define-public selene
+  (package
+    (name "selene")
+    (version "2017.08.25")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jeremyong/Selene.git")
+                    ;; The release is quite old.
+                    (commit "ffe1ade2568d4cff5894552be8f43e63e379a4c9")))
+              (file-name "Selene")
+              (sha256
+               (base32
+                "1axrgv3rxxdsaf807lwvklfzicn6x6gpf35narllrnz9lg6hn508"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; lua pc file in CMakeLists.txt is lua5.3.pc
+       '("-DLUA_PC_CFG=lua;lua-5.3;lua-5.1")
+       #:test-target "all"
+       #:phases
+       ;; This is a header only library
+       (modify-phases %standard-phases
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((output (assoc-ref outputs "out"))
+                    (source (assoc-ref inputs "source"))
+                    (includedir (string-append output "/include")))
+               (copy-recursively
+                (string-append source "/include")
+                includedir))
+             #t))
+         ;; The path of test files are hard coded.
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((output (assoc-ref outputs "out"))
+                    (source (assoc-ref inputs "source"))
+                    (builddir (getcwd))
+                    (testdir  (string-append builddir "/test")))
+               (copy-recursively (string-append source "/test") testdir)
+               (invoke "make")
+               (mkdir-p "runner")
+               (copy-file "./test_runner" "./runner/test_runner")
+               (chdir "./runner")
+               (invoke "./test_runner")))))))
+    (native-inputs
+     `(("lua" ,lua)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/jeremyong/Selene")
+    (synopsis "Lua C++11 bindings")
+    (description
+     "Selene is a simple C++11 header-only library enabling seamless
+ interoperability between C++ and Lua programming language.")
+    (license license:zlib)))
