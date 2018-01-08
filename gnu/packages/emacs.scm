@@ -31,7 +31,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
-;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2331,27 +2331,29 @@ truncation.")
     (license license:gpl2+)))
 
 (define-public emacs-sr-speedbar
-  (package
-    (name "emacs-sr-speedbar")
-    (version "20140914.2339")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/emacsorphanage/sr-speedbar/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "15xwwc6kgvmk4wdhx1j8w6m6ivxvc94028ppgdpa2m51a8c9vjm9"))))
-    (build-system emacs-build-system)
-    (home-page "https://www.emacswiki.org/emacs/SrSpeedbar")
-    (synopsis "Same frame Emacs @code{speedbar}")
-    (description
-     "This Emacs package allows you to show @code{M-x speedbar} in the
+  (let ((commit "77a83fb50f763a465c021eca7343243f465b4a47")
+        (revision "0"))
+    (package
+      (name "emacs-sr-speedbar")
+      (version (git-version "20161025" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsorphanage/sr-speedbar.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0sd12555hk7z721y00kv3crdybvcn1i08wmd148z5imayzibj153"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/SrSpeedbar")
+      (synopsis "Same frame Emacs @code{speedbar}")
+      (description
+       "This Emacs package allows you to show @code{M-x speedbar} in the
 same frame (in an extra window).  You can customize the initial width of
 the speedbar window.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-shell-switcher
   (package
