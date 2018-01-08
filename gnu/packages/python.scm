@@ -4815,13 +4815,13 @@ of the structure, dynamics, and functions of complex networks.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "4.2.0")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "0mgl44q152ws40zj2vicqark5szyd73vqy9pf26g6hk6dk0y0c79"))))
+        (base32 "0g0paia4z7w3srnqdmavq3hrb2x7qnpf81jx50njl0p7y4y0j8jv"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
