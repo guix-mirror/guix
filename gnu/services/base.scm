@@ -1434,6 +1434,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                     (default #t))
   (substitute-urls  guix-configuration-substitute-urls ;list of strings
                     (default %default-substitute-urls))
+  (chroot-directories guix-configuration-chroot-directories ;list of file-like/strings
+                      (default '()))
   (max-silent-time  guix-configuration-max-silent-time ;integer
                     (default 0))
   (timeout          guix-configuration-timeout    ;integer
@@ -1457,23 +1459,35 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   (match-record config <guix-configuration>
     (guix build-group build-accounts authorize-key? authorized-keys
           use-substitutes? substitute-urls max-silent-time timeout
-          log-compression extra-options log-file http-proxy tmpdir)
+          log-compression extra-options log-file http-proxy tmpdir
+          chroot-directories)
     (list (shepherd-service
            (documentation "Run the Guix daemon.")
            (provision '(guix-daemon))
            (requirement '(user-processes))
+           (modules '((srfi srfi-1)))
            (start
             #~(make-forkexec-constructor
-               (list #$(file-append guix "/bin/guix-daemon")
-                     "--build-users-group" #$build-group
-                     "--max-silent-time" #$(number->string max-silent-time)
-                     "--timeout" #$(number->string timeout)
-                     "--log-compression" #$(symbol->string log-compression)
-                     #$@(if use-substitutes?
-                            '()
-                            '("--no-substitutes"))
-                     "--substitute-urls" #$(string-join substitute-urls)
-                     #$@extra-options)
+               (cons* #$(file-append guix "/bin/guix-daemon")
+                      "--build-users-group" #$build-group
+                      "--max-silent-time" #$(number->string max-silent-time)
+                      "--timeout" #$(number->string timeout)
+                      "--log-compression" #$(symbol->string log-compression)
+                      #$@(if use-substitutes?
+                             '()
+                             '("--no-substitutes"))
+                      "--substitute-urls" #$(string-join substitute-urls)
+                      #$@extra-options
+
+                      ;; Add CHROOT-DIRECTORIES and all their dependencies (if
+                      ;; these are store items) to the chroot.
+                      (append-map (lambda (file)
+                                    (append-map (lambda (directory)
+                                                  (list "--chroot-directory"
+                                                        directory))
+                                                (call-with-input-file file
+                                                  read)))
+                                  '#$(map references-file chroot-directories)))
 
                #:environment-variables
                (list #$@(if http-proxy
@@ -1514,6 +1528,24 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
              #$@(map (cut hydra-key-authorization <> guix) keys))
          #~#f))))
 
+(define* (references-file item #:optional (name "references"))
+  "Return a file that contains the list of references of ITEM."
+  (if (struct? item)                              ;lowerable object
+      (computed-file name
+                     (with-imported-modules (source-module-closure
+                                             '((guix build store-copy)))
+                       #~(begin
+                           (use-modules (guix build store-copy))
+
+                           (call-with-output-file #$output
+                             (lambda (port)
+                               (write (call-with-input-file "graph"
+                                        read-reference-graph)
+                                      port)))))
+                     #:options `(#:local-build? #f
+                                 #:references-graphs (("graph" ,item))))
+      (plain-file name "()")))
+
 (define guix-service-type
   (service-type
    (name 'guix)
@@ -1523,6 +1555,16 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
           (service-extension activation-service-type guix-activation)
           (service-extension profile-service-type
                              (compose list guix-configuration-guix))))
+
+   ;; Extensions can specify extra directories to add to the build chroot.
+   (compose concatenate)
+   (extend (lambda (config directories)
+             (guix-configuration
+              (inherit config)
+              (chroot-directories
+               (append (guix-configuration-chroot-directories config)
+                       directories)))))
+
    (default-value (guix-configuration))
    (description
     "Run the build daemon of GNU@tie{}Guix, aka. @command{guix-daemon}.")))
