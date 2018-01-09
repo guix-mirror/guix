@@ -1682,15 +1682,6 @@ void DerivationGoal::startBuilder()
     f.exceptions(boost::io::all_error_bits ^ boost::io::too_many_args_bit);
     startNest(nest, lvlInfo, f % showPaths(missingPaths) % curRound % nrRounds);
 
-    /* Right platform? */
-    if (!canBuildLocally(drv.platform)) {
-        if (settings.printBuildTrace)
-            printMsg(lvlError, format("@ unsupported-platform %1% %2%") % drvPath % drv.platform);
-        throw Error(
-            format("a `%1%' is required to build `%3%', but I am a `%2%'")
-            % drv.platform % settings.thisSystem % drvPath);
-    }
-
     /* Note: built-in builders are *not* running in a chroot environment so
        that we can easily implement them in Guile without having it as a
        derivation input (they are running under a separate build user,
@@ -2311,6 +2302,20 @@ void DerivationGoal::runChild()
 
         execve(drv.builder.c_str(), stringsToCharPtrs(args).data(), stringsToCharPtrs(envStrs).data());
 
+	int error = errno;
+
+	/* Right platform?  Check this after we've tried 'execve' to allow for
+	   transparent emulation of different platforms with binfmt_misc
+	   handlers that invoke QEMU.  */
+	if (error == ENOEXEC && !canBuildLocally(drv.platform)) {
+	    if (settings.printBuildTrace)
+		printMsg(lvlError, format("@ unsupported-platform %1% %2%") % drvPath % drv.platform);
+	    throw Error(
+		format("a `%1%' is required to build `%3%', but I am a `%2%'")
+		% drv.platform % settings.thisSystem % drvPath);
+	}
+
+	errno = error;
         throw SysError(format("executing `%1%'") % drv.builder);
 
     } catch (std::exception & e) {
