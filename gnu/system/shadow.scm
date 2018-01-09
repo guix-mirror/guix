@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -187,7 +187,11 @@ XTerm*utf8: always
 XTerm*metaSendsEscape: true\n"))
         (gdbinit   (plain-file "gdbinit" "\
 # Tell GDB where to look for separate debugging files.
-set debug-file-directory ~/.guix-profile/lib/debug\n")))
+set debug-file-directory ~/.guix-profile/lib/debug
+
+# Authorize extensions found in the store, such as the
+# pretty-printers of libstdc++.
+set auto-load safe-path /gnu/store/*/lib\n")))
     `((".bash_profile" ,profile)
       (".bashrc" ,bashrc)
       (".zlogin" ,zlogin)
