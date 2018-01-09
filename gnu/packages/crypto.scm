@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,7 +57,9 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system perl))
+  #:use-module (guix build-system perl)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public libsodium
   (package
@@ -634,8 +637,14 @@ data on your platform, so the seed itself will be as random as possible.
          ("libtool" ,libtool)))
       (arguments
        `(#:configure-flags
-         (list "--enable-fat"           ; detect optimisations at run time...
-               "--disable-native")      ; ...not build time
+         (list
+           ,@(if (any (cute string-prefix? <> (or (%current-system)
+                                                  (%current-target-system)))
+                      '("x86_64" "i686"))
+               ;; fat only checks for Intel optimisations
+               '("--enable-fat")
+               '())
+           "--disable-native") ; don't optimise at build time.
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'bootstrap
