@@ -47,15 +47,15 @@
 (define-public gnucash
   (package
     (name "gnucash")
-    (version "2.6.18")
+    (version "2.6.19")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
-                          version "/gnucash-" version "-1.tar.bz2"))
+                          version "/gnucash-" version ".tar.bz2"))
       (sha256
        (base32
-        "1794qi7lkn1kbnhzk08wawacfcphbln3ngdl3q0qax5drv7hnwv8"))
+        "1lbz7ygqlxbndxir5ay59bmmrqv9qvc6pgb5jwgdbhkf4ikr7f2h"))
       (patches (search-patches "gnucash-price-quotes-perl.patch"))))
     (build-system glib-or-gtk-build-system)
     (inputs
@@ -142,7 +142,7 @@ financial calculations or scheduled transactions.")
                            version "/gnucash-docs-" version ".tar.gz"))
        (sha256
         (base32
-         "0bzc7mvdba2sc8m61yxa1fp2liqs00b64dvfxhv854vdrl1z5vmb"))))
+         "1ix99d5c1ppamn5ajamjfxpx6l25bv81nkg777rp1sl0glaib116"))))
     (build-system gnu-build-system)
     ;; These are native-inputs because they are only required for building the
     ;; documentation.
