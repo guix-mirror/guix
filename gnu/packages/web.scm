@@ -3497,15 +3497,18 @@ applications.")
 (define-public perl-uri
   (package
     (name "perl-uri")
-    (version "1.71")
+    (version "1.73")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                                  "URI-" version ".tar.gz"))
              (sha256
               (base32
-               "05a1ck1bhvqkkk690xhsxf7276dnagk96qkh2jy4prrrgw6wm3lw"))))
+               "04z4xwiryrbxxi48bwbkgq9q9pwfgqry3wp0ramcrwv3dx5ap9yc"))))
     (build-system perl-build-system)
+    (native-inputs
+     ;; For tests.
+     `(("perl-test-needs" ,perl-test-needs)))
     (license l:perl-license)
     (synopsis "Perl Uniform Resource Identifiers (absolute and relative)")
     (description
