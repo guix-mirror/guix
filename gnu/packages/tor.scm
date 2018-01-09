@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
@@ -47,14 +47,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.3.1.9")
+    (version "0.3.2.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "09ixizsr635qyshvrn1m5asjkaz4fm8dx80lc3ajyy0fi7vh86vf"))))
+               "03qn55c969zynnx71r82iaqnadpzq0qclq0zmjhb3n4qma8pnnj3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-gcc-hardening"
