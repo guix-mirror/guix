@@ -257,7 +257,7 @@ in ability, and easy to use.")
               #t)))))
     (inputs
      `(("icecat" ,icecat)))
-    (home-page "http://stesie.github.io/geierlein/")
+    (home-page "https://stesie.github.io/geierlein/")
     (synopsis "Free Elster client, for sending Germany VAT declarations")
     (description
      "Geierlein is a free Elster client, i.e. an application that
