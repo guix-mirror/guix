@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -2445,6 +2445,8 @@ It works with most newer systems.")
      "@command{iucode_tool} is a utility to work with microcode packages for
 Intel processors.  It can convert between formats, extract specific versions,
 create a firmware image suitable for the Linux kernel, and more.")
+    ;; cpuid.h is available for i686, x86_64, and ia64.
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:gpl2+)))
 
 (define-public i2c-tools
