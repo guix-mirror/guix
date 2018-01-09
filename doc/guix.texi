@@ -5621,10 +5621,25 @@ The following derivations will be built:
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
 the system type of the build host.
 
+@quotation Note
+The @code{--system} flag is for @emph{native} compilation and must not
+be confused with cross-compilation.  See @code{--target} below for
+information on cross-compilation.
+@end quotation
+
 An example use of this is on Linux-based systems, which can emulate
 different personalities.  For instance, passing
-@code{--system=i686-linux} on an @code{x86_64-linux} system allows users
+@code{--system=i686-linux} on an @code{x86_64-linux} system allows you
 to build packages in a complete 32-bit environment.
+
+Similarly, when transparent emulation with QEMU and @code{binfmt_misc}
+is enabled (@pxref{Virtualization Services,
+@code{qemu-binfmt-service-type}}), you can build for any system for
+which a QEMU @code{binfmt_misc} handler is installed.
+
+Builds for a system other than that of the machine you are using can
+also be offloaded to a remote machine of the right architecture.
+@xref{Daemon Offload Setup}, for more information on offloading.
 
 @item --target=@var{triplet}
 @cindex cross-compilation
@@ -17697,6 +17712,35 @@ This is the configuration for the @code{qemu-binfmt} service.
 @item @code{platforms} (default: @code{'()})
 The list of emulated QEMU platforms.  Each item must be a @dfn{platform
 object} as returned by @code{lookup-qemu-platforms} (see below).
+
+@item @code{guix-support?} (default: @code{#f})
+When it is true, QEMU and all its dependencies are added to the build
+environment of @command{guix-daemon} (@pxref{Invoking guix-daemon,
+@code{--chroot-directory} option}).  This allows the @code{binfmt_misc}
+handlers to be used within the build environment, which in turn means
+that you can transparently build programs for another architecture.
+
+For example, let's suppose you're on an x86_64 machine and you have this
+service:
+
+@example
+(service qemu-binfmt-service-type
+         (qemu-binfmt-configuration
+           (platforms (lookup-qemu-platforms "arm"))
+           (qemu-support? #t)))
+@end example
+
+You can run:
+
+@example
+guix build -s armhf-linux inkscape
+@end example
+
+@noindent
+and it will build Inkscape for ARMv7 @emph{as if it were a native
+build}, transparently using QEMU to emulate the ARMv7 CPU.  Pretty handy
+if you'd like to test a package build for an architecture you don't have
+access to!
 
 @item @code{qemu} (default: @code{qemu})
 The QEMU package to use.

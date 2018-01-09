@@ -662,7 +662,9 @@ potential infinite waits blocking libvirt."))
   (qemu        qemu-binfmt-configuration-qemu
                (default qemu))
   (platforms   qemu-binfmt-configuration-platforms
-               (default '())))                    ;safest default
+               (default '()))                     ;safest default
+  (guix-support? qemu-binfmt-configuration-guix-support?
+                 (default #f)))
 
 (define (qemu-platform->binfmt qemu platform)
   "Return a gexp that evaluates to a binfmt string for PLATFORM, using the
@@ -724,6 +726,19 @@ given QEMU package."
                                 '#$(map qemu-platform-name platforms))
                       #f)))))))
 
+(define qemu-binfmt-guix-chroot
+  (match-lambda
+    ;; Add QEMU and its dependencies to the guix-daemon chroot so that our
+    ;; binfmt_misc handlers work in the chroot (otherwise 'execve' would fail
+    ;; with ENOENT.)
+    ;;
+    ;; The 'F' flag of binfmt_misc is meant to address this problem by loading
+    ;; the interpreter upfront rather than lazily, but apparently that is
+    ;; insufficient (perhaps it loads the 'qemu-ARCH' binary upfront but looks
+    ;; up its dependencies lazily?).
+    (($ <qemu-binfmt-configuration> qemu platforms guix?)
+     (if guix? (list qemu) '()))))
+
 (define qemu-binfmt-service-type
   ;; TODO: Make a separate binfmt_misc service out of this?
   (service-type (name 'qemu-binfmt)
@@ -732,7 +747,9 @@ given QEMU package."
                                           (const
                                            (list %binary-format-file-system)))
                        (service-extension shepherd-root-service-type
-                                          qemu-binfmt-shepherd-services)))
+                                          qemu-binfmt-shepherd-services)
+                       (service-extension guix-service-type
+                                          qemu-binfmt-guix-chroot)))
                 (default-value (qemu-binfmt-configuration))
                 (description
                  "This service supports transparent emulation of binaries
