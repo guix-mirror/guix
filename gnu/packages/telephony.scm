@@ -244,9 +244,10 @@ internet.")
                (("words.txt") "FAQ"))
              #t)))))
     (synopsis "Secure RTP (SRTP) Reference Implementation")
-    (description "This package provides an implementation of the Secure
-Real-time Transport Protocol (SRTP), the Universal Security Transform (UST),
-and a supporting cryptographic kernel.")
+    (description
+     "This package provides an implementation of the Secure Real-time Transport
+Protocol (@dfn{SRTP}), the Universal Security Transform (@dfn{UST}), and a
+supporting cryptographic kernel.")
     (home-page "https://github.com/cisco/libsrtp")
     (license license:bsd-3)))
 
