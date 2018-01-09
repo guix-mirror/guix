@@ -505,10 +505,10 @@ requested using POOL."
                                                       stat:size))
                    port))))))
 
-;; XXX: Declare the 'Guix-Compression' HTTP header, which is in fact for
+;; XXX: Declare the 'X-Nar-Compression' HTTP header, which is in fact for
 ;; internal consumption: it allows us to pass the compression info to
 ;; 'http-write', as part of the workaround to <http://bugs.gnu.org/21093>.
-(declare-header! "Guix-Nar-Compression"
+(declare-header! "X-Nar-Compression"
                  (lambda (str)
                    (match (call-with-input-string str read)
                      (('compression type level)
@@ -529,7 +529,7 @@ requested using POOL."
     (if (valid-path? store store-path)
         (values `((content-type . (application/x-nix-archive
                                    (charset . "ISO-8859-1")))
-                  (guix-nar-compression . ,compression))
+                  (x-nar-compression . ,compression))
                 ;; XXX: We're not returning the actual contents, deferring
                 ;; instead to 'http-write'.  This is a hack to work around
                 ;; <http://bugs.gnu.org/21093>.
@@ -638,20 +638,22 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
 (define %http-write
   (@@ (web server http) http-write))
 
+(define (strip-headers response)
+  "Return RESPONSE's headers minus 'Content-Length' and our internal headers."
+  (fold alist-delete
+        (response-headers response)
+        '(content-length x-raw-file x-nar-compression)))
+
 (define (sans-content-length response)
   "Return RESPONSE without its 'content-length' header."
   (set-field response (response-headers)
-             (alist-delete 'content-length
-                           (response-headers response)
-                           eq?)))
+             (strip-headers response)))
 
 (define (with-content-length response length)
   "Return RESPONSE with a 'content-length' header set to LENGTH."
   (set-field response (response-headers)
              (alist-cons 'content-length length
-                         (fold alist-delete
-                               (response-headers response)
-                               '(content-length x-raw-file)))))
+                         (strip-headers response))))
 
 (define-syntax-rule (swallow-EPIPE exp ...)
   "Swallow EPIPE errors raised by EXP..."
@@ -673,7 +675,7 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
 (define (nar-response-port response)
   "Return a port on which to write the body of RESPONSE, the response of a
 /nar request, according to COMPRESSION."
-  (match (assoc-ref (response-headers response) 'guix-nar-compression)
+  (match (assoc-ref (response-headers response) 'x-nar-compression)
     (($ <compression> 'gzip level)
      ;; Note: We cannot used chunked encoding here because
      ;; 'make-gzip-output-port' wants a file port.
