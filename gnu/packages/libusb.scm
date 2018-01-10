@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -250,14 +251,14 @@ implementing @code{javax.usb} (JSR-80).")
 (define-public libmtp
   (package
     (name "libmtp")
-    (version "1.1.13")
+    (version "1.1.14")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/libmtp/libmtp/" version
                                  "/libmtp-" version ".tar.gz"))
              (sha256
               (base32
-               "0h3dv9py5mmvxhfxmkr8ky4s80hgq3d66cmrfnnnlcdwpwpy0kj9"))))
+               "1s0jyhypxmj0j8s003ba1n74x63h1rw8am9q4z2ip3xyjvid65rq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
