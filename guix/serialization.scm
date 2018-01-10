@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -102,9 +102,9 @@
         (or (zero? m)
             (put-bytevector p zero 0 (- 8 m)))))))
 
-(define (write-bytevector s p)
-  (let* ((l (bytevector-length s))
-         (m (modulo l 8))
+(define* (write-bytevector s p
+                           #:optional (l (bytevector-length s)))
+  (let* ((m (modulo l 8))
          (b (make-bytevector (+ 8 l (if (zero? m) 0 (- 8 m))))))
     (bytevector-u32-set! b 0 l (endianness little))
     (bytevector-copy! s 0 b 8 l)
