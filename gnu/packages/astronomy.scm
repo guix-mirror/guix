@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,7 +65,7 @@ in FITS files.")
 (define-public wcslib
   (package
     (name "wcslib")
-    (version "5.17")
+    (version "5.18")
     (source
      (origin
        (method url-fetch)
@@ -72,7 +73,7 @@ in FITS files.")
              "ftp://ftp.atnf.csiro.au/pub/software/wcslib/" name "-" version
              ".tar.bz2"))
        (sha256
-        (base32 "0v23x1fw01arhmqdrzfd9n593mjglhzfyx4793v065z0dg4bb72w"))))
+        (base32 "16jh568k99c9p0y3qzcgps2rii933x9wlay7q1xm0lr59zqzp4xn"))))
     (inputs
      `(("cfitsio" ,cfitsio)))
     (build-system gnu-build-system)
