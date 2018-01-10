@@ -124,8 +124,8 @@ Throw an error on failure."
          (connect sock AF_UNIX ,socket-name)
 
          (let loop ()
-           (match (select (list stdin sock) '() (list stdin stdout sock))
-             ((reads writes ())
+           (match (select (list stdin sock) '() '())
+             ((reads () ())
               (when (memq stdin reads)
                 (match (read! stdin buffer)
                   ((? zero?)                      ;EOF
