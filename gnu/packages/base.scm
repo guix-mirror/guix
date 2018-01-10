@@ -177,7 +177,8 @@ implementation offers several extensions over the standard utility.")
             (sha256
              (base32
               "1lyjyk8z8hdddsxw0ikchrsfg3i0x3fsh7l63a8jgaz1n7dr5gzi"))
-            (patches (search-patches "tar-skip-unreliable-tests.patch"))))
+            (patches (search-patches "tar-skip-unreliable-tests.patch"
+                                     "tar-remove-wholesparse-check.patch"))))
    (build-system gnu-build-system)
    ;; Note: test suite requires ~1GiB of disk space.
    (arguments
