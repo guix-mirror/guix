@@ -101,11 +101,24 @@ Throw an error on failure."
     ;; Unix-domain sockets but libssh doesn't have an API for that, hence this
     ;; hack.
     `(begin
-       (use-modules (ice-9 match) (rnrs io ports))
+       (use-modules (ice-9 match) (rnrs io ports)
+                    (rnrs bytevectors) (system foreign))
+
+       (define read!
+         ;; XXX: We would use 'get-bytevector-some' but it always returns a
+         ;; single byte in Guile <= 2.2.3---see <https://bugs.gnu.org/30066>.
+         ;; This procedure works around it.
+         (let ((proc (pointer->procedure int
+                                         (dynamic-func "read" (dynamic-link))
+                                         (list int '* size_t))))
+           (lambda (port bv)
+             (proc (fileno port) (bytevector->pointer bv)
+                   (bytevector-length bv)))))
 
        (let ((sock   (socket AF_UNIX SOCK_STREAM 0))
              (stdin  (current-input-port))
-             (stdout (current-output-port)))
+             (stdout (current-output-port))
+             (buffer (make-bytevector 65536)))
          (setvbuf stdin _IONBF)
          (setvbuf stdout _IONBF)
          (connect sock AF_UNIX ,socket-name)
@@ -114,17 +127,17 @@ Throw an error on failure."
            (match (select (list stdin sock) '() (list stdin stdout sock))
              ((reads writes ())
               (when (memq stdin reads)
-                (match (get-bytevector-some stdin)
-                  ((? eof-object?)
+                (match (read! stdin buffer)
+                  ((? zero?)                      ;EOF
                    (primitive-exit 0))
-                  (bv
-                   (put-bytevector sock bv))))
+                  (count
+                   (put-bytevector sock buffer 0 count))))
               (when (memq sock reads)
-                (match (get-bytevector-some sock)
-                  ((? eof-object?)
+                (match (read! sock buffer)
+                  ((? zero?)                      ;EOF
                    (primitive-exit 0))
-                  (bv
-                   (put-bytevector stdout bv))))
+                  (count
+                   (put-bytevector stdout buffer 0 count))))
               (loop))
              (_
               (primitive-exit 1)))))))
