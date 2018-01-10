@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,7 +77,7 @@
 (define-public xdg-utils
   (package
     (name "xdg-utils")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
@@ -85,7 +86,7 @@
                  version ".tar.gz"))
           (sha256
             (base32
-             "09a1pk3ifsndc5qz2kcd1557i137gpgnv3d739pv22vfayi67pdh"))))
+             "1k4b4m3aiyqn9k12a0ihcdahzlspl3zhskmm1d7228dvqvi546cm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("docbook-xsl" ,docbook-xsl)
