@@ -158,11 +158,7 @@ integrate Windows applications into your desktop.")
     ;; Any platform should be able to build wine, but based on '#:system' these
     ;; are thr ones we currently support.
     (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux"))
-    (license license:lgpl2.1+)
-
-    ;; It really only supports IA32, but building on x86_64 will have the same
-    ;; effect as building on i686 anyway.
-    (supported-systems (delete "mips64el-linux" %supported-systems))))
+    (license license:lgpl2.1+)))
 
 (define-public wine64
   (package
