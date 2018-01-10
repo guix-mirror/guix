@@ -5381,9 +5381,7 @@ bioinformatics file formats, sequence alignment, and more.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/s/seqmagick/seqmagick-"
-             version ".tar.gz"))
+       (uri (pypi-uri "seqmagick" version))
        (sha256
         (base32
          "12bfyp8nqi0hd36rmj450aygafp01qy3hkbvlwn3bk39pyjjkgg5"))))
