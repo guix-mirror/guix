@@ -1992,17 +1992,7 @@ capabilities, custom envelopes, effects, etc.")
               (("-msse -msse2 -mfpmath=sse") "")
               (("-march=(athlon64|core2)" flag)
                (string-append flag " -msse -msse2 -mfpmath=sse")))
-            #t))
-         ;; Yoshimi tries to find ncurses with pkg-config, but our ncurses
-         ;; package does not install .pc files.
-         (add-after 'unpack 'find-ncurses
-           (lambda _
-             (substitute* "src/CMakeLists.txt"
-               (("LIBNCURSES REQUIRED") "LIBNCURSES")
-               (("NCURSES REQUIRED") "NCURSES")
-               (("FATAL_ERROR \"libncurses") "STATUS \"libncurses")
-               (("\\$\\{NCURSES_LIBRARIES\\}") "ncurses"))
-             #t)))))
+            #t)))))
     (inputs
      `(("boost" ,boost)
        ("fftwf" ,fftwf)
