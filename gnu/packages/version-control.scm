@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -1549,14 +1549,14 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
 (define-public stagit
   (package
     (name "stagit")
-    (version "0.5")
+    (version "0.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.2f30.org/releases/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ym1dwzn2z23hcg53qh1m1g5pfibrfnnlp3sm3z1v4mhz0pgaj56"))))
+                "1m3s9g1z9szbjrhm8sic91xh6f2bfpi56rskdkqd5wc4wdycpyi5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests
