@@ -460,14 +460,13 @@ and up to 1 Mbit/s downstream.")
         (base32
          "02f00vpgrdb77w7lskl9jfm2akpy21ws9cjazs13gash2xksnj38"))))
     (build-system gnu-build-system)
-    ;; TODO: unbundle mkpasswd binary + its po files.
     (arguments
-     `(#:tests? #f ; Does not exist
+     `(#:tests? #f                      ; Does not exist
        #:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; No configure
+         (delete 'configure)            ; No configure
          (add-before 'build 'setenv
            (lambda _
              (setenv "HAVE_ICONV" "1")
