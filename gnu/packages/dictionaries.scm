@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -150,14 +151,14 @@ work, such as sentence length and other readability measures.")
 (define-public ding
   (package
     (name "ding")
-    (version "1.8")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.tu-chemnitz.de/pub/Local/urz/" name
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00z97ndwmzsgig9q6y98y8nbxy76pyi9qyj5qfpbbck24gakpz5l"))))
+                "0chjqs3z9zs1w3l7b5lsaj682rgnkf9kibcbzhggqqcn1pbvl5sq"))))
     (build-system gnu-build-system)
     (inputs `(("tk" ,tk)))
     (arguments
