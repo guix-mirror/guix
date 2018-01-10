@@ -63,7 +63,7 @@
                (("^rrdcached_LDADD = librrd_th.la")
                 "rrdcached_LDADD = librrd_th.la -lglib-2.0"))
              #t)))))
-    (home-page "http://oss.oetiker.ch/rrdtool/")
+    (home-page "https://oss.oetiker.ch/rrdtool/")
     (synopsis "Time-series data storage and display system")
     (description
      "The Round Robin Database Tool (RRDtool) is a system to store and display
