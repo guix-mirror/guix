@@ -2472,7 +2472,8 @@ interested parties to subscribe to events, or \"signals\".")
        ("python-blinker" ,python-blinker)
        ("python-unidecode" ,python-unidecode)
        ("python-six" ,python-six)
-       ("python-dateutil" ,python-dateutil)))
+       ("python-dateutil" ,python-dateutil)
+       ("python-markdown" ,python-markdown)))
     (home-page "http://getpelican.com/")
     (arguments
      `(;; XXX Requires a lot more packages to do unit tests :P
