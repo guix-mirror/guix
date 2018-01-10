@@ -51,14 +51,14 @@
 (define-public blind
   (package
     (name "blind")
-    (version "1.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.suckless.org/tools/blind-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1b36k8fg2gmabm69jckqja49i8y4rcbccgvv2wija15ciszrm1x9"))))
+                "0nncvzyipvkkd7zlgzwbjygp82frzs2hvbnk71gxf671np607y94"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
