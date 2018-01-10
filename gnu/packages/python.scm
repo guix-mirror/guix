@@ -32,7 +32,7 @@
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
@@ -8553,14 +8553,14 @@ network support library.")
 (define-public python-ply
   (package
     (name "python-ply")
-    (version "3.9")
+    (version "3.10")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "ply" version))
         (sha256
           (base32
-            "0gpl0yli3w03ipyqfrp3w5nf0iawhsq65anf5wwm2wf5p502jzhd"))))
+            "1jxsr1d2f732r6ljhvm827113dckwl6qwakfvpbdhcbhvpvlmscn"))))
     (build-system python-build-system)
     (home-page "http://www.dabeaz.com/ply/")
     (synopsis "Python Lex & Yacc")
