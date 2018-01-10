@@ -15122,11 +15122,12 @@ URI which this location block matches.
 
 @anchor{nginx-location-configuration body}
 @item @code{body}
-Body of the location block, specified as a string. This can contain many
+Body of the location block, specified as a list of strings. This can contain
+many
 configuration directives.  For example, to pass requests to a upstream
 server group defined using an @code{nginx-upstream-configuration} block,
-the following directive would be specified in the body @samp{proxy_pass
-http://upstream-name;}.
+the following directive would be specified in the body @samp{(list "proxy_pass
+http://upstream-name;")}.
 
 @end table
 @end deftp
