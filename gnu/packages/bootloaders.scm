@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -221,7 +221,8 @@ menu to select one of the installed operating systems.")
                                                 "/lib/grub")))
                  (for-each
                   (lambda (basename)
-                    (if (not (string-prefix? "." basename))
+                    (if (not (or (string-prefix? "." basename)
+                                 (file-exists? (string-append output-dir "/" basename))))
                         (symlink (string-append input-dir "/" basename)
                                  (string-append output-dir "/" basename))))
                   (scandir input-dir))
