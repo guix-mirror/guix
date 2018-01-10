@@ -17,19 +17,19 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages rrdtool)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages groff)
-  #:use-module (gnu packages python)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xml)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages))
 
 (define-public rrdtool
   (package
