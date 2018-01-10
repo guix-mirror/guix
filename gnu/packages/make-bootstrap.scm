@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -104,10 +104,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ("cross-binutils" ,(cross-binutils target))
             ,@(%final-inputs)))
         `(("libc" ,(glibc-for-bootstrap))
+          ("libc:static" ,(glibc-for-bootstrap) "static")
           ("gcc" ,(package (inherit gcc)
                     (outputs '("out")) ; all in one so libgcc_s is easily found
                     (inputs
                      `(("libc",(glibc-for-bootstrap))
+                       ("libc:static" ,(glibc-for-bootstrap) "static")
                        ,@(package-inputs gcc)))))
           ,@(fold alist-delete (%final-inputs) '("libc" "gcc")))))
 
