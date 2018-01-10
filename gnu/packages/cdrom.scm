@@ -97,14 +97,14 @@ caching facility provided by the library.")
 (define-public libcdio
   (package
     (name "libcdio")
-    (version "0.94")
+    (version "2.0.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/libcdio/libcdio-"
-                                 version ".tar.gz"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "0nh222bnj0hgdic5nvr8l9j194mh5niqy15rypwrdbk6z01wkqln"))))
+               "0jr8ppdm80c533nzmrpz3iffnpc6nhvsria1di9f4jg1l19a03fd"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
