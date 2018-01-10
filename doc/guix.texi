@@ -7069,7 +7069,7 @@ The above commands only use the default output of the given packages.
 To select other outputs, two element tuples can be specified:
 
 @example
-guix environment --ad-hoc -e '(list (@ (gnu packages bash) bash) "include")'
+guix environment --ad-hoc -e '(list (@@ (gnu packages bash) bash) "include")'
 @end example
 
 @item --load=@var{file}
