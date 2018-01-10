@@ -5784,8 +5784,11 @@ to answer a question.  Xmessage can also exit after a specified time.")
     (version "331")
     (source (origin
               (method url-fetch)
-              (uri (string-append "ftp://ftp.invisible-island.net/xterm/"
-                                  "xterm-" version ".tgz"))
+              (uri (list
+                    (string-append "http://invisible-mirror.net/archives/xterm/"
+                                   name "-" version ".tgz")
+                    (string-append "ftp://ftp.invisible-island.net/xterm/"
+                                   name "-" version ".tgz")))
               (sha256
                (base32
                 "047gk58hvj64974sg259ss5gixj7pac6halmjfz4cc6r1yimds4s"))))
