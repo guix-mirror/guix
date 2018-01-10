@@ -3504,16 +3504,16 @@ sequencing tag position and orientation.")
 (define-public mafft
   (package
     (name "mafft")
-    (version "7.310")
+    (version "7.313")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://mafft.cbrc.jp/alignment/software/mafft-" version
+                    "https://mafft.cbrc.jp/alignment/software/mafft-" version
                     "-without-extensions-src.tgz"))
               (file-name (string-append name "-" version ".tgz"))
               (sha256
                (base32
-                "0gbsaz6z2qa307kd7wfb06c3y4ikmv1hsdvlns11f6zq4w1z9pwc"))))
+                "0r83qmg2if8mi6jyx3xdf8ar2gcxl7r9nmj98jr7lxym97v61a2k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no automated tests, though there are tests in the read me
