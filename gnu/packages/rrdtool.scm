@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,11 +19,13 @@
 
 (define-module (gnu packages rrdtool)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
@@ -34,24 +37,31 @@
 (define-public rrdtool
   (package
     (name "rrdtool")
-    (version "1.4.8")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://oss.oetiker.ch/rrdtool/pub/rrdtool-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1mpki7pv5ql73h5al04dps6dky0nqc3mmb8ac21hd2s8mbsvk5fy"))))
+                "0ssjqpa0dwwzbylc0drmlbq922qcw8crffc0rpr805xr6n4k8zgr"))))
     (build-system gnu-build-system)
-    (inputs `(("cairo" ,cairo)
-              ("glib" ,glib)
-              ("gtk" ,gtk+-2)
-              ("pango" ,pango)
-              ("freetype" ,freetype)
-              ("libxml2" ,libxml2)
-              ("python" ,python-2)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("groff" ,groff)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("freetype" ,freetype)
+       ("glib" ,glib)
+       ("gtk" ,gtk+-2)
+       ("libxml2" ,libxml2)
+       ("pango" ,pango)
+       ("python" ,python-2)))
+    (native-inputs
+     `(("groff" ,groff)
+       ("pkg-config" ,pkg-config)
+
+       ;; For tests.
+       ("bc" ,bc)
+       ("perl" ,perl)                   ; will also build Perl bindings
+       ("tzdata" ,tzdata)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -59,10 +69,22 @@
            (lambda _
              (substitute* "libtool"
                (("/bin/sed") (which "sed")))
-             (substitute* "src/Makefile.in"
-               (("^rrdcached_LDADD = librrd_th.la")
-                "rrdcached_LDADD = librrd_th.la -lglib-2.0"))
-             #t)))))
+             #t))
+         (add-before 'check 'prepare-test-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t))
+         (add-after 'install 'remove-native-input-references
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (examples (string-append out "/share/rrdtool/examples")))
+               ;; Drop shebangs from examples to avoid depending on native-input
+               ;; perl.  It's clear from context and extension how to run them.
+               (substitute* (find-files examples "\\.pl$")
+                 (("^#!.*") ""))
+               #t))))))
     (home-page "https://oss.oetiker.ch/rrdtool/")
     (synopsis "Time-series data storage and display system")
     (description
