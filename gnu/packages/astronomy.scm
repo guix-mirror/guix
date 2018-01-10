@@ -86,9 +86,10 @@ in FITS files.")
                       #t)))))
     (home-page "https://www.atnf.csiro.au/people/mcalabre/WCS")
     (synopsis "Library which implements the FITS WCS standard")
-    (description "The FITS \"World Coordinate System\" (WCS) standard defines
-keywords and usage that provide for the description of astronomical coordinate
-systems in a FITS image header.")
+    (description "The FITS \"World Coordinate System\" (@dfn{WCS}) standard
+defines keywords and usage that provide for the description of astronomical
+coordinate systems in a @dfn{FITS} (Flexible Image Transport System) image
+header.")
     (license license:lgpl3+)))
 
 (define-public gnuastro
