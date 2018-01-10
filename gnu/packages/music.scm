@@ -13,7 +13,7 @@
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1964,7 +1964,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.5.5")
+    (version "1.5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -1972,7 +1972,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "0h71x9742bswifwll7bma1fz648fd5xd0yfp7byvsczy6zhjz5pf"))))
+                "0bjfhfslpa2hjrc9h38m7dlr62953w9n4cvkgvfy495cbym12dak"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -2012,7 +2012,7 @@ capabilities, custom envelopes, effects, etc.")
     (home-page "http://yoshimi.sourceforge.net/")
     (synopsis "Multi-paradigm software synthesizer")
     (description
-     "Yoshimi is a fork of ZynAddSubFX, a feature heavy realtime software
+     "Yoshimi is a fork of ZynAddSubFX, a feature-heavy real-time software
 synthesizer.  It offers three synthesizer engines, multitimbral and polyphonic
 synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
