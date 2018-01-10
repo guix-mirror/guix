@@ -13,6 +13,7 @@
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,6 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system trivial)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
@@ -452,36 +452,29 @@ spreadsheets and outputs it in comma-separated-value format, and
 (define-public utfcpp
   (package
     (name "utfcpp")
-    (version "2.3.4")
+    (version "2.3.5")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append
-                "mirror://sourceforge/utfcpp/utf8cpp_2x/Release%20"
-                version "/utf8_v"
-                (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
-                ".zip"))
-              (file-name (string-append name "-" version ".zip"))
+               (string-append "https://github.com/nemtrif/utfcpp/archive/v"
+                              version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vqhs0aipcvvdrwcs7h3jsryg6mgbmc4s34n5cm6d36q4nxwwwrk"))))
-    (build-system trivial-build-system)
+                "0gcqcfw19kfim8xw29xdp91l310yfjyrqdj2zsx8xx02dkpy1zzk"))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((source (assoc-ref %build-inputs "source"))
-               (out    (assoc-ref %outputs "out"))
-               (unzip  (string-append (assoc-ref %build-inputs "unzip")
-                                      "/bin/unzip")))
-           (mkdir-p out)
-           (with-directory-excursion out
-             (system* unzip source)
-             (mkdir-p "share/doc")
-             (rename-file "doc" "share/doc/utfcpp")
-             (rename-file "source" "include"))))))
-    (native-inputs `(("unzip" ,unzip)))
+     `(#:out-of-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install              ; no install target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (include (string-append out "/include"))
+                    (doc (string-append out "/share/doc/" ,name)))
+               (copy-recursively "source" include)
+               (install-file "README.md" doc)
+               #t))))))
     (home-page "https://github.com/nemtrif/utfcpp")
     (synopsis "Portable C++ library for handling UTF-8")
     (description "UTF8-CPP is a C++ library for handling UTF-8 encoded text
