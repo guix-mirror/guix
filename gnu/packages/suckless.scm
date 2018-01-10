@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -351,7 +352,7 @@ few minutes.")
 (define-public xbattmon
   (package
     (name "xbattmon")
-    (version "0.9")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
@@ -359,7 +360,7 @@ few minutes.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0n2rrjq03pgqrdkl7cz5snsfdanf4s58w9h6dbvnl7p8bbd3j2kn"))))
+         "1zr6y8lml9xkx0a3dbbsds2qz1bjxvskp7wsckkf8mlsqrbb3xsg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests
