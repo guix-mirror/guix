@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
@@ -155,6 +155,9 @@ simulating internal Windows logic like a virtual machine or emulator, Wine
 translates Windows API calls into POSIX calls on-the-fly, eliminating the
 performance and memory penalties of other methods and allowing you to cleanly
 integrate Windows applications into your desktop.")
+    ;; Any platform should be able to build wine, but based on '#:system' these
+    ;; are thr ones we currently support.
+    (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux"))
     (license license:lgpl2.1+)
 
     ;; It really only supports IA32, but building on x86_64 will have the same
