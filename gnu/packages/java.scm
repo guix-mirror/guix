@@ -3272,6 +3272,7 @@ file filters and endian classes.")
     (outputs '("out" "doc"))
     (arguments
      `(#:test-target "test"
+       #:test-exclude (list "**/Abstract*.java" "**/Random*.java")
        #:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-javadoc ant-build-javadoc)
