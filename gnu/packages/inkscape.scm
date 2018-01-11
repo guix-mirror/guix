@@ -88,7 +88,7 @@
        ("pkg-config" ,pkg-config)))
     ;; FIXME: tests require gmock
     (arguments `(#:tests? #f))
-    (home-page "http://inkscape.org/")
+    (home-page "https://inkscape.org/")
     (synopsis "Vector graphics editor")
     (description "Inkscape is a vector graphics editor.  What sets Inkscape
 apart is its use of Scalable Vector Graphics (SVG), an XML-based W3C standard,
