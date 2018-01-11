@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -1028,7 +1028,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "1.1.8")
+    (version "1.1.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1037,7 +1037,7 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "12q7hv0zvgylsdj1ipssv5zr7ap2y410dxsd63dz22y05fa2hwwd"))))
+                "0krvmb1idnf95l2ydzfcb08ayyx3n4m71hf9fgwv3srzaikvpf3q"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f  ; no check phase
@@ -1960,19 +1960,20 @@ and ALSA.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.4.5")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "1dsavjfzz5bpzc80mvfs940w9f9f47cf4r9cqxnaqrl4xilsa3f5"))))
+                "0lx81dfwanc10vrny1vzi0wx73ph82dlz99ffjzsigj3cqzz6x4s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f)) ; no check target
     (inputs
      `(("jack" ,jack-1)
+       ("alsa-lib" ,alsa-lib)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
@@ -1987,14 +1988,15 @@ into various outputs and to start, stop and configure jackd")
 (define-public qjackrcd
   (package
     (name "qjackrcd")
-    (version "1.2.0")
+    (version "1.2.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/qjackrcd/stable/"
-                                  "qjackrcd-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/orouits/qjackrcd.git")
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "0xpnhzbwg5c60n5dhwln5p7qm191nvmf23la88zxfqx1jv0mmxxb"))))
+                "1l5iq2mkqd4gn9yr8xbh9qlpp1clcflazychl4vhdbz0bzq4c6al"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2598,7 +2600,7 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.4.4")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
@@ -2606,7 +2608,7 @@ interface.")
                            "/qsynth-" version ".tar.gz"))
        (sha256
         (base32
-         "0qhfnikx3xcllkvs60kj6vcf2rwwzh31y41qkk6kwfhzgd219y8f"))))
+         "1sr6vrz8z9r99j9xcix86lgcqldragb2ajmq1bnhr58d99sda584"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" phase

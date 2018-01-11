@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -230,7 +230,7 @@ Nix itself keeps only one of them."
 
 CUT? is a predicate that is passed a derivation-input and returns true to
 eliminate the given input and its dependencies from the search.  An example of
-search a predicate is 'valid-derivation-input?'; when it is used as CUT?, the
+such a predicate is 'valid-derivation-input?'; when it is used as CUT?, the
 result is the set of prerequisites of DRV not already in valid."
   (let loop ((drv       drv)
              (result    '())

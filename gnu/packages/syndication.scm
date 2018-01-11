@@ -25,59 +25,9 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages ruby)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages web))
-
-(define-public newsbeuter
-  (package
-    (name "newsbeuter")
-    (version "2.9")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://newsbeuter.org/downloads/newsbeuter-"
-                            version ".tar.gz"))
-        (patches (search-patches "newsbeuter-CVE-2017-12904.patch"
-                                 "newsbeuter-CVE-2017-14500.patch"))
-        (sha256
-         (base32
-          "1j1x0hgwxz11dckk81ncalgylj5y5fgw5bcmp9qb5hq9kc0vza3l"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda _
-             (substitute* "config.sh"
-               ;; try to remove this at the next release
-               (("ncursesw5") "ncursesw6"))
-             #t)))
-       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:test-target "test"))
-    (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("ruby" ,ruby))) ; for tests
-    (inputs
-     `(("curl" ,curl)
-       ("json-c" ,json-c-0.12)      ; check whether json-c-0.12 can be removed
-       ("ncurses" ,ncurses)
-       ("stfl" ,stfl)
-       ("sqlite" ,sqlite)
-       ("libxml2" ,libxml2)))
-    (home-page "https://newsbeuter.org/")
-    (synopsis "Text mode rss feed reader with podcast support")
-    (description "Newsbeuter is an innovative RSS feed reader for the text
-console.  It supports OPML import/exports, HTML rendering, podcast (podbeuter),
-offline reading, searching and storing articles to your filesystem, and many
-more features.  Its user interface is coherent, easy to use, and might look
-common to users of @command{mutt} and @command{slrn}.")
-    (license (list license:gpl2+        ; filter/*
-                   license:expat))))    ; everything else
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xml))
 
 (define-public newsboat
   (package
@@ -128,3 +78,7 @@ file system, and many more features.
 It started life as a fork of the currently unmaintained Newsbeuter.")
     (license (list license:gpl2+        ; filter/*
                    license:expat))))    ; everything else
+
+(define-public newsbeuter
+  ;; Newsbeuter is unmaintained with multiple CVEs, and was forked as Newsboat.
+  (deprecated-package "newsbeuter" newsboat))

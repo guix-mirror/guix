@@ -362,12 +362,6 @@ use with CD-recording software).")
               (base32
                "07nsn5sy3a8xbmw1bidxnsj5fj6kg9ai04icmqw40ybkp353dznx"))))
     (build-system gnu-build-system)
-    ;; XXX FIXME: Use gcc-4.8 on i686 to work around
-    ;; <http://bugs.gnu.org/20856>.
-    (native-inputs (if (and (not (%current-target-system))
-                            (string-prefix? "i686-" (%current-system)))
-                       `(("gcc" ,(canonical-package gcc-4.8)))
-                       '()))
     (home-page "http://lame.sourceforge.net/")
     (synopsis "MPEG Audio Layer III (MP3) encoder")
     (description "LAME is a high quality MPEG Audio Layer III (MP3) encoder.")

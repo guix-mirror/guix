@@ -790,20 +790,6 @@ into separate processes; and more.")
 (define-public python2-biopython
   (package-with-python2 python-biopython))
 
-;; An outdated version of biopython is required for seqmagick, see
-;; https://github.com/fhcrc/seqmagick/issues/59
-;; When that issue has been resolved this package should be removed.
-(define python2-biopython-1.66
-  (package
-    (inherit python2-biopython)
-    (version "1.66")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "biopython" version))
-              (sha256
-               (base32
-                "1gdv92593klimg22icf5j9by7xiq86jnwzkpz4abaa05ylkdf6hp"))))))
-
 (define-public bpp-core
   ;; The last release was in 2014 and the recommended way to install from source
   ;; is to clone the git repository, so we do this.
@@ -3518,16 +3504,16 @@ sequencing tag position and orientation.")
 (define-public mafft
   (package
     (name "mafft")
-    (version "7.310")
+    (version "7.313")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://mafft.cbrc.jp/alignment/software/mafft-" version
+                    "https://mafft.cbrc.jp/alignment/software/mafft-" version
                     "-without-extensions-src.tgz"))
               (file-name (string-append name "-" version ".tgz"))
               (sha256
                (base32
-                "0gbsaz6z2qa307kd7wfb06c3y4ikmv1hsdvlns11f6zq4w1z9pwc"))))
+                "0r83qmg2if8mi6jyx3xdf8ar2gcxl7r9nmj98jr7lxym97v61a2k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no automated tests, though there are tests in the read me
@@ -5391,34 +5377,19 @@ bioinformatics file formats, sequence alignment, and more.")
 (define-public seqmagick
   (package
     (name "seqmagick")
-    (version "0.6.1")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/s/seqmagick/seqmagick-"
-             version ".tar.gz"))
+       (uri (pypi-uri "seqmagick" version))
        (sha256
         (base32
-         "0cgn477n74gsl4qdaakrrhi953kcsd4q3ivk2lr18x74s3g4ma1d"))))
+         "12bfyp8nqi0hd36rmj450aygafp01qy3hkbvlwn3bk39pyjjkgg5"))))
     (build-system python-build-system)
-    (arguments
-     ;; python2 only, see https://github.com/fhcrc/seqmagick/issues/56
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         ;; Current test in setup.py does not work as of 0.6.1,
-         ;; so use nose to run tests instead for now. See
-         ;; https://github.com/fhcrc/seqmagick/issues/55
-         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
     (inputs
-     ;; biopython-1.66 is required due to
-     ;; https://github.com/fhcrc/seqmagick/issues/59
-     ;; When that issue is resolved the 'python2-biopython-1.66' package
-     ;; should be removed.
-     `(("python-biopython" ,python2-biopython-1.66)))
+     `(("python-biopython" ,python-biopython)))
     (native-inputs
-     `(("python-nose" ,python2-nose)))
+     `(("python-nose" ,python-nose)))
     (home-page "https://github.com/fhcrc/seqmagick")
     (synopsis "Tools for converting and modifying sequence files")
     (description

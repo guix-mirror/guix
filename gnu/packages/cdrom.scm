@@ -97,14 +97,14 @@ caching facility provided by the library.")
 (define-public libcdio
   (package
     (name "libcdio")
-    (version "0.94")
+    (version "2.0.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/libcdio/libcdio-"
-                                 version ".tar.gz"))
+                                 version ".tar.bz2"))
              (sha256
               (base32
-               "0nh222bnj0hgdic5nvr8l9j194mh5niqy15rypwrdbk6z01wkqln"))))
+               "0jr8ppdm80c533nzmrpz3iffnpc6nhvsria1di9f4jg1l19a03fd"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
@@ -127,14 +127,14 @@ extraction from CDs.")
 (define-public libcdio-paranoia
   (package
     (name "libcdio-paranoia")
-    (version "10.2+0.93+1")
+    (version "10.2+0.94+2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/libcdio/libcdio-paranoia-"
-                                 version ".tar.bz2"))
+                                 version ".tar.gz"))
              (sha256
               (base32
-               "14x4b4jk5b0zvcalrg02y4jmbkmmlb07qfmk5hph9k18b8frn7gc"))))
+               "0h8rr1ir05r29rgawa1ccw335668k4s3zq4yg9095svyx7n843yn"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("libcdio" ,libcdio)))

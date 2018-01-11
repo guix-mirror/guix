@@ -2,7 +2,7 @@
 # Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-# Copyright © 2013, 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+# Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 # Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 # Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
@@ -16,6 +16,7 @@
 # Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
+# Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 #
 # This file is part of GNU Guix.
 #
@@ -87,6 +88,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/cdrom.scm			\
   %D%/packages/certs.scm			\
   %D%/packages/check.scm			\
+  %D%/packages/chemistry.scm			\
   %D%/packages/chez.scm				\
   %D%/packages/ci.scm				\
   %D%/packages/cinnamon.scm			\
@@ -460,6 +462,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/mail.scm				\
   %D%/services/mcron.scm			\
   %D%/services/messaging.scm			\
+  %D%/services/monitoring.scm			\
   %D%/services/networking.scm			\
   %D%/services/nfs.scm			\
   %D%/services/shepherd.scm			\
@@ -541,6 +544,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/ansible-wrap-program-hack.patch		\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
+  %D%/packages/patches/ao-cad-aarch64-support.patch		\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
@@ -717,7 +721,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-2.2-default-utf8.patch		\
-  %D%/packages/patches/guile-bytestructures-name-clash.patch	\
   %D%/packages/patches/guile-default-utf8.patch			\
   %D%/packages/patches/guile-linux-syscalls.patch		\
   %D%/packages/patches/guile-present-coding.patch		\
@@ -755,6 +758,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/icecat-bug-1415133.patch			\
   %D%/packages/patches/icecat-bug-1414945.patch			\
   %D%/packages/patches/icecat-bug-1424373-pt2.patch		\
+  %D%/packages/patches/icecat-bug-1427870-spectre-mitigation.patch	\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
@@ -783,6 +787,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/ldc-disable-tests.patch			\
   %D%/packages/patches/ldc-1.1.0-disable-dmd-tests.patch	\
   %D%/packages/patches/ldc-1.1.0-disable-phobos-tests.patch	\
+  %D%/packages/patches/ledger-fix-uninitialized.patch		\
+  %D%/packages/patches/ledger-revert-boost-python-fix.patch	\
   %D%/packages/patches/liba52-enable-pic.patch			\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
@@ -832,6 +838,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libusb-for-axoloti.patch			\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
+  %D%/packages/patches/libvorbis-CVE-2017-14632.patch		\
+  %D%/packages/patches/libvorbis-CVE-2017-14633.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxcb-python-3.5-compat.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
@@ -892,8 +900,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/netsurf-system-utf8proc.patch		\
   %D%/packages/patches/netsurf-y2038-tests.patch		\
   %D%/packages/patches/netsurf-longer-test-timeout.patch	\
-  %D%/packages/patches/newsbeuter-CVE-2017-12904.patch		\
-  %D%/packages/patches/newsbeuter-CVE-2017-14500.patch		\
   %D%/packages/patches/nfs-utils-missing-headers.patch		\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ninja-zero-mtime.patch			\
@@ -1110,6 +1116,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/vsearch-unbundle-cityhash.patch		\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
+  %D%/packages/patches/webkitgtk-mitigate-spectre.patch		\
   %D%/packages/patches/weechat-python.patch			\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\

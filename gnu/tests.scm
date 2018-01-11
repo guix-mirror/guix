@@ -172,6 +172,14 @@ marionette service in the guest is started after the Shepherd services listed
 in REQUIREMENTS."
   (operating-system
     (inherit os)
+    ;; Make sure the guest dies on error.
+    (kernel-arguments (cons "panic=1"
+                            (operating-system-user-kernel-arguments os)))
+    ;; Make sure the guest doesn't hang in the REPL on error.
+    (initrd (lambda (fs . rest)
+              (apply (operating-system-initrd os) fs
+                     #:on-error 'backtrace
+                     rest)))
     (services (cons (service marionette-service-type
                              (marionette-configuration
                               (requirements requirements)

@@ -443,34 +443,41 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.2.6")
+    (version "2.3.7")
     (source
-     (let ((build "7246"))
+     (let ((build "7543"))
        (origin
          (method url-fetch)
          (uri
           (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
                          name "-" version "-" build ".tar.gz"))
          (sha256
-          (base32
-           "041a35f5jz2wcn8pxk1m7b2qln2wbvj4ddwb0a53lqabl912xi6p")))))
+          (base32 "0j4zj7h72ni3bbqbm1632z0vx8b9fjdrn4n1yx4yyzkpchsipwff")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
     (inputs
      `(("openssl" ,openssl)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'omit-example-configurations
-                              (lambda _
-                                (substitute* "Makefile.in"
-                                  ((" (etc|var)") ""))
-                                #t)))
-       #:configure-flags (list "--sysconfdir=/etc"      "--localstatedir=/var"
-                               "--enable-shared"        "--disable-static"
-                               "--enable-messages"      "--enable-ctrl"
-                               "--enable-nsec"          "--enable-nsec3"
-                               "--enable-tsig"          "--enable-caching")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'omit-example-configurations
+           (lambda _
+             (substitute* "Makefile.in"
+               ((" (etc|var)") ""))
+             #t)))
+       #:configure-flags
+       (list "--sysconfdir=/etc"
+             "--localstatedir=/var"
+             "--disable-build-timestamp" ; build reproducibly
+             "--enable-shared"
+             "--disable-static"
+             "--enable-acl"
+             "--enable-caching"
+             "--enable-ctrl"            ; enable remote control
+             "--enable-nsec"
+             "--enable-nsec3"
+             "--enable-tsig")))
     (home-page "http://www.yadifa.eu/")
     (synopsis "Authoritative DNS name server")
     (description "YADIFA is an authoritative name server for the @dfn{Domain

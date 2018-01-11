@@ -31,7 +31,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
-;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1132,7 +1132,7 @@ as a library for other Emacs packages.")
 (define-public emacs-auctex
   (package
     (name "emacs-auctex")
-    (version "11.91.0")
+    (version "12.1.0")
     (source
      (origin
        (method url-fetch)
@@ -1142,7 +1142,7 @@ as a library for other Emacs packages.")
              ".tar"))
        (sha256
         (base32
-         "1yh182mxgngjmwpkyv2n9km3vyq95bqfq8mnly3dbv78nwk7f2l3"))))
+         "0iy5x61xqkxaph2hq64sg50l1c6yp6qhzppwadayxkdz00b46sas"))))
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
@@ -2332,27 +2332,29 @@ truncation.")
     (license license:gpl2+)))
 
 (define-public emacs-sr-speedbar
-  (package
-    (name "emacs-sr-speedbar")
-    (version "20140914.2339")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/emacsorphanage/sr-speedbar/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "15xwwc6kgvmk4wdhx1j8w6m6ivxvc94028ppgdpa2m51a8c9vjm9"))))
-    (build-system emacs-build-system)
-    (home-page "https://www.emacswiki.org/emacs/SrSpeedbar")
-    (synopsis "Same frame Emacs @code{speedbar}")
-    (description
-     "This Emacs package allows you to show @code{M-x speedbar} in the
+  (let ((commit "77a83fb50f763a465c021eca7343243f465b4a47")
+        (revision "0"))
+    (package
+      (name "emacs-sr-speedbar")
+      (version (git-version "20161025" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsorphanage/sr-speedbar.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0sd12555hk7z721y00kv3crdybvcn1i08wmd148z5imayzibj153"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/SrSpeedbar")
+      (synopsis "Same frame Emacs @code{speedbar}")
+      (description
+       "This Emacs package allows you to show @code{M-x speedbar} in the
 same frame (in an extra window).  You can customize the initial width of
 the speedbar window.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-shell-switcher
   (package
@@ -6635,3 +6637,27 @@ mode’s f,F,t,T keys, allowing for quick navigation within a line.  It is a
 port of quick-scope for Vim.  Evil is an Emacs minor mode that emulates Vim
 features and provides Vim-like key bindings.")
     (license license:gpl3+)))
+
+(define-public emacs-bongo
+  (package
+    (name "emacs-bongo")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/dbrock/bongo/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pcsyyrvj7djjjwpaswd1i782hvqvlvs39cy9ns0k795si6xd64d"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dbrock/bongo")
+    (synopsis "Media player for Emacs")
+    (description
+     "This package provides a flexible media player for Emacs.  @code{Bongo}
+supports multiple backends such as @code{vlc}, @code{mpg123},
+@code{ogg123}, @code{speexdec}, @code{timidity}, @code{mikmod} and
+@code{afplay}.")
+    (license license:gpl2+)))

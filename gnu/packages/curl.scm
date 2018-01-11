@@ -149,7 +149,17 @@ tunneling, and so on.")
                 "1q192f457sjypgvwq7grrf8gq8w272p3zf1d5ppc20mriqm0mbc3"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "github.com/davidjpeacock/kurly"))
+     `(#:import-path "github.com/davidjpeacock/kurly"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-readme
+           (lambda* (#:key outputs import-path #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (readme (string-append "src/" import-path "/README.md"))
+                    (misc (string-append out "/share/kurly/misc/")))
+               (install-file readme misc)
+               #t))))))
     (inputs
      `(("go-github-com-alsm-ioprogress" ,go-github-com-alsm-ioprogress)
        ("go-github-com-aki237-nscjar" ,go-github-com-aki237-nscjar)

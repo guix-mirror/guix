@@ -45,7 +45,11 @@ Settings::Settings()
     useSshSubstituter = false;
     impersonateLinux26 = false;
     keepLog = true;
-    compressLog = true;
+#if HAVE_BZLIB_H
+    logCompression = COMPRESSION_BZIP2;
+#else
+    logCompression = COMPRESSION_GZIP;
+#endif
     maxLogSize = 0;
     cacheFailure = false;
     pollInterval = 5;
@@ -162,7 +166,7 @@ void Settings::update()
     _get(useChroot, "build-use-chroot");
     _get(impersonateLinux26, "build-impersonate-linux-26");
     _get(keepLog, "build-keep-log");
-    _get(compressLog, "build-compress-log");
+    // _get(logCompression, "build-log-compression");
     _get(maxLogSize, "build-max-log-size");
     _get(cacheFailure, "build-cache-failure");
     _get(pollInterval, "build-poll-interval");

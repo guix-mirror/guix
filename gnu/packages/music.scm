@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -13,7 +13,8 @@
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -113,6 +114,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
@@ -1266,7 +1268,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.8.5")
+    (version "0.8.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -1274,7 +1276,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0mvrqk6jy7h2wg442ixwm49w7x15rs4066c2ljrz4kvxlzp5z69i"))))
+                "141ah1gnv5r2k846v5ay15q9q90h01p74240a56vlxqh20z43g92"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1300,7 +1302,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.8.5")
+    (version "0.8.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -1308,7 +1310,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "06xqqm1ylmpp2s7xk7xav325gc50kxlvh9vf1343b0n3i8xkgjfg"))))
+                "0fwxrfyp15a4m77mzz4mwj36mhdrj646whlrkvcys33p2w75f8cq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1335,7 +1337,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.8.5")
+    (version "0.8.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -1343,7 +1345,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1gscwybsbaqbnylmgf2baf71cm2g7a0pd11rqmk3cz9hi3lyjric"))))
+                "035bq7yfg1yirsqk63zwkzjw9dxl52lrzq9y0w7nga0vb11xdfij"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1365,6 +1367,42 @@ effects.")
     (description
      "Samplv1 is an old-school polyphonic sampler synthesizer with stereo
 effects.")
+    (license license:gpl2+)))
+
+(define-public padthv1
+  (package
+    (name "padthv1")
+    (version "0.8.6")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://sourceforge/padthv1/padthv1/" version
+                              "/padthv1-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mikab2f9n5q1sfgnp3sbm1rf3v57k4085lsgh0a5gzga2h4hwxq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:configure-flags
+       '("CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("alsa-lib" ,alsa-lib)
+       ("non-session-manager" ,non-session-manager)
+       ("liblo" ,liblo)
+       ("fftw" ,fftw)
+       ("qtbase" ,qtbase)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://padthv1.sourceforge.net")
+    (synopsis "Polyphonic additive synthesizer")
+    (description
+     "Padthv1 is an old-school polyphonic additive synthesizer with stereo
+effects.  Padthv1 is based on the PADsynth algorithm by Paul Nasca, as a
+special variant of additive synthesis.")
     (license license:gpl2+)))
 
 (define-public amsynth
@@ -1928,7 +1966,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.5.5")
+    (version "1.5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -1936,7 +1974,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "0h71x9742bswifwll7bma1fz648fd5xd0yfp7byvsczy6zhjz5pf"))))
+                "0bjfhfslpa2hjrc9h38m7dlr62953w9n4cvkgvfy495cbym12dak"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -1956,17 +1994,7 @@ capabilities, custom envelopes, effects, etc.")
               (("-msse -msse2 -mfpmath=sse") "")
               (("-march=(athlon64|core2)" flag)
                (string-append flag " -msse -msse2 -mfpmath=sse")))
-            #t))
-         ;; Yoshimi tries to find ncurses with pkg-config, but our ncurses
-         ;; package does not install .pc files.
-         (add-after 'unpack 'find-ncurses
-           (lambda _
-             (substitute* "src/CMakeLists.txt"
-               (("LIBNCURSES REQUIRED") "LIBNCURSES")
-               (("NCURSES REQUIRED") "NCURSES")
-               (("FATAL_ERROR \"libncurses") "STATUS \"libncurses")
-               (("\\$\\{NCURSES_LIBRARIES\\}") "ncurses"))
-             #t)))))
+            #t)))))
     (inputs
      `(("boost" ,boost)
        ("fftwf" ,fftwf)
@@ -1986,7 +2014,7 @@ capabilities, custom envelopes, effects, etc.")
     (home-page "http://yoshimi.sourceforge.net/")
     (synopsis "Multi-paradigm software synthesizer")
     (description
-     "Yoshimi is a fork of ZynAddSubFX, a feature heavy realtime software
+     "Yoshimi is a fork of ZynAddSubFX, a feature-heavy real-time software
 synthesizer.  It offers three synthesizer engines, multitimbral and polyphonic
 synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
@@ -3460,6 +3488,62 @@ sample library.")
     (home-page "https://musescore.org")
     (license license:gpl2)))
 
+(define-public muse-sequencer
+  (package
+    (name "muse-sequencer")
+    (version "3.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/muse-sequencer/muse.git")
+                    (commit (string-append "muse_"
+                                           (string-map (lambda (c)
+                                                         (if (char=? c #\.)
+                                                             #\_ c)) version)))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1nninz8qyqlxxjdnrm79y3gr3056pga9l2fsqh674jd3cjvafya3"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; there is no test target
+       #:configure-flags
+       (list "-DENABLE_LV2_SUPPLIED=OFF"
+             "-DENABLE_RTAUDIO=OFF"    ; FIXME: not packaged
+             "-DENABLE_INSTPATCH=OFF"  ; FIXME: not packaged
+             "-DENABLE_VST_NATIVE=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "muse3"))))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("lash" ,lash)
+       ("jack" ,jack-1)
+       ("liblo" ,liblo)
+       ("dssi" ,dssi)
+       ("ladspa" ,ladspa)
+       ("lv2" ,lv2)
+       ("lilv" ,lilv)
+       ("sord" ,sord)
+       ("libsndfile" ,libsndfile)
+       ("libsamplerate" ,libsamplerate)
+       ("fluidsynth" ,fluidsynth)
+       ("pcre" ,pcre)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (home-page "http://muse-sequencer.org")
+    (synopsis "MIDI/Audio sequencer")
+    (description "MusE is a MIDI/Audio sequencer with recording and editing
+capabilities.  Its audio sequencer supports the LADSPA, DSSI, and LV2 audio
+plugin formats; the MIDI sequencer provides a piano roll, a drum editor, a
+list view, and a score editor.  MusE aims to be a complete multitrack virtual
+studio.")
+    (license license:gpl2+)))
+
 (define-public dssi
   (package
     (name "dssi")
@@ -3475,7 +3559,7 @@ sample library.")
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("jack-2" ,jack-2)
+       ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("libsamplerate" ,libsamplerate)
        ("libsndfile" ,libsndfile)
@@ -3566,7 +3650,7 @@ specification and header.")
        ("dssi" ,dssi)
        ("flac" ,flac)
        ("fftwf" ,fftwf)
-       ("jack-2" ,jack-2)
+       ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("liblo" ,liblo)
        ("libsamplerate" ,libsamplerate)
@@ -3752,3 +3836,59 @@ for the DSSI Soft Synth Interface.  A brief list of features:
 @end enumerate
 ")
     (license license:gpl2+)))
+
+(define-public libdiscid
+  (package
+    (name "libdiscid")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://ftp.musicbrainz.org/pub/musicbrainz/libdiscid/libdiscid-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1f9irlj3dpb5gyfdnb1m4skbjvx4d4hwiz2152f83m0d9jn47r7r"))))
+    (arguments `(#:test-target "check"))
+    (build-system cmake-build-system)
+    (home-page "https://musicbrainz.org/doc/libdiscid")
+    (synopsis "Disc id reader library")
+    (description "libdiscid is a C library for creating MusicBrainz and freedb
+disc IDs from audio CDs.  It reads a CD's table of contents (TOC) and generates
+an identifier which can be used to lookup the CD at MusicBrainz.  Additionally,
+it provides a submission URL for adding the disc ID to the database and gathers
+ISRCs and the MCN (=UPC/EAN) from disc.")
+    (license license:lgpl2.1+)))
+
+(define-public libmusicbrainz
+  (package
+    (name "libmusicbrainz")
+    (version "5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/metabrainz/libmusicbrainz/releases/download/release-"
+             version "/libmusicbrainz-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ikb9igyyk28jm34raxfzkw2qyn4nzzwsymdyprp7cmvi6g2ajb7"))     ))
+    (build-system cmake-build-system)
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                   (replace 'check
+                     (lambda _
+                       (and
+                        ;; requires network connections
+                        ;; (zero? (system* "tests/mbtest"))
+                        (zero? (system* "tests/ctest"))))))))
+    (inputs `(("neon" ,neon)
+              ("libxml2" ,libxml2)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://musicbrainz.org/doc/libmusicbrainz")
+    (synopsis "MusicBrainz client library")
+    (description "The MusicBrainz Client Library (libmusicbrainz), also known as
+mb_client, is a development library geared towards developers who wish to add
+MusicBrainz lookup capabilities to their applications.")
+    (license license:lgpl2.1+)))

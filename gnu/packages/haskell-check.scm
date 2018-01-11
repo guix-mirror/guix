@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -343,17 +343,16 @@ provided by the Haskell Platform.")
 (define-public ghc-quickcheck-unicode
   (package
     (name "ghc-quickcheck-unicode")
-    (version "1.0.0.1")
+    (version "1.0.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://hackage.haskell.org/package/quickcheck-unicode/quickcheck-unicode-"
-             version
-             ".tar.gz"))
+             "https://hackage.haskell.org/package/quickcheck-unicode/"
+             "quickcheck-unicode-" version ".tar.gz"))
        (sha256
         (base32
-         "1a8nl6x7l9b22yx61wm0bh2n1xzb1hd5i5zgg1w4fpaivjnrrhi4"))))
+         "0s43s1bzbg3gwsjgm7fpyksd1339f0m26dlw2famxwyzgvm0a80k"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page

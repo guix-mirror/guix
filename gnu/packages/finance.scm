@@ -6,6 +6,8 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +31,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -130,7 +133,9 @@ line client and a client based on Qt.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12jlv3gsjhrja25q9hrwh73cdacd2l3c2yyn8qnijav9mdhnbw4h"))))
+                "12jlv3gsjhrja25q9hrwh73cdacd2l3c2yyn8qnijav9mdhnbw4h"))
+              (patches (search-patches "ledger-revert-boost-python-fix.patch"
+                                       "ledger-fix-uninitialized.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
@@ -218,7 +223,7 @@ in ability, and easy to use.")
 (define-public geierlein
   (package
     (name "geierlein")
-    (version "0.9.5")
+    (version "0.9.13")
     (source
      (origin
        (method url-fetch)
@@ -227,13 +232,13 @@ in ability, and easy to use.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0b11fq8v5w8nxjb20jl4dsfhv76xky6n3sq3k3fbb0m2sq9ikikw"))))
+         "11jfa7mxvvf0ldhx0hsvjbx3xwvzvn2wrfjpms8c7qmrnqhwh4wp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; would require npm, python and a lot more
        #:phases
         (modify-phases %standard-phases
-          (delete 'configure)
+          (delete 'configure)           ; no configure script
           (add-after 'unpack 'override-target-directory-and-tool-paths
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (substitute* "Makefile"
@@ -252,7 +257,7 @@ in ability, and easy to use.")
               #t)))))
     (inputs
      `(("icecat" ,icecat)))
-    (home-page "http://stesie.github.io/geierlein/")
+    (home-page "https://stesie.github.io/geierlein/")
     (synopsis "Free Elster client, for sending Germany VAT declarations")
     (description
      "Geierlein is a free Elster client, i.e. an application that
@@ -268,7 +273,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "3.0")
+    (version "3.0.5")
     (source
      (origin
        (method url-fetch)
@@ -277,7 +282,7 @@ do so.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "184cmpfqcznnm0wfjiarb6dps2vs0s2aykmy2ji7p77x20fbisfi"))
+         "06z0a5p1jg93jialphslip8d72q9yg3651qqaf494gs3h9kw1sv1"))
        (modules '((guix build utils)))
        (snippet
         '(begin

@@ -2,6 +2,8 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +38,7 @@
 (define-public log4cpp
   (package
     (name "log4cpp")
-    (version "1.1.1")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/log4cpp/log4cpp-"
@@ -45,7 +47,7 @@
                                   "/log4cpp-" version ".tar.gz"))
               (sha256
                (base32
-                "1l5yz5rfzzv6g3ynrj14mxfsk08cp5h1ssr7d74hjs0accrg7arm"))))
+                "07gmr3jyaf2239n9sp6h7hwdz1pv7b7aka8n06gmr2fnlmaymfrc"))))
     (build-system gnu-build-system)
     (synopsis "Log library for C++")
     (description
@@ -84,7 +86,14 @@ staying as close to their API as is reasonable.")
                       ;; mismatch, so run the whole thing.
                       (delete-file "test-driver")
                       (delete-file "configure")   ;it's read-only
-                      (zero? (system* "autoreconf" "-vfi")))))))
+                      (zero? (system* "autoreconf" "-vfi"))))
+                  (add-before 'check 'disable-signal-tests
+                    (lambda _
+                      ;; See e.g. https://github.com/google/glog/issues/219
+                      ;; and https://github.com/google/glog/issues/256
+                      (substitute* "Makefile"
+                        (("\tsignalhandler_unittest_sh") "\t$(EMPTY)"))
+                      #t)))))
     (synopsis "C++ logging library")
     (description
      "Google glog is a library that implements application-level logging.

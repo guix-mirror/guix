@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Francesco Frassinelli <fraph24@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -209,17 +210,17 @@ internet.")
 (define-public libsrtp
   (package
     (name "libsrtp")
-    (version "1.5.4")
+    (version "1.6.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/cisco/libsrtp/archive/v"
+              (method url-fetch)
+              (uri (string-append "https://github.com/cisco/libsrtp/archive/v"
                                   version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1w2g623qkd7gdyydglx2hr4s2y237lg0nszjmy7z8d2iq8hvb9sn"))))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ppdqsrx5ni54vmd4kdzzmvgmf5ixb04w0jw7idy8mad6l27jghs"))))
     (native-inputs
-     `(("psmisc" ,psmisc)                        ;some tests require 'killall'
+     `(("psmisc" ,psmisc)               ;some tests require 'killall'
        ("procps" ,procps)))
     (build-system gnu-build-system)
     (arguments
@@ -234,7 +235,7 @@ internet.")
                (("mips\\)") "mips_est)"))
              #t))
          (add-after 'unpack 'patch-dictionary-location
-           ;; With the above changes, the rtpw_test.sh test finally runs, and fails
+           ;; With the above changes, the rtpw_test.sh test finally runs, and fails.
            (lambda _
              (substitute* "test/rtpw.c"
                (("/usr/share/dict/words")
@@ -243,9 +244,10 @@ internet.")
                (("words.txt") "FAQ"))
              #t)))))
     (synopsis "Secure RTP (SRTP) Reference Implementation")
-    (description "This package provides an implementation of the Secure
-Real-time Transport Protocol (SRTP), the Universal Security Transform (UST),
-and a supporting cryptographic kernel.")
+    (description
+     "This package provides an implementation of the Secure Real-time Transport
+Protocol (@dfn{SRTP}), the Universal Security Transform (@dfn{UST}), and a
+supporting cryptographic kernel.")
     (home-page "https://github.com/cisco/libsrtp")
     (license license:bsd-3)))
 

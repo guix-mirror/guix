@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5748,20 +5749,22 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "330")
+    (version "331")
     (source (origin
               (method url-fetch)
-              (uri (string-append "ftp://ftp.invisible-island.net/xterm/"
-                                  "xterm-" version ".tgz"))
+              (uri (list
+                    (string-append "http://invisible-mirror.net/archives/xterm/"
+                                   name "-" version ".tgz")
+                    (string-append "ftp://ftp.invisible-island.net/xterm/"
+                                   name "-" version ".tgz")))
               (sha256
                (base32
-                "1psnfmqd23v9gxj8a98nzrgvymrk0p1whwqi92gy15bbkzrgkvks"))))
+                "047gk58hvj64974sg259ss5gixj7pac6halmjfz4cc6r1yimds4s"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-wide-chars" "--enable-256-color"
-                           "--enable-load-vt-fonts" "--enable-i18n"
-                           "--enable-doublechars" "--enable-luit"
-                           "--enable-mini-luit")
+     '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
+                           "--enable-i18n" "--enable-doublechars"
+                           "--enable-luit" "--enable-mini-luit")
        #:tests? #f))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

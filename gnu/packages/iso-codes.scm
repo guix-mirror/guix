@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages iso-codes)
-  #:use-module ((guix licenses) #:select (gpl2+))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -29,7 +30,7 @@
 (define-public iso-codes
   (package
     (name "iso-codes")
-    (version "3.76")
+    (version "3.77")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -37,7 +38,7 @@
                    version ".tar.xz"))
              (sha256
               (base32
-               "1i40shd6v4nh4lkv1c1a5qm9jmf17316bv03jr65nzf0wwfqrsiq"))))
+               "140dgygv22a49xb8x1941xr5ff12cphd9zzwxds98pgrqsj77k91"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
@@ -62,5 +63,4 @@ translations instead of maintaining their own translation
 infrastructure.  Moreover, the programmer does not need to follow
 changes in the ISO standard and will not work with outdated
 information.")
-    ; Some bits use the lgpl2
-    (license gpl2+)))
+    (license license:gpl2+)))           ; some bits use the lgpl2

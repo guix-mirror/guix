@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,7 +61,8 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1f1j0r996l20cgkvbwpizn7d4yp58cy334b1pvn4kfb5c2dbpdl7"))))
+                "1f1j0r996l20cgkvbwpizn7d4yp58cy334b1pvn4kfb5c2dbpdl7"))
+              (patches (search-patches "webkitgtk-mitigate-spectre.patch"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests

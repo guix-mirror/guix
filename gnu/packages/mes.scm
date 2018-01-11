@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,8 +76,8 @@ extensive examples, including parsers for the Javascript and C99 languages.")
          ("nyacc" ,nyacc)))
       (native-inputs
        `(("guile" ,guile-2.2)
-         ,@(if (string-prefix? "x86_64-linux" (or (%current-target-system)
-                                                  (%current-system)))
+         ,@(if (not (string-prefix? "i686-linux" (or (%current-target-system)
+                                                     (%current-system))))
                ;; Use cross-compiler rather than #:system "i686-linux" to get
                ;; MesCC 64 bit .go files installed ready for use with Guile.
                `(("i686-linux-binutils" ,(cross-binutils triplet))

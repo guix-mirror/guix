@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Coypright © 2016 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -4404,7 +4404,7 @@ intersections, unions, unique elements, complements and many more.")
 (define-public perl-list-moreutils
   (package
     (name "perl-list-moreutils")
-    (version "0.426")
+    (version "0.428")
     (source
      (origin
        (method url-fetch)
@@ -4412,7 +4412,7 @@ intersections, unions, unique elements, complements and many more.")
                            "List-MoreUtils-" version ".tar.gz"))
        (sha256
         (base32
-         "1dj77b42cp5ziq9y38fff458avjwzm88kn076svcvl660h6n21cf"))))
+         "1hkc8xkd27yzfkgaglzn77j4qjmilyva4gaz3pc64vpism2hjgki"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases

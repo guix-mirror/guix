@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -326,7 +326,7 @@ advertise it as the maximum validity period (in seconds) via the
 appropriate duration.  NAR-PATH specifies the prefix for nar URLs."
   (let ((store-path (hash-part->path store hash)))
     (if (string-null? store-path)
-        (not-found request)
+        (not-found request #:phrase "")
         (values `((content-type . (application/x-nix-narinfo))
                   ,@(if ttl
                         `((cache-control (max-age . ,ttl)))
@@ -461,7 +461,7 @@ requested using POOL."
                       #:phrase "We're baking it"
                       #:ttl 300))              ;should be available within 5m
           (else
-           (not-found request)))))
+           (not-found request #:phrase "")))))
 
 (define* (bake-narinfo+nar cache item
                            #:key ttl (compression %no-compression)
@@ -505,10 +505,10 @@ requested using POOL."
                                                       stat:size))
                    port))))))
 
-;; XXX: Declare the 'Guix-Compression' HTTP header, which is in fact for
+;; XXX: Declare the 'X-Nar-Compression' HTTP header, which is in fact for
 ;; internal consumption: it allows us to pass the compression info to
 ;; 'http-write', as part of the workaround to <http://bugs.gnu.org/21093>.
-(declare-header! "Guix-Nar-Compression"
+(declare-header! "X-Nar-Compression"
                  (lambda (str)
                    (match (call-with-input-string str read)
                      (('compression type level)
@@ -529,7 +529,7 @@ requested using POOL."
     (if (valid-path? store store-path)
         (values `((content-type . (application/x-nix-archive
                                    (charset . "ISO-8859-1")))
-                  (guix-nar-compression . ,compression))
+                  (x-nar-compression . ,compression))
                 ;; XXX: We're not returning the actual contents, deferring
                 ;; instead to 'http-write'.  This is a hack to work around
                 ;; <http://bugs.gnu.org/21093>.
@@ -544,11 +544,12 @@ return it; otherwise, return 404."
                                 #:compression compression)))
     (if (file-exists? cached)
         (values `((content-type . (application/octet-stream
-                                   (charset . "ISO-8859-1"))))
-                ;; XXX: We're not returning the actual contents, deferring
-                ;; instead to 'http-write'.  This is a hack to work around
-                ;; <http://bugs.gnu.org/21093>.
-                cached)
+                                   (charset . "ISO-8859-1")))
+                  ;; XXX: We're not returning the actual contents, deferring
+                  ;; instead to 'http-write'.  This is a hack to work around
+                  ;; <http://bugs.gnu.org/21093>.
+                  (x-raw-file . ,cached))
+                #f)
         (not-found request))))
 
 (define (render-content-addressed-file store request
@@ -562,13 +563,39 @@ has the given HASH of type ALGO."
                                      #:recursive? #f)))
         (if (valid-path? store item)
             (values `((content-type . (application/octet-stream
-                                       (charset . "ISO-8859-1"))))
-                    ;; XXX: We're not returning the actual contents, deferring
-                    ;; instead to 'http-write'.  This is a hack to work around
-                    ;; <http://bugs.gnu.org/21093>.
-                    item)
+                                       (charset . "ISO-8859-1")))
+                      ;; XXX: We're not returning the actual contents,
+                      ;; deferring instead to 'http-write'.  This is a hack to
+                      ;; work around <http://bugs.gnu.org/21093>.
+                      (x-raw-file . ,item))
+                    #f)
             (not-found request)))
       (not-found request)))
+
+(define (render-log-file store request name)
+  "Render the log file for NAME, the base name of a store item.  Don't attempt
+to compress or decompress the log file; just return it as-is."
+  (define (response-headers file)
+    ;; XXX: We're not returning the actual contents, deferring instead to
+    ;; 'http-write'.  This is a hack to work around
+    ;; <http://bugs.gnu.org/21093>.
+    (cond ((string-suffix? ".gz" file)
+           `((content-type . (text/plain (charset . "UTF-8")))
+             (content-encoding . (gzip))
+             (x-raw-file . ,file)))
+          ((string-suffix? ".bz2" file)
+           `((content-type . (application/x-bzip2
+                              (charset . "ISO-8859-1")))
+             (x-raw-file . ,file)))
+          (else                                   ;uncompressed
+           `((content-type . (text/plain (charset . "UTF-8")))
+             (x-raw-file . ,file)))))
+
+  (let ((log (log-file store
+                       (string-append (%store-prefix) "/" name))))
+    (if log
+        (values (response-headers log) log)
+        (not-found request))))
 
 (define (render-home-page request)
   "Render the home page."
@@ -611,20 +638,22 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
 (define %http-write
   (@@ (web server http) http-write))
 
+(define (strip-headers response)
+  "Return RESPONSE's headers minus 'Content-Length' and our internal headers."
+  (fold alist-delete
+        (response-headers response)
+        '(content-length x-raw-file x-nar-compression)))
+
 (define (sans-content-length response)
   "Return RESPONSE without its 'content-length' header."
   (set-field response (response-headers)
-             (alist-delete 'content-length
-                           (response-headers response)
-                           eq?)))
+             (strip-headers response)))
 
 (define (with-content-length response length)
   "Return RESPONSE with a 'content-length' header set to LENGTH."
   (set-field response (response-headers)
              (alist-cons 'content-length length
-                         (alist-delete 'content-length
-                                       (response-headers response)
-                                       eq?))))
+                         (strip-headers response))))
 
 (define-syntax-rule (swallow-EPIPE exp ...)
   "Swallow EPIPE errors raised by EXP..."
@@ -646,7 +675,7 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
 (define (nar-response-port response)
   "Return a port on which to write the body of RESPONSE, the response of a
 /nar request, according to COMPRESSION."
-  (match (assoc-ref (response-headers response) 'guix-nar-compression)
+  (match (assoc-ref (response-headers response) 'x-nar-compression)
     (($ <compression> 'gzip level)
      ;; Note: We cannot used chunked encoding here because
      ;; 'make-gzip-output-port' wants a file port.
@@ -685,35 +714,37 @@ blocking."
           (swallow-zlib-error
            (close-port port))
           (values)))))
-    (('application/octet-stream . _)
-     ;; Send a raw file in a separate thread.
-     (call-with-new-thread
-      (lambda ()
-        (set-thread-name "publish file")
-        (catch 'system-error
-          (lambda ()
-            (call-with-input-file (utf8->string body)
-              (lambda (input)
-                (let* ((size     (stat:size (stat input)))
-                       (response (write-response (with-content-length response
-                                                                      size)
-                                                 client))
-                       (output   (response-port response)))
-                  (if (file-port? output)
-                      (sendfile output input size)
-                      (dump-port input output))
-                  (close-port output)
-                  (values)))))
-          (lambda args
-            ;; If the file was GC'd behind our back, that's fine.  Likewise if
-            ;; the client closes the connection.
-            (unless (memv (system-error-errno args)
-                          (list ENOENT EPIPE ECONNRESET))
-              (apply throw args))
-            (values))))))
     (_
-     ;; Handle other responses sequentially.
-     (%http-write server client response body))))
+     (match (assoc-ref (response-headers response) 'x-raw-file)
+       ((? string? file)
+        ;; Send a raw file in a separate thread.
+        (call-with-new-thread
+         (lambda ()
+           (set-thread-name "publish file")
+           (catch 'system-error
+             (lambda ()
+               (call-with-input-file file
+                 (lambda (input)
+                   (let* ((size     (stat:size (stat input)))
+                          (response (write-response (with-content-length response
+                                                                         size)
+                                                    client))
+                          (output   (response-port response)))
+                     (if (file-port? output)
+                         (sendfile output input size)
+                         (dump-port input output))
+                     (close-port output)
+                     (values)))))
+             (lambda args
+               ;; If the file was GC'd behind our back, that's fine.  Likewise if
+               ;; the client closes the connection.
+               (unless (memv (system-error-errno args)
+                             (list ENOENT EPIPE ECONNRESET))
+                 (apply throw args))
+               (values))))))
+       (#f
+        ;; Handle other responses sequentially.
+        (%http-write server client response body))))))
 
 (define-server-impl concurrent-http-server
   ;; A variant of Guile's built-in HTTP server that offloads possibly long
@@ -767,6 +798,10 @@ blocking."
              (let ((hash (nix-base32-string->bytevector hash)))
                (render-content-addressed-file store request
                                               name 'sha256 hash))))
+
+          ;; /log/OUTPUT
+          (("log" name)
+           (render-log-file store request name))
 
           ;; Use different URLs depending on the compression type.  This
           ;; guarantees that /nar URLs remain valid even when 'guix publish'

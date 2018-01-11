@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;

@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,7 +46,7 @@
 (define-public inkscape
   (package
     (name "inkscape")
-    (version "0.92.1")
+    (version "0.92.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://media.inkscape.org/dl/"
@@ -63,7 +64,7 @@
                     "0wwyhkqb1qyazz5f6wqrc223l6k8qnmadiw28q8gihlgvh38rvll")))))
               (sha256
                (base32
-                "01chr3vh728dkg7l7lilwgmh5nrp784khdhjgpqjbq9dh2zhax15"))))
+                "1lyghk6yarcv9nwkh6k366p6hb7rfilqcvbyji09hki59khd0a56"))))
     (build-system cmake-build-system)
     (inputs
      `(("aspell" ,aspell)
@@ -87,7 +88,7 @@
        ("pkg-config" ,pkg-config)))
     ;; FIXME: tests require gmock
     (arguments `(#:tests? #f))
-    (home-page "http://inkscape.org/")
+    (home-page "https://inkscape.org/")
     (synopsis "Vector graphics editor")
     (description "Inkscape is a vector graphics editor.  What sets Inkscape
 apart is its use of Scalable Vector Graphics (SVG), an XML-based W3C standard,

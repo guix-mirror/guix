@@ -90,6 +90,7 @@
             operating-system-activation-script
             operating-system-user-accounts
             operating-system-shepherd-service-names
+            operating-system-user-kernel-arguments
 
             operating-system-derivation
             operating-system-profile

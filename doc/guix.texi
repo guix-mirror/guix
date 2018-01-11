@@ -13,7 +13,7 @@
 @set OPENPGP-SIGNING-KEY-ID 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
 
 @copying
-Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès@*
+Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
 Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
@@ -44,7 +44,8 @@ Copyright @copyright{} 2017 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
 Copyright @copyright{} 2017 Arun Isaac@*
-Copyright @copyright{} 2017 nee
+Copyright @copyright{} 2017 nee@*
+Copyright @copyright{} 2018 Rutger Helling
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -604,6 +605,7 @@ Guile,, gnutls-guile, GnuTLS-Guile});
 @c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
 2017 or later;
+@item @url{http://zlib.net, zlib};
 @item @url{http://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 
@@ -625,8 +627,8 @@ Support for build offloading (@pxref{Daemon Offload Setup}) and
 version 0.10.2 or later.
 
 @item
-When @url{http://zlib.net, zlib} is available, @command{guix publish}
-can compress build byproducts (@pxref{Invoking guix publish}).
+When @url{http://www.bzip.org, libbz2} is available,
+@command{guix-daemon} can use it to compress build logs.
 @end itemize
 
 Unless @code{--disable-daemon} was passed to @command{configure}, the
@@ -634,7 +636,6 @@ following packages are also needed:
 
 @itemize
 @item @url{http://sqlite.org, SQLite 3};
-@item @url{http://www.bzip.org, libbz2};
 @item @url{http://gcc.gnu.org, GCC's g++}, with support for the
 C++11 standard.
 @end itemize
@@ -1234,12 +1235,13 @@ processes to gain access to undeclared dependencies.  It is necessary,
 though, when @command{guix-daemon} is running under an unprivileged user
 account.
 
-@item --disable-log-compression
-Disable compression of the build logs.
+@item --log-compression=@var{type}
+Compress build logs according to @var{type}, one of @code{gzip},
+@code{bzip2}, or @code{none}.
 
 Unless @code{--lose-logs} is used, all the build logs are kept in the
 @var{localstatedir}.  To save space, the daemon automatically compresses
-them with bzip2 by default.  This option disables that.
+them with bzip2 by default.
 
 @item --disable-deduplication
 @cindex deduplication
@@ -5619,10 +5621,25 @@ The following derivations will be built:
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
 the system type of the build host.
 
+@quotation Note
+The @code{--system} flag is for @emph{native} compilation and must not
+be confused with cross-compilation.  See @code{--target} below for
+information on cross-compilation.
+@end quotation
+
 An example use of this is on Linux-based systems, which can emulate
 different personalities.  For instance, passing
-@code{--system=i686-linux} on an @code{x86_64-linux} system allows users
+@code{--system=i686-linux} on an @code{x86_64-linux} system allows you
 to build packages in a complete 32-bit environment.
+
+Similarly, when transparent emulation with QEMU and @code{binfmt_misc}
+is enabled (@pxref{Virtualization Services,
+@code{qemu-binfmt-service-type}}), you can build for any system for
+which a QEMU @code{binfmt_misc} handler is installed.
+
+Builds for a system other than that of the machine you are using can
+also be offloaded to a remote machine of the right architecture.
+@xref{Daemon Offload Setup}, for more information on offloading.
 
 @item --target=@var{triplet}
 @cindex cross-compilation
@@ -5674,6 +5691,7 @@ collection as soon as the build completes.  @xref{Invoking guix gc}, for
 more on GC roots.
 
 @item --log-file
+@cindex build logs, access
 Return the build log file names or URLs for the given
 @var{package-or-derivation}, or raise an error if build logs are
 missing.
@@ -7066,7 +7084,7 @@ The above commands only use the default output of the given packages.
 To select other outputs, two element tuples can be specified:
 
 @example
-guix environment --ad-hoc -e '(list (@ (gnu packages bash) bash) "include")'
+guix environment --ad-hoc -e '(list (@@ (gnu packages bash) bash) "include")'
 @end example
 
 @item --load=@var{file}
@@ -7235,6 +7253,22 @@ http://example.org/file/hello-2.10.tar.gz/sha256/0ssi1@dots{}ndq1i
 
 Obviously, these URLs only work for files that are in the store; in
 other cases, they return 404 (``Not Found'').
+
+@cindex build logs, publication
+Build logs are available from @code{/log} URLs like:
+
+@example
+http://example.org/log/gwspk@dots{}-guile-2.2.3
+@end example
+
+@noindent
+When @command{guix-daemon} is configured to save compressed build logs,
+as is the case by default (@pxref{Invoking guix-daemon}), @code{/log}
+URLs return the compressed log as-is, with an appropriate
+@code{Content-Type} and/or @code{Content-Encoding} header.  We recommend
+running @command{guix-daemon} with @code{--log-compression=gzip} since
+Web browsers can automatically decompress it, which is not the case with
+bzip2 compression.
 
 The following options are available:
 
@@ -9910,6 +9944,10 @@ The number of seconds of silence and the number of seconds of activity,
 respectively, after which a build process times out.  A value of zero
 disables the timeout.
 
+@item @code{log-compression} (default: @code{'bzip2})
+The type of compression used for build logs---one of @code{gzip},
+@code{bzip2}, or @code{none}.
+
 @item @code{extra-options} (default: @code{'()})
 List of extra command-line options for @command{guix-daemon}.
 
@@ -12150,6 +12188,13 @@ appropriately, allowing MATE to operate with elevated privileges on a
 limited number of special-purpose system interfaces.  Additionally,
 adding a service made by @code{mate-desktop-service} adds the MATE
 metapackage to the system profile.
+
+The desktop environments in Guix use the Xorg display server by
+default.  If you'd like to use the newer display server protocol
+called Wayland, you need to use the @code{sddm-service} instead of the
+@code{slim-service} for the graphical login manager.  You should then
+select the ``GNOME (Wayland)'' session in SDDM.  Currently only GNOME
+has support for Wayland.
 
 @deffn {Scheme Procedure} gnome-desktop-service
 Return a service that adds the @code{gnome} package to the system
@@ -14697,6 +14742,48 @@ the 2nd element of the pair is the password.
 @end deftp
 
 
+@subsubheading Darkstat Service
+@cindex darkstat
+Darkstat is a packet sniffer that captures network traffic, calculates
+statistics about usage, and serves reports over HTTP.
+
+@defvar {Scheme Variable} darkstat-service-type
+This is the service type for the
+@uref{https://unix4lyfe.org/darkstat/, darkstat}
+service,  its value must be a @code{darkstat-configuration} record as in
+this example:
+
+@example
+(service darkstat-service-type
+         (darkstat-configuration
+           (interface "eno1")))
+@end example
+@end defvar
+
+@deftp {Data Type} darkstat-configuration
+Data type representing the configuration of @command{darkstat}.
+
+@table @asis
+@item @code{package} (default: @code{darkstat})
+The darkstat package to use.
+
+@item @code{interface}
+Capture traffic on the specified network interface.
+
+@item @code{port} (default: @code{"667"})
+Bind the web interface to the specified port.
+
+@item @code{bind-address} (default: @code{"127.0.0.1"})
+Bind the web interface to the specified address.
+
+@item @code{base} (default: @code{"/"})
+Specify the path of the base URL.  This can be useful if
+@command{darkstat} is accessed via a reverse proxy.
+
+@end table
+@end deftp
+
+
 @node Kerberos Services
 @subsubsection Kerberos Services
 @cindex Kerberos
@@ -16884,8 +16971,10 @@ an absolute path can be specified here.
 
 @node Virtualization Services
 @subsubsection Virtualization services
+
 The @code{(gnu services virtualization)} module provides services for
-the libvirt and virtlog daemons.
+the libvirt and virtlog daemons, as well as other virtualization-related
+services.
 
 @subsubheading Libvirt daemon
 @code{libvirtd} is the server side daemon component of the libvirt
@@ -17588,6 +17677,90 @@ Defaults to @samp{3}
 
 @end deftypevr
 
+@subsubheading Transparent Emulation with QEMU
+
+@cindex emulation
+@cindex @code{binfmt_misc}
+@code{qemu-binfmt-service-type} provides support for transparent
+emulation of program binaries built for different architectures---e.g.,
+it allows you to transparently execute an ARMv7 program on an x86_64
+machine.  It achieves this by combining the @uref{https://www.qemu.org,
+QEMU} emulator and the @code{binfmt_misc} feature of the kernel Linux.
+
+@defvr {Scheme Variable} qemu-binfmt-service-type
+This is the type of the QEMU/binfmt service for transparent emulation.
+Its value must be a @code{qemu-binfmt-configuration} object, which
+specifies the QEMU package to use as well as the architecture we want to
+emulated:
+
+@example
+(service qemu-binfmt-service-type
+         (qemu-binfmt-configuration
+           (platforms (lookup-qemu-platforms "arm" "aarch64" "ppc"))))
+@end example
+
+In this example, we enable transparent emulation for the ARM and aarch64
+platforms.  Running @code{herd stop qemu-binfmt} turns it off, and
+running @code{herd start qemu-binfmt} turns it back on (@pxref{Invoking
+herd, the @command{herd} command,, shepherd, The GNU Shepherd Manual}).
+@end defvr
+
+@deftp {Data Type} qemu-binfmt-configuration
+This is the configuration for the @code{qemu-binfmt} service.
+
+@table @asis
+@item @code{platforms} (default: @code{'()})
+The list of emulated QEMU platforms.  Each item must be a @dfn{platform
+object} as returned by @code{lookup-qemu-platforms} (see below).
+
+@item @code{guix-support?} (default: @code{#f})
+When it is true, QEMU and all its dependencies are added to the build
+environment of @command{guix-daemon} (@pxref{Invoking guix-daemon,
+@code{--chroot-directory} option}).  This allows the @code{binfmt_misc}
+handlers to be used within the build environment, which in turn means
+that you can transparently build programs for another architecture.
+
+For example, let's suppose you're on an x86_64 machine and you have this
+service:
+
+@example
+(service qemu-binfmt-service-type
+         (qemu-binfmt-configuration
+           (platforms (lookup-qemu-platforms "arm"))
+           (qemu-support? #t)))
+@end example
+
+You can run:
+
+@example
+guix build -s armhf-linux inkscape
+@end example
+
+@noindent
+and it will build Inkscape for ARMv7 @emph{as if it were a native
+build}, transparently using QEMU to emulate the ARMv7 CPU.  Pretty handy
+if you'd like to test a package build for an architecture you don't have
+access to!
+
+@item @code{qemu} (default: @code{qemu})
+The QEMU package to use.
+@end table
+@end deftp
+
+@deffn {Scheme Procedure} lookup-qemu-platforms @var{platforms}@dots{}
+Return the list of QEMU platform objects corresponding to
+@var{platforms}@dots{}.  @var{platforms} must be a list of strings
+corresponding to platform names, such as @code{"arm"}, @code{"sparc"},
+@code{"mips64el"}, and so on.
+@end deffn
+
+@deffn {Scheme Procedure} qemu-platform? @var{obj}
+Return true if @var{obj} is a platform object.
+@end deffn
+
+@deffn {Scheme Procedure} qemu-platform-name @var{platform}
+Return the name of @var{platform}---a string such as @code{"arm"}.
+@end deffn
 
 @node Version Control Services
 @subsubsection Version Control Services

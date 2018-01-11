@@ -450,7 +450,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.2.19")
+    (version "5.2.20")
     (source
      (origin
        (method url-fetch)
@@ -458,16 +458,15 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0b16w48c17k35lhd95qcl2kjq2rahk8znkg3w467rf3kzmsa4fbc"))))
+         "02f00vpgrdb77w7lskl9jfm2akpy21ws9cjazs13gash2xksnj38"))))
     (build-system gnu-build-system)
-    ;; TODO: unbundle mkpasswd binary + its po files.
     (arguments
-     `(#:tests? #f ; Does not exist
+     `(#:tests? #f                      ; Does not exist
        #:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; No configure
+         (delete 'configure)            ; No configure
          (add-before 'build 'setenv
            (lambda _
              (setenv "HAVE_ICONV" "1")
@@ -1194,7 +1193,7 @@ procedure calls (RPCs).")
 (define-public openvswitch
   (package
     (name "openvswitch")
-    (version "2.6.1")
+    (version "2.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1202,7 +1201,7 @@ procedure calls (RPCs).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "036gq741j9kqsjlp693nff838c9wjd1c56nswl9vyyd1lsmj0yrh"))))
+                "14rqqhfyv49irz8ag0qbv9jn8z0bn3qzxir3r074y16p4sg4674d"))))
     (build-system gnu-build-system)
     (arguments
      '(;; FIXME: many tests fail with:

@@ -4,11 +4,11 @@
 ;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
-;;; Coypright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Coypright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Coypright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Coypright © 2016 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>

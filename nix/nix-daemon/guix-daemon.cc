@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
    Copyright (C) 2006, 2010, 2012, 2014 Eelco Dolstra <e.dolstra@tudelft.nl>
 
    This file is part of GNU Guix.
@@ -88,6 +88,7 @@ builds derivations on behalf of its clients.");
 #define GUIX_OPT_BUILD_ROUNDS 17
 #define GUIX_OPT_TIMEOUT 18
 #define GUIX_OPT_MAX_SILENT_TIME 19
+#define GUIX_OPT_LOG_COMPRESSION 20
 
 static const struct argp_option options[] =
   {
@@ -120,8 +121,11 @@ static const struct argp_option options[] =
       n_("build each derivation N times in a row") },
     { "lose-logs", GUIX_OPT_LOSE_LOGS, 0, 0,
       n_("do not keep build logs") },
-    { "disable-log-compression", GUIX_OPT_DISABLE_LOG_COMPRESSION, 0, 0,
+    { "disable-log-compression", GUIX_OPT_DISABLE_LOG_COMPRESSION, 0,
+      OPTION_HIDDEN,				  // deprecated
       n_("disable compression of the build logs") },
+    { "log-compression", GUIX_OPT_LOG_COMPRESSION, "TYPE", 0,
+      n_("use the specified compression type for build logs") },
 
     /* '--disable-deduplication' was known as '--disable-store-optimization'
        up to Guix 0.7 included, so keep the alias around.  */
@@ -197,8 +201,23 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	settings.set("build-extra-chroot-dirs", chroot_dirs);
 	break;
       }
+    case GUIX_OPT_LOG_COMPRESSION:
+      if (strcmp (arg, "none") == 0)
+	settings.logCompression = COMPRESSION_NONE;
+      else if (strcmp (arg, "gzip") == 0)
+	settings.logCompression = COMPRESSION_GZIP;
+#if HAVE_BZLIB_H
+      else if (strcmp (arg, "bzip2") == 0)
+	settings.logCompression = COMPRESSION_BZIP2;
+#endif
+      else
+	{
+	  fprintf (stderr, _("error: %s: unknown compression type\n"), arg);
+	  exit (EXIT_FAILURE);
+	}
+      break;
     case GUIX_OPT_DISABLE_LOG_COMPRESSION:
-      settings.compressLog = false;
+      settings.logCompression = COMPRESSION_NONE;
       break;
     case GUIX_OPT_BUILD_USERS_GROUP:
       settings.buildUsersGroup = arg;
@@ -487,6 +506,8 @@ main (int argc, char *argv[])
 
       /* Effect all the changes made via 'settings.set'.  */
       settings.update ();
+      printMsg(lvlDebug,
+	       format ("build log compression: %1%") % settings.logCompression);
 
       if (settings.useSubstitutes)
 	{

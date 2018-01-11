@@ -27,6 +27,7 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1506,12 +1507,16 @@ backported from Python 2.7 for Python 2.4+.")
               (base32
                "1iypp6z46r19n4xmgx6m1lwmlpfjh8vapq8izigrqlaarvp2y64c"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-pyhamcrest" ,python-pyhamcrest)))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-parse" ,python-parse)
        ("python-parse-type" ,python-parse-type)))
-    (arguments `(#:tests? #f))          ;TODO: tests require nose>=1.3 and
-                                        ;PyHamcrest>=1.8
+    (arguments
+     '(#:test-target "behave_test"))
     (home-page "https://github.com/behave/behave")
     (synopsis "Python behavior-driven development")
     (description
@@ -1724,3 +1729,37 @@ retried.")
 
 (define-public python2-flaky
   (package-with-python2 python-flaky))
+
+(define-public python-pyhamcrest
+  (package
+    (name "python-pyhamcrest")
+    (version "1.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://github.com/hamcrest/PyHamcrest/archive/V"
+                version
+                ".tar.gz"))
+              (file-name
+               (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1lqjajhwf7x7igvvnj5p1cm31y9njy07qby94w18kl6zwbdjqrwy"))))
+    (native-inputs                      ; All native inputs are for tests
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-hypothesis" ,python-hypothesis)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (build-system python-build-system)
+    (home-page "http://hamcrest.org/")
+    (synopsis "Hamcrest matchers for Python")
+    (description
+     "PyHamcrest is a framework for writing matcher objects,
+ allowing you to declaratively define \"match\" rules.")
+    (license license:bsd-3)))
+
+(define-public python2-pyhamcrest
+  (package-with-python2 python-pyhamcrest))

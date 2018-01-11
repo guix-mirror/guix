@@ -3,10 +3,11 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,7 +57,9 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system perl))
+  #:use-module (guix build-system perl)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public libsodium
   (package
@@ -612,3 +615,51 @@ data on your platform, so the seed itself will be as random as possible.
     ;; files in the compilation are in the public domain.
     (license (list license:boost1.0 license:public-domain))))
 
+(define-public libb2
+  (let ((revision "1")                  ; upstream doesn't ‘do’ releases
+        (commit "60ea749837362c226e8501718f505ab138e5c19d"))
+    (package
+      (name "libb2")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/BLAKE2/libb2")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "07a2m8basxrsj9dsp5lj24y8jraj85lfy56756a7za1nfkgy04z7"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (arguments
+       `(#:configure-flags
+         (list
+           ,@(if (any (cute string-prefix? <> (or (%current-system)
+                                                  (%current-target-system)))
+                      '("x86_64" "i686"))
+               ;; fat only checks for Intel optimisations
+               '("--enable-fat")
+               '())
+           "--disable-native") ; don't optimise at build time.
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'bootstrap
+             (lambda _
+               (invoke "sh" "autogen.sh"))))))
+      (home-page "https://blake2.net/")
+      (synopsis "Library implementing the BLAKE2 family of hash functions")
+      (description
+       "libb2 is a portable implementation of the BLAKE2 family of cryptographic
+hash functions.  It includes optimised implementations for IA-32 and AMD64
+processors, and an interface layer that automatically selects the best
+implementation for the processor it is run on.
+
+@dfn{BLAKE2} (RFC 7693) is a family of high-speed cryptographic hash functions
+that are faster than MD5, SHA-1, SHA-2, and SHA-3, yet are at least as secure
+as the latest standard, SHA-3.  It is an improved version of the SHA-3 finalist
+BLAKE.")
+      (license license:public-domain))))

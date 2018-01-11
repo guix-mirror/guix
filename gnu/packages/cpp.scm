@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
 (define-public libzen
   (package
     (name "libzen")
-    (version "0.4.35")
+    (version "0.4.37")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mediaarea.net/download/source/"
@@ -35,7 +36,7 @@
                                   name "_" version ".tar.bz2"))
               (sha256
                (base32
-                "12a1icgcffgv503ii2k1453kxg5hfly09mf4zjcc80aq8a6rf8by"))))
+                "1hcsrmn85b0xp0mp33aazk7g071q1v3f163nnhv8b0mv9c4bgsfn"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

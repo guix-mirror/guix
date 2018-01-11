@@ -12,7 +12,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6306,16 +6306,16 @@ testing strategies.")
 (define ghc-chell-quickcheck-bootstrap
   (package
     (name "ghc-chell-quickcheck-bootstrap")
-    (version "0.2.5")
+    (version "0.2.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://hackage.haskell.org/package/chell-quickcheck/chell-quickcheck-"
-             version ".tar.gz"))
+             "https://hackage.haskell.org/package/chell-quickcheck/"
+             "chell-quickcheck-" version ".tar.gz"))
        (sha256
         (base32
-         "02bkcnx5k6r5csdnnkvk4wfd0l36nxb87i1463ynw17n7ym9s4cs"))))
+         "1iicsys9igx7m7n4l2b8djardmjy2ah5ibzp7kzs758h460fq53a"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-chell" ,ghc-chell)
@@ -6331,16 +6331,16 @@ testing strategies.")
 (define-public ghc-chell-quickcheck
   (package
     (name "ghc-chell-quickcheck")
-    (version "0.2.5")
+    (version "0.2.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://hackage.haskell.org/package/chell-quickcheck/chell-quickcheck-"
-             version ".tar.gz"))
+             "https://hackage.haskell.org/package/chell-quickcheck/"
+             "chell-quickcheck-" version ".tar.gz"))
        (sha256
         (base32
-         "02bkcnx5k6r5csdnnkvk4wfd0l36nxb87i1463ynw17n7ym9s4cs"))))
+         "1iicsys9igx7m7n4l2b8djardmjy2ah5ibzp7kzs758h460fq53a"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-chell" ,ghc-chell)

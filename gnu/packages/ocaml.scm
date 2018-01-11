@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3619,7 +3619,7 @@ is provide a description of your project and Jbuilder will do the rest.")
 (define-public ocaml-zed
   (package
     (name "ocaml-zed")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/diml/zed/archive/"
@@ -3627,7 +3627,7 @@ is provide a description of your project and Jbuilder will do the rest.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1q281slzwgdrrxalayll75bxgghadswlh2zcvzy08nrywqnlq5y8"))))
+                "19m5vrj60vg1b63qfsv0aabdlzgn40cqmx65s3wafqi4fs9xp6jn"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases

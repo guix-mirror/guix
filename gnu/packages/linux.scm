@@ -2,12 +2,12 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
@@ -370,8 +370,8 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 (define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
 
-(define %linux-libre-version "4.14.11")
-(define %linux-libre-hash "09q968iv4cbr0gby8pispxabraf2mkzbsx9y2rif4n2ykmxwx4wg")
+(define %linux-libre-version "4.14.13")
+(define %linux-libre-hash "1a1wkl4xn2jsjvdnszv5gmg794waiir6x178q85qykninfbigfzx")
 
 ;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
@@ -384,14 +384,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.74"
-                    "1xavyjj1ajg1nb6iy75ih1k2rwcfx09vjav1a69r0vq4q140qsfc"
+  (make-linux-libre "4.9.76"
+                    "1ms026dp8r1cv8rbc98nfc331xggwdz1dafv89ack8d80qrhg1y1"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.109"
-                    "1yn0vzvh8g26zgmblr92krcik18c0290mqdba5lbz7sd29jbhvzn"
+  (make-linux-libre "4.4.111"
+                    "1yxii8csdxpxbspbz5gd768zjzfv9x0h22hdk8dbw4c9nq09z0zc"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2337,6 +2337,28 @@ you to access information from temperature, voltage, and fan speed sensors.
 It works with most newer systems.")
     (license license:gpl2+)))
 
+(define-public iucode-tool
+  (package
+    (name "iucode-tool")
+    (version "2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gitlab.com/iucode-tool/releases"
+                                  "/raw/latest/iucode-tool_" version ".tar.xz"))
+              (sha256
+               (base32
+                "0w99k1aq1xw148ffk1xykqf60rdbphb1jknw98jcmadq4pwxl44q"))))
+    (build-system gnu-build-system)
+    (home-page "https://gitlab.com/iucode-tool/iucode-tool/wikis/home")
+    (synopsis "Manipulate Intel microcode bundles")
+    (description
+     "@command{iucode_tool} is a utility to work with microcode packages for
+Intel processors.  It can convert between formats, extract specific versions,
+create a firmware image suitable for the Linux kernel, and more.")
+    ;; cpuid.h is available for i686, x86_64, and ia64.
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (license license:gpl2+)))
+
 (define-public i2c-tools
   (package
     (name "i2c-tools")
@@ -2486,14 +2508,14 @@ thanks to the use of namespaces.")
 (define-public hdparm
   (package
     (name "hdparm")
-    (version "9.52")
+    (version "9.53")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" name "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1djgxhfadd865dcrl6dp7dvjxpaisy7mk17mbdbglwg24ga9qhn3"))))
+                "1rb5086gp4l1h1fn2nk10ziqxjxigsd0c1zczahwc5k9vy8zawr6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
@@ -2515,8 +2537,8 @@ performance benchmarking tool.
 
 @command{hdparm} provides a command line interface to various Linux kernel
 interfaces provided by the SATA/ATA/SAS @code{libata} subsystem, and the older
-IDE driver subsystem.  Many external USB drive enclosures with @dfn{SCSI-ATA
-Command Translation} (SAT) are also supported.")
+IDE driver subsystem.  Many external USB drive enclosures with SCSI-ATA Command
+Translation (@dfn{SAT}) are also supported.")
     (license (license:non-copyleft "file://LICENSE.TXT"))))
 
 (define-public rfkill
@@ -3085,7 +3107,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.14")
+    (version "4.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3093,7 +3115,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1bwirg6hz6gyfj5r3xkj4lfwadvl9pxlccf916fsmdn27fy5q289"))))
+                "1palnddw3d50kyflwk1j4xapbc6jniid6j5i9dsr8l8a7nkv7ich"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"

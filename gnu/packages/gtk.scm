@@ -13,10 +13,10 @@
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
-;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
-;;; Coypright © 2017 Roel Janssen <roel@gnu.org>
-;;; Coypright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Coypright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1413,14 +1413,14 @@ glass artworks done by Venicians glass blowers.")
 (define-public gtkspell3
   (package
     (name "gtkspell3")
-    (version "3.0.8")
+    (version "3.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gtkspell/"
-                                  version "/" name "-" version ".tar.gz"))
+                                  version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zrz5pz4ryvcssk898liynmy2wyxgj95ak7mp2jv7x62yzihq6h1"))))
+                "09jdicmpipmj4v84gnkqwbmj4lh8v0i6pn967rb9jx4zg2ia9x54"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)

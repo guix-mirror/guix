@@ -3,10 +3,10 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +28,7 @@
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages algebra) #:select (bc))
   #:use-module (gnu packages assembly)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
@@ -41,10 +42,13 @@
   #:use-module (gnu packages mtools)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages virtualization)
+  #:use-module (gnu packages web)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -217,7 +221,8 @@ menu to select one of the installed operating systems.")
                                                 "/lib/grub")))
                  (for-each
                   (lambda (basename)
-                    (if (not (string-prefix? "." basename))
+                    (if (not (or (string-prefix? "." basename)
+                                 (file-exists? (string-append output-dir "/" basename))))
                         (symlink (string-append input-dir "/" basename)
                                  (string-append output-dir "/" basename))))
                   (scandir input-dir))
@@ -420,6 +425,73 @@ also initializes the boards (RAM etc).")
 
 (define-public u-boot-odroid-c2
   (make-u-boot-package "odroid-c2" "aarch64-linux-gnu"))
+
+(define-public vboot-utils
+  (package
+    (name "vboot-utils")
+    (version "R63-10032.B")
+    (source (origin
+              ;; XXX: Snapshots are available but changes timestamps every download.
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://chromium.googlesource.com"
+                                        "/chromiumos/platform/vboot_reference"))
+                    (commit (string-append "release-" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0h0m3l69vp9dr6xrs1p6y7ilkq3jq8jraw2z20kqfv7lvc9l1lxj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc"
+                          (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-hard-coded-paths
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((coreutils (assoc-ref inputs "coreutils"))
+                            (diffutils (assoc-ref inputs "diffutils")))
+                        (substitute* "futility/misc.c"
+                          (("/bin/cp") (string-append coreutils "/bin/cp")))
+                        (substitute* "tests/bitmaps/TestBmpBlock.py"
+                          (("/usr/bin/cmp") (string-append diffutils "/bin/cmp")))
+                        (substitute* "vboot_host.pc.in"
+                          (("prefix=/usr")
+                           (string-append "prefix=" (assoc-ref outputs "out"))))
+                        #t)))
+                  (delete 'configure)
+                  (add-before 'check 'patch-tests
+                    (lambda _
+                      ;; These tests compare diffs against known-good values.
+                      ;; Patch the paths to match those in the build container.
+                      (substitute* (find-files "tests/futility/expect_output")
+                        (("/mnt/host/source/src/platform/vboot_reference")
+                         (string-append "/tmp/guix-build-" ,name "-" ,version
+                                        ".drv-0/source")))
+                      ;; Tests require write permissions to many of these files.
+                      (for-each make-file-writable (find-files "tests/futility"))
+                      #t)))
+       #:test-target "runtests"))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; For tests.
+       ("diffutils" ,diffutils)
+       ("python@2" ,python-2)))
+    (inputs
+     `(("coreutils" ,coreutils)
+       ("libyaml" ,libyaml)
+       ("openssl" ,openssl)
+       ("openssl:static" ,openssl "static")
+       ("util-linux" ,util-linux)))
+    (home-page
+     "https://dev.chromium.org/chromium-os/chromiumos-design-docs/verified-boot")
+    (synopsis "ChromiumOS verified boot utilities")
+    (description
+     "vboot-utils is a collection of tools to facilitate booting of
+Chrome-branded devices.  This includes the @command{cgpt} partitioning
+program, the @command{futility} and @command{crossystem} firmware management
+tools, and more.")
+    (license license:bsd-3)))
 
 (define-public os-prober
   (package

@@ -24,6 +24,7 @@
    (eval . (put 'guard 'scheme-indent-function 1))
    (eval . (put 'lambda* 'scheme-indent-function 1))
    (eval . (put 'substitute* 'scheme-indent-function 1))
+   (eval . (put 'match-record 'scheme-indent-function 2))
 
    ;; 'modify-phases' and its keywords.
    (eval . (put 'modify-phases 'scheme-indent-function 1))

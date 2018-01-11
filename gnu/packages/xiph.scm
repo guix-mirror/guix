@@ -79,6 +79,7 @@ periodic timestamps for seeking.")
 (define libvorbis
   (package
    (name "libvorbis")
+   (replacement libvorbis/fixed)
    (version "1.3.5")
    (source (origin
             (method url-fetch)
@@ -101,6 +102,14 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
    (license (license:non-copyleft "file://COPYING"
                                "See COPYING in the distribution."))
    (home-page "http://xiph.org/vorbis/")))
+
+(define libvorbis/fixed
+  (package
+    (inherit libvorbis)
+    (source (origin
+              (inherit (package-source libvorbis))
+              (patches (search-patches "libvorbis-CVE-2017-14633.patch"
+                                       "libvorbis-CVE-2017-14632.patch"))))))
 
 (define libtheora
   (package

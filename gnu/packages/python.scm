@@ -32,7 +32,7 @@
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
@@ -2534,7 +2534,8 @@ interested parties to subscribe to events, or \"signals\".")
        ("python-blinker" ,python-blinker)
        ("python-unidecode" ,python-unidecode)
        ("python-six" ,python-six)
-       ("python-dateutil" ,python-dateutil)))
+       ("python-dateutil" ,python-dateutil)
+       ("python-markdown" ,python-markdown)))
     (home-page "http://getpelican.com/")
     (arguments
      `(;; XXX Requires a lot more packages to do unit tests :P
@@ -4857,13 +4858,13 @@ of the structure, dynamics, and functions of complex networks.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "4.2.0")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "0mgl44q152ws40zj2vicqark5szyd73vqy9pf26g6hk6dk0y0c79"))))
+        (base32 "0g0paia4z7w3srnqdmavq3hrb2x7qnpf81jx50njl0p7y4y0j8jv"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
@@ -6023,14 +6024,14 @@ versions of Python.")
 (define-public python-idna
   (package
     (name "python-idna")
-    (version "2.5")
+    (version "2.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "idna" version))
        (sha256
         (base32
-         "1ara12a7k2zc69msa0arrvw00gn61a6i6by01xb3lkkc0h4cxd9w"))))
+         "13qaab6d0s15gknz8v3zbcfmbj6v86hn9pjxgkdf62ch13imssic"))))
     (build-system python-build-system)
     (home-page "https://github.com/kjd/idna")
     (synopsis "Internationalized domain names in applications")
@@ -6859,13 +6860,13 @@ for atomic file system operations.")
 (define-public python-click-threading
   (package
     (name "python-click-threading")
-    (version "0.4.3")
+    (version "0.4.4")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "click-threading" version))
              (sha256
               (base32
-               "0xs4bg2ws0zgyiplk312l049hi23c2zqf1g771rjhh5vr2msk4cg"))))
+               "1rsxc2fbkxlhwhlmxsdjzq3spn284l6rvjfcz9mbb17ibgdgmc5j"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)))
@@ -6878,13 +6879,13 @@ applications.")
 (define-public python-click-log
   (package
     (name "python-click-log")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "click-log" version))
              (sha256
               (base32
-               "1bjrfxji1yv4fj0g78ri2yfgn2wbivn8g69fxfinxvxpmighhshp"))))
+               "1r1x85023cslb2pwldd089jjk573mk3w78cnashs77wrx7yz8fj9"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)))
@@ -8600,14 +8601,14 @@ network support library.")
 (define-public python-ply
   (package
     (name "python-ply")
-    (version "3.9")
+    (version "3.10")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "ply" version))
         (sha256
           (base32
-            "0gpl0yli3w03ipyqfrp3w5nf0iawhsq65anf5wwm2wf5p502jzhd"))))
+            "1jxsr1d2f732r6ljhvm827113dckwl6qwakfvpbdhcbhvpvlmscn"))))
     (build-system python-build-system)
     (home-page "http://www.dabeaz.com/ply/")
     (synopsis "Python Lex & Yacc")
@@ -12295,4 +12296,45 @@ useful for scientific computing.  Most modules are rather general (Geometry,
 physical units, automatic derivatives, ...) whereas others are more
 domain-specific (e.g. netCDF and PDB support).  The library is currently
 not actively maintained and works only with Python 2 and NumPy < 1.9.")
+    (license license:cecill-c)))
+
+(define-public python2-mmtk
+  (package
+    (name "python2-mmtk")
+    (version "2.7.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/khinsen/"
+                           "mmtk/downloads/MMTK-" version ".tar.gz"))
+       (file-name (string-append "MMTK-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k4gsd50zja89dbzgy3aji7h4zpvbvdfrds7rxr3whqrsgcffnir"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("netcdf" ,netcdf)))
+    (propagated-inputs
+     `(("python-scientific" ,python2-scientific)
+       ("python-tkinter" ,python-2 "tk")))
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'includes-from-scientific
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "Include/Scientific")
+             (copy-recursively
+                     (string-append
+                      (assoc-ref inputs "python-scientific")
+                      "/include/python2.7/Scientific")
+                     "Include/Scientific"))))))
+    (home-page "http://dirac.cnrs-orleans.fr/MMTK")
+    (synopsis "Python library for molecular simulation")
+    (description "MMTK is a library for molecular simulations with an emphasis
+on biomolecules.  It provides widely used methods such as Molecular Dynamics
+and normal mode analysis, but also basic routines for implementing new methods
+for simulation and analysis.  The library is currently not actively maintained
+and works only with Python 2 and NumPy < 1.9.")
     (license license:cecill-c)))

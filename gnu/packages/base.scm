@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -39,6 +39,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages pkg-config)
@@ -93,6 +94,7 @@ command-line arguments, multiple languages, and so on.")
             (patches (search-patches "grep-timing-sensitive-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))             ;some of the tests require it
+   (inputs `(("pcre" ,pcre)))
    (arguments
     `(#:phases
       (modify-phases %standard-phases

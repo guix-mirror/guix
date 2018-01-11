@@ -28,7 +28,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.42")
+    (version "0.14.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -36,7 +36,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0qqcn8j2hng4jl6ndbrjmbiwbl2f305qx5yw7swbvj7s3l7k756i"))))
+                "175xkc4i00axxljc5kgkr30lm1s9hfmz0hrzrsl91rpwpbh500mv"))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
@@ -118,8 +118,8 @@
     (inputs
      `(("go-github-com-audriusbutkevicius-cli"
         ,go-github-com-audriusbutkevicius-cli)
-       ("go-github-com-audriusbutkevicius-kcp-go"
-        ,go-github-com-audriusbutkevicius-kcp-go)
+       ("go-github-com-xtaci-kcp-go"
+        ,go-github-com-xtaci-kcp-go)
        ("go-github-com-audriusbutkevicius-go-nat-pmp"
         ,go-github-com-audriusbutkevicius-go-nat-pmp)
        ("go-github-com-audriusbutkevicius-pfilter"
@@ -157,9 +157,9 @@
        ("go-golang-org-x-net-union" ,(go-golang-org-x-net-union))
        ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
        ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
-       ("go-github-com-d4l3k-messagediff"
-        ,go-github-com-d4l3k-messagediff)
-       ("go-github-com-zillode-notify" ,go-github-com-zillode-notify)))
+       ("go-github-com-zillode-notify" ,go-github-com-zillode-notify)
+       ;; For tests
+       ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
     (synopsis "Decentralized continuous filesystem synchronization")
     (description "Syncthing is a peer-to-peer file synchronization tool that
 supports a wide variety of computing platforms.  It uses the Block Exchange
@@ -358,11 +358,11 @@ structs in the Go programming language.")
     (license (package-license go-github-com-gogo-protobuf))))
 
 (define-public go-github-com-gogo-protobuf
-  (let ((commit "efccd33a0c20aa078705571d5ddbfa14c8395a63")
-        (revision "0"))
+  (let ((commit "35b81a066e522fb86ece043a8ef1dbfa10b4fed1")
+        (revision "1"))
     (package
       (name "go-github-com-gogo-protobuf")
-      (version (git-version "0.2" revision commit))
+      (version (git-version "0.5" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -371,7 +371,7 @@ structs in the Go programming language.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "09kfa3aqmhh7p0rc6wd4fw5cjccidsk9vgcy13albv0g8vnbmmgw"))))
+                  "194k6cls2g654df54x5rzrn5nqrfk8yz1jymm667ajjvzcplidja"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/gogo/protobuf/proto"
@@ -427,8 +427,8 @@ generation features.  This code generation is used to achieve:
       (license bsd-3))))
 
 (define-public go-github-com-golang-groupcache-lru
-  (let ((commit "72d04f9fcdec7d3821820cc4a6f150eae553639a")
-        (revision "0"))
+  (let ((commit "84a468cf14b4376def5d68c722b139b881c450a4")
+        (revision "1"))
     (package
       (name "go-github-com-golang-groupcache-lru")
       (version (git-version "0.0.0" revision commit))
@@ -440,7 +440,7 @@ generation features.  This code generation is used to achieve:
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1l3ryh7bq1f2mhr3sd3x1wav99pd27r8l3ydgqh375wn4x7v5qd6"))))
+                  "1ky1r9qh54yi9zp2769qrjngzndgd8fn7mja2qfac285n06chmcn"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/golang/groupcache/lru"
@@ -502,8 +502,8 @@ address of the default LAN gateway.")
       (license bsd-3))))
 
 (define-public go-github-com-kardianos-osext
-  (let ((commit "9d302b58e975387d0b4d9be876622c86cefe64be")
-        (revision "0"))
+  (let ((commit "ae77be60afb1dcacde03767a8c37337fad28ac14")
+        (revision "1"))
     (package
       (name "go-github-com-kardianos-osext")
       (version (git-version "0.0.0" revision commit))
@@ -515,7 +515,7 @@ address of the default LAN gateway.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0r6f727s16g4f66k8c2z1xh8ga1p53hg9g2v95pmhd1i60fhy47a"))))
+                  "056dkgxrqjj5r18bnc3knlpgdz5p3yvp12y4y978hnsfhwaqvbjz"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/kardianos/osext"))
@@ -527,8 +527,8 @@ finding resources located relative to the executable file.")
       (license bsd-3))))
 
 (define-public go-github-com-lib-pq
-  (let ((commit "2704adc878c21e1329f46f6e56a1c387d788ff94")
-        (revision "0"))
+  (let ((commit "83612a56d3dd153a94a629cd64925371c9adad78")
+        (revision "1"))
     (package
       (name "go-github-com-lib-pq")
       (version (git-version "0.0.0" revision commit))
@@ -540,7 +540,7 @@ finding resources located relative to the executable file.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "160fmvi7bczxw3i3h5s821hv029ph5ld8x3c36b4cz2sr30wp110"))))
+                  "12334yigh284k5cdvb9pgxaq6n78205jcbp75ajz44vvfd4wi6qc"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/lib/pq"
@@ -554,8 +554,8 @@ database/sql package.")
       (license expat))))
 
 (define-public go-github-com-minio-sha256-simd
-  (let ((commit "6124d070eb4e7001c244b6ccc282620a5dce44a0")
-        (revision "0"))
+  (let ((commit "ad98a36ba0da87206e3378c556abbfeaeaa98668")
+        (revision "1"))
     (package
       (name "go-github-com-minio-sha256-simd")
       (version (git-version "0.0.0" revision commit))
@@ -567,7 +567,7 @@ database/sql package.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1azrdp7x7vl9ngkxs890blspz0345xhadvssdlb0435hdqa0gkll"))))
+                  "0yfnqn3kqdnlfm54yvc4fr5vpdmwdi2kw571nlkbpmy8ldhsqqfi"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/minio/sha256-simd"))
@@ -579,40 +579,38 @@ architectures.")
       (license asl2.0))))
 
 (define-public go-github-com-oschwald-geoip2-golang
-  (let ((commit "0fd242da7906550802871efe101abfdb1cc550a8")
-        (revision "0"))
-    (package
-      (name "go-github-com-oschwald-geoip2-golang")
-      (version (git-version "0.1.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/oschwald/geoip2-golang")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0kglnix0r5sjkk346ip30l7dwq1gv2g4wjy2cjmgjvb8x778hnww"))))
-      (build-system go-build-system)
-      (propagated-inputs
-       `(("go-github-com-oschwald-maxminddb-golang"
-          ,go-github-com-oschwald-maxminddb-golang)
-         ("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (arguments
-       `(#:import-path "github.com/oschwald/geoip2-golang"
-         #:tests? #f)) ; Requires some unpackaged software and test data
-      (synopsis "MaxMind GeoIP2 reader")
-      (description "This packages provides a library for reading MaxMind
+  (package
+    (name "go-github-com-oschwald-geoip2-golang")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/oschwald/geoip2-golang")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0v698bzs8lb59cqpsa9cf4sl8rdsvnnmaravhbfn6g6i511ppclr"))))
+    (build-system go-build-system)
+    (propagated-inputs
+     `(("go-github-com-oschwald-maxminddb-golang"
+        ,go-github-com-oschwald-maxminddb-golang)
+       ("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+    (arguments
+     `(#:import-path "github.com/oschwald/geoip2-golang"
+       #:tests? #f)) ; Requires some unpackaged software and test data
+    (synopsis "MaxMind GeoIP2 reader")
+    (description "This packages provides a library for reading MaxMind
 GeoLite2 and GeoIP2 databases in Go.")
-      (home-page "https://github.com/oschwald/geoip2-golang")
-      (license isc))))
+    (home-page "https://github.com/oschwald/geoip2-golang")
+    (license isc)))
 
 (define-public go-github-com-oschwald-maxminddb-golang
-  (let ((commit "697da8075d2061aa8ed639346443f5d3e8c80b30")
+  (let ((commit "26fe5ace1c706491c2936119e1dc69c1a9c04d7f")
         (revision "0"))
     (package
       (name "go-github-com-oschwald-maxminddb-golang")
-      (version (git-version "0.2.0" revision commit))
+      (version (git-version "1.2.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -621,7 +619,7 @@ GeoLite2 and GeoIP2 databases in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "00kkxzlvra0kcbkl56wp0dp1yw3cmfjqqlwbqy7bq5r34s7iavq0"))))
+                  "1i6d935f3cv9djpjvc2ibh8aps8jqvg454b9pkwg2h98al759ggk"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
@@ -659,8 +657,8 @@ higher-level API for doing so.")
       (license expat))))
 
 (define-public go-github-com-rcrowley-go-metrics
-  (let ((commit "1f30fe9094a513ce4c700b9a54458bbb0c96996c")
-        (revision "0"))
+  (let ((commit "e181e095bae94582363434144c61a9653aff6e50")
+        (revision "1"))
     (package
       (name "go-github-com-rcrowley-go-metrics")
       (version (git-version "0.0.0" revision commit))
@@ -672,7 +670,7 @@ higher-level API for doing so.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1hvbiaq4b6dqgjz6jkkxglfh9gf71zin6qsg508sh0r0ixfavrzj"))))
+                  "1pwkyw801hy7n94skzk6h177zqcil6ayrmb5gs3jdpsfayh8ia5w"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/rcrowley/go-metrics"))
@@ -685,8 +683,8 @@ Metrics library.")
       (license bsd-2))))
 
 (define-public go-github-com-sasha-s-go-deadlock
-  (let ((commit "341000892f3dd25f440e6231e8533eb3688ed7ec")
-        (revision "0"))
+  (let ((commit "03d40e5dbd5488667a13b3c2600b2f7c2886f02f")
+        (revision "1"))
     (package
       (name "go-github-com-sasha-s-go-deadlock")
       (version (git-version "0.1.0" revision commit))
@@ -698,7 +696,7 @@ Metrics library.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1bcdyxwm5qpqynxahwaahbqi7ghgdajmg7b4276pdalkxkxkhsv8"))))
+                  "13p7b7pakd9k1c2k0fs1hfim3c8mivz679977ai6zb01s4aw7gyg"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/sasha-s/go-deadlock"))
@@ -711,8 +709,8 @@ run-time in Go.")
       (license asl2.0))))
 
 (define-public go-github-com-syndtr-goleveldb
-  (let ((commit "549b6d6b1c0419617182954dd77770f2e2685ed5")
-        (revision "1"))
+  (let ((commit "34011bf325bce385408353a30b101fe5e923eb6e")
+        (revision "2"))
     (package
       (name "go-github-com-syndtr-goleveldb")
       (version (git-version "0.0.0" revision commit))
@@ -724,7 +722,7 @@ run-time in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1hs8bsxyjfq9d7000i1jk8bq7p2ab8snz23air13aw5ra2ri36bq"))))
+                  "097ja0vyj6p27zrxha9nhk09fj977xsvhmd3bk2hbyvnbw4znnhd"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-github-com-golang-snappy" ,go-github-com-golang-snappy)))
@@ -739,11 +737,11 @@ database in Go.")
       (license bsd-2))))
 
 (define-public go-github-com-thejerf-suture
-  (let ((commit "0ac47afae95ad5bc5184ed346bc945168e883f5d")
+  (let ((commit "87e298c9891673c9ae76e10c2c9be589127e5f49")
         (revision "0"))
     (package
       (name "go-github-com-thejerf-suture")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "2.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -752,7 +750,7 @@ database in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0f860fkaibnnkmh4q6q9yn3r26sraaj8wx9irwm76cmsp48zcxfy"))))
+                  "0srw0g94z6jplvlsjqsr6wf7885alnbb6h4fhvbg2i7q1ia5ldy2"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/thejerf/suture"))
@@ -921,8 +919,8 @@ libraries are in the same directory.")
     (license (package-license go-golang-org-x-crypto-bcrypt))))
 
 (define-public go-golang-org-x-crypto-bcrypt
-  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
-        (revision "0"))
+  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
+        (revision "1"))
     (package
       (name "go-golang-org-x-crypto-bcrypt")
       (version (git-version "0.0.0" revision commit))
@@ -935,7 +933,7 @@ libraries are in the same directory.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/bcrypt"
@@ -958,8 +956,8 @@ password hashing function.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-crypto-blowfish
-  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
-        (revision "0"))
+  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
+        (revision "1"))
     (package
       (name "go-golang-org-x-crypto-blowfish")
       (version (git-version "0.0.0" revision commit))
@@ -972,7 +970,7 @@ password hashing function.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/blowfish"
@@ -995,8 +993,8 @@ symmetric-key block cipher.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-crypto-pbkdf2
-  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
-        (revision "0"))
+  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
+        (revision "1"))
     (package
       (name "go-golang-org-x-crypto-pbkdf2")
       (version (git-version "0.0.0" revision commit))
@@ -1009,7 +1007,7 @@ symmetric-key block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/pbkdf2"
@@ -1032,8 +1030,8 @@ derivation function.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-crypto-tea
-  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
-        (revision "0"))
+  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
+        (revision "1"))
     (package
       (name "go-golang-org-x-crypto-tea")
       (version (git-version "0.0.0" revision commit))
@@ -1046,7 +1044,7 @@ derivation function.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/tea"
@@ -1069,8 +1067,8 @@ Algorithm (TEA) block cipher.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-crypto-salsa20
-  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
-        (revision "0"))
+  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
+        (revision "1"))
     (package
       (name "go-golang-org-x-crypto-salsa20")
       (version (git-version "0.0.0" revision commit))
@@ -1083,7 +1081,7 @@ Algorithm (TEA) block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/salsa20"
@@ -1106,8 +1104,8 @@ stream cipher.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-crypto-cast5
-  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
-        (revision "0"))
+  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
+        (revision "1"))
     (package
       (name "go-golang-org-x-crypto-cast5")
       (version (git-version "0.0.0" revision commit))
@@ -1120,7 +1118,7 @@ stream cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/cast5"
@@ -1143,8 +1141,8 @@ symmetric-key block cipher.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-crypto-twofish
-  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
-        (revision "0"))
+  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
+        (revision "1"))
     (package
       (name "go-golang-org-x-crypto-twofish")
       (version (git-version "0.0.0" revision commit))
@@ -1157,7 +1155,7 @@ symmetric-key block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/twofish"
@@ -1180,8 +1178,8 @@ symmetric-key block cipher.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-crypto-xtea
-  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
-        (revision "0"))
+  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
+        (revision "1"))
     (package
       (name "go-golang-org-x-crypto-xtea")
       (version (git-version "0.0.0" revision commit))
@@ -1194,7 +1192,7 @@ symmetric-key block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/xtea"
@@ -1246,8 +1244,8 @@ Tiny Encryption Algorithm (XTEA) block cipher.")
     (license (package-license go-golang-org-x-net-ipv4))))
 
 (define-public go-golang-org-x-net-ipv4
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-ipv4")
       (version (git-version "0.0.0" revision commit))
@@ -1259,7 +1257,7 @@ Tiny Encryption Algorithm (XTEA) block cipher.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/ipv4"
@@ -1271,8 +1269,8 @@ socket options for the Internet Protocol version 4.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-net-bpf
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-bpf")
       (version (git-version "0.0.0" revision commit))
@@ -1285,7 +1283,7 @@ socket options for the Internet Protocol version 4.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/bpf"
@@ -1297,8 +1295,8 @@ Packet Filter (BPF) virtual machine.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-net-context
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-context")
       (version (git-version "0.0.0" revision commit))
@@ -1311,7 +1309,7 @@ Packet Filter (BPF) virtual machine.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/context"
@@ -1324,8 +1322,8 @@ request-scoped values across API boundaries and between processes.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-net-internal-iana
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-internal-iana")
       (version (git-version "0.0.0" revision commit))
@@ -1338,7 +1336,7 @@ request-scoped values across API boundaries and between processes.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/internal/iana"
@@ -1350,8 +1348,8 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
       (license bsd-3))))
 
 (define-public go-golang-org-x-net-ipv6
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-ipv6")
       (version (git-version "0.0.0" revision commit))
@@ -1364,7 +1362,7 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/ipv6"
@@ -1376,8 +1374,8 @@ IP-level socket options for the Internet Protocol version 6.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-net-proxy
-  (let ((commit "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d")
-        (revision "0"))
+  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
+        (revision "1"))
     (package
       (name "go-golang-org-x-net-proxy")
       (version (git-version "0.0.0" revision commit))
@@ -1390,7 +1388,7 @@ IP-level socket options for the Internet Protocol version 6.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1ifqw09pj9q23mza1d0im99yy3jp72dvq9dcx2bs1n1m11cjdjzp"))))
+                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/proxy"
@@ -1402,8 +1400,8 @@ for a variety of protocols to proxy network data.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-sys-unix
-  (let ((commit "f3918c30c5c2cb527c0b071a27c35120a6c0719a")
-        (revision "0"))
+  (let ((commit "83801418e1b59fb1880e363299581ee543af32ca")
+        (revision "1"))
     (package
       (name "go-golang-org-x-sys-unix")
       (version (git-version "0.0.0" revision commit))
@@ -1415,11 +1413,19 @@ for a variety of protocols to proxy network data.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "02967mw0nq7hp39bcf8rdbid4jgz2fn6hd1x03mmavvca03scxbh"))))
+                  "0ilykaanvnzb27d42kmbr4i37hcn7hgqbx98z945gy63aa8dskji"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys/unix"
-         #:unpack-path "golang.org/x/sys"))
+         #:unpack-path "golang.org/x/sys"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-tests
+             (lambda _
+               (pk (getcwd))
+               (substitute* "src/golang.org/x/sys/unix/syscall_unix_test.go"
+                 (("/usr/bin") "/tmp"))
+               #t)))))
       (synopsis "Go support for low-level system interaction")
       (description "This package provides @code{unix}, which offers Go support
 for low-level interaction with the operating system.")
@@ -1452,8 +1458,8 @@ for low-level interaction with the operating system.")
     (license (package-license go-golang-org-x-text-transform))))
 
 (define-public go-golang-org-x-text-transform
-  (let ((commit "f4b4367115ec2de254587813edaa901bc1c723a8")
-        (revision "0"))
+  (let ((commit "e19ae1496984b1c655b8044a65c0300a3c878dd3")
+        (revision "1"))
     (package
       (name "go-golang-org-x-text-transform")
       (version (git-version "0.0.0" revision commit))
@@ -1466,7 +1472,7 @@ for low-level interaction with the operating system.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1a5m97y7sdxks02p4swg8ffp8bgr95aaf5fhfw511p7h3xg1dm0d"))))
+                  "1cvnnx8nwx5c7gr6ajs7sldhbqh52n7h6fsa3i21l2lhx6xrsh4w"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/text/transform"
@@ -1480,8 +1486,8 @@ between character sets.")
       (license bsd-3))))
 
 (define-public go-golang-org-x-text-unicode-norm
-  (let ((commit "f4b4367115ec2de254587813edaa901bc1c723a8")
-        (revision "0"))
+  (let ((commit "e19ae1496984b1c655b8044a65c0300a3c878dd3")
+        (revision "1"))
     (package
       (name "go-golang-org-x-text-unicode-norm")
       (version (git-version "0.0.0" revision commit))
@@ -1494,7 +1500,7 @@ between character sets.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1a5m97y7sdxks02p4swg8ffp8bgr95aaf5fhfw511p7h3xg1dm0d"))))
+                  "1cvnnx8nwx5c7gr6ajs7sldhbqh52n7h6fsa3i21l2lhx6xrsh4w"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/text/unicode/norm"
@@ -1556,8 +1562,8 @@ and RFC 5389).")
       (license asl2.0))))
 
 (define-public go-github-com-chmduquesne-rollinghash-adler32
-  (let ((commit "043b8fdecc9816f0011a056f6d92f9a091ab63dd")
-        (revision "0"))
+  (let ((commit "3dc7875a1f890f9bcf0619adb5571fc6f7d516bb")
+        (revision "1"))
     (package
       (name "go-github-com-chmduquesne-rollinghash-adler32")
       (version (git-version "0.0.0" revision commit))
@@ -1570,7 +1576,7 @@ and RFC 5389).")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "0pc87laxgydqv03bdirfv32y9k0bdk2cwjxn28yh42nvay9p6y0k"))))
+            "0frl021qdqcdyk9fccw6x1v2byvh0hls4rsrdjih5jgqpc18kx6y"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/chmduquesne/rollinghash/adler32"
@@ -1581,33 +1587,34 @@ rolling hash.")
       (home-page "https://github.com/chmduquesne/rollinghash")
       (license expat))))
 
-(define-public go-github-com-audriusbutkevicius-kcp-go
-  (let ((commit "8ae5f528469c6ab76110f41eb7a51341b7efb946")
-        (revision "1"))
+(define-public go-github-com-xtaci-kcp-go
+  (let ((commit "86eebd5cadb519b7c9306082c7eb3bcee2c49a7b")
+        (revision "0"))
     (package
-      (name "go-github-com-audriusbutkevicius-kcp-go")
+      (name "go-github-com-xtaci-kcp-go")
       (version (git-version "0.0.0" revision commit))
       (source
         (origin
           (method git-fetch)
           (uri (git-reference
-                 (url "https://github.com/AudriusButkevicius/kcp-go")
+                 (url "https://github.com/xtaci/kcp-go")
                  (commit commit)))
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "1bhg7bfc0r4a7i516xasq3i5ln15lsalm7i53b4nchba6db7mq14"))))
+            "1mdfsya4y04nycfgsk9ghm67zpim5pw78si3f1566xgrv4ghl0ni"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-golang-org-x-net-ipv4" ,go-golang-org-x-net-ipv4)
-         ("go-github-com-templexxx-reedsolomon"
-          ,go-github-com-templexxx-reedsolomon)
+         ("go-github-com-klauspost-reedsolomon"
+          ,go-github-com-klauspost-reedsolomon)
          ("go-github-com-tjfoc-gmsm-sm4" ,go-github-com-tjfoc-gmsm-sm4)
          ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
          ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
          ("go-github-com-templexxx-xor" ,go-github-com-templexxx-xor)))
       (arguments
-       '(#:import-path "github.com/AudriusButkevicius/kcp-go"
+       '(#:import-path "github.com/xtaci/kcp-go"
+         ;; XXX update comment
          ;; 'TestListenerClose' is known to fail. It seems that the test suite
          ;; is not being used upstream:
          ;; https://github.com/AudriusButkevicius/kcp-go/pull/1
@@ -1620,35 +1627,35 @@ over UDP packets.")
       (license expat))))
 
 (define-public go-github-com-templexxx-xor
-  (let ((commit "42f9c041c330b560afb991153bf183c25444bcdc")
-        (revision "0"))
-    (package
-      (name "go-github-com-templexxx-xor")
-      (version (git-version "0.0.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/templexxx/xor.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "0ixzk64nyyzas4lyqxdih824xg5f5vph18vyiibmnflwd61m0i78"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/templexxx/xor"))
-      (synopsis "XOR in Go")
-      (description "This packages provides a Go implementation of XOR.")
-      (home-page "https://github.com/templexxx/xor")
-      (license expat))))
+  (package
+    (name "go-github-com-templexxx-xor")
+    (version "0.1.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/templexxx/xor.git")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0v1maiii0sggmxk9bgpy6pypb40j3hy2328pc4kd5bldkpdb67d5"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/templexxx/xor"))
+    (propagated-inputs
+     `(("go-github-com-templexxx-cpufeat" ,go-github-com-templexxx-cpufeat)))
+    (synopsis "XOR in Go")
+    (description "This packages provides a Go implementation of XOR.")
+    (home-page "https://github.com/templexxx/xor")
+    (license expat)))
 
 (define-public go-github-com-xtaci-smux
-  (let ((commit "0f6b9aaecaaf354357adc7def9239011ad276776")
+  (let ((commit "c3e18246ff2252a6e9d6b529fcbf22ae5c74c007")
         (revision "0"))
     (package
       (name "go-github-com-xtaci-smux")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "1.0.6" revision commit))
       (source
         (origin
           (method git-fetch)
@@ -1658,7 +1665,7 @@ over UDP packets.")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "0wx9j0id2f5iqvyalhm4i80fr9k25klr7qqj8sd9acwp5vfl5fas"))))
+            "1dfmxd9g31idldhq6n7r998gi4jw51ji3xvkjrzypsw2ypbjx1dz"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-github-com-pkg-errors" ,go-github-com-pkg-errors)))
@@ -1672,8 +1679,8 @@ ordering, such as TCP or KCP, and provides stream-oriented multiplexing.")
       (license expat))))
 
 (define-public go-github-com-pkg-errors
-  (let ((commit "ff09b135c25aae272398c51a07235b90a75aa4f0")
-        (revision "0"))
+  (let ((commit "e881fd58d78e04cf6d0de1217f8707c8cc2249bc")
+        (revision "1"))
     (package
       (name "go-github-com-pkg-errors")
       (version (git-version "0.0.0" revision commit))
@@ -1685,7 +1692,7 @@ ordering, such as TCP or KCP, and provides stream-oriented multiplexing.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0pwl6v3hmc22zp32gkyqykl4kg69xk1mlp0vmhgd1f44difd5fvz"))))
+                  "0vfhj598jp6dzy4pbyjdrqxzb5kppw8ggvfh78g80nz11r34xnzs"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/pkg/errors"))
@@ -1696,8 +1703,8 @@ error handling primitives in Go.")
       (license bsd-2))))
 
 (define-public go-golang-org-x-time-rate
-  (let ((commit "f51c12702a4d776e4c1fa9b0fabab841babae631")
-        (revision "0"))
+  (let ((commit "6dc17368e09b0e8634d71cac8168d853e869a0c7")
+        (revision "1"))
     (package
       (name "go-golang-org-x-time-rate")
       (version (git-version "0.0.0" revision commit))
@@ -1709,7 +1716,7 @@ error handling primitives in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "07wc6g2fvafkr6djsscm0jpbpl4135khhb6kpyx1953hi5d1jvyy"))))
+                  "1fx4cf5fpdz00g3c7vxzy92hdcg0vh4yqw00qp5s52j72qixynbk"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/time/rate"
@@ -1795,30 +1802,6 @@ using sh's word-splitting rules.")
       (home-page "https://github.com/kballard/go-shellquote")
       (license expat))))
 
-(define-public go-github-com-templexxx-reedsolomon
-  (package
-    (name "go-github-com-templexxx-reedsolomon")
-    (version "0.1.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/templexxx/reedsolomon.git")
-                     (commit version)))
-              (sha256
-               (base32
-                "05yfi6dq2mwaw6jf9vq2qhpw8vb9y94b3zi6mpfcpma262rxdkg4"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/templexxx/reedsolomon"))
-    (propagated-inputs
-     `(("go-github-com-templexxx-cpufeat"
-        ,go-github-com-templexxx-cpufeat)))
-    (synopsis "Reed-Solomon Erasure Coding in Go")
-    (description "This package provides and implemenation of Reed-Solomon
-Erasure Coding in Go.")
-    (home-page "https://github.com/templexxx/reedsolomon")
-    (license expat)))
-
 (define-public go-github-com-templexxx-cpufeat
   (let ((commit "3794dfbfb04749f896b521032f69383f24c3687e")
         (revision "0"))
@@ -1844,8 +1827,8 @@ processor feature detection used by the Go standard libary.")
       (license bsd-3))))
 
 (define-public go-github-com-tjfoc-gmsm-sm4
-  (let ((commit "0f4904804c0f24f1784e10195a4144fcffa86a85")
-        (revision "0"))
+  (let ((commit "98aa888b79d8de04afe0fccf45ed10594efc858b")
+        (revision "1"))
     (package
       (name "go-github-com-tjfoc-gmsm-sm4")
       (version (git-version "0.0.0" revision commit))
@@ -1857,7 +1840,7 @@ processor feature detection used by the Go standard libary.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1k56gx2ky0c5kf4icafd7zr809lliqzx2mn88lb6d52ljfpf77q5"))))
+                  "1ii4imnz3ims2s23pdv0l4ijzxjsvl82h4yzgfqm5y809ph6pjq9"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/tjfoc/gmsm/sm4"
@@ -1870,8 +1853,8 @@ Authentication and Privacy Infrastructure).")
       (license asl2.0))))
 
 (define-public go-github-com-zillode-notify
-  (let ((commit "54e3093eb7377fd139c4605f475cc78e83610b9d")
-        (revision "0"))
+  (let ((commit "8fff849a2026ce7a59f67ed9747dd9c7adc8bd0b")
+        (revision "1"))
     (package
       (name "go-github-com-zillode-notify")
       (version (git-version "0.0.0" revision commit))
@@ -1883,7 +1866,7 @@ Authentication and Privacy Infrastructure).")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0xmj0bh15hqbzq5qsbi2nb2lihl1pqdh1vwalwmxywnda3w68xj6"))))
+                  "1aazci21y85k1c02dlvdfx926vxb3j4i96fn27s7zxmqjlk7l3ga"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/zillode/notify"))
@@ -1894,3 +1877,53 @@ Authentication and Privacy Infrastructure).")
 notification library in Go.")
       (home-page "https://github.com/zillode/notify")
       (license expat))))
+
+(define-public go-github-com-klauspost-cpuid
+  (let ((commit "eae9b3e628d72774e13bdf024e78c0802f85a5b9")
+        (revision "0"))
+  (package
+    (name "go-github-com-klauspost-cpuid")
+    (version (git-version "1.1" revision commit))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/klauspost/cpuid.git")
+                     (commit commit)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dgxlsxdfhfapmz1qlvc919m3kcbmfqcfpxk78zl9am5zc3zr689"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/klauspost/cpuid"))
+    (synopsis "CPU feature identification library")
+    (description "This package provides @code{cpuid}, a Go library that provides information about the CPU running the current program")
+    (home-page "https://github.com/klauspost/cpuid")
+    (license expat))))
+
+(define-public go-github-com-klauspost-reedsolomon
+  (let ((commit "0b30fa71cc8e4e9010c9aba6d0320e2e5b163b29")
+        (revision "0"))
+  (package
+    (name "go-github-com-klauspost-reedsolomon")
+    (version (git-version "1.6" revision commit))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/klauspost/reedsolomon.git")
+                     (commit commit)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "04jvf65ybsa7w4d7s2n0s174p0q2fl0dqd5hhn2krw66z9i3rc6d"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/klauspost/reedsolomon"))
+    (propagated-inputs
+     `(("go-github-com-klauspost-cpuid"
+        ,go-github-com-klauspost-cpuid)))
+    (synopsis "Reed-Solomon Erasure Coding in Go")
+    (description "This package provides and implemenation of Reed-Solomon
+Erasure Coding in Go.")
+    (home-page "https://github.com/klauspost/reedsolomon")
+    (license expat))))

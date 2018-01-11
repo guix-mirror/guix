@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -155,7 +155,8 @@ MODULES and taken from LINUX."
                       (mapped-devices '())
                       (helper-packages '())
                       qemu-networking?
-                      volatile-root?)
+                      volatile-root?
+                      (on-error 'debug))
   "Return a monadic derivation that builds a raw initrd, with kernel
 modules taken from LINUX.  FILE-SYSTEMS is a list of file-systems to be
 mounted by the initrd, possibly in addition to the root file system specified
@@ -167,8 +168,12 @@ e2fsck/static or other packages needed by the initrd to check root partition.
 
 When QEMU-NETWORKING? is true, set up networking with the standard QEMU
 parameters.
+
 When VOLATILE-ROOT? is true, the root file system is writable but any changes
-to it are lost."
+to it are lost.
+
+ON-ERROR is passed to 'call-with-error-handling'; it determines what happens
+upon error."
   (define device-mapping-commands
     ;; List of gexps to open the mapped devices.
     (map (lambda (md)
@@ -216,7 +221,8 @@ to it are lost."
                       #:linux-modules '#$linux-modules
                       #:linux-module-directory '#$kodir
                       #:qemu-guest-networking? #$qemu-networking?
-                      #:volatile-root? '#$volatile-root?)))
+                      #:volatile-root? '#$volatile-root?
+                      #:on-error '#$on-error)))
    #:name "raw-initrd"))
 
 (define* (file-system-packages file-systems #:key (volatile-root? #f))
@@ -243,7 +249,8 @@ FILE-SYSTEMS."
                       qemu-networking?
                       volatile-root?
                       (virtio? #t)
-                      (extra-modules '()))
+                      (extra-modules '())
+                      (on-error 'debug))
   "Return a monadic derivation that builds a generic initrd, with kernel
 modules taken from LINUX.  FILE-SYSTEMS is a list of file-systems to be
 mounted by the initrd, possibly in addition to the root file system specified
@@ -318,6 +325,7 @@ loaded at boot time in the order in which they appear."
               #:mapped-devices mapped-devices
               #:helper-packages helper-packages
               #:qemu-networking? qemu-networking?
-              #:volatile-root? volatile-root?))
+              #:volatile-root? volatile-root?
+              #:on-error on-error))
 
 ;;; linux-initrd.scm ends here
