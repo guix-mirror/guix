@@ -66,6 +66,7 @@
               (uri (string-append
                     "https://transmission.cachefly.net/transmission-"
                     version ".tar.xz"))
+              (patches (search-patches "transmission-fix-dns-rebinding-vuln.patch"))
               (sha256
                (base32
                 "0pykmhi7pdmzq47glbj8i2im6iarp4wnj4l1pyvsrnba61f0939s"))))
