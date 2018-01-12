@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -150,24 +151,26 @@ refreshed, and more.")
 (define-public colordiff
   (package
     (name "colordiff")
-    (version "1.0.16")
+    (version "1.0.18")
     (source
       (origin
         (method url-fetch)
-        (uri (list (string-append "http://www.colordiff.org/archive/colordiff-"
+        (uri (list (string-append "https://www.colordiff.org/colordiff-"
+                                  version ".tar.gz")
+                   (string-append "http://www.colordiff.org/archive/colordiff-"
                                   version ".tar.gz")))
       (sha256
        (base32
-        "12qkkw13261dra8pg7mzx4r8p9pb0ajb090bib9j1s6hgphwzwga"))))
+        "1q6n60n4b9fnzccxyxv04mxjsql4ddq17vl2c74ijvjdhpcfrkr9"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f
+     `(#:tests? #f                      ; no tests
        #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
                           "INSTALL_DIR=/bin" "MAN_DIR=/share/man/man1")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'build))))
+         (delete 'configure)            ; no configure script
+         (delete 'build))))             ; nothing to build
     (inputs
      `(("perl" ,perl)
        ("xmlto" ,xmlto)))
