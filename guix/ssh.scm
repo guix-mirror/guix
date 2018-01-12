@@ -28,6 +28,7 @@
   #:use-module (ssh session)
   #:use-module (ssh dist)
   #:use-module (ssh dist node)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -235,6 +236,10 @@ be read.  When RECURSIVE? is true, the closure of FILES is exported."
                (write `(invalid-items ,invalid))
                (exit 1))
 
+             ;; TODO: When RECURSIVE? is true, we could send the list of store
+             ;; items in the closure so that the other end can filter out
+             ;; those it already has.
+
              (write '(exporting))                 ;we're ready
              (force-output)
 
@@ -394,7 +399,8 @@ check.")
                          #:key recursive? (log-port (current-error-port)))
   "Retrieve FILES from REMOTE and import them using the 'import-paths' RPC on
 LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
-  (retrieve-files* files remote
+  (retrieve-files* (remove (cut valid-path? local <>) files)
+                   remote
                    #:recursive? recursive?
                    #:log-port log-port
                    #:import (lambda (port)
