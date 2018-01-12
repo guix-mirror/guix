@@ -24,6 +24,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6296,3 +6297,46 @@ features include:
 @item logging with multiple log levels.
 @end enumerate\n")
     (license l:expat)))
+
+(define-public cat-avatar-generator
+  (package
+    (name "cat-avatar-generator")
+    (version "1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://framagit.org/Deevad/cat-avatar-generator.git")
+                     (commit "71c0c662742cafe8afd2d2d50ec84243113e35ad")))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "0s7b5whqsmfa57prbgl66ym551kg6ly0z14h5dgrlx4lqm70y2yw"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (srfi srfi-1)
+                      (srfi srfi-26))
+         (let ((source (assoc-ref %build-inputs "source"))
+               (php-dir (string-append %output "/share/web/" ,name "/")))
+           ;; The cache directory must not be in the store, but in a writable
+           ;; location.  The webserver will give us this location.
+           (copy-recursively source php-dir)
+           (substitute* (string-append php-dir "/cat-avatar-generator.php")
+             (("\\$cachepath = .*")
+              "if(isset($_SERVER['CACHE_DIR']))
+$cachepath = $_SERVER['CACHE_DIR'];
+else
+die('You need to set the CACHE_DIR variable first.');"))))))
+    (home-page "https://framagit.org/Deevad/cat-avatar-generator")
+    (synopsis "Random avatar generator")
+    (description "Cat avatar generator is a generator of cat pictures optimised
+to generate random avatars, or defined avatar from a \"seed\".  This is a
+derivation by David Revoy from the original MonsterID by Andreas Gohr.")
+    ;; expat for the code, CC-BY 4.0 for the artwork
+    (license (list l:expat
+                   l:cc-by4.0))))
