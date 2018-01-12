@@ -551,18 +551,23 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
 
 (define (assert-node-has-guix node name)
   "Bail out if NODE lacks the (guix) module, or if its daemon is not running."
-  (match (node-eval node
-                    '(begin
-                       (use-modules (guix))
-                       (with-store store
-                         (add-text-to-store store "test"
-                                            "Hello, build machine!"))))
-    ((? string? str)
-     (info (G_ "Guix is usable on '~a' (test returned ~s)~%")
-           name str))
-    (x
-     (leave (G_ "failed to use Guix module on '~a' (test returned ~s)~%")
-            name x))))
+  (catch 'node-repl-error
+    (lambda ()
+      (match (node-eval node
+                        '(begin
+                           (use-modules (guix))
+                           (with-store store
+                             (add-text-to-store store "test"
+                                                "Hello, build machine!"))))
+        ((? string? str)
+         (info (G_ "Guix is usable on '~a' (test returned ~s)~%")
+               name str))
+        (x
+         (leave (G_ "failed to use Guix module on '~a' (test returned ~s)~%")
+                name x))))
+    (lambda (key . args)
+      (leave (G_ "remove evaluation on '~a' failed:~{ ~s~}~%")
+             args))))
 
 (define %random-state
   (delay
