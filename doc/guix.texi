@@ -15641,6 +15641,31 @@ A simple services setup for nginx with php can look like this:
                  %base-services))
 @end example
 
+@cindex cat-avatar-generator
+The cat avatar generator is a simple service to demonstrate the use of php-fpm
+in @code{Nginx}.  It is used to generate cat avatar from a seed, for instance
+the hash of a user's email address.
+
+@deffn {Scheme Procedure} cat-avatar-generator-serice @
+       [#:cache-dir "/var/cache/cat-avatar-generator"] @
+       [#:package cat-avatar-generator] @
+       [#:configuration (nginx-server-configuration)]
+Returns an nginx-server-configuration that inherits @code{configuration}.  It
+extends the nginx configuration to add a server block that serves @code{package},
+a version of cat-avatar-generator.  During execution, cat-avatar-generator will
+be able to use @code{cache-dir} as its cache directory.
+@end deffn
+
+A simple setup for cat-avatar-generator can look like this:
+@example
+(services (cons* (cat-avatar-generator-service
+                  #:configuration
+                  (nginx-server-configuration
+                    (server-name '("example.com"))))
+                 ...
+                 %base-services))
+@end example
+
 @node Certificate Services
 @subsubsection Certificate Services
 
