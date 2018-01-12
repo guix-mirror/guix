@@ -358,25 +358,18 @@ MACHINE."
     (parameterize ((current-build-output-port (build-log-port)))
       (build-derivations store (list drv))))
 
-  (retrieve-files* outputs store)
+  (retrieve-files* outputs store
+
+                   ;; We cannot use the 'import-paths' RPC here because we
+                   ;; already hold the locks for FILES.
+                   #:import
+                   (lambda (port)
+                     (restore-file-set port
+                                       #:log-port (current-error-port)
+                                       #:lock? #f)))
+
   (format (current-error-port) "done with offloaded '~a'~%"
           (derivation-file-name drv)))
-
-(define (retrieve-files* files remote)
-  "Retrieve FILES from REMOTE and import them using 'restore-file-set'."
-  (let-values (((port count)
-                (file-retrieval-port files remote)))
-    (format #t (N_ "retrieving ~a store item from '~a'...~%"
-                   "retrieving ~a store items from '~a'...~%" count)
-            count (remote-store-host remote))
-
-    ;; We cannot use the 'import-paths' RPC here because we already
-    ;; hold the locks for FILES.
-    (let ((result (restore-file-set port
-                                    #:log-port (current-error-port)
-                                    #:lock? #f)))
-      (close-port port)
-      result)))
 
 
 ;;;

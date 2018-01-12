@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +29,7 @@
   #:use-module (ssh dist)
   #:use-module (ssh dist node)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
@@ -38,9 +39,8 @@
             connect-to-remote-daemon
             send-files
             retrieve-files
-            remote-store-host
-
-            file-retrieval-port))
+            retrieve-files*
+            remote-store-host))
 
 ;;; Commentary:
 ;;;
@@ -339,10 +339,11 @@ to the length of FILES.)"
              (&message
               (message (format #f fmt args ...))))))))
 
-(define* (retrieve-files local files remote
-                         #:key recursive? (log-port (current-error-port)))
-  "Retrieve FILES from REMOTE and import them using the 'import-paths' RPC on
-LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
+(define* (retrieve-files* files remote
+                          #:key recursive? (log-port (current-error-port))
+                          (import (const #f)))
+  "Pass IMPORT an input port from which to read the sequence of FILES coming
+from REMOTE.  When RECURSIVE? is true, retrieve the closure of FILES."
   (let-values (((port count)
                 (file-retrieval-port files remote
                                      #:recursive? recursive?)))
@@ -352,9 +353,12 @@ LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
                       "retrieving ~a store items from '~a'...~%" count)
                count (remote-store-host remote))
 
-       (let ((result (import-paths local port)))
-         (close-port port)
-         result))
+       (dynamic-wind
+         (const #t)
+         (lambda ()
+           (import port))
+         (lambda ()
+           (close-port port))))
       ((? eof-object?)
        (raise-error (G_ "failed to start Guile on remote host '~A': exit code ~A")
                     (remote-store-host remote)
@@ -385,5 +389,15 @@ check.")
       (_
        (raise-error (G_ "failed to retrieve store items from '~a'")
                     (remote-store-host remote))))))
+
+(define* (retrieve-files local files remote
+                         #:key recursive? (log-port (current-error-port)))
+  "Retrieve FILES from REMOTE and import them using the 'import-paths' RPC on
+LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
+  (retrieve-files* files remote
+                   #:recursive? recursive?
+                   #:log-port log-port
+                   #:import (lambda (port)
+                              (import-paths local port))))
 
 ;;; ssh.scm ends here
