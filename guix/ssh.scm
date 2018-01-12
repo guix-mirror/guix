@@ -41,7 +41,10 @@
             send-files
             retrieve-files
             retrieve-files*
-            remote-store-host))
+            remote-store-host
+
+            report-guile-error
+            report-module-error))
 
 ;;; Commentary:
 ;;;
@@ -365,21 +368,9 @@ from REMOTE.  When RECURSIVE? is true, retrieve the closure of FILES."
          (lambda ()
            (close-port port))))
       ((? eof-object?)
-       (raise-error (G_ "failed to start Guile on remote host '~A': exit code ~A")
-                    (remote-store-host remote)
-                    (channel-get-exit-status port)
-                    (=> (G_ "Make sure @command{guile} can be found in
-@code{$PATH} on the remote host.  Run @command{ssh ~A guile --version} to
-check.")
-                        (remote-store-host remote))))
+       (report-guile-error (remote-store-host remote)))
       (('module-error . _)
-       ;; TRANSLATORS: Leave "Guile" untranslated.
-       (raise-error (G_ "Guile modules not found on remote host '~A'")
-                    (remote-store-host remote)
-                    (=> (G_ "Make sure @code{GUILE_LOAD_PATH} includes Guix'
-own module directory.  Run @command{ssh ~A env | grep GUILE_LOAD_PATH} to
-check.")
-                        (remote-store-host remote))))
+       (report-module-error (remote-store-host remote)))
       (('connection-error file code . _)
        (raise-error (G_ "failed to connect to '~A' on remote host '~A': ~a")
                     file (remote-store-host remote) (strerror code)))
@@ -405,5 +396,26 @@ LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
                    #:log-port log-port
                    #:import (lambda (port)
                               (import-paths local port))))
+
+
+;;;
+;;; Error reporting.
+;;;
+
+(define (report-guile-error host)
+  (raise-error (G_ "failed to start Guile on remote host '~A'") host
+               (=> (G_ "Make sure @command{guile} can be found in
+@code{$PATH} on the remote host.  Run @command{ssh ~A guile --version} to
+check.")
+                   host)))
+
+(define (report-module-error host)
+  "Report an error about missing Guix modules on HOST."
+  ;; TRANSLATORS: Leave "Guile" untranslated.
+  (raise-error (G_ "Guile modules not found on remote host '~A'") host
+               (=> (G_ "Make sure @code{GUILE_LOAD_PATH} includes Guix'
+own module directory.  Run @command{ssh ~A env | grep GUILE_LOAD_PATH} to
+check.")
+                   host)))
 
 ;;; ssh.scm ends here

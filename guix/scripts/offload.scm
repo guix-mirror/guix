@@ -542,8 +542,7 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
   "Bail out if NODE is not running Guile."
   (match (node-guile-version node)
     (#f
-     (leave (G_ "Guile could not be started on '~a'~%")
-            name))
+     (report-guile-error name))
     ((? string? version)
      ;; Note: The version string already contains the word "Guile".
      (info (G_ "'~a' is running ~a~%")
@@ -556,6 +555,17 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
       (match (node-eval node
                         '(begin
                            (use-modules (guix))
+                           (and add-text-to-store 'alright)))
+        ('alright #t)
+        (_ (report-module-error name))))
+    (lambda (key . args)
+      (report-module-error name)))
+
+  (catch 'node-repl-error
+    (lambda ()
+      (match (node-eval node
+                        '(begin
+                           (use-modules (guix))
                            (with-store store
                              (add-text-to-store store "test"
                                                 "Hello, build machine!"))))
@@ -563,7 +573,7 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
          (info (G_ "Guix is usable on '~a' (test returned ~s)~%")
                name str))
         (x
-         (leave (G_ "failed to use Guix module on '~a' (test returned ~s)~%")
+         (leave (G_ "failed to talk to guix-daemon on '~a' (test returned ~s)~%")
                 name x))))
     (lambda (key . args)
       (leave (G_ "remove evaluation on '~a' failed:~{ ~s~}~%")
