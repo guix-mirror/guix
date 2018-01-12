@@ -1,0 +1,16 @@
+Remove non-UTF-8 character (this is a NO-BREAK SPACE character, encoded in
+ISO-8859-1) to fix build failure with 'glib-mkenums' in GLib 2.54.2+.
+
+Patch from <https://github.com/macports/macports-ports/commit/1f3efc8e65cc060d1701407bd1e56e62e6bd9c55>.
+
+--- a/libgnome/gnome-config.h	2009-04-23 04:29:13.000000000 -0500
++++ b/libgnome/gnome-config.h	2017-10-04 02:17:22.000000000 -0500
+@@ -270,7 +270,7 @@ void gnome_config_clean_key_ (const char
+ #define gnome_config_private_clean_key(path) \
+ 	(gnome_config_clean_key_((path),TRUE))
+ 
+-/* returns the true filename of the config file */
++/* returns the true filename of the config file */
+ #define gnome_config_get_real_path(path) \
+ 	(g_build_filename (gnome_user_dir_get(),(path),NULL))
+ #define gnome_config_private_get_real_path(path) \
