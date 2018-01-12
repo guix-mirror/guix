@@ -106,42 +106,36 @@ Throw an error on failure."
     ;; hack.
     `(begin
        (use-modules (ice-9 match) (rnrs io ports)
-                    (rnrs bytevectors) (system foreign))
-
-       (define read!
-         ;; XXX: We would use 'get-bytevector-some' but it always returns a
-         ;; single byte in Guile <= 2.2.3---see <https://bugs.gnu.org/30066>.
-         ;; This procedure works around it.
-         (let ((proc (pointer->procedure int
-                                         (dynamic-func "read" (dynamic-link))
-                                         (list int '* size_t))))
-           (lambda (port bv)
-             (proc (fileno port) (bytevector->pointer bv)
-                   (bytevector-length bv)))))
+                    (rnrs bytevectors))
 
        (let ((sock   (socket AF_UNIX SOCK_STREAM 0))
              (stdin  (current-input-port))
-             (stdout (current-output-port))
-             (buffer (make-bytevector 65536)))
-         (setvbuf stdin _IONBF)
+             (stdout (current-output-port)))
          (setvbuf stdout _IONBF)
+
+         ;; Use buffered ports so that 'get-bytevector-some' returns up to the
+         ;; whole buffer like read(2) would--see <https://bugs.gnu.org/30066>.
+         (setvbuf stdin _IOFBF 65536)
+         (setvbuf sock _IOFBF 65536)
+
          (connect sock AF_UNIX ,socket-name)
 
          (let loop ()
            (match (select (list stdin sock) '() '())
              ((reads () ())
               (when (memq stdin reads)
-                (match (read! stdin buffer)
-                  ((? zero?)                      ;EOF
+                (match (get-bytevector-some stdin)
+                  ((? eof-object?)
                    (primitive-exit 0))
-                  (count
-                   (put-bytevector sock buffer 0 count))))
+                  (bv
+                   (put-bytevector sock bv)
+                   (force-output sock))))
               (when (memq sock reads)
-                (match (read! sock buffer)
-                  ((? zero?)                      ;EOF
+                (match (get-bytevector-some sock)
+                  ((? eof-object?)
                    (primitive-exit 0))
-                  (count
-                   (put-bytevector stdout buffer 0 count))))
+                  (bv
+                   (put-bytevector stdout bv))))
               (loop))
              (_
               (primitive-exit 1)))))))
