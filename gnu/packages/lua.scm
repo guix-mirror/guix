@@ -290,7 +290,7 @@ secure session between the peers.")
 (define-public lua-lgi
   (package
     (name "lua-lgi")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
       (origin
         (method url-fetch)
@@ -300,7 +300,7 @@ secure session between the peers.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "1fmgdl5y4ph3yc6ycg865s3vai1rjkyda61cgqxk6zd13hmznw0c"))))
+            "0kwcaj3ahi9gxfyp0lr5zgr6vi1mgsg9sz0980x0nwxlh9a11i6g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
@@ -351,7 +351,8 @@ secure session between the peers.")
        ("libffi" ,libffi)
        ("xorg-server", xorg-server)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("dbus" ,dbus)))                          ;tests use 'dbus-run-session'
     (home-page "https://github.com/pavouk/lgi/")
     (synopsis "Lua bridge to GObject based libraries")
     (description
