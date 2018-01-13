@@ -2427,7 +2427,12 @@ many codecs and formats supported by libmediainfo.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0xf3vynxqpxpd762zni0jkblnjlgbqxjx99m83m7gqx6zriph271"))))
+                "0xf3vynxqpxpd762zni0jkblnjlgbqxjx99m83m7gqx6zriph271"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; As of glibc 2.26, <xlocale.h> no longer is.
+               '(substitute* "liveMedia/include/Locale.hh"
+                  (("xlocale\\.h") "locale.h")))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
