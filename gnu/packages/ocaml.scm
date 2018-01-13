@@ -9,6 +9,7 @@
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -918,7 +919,7 @@ compilers that can directly deal with packages.")
                (let ((out (assoc-ref outputs "out")))
                  (zero? (system* "make" "install"
                                  (string-append "OCAML_CORE_STDLIB="
-                                                out))))))))))))
+                                                out "/lib/ocaml/site-lib"))))))))))))
 
 (define-public ocaml4.01-findlib
   (package
