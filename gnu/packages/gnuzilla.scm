@@ -268,6 +268,10 @@ in C/C++.")
                                (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib"))
+       ;; Use fixed timestamps for reproducibility.
+       #:make-flags '("SH_DATE='1970-01-01 00:00:01'"
+                      ;; This is epoch 1 in microseconds.
+                      "SH_NOW=100000")
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'chdir
                     (lambda _ (chdir "nspr") #t)))))
