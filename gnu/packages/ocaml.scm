@@ -851,15 +851,14 @@ to the other.")
 (define-public ocaml-findlib
   (package
     (name "ocaml-findlib")
-    (version "1.6.1")
+    (version "1.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.camlcity.org/download/"
                                   "findlib" "-" version ".tar.gz"))
               (sha256
                (base32
-                "02abg1lsnwvjg3igdyb8qjgr5kv1nbwl4gaf8mdinzfii5p82721"))
-              (patches (search-patches "ocaml-findlib-make-install.patch"))))
+                "12xx8si1qv3xz90qsrpazjjk4lc1989fzm97rsmc4diwla7n15ni"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)
@@ -881,6 +880,12 @@ to the other.")
                         "-mandir" (string-append out "/share/man")
                         "-sitelib" (string-append out "/lib/ocaml/site-lib")
                         "-with-toolbox"))))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (zero? (system* "make" "install"
+                                        (string-append "OCAML_CORE_STDLIB="
+                                                       out "/lib/ocaml/site-lib"))))))
                   (add-after 'install 'remove-camlp4
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
@@ -900,28 +905,6 @@ allows the user to enter queries on the command-line.  In order to simplify
 compilation and linkage, there are new frontends of the various OCaml
 compilers that can directly deal with packages.")
     (license license:x11)))
-
-(define-public ocaml-findlib-1.7.3
-  (package
-    (inherit ocaml-findlib)
-    (version "1.7.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.camlcity.org/download/"
-                                  "findlib" "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "12xx8si1qv3xz90qsrpazjjk4lc1989fzm97rsmc4diwla7n15ni"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments ocaml-findlib)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (zero? (system* "make" "install"
-                                 (string-append "OCAML_CORE_STDLIB="
-                                                out "/lib/ocaml/site-lib"))))))))))))
 
 (define-public ocaml4.01-findlib
   (package
@@ -3729,7 +3712,7 @@ instead of bindings to a C library.")
        ("cppo" ,ocaml-cppo)
        ("jbuilder" ,ocaml-jbuilder)))
     (propagated-inputs
-     `(("findlib" ,ocaml-findlib-1.7.3)
+     `(("ocaml-findlib" ,ocaml-findlib)
        ("lambda-term" ,ocaml-lambda-term)
        ("lwt" ,ocaml-lwt)
        ("react" ,ocaml-react)
@@ -3764,8 +3747,7 @@ sensitive completion, colors, and more.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("findlib" ,ocaml-findlib-1.7.3)
-       ("topkg" ,ocaml-topkg)
+     `(("topkg" ,ocaml-topkg)
        ("opam", opam)))
     (synopsis "Various signed and unsigned integer types for OCaml")
     (description "The ocaml-integers library provides a number of 8-, 16-, 32-
@@ -3787,8 +3769,7 @@ long and size_t whose sizes depend on the host platform.")
                "17w0pr5k0zjcjns4y9n36rjpfl35zhvp3h8ggqs9lz12qhshdk2m"))))
    (build-system ocaml-build-system)
    (arguments
-    `(#:findlib ,ocaml-findlib-1.7.3
-      #:make-flags
+    `(#:make-flags
       (list (string-append "INSTALL_HEADERS = $(wildcard $($(PROJECT).dir)/*.h)"))
       #:phases
       (modify-phases %standard-phases
@@ -3828,8 +3809,7 @@ without writing or generating any C!")
                "167b7x1j21mkviq8dbaa0nmk4rps2ilvzwx02igsc2706784z72f"))))
    (build-system ocaml-build-system)
    (arguments
-    `(#:findlib ,ocaml-findlib-1.7.3
-      #:build-flags (list "build" "--tests" "true")
+    `(#:build-flags (list "build" "--tests" "true")
       #:phases
       (modify-phases %standard-phases
         (delete 'configure))))
@@ -3868,8 +3848,7 @@ OCaml projects that contain C stubs.")
      `(("opam" ,opam)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("findlib" ,ocaml-findlib-1.7.3)
-       ("topkg" ,ocaml-topkg)
+     `(("topkg" ,ocaml-topkg)
        ("result" ,ocaml-result)
        ("sdl2" ,sdl2)
        ("integers" ,ocaml-integers)
