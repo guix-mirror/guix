@@ -3740,6 +3740,37 @@ terminal or in Emacs.  It supports line editing, history, real-time and context
 sensitive completion, colors, and more.")
     (license license:bsd-3)))
 
+(define-public ocaml-integers
+  (package
+    (name "ocaml-integers")
+    (version "0.2.2")
+    (home-page "https://github.com/ocamllabs/ocaml-integers")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page
+                                  "/releases/download/v0.2.2/integers-"
+                                  version ".tbz"))
+              (file-name (string-append name "-" version ".tbz"))
+              (sha256
+               (base32
+                "08b1ljw88ny3l0mdq6xmffjk8anfc77igryva5jz1p6f4f746ywk"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:build-flags (list "build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("findlib" ,ocaml-findlib-1.7.3)
+       ("topkg" ,ocaml-topkg)
+       ("opam", opam)))
+    (synopsis "Various signed and unsigned integer types for OCaml")
+    (description "The ocaml-integers library provides a number of 8-, 16-, 32-
+and 64-bit signed and unsigned integer types, together with aliases such as
+long and size_t whose sizes depend on the host platform.")
+    (license license:expat)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
