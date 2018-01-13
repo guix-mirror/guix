@@ -33,7 +33,6 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
-  #:use-module (gnu packages gcc) ; GCC@5 for MPD >= 0.20
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
