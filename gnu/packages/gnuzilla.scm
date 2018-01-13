@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -414,6 +414,7 @@ security standards.")
       (patches
        (list
         (search-patch "icecat-avoid-bundled-libraries.patch")
+        (search-patch "icecat-glibc-2.26.patch")
         (mozilla-patch "icecat-bug-546387.patch"         "d13e3fefb76e" "1b760r0bg2ydbl585wlmajljh1nlisrwxvjws5b28a3sgjy01i6k")
         (mozilla-patch "icecat-bug-1350152.patch"        "f822bda79c28" "1wf56169ca874shr6r7qx40s17h2gwj7ngmpyylrpmd1c6hipvsj")
         (mozilla-patch "icecat-bug-1388166.patch"        "fbb0bdb191d5" "1y8wpj38vw1dd6f375s9i0mrk9bd8z8gz5g70p4qynfllpkn072d")
