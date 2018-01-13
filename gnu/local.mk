@@ -862,6 +862,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libxml2-CVE-2017-7376.patch		\
   %D%/packages/patches/libxml2-CVE-2017-9047+CVE-2017-9048.patch	\
   %D%/packages/patches/libxml2-CVE-2017-9049+CVE-2017-9050.patch	\
+  %D%/packages/patches/libxml2-CVE-2017-15412.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxslt-CVE-2016-4738.patch		\
   %D%/packages/patches/libxslt-CVE-2017-5029.patch		\

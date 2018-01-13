@@ -155,7 +155,8 @@ project (but it is usable outside of the Gnome platform).")
                         "libxml2-CVE-2017-7375.patch"
                         "libxml2-CVE-2017-7376.patch"
                         "libxml2-CVE-2017-9047+CVE-2017-9048.patch"
-                        "libxml2-CVE-2017-9049+CVE-2017-9050.patch")))))))
+                        "libxml2-CVE-2017-9049+CVE-2017-9050.patch"
+                        "libxml2-CVE-2017-15412.patch")))))))
 
 (define-public python-libxml2
   (package (inherit libxml2)
