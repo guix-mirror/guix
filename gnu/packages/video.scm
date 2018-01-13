@@ -2419,7 +2419,7 @@ many codecs and formats supported by libmediainfo.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2017.06.04")
+    (version "2017.10.28")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2427,7 +2427,7 @@ many codecs and formats supported by libmediainfo.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0xf3vynxqpxpd762zni0jkblnjlgbqxjx99m83m7gqx6zriph271"))
+                "0f5kxpayqn3yhabqrd2cqlc74i6x2xr01jfkank1lcilxnfyrsnq"))
               (modules '((guix build utils)))
               (snippet
                ;; As of glibc 2.26, <xlocale.h> no longer is.
