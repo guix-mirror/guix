@@ -710,7 +710,7 @@ writing of compressed data created with the zlib and bzip2 libraries.")
 (define-public lz4
   (package
     (name "lz4")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
@@ -718,15 +718,14 @@ writing of compressed data created with the zlib and bzip2 libraries.")
                            "v" version ".tar.gz"))
        (sha256
         (base32
-         "1xnckwwah74gl98gylf1b00vk4km1d8sgd8865h07ccvgbm8591c"))
+         "0jdknxz66gak4w7j7b8n18xf28xw3yb1v6npsl4fgiiwnq0fjbgw"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs `(("valgrind" ,valgrind)))   ; for tests
     (arguments
      `(#:test-target "test"
-       #:parallel-tests? #f ; tests fail if run in parallel
        #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+                          (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))        ; no configure script
     (home-page "http://www.lz4.org")
