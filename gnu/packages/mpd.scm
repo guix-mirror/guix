@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
@@ -55,7 +57,7 @@
 (define-public libmpdclient
   (package
     (name "libmpdclient")
-    (version "2.11")
+    (version "2.13")
     (source (origin
               (method url-fetch)
               (uri
@@ -64,9 +66,20 @@
                               "/libmpdclient-" version ".tar.xz"))
               (sha256
                (base32
-                "1xms8q44g6zc7sc212qpcihq6ch3pmph3i1m9hzymmy0jcw6kzhm"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("doxygen" ,doxygen)))
+                "0pflbv2jzik7yxnacci1iqs0awy1i5ipwn67xk0hg9r0pi9bs5ai"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; For building HTML documentation.
+       ("doxygen" ,doxygen)
+
+       ;; For tests.
+       ("check" ,check)))
+    (arguments
+     `(#:configure-flags
+       (list "-Ddocumentation=true"
+             "-Dtest=true")))
     (synopsis "Music Player Daemon client library")
     (description "A stable, documented, asynchronous API library for
 interfacing MPD in the C, C++ & Objective C languages.")
