@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,7 +46,7 @@
 (define-public flashrom
   (package
     (name "flashrom")
-    (version "0.9.9")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -53,7 +54,7 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0i9wg1lyfg99bld7d00zqjm9f0lk6m0q3h3n9c195c9yysq5ccfb"))))
+                "0r7fkpfc8w51n8ffbhclj4wa3kwrk0ijv1acwpw5myx5bchzl0ip"))))
     (build-system gnu-build-system)
     (inputs `(("dmidecode" ,dmidecode)
               ("pciutils" ,pciutils)
@@ -64,10 +65,10 @@
      '(#:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output)
                           "CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no")
-       #:tests? #f   ; no 'check' target
+       #:tests? #f                      ; no 'check' target
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (add-before 'build 'patch-exec-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "dmi.c"
