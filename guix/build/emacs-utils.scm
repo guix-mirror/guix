@@ -58,14 +58,9 @@
                   (update-directory-autoloads ,directory))))
     (emacs-batch-eval expr)))
 
-(define* (emacs-byte-compile-directory dir #:optional (dependency-dirs '()))
-  "Byte compile all files in DIR and its sub-directories.  Before compiling
-the files, add DIR and all directories in DEPENDENCY-DIRS to 'load-path'."
-  (let ((expr `(progn
-                (add-to-list 'load-path ,dir)
-                (when ',dependency-dirs
-                  (setq load-path (append ',dependency-dirs load-path)))
-                (byte-recompile-directory (file-name-as-directory ,dir) 0))))
+(define* (emacs-byte-compile-directory dir)
+  "Byte compile all files in DIR and its sub-directories."
+  (let ((expr `(byte-recompile-directory (file-name-as-directory ,dir) 0)))
     (emacs-batch-eval expr)))
 
 (define-syntax emacs-substitute-sexps
