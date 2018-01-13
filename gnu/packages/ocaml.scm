@@ -53,6 +53,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
@@ -3842,6 +3843,41 @@ without writing or generating any C!")
 repeat over, over, over and over again if you are using ocamlbuild to build
 OCaml projects that contain C stubs.")
    (license license:isc)))
+
+(define-public ocaml-tsdl
+  (package
+    (name "ocaml-tsdl")
+    (version "0.9.1")
+    (home-page "http://erratique.ch/software/tsdl")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/releases/tsdl-"
+                                  version ".tbz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08bb97fhvz829fb0sgjn2p20mp7b04v98zy2qxpk2w390a6c4b34"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:build-flags '("build")
+       #:tests? #f; tests require a display device
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("opam" ,opam)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("findlib" ,ocaml-findlib-1.7.3)
+       ("topkg" ,ocaml-topkg)
+       ("result" ,ocaml-result)
+       ("sdl2" ,sdl2)
+       ("integers" ,ocaml-integers)
+       ("ctypes" ,ocaml-ctypes)))
+    (synopsis "Thin bindings to SDL for OCaml")
+    (description "Tsdl is an OCaml library providing thin bindings to the
+cross-platform SDL C library.")
+    (license license:isc)))
 
 (define-public coq-flocq
   (package
