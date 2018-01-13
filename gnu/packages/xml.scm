@@ -159,7 +159,7 @@ project (but it is usable outside of the Gnome platform).")
                         "libxml2-CVE-2017-15412.patch")))))))
 
 (define-public python-libxml2
-  (package (inherit libxml2)
+  (package/inherit libxml2
     (name "python-libxml2")
     (build-system python-build-system)
     (arguments
