@@ -83,7 +83,7 @@
     (synopsis "Music Player Daemon client library")
     (description "A stable, documented, asynchronous API library for
 interfacing MPD in the C, C++ & Objective C languages.")
-    (home-page "http://www.musicpd.org/libs/libmpdclient/")
+    (home-page "https://www.musicpd.org/libs/libmpdclient/")
     (license license:bsd-3)))
 
 (define-public mpd
@@ -157,7 +157,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 server-side application for playing music.  Through plugins and libraries it
 can play a variety of sound files while being controlled by its network
 protocol.")
-    (home-page "http://www.musicpd.org/")
+    (home-page "https://www.musicpd.org/")
     (license license:gpl2)))
 
 (define-public mpd-mpc
@@ -179,7 +179,7 @@ protocol.")
     (synopsis "Music Player Daemon client")
     (description "MPC is a minimalist command line interface to MPD, the music
 player daemon.")
-    (home-page "http://www.musicpd.org/clients/mpc/")
+    (home-page "https://www.musicpd.org/clients/mpc/")
     (license license:gpl2)))
 
 (define-public ncmpc
@@ -203,7 +203,7 @@ player daemon.")
     (synopsis "Curses Music Player Daemon client")
     (description "ncmpc is a fully featured MPD client, which runs in a
 terminal using ncurses.")
-    (home-page "http://www.musicpd.org/clients/ncmpc/")
+    (home-page "https://www.musicpd.org/clients/ncmpc/")
     (license license:gpl2)))
 
 (define-public ncmpcpp
