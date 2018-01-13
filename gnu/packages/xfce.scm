@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -673,7 +674,7 @@ devices and folders.")
 (define-public xfce4-terminal
   (package
     (name "xfce4-terminal")
-    (version "0.8.3")
+    (version "0.8.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/" name "/"
@@ -681,7 +682,7 @@ devices and folders.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1w8jvi9nw00aki825mm8f7wpkhxxicw4f6j9v4ka71z8p2ry9rj0"))))
+                "1mw1v20a9r8figl5m93jfp16x64bfj8yjmy5s5kbdw501425camw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
