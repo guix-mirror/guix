@@ -43,6 +43,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
@@ -3770,6 +3771,45 @@ sensitive completion, colors, and more.")
 and 64-bit signed and unsigned integer types, together with aliases such as
 long and size_t whose sizes depend on the host platform.")
     (license license:expat)))
+
+(define-public ocaml-ctypes
+  (package
+   (name "ocaml-ctypes")
+   (version "0.13.1")
+   (home-page "https://github.com/ocamllabs/ocaml-ctypes")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append home-page "/archive/" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "17w0pr5k0zjcjns4y9n36rjpfl35zhvp3h8ggqs9lz12qhshdk2m"))))
+   (build-system ocaml-build-system)
+   (arguments
+    `(#:findlib ,ocaml-findlib-1.7.3
+      #:make-flags
+      (list (string-append "INSTALL_HEADERS = $(wildcard $($(PROJECT).dir)/*.h)"))
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (inputs
+    `(("libffi" ,libffi)
+      ("ounit" ,ocaml-ounit)
+      ("integers" ,ocaml-integers)
+      ("lwt" ,ocaml-lwt)
+      ("topkg" ,ocaml-topkg)
+      ("opam", opam)))
+   (synopsis "Library for binding to C libraries using pure OCaml")
+   (description "Ctypes is a library for binding to C libraries using pure
+OCaml.  The primary aim is to make writing C extensions as straightforward as
+possible.  The core of ctypes is a set of combinators for describing the
+structure of C types -- numeric types, arrays, pointers, structs, unions and
+functions.  You can use these combinators to describe the types of the
+functions that you want to call, then bind directly to those functions -- all
+without writing or generating any C!")
+   (license license:expat)))
 
 (define-public coq-flocq
   (package
