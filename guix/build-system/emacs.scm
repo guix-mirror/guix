@@ -82,7 +82,8 @@
 
 (define* (emacs-build store name inputs
                       #:key source
-                      (tests? #t)
+                      (tests? #f)
+                      (parallel-tests? #t)
                       (test-target "test")
                       (configure-flags ''())
                       (phases '(@ (guix build emacs-build-system)

@@ -246,7 +246,6 @@ second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
     (add-after 'set-paths 'set-emacs-load-path set-emacs-load-path)
     (replace 'unpack unpack)
     (delete 'configure)
-    (delete 'check)
     ;; Move the build phase after install: the .el files are byte compiled
     ;; directly in the store.
     (delete 'build)
