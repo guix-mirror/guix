@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -650,7 +651,7 @@ and visualizations.")
 (define-public gl2ps
   (package
     (name "gl2ps")
-    (version "1.3.9")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
@@ -659,7 +660,7 @@ and visualizations.")
              version ".tgz"))
        (sha256
         (base32
-         "0h1nrhmkc4qjw2ninwpj2zbgwhc0qg6pdhpsibbvry0d2bzhns4a"))))
+         "1qpidkz8x3bxqf69hlhyz1m0jmfi9kq24fxsp7rq6wfqzinmxjq3"))))
     (build-system cmake-build-system)
     (inputs
      `(("libpng" ,libpng)
@@ -675,6 +676,7 @@ capable of handling intersecting and stretched polygons, as well as
 non-manifold objects.  GL2PS provides many features including advanced
 smooth shading and text rendering, culling of invisible primitives and
 mixed vector/bitmap output.")
+    ;; GL2PS is dual-licenced and can be used under the terms of either.
     (license (list license:lgpl2.0+
                    (license:fsf-free "http://www.geuz.org/gl2ps/COPYING.GL2PS"
                                      "GPL-incompatible copyleft license")))))
