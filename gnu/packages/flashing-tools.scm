@@ -76,7 +76,7 @@
                         (string-append (assoc-ref inputs "dmidecode")
                                        "/sbin/dmidecode"))))
              #t)))))
-    (home-page "http://flashrom.org/")
+    (home-page "https://flashrom.org/")
     (synopsis "Identify, read, write, erase, and verify ROM/flash chips")
     (description
      "flashrom is a utility for identifying, reading, writing,
