@@ -3811,6 +3811,38 @@ functions that you want to call, then bind directly to those functions -- all
 without writing or generating any C!")
    (license license:expat)))
 
+(define-public ocaml-ocb-stubblr
+  (package
+   (name "ocaml-ocb-stubblr")
+   (version "0.1.1")
+   (home-page "https://github.com/pqwy/ocb-stubblr")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   home-page "/releases/download/v0.1.1/ocb-stubblr-"
+                   version ".tbz"))
+             (file-name (string-append name "-" version ".tbz"))
+             (sha256
+              (base32
+               "167b7x1j21mkviq8dbaa0nmk4rps2ilvzwx02igsc2706784z72f"))))
+   (build-system ocaml-build-system)
+   (arguments
+    `(#:findlib ,ocaml-findlib-1.7.3
+      #:build-flags (list "build" "--tests" "true")
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))
+   (inputs
+    `(("topkg" ,ocaml-topkg)
+      ("opam", opam)))
+   (native-inputs
+    `(("astring" ,ocaml-astring)))
+   (synopsis "OCamlbuild plugin for C stubs")
+   (description "Ocb-stubblr is about ten lines of code that you need to
+repeat over, over, over and over again if you are using ocamlbuild to build
+OCaml projects that contain C stubs.")
+   (license license:isc)))
+
 (define-public coq-flocq
   (package
     (name "coq-flocq")
