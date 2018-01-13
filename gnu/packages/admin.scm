@@ -1308,7 +1308,7 @@ track changes in important system configuration files.")
                 "0ssvnh4cvhya0c1j6k6192zvqcq7nc0x01fb5nwhr0prfqr0i8j8"))))
     (build-system gnu-build-system)
     (inputs `(("python" ,python)))
-    (home-page "http://people.redhat.com/sgrubb/libcap-ng/")
+    (home-page "https://people.redhat.com/sgrubb/libcap-ng/")
     (synopsis "Library for more easily working with POSIX capabilities")
     (description
      "The libcap-ng library is intended to make programming with POSIX
