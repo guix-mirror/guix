@@ -258,9 +258,7 @@ sort playlists, and a local file system browser.")
     (synopsis "MPD client for track scrobbling")
     (description "mpdscribble is a Music Player Daemon client which submits
 information about tracks being played to a scrobbler, such as Libre.FM.")
-    ;; musicpd.org doesn't mention mpdscribble.  It points users to this wiki
-    ;; instead.
-    (home-page "http://mpd.wikia.com/wiki/Client:Mpdscribble")
+    (home-page "https://www.musicpd.org/clients/mpdscribble/")
     (license license:gpl2+)))
 
 (define-public python-mpd2
