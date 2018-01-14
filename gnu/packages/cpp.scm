@@ -89,8 +89,9 @@ operating system functions.")
          '("-DWITH_TESTS=ON")))           ; To run the test suite
       (native-inputs
        `(("cppunit" ,cppunit)
-         ("openssl" ,openssl)
-         ("pkg-config" ,pkg-config)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("openssl" ,openssl)
          ("zlib" ,zlib)))
       (synopsis "C++ library providing Qt-like APIs on top of the STL")
       (description "Rct is a set of C++ tools that provide nicer (more Qt-like)
