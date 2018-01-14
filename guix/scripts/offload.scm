@@ -400,7 +400,7 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
            +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
            (match (string-tokenize line)
              ((one five fifteen . x)
-              (let* ((raw        (string->number five))
+              (let* ((raw        (string->number one))
                      (jobs       (build-machine-parallel-builds machine))
                      (normalized (/ raw jobs)))
                 (format (current-error-port) "load on machine '~a' is ~s\
