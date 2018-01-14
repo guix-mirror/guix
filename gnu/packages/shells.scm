@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -145,32 +145,6 @@ include smart terminal handling based on terminfo, an easy to search history,
 and syntax highlighting.")
     (home-page "https://fishshell.com/")
     (license gpl2)))
-
-(define-public fish-guix
-  (package
-    (name "fish-guix")
-    (version "0.1.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://d.n0.is/releases/fish-guix/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0k71hcn7nr523w74jw2i68x52s9hv6vmasnvnn7yr3xxvzn4kqgf"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ; No checks.
-       #:make-flags (list
-                     (string-append "PREFIX=" %output))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script.
-    (home-page "https://n0.is/s/fish-guix/")
-    (synopsis "Fish completions for Guix")
-    (description
-     "Fish-guix provides completions for Guix for users of the fish shell.")
-    (license bsd-3)))
 
 (define-public rc
   (package
