@@ -47,6 +47,13 @@ AC_ARG_WITH([zsh-completion-dir],
   [zshcompletiondir='${datadir}/zsh/site-functions'])
 AC_SUBST([zshcompletiondir])
 
+AC_ARG_WITH([fish-completion-dir],
+  AC_HELP_STRING([--with-fish-completion-dir=DIR],
+    [name of the Fish completion directory]),
+  [fishcompletiondir="$withval"],
+  [fishcompletiondir='${datadir}/fish/vendor_completions.d'])
+AC_SUBST([fishcompletiondir])
+
 dnl Better be verbose.
 AC_MSG_CHECKING([for the store directory])
 AC_MSG_RESULT([$storedir])
