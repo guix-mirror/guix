@@ -259,6 +259,12 @@ the freedesktop.org XDG Base Directory specification.")
        #:make-flags '("PKTTYAGENT=/run/current-system/profile/bin/pkttyagent")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-locale-header
+           (lambda _
+             ;; Fix compilation with glibc >= 2.26, which removed xlocale.h.
+             ;; This can be removed for elogind 234.
+             (substitute* "src/basic/parse-util.c"
+               (("xlocale\\.h") "locale.h"))))
          (add-before 'configure 'autogen
            (lambda _
              (and (zero? (system* "intltoolize" "--force" "--automake"))
