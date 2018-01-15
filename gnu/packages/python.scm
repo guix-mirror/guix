@@ -41,7 +41,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
@@ -76,6 +76,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -469,6 +470,52 @@ pidof, tty, taskset, pmap.")
 
 (define-public python2-psutil
   (package-with-python2 python-psutil))
+
+(define-public python-shapely
+  (package
+    (name "python-shapely")
+    (version "1.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Shapely" version))
+       (sha256
+        (base32
+         "0svc58dzcw9gj92b4sgq35sdxkf85z0qwlzxarkzq4bp3h8jy58l"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (inputs
+     `(("geos" ,geos)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-geos-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((geos (assoc-ref inputs "geos"))
+                   (glibc (assoc-ref inputs ,(if (%current-target-system)
+                                                 "cross-libc" "libc"))))
+               (substitute* "shapely/geos.py"
+                 (("_lgeos = load_dll\\('geos_c', fallbacks=.*\\)")
+                  (string-append "_lgeos = load_dll('geos_c', fallbacks=['"
+                                 geos "/lib/libgeos_c.so'])"))
+                 (("free = load_dll\\('c'\\)\\.free")
+                  (string-append "free = load_dll('c', fallbacks=['"
+                                 glibc "/lib/libc.so.6']).free"))))
+             #t)))))
+    (home-page "https://github.com/Toblerity/Shapely")
+    (synopsis "Library for the manipulation and analysis of geometric objects")
+    (description "Shapely is a Python package for manipulation and analysis of
+planar geometric objects.  It is based on the @code{GEOS} library.")
+    (license license:bsd-3)))
+
+(define-public python2-shapely
+  (package-with-python2 python-shapely))
 
 (define-public python-clyent
   (package
