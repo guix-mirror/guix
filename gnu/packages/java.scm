@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1833,15 +1833,15 @@ IcedTea build harness.")
                         (snippet remove-archives)))))
     (package
       (name "clojure")
-      (version "1.8.0")
+      (version "1.9.0")
       (source
        (origin
          (method url-fetch)
          (uri
-          (string-append "http://repo1.maven.org/maven2/org/clojure/clojure/"
-                         version "/clojure-" version ".zip"))
+          (string-append "https://github.com/clojure/clojure/archive/clojure-"
+                         version ".tar.gz"))
          (sha256
-          (base32 "1nip095fz5c492sw15skril60i1vd21ibg6szin4jcvyy3xr6cym"))
+          (base32 "0xjbzcw45z32vsn9pifp7ndysjzqswp5ig0jkjpivigh2ckkdzha"))
          (modules '((guix build utils)))
          (snippet remove-archives)))
       (build-system ant-build-system)
@@ -1871,12 +1871,12 @@ IcedTea build harness.")
                         (error "failed to unpack tarball" name)))
                   (copy-recursively (string-append name "/src/main/clojure/")
                                     "src/clj/"))
-                '("data-generators-src"
-                  "java-classpath-src"
+                '("core-specs-alpha-src"
+                  "data-generators-src"
+                  "spec-alpha-src"
                   "test-check-src"
                   "test-generative-src"
-                  "tools-namespace-src"
-                  "tools-reader-src"))
+                  "tools-namespace-src"))
                #t))
            ;; The javadoc target is not built by default.
            (add-after 'build 'build-doc
@@ -1908,14 +1908,18 @@ IcedTea build harness.")
                  #t))))))
       ;; The native-inputs below are needed to run the tests.
       (native-inputs
-       `(("data-generators-src"
+       `(("core-specs-alpha-src"
+          ,(submodule "core.specs.alpha/archive/core.specs.alpha-"
+                      "0.1.24"
+                      "0v2a0svf1ar2y42ajxwsjr7zmm5j7pp2zwrd2jh3k7xzd1p9x1fv"))
+         ("data-generators-src"
           ,(submodule "data.generators/archive/data.generators-"
                       "0.1.2"
                       "0kki093jp4ckwxzfnw8ylflrfqs8b1i1wi9iapmwcsy328dmgzp1"))
-         ("java-classpath-src"
-          ,(submodule "java.classpath/archive/java.classpath-"
-                      "0.2.3"
-                      "0sjymly9xh1lkvwn5ygygpsfwz4dabblnlq0c9bx76rkvq62fyng"))
+         ("spec-alpha-src"
+          ,(submodule "spec.alpha/archive/spec.alpha-"
+                      "0.1.143"
+                      "00alf0347licdn773w2jarpllyrbl52qz4d8mw61anjksacxylzz"))
          ("test-check-src"
           ,(submodule "test.check/archive/test.check-"
                       "0.9.0"
@@ -1927,11 +1931,7 @@ IcedTea build harness.")
          ("tools-namespace-src"
           ,(submodule "tools.namespace/archive/tools.namespace-"
                       "0.2.11"
-                      "10baak8v0hnwz2hr33bavshm7y49mmn9zsyyms1dwjz45p5ymhy0"))
-         ("tools-reader-src"
-          ,(submodule "tools.reader/archive/tools.reader-"
-                      "1.0.0"
-                      "1lafblmmj4hkg0aqrf19qkdw9wdcsh3qxmn6cbkmnzbhffpyv2lv"))))
+                      "10baak8v0hnwz2hr33bavshm7y49mmn9zsyyms1dwjz45p5ymhy0"))))
       (home-page "https://clojure.org/")
       (synopsis "Lisp dialect running on the JVM")
       (description "Clojure is a dynamic, general-purpose programming language,
