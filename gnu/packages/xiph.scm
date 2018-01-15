@@ -74,7 +74,7 @@ multiple data streams, ogg provides packet framing, error detection, and
 periodic timestamps for seeking.")
    (license (license:non-copyleft "file://COPYING"
                                "See COPYING in the distribution."))
-   (home-page "http://xiph.org/ogg/")))
+   (home-page "https://xiph.org/ogg/")))
 
 (define libvorbis
   (package
@@ -101,7 +101,7 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
 128 kbps/channel.")
    (license (license:non-copyleft "file://COPYING"
                                "See COPYING in the distribution."))
-   (home-page "http://xiph.org/vorbis/")))
+   (home-page "https://xiph.org/vorbis/")))
 
 (define libvorbis/fixed
   (package
@@ -133,7 +133,7 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
 a fully open, non-proprietary, patent-and-royalty-free, general-purpose
 compressed video format.")
     (license license:bsd-3)
-    (home-page "http://xiph.org/theora/")))
+    (home-page "https://xiph.org/theora/")))
 
 (define speex
   (package
@@ -237,7 +237,7 @@ It currently supports:
 @end enumerate
 ")
     (license license:gpl2+)
-    (home-page "http://www.xiph.org/ao/")))
+    (home-page "https://www.xiph.org/ao/")))
 
 (define flac
   (package
@@ -261,7 +261,7 @@ It currently supports:
 meaning that audio is compressed in FLAC without any loss in quality.")
    (license (license:non-copyleft "file://COPYING"
                                "See COPYING in the distribution.")) ; and LGPL and GPL
-   (home-page "http://xiph.org/flac/")))
+   (home-page "https://xiph.org/flac/")))
 
 (define libkate
   (package
@@ -335,7 +335,7 @@ oggdec,  a simple, portable command line decoder (to wav and raw);
 ogginfo, to obtain information (tags, bitrate, length, etc.) about
          an ogg vorbis file.")
    (license license:gpl2)
-   (home-page "http://xiph.org/vorbis/")))
+   (home-page "https://xiph.org/vorbis/")))
 
 (define opus
   (package
@@ -418,7 +418,7 @@ decoding .opus files.")
 streams in the Ogg container (.opus files) including over http(s) on posix and
 windows systems.")
     (license license:bsd-3)
-    (home-page "http://www.opus-codec.org")))
+    (home-page "https://www.opus-codec.org")))
 
 (define-public icecast
   (package
@@ -449,7 +449,7 @@ windows systems.")
 Ogg (Vorbis and Theora), Opus, WebM and MP3 audio streams.  It can be used to
 create an Internet radio station or a privately running jukebox and many
 things in between.")
-    (home-page "http://icecast.org/")
+    (home-page "https://icecast.org/")
     (license license:gpl2)))
 
 (define-public libshout
