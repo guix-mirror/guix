@@ -140,7 +140,7 @@ in intelligent transportation networks.")
        ("libtasn1" ,libtasn1)))
     (arguments
      `(#:configure-flags '("--without-trust-paths")))
-    (home-page "http://p11-glue.freedesktop.org/p11-kit.html")
+    (home-page "https://p11-glue.freedesktop.org/p11-kit.html")
     (synopsis "PKCS#11 library")
     (description
      "p11-kit provides a way to load and enumerate PKCS#11 modules.  It
@@ -396,7 +396,7 @@ required structures.")
    (description
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
-   (home-page "http://www.openssl.org/")))
+   (home-page "https://www.openssl.org/")))
 
 ;; Fixes CVE-2017-3735, CVE-2017-3736, CVE-2017-3737, and CVE-2017-3738.
 ;; See <https://www.openssl.org/news/cl102.txt>.
@@ -568,7 +568,7 @@ netcat implementation that supports TLS.")
        ("python-pyasn1" ,python-pyasn1)
        ("python-cryptography" ,python-cryptography)
        ("python-pyopenssl" ,python-pyopenssl)))
-    (home-page "https://github.com/letsencrypt/letsencrypt")
+    (home-page "https://github.com/certbot/certbot")
     (synopsis "ACME protocol implementation in Python")
     (description "ACME protocol implementation in Python")
     (license license:asl2.0)))
