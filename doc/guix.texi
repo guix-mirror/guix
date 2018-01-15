@@ -10701,21 +10701,6 @@ See @uref{https://www.torproject.org/docs/tor-hidden-service.html.en, the Tor
 project's documentation} for more information.
 @end deffn
 
-@deffn {Scheme Procedure} bitlbee-service [#:bitlbee bitlbee] @
-         [#:interface "127.0.0.1"] [#:port 6667] @
-         [#:extra-settings ""]
-Return a service that runs @url{http://bitlbee.org,BitlBee}, a daemon that
-acts as a gateway between IRC and chat networks.
-
-The daemon will listen to the interface corresponding to the IP address
-specified in @var{interface}, on @var{port}.  @code{127.0.0.1} means that only
-local clients can connect, whereas @code{0.0.0.0} means that connections can
-come from any networking interface.
-
-In addition, @var{extra-settings} specifies a string to append to the
-configuration file.
-@end deffn
-
 The @code{(gnu services rsync)} module provides the following services:
 
 You might want an rsync daemon if you have files that you want available
@@ -14437,6 +14422,25 @@ string, you could instantiate a prosody service like this:
           (prosody.cfg.lua "")))
 @end example
 
+@subsubheading BitlBee Service
+
+@url{http://bitlbee.org,BitlBee} is a gateway that provides an IRC
+interface to a variety of messaging protocols such as XMPP.
+
+@deffn {Scheme Procedure} bitlbee-service [#:bitlbee bitlbee] @
+         [#:interface "127.0.0.1"] [#:port 6667] @
+         [#:extra-settings ""]
+Return a service that runs @url{http://bitlbee.org,BitlBee}, a daemon that
+acts as a gateway between IRC and chat networks.
+
+The daemon will listen to the interface corresponding to the IP address
+specified in @var{interface}, on @var{port}.  @code{127.0.0.1} means that only
+local clients can connect, whereas @code{0.0.0.0} means that connections can
+come from any networking interface.
+
+In addition, @var{extra-settings} specifies a string to append to the
+configuration file.
+@end deffn
 
 @node Telephony Services
 @subsubsection Telephony Services
