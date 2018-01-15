@@ -6512,7 +6512,7 @@ using GSL.")
 (define-public ghc-hmatrix-special
   (package
     (name "ghc-hmatrix-special")
-    (version "0.4.0.0")
+    (version "0.4.0.1")
     (source
      (origin
        (method url-fetch)
@@ -6521,7 +6521,7 @@ using GSL.")
          "http://hackage.haskell.org/package/hmatrix-special/hmatrix-special-"
          version ".tar.gz"))
        (sha256
-        (base32 "0cr9y3swzj7slrd84g1nhdkp1kpq4q5ihwapmiaidpr2bv3hrfhz"))))
+        (base32 "0kpcqdchi7ikzhqacy4rh4dxz3v37paxyb84wqa66sysb72wkabj"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hmatrix" ,ghc-hmatrix)
