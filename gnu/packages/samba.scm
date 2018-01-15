@@ -233,31 +233,26 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.1.10")
+    (version "2.1.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "06gn45if56g81vbj3841fzdjsahrrczwqpfrydm2zv6nxd5yk1f9"))))
+                "1lzfxv2zjxap5snf9ydl1bqgjpz0kgkq7n644f8rkbx0arav77k3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; test_magic_differs.sh has syntax error, and is not in the right
-             ;; place where wscript expected.
-             ;; Skip the test.
-             (substitute* "wscript"
-               (("magic_ret = .*") "magic_ret = 0\n"))
-             ;; talloc uses a custom configuration script that runs a
-             ;; python script called 'waf'.
+             ;; talloc uses a custom configuration script that runs a Python
+             ;; script called 'waf', and doesn't tolerate unknown options.
              (setenv "CONFIG_SHELL" (which "sh"))
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (inputs
      `(("python" ,python-2)))
     (home-page "https://talloc.samba.org")
