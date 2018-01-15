@@ -4970,7 +4970,7 @@ do on-demand loading.")
 (define-public ghc-juicypixels
   (package
     (name "ghc-juicypixels")
-    (version "3.2.6.2")
+    (version "3.2.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -4978,7 +4978,7 @@ do on-demand loading.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0hxa57cdknz86zywpjwfbdhac5lmk7j0wd5hy4mcnb8mw6r2m592"))))
+                "14s57fgf6kd5n5al2kcvk1aaxbq1ph0r5h8blflrjkx83yl6r8yn"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
