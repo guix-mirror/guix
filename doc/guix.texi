@@ -2659,6 +2659,12 @@ lucky enough to be using Guix.  You'd tell them to run @command{guix
 package -i @var{something}}, but that's not possible in this case.  This
 is where @command{guix pack} comes in.
 
+@quotation Note
+If you are looking for ways to exchange binaries among machines that
+already run Guix, @pxref{Invoking guix copy}, @ref{Invoking guix
+publish}, and @ref{Invoking guix archive}.
+@end quotation
+
 @cindex pack
 @cindex bundle
 @cindex application bundle
@@ -2794,9 +2800,15 @@ options (@pxref{Package Transformation Options}).
 @cindex @command{guix archive}
 @cindex archive
 The @command{guix archive} command allows users to @dfn{export} files
-from the store into a single archive, and to later @dfn{import} them.
+from the store into a single archive, and to later @dfn{import} them on
+a machine that runs Guix.
 In particular, it allows store files to be transferred from one machine
 to the store on another machine.
+
+@quotation Note
+If you're looking for a way to produce archives in a formatq suitable for
+tools other than Guix, @pxref{Invoking guix pack}.
+@end quotation
 
 @cindex exporting store items
 To export store files as an archive to standard output, run:
