@@ -45,6 +45,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -1150,3 +1151,55 @@ features design tools such as a visual editor, can import 3D models and
 provide high-quality 3D rendering, it contains an animation editor, and can be
 scripted in a Python-like language.")
     (license license:expat)))
+
+(define-public eureka
+  (package
+    (name "eureka")
+    (version "1.21")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/eureka-editor/Eureka/"
+                                  version "/eureka-"
+                                  ;; version without dots e.g 1.21 => 121
+                                  (string-join (string-split version #\.) "")
+                                  "-source.tar.gz"))
+              (sha256
+               (base32
+                "1a7pf7xi56fcz7jc8layih5gq5m66g2ss4x5j61kzgip07j6rkir"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'prepare-install-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir-p (string-append out "/share"))
+
+               (with-fluids ((%default-port-encoding #f))
+                 (substitute* "./src/main.cc"
+                   (("/usr/local") out)))
+
+               (substitute* "Makefile"
+                 (("-o root") ""))))))))
+    (inputs `(("mesa" ,mesa)
+              ("libxft" ,libxft)
+              ("libxinerama" ,libxinerama)
+              ("libfontconfig" ,fontconfig)
+              ("libjpeg" ,libjpeg)
+              ("libpng" ,libpng)
+              ("fltk" ,fltk)
+              ("zlib" ,zlib)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("xdg-utils" ,xdg-utils)))
+    (synopsis "Doom map editor")
+    (description "Eureka is a map editor for the classic DOOM games, and a few
+related games such as Heretic and Hexen.  It comes with a 3d preview mode and
+a 2D editor view.")
+    (home-page "http://eureka-editor.sourceforge.net/")
+    (license license:gpl2+)))
