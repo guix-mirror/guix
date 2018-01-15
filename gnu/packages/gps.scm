@@ -76,7 +76,7 @@
     (native-inputs
      `(("which" ,which)
        ("libxml2" ,libxml2)))              ;'xmllint' needed for the KML tests
-    (home-page "http://www.gpsbabel.org/")
+    (home-page "https://www.gpsbabel.org/")
     (synopsis "Convert and exchange data with GPS and map programs")
     (description
      "GPSBabel converts waypoints, tracks, and routes between hundreds of
