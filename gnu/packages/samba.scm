@@ -104,18 +104,19 @@ the Linux kernel CIFS client.")
                "1flj7srvh2hp9ls96qz922bklyhw7f27mmn23b16839zpdjddfz0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:make-flags
+       (list "CC=gcc")
+       #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* '("Makefile" "test/Makefile")
                (("/usr/lib")
-                (string-append (assoc-ref outputs "out") "/lib"))
-               (("\\?= gcc") "= gcc"))))
+                (string-append (assoc-ref outputs "out") "/lib")))))
          (replace 'build
-           (lambda _
-             (and (zero? (system* "make" "libiniparser.so"))
-                         (symlink "libiniparser.so.0" "libiniparser.so"))))
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "libiniparser.so"
+                    make-flags)))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
