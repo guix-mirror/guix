@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -395,7 +396,7 @@ decoding .opus files.")
 (define opusfile
   (package
     (name "opusfile")
-    (version "0.8")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -403,7 +404,7 @@ decoding .opus files.")
                     ".tar.gz"))
               (sha256
                (base32
-                "192mp2jgn5s9815h31ybzsfipmbppmdhwx1dymrk26xarz9iw8rc"))))
+                "0yg9whb9y6ja3d5dmscg5a29hxj7qj0asw8smisjf4hbwh0bapzp"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("opus" ,opus)))
