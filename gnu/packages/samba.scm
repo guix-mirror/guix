@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,7 +104,7 @@ the Linux kernel CIFS client.")
                "1flj7srvh2hp9ls96qz922bklyhw7f27mmn23b16839zpdjddfz0"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
@@ -120,7 +121,7 @@ the Linux kernel CIFS client.")
              (let* ((out  (assoc-ref outputs "out"))
                     (lib  (string-append out "/lib"))
                     (inc  (string-append out "/include"))
-                    (doc  (string-append out "/share/doc"))
+                    (doc  (string-append out "/share/doc/" ,name))
                     (html (string-append doc "/html")))
                (define (copy dir)
                  (lambda (file)
