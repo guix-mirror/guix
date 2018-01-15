@@ -97,23 +97,40 @@ archive, a directory, or an Emacs Lisp file."
 (define* (patch-el-files #:key outputs #:allow-other-keys)
   "Substitute the absolute \"/bin/\" directory with the right location in the
 store in '.el' files."
+
+  (define (file-contains-nul-char? file)
+    (call-with-input-file file
+      (lambda (in)
+        (let loop ((line (read-line in 'concat)))
+          (cond
+           ((eof-object? line) #f)
+           ((string-index line #\nul) #t)
+           (else (loop (read-line in 'concat))))))
+      #:binary #t))
+
   (let* ((out (assoc-ref outputs "out"))
          (elpa-name-ver (store-directory->elpa-name-version out))
          (el-dir (string-append out %install-suffix "/" elpa-name-ver))
-         (substitute-cmd (lambda ()
-                           (substitute* (find-files "." "\\.el$")
-                             (("\"/bin/([^.]\\S*)\"" _ cmd-name)
-                              (let ((cmd (which cmd-name)))
-                                (unless cmd
-                                  (error
-                                   "patch-el-files: unable to locate " cmd-name))
-                                (string-append "\"" cmd "\"")))))))
+
+         ;; (ice-9 regex) uses libc's regexp routines, which cannot deal with
+         ;; strings containing NULs.  Filter out such files.  TODO: Remove
+         ;; this workaround when <https://bugs.gnu.org/30116> is fixed.
+         (el-files (remove file-contains-nul-char?
+                           (find-files (getcwd) "\\.el$"))))
+    (define (substitute-program-names)
+      (substitute* el-files
+        (("\"/bin/([^.]\\S*)\"" _ cmd-name)
+         (let ((cmd (which cmd-name)))
+           (unless cmd
+             (error "patch-el-files: unable to locate " cmd-name))
+           (string-append "\"" cmd "\"")))))
+
     (with-directory-excursion el-dir
-      ;; Some old '.el' files (e.g., tex-buf.el in AUCTeX) are still encoded
-      ;; with the "ISO-8859-1" locale.
-      (unless (false-if-exception (substitute-cmd))
+      ;; Some old '.el' files (e.g., tex-buf.el in AUCTeX) are still
+      ;; ISO-8859-1-encoded.
+      (unless (false-if-exception (substitute-program-names))
         (with-fluids ((%default-port-encoding "ISO-8859-1"))
-          (substitute-cmd))))
+          (substitute-program-names))))
     #t))
 
 (define* (install #:key outputs
