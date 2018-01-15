@@ -93,7 +93,7 @@ the Linux kernel CIFS client.")
 (define-public iniparser
   (package
     (name "iniparser")
-    (version "4.0")
+    (version "4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/ndevilla/iniparser/archive/v"
@@ -101,7 +101,7 @@ the Linux kernel CIFS client.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1flj7srvh2hp9ls96qz922bklyhw7f27mmn23b16839zpdjddfz0"))))
+               "1bpk8dj9d5cl64lg6jsk0qlzrpg848nymwxc3fx707fk1n0al3cn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -115,7 +115,7 @@ the Linux kernel CIFS client.")
                 (string-append (assoc-ref outputs "out") "/lib")))))
          (replace 'build
            (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "libiniparser.so"
+             (apply invoke "make" "libiniparser.so.1"
                     make-flags)))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -130,14 +130,14 @@ the Linux kernel CIFS client.")
                (for-each (install lib)
                          (find-files "." "^lib.*\\.so"))
                (with-directory-excursion lib
-                 (symlink "libiniparser.so.0" "libiniparser.so"))
+                 (symlink "libiniparser.so.1" "libiniparser.so"))
                (for-each (install inc)
                          (find-files "src" "\\.h$"))
                (for-each (install html)
                          (find-files "html" ".*"))
                (for-each (install doc)
                          '("AUTHORS" "INSTALL" "LICENSE" "README.md"))))))))
-    (home-page "http://ndevilla.free.fr/iniparser")
+    (home-page "https://github.com/ndevilla/iniparser")
     (synopsis "Standalone ini file parsing library")
     (description
      "iniparser is a free stand-alone `ini' file parsing library (Windows
