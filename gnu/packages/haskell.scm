@@ -2061,7 +2061,7 @@ lines continued at an indented level below.")
        ("ghc-byteorder" ,ghc-byteorder)
        ("ghc-network" ,ghc-network)
        ("ghc-safe" ,ghc-safe)))
-    (home-page "http://www.mew.org/~kazu/proj/iproute/")
+    (home-page "https://www.mew.org/~kazu/proj/iproute/")
     (synopsis "IP routing table")
     (description "IP Routing Table is a tree of IP ranges to search one of
 them on the longest match base.  It is a kind of TRIE with one way branching
