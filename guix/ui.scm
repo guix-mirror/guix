@@ -195,7 +195,16 @@ messages."
   (catch #t
     (lambda ()
       ;; XXX: Force a recompilation to avoid ABI issues.
-      ;; (set! %fresh-auto-compile #t)
+      ;;
+      ;; In 2.2.3, the bogus answer to <https://bugs.gnu.org/29226> was to
+      ;; ignore all available .go, not just those from ~/.cache, which in turn
+      ;; meant that we had to rebuild *everything*.  Since this is too costly,
+      ;; we have to turn auto '%fresh-auto-compile' with that version, at the
+      ;; risk of getting ABI breakage in the user's config file.  See
+      ;; <https://bugs.gnu.org/29881>.
+      (unless (string=? (version) "2.2.3")
+        (set! %fresh-auto-compile #t))
+
       (set! %load-should-auto-compile #t)
 
       (save-module-excursion
