@@ -44,4 +44,6 @@
     ((? license?) `((name . (license-name o))
                     (uri . ,(license-uri o))
                     (comment . ,(license-comment o))))
+    ((lst ...)
+     (map entry->sexp-entry lst))
     (_ o)))
