@@ -1947,7 +1947,7 @@ algorithms in Java.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.savannah.gnu.org/releases/lzip/"
+       (uri (string-append "mirror://savannah/lzip/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
         (base32 "1ax3d9cp66z1qb9q7lfzg5bpx9630xrxgq9a5sw569wm0qqgpg2q"))))
@@ -1974,7 +1974,7 @@ Lunzip is intended to be fully compatible with the regular lzip package.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.savannah.gnu.org/releases/lzip/"
+       (uri (string-append "mirror://savannah/lzip/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
         (base32 "1brvsnpihzj81cf4wk2x5bnr2qldlq0wncpdbzxmzvxapm1cq2yc"))))
@@ -2000,7 +2000,7 @@ Clzip is intended to be fully compatible with the regular lzip package.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.savannah.gnu.org/releases/lzip/"
+       (uri (string-append "mirror://savannah/lzip/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
         (base32 "13mssf3hrcnmd4ijbqnxfk0zgj1q5lvpxxkm1hmrbl1h73czhwi4"))))
@@ -2028,7 +2028,7 @@ corrupted input.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.savannah.gnu.org/releases/lzip/"
+       (uri (string-append "mirror://savannah/lzip/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
         (base32 "0z2cs6vn4xl65wakd013xl3sdfpg8dr0cvcjwc2slh8y9bz7j7ax"))))
