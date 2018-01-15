@@ -2042,7 +2042,7 @@ lines continued at an indented level below.")
 (define-public ghc-iproute
   (package
     (name "ghc-iproute")
-    (version "1.7.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
@@ -2052,7 +2052,7 @@ lines continued at an indented level below.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ply0i110c2sppjbfyysgw48jfjnsbam5zwil8xws0hp20rh1pb5"))))
+         "1viyxq3m1aifl05w0hxwrhhhcfpmvwz4ymil2gngi4nfm0yd1f2p"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Tests cannot find System.ByteOrder,
                                ; exported by ghc-byteorder.  Doctest issue.
