@@ -317,7 +317,7 @@ This package contains the binary.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("pulseaudio" ,pulseaudio)
               ("alsa-lib" ,alsa-lib)))
-    (home-page "http://www.mpg123.org/")
+    (home-page "https://www.mpg123.org/")
     (synopsis "Console MP3 player and decoder library")
     (description
      "Mpg123 is a real time MPEG 1.0/2.0/2.5 audio player/decoder for layers
