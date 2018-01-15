@@ -2018,25 +2018,20 @@ debugging, etc.")
 (define-public java-classpathx-servletapi
   (package
     (name "java-classpathx-servletapi")
-    (version "3.0")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/classpathx/servletapi/"
                                   "servletapi-" version ".tar.gz"))
               (sha256
                (base32
-                "0y9489pk4as9q6x300sk3ycc0psqfxcd4b0xvbmf3rhgli8q1kx3"))))
+                "07d8h051siga2f33fra72hk12sbq1bxa4jifjg0qj0vfazjjff0x"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; there is no test target
        #:build-target "compile"
-       ;; NOTE: This package does not build with Java 8 because of a type
-       ;; mismatch in
-       ;; "source/javax/servlet/jsp/el/ImplicitObjectELResolver.java".  It
-       ;; defines the return value of ScopeMap's "remove" method to be of type
-       ;; "Object", whereas Map's "remove" method returns boolean.
        #:make-flags
-       (list "-Dbuild.compiler=javac1.7"
+       (list "-Dbuild.compiler=javac1.8"
              (string-append "-Ddist=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
