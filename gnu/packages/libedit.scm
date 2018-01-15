@@ -40,7 +40,7 @@
     (arguments `(#:configure-flags (list "--enable-widec")))
     (inputs
      `(("ncurses" ,ncurses)))
-    (home-page "http://thrysoee.dk/editline/")
+    (home-page "https://thrysoee.dk/editline/")
     (synopsis "NetBSD Editline library")
     (description
      "This is an autotool- and libtoolized port of the NetBSD Editline
