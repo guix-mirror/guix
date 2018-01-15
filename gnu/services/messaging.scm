@@ -848,7 +848,7 @@ string, you could instantiate a prosody service like this:
                  "Run @url{http://bitlbee.org,BitlBee}, a daemon that acts as
 a gateway between IRC and chat networks.")))
 
-(define* (bitlbee-service #:key (bitlbee bitlbee)
+(define* (bitlbee-service #:key (bitlbee bitlbee) ;deprecated
                           (interface "127.0.0.1") (port 6667)
                           (extra-settings ""))
   "Return a service that runs @url{http://bitlbee.org,BitlBee}, a daemon that

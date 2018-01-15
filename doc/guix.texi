@@ -14424,23 +14424,45 @@ string, you could instantiate a prosody service like this:
 
 @subsubheading BitlBee Service
 
+@cindex IRC (Internet Relay Chat)
+@cindex IRC gateway
 @url{http://bitlbee.org,BitlBee} is a gateway that provides an IRC
 interface to a variety of messaging protocols such as XMPP.
 
-@deffn {Scheme Procedure} bitlbee-service [#:bitlbee bitlbee] @
-         [#:interface "127.0.0.1"] [#:port 6667] @
-         [#:extra-settings ""]
-Return a service that runs @url{http://bitlbee.org,BitlBee}, a daemon that
-acts as a gateway between IRC and chat networks.
+@defvr {Scheme Variable} bitlbee-service-type
+This is the service type for the @url{http://bitlbee.org,BitlBee} IRC
+gateway daemon.  Its value is a @code{bitlbee-configuration} (see
+below).
 
-The daemon will listen to the interface corresponding to the IP address
-specified in @var{interface}, on @var{port}.  @code{127.0.0.1} means that only
-local clients can connect, whereas @code{0.0.0.0} means that connections can
-come from any networking interface.
+To have BitlBee listen on port 6667 on localhost, add this line to your
+services:
 
-In addition, @var{extra-settings} specifies a string to append to the
-configuration file.
-@end deffn
+@example
+(service bitlbee-service-type)
+@end example
+@end defvr
+
+@deftp {Data Type} bitlbee-configuration
+This is the configuration for BitlBee, with the following fields:
+
+@table @asis
+@item @code{interface} (default: @code{"127.0.0.1"})
+@itemx @code{port} (default: @code{6667})
+Listen on the network interface corresponding to the IP address
+specified in @var{interface}, on @var{port}.
+
+When @var{interface} is @code{127.0.0.1}, only local clients can
+connect; when it is @code{0.0.0.0}, connections can come from any
+networking interface.
+
+@item @code{package} (default: @code{bitlbee})
+The BitlBee package to use.
+
+@item @code{extra-settings} (default: @code{""})
+Configuration snippet added as-is to the BitlBee configuration file.
+@end table
+@end deftp
+
 
 @node Telephony Services
 @subsubsection Telephony Services
