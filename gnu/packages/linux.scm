@@ -915,7 +915,7 @@ trace of all the system calls made by a another process/program.")
     (arguments
      ;; Compilation uses -Werror by default, but it fails.
      '(#:configure-flags '("--disable-werror")))
-    (home-page "http://www.ltrace.org/")
+    (home-page "https://www.ltrace.org/")
     (synopsis "Library call tracer for Linux")
     (description
      "ltrace intercepts and records dynamic library calls which are called by
@@ -1527,7 +1527,7 @@ transparently through a bridge.")
                (mkdir-p dest)
                (zero? (system* "tar" "xf" (assoc-ref inputs "libnl3-doc")
                                "--strip-components=1" "-C" dest))))))))
-    (home-page "http://www.infradead.org/~tgr/libnl/")
+    (home-page "https://www.infradead.org/~tgr/libnl/")
     (synopsis "NetLink protocol library suite")
     (description
      "The libnl suite is a collection of libraries providing APIs to netlink
@@ -2586,7 +2586,7 @@ particular the 'perf' command.")
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
-    (home-page "http://ghedo.github.io/pflask/")
+    (home-page "https://ghedo.github.io/pflask/")
     (synopsis "Simple tool for creating Linux namespace containers")
     (description "pflask is a simple tool for creating Linux namespace
 containers.  It can be used for running a command or even booting an OS inside
@@ -2664,7 +2664,7 @@ WLAN, Bluetooth and mobile broadband.")
     (version "1.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/acpiclient/acpiclient/" 
+              (uri (string-append "mirror://sourceforge/acpiclient/acpiclient/"
                                   version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -3705,7 +3705,7 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
                (("^DOCBOOKTOMAN.*$")
                 "DOCBOOKTOMAN = true\n"))
              #t)))))
-    (home-page "http://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
+    (home-page "https://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
     (synopsis "Tools for loading and managing Linux kernel modules")
     (description
      "Tools for loading and managing Linux kernel modules, such as `modprobe',
@@ -4532,7 +4532,7 @@ interfaces in parallel environments.")
              (let ((out (assoc-ref outputs "out")))
                (mkdir-p (string-append out "/share/man/man1"))
                #t))))))
-    (home-page "http://bisqwit.iki.fi/source/snapscreenshot.html")
+    (home-page "https://bisqwit.iki.fi/source/snapscreenshot.html")
     (synopsis "Take screenshots of one or more Linux text consoles")
     (description
      "snapscreenshot saves a screenshot of one or more Linux text consoles as a
