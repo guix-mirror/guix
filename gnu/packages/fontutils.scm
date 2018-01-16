@@ -553,7 +553,11 @@ definitions.")
                           "libxml2" "zlib" "libspiro" "freetype"
                           "pango" "cairo" "fontconfig")))
                 ;; Checks for potrace program at runtime
-                `("PATH" ":" prefix (,potrace)))))))))
+                `("PATH" ":" prefix (,potrace)))))))
+
+      ;; Check test 40 "FontForge .sfd file open check" to work around
+      ;; <https://github.com/fontforge/fontforge/issues/3246>.
+      #:make-flags '("TESTSUITEFLAGS=-k '!\\.sfd'")))
    (synopsis "Outline font editor")
    (description
     "FontForge allows you to create and modify postscript, truetype and
