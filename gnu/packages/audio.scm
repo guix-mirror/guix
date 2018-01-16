@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3343,3 +3344,35 @@ representations.")
     (description "C.A.V.A. is a bar audio spectrum visualizer for the terminal
 using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
     (license license:expat)))
+
+(define-public fluid-3
+  (let ((commit "871c8ce2002e8b3c198f532fdb4fbcce7914f951"))
+    (package
+      (name "fluid-3")
+      (version "2.1")
+      (source
+       (origin
+         (method url-fetch)
+         ;; Only one file is required, but the release bundles the whole
+         ;; software which is 50MiB as tar and 200MiB unpacked. The website
+         ;; directly links the soundfont release to the github file download.
+         (uri (string-append "https://github.com/musescore/MuseScore/raw/"
+                             commit "/share/sound/FluidR3Mono_GM.sf3"))
+         (file-name (string-append name "-" version ".sf3"))
+         (sha256
+          (base32
+           "1hjfg5i15bw9279007xs92zsggjgn4s4k9pc00s851l3kvc6dkfg"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((file (assoc-ref %build-inputs "source"))
+                 (out (string-append %output "/share/soundfonts")))
+             (mkdir-p out)
+             (copy-file file (string-append out "/FluidR3Mono_GM.sf3"))))))
+      (home-page  "https://github.com/musescore/MuseScore/tree/master/share/sound")
+      (synopsis "Pro-quality GM soundfont")
+      (description "Fluid-3 is Frank Wen's pro-quality GM soundfont.")
+      (license license:expat))))
