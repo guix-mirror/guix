@@ -1937,7 +1937,7 @@ transfer protocols.")
        ("groff" ,groff)))
     (arguments
      `(#:configure-flags
-       (list "--with-table-db" "--localstatedir=/var"
+       (list "--with-table-db" "--with-auth-pam" "--localstatedir=/var"
              "--with-user-smtpd=smtpd" "--with-user-queue=smtpq"
              "--with-group-queue=smtpq"
              "--with-path-socket=/var/run" ; not default (./configure lies)
