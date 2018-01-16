@@ -33,6 +33,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5678,3 +5679,91 @@ to C++ and Java.  Your mission is to find a new planet to live and survive.
 You can save humanity and get programming skills!")
     (home-page "https://colobot.info")
     (license license:gpl3+)))
+
+(define-public gzdoom
+  (package
+    (name "gzdoom")
+    (version "3.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://zdoom.org/files/gzdoom/src/gzdoom-g"
+                              version ".zip"))
+              (sha256
+               (base32
+                "1164d1zf5in98gp4j981ml3hwmks3q7vzfanlqpjlx2c09jmlv0q"))
+              (patches (search-patches "gzdoom-search-in-installed-share.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "bzip2")
+                  (delete-file-recursively "game-music-emu")
+                  (delete-file-recursively "jpeg-6b")
+                  (delete-file-recursively "zlib")))))
+    (arguments
+     '(#:tests? #f
+       #:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list
+          (string-append
+           "-DCMAKE_CXX_FLAGS:="
+           "-DSHARE_DIR=\\\"" out "/share/\\\" "
+           "-DGUIX_OUT_PK3=\\\"" out "/share/games/doom\\\"")
+          ;; look for libraries at buildtime instead of
+          ;; dynamically finding them at runtime
+          "-DDYN_OPENAL=OFF"
+          "-DDYN_FLUIDSYNTH=OFF"
+          "-DDYN_GTK=OFF"
+          "-DDYN_MPG123=OFF"
+          "-DDYN_SNDFILE=OFF"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-referenced-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((fluid-3 (assoc-ref inputs "fluid-3"))
+                   (timidity++ (assoc-ref inputs "timidity++"))
+                   (out (assoc-ref outputs "out")))
+
+               (substitute*
+                   "src/CMakeLists.txt"
+                 (("COMMAND /bin/sh")
+                  (string-append "COMMAND " (which "sh"))))
+
+               (substitute*
+                   "src/sound/mididevices/music_fluidsynth_mididevice.cpp"
+                 (("/usr/share/sounds/sf2/FluidR3_GM.sf2")
+                  (string-append fluid-3 "/share/soundfonts/FluidR3Mono_GM.sf3")))
+
+               (substitute*
+                   "src/sound/mididevices/music_timiditypp_mididevice.cpp"
+                 (("exename = \"timidity\"")
+                  (string-append "exename = \"" timidity++ "/bin/timidity\"")))
+               #t))))))
+    (build-system cmake-build-system)
+    (inputs `(("bzip2" ,bzip2)
+              ("fluid-3" ,fluid-3)
+              ("fluidsynth" ,fluidsynth)
+              ("gtk+3" ,gtk+)
+              ("libgme" ,libgme)
+              ("libjpeg" ,libjpeg)
+              ("libsndfile" ,libsndfile)
+              ("mesa" ,mesa)
+              ("mpg123" ,mpg123)
+              ("openal" ,openal)
+              ("sdl2" ,sdl2)
+              ("timidity++" ,timidity++)
+              ("zlib" ,zlib)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("unzip" ,unzip)))
+    (synopsis "Modern Doom 2 source port")
+    (description "GZdoom is a port of the Doom 2 game engine, with a modern
+renderer.  It improves modding support with ZDoom's advanced mapping features
+and the new ZScript language.  In addition to Doom, it supports Heretic, Hexen,
+Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
+    (home-page "https://zdoom.org/index")
+    (license (list license:gpl3+         ; gzdoom game
+                   license:lgpl3+        ; gzdoom renderer
+                   license:expat         ; gdtoa
+                   (license:non-copyleft ; modified dumb
+                    "file://dumb/licence.txt"
+                    "Dumb license, explicitly GPL compatible.")))))

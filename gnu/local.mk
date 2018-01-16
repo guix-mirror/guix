@@ -746,6 +746,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
+  %D%/packages/patches/gzdoom-search-in-installed-share.patch	\
   %D%/packages/patches/handbrake-pkg-config-path.patch		\
   %D%/packages/patches/hdf4-architectures.patch 		\
   %D%/packages/patches/hdf4-reproducibility.patch 		\
