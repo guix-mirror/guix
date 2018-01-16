@@ -1916,14 +1916,14 @@ transfer protocols.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "6.0.2p1")
+    (version "6.0.3p1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.opensmtpd.org/archives/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1b4h64w45hpmfq5721smhg4s0shs64gbcjqjpx3fbiw4hz8bdy9a"))))
+                "10bsfsnlg9d9i6l2izdnxp05s3ri8fvwzqxvx1jmarc852382619"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -1940,7 +1940,7 @@ transfer protocols.")
        (list "--with-table-db" "--localstatedir=/var"
              "--with-user-smtpd=smtpd" "--with-user-queue=smtpq"
              "--with-group-queue=smtpq"
-             "--with-path-socket=/var/run"
+             "--with-path-socket=/var/run" ; not default (./configure lies)
              "--with-path-CAfile=/etc/ssl/certs/ca-certificates.crt")
        #:phases
        (modify-phases %standard-phases
