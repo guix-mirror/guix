@@ -23,6 +23,7 @@
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1126,20 +1127,19 @@ access to mpv's powerful playback capabilities.")
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "CONFIG_SHELL" (which "bash"))
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "LDFLAGS"
-                       (string-append "-Wl,-rpath=" out "/lib"))
-               (zero? (system* "./configure"
-                               "--enable-shared"
+     `(#:configure-flags (list "--enable-shared"
                                "--as=yasm"
                                ;; Limit size to avoid CVE-2015-1258
                                "--size-limit=16384x16384"
-                               (string-append "--prefix=" out)))))))
+                               (string-append "--prefix=" (assoc-ref %outputs "out")))
+       #:make-flags  (list (string-append "LDFLAGS=-Wl,-rpath="
+                                          (assoc-ref %outputs "out") "/lib"))
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key configure-flags #:allow-other-keys)
+                      ;; The configure script does not understand some of the GNU
+                      ;; options, so we only add the flags specified above.
+                      (apply invoke  "./configure" configure-flags))))
        #:tests? #f)) ; no check target
     (native-inputs
      `(("perl" ,perl)
