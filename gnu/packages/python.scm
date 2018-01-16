@@ -4255,7 +4255,7 @@ standard library.")
        (base32 "19l2pp1c64ansr89l3cqh19jdi2ixhssdzx0vz4n6r52a6i281is"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no tests
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "Vestigial utilities from IPython")
     (description
      "This package provides retired utilities from IPython.  No packages
@@ -4292,7 +4292,7 @@ away.")
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-nose" ,python-nose)))
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "Configuration system for Python applications")
     (description
      "Traitlets is a framework that lets Python classes have attributes with
@@ -4380,7 +4380,7 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
     (propagated-inputs
      ;; imported at runtime during connect
      `(("python-jupyter-client" ,python-jupyter-client)))
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "IPython Kernel for Jupyter")
     (description
      "This package provides the IPython kernel for Jupyter.")
@@ -4526,7 +4526,7 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
             (substitute* "./IPython/core/tests/test_magic.py"
               (("def test_dirops\\(\\):" all)
                (string-append "@dec.skipif(True)\n" all))))))))
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "IPython is a tool for interactive computing in Python")
     (description
      "IPython provides a rich architecture for interactive computing with:
@@ -6437,7 +6437,7 @@ interactive computing.")
     (native-inputs
      `(("python-certifi" ,python-certifi)
        ("python-nose" ,python-nose)))
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "IPython HTML widgets for Jupyter")
     (description "This package provides interactive HTML widgets for Jupyter
 notebooks.")
@@ -6465,7 +6465,7 @@ notebooks.")
        ("python-ipython" ,python-ipython)
        ("python-traitlets" ,python-traitlets)
        ("python-widgetsnbextension" ,python-widgetsnbextension)))
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "IPython HTML widgets for Jupyter")
     (description "Ipywidgets are interactive HTML widgets for Jupyter
 notebooks and the IPython kernel.  Notebooks come alive when interactive
