@@ -3841,7 +3841,7 @@ Custom formats can be created using a fluent style API.")
     (arguments
      `(#:tests? #f ; no tests
        #:jar-name "osgi-annotation.jar"))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Annotation module of OSGi framework")
     (description
      "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -3868,7 +3868,7 @@ components.")
        #:jar-name "osgi-core.jar"))
     (inputs
      `(("java-osgi-annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Core module of OSGi framework")
     (description
      "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -3896,7 +3896,7 @@ the OSGi Core module.")
     (inputs
      `(("java-osgi-annotation" ,java-osgi-annotation)
        ("java-osgi-core" ,java-osgi-core)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGi service event module")
     (description
      "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5350,7 +5350,7 @@ used to generate this API.")
        ("java-datanucleus-javax-persistence" ,java-datanucleus-javax-persistence)
        ("microemulator" ,java-microemulator-cldc)
        ("servlet" ,java-classpathx-servletapi)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Compendium specification module of OSGi framework")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5378,7 +5378,7 @@ in compiling bundles.")
        #:tests? #f)); no tests
     (inputs
      `(("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Support annotations for osgi-service-component")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5404,7 +5404,7 @@ the support annotations for osgi-service-component.")
        #:tests? #f)); no tests
     (inputs
      `(("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Data Transfer Objects")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5435,7 +5435,7 @@ objects of the listed types or aggregates.")
     (inputs
      `(("annotation" ,java-osgi-annotation)
        ("dto" ,java-osgi-dto)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI Resource")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5463,7 +5463,7 @@ the definition of common types in osgi packages.")
     (arguments
      `(#:jar-name "osgi-namespace-contract.jar"
        #:tests? #f)); no tests
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Contract Capability and Requirement Namespace")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5491,7 +5491,7 @@ the names for the attributes and directives for a namespace with contracts.")
     (arguments
      `(#:jar-name "osgi-namespace-extendent.jar"
        #:tests? #f)); no tests
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Extender Capability and Requirement Namespace")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5519,7 +5519,7 @@ the names for the attributes and directives for an extender namespace.")
     (arguments
      `(#:jar-name "osgi-namespace-service.jar"
        #:tests? #f)); no tests
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Service Capability and Requirement Namespace")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5546,7 +5546,7 @@ the names for the attributes and directives for a service namespace.")
        #:tests? #f)); no tests
     (inputs
      `(("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI Util Function")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5574,7 +5574,7 @@ an interface for a function that accepts a single argument and produces a result
     (inputs
      `(("annotation" ,java-osgi-annotation)
        ("function" ,java-osgi-util-function)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Promise of a value")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5602,7 +5602,7 @@ value.  It handles the interactions for asynchronous processing.")
        #:tests? #f)); no tests
     (inputs
      `(("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Support annotations for metatype")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5631,7 +5631,7 @@ the support annotations for metatype.")
      `(("annotation" ,java-osgi-annotation)
        ("promise" ,java-osgi-util-promise)
        ("resource" ,java-osgi-resource)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI service repository")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5659,7 +5659,7 @@ a repository service that contains resources.")
      `(("annotation" ,java-osgi-annotation)
        ("resource" ,java-osgi-resource)
        ("dto" ,java-osgi-dto)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGi framework")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5685,7 +5685,7 @@ and service platform for the Java programming language.")
        #:tests? #f)); no tests
     (inputs
      `(("java-osgi-framework" ,java-osgi-framework)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Provides methods for bundles to write messages to the log")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5710,7 +5710,7 @@ the log service.")
     (arguments
      `(#:jar-name "osgi-service-jdbc.jar"
        #:tests? #f)); no tests
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Factory for JDBC connection factories")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5745,7 +5745,7 @@ factories for getting JDBC connections:
     (inputs
      `(("annotation" ,java-osgi-annotation)
        ("resource" ,java-osgi-resource)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI Resolver service")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5774,7 +5774,7 @@ by the caller.")
     (inputs
      `(("framework" ,java-osgi-framework)
        ("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Bundle tracking")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5802,7 +5802,7 @@ bundle tracking utility classes.")
     (inputs
      `(("framework" ,java-osgi-framework)
        ("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI Configuration Management")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5829,7 +5829,7 @@ utility classes for the configuration of services.")
        #:tests? #f)); no tests
     (inputs
      `(("framework" ,java-osgi-framework)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI Package Administration")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
