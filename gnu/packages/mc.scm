@@ -68,7 +68,7 @@
              (substitute* "misc/ext.d/misc.sh.in"
                (("/bin/cat") "cat"))
              #t)))))
-    (home-page "http://www.midnight-commander.org")
+    (home-page "https://www.midnight-commander.org")
     (synopsis "Graphical file manager")
     (description
      "GNU Midnight Commander is a command-line file manager laid out in a
