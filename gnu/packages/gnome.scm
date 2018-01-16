@@ -1601,6 +1601,7 @@ creating interactive structured graphics.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.bz2"))
+              (patches (search-patches "libgnomeui-utf8.patch"))
               (sha256
                (base32
                 "03rwbli76crkjl6gp422wrc9lqpl174k56cp9i96b7l8jlj2yddf"))))
