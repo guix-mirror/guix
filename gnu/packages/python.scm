@@ -9578,8 +9578,8 @@ to Python.")
          (base32
           "1nv5dxcj59zv31qvl8bd142njmxcmymny2dz3br1l2cpbljbf5i7"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-pytest" ,python-pytest)))
+    (arguments
+     '(#:tests? #f)) ; The tests are not distributed
     (propagated-inputs
      `(("python-graphql-core" ,python-graphql-core)
        ("python-promise" ,python-promise)
