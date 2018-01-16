@@ -9373,8 +9373,8 @@ interface for programs.")
          (base32
           "0rfyxcy4cr3x848vhx876ifalxd5ghq6l5x813m49h4vq2d4jiq8"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-pytest" ,python-pytest)))
+    (arguments
+     '(#:tests? #f)) ; The tests are not distributed
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-six" ,python-six)))
