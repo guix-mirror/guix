@@ -1145,7 +1145,7 @@ access to mpv's powerful playback capabilities.")
     (synopsis "VP8/VP9 video codec")
     (description "libvpx is a codec for the VP8/VP9 video compression format.")
     (license license:bsd-3)
-    (home-page "http://www.webmproject.org/")))
+    (home-page "https://www.webmproject.org/")))
 
 (define-public youtube-dl
   (package
