@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Julian Graham <joolean@gmail.com>
@@ -83,7 +83,7 @@
 (define-public bullet
   (package
     (name "bullet")
-    (version "2.86.1")
+    (version "2.87")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bulletphysics/bullet3/"
@@ -91,7 +91,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0nghzcl84p8di215p7xj0gy1hyy072hw2xk9cnmav9hv6bjb4n60"))))
+                "15azjc1jj8ak9ad7c5sbp9nv5gpqjsa0s9pc0bwy63w490f1b323"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags (list (string-append
@@ -102,7 +102,7 @@
      `(("glu" ,glu)
        ("libx11" ,libx11)
        ("mesa" ,mesa)))
-    (home-page "http://bulletphysics.org/")
+    (home-page "https://pybullet.org/wordpress/")
     (synopsis "3D physics engine library")
     (description
      "Bullet is a physics engine library usable for collision detection.  It
