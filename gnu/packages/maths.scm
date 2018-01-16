@@ -1355,6 +1355,7 @@ script files.")
                "https://github.com/tpaviot/oce/archive/OCE-"
                version
                ".tar.gz"))
+        (patches (search-patches "opencascade-oce-glibc-2.26.patch"))
         (sha256
           (base32
             "0vpmnb0k5y2f7lpmwx9pg9yfq24zjvnsak5alzacncfm1hv9b6cd"))))
