@@ -1183,7 +1183,7 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
                (base32
                 "1vjmda2zfjxg0qkaj8hfqa8g6bfwnn1ja8696rxrjgqq4w69wd95"))))
     (build-system gnu-build-system)
-    (home-page "http://invisible-island.net/diffstat/")
+    (home-page "https://invisible-island.net/diffstat/")
     (synopsis "Make histograms from the output of @command{diff}")
     (description
      "Diffstat reads the output of @command{diff} and displays a histogram of

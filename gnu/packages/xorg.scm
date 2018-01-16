@@ -5813,7 +5813,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
        ("libXt" ,libxt)
        ("xproto" ,xproto)
        ("libXaw" ,libxaw)))
-    (home-page "http://invisible-island.net/xterm/")
+    (home-page "https://invisible-island.net/xterm/")
     (synopsis "Terminal emulator for the X Window System")
     (description
      "The xterm program is a terminal emulator for the X Window System.  It
