@@ -2806,7 +2806,7 @@ In particular, it allows store files to be transferred from one machine
 to the store on another machine.
 
 @quotation Note
-If you're looking for a way to produce archives in a formatq suitable for
+If you're looking for a way to produce archives in a format suitable for
 tools other than Guix, @pxref{Invoking guix pack}.
 @end quotation
 
