@@ -208,7 +208,7 @@ create smooth, animated user interfaces.")
 (define-public lightdm
   (package
     (name "lightdm")
-    (version "1.22.0")
+    (version "1.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/lightdm/"
@@ -217,7 +217,7 @@ create smooth, animated user interfaces.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0a5bvfl2h7r873al6q7c819h0kg564k9fh51rl6489z6lyvazfg4"))))
+                "18j33bm54i8k7ncxcs69zqi4105s62n58jrydqn3ikrb71s9nl6d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f ; fails when run in parallel
