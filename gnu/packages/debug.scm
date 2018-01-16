@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,27 +143,6 @@ intended for use by people who discover and report bugs in compilers and other
 tools that process C/C++ code.")
     (license ncsa)))
 
-(define qemu-2.3.0
-  (package
-    (inherit qemu-minimal)
-    (version "2.3.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://wiki.qemu-project.org/download/qemu-"
-                    version ".tar.bz2"))
-              (sha256
-               (base32
-                "120m53c3p28qxmfzllicjzr8syjv6v4d9rsyrgkp7gnmcgvvgfmn"))))
-    (arguments
-     ;; XXX: Disable tests because of GTester's rejection of duplicate test
-     ;; names, which wasn't addressed in this version of QEMU.
-     `(#:tests? #f
-       ,@(substitute-keyword-arguments (package-arguments qemu-minimal)
-           ((#:phases phases)
-            ;; We disable the tests so we skip the phase disabling the qga test.
-            `(modify-phases ,phases (delete 'disable-test-qga))))))))
-
 (define-public american-fuzzy-lop
   (let ((machine (match (or (%current-target-system)
                             (%current-system))
@@ -177,7 +156,7 @@ tools that process C/C++ code.")
                    (_                "UNSUPPORTED"))))
     (package
       (name "american-fuzzy-lop")
-      (version "2.49b")             ;It seems all releases have the 'b' suffix
+      (version "2.52b")             ;It seems all releases have the 'b' suffix
       (source
        (origin
          (method url-fetch)
@@ -185,22 +164,22 @@ tools that process C/C++ code.")
                              "afl-" version ".tgz"))
          (sha256
           (base32
-           "1lc8mpwlbyb1iil9961yfysp8l2l4nw0s07781m1haiz4jq2rigp"))))
+           "0ig0ij4n1pwry5dw1hk4q88801jzzy2cric6y2gd6560j55lnqa3"))))
       (build-system gnu-build-system)
       (inputs
        `(("custom-qemu"
-          ;; The afl-qemu tool builds qemu 2.3.0 with a few patches applied.
-          ,(package (inherit qemu-2.3.0)
+          ;; The afl-qemu tool builds qemu 2.10.0 with a few patches applied.
+          ,(package (inherit qemu-minimal)
              (name "afl-qemu")
              (inputs
               `(("afl-src" ,source)
-                ,@(package-inputs qemu-2.3.0)))
+                ,@(package-inputs qemu-minimal)))
              ;; afl only supports using a single afl-qemu-trace executable, so
              ;; we only build qemu for the native target.
              (arguments
               `(#:modules ((srfi srfi-1)
                            ,@%gnu-build-system-modules)
-                ,@(substitute-keyword-arguments (package-arguments qemu-2.3.0)
+                ,@(substitute-keyword-arguments (package-arguments qemu-minimal)
                     ((#:configure-flags config-flags)
                      ``(,(string-append "--target-list=" ,machine "-linux-user")
                         ,@(remove (λ (f) (string-prefix? "--target-list=" f))
