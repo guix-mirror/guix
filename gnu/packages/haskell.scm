@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -280,9 +280,12 @@ top of CLISP.")
                   (mkdir-p libtinfo-dir)
                   (symlink
                    (string-append ncurses-lib "/libncursesw.so."
-                                  ,(version-major+minor
-                                    (package-version ncurses)))
+                                  ;; Extract "6.0" from "6.0-20170930".
+                                  ,(let* ((v (package-version ncurses))
+                                          (d (string-index v #\-)))
+                                     (version-major+minor (string-take v d))))
                    (string-append libtinfo-dir "/libtinfo.so.5"))
+
                   (setenv "PATH"
                           (string-append (getenv "PATH") ":"
                                          ghc-bootstrap-prefix "/bin"))
