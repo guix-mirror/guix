@@ -17,7 +17,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -138,6 +138,7 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages web)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
@@ -5494,3 +5495,29 @@ smuggler or bounty hunter.  Forge and break alliances with the various
 factions fighting for power, freedom or self-determination.  The universe is
 whatever you make of it.")
     (license license:gpl3)))
+
+(define-public badass
+  (let ((commit "3c3cd669b4fc8f73a102e3702788f7b28dc47dbb")
+        (revision "0"))
+  (package
+    (name "badass")
+    (version (git-version "0.0" revision commit))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/umayr/badass.git")
+                     (commit commit)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05c9vdcb5ym3z0n5ll3v39mw4yl9jcjnlydmn0yl89ai9pv71zb6"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/umayr/badass"))
+    (synopsis "Hacking contribution graphs in git")
+    (description
+     "Badass generates false commits for a range of dates, essentially
+hacking the gamification of contribution graphs on platforms such as
+Github or Gitlab.")
+    (home-page "https://github.com/umayr/badass")
+    (license license:expat))))
