@@ -139,7 +139,7 @@ and they are executed on lists of files, hosts, users or other items.")
       (modify-phases %standard-phases
         (add-after 'unpack 'autoconf
           (lambda _ (invoke "autoconf")))))) ; configure.ac was patched
-   (home-page "http://slurm.schedmd.com/")
+   (home-page "https://slurm.schedmd.com/")
    (synopsis "Workload manager for cluster computing")
    (description
     "SLURM is a fault-tolerant and highly scalable cluster management and job
