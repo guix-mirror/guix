@@ -5091,7 +5091,7 @@ private methods are not.")
 (define-public perl-moosex-getopt
   (package
     (name "perl-moosex-getopt")
-    (version "0.65")
+    (version "0.71")
     (source
      (origin
        (method url-fetch)
@@ -5099,7 +5099,7 @@ private methods are not.")
                            "MooseX-Getopt-" version ".tar.gz"))
        (sha256
         (base32
-         "1nkzvbsiwldmpn6207ns7rinh860djnw098h6cnvywf429rjnz60"))))
+         "0nf2094qgir0irxjycwqavy53ygm530g9f7cxfywnl2n1bmgh66y"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
