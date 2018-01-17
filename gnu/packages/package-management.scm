@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,8 +61,7 @@
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
-  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ agpl3+ lgpl2.1+ asl2.0
-                                            bsd-3 silofl1.1))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
@@ -292,7 +291,7 @@ also a distribution thereof.  It includes a virtual machine image.  Besides
 the usual package management features, it also supports transactional
 upgrades and roll-backs, per-user profiles, and much more.  It is based on
 the Nix package manager.")
-      (license gpl3+)
+      (license license:gpl3+)
       (properties '((ftp-server . "alpha.gnu.org"))))))
 
 ;; Alias for backward compatibility.
@@ -396,7 +395,7 @@ Haskell—they are built by functions that don't have side-effects, and they
 never change after they have been built.  Nix stores packages in the Nix
 store, usually the directory /nix/store, where each package has its own unique
 sub-directory.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public emacs-nix-mode
   (package
@@ -442,7 +441,7 @@ of data and makes them appear to be merged into the same directory.  It is
 typically used for managing software packages installed from source, by
 letting you install them apart in distinct directories and then create
 symlinks to the files in a common directory such as /usr/local.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public rpm
   (package
@@ -515,7 +514,7 @@ description.  There is also a library permitting developers to manage such
 transactions from C or Python.")
 
     ;; The whole is GPLv2+; librpm itself is dual-licensed LGPLv2+ | GPLv2+.
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public diffoscope
   (package
@@ -577,7 +576,7 @@ transactions from C or Python.")
 different.  It recursively unpacks archives of many kinds and transforms
 various binary formats into more human readable forms to compare them.  It can
 compare two tarballs, ISO images, or PDFs just as easily.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public python-anaconda-client
   (package
@@ -629,7 +628,7 @@ compare two tarballs, ISO images, or PDFs just as easily.")
      "Anaconda Cloud command line client library provides an interface to
 Anaconda Cloud.  Anaconda Cloud is useful for sharing packages, notebooks and
 environments.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-anaconda-client
   (package-with-python2 python-anaconda-client))
@@ -705,7 +704,7 @@ it easy to create independent environments even for C libraries.  Conda is
 written entirely in Python.
 
 This package provides Conda as a library.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-conda
   (let ((base (package-with-python2
@@ -803,4 +802,4 @@ on top of GNU Guix.")
     ;; The Scheme modules in guix/ and gnu/ are licensed GPL3+,
     ;; the web interface modules in gwl/ are licensed AGPL3+,
     ;; and the fonts included in this package are licensed OFL1.1.
-    (license (list gpl3+ agpl3+ silofl1.1))))
+    (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
