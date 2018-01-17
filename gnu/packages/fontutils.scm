@@ -555,7 +555,7 @@ definitions.")
                 ;; Checks for potrace program at runtime
                 `("PATH" ":" prefix (,potrace)))))))
 
-      ;; Check test 40 "FontForge .sfd file open check" to work around
+      ;; Skip test 40 "FontForge .sfd file open check" to work around
       ;; <https://github.com/fontforge/fontforge/issues/3246>.
       #:make-flags '("TESTSUITEFLAGS=-k '!\\.sfd'")))
    (synopsis "Outline font editor")
