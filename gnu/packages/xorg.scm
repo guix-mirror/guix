@@ -5955,7 +5955,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
@@ -5963,7 +5963,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "052w92w21ywgip5p90nifn8vxqzg09by4a0ai22znhqm5mqh7qc1"))))
+         "16m21gr904k6ap0aq73i8ls3g94srpqmn3v6cx844qdy2lg7j0hk"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)
