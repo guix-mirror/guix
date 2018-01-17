@@ -536,8 +536,6 @@ printer/driver specific, but spooler-independent PPD file.")
 
 (define-public foo2zjs
   (package
-    ;; The tarball is called "foo2zjs", but the web page talks about
-    ;; "foo2xqx".  Go figure!
     (name "foo2zjs")
     (version "201709")
     (source (origin
@@ -592,13 +590,17 @@ printer/driver specific, but spooler-independent PPD file.")
     (native-inputs
      `(("bc" ,bc)
        ("groff" ,groff)))
-    (home-page "http://foo2xqx.rkkda.com/")
-    (synopsis "Printer driver for XQX stream protocol")
+    (home-page "http://foo2zjs.rkkda.com/")
+    (synopsis "Printer driver for ZjStream-based printers")
     (description
-     "This package provides a printer driver notably for the ZJS and XQX
-protocols, which cover printers made by Konica, HP (LaserJet), Oki, Samsung,
-and more.  See @file{README} for details.")
-    (license license:gpl2+)))
+     "foo2zjs is a printer driver for printers that use the Zenographics
+ZjStream wire protocol for their print data, often erroneously referred to as
+winprinters or GDI printers.
+
+It supports Minolta/QMS@tie{}Magicolor, Minolta@tie{}Color@tie{}PageWorks/Pro,
+HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
+    (license (list license:expat        ; icc2ps/*.[ch]
+                   license:gpl2+))))    ; everything else
 
 (define-public escpr
   (package
