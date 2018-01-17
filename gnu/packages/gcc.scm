@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -394,7 +394,18 @@ Go.  It also includes runtime support libraries for these languages.")
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
                                        "gcc-libvtv-runpath.patch"
-                                       "gcc-fix-texi2pod.patch"))))
+                                       "gcc-fix-texi2pod.patch"))
+              (modules '((guix build utils)))
+              ;; This is required for building with glibc-2.26.
+              ;; https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81712
+              (snippet
+               '(for-each
+                  (lambda (dir)
+                    (substitute* (string-append "libgcc/config/"
+                                                dir "/linux-unwind.h")
+                      (("struct ucontext") "ucontext_t")))
+                  '("aarch64" "alpha" "bfin" "i386" "m68k" "nios2"
+                    "pa" "sh" "tilepro" "xtensa")))))
     ;; Override inherited texinfo-5 with latest version.
     (native-inputs `(("perl" ,perl)   ;for manpages
                      ("texinfo" ,texinfo)))))
