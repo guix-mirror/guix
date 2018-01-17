@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -30,6 +30,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix hg-download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
@@ -5509,3 +5510,27 @@ positioning methods that can be re-used across several different plots.  There
 are heuristics for examining @code{trellis} and @code{ggplot} objects and
 inferring an appropriate positioning method.")
     (license license:gpl3)))
+
+(define-public r-catterplots
+  (let ((commit "40063ec57f9515d231508f135ca0ec769614efb9")
+        (revision "2"))
+    (package
+      (name "r-catterplots")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Gibbsdavidl/CatterPlots.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1wl80pgbz8d9kfpffvkh439hlgz2qldm9m75wqjfrgrg8lcjzrxg"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-png" ,r-png)))
+      (home-page "https://github.com/Gibbsdavidl/CatterPlots")
+      (synopsis "Scatter plots with cat shaped points")
+      (description "Did you ever wish you could make scatter plots with cat
+shaped points?  Now you can!")
+      (license license:asl2.0))))
