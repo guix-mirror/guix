@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,18 +37,15 @@
 (define-public mitlm
   (package
     (name "mitlm")
-    (version "0.4.1")
-    ;; No official release tarballs, so for now we use the one from Debian
-    ;; that is maintained by one of the project developers.
-    ;;
-    ;; See: https://github.com/mitlm/mitlm/issues/54
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://debian/pool/main/m/mitlm/mitlm_"
-                                  version ".orig.tar.gz"))
+              (uri (string-append "https://github.com/mitlm/mitlm/releases/"
+                                  "download/v" version "/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12m09xxx8jbir9cnzzaysvni5sfijpfj96z1x1520qqvmpc8lmn7"))))
+                "09fv4fcpmw9g1j0zml0k5kk1lgjw2spr8gn51llbkaaph6v8d62a"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
