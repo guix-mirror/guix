@@ -17920,7 +17920,7 @@ service:
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
            (platforms (lookup-qemu-platforms "arm"))
-           (qemu-support? #t)))
+           (guix-support? #t)))
 @end example
 
 You can run:
