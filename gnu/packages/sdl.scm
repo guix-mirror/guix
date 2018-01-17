@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -361,7 +362,7 @@ directory.")
 (define-public sdl2-mixer
   (package (inherit sdl-mixer)
     (name "sdl2-mixer")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -373,7 +374,7 @@ directory.")
                '(delete-file-recursively "external"))
               (sha256
                (base32
-                "0pv9jzjpcjlbiaybvwrb4avmv46qk7iqxlnqrd2dfj82c4mgc92s"))))
+                "1fw3kkqi5346ai5if4pxrcbhs5c4vv3a4smgz6fl6kyaxwkmwqaf"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-mixer))))
 
