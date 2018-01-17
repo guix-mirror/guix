@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -311,7 +312,7 @@ to a Unix shell that can run commands on the connected device or emulator.")
 (define-public android-udev-rules
   (package
     (name "android-udev-rules")
-    (version "20170910")
+    (version "20171113")
     (source
      (origin
        (method git-fetch)
@@ -320,7 +321,7 @@ to a Unix shell that can run commands on the connected device or emulator.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "0vic40n3si0dxag3dyc3hi3pn7cjpm5q378x8v2ys19n3iz9fp1g"))))
+        (base32 "11gcnk6wjc2sw05hwi4xphvx9ksmkpvsdziaczymqxkaads3f1dy"))))
     (build-system trivial-build-system)
     (native-inputs `(("source" ,source)))
     (arguments
