@@ -2,7 +2,7 @@
 # Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2015, 2017 Alex Kost <alezost@gmail.com>
-# Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
+# Copyright © 2016, 2018 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2016, 2017 Mark H Weaver <mhw@netris.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -26,8 +26,20 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-bin_SCRIPTS =					\
-  scripts/guix
+bin_SCRIPTS = scripts/guix
+
+# Handle substitution of fully-expanded Autoconf variables.
+do_subst = $(SED)					\
+  -e 's,[@]GUILE[@],$(GUILE),g'				\
+  -e 's,[@]guilemoduledir[@],$(guilemoduledir),g'	\
+  -e 's,[@]guileobjectdir[@],$(guileobjectdir),g'	\
+  -e 's,[@]localedir[@],$(localedir),g'
+
+scripts/guix: scripts/guix.in Makefile
+	$(AM_V_at)rm -f $@ $@-t
+	$(AM_V_at)$(MKDIR_P) "$(@D)"
+	$(AM_V_GEN)$(do_subst) < "$(srcdir)/$@.in" > "$@-t"
+	$(AM_V_at)chmod a+x,a-w "$@-t" && mv -f "$@-t" "$@"
 
 nodist_noinst_SCRIPTS =				\
   pre-inst-env					\
@@ -437,6 +449,7 @@ EXTRA_DIST =						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
+  bin/guix.in						\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\
@@ -473,6 +486,7 @@ endif !BUILD_DAEMON_OFFLOAD
 
 
 CLEANFILES =					\
+  $(bin_SCRIPTS)				\
   $(GOBJECTS)					\
   $(SCM_TESTS:tests/%.scm=%.log)
 

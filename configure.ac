@@ -124,6 +124,8 @@ dnl Make sure we don't suffer from the bug in 'equal?' wrt. syntax objects
 dnl found in 2.2.1.  See <https://bugs.gnu.org/29903>.
 GUIX_ASSERT_SYNTAX_OBJECT_EQUAL
 
+AC_PROG_SED
+
 dnl Decompressors, for use by the substituter and other modules.
 AC_PATH_PROG([GZIP], [gzip])
 AC_PATH_PROG([BZIP2], [bzip2])
@@ -272,7 +274,6 @@ AC_CONFIG_FILES([Makefile
                  po/packages/Makefile.in
 		 guix/config.scm])
 
-AC_CONFIG_FILES([scripts/guix], [chmod +x scripts/guix])
 AC_CONFIG_FILES([test-env:build-aux/test-env.in], [chmod +x test-env])
 AC_CONFIG_FILES([pre-inst-env:build-aux/pre-inst-env.in],
   [chmod +x pre-inst-env])
