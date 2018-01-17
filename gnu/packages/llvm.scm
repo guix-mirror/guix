@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
@@ -98,7 +98,8 @@ of programming tools as well as libraries with equivalent functionality.")
                    "-DLLVM_REQUIRES_RTTI=1")
                  ,flags))))))
 
-(define (clang-runtime-from-llvm llvm hash)
+(define* (clang-runtime-from-llvm llvm hash
+                                  #:optional (patches '()))
   (package
     (name "clang-runtime")
     (version (package-version llvm))
@@ -107,7 +108,8 @@ of programming tools as well as libraries with equivalent functionality.")
        (method url-fetch)
        (uri (string-append "http://llvm.org/releases/"
                            version "/compiler-rt-" version ".src.tar.xz"))
-       (sha256 (base32 hash))))
+       (sha256 (base32 hash))
+       (patches (map search-patch patches))))
     (build-system cmake-build-system)
     (native-inputs (package-native-inputs llvm))
     (inputs
@@ -212,7 +214,8 @@ code analysis tools.")
 (define-public clang-runtime
   (clang-runtime-from-llvm
    llvm
-   "0p0y85c7izndbpg2l816z7z7558axq11d5pwkm4h11sdw7d13w0d"))
+   "0p0y85c7izndbpg2l816z7z7558axq11d5pwkm4h11sdw7d13w0d"
+   '("clang-runtime-asan-build-fixes.patch")))
 
 (define-public clang
   (clang-from-llvm llvm clang-runtime
@@ -235,7 +238,9 @@ code analysis tools.")
 (define-public clang-runtime-3.9.1
   (clang-runtime-from-llvm
    llvm-3.9.1
-   "16gc2gdmp5c800qvydrdhsp0bzb97s8wrakl6i8a4lgslnqnf2fk"))
+   "16gc2gdmp5c800qvydrdhsp0bzb97s8wrakl6i8a4lgslnqnf2fk"
+   '("clang-runtime-asan-build-fixes.patch"
+     "clang-runtime-esan-build-fixes.patch")))
 
 (define-public clang-3.9.1
   (clang-from-llvm llvm-3.9.1 clang-runtime-3.9.1
@@ -257,7 +262,8 @@ code analysis tools.")
 (define-public clang-runtime-3.7
   (clang-runtime-from-llvm
    llvm-3.7
-   "10c1mz2q4bdq9bqfgr3dirc6hz1h3sq8573srd5q5lr7m7j6jiwx"))
+   "10c1mz2q4bdq9bqfgr3dirc6hz1h3sq8573srd5q5lr7m7j6jiwx"
+   '("clang-runtime-asan-build-fixes.patch")))
 
 (define-public clang-3.7
   (clang-from-llvm llvm-3.7 clang-runtime-3.7
@@ -278,7 +284,8 @@ code analysis tools.")
 (define-public clang-runtime-3.6
   (clang-runtime-from-llvm
    llvm-3.6
-   "11qx8d3pbfqjaj2x207pvlvzihbs1z2xbw4crpz7aid6h1yz6bqg"))
+   "11qx8d3pbfqjaj2x207pvlvzihbs1z2xbw4crpz7aid6h1yz6bqg"
+   '("clang-runtime-asan-build-fixes.patch")))
 
 (define-public clang-3.6
   (clang-from-llvm llvm-3.6 clang-runtime-3.6
@@ -301,7 +308,8 @@ code analysis tools.")
 (define-public clang-runtime-3.5
   (clang-runtime-from-llvm
    llvm-3.5
-   "1hsdnzzdr5kglz6fnv3lcsjs222zjsy14y8ax9dy6zqysanplbal"))
+   "1hsdnzzdr5kglz6fnv3lcsjs222zjsy14y8ax9dy6zqysanplbal"
+   '("clang-runtime-asan-build-fixes.patch")))
 
 (define-public clang-3.5
   (clang-from-llvm llvm-3.5 clang-runtime-3.5
