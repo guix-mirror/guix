@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -486,7 +487,7 @@ device-specific programs to convert and print many types of files.")
 (define-public foomatic-filters
   (package
     (name "foomatic-filters")
-    (version "4.0.12")
+    (version "4.0.17")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -494,7 +495,7 @@ device-specific programs to convert and print many types of files.")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "17w26r15094j4fqifa7f7i7jad4gsy9zdlq69kffrykcw31qx3q8"))
+                "1qrkgbm5jay2r7sh9qbyf0aiyrsl1mdc844hxf7fhw95a0zfbqm2"))
               (patches
                (search-patches "foomatic-filters-CVE-2015-8327.patch"
                                "foomatic-filters-CVE-2015-8560.patch"))))
