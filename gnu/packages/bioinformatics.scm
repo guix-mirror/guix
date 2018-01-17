@@ -11307,3 +11307,266 @@ reference or de-novo assembly) to quantify.  All you need to run sailfish is a
 fasta file containing your reference transcripts and a (set of) fasta/fastq
 file(s) containing your reads.")
     (license license:gpl3+)))
+
+(define libstadenio-for-salmon
+  (package
+    (name "libstadenio")
+    (version "1.14.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/COMBINE-lab/staden-io_lib.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1x8kxxqxl892vwfbprlbyfwkkv7c34ggkc94892x9x0g37x5nbwx"))))
+    (build-system gnu-build-system)
+    (arguments '(#:parallel-tests? #f)) ; not supported
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl)))                 ; for tests
+    (home-page "https://github.com/COMBINE-lab/staden-io_lib")
+    (synopsis "General purpose trace and experiment file library")
+    (description "This package provides a library of file reading and writing
+code to provide a general purpose Trace file (and Experiment File) reading
+interface.
+
+The following file formats are supported:
+
+@enumerate
+@item SCF trace files
+@item ABI trace files
+@item ALF trace files
+@item ZTR trace files
+@item SFF trace archives
+@item SRF trace archives
+@item Experiment files
+@item Plain text files
+@item SAM/BAM sequence files
+@item CRAM sequence files
+@end enumerate\n")
+    (license license:bsd-3)))
+
+(define spdlog-for-salmon
+  (package
+    (name "spdlog")
+    (version "0.14.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/COMBINE-lab/spdlog.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "13730429gwlabi432ilpnja3sfvy0nn2719vnhhmii34xcdyc57q"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/COMBINE-lab/spdlog")
+    (synopsis "Very fast C++ logging library")
+    (description "Spdlog is a very fast header-only C++ logging library with
+performance as its primary goal.")
+    (license license:expat)))
+
+;; This is a modified variant of bwa for use with Salmon. It installs a
+;; library to avoid having to build this as part of Salmon.
+(define bwa-for-salmon
+  (package (inherit bwa)
+    (name "bwa")
+    (version "0.7.12.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/COMBINE-lab/bwa.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append "bwa-for-salmon-" version "-checkout"))
+              (sha256
+               (base32
+                "1z2qa64y0c5hky10510x137mnzlhz6k8qf27csw4w9j6qihq95gb"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
+                    (doc (string-append out "/share/doc/bwa"))
+                    (man (string-append out "/share/man/man1"))
+                    (inc (string-append out "/include/bwa")))
+               (install-file "bwa" bin)
+               (install-file "README.md" doc)
+               (install-file "bwa.1" man)
+               (install-file "libbwa.a" lib)
+               (mkdir-p lib)
+               (mkdir-p inc)
+               (for-each (lambda (file)
+                           (install-file file inc))
+                         (find-files "." "\\.h$")))
+             #t))
+         ;; no "configure" script
+         (delete 'configure))))))
+
+(define-public salmon
+  (package
+    (name "salmon")
+    (version "0.9.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/COMBINE-lab/salmon.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1zi1ff4i7y2ykk0vdzysgwzzzv166vg2x77pj1mf4baclavxj87a"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled headers for eigen3.
+                  (delete-file-recursively "include/eigen3/")
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DBOOST_INCLUDEDIR="
+                            (assoc-ref %build-inputs "boost")
+                            "/include/")
+             (string-append "-DBOOST_LIBRARYDIR="
+                            (assoc-ref %build-inputs "boost")
+                            "/lib/")
+             (string-append "-DBoost_LIBRARIES="
+                            "-lboost_iostreams "
+                            "-lboost_filesystem "
+                            "-lboost_system "
+                            "-lboost_thread "
+                            "-lboost_timer "
+                            "-lboost_chrono "
+                            "-lboost_program_options")
+             "-DBoost_FOUND=TRUE"
+             "-DTBB_LIBRARIES=tbb tbbmalloc"
+             ;; Don't download RapMap---we already have it!
+             "-DFETCHED_RAPMAP=1")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Boost cannot be found, even though it's right there.
+         (add-after 'unpack 'do-not-look-for-boost
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("find_package\\(Boost 1\\.53\\.0") "#"))))
+         (add-after 'unpack 'do-not-phone-home
+           (lambda _
+             (substitute* "src/Salmon.cpp"
+               (("getVersionMessage\\(\\)") "\"\""))))
+         (add-after 'unpack 'prepare-rapmap
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((src "external/install/src/rapmap/")
+                   (include "external/install/include/rapmap/")
+                   (rapmap (assoc-ref inputs "rapmap")))
+               (mkdir-p src)
+               (mkdir-p include)
+               (for-each (lambda (file)
+                           (install-file file src))
+                         (find-files (string-append rapmap "/src") "\\.(c|cpp)"))
+               (copy-recursively (string-append rapmap "/include") include)
+               (for-each delete-file '("external/install/include/rapmap/xxhash.h"
+                                       "external/install/include/rapmap/FastxParser.hpp"
+                                       "external/install/include/rapmap/concurrentqueue.h"
+                                       "external/install/include/rapmap/FastxParserThreadUtils.hpp"
+                                       "external/install/src/rapmap/FastxParser.cpp"
+                                       "external/install/src/rapmap/xxhash.c")))))
+         (add-after 'unpack 'use-system-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/CMakeLists.txt"
+               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/include/jellyfish-2.2..")
+                (string-append (assoc-ref inputs "jellyfish")
+                               "/include/jellyfish-" ,(package-version jellyfish)))
+               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libjellyfish-2.0.a")
+                (string-append (assoc-ref inputs "jellyfish")
+                               "/lib/libjellyfish-2.0.a"))
+               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libdivsufsort.a")
+                (string-append (assoc-ref inputs "libdivsufsort")
+                               "/lib/libdivsufsort.so"))
+               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libstaden-read.a")
+                (string-append (assoc-ref inputs "libstadenio-for-salmon")
+                               "/lib/libstaden-read.a"))
+               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libbwa.a")
+                (string-append (assoc-ref inputs "bwa") "/lib/libbwa.a"))
+               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libdivsufsort64.a")
+                (string-append (assoc-ref inputs "libdivsufsort")
+                               "/lib/libdivsufsort64.so")))
+             (substitute* "CMakeLists.txt"
+               ;; Don't prefer static libs
+               (("SET\\(CMAKE_FIND_LIBRARY_SUFFIXES.*") "")
+               (("set\\(TBB_LIBRARIES") "message(")
+               (("find_package\\(Jellyfish.*") "")
+               (("ExternalProject_Add\\(libcereal") "message(")
+               (("ExternalProject_Add\\(libbwa") "message(")
+               (("ExternalProject_Add\\(libjellyfish") "message(")
+               (("ExternalProject_Add\\(libgff") "message(")
+               (("ExternalProject_Add\\(libtbb") "message(")
+               (("ExternalProject_Add\\(libspdlog") "message(")
+               (("ExternalProject_Add\\(libdivsufsort") "message(")
+               (("ExternalProject_Add\\(libstadenio") "message(")
+               (("ExternalProject_Add_Step\\(") "message("))
+
+             ;; Ensure that all headers can be found
+             (setenv "CPLUS_INCLUDE_PATH"
+                     (string-append (getenv "CPLUS_INCLUDE_PATH")
+                                    ":"
+                                    (assoc-ref inputs "bwa")
+                                    "/include/bwa"
+                                    ":"
+                                    (assoc-ref inputs "eigen")
+                                    "/include/eigen3"))
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "bwa")
+                                    "/include/bwa"
+                                    ":"
+                                    (assoc-ref inputs "eigen")
+                                    "/include/eigen3"))
+             #t))
+         ;; CMAKE_INSTALL_PREFIX does not exist when the tests are
+         ;; run.  It only exists after the install phase.
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("DTOPLEVEL_DIR=\\$\\{CMAKE_INSTALL_PREFIX")
+                "DTOPLEVEL_DIR=${GAT_SOURCE_DIR"))
+             #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("bwa" ,bwa-for-salmon)
+       ("bzip2" ,bzip2)
+       ("cereal" ,cereal)
+       ("eigen" ,eigen)
+       ("rapmap" ,(origin
+                    (method git-fetch)
+                    (uri (git-reference
+                          (url "https://github.com/COMBINE-lab/RapMap.git")
+                          (commit (string-append "salmon-v" version))))
+                    (file-name (string-append "rapmap-salmon-v" version "-checkout"))
+                    (sha256
+                     (base32
+                      "1yc12yqsz6f0r8sg1qnk57xg34aqwc9jbqq6gd5ys28xw3plj98p"))))
+       ("jemalloc" ,jemalloc)
+       ("jellyfish" ,jellyfish)
+       ("libgff" ,libgff)
+       ("tbb" ,tbb)
+       ("libdivsufsort" ,libdivsufsort)
+       ("libstadenio-for-salmon" ,libstadenio-for-salmon)
+       ("spdlog-for-salmon" ,spdlog-for-salmon)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/COMBINE-lab/salmon")
+    (synopsis "Quantification from RNA-seq reads using lightweight alignments")
+    (description "Salmon is a program to produce highly-accurate,
+transcript-level quantification estimates from RNA-seq data.  Salmon achieves
+its accuracy and speed via a number of different innovations, including the
+use of lightweight alignments (accurate but fast-to-compute proxies for
+traditional read alignments) and massively-parallel stochastic collapsed
+variational inference.")
+    (license license:gpl3+)))
