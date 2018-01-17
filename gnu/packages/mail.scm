@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -2066,7 +2066,7 @@ the GNU Mailman 3 REST API.")
 (define-public mlmmj
   (package
     (name "mlmmj")
-    (version "1.2.19.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -2074,7 +2074,7 @@ the GNU Mailman 3 REST API.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "1piwvcxkqadjwk5x8jicaiyz9nngmaj3w13ghdqgaki32xd7zk9v"))))
+         "0hpj10qad821ci11si8xc2qnmkzfn90y13s43fm4fca38f0qjp8w"))))
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl))) ; For "contrib/web/"
