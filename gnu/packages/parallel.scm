@@ -148,7 +148,12 @@ resources (computer nodes) to users for some duration of time, provides a
 framework for starting, executing, and monitoring work (typically a parallel
 job) on a set of allocated nodes, and arbitrates contention for resources
 by managing a queue of pending work.")
-   (license license:gpl2+)))
+   (license (list license:bsd-2       ; src/common/log.[ch], src/common/uthash
+                  license:expat       ; slurm/pmi.h
+                  license:isc         ; src/common/strlcpy.c
+                  license:lgpl2.1+    ; hilbert.[ch], src/common/slurm_time.h
+                  license:zlib        ; src/common/strnatcmp.c
+                  license:gpl2+))))   ; the rest, often with OpenSSL exception
 
 (define-public slurm-drmaa
   (package
