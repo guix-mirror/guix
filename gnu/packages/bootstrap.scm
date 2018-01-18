@@ -137,7 +137,7 @@ successful, or false to signal an error."
     (license gpl3+)))
 
 (define package-with-bootstrap-guile
-  (mlambda (p)
+  (mlambdaq (p)
     "Return a variant of P such that all its origins are fetched with
 %BOOTSTRAP-GUILE."
     (define rewritten-input
