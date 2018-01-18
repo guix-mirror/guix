@@ -853,7 +853,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.21p2")
+    (version "1.8.22")
     (source (origin
               (method url-fetch)
               (uri
@@ -863,7 +863,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0s33szq6q59v5s377l4v6ybsdy7pfq6sz7y364j4x09ssdn79ibl"))
+                "00pxp74xkwdcmrjwy55j0k8p684jk1zx3nzdc11v30q8q8kwnmkj"))
               (modules '((guix build utils)))
               (snippet
                '(delete-file-recursively "lib/zlib"))))
