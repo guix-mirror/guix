@@ -66,7 +66,7 @@ is only limited by the available memory.  The library is highly optimized,
 with a design focus on execution speed.  It is aimed at use in, for example,
 cryptography and computational algebra.")
    (license lgpl3+)
-   (home-page "http://gmplib.org/")))
+   (home-page "https://gmplib.org/")))
 
 (define-public gmp-6.0
   ;; We keep this one around to bootstrap GCC, to work around a compilation
