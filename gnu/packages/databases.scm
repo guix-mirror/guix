@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -498,7 +498,7 @@ RDBMS systems (which are deep in functionality).")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.20")
+    (version "5.7.21")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -510,7 +510,7 @@ RDBMS systems (which are deep in functionality).")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "11v4g3igigv3zvknv67qml8in6fjrbs2vnr3q6bg6f62nydm95sk"))))
+               "1dq9bgnajf7cq3mrjkwv6w5nwslhs26lkrw56i7w4fbsq9wm087s"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
