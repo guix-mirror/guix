@@ -47,6 +47,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix memoization)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -371,18 +372,21 @@
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
-(define (linux-libre-headers-boot0)
-  "Return Linux-Libre header files for the bootstrap environment."
-  ;; Note: this is wrapped in a thunk to nicely handle circular dependencies
-  ;; between (gnu packages linux) and this module.
-  (package-with-bootstrap-guile
-   (package (inherit linux-libre-headers)
-     (arguments `(#:guile ,%bootstrap-guile
-                  #:implicit-inputs? #f
-                  ,@(package-arguments linux-libre-headers)))
-     (native-inputs
-      `(("perl" ,perl-boot0)
-        ,@%boot0-inputs)))))
+(define linux-libre-headers-boot0
+  (mlambda ()
+    "Return Linux-Libre header files for the bootstrap environment."
+    ;; Note: this is wrapped in a thunk to nicely handle circular dependencies
+    ;; between (gnu packages linux) and this module.  Additionally, memoize
+    ;; the result to play well with further memoization and code that relies
+    ;; on pointer identity; see <https://bugs.gnu.org/30155>.
+    (package-with-bootstrap-guile
+     (package (inherit linux-libre-headers)
+              (arguments `(#:guile ,%bootstrap-guile
+                           #:implicit-inputs? #f
+                           ,@(package-arguments linux-libre-headers)))
+              (native-inputs
+               `(("perl" ,perl-boot0)
+                 ,@%boot0-inputs))))))
 
 (define gnumach-headers-boot0
   (package-with-bootstrap-guile
@@ -423,18 +427,19 @@
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
-(define (hurd-core-headers-boot0)
-  "Return the Hurd and Mach headers as well as initial Hurd libraries for
+(define hurd-core-headers-boot0
+  (mlambda ()
+    "Return the Hurd and Mach headers as well as initial Hurd libraries for
 the bootstrap environment."
-  (package-with-bootstrap-guile
-   (package (inherit hurd-core-headers)
-            (arguments `(#:guile ,%bootstrap-guile
-                                 ,@(package-arguments hurd-core-headers)))
-            (inputs
-             `(("gnumach-headers" ,gnumach-headers-boot0)
-               ("hurd-headers" ,hurd-headers-boot0)
-               ("hurd-minimal" ,hurd-minimal-boot0)
-               ,@%boot0-inputs)))))
+    (package-with-bootstrap-guile
+     (package (inherit hurd-core-headers)
+              (arguments `(#:guile ,%bootstrap-guile
+                           ,@(package-arguments hurd-core-headers)))
+              (inputs
+               `(("gnumach-headers" ,gnumach-headers-boot0)
+                 ("hurd-headers" ,hurd-headers-boot0)
+                 ("hurd-minimal" ,hurd-minimal-boot0)
+                 ,@%boot0-inputs))))))
 
 (define* (kernel-headers-boot0 #:optional (system (%current-system)))
   (match system

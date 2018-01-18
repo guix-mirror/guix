@@ -620,6 +620,9 @@ itself.
 This is implemented as a breadth-first traversal such that INPUTS is
 preserved, and only duplicate propagated inputs are removed."
   (define (seen? seen item outputs)
+    ;; FIXME: We're using pointer identity here, which is extremely sensitive
+    ;; to memoization in package-producing procedures; see
+    ;; <https://bugs.gnu.org/30155>.
     (match (vhash-assq item seen)
       ((_ . o) (equal? o outputs))
       (_       #f)))
