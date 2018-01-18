@@ -423,6 +423,9 @@ also initializes the boards (RAM etc).")
 (define-public u-boot-odroid-c2
   (make-u-boot-package "odroid-c2" "aarch64-linux-gnu"))
 
+(define-public u-boot-banana-pi-m2-ultra
+  (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))
+
 (define-public vboot-utils
   (package
     (name "vboot-utils")
