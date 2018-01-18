@@ -1142,14 +1142,14 @@ development, not the kernel implementation of ACPI.")
 (define-public stress
   (package
     (name "stress")
-    (version "1.0.1")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://debian/pool/main/s/stress/stress_"
                                   version ".orig.tar.gz"))
               (sha256
                (base32
-                "1v9vnzlihqfjsxa93hdbrq72pqqk00dkylmlg8jpxhm7s1w9qfl1"))))
+                "0nw210jajk38m3y7h8s130ps2qsbz7j75wab07hi2r3hlz14yzh5"))))
     (build-system gnu-build-system)
     (home-page "https://packages.debian.org/sid/stress")
     (synopsis "Impose load on and stress test a computer system")
