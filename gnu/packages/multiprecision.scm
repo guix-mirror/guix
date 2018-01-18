@@ -125,7 +125,7 @@ floating-point computations with correct rounding.")
     "GNU MPC is a C library for performing arithmetic on complex numbers.
 It supports arbitrarily high precision and it correctly rounds the results.")
    (license lgpl3+)
-   (home-page "http://mpc.multiprecision.org/")))
+   (home-page "http://multiprecision.org/mpc/")))
 
 (define-public mpfi
   (package
