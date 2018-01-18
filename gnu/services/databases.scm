@@ -552,4 +552,5 @@ The optional @var{config} argument specifies the configuration for
                        (service-extension activation-service-type
                                           redis-activation)
                        (service-extension account-service-type
-                                          (const %redis-accounts))))))
+                                          (const %redis-accounts))))
+                (default-value (redis-configuration))))
