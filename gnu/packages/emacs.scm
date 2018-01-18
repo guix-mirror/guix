@@ -7313,3 +7313,26 @@ Features:
     (description "@code{epipe} provides an utility to use your editor in
 the pipeline, featuring the support for running @code{emacsclient}.")
     (license license:gpl3+)))
+
+(define-public emacs-hcl-mode
+  (package
+    (name "emacs-hcl-mode")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/syohex/emacs-hcl-mode/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pvw74qpwh0znqzp6syp4wxjqs7dp1hbn5h7xfk97mff9l5d8k6x"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/syohex/emacs-hcl-mode")
+    (synopsis "Major mode for the Hashicorp Configuration Language")
+    (description
+     "@code{emacs-hcl-mode} provides an Emacs major mode for working with
+@acronym{HCL, Hashicorp Configuration Language}.  It provides syntax
+highlighting and indentation support.")
+    (license license:gpl3+)))
