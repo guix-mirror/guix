@@ -469,7 +469,8 @@ FLUSH PRIVILEGES;
           (service-extension activation-service-type
                              %mysql-activation)
           (service-extension shepherd-root-service-type
-                             mysql-shepherd-service)))))
+                             mysql-shepherd-service)))
+   (default-value (mysql-configuration))))
 
 (define* (mysql-service #:key (config (mysql-configuration)))
   "Return a service that runs @command{mysqld}, the MySQL or MariaDB
