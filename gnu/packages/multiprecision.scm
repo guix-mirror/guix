@@ -120,10 +120,11 @@ floating-point computations with correct rounding.")
    (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)              ; <mpc.h> refers to both
                         ("mpfr" ,mpfr)))
-   (synopsis "C library for arbitrary precision complex arithmetic")
+   (synopsis "C library for arbitrary-precision complex arithmetic")
    (description
-    "GNU MPC is a C library for performing arithmetic on complex numbers.
-It supports arbitrarily high precision and it correctly rounds the results.")
+    "GNU@tie{}@dfn{MPC} (Multiple Precision Complex library) is a C library for
+performing arithmetic on complex numbers.  It supports arbitrarily high
+precision and correctly rounds the results.")
    (license lgpl3+)
    (home-page "http://multiprecision.org/mpc/")))
 
