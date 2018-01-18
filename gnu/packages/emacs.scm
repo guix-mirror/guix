@@ -7336,3 +7336,28 @@ the pipeline, featuring the support for running @code{emacsclient}.")
 @acronym{HCL, Hashicorp Configuration Language}.  It provides syntax
 highlighting and indentation support.")
     (license license:gpl3+)))
+
+(define-public emacs-terraform-mode
+  (package
+    (name "emacs-terraform-mode")
+    (version "0.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/syohex/emacs-terraform-mode/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h9267ifdjmcin4sj8slxydbacx4bqicbvg8pa1qq2l72h9m5381"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-hcl-mode" ,emacs-hcl-mode)))
+    (home-page "https://github.com/syohex/emacs-terraform-mode")
+    (synopsis "Major mode for Terraform")
+    (description
+     "@code{emacs-terraform-mode} provides a major mode for working with
+@uref{https://www.terraform.io/, Terraform} configuration files.  Most of the
+functionality is inherited from @code{hcl-mode}.")
+    (license license:gpl3+)))
