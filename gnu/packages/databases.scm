@@ -464,8 +464,8 @@ applications.")
                    ;; individual executable files, with some being hundreds of
                    ;; megabytes in size.
                    (begin
-		     (apply
-                      invoke `("scons" ,@common-options "dbtest" "unittests"))
+                     (apply
+                       invoke `("scons" ,@common-options "dbtest" "unittests"))
                      (substitute* "build/unittests.txt"
                        ;; TODO: Don't run the async_stream_test, as it hangs
                        (("^build\\/opt\\/mongo\\/executor\\/async\\_stream\\_test\n$")
@@ -474,8 +474,8 @@ applications.")
                        ;; Expected 0UL != disks.size() (0 != 0) @src/mongo/util/procparser_test.cpp:476
                        (("^build\\/opt\\/mongo\\/util\\/procparser\\_test\n$")
                         ""))
-		     (invoke "python" "buildscripts/resmoke.py"
-			     "--suites=dbtest,unittests"
+                     (invoke "python" "buildscripts/resmoke.py"
+                             "--suites=dbtest,unittests"
                              (format #f  "--jobs=~a" (parallel-job-count)))))))
            (replace 'install
              (lambda _
