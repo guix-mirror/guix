@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -157,21 +158,16 @@ toolkit.  It allows users to monitor and control of running processes.")
 (define-public lxterminal
   (package
     (name "lxterminal")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lxde/LXTerminal"
                                   "%20%28terminal%20emulator%29/LXTerminal%20"
                                   version "/" name "-" version ".tar.xz"))
-              (patches (search-patches "lxterminal-CVE-2016-10369.patch"))
               (sha256
                (base32
-                "1yf76s15zvfw0h42b0ay1slpq47khgjmcry8ki2z812zar9lchia"))))
+                "0jrc3m0hbxcmcgahwjlm46s2350gh80ggb6a90xy0h6xqa3z73fd"))))
     (build-system gnu-build-system)
-    (arguments
-     `(;; Tests for "po" fail with "No rule to make target '../src/encoding.c'
-       ;; needed by 'lxterminal.pot'. Stop."
-       #:tests? #f))
     (inputs `(("gtk+" ,gtk+-2)
               ("vte"  ,vte/gtk+-2)))
     (native-inputs `(("intltool"   ,intltool)
