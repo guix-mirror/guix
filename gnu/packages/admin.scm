@@ -1151,7 +1151,7 @@ development, not the kernel implementation of ACPI.")
                (base32
                 "1v9vnzlihqfjsxa93hdbrq72pqqk00dkylmlg8jpxhm7s1w9qfl1"))))
     (build-system gnu-build-system)
-    (home-page "http://packages.debian.org/wheezy/stress")
+    (home-page "https://packages.debian.org/sid/stress")
     (synopsis "Impose load on and stress test a computer system")
     (description
      "Stress is a tool that imposes a configurable amount of CPU, memory, I/O,
