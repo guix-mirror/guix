@@ -210,20 +210,6 @@ integrate Windows applications into your desktop.")
     (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
 
-;; TODO: This is wine development version, provided for historical reasons.
-;; We can remove it as soon as a new stable release is out.
-(define-public wine-next
-  (package (inherit wine)
-    (name "wine-next")
-    (version "2.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://dl.winehq.org/wine/source/2.x"
-                                  "/wine-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0g6cwjyqwc660w33453aklh3hpc0b8rrb88dryn23ah6wannvagg"))))))
-
 (define-public wine-staging
   (package
     (inherit wine)
