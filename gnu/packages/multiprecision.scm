@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -129,14 +130,14 @@ It supports arbitrarily high precision and it correctly rounds the results.")
 (define-public mpfi
   (package
     (name "mpfi")
-    (version "1.5.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/30130/mpfi-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1g2q6i7dqx40p4gw11da6jgfcbzmm26wxc69fwv8zpcdyg32a9za"))))
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gforge.inria.fr/frs/download.php"
+                           "/latestfile/181/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "0bqr8yibl7jbrp0bw7xk1lm7nis7rv26jsz6y8ycvih8n9bx90r3"))))
     (build-system gnu-build-system)
     (propagated-inputs `(("gmp" ,gmp)   ; <mpfi.h> refers to both
                          ("mpfr" ,mpfr)))
