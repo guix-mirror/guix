@@ -1630,15 +1630,12 @@ user-space processes.")
                 "0hsn8l1iblvx27bpd4dvnvnbh9ri3sv2f9xzpsnfz3379kb7skgj"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("python" ,python)
-       ("python-pytest" ,python-pytest)))
+     `(("python" ,python)))
     (inputs `(("fuse" ,fuse)))
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           ;; Borrowed from the Makefile
-           (lambda _ (zero? (system* "python3" "-m" "pytest")))))))
+     ;; The tests were never actually run ("collected 0 items"), but in recent
+     ;; versions of pytest that causes an error.
+     '(#:tests? #f))
     (home-page "https://github.com/rpodgorny/unionfs-fuse")
     (synopsis "User-space union file system")
     (description
