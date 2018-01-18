@@ -141,13 +141,16 @@ It supports arbitrarily high precision and it correctly rounds the results.")
     (build-system gnu-build-system)
     (propagated-inputs `(("gmp" ,gmp)   ; <mpfi.h> refers to both
                          ("mpfr" ,mpfr)))
-    (synopsis "C library for arbitrary precision interval arithmetic")
-    (description "MPFI is intended to be a portable library written in C for
-arbitrary precision interval arithmetic with intervals represented using MPFR
-reliable floating-point numbers.  It is based on the GNU MP library and on the
-MPFR library.  The purpose of an arbitrary precision interval arithmetic is on
-the one hand to get guaranteed results, thanks to interval computation, and on
-the other hand to obtain accurate results, thanks to multiple precision
-arithmetic.")
+    (synopsis "C library for arbitrary-precision interval arithmetic")
+    (description
+     "@dfn{MPFI} (Multiple Precision Floating-point Interval) is a portable C
+library for arbitrary-precision interval arithmetic, with intervals represented
+using MPFR reliable floating-point numbers.  It's based on the @dfn{GMP} (GNU
+Multiple Precision Arithmetic) and GNU@tie{}@dfn{MPFR} (Multiple Precision
+Floating-Point Reliably) libraries.
+
+The purpose of arbitrary-precision interval arithmetic is to get results that
+are both guaranteed, thanks to interval computation, and accurate, thanks to
+multiple-precision arithmetic.")
     (license lgpl2.1+)
     (home-page "https://perso.ens-lyon.fr/nathalie.revol/software.html")))
