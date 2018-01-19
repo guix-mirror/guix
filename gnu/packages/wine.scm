@@ -64,7 +64,8 @@
     (version "3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://dl.winehq.org/wine/source/3.0"
+              (uri (string-append "https://dl.winehq.org/wine/source/"
+                                  (version-major+minor version)
                                   "/wine-" version ".tar.xz"))
               (sha256
                (base32
