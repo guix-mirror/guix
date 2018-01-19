@@ -710,7 +710,7 @@ writing of compressed data created with the zlib and bzip2 libraries.")
 (define-public lz4
   (package
     (name "lz4")
-    (version "1.8.1")
+    (version "1.8.1.2")
     (source
      (origin
        (method url-fetch)
@@ -718,7 +718,7 @@ writing of compressed data created with the zlib and bzip2 libraries.")
                            "v" version ".tar.gz"))
        (sha256
         (base32
-         "0jdknxz66gak4w7j7b8n18xf28xw3yb1v6npsl4fgiiwnq0fjbgw"))
+         "1y93h6dyi3026gvpzdv310ldcylnnhwf32n75mdjf8x9fvkskwqj"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs `(("valgrind" ,valgrind)))   ; for tests
