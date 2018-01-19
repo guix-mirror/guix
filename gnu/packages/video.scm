@@ -89,6 +89,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
@@ -102,6 +103,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages ruby)
@@ -1723,6 +1725,35 @@ and custom quantization matrices.")
     (description "Livestreamer is a command-line utility that extracts streams
 from various services and pipes them into a video playing application.")
     (home-page "http://livestreamer.io/")
+    (license license:bsd-2)))
+
+(define-public streamlink
+  (package
+    (name "streamlink")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "streamlink" version))
+       (sha256
+        (base32
+         "17299xnd9jzi7m1d2rr4xdlj47q64bzj2957nlsrhw0hskds1s6h"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/streamlink/streamlink")
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-mock" ,python-mock)
+       ("python-requests-mock" ,python-requests-mock)))
+    (propagated-inputs
+     `(("python-pysocks" ,python-pysocks)
+       ("python-websocket-client" ,python-websocket-client)
+       ("python-iso3166" ,python-iso3166)
+       ("python-iso639" ,python-iso639)
+       ("python-pycryptodome" ,python-pycryptodome)
+       ("python-requests" ,python-requests)))
+    (synopsis "Extract streams from various services")
+    (description "Streamlink is command-line utility that extracts streams
+from sites like Twitch.tv and pipes them into a video player of choice.")
     (license license:bsd-2)))
 
 (define-public mlt
