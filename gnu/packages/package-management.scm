@@ -34,6 +34,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages graphviz)
@@ -803,3 +804,29 @@ on top of GNU Guix.")
     ;; the web interface modules in gwl/ are licensed AGPL3+,
     ;; and the fonts included in this package are licensed OFL1.1.
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
+
+(define-public gcab
+  (package
+    (name "gcab")
+    (version "0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1vxdsiky3492zlyrym02sdwf09y19rl2z5h5iin7qm0wizw5wvm1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("zlib" ,zlib)))
+    (home-page "https://wiki.gnome.org/msitools") ; no dedicated home page
+    (synopsis "Microsoft Cabinet file manipulation library")
+    (description
+     "The libgcab library provides GObject functions to read, write, and modify
+Microsoft cabinet (.@dfn{CAB}) files.")
+    (license (list license:gpl2+        ; tests/testsuite.at
+                   license:lgpl2.1+)))) ; the rest
