@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -345,14 +345,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "3.10.0")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "03kb37iv3dvvdlslznlc0njvjpmq082lczmsslz5p4fcwb50kwfz"))))
+                "1j6zzajh4j3zzsaqn5f5mrchm0590xcf6rzkfajvqw3bd4dcms79"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -362,7 +362,7 @@ manage system or application containers.")
        ;; FAIL: networkxml2firewalltest
        ;; FAIL: nwfilterebiptablestest
        ;; FAIL: nwfilterxml2firewalltest
-       ;; Times while running commandest.
+       ;; Time-out while running commandtest.
        #:tests? #f
        #:configure-flags
        (list "--with-polkit"
@@ -382,9 +382,9 @@ manage system or application containers.")
            ;; at runtime, we must prevent writing to them at installation
            ;; time.
            (lambda _
-             (zero? (system* "make" "install"
-                             "sysconfdir=/tmp/etc"
-                             "localstatedir=/tmp/var"))))
+             (invoke "make" "install"
+                            "sysconfdir=/tmp/etc"
+                            "localstatedir=/tmp/var")))
          (add-after 'install 'wrap-libvirtd
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
