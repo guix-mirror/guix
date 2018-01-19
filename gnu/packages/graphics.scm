@@ -33,6 +33,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
@@ -88,40 +89,48 @@
                 "16f84mdzkmwjmqahjj64kbyk4kagdj4mcr8qjazs1952d7kh7pm9"))))
     (build-system cmake-build-system)
     (arguments
-     `(;; Test files are very large and not included in the release tarball.
-       #:tests? #f
-       #:configure-flags
-       (list "-DWITH_CODEC_FFMPEG=ON"
-             "-DWITH_CODEC_SNDFILE=ON"
-             "-DWITH_CYCLES=ON"
-             "-DWITH_DOC_MANPAGE=ON"
-             "-DWITH_FFTW3=ON"
-             "-DWITH_GAMEENGINE=ON"
-             "-DWITH_IMAGE_OPENJPEG=ON"
-             "-DWITH_INPUT_NDOF=ON"
-             "-DWITH_INSTALL_PORTABLE=OFF"
-             "-DWITH_JACK=ON"
-             "-DWITH_MOD_OCEANSIM=ON"
-             "-DWITH_PLAYER=ON"
-             "-DWITH_PYTHON_INSTALL=OFF"
-             "-DWITH_SYSTEM_OPENJPEG=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-broken-import
-           (lambda _
-             (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
-               (("import encode_bin") "from . import encode_bin"))
-             #t))
-         (add-after 'set-paths 'add-ilmbase-include-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; OpenEXR propagates ilmbase, but its include files do not appear
-             ;; in the CPATH, so we need to add "$ilmbase/include/OpenEXR/" to
-             ;; the CPATH to satisfy the dependency on "half.h".
-             (setenv "CPATH"
-                     (string-append (assoc-ref inputs "ilmbase")
-                                    "/include/OpenEXR"
-                                    ":" (or (getenv "CPATH") "")))
-             #t)))))
+      (let ((python-version (version-major+minor (package-version python))))
+       `(;; Test files are very large and not included in the release tarball.
+         #:tests? #f
+         #:configure-flags
+         (list "-DWITH_CODEC_FFMPEG=ON"
+               "-DWITH_CODEC_SNDFILE=ON"
+               "-DWITH_CYCLES=ON"
+               "-DWITH_DOC_MANPAGE=ON"
+               "-DWITH_FFTW3=ON"
+               "-DWITH_GAMEENGINE=ON"
+               "-DWITH_IMAGE_OPENJPEG=ON"
+               "-DWITH_INPUT_NDOF=ON"
+               "-DWITH_INSTALL_PORTABLE=OFF"
+               "-DWITH_JACK=ON"
+               "-DWITH_MOD_OCEANSIM=ON"
+               "-DWITH_PLAYER=ON"
+               "-DWITH_PYTHON_INSTALL=OFF"
+               "-DWITH_PYTHON_INSTALL=OFF"
+               "-DWITH_SYSTEM_OPENJPEG=ON"
+               (string-append "-DPYTHON_LIBRARY=python" ,python-version "m")
+               (string-append "-DPYTHON_LIBPATH=" (assoc-ref %build-inputs "python")
+                              "/lib")
+               (string-append "-DPYTHON_INCLUDE_DIR=" (assoc-ref %build-inputs "python")
+                              "/include/python" ,python-version "m")
+               (string-append "-DPYTHON_VERSION=" ,python-version))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-broken-import
+             (lambda _
+               (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
+                 (("import encode_bin") "from . import encode_bin"))
+               #t))
+           (add-after 'set-paths 'add-ilmbase-include-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; OpenEXR propagates ilmbase, but its include files do not appear
+               ;; in the CPATH, so we need to add "$ilmbase/include/OpenEXR/" to
+               ;; the CPATH to satisfy the dependency on "half.h".
+               (setenv "CPATH"
+                       (string-append (assoc-ref inputs "ilmbase")
+                                      "/include/OpenEXR"
+                                      ":" (or (getenv "CPATH") "")))
+               #t))))))
     (inputs
      `(("boost" ,boost)
        ("jemalloc" ,jemalloc)
@@ -140,7 +149,7 @@
        ("freetype" ,freetype)
        ("glew" ,glew)
        ("openal" ,openal)
-       ("python" ,python-wrapper)
+       ("python" ,python)
        ("zlib" ,zlib)))
     (home-page "https://blender.org/")
     (synopsis "3D graphics creation suite")
