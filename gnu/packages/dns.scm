@@ -284,7 +284,7 @@ asynchronous fashion.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.6.7")
+    (version "1.6.8")
     (source
      (origin
        (method url-fetch)
@@ -292,7 +292,7 @@ asynchronous fashion.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "17qwfmlls0w9kpkya3dlpn44b3kr87wsswzg3gawc13hh8yx8ysf"))))
+         "0jfxhh4gc5amhndikskz1s7da27ycn442j3l20bm992n7zijid73"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
