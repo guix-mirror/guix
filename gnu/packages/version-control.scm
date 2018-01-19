@@ -582,10 +582,10 @@ collaboration using typical untrusted file hosts or services.")
        ("git:src"
         ,(origin
            (method url-fetch)
-           (uri "mirror://kernel.org/software/scm/git/git-2.10.4.tar.xz")
+           (uri "mirror://kernel.org/software/scm/git/git-2.10.5.tar.xz")
            (sha256
             (base32
-             "1pni4mgih5w42813dxljl61s7xmcpdnar34d9m4548hzpljjyd4l"))))
+             "1r2aa19gnrvm2y4fqcvpw1g9l72n48axqmpgv18s6d0y2p72vhzj"))))
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
