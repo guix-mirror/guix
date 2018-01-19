@@ -1040,7 +1040,7 @@ testing frameworks.")
     (synopsis "Test utilities for code working with files and commands")
     (description
      "Testpath is a collection of utilities for Python code working with files
-and commands.  It contains functions to check things on the filesystem, and
+and commands.  It contains functions to check things on the file system, and
 tools for mocking system commands and recording calls to those.")
     (license license:expat)))
 

@@ -842,7 +842,7 @@ infamous 'Wanda the Fish'.")
      "Caja is the official file manager for the MATE desktop.
 It allows for browsing directories, as well as previewing files and launching
 applications associated with them.  Caja is also responsible for handling the
-icons on the MATE desktop.  It works on local and remote filesystems.")
+icons on the MATE desktop.  It works on local and remote file systems.")
     ;; There is a note about a TRADEMARKS_NOTICE file in COPYING which
     ;; does not exist. It is safe to assume that this is of no concern
     ;; for us.
@@ -900,7 +900,7 @@ icons on the MATE desktop.  It works on local and remote filesystems.")
      "Caja is the official file manager for the MATE desktop.
 It allows for browsing directories, as well as previewing files and launching
 applications associated with them.  Caja is also responsible for handling the
-icons on the MATE desktop.  It works on local and remote filesystems.")
+icons on the MATE desktop.  It works on local and remote file systems.")
     (license license:gpl2+)))
 
 (define-public mate-control-center

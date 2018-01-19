@@ -37,7 +37,7 @@
 ;; process for Go libraries, so we use `go install`, which preserves the
 ;; results. [0]
 
-;; Go software is developed and built within a particular filesystem hierarchy
+;; Go software is developed and built within a particular file system hierarchy
 ;; structure called a 'workspace' [1].  This workspace is found by Go
 ;; via the GOPATH environment variable.  Typically, all Go source code
 ;; and compiled objects are kept in a single workspace, but it is
@@ -48,7 +48,7 @@
 ;; an 'import path'.  The import path is based on the URL of the
 ;; software's source.  Since most source code is provided over the
 ;; internet, the import path is typically a combination of the remote
-;; URL and the source repository's filesystem structure. For example,
+;; URL and the source repository's file system structure. For example,
 ;; the Go port of the common `du` command is hosted on github.com, at
 ;; <https://github.com/calmh/du>.  Thus, the import path is
 ;; <github.com/calmh/du>. [3]
@@ -58,12 +58,12 @@
 ;; the go-build-system.
 ;;
 ;; Modules of modular Go libraries are named uniquely with their
-;; filesystem paths.  For example, the supplemental but "standardized"
+;; file system paths.  For example, the supplemental but "standardized"
 ;; libraries developed by the Go upstream developers are available at
 ;; <https://golang.org/x/{net,text,crypto, et cetera}>.  The Go IPv4
 ;; library's import path is <golang.org/x/net/ipv4>.  The source of
 ;; such modular libraries must be unpacked at the top-level of the
-;; filesystem structure of the library.  So the IPv4 library should be
+;; file system structure of the library.  So the IPv4 library should be
 ;; unpacked to <golang.org/x/net>.  This is handled in the
 ;; go-build-system with the optional #:unpack-path key.
 ;;
@@ -72,7 +72,7 @@
 ;; that all modules of modular libraries cannot be built with a single
 ;; command.  Each module must be built individually.  This complicates
 ;; certain cases, and these issues are currently resolved by creating a
-;; filesystem union of the required modules of such libraries.  I think
+;; file system union of the required modules of such libraries.  I think
 ;; this could be improved in future revisions of the go-build-system.
 ;;
 ;; [0] `go build`:

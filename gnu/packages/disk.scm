@@ -371,7 +371,7 @@ permit managing file systems not included in libparted.")
   (synopsis "Colourised @command{df} clone")
   (description "All-singing, all-dancing, fully colourised @command{df} clone
 written in Python.  It displays the amount of disk space available on the
-mounted filesystems, using different colours for different types of file
+mounted file systems, using different colours for different types of file
 systems.  Output format is completely customizable.")
   (license license:public-domain)))
 

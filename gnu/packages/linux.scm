@@ -4304,7 +4304,7 @@ userspace queueing component and the logging subsystem.")
      "PRoot is a user-space implementation of @code{chroot}, @code{mount --bind},
 and @code{binfmt_misc}.  This means that users don't need any privileges or
 setup to do things like using an arbitrary directory as the new root
-filesystem, making files accessible somewhere else in the file system
+file system, making files accessible somewhere else in the file system
 hierarchy, or executing programs built for another CPU architecture
 transparently through QEMU user-mode.  Also, developers can use PRoot as a
 generic process instrumentation engine thanks to its extension mechanism.
@@ -4391,10 +4391,10 @@ NexGen, Rise, and SiS CPUs.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/JasonFerrara/jmtpfs")
-    (synopsis "Use a FUSE filesystem to access data over MTP")
-    (description "jmtpfs uses FUSE (filesystem in userspace) to provide access
+    (synopsis "Use a FUSE file system to access data over MTP")
+    (description "jmtpfs uses FUSE (file system in userspace) to provide access
 to data over the Media Transfer Protocol (MTP).  Unprivileged users can mount
-the MTP device as a filesystem.")
+the MTP device as a file system.")
     (license license:gpl3)))
 
 (define-public procenv

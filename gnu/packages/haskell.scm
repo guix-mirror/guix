@@ -5942,7 +5942,7 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
          "0zkqihmdfz7bzv3sxh1p9ijl4vra880kfy3qy9h96flq7d2if0f2"))))
     (build-system haskell-build-system)
     (home-page "http://hackage.haskell.org/package/directory")
-    (synopsis "Platform-agnostic library for filesystem operations")
+    (synopsis "Platform-agnostic library for file system operations")
     (description
      "This library provides a basic set of operations for manipulating
 files and directories in a portable way.")
@@ -6203,7 +6203,7 @@ increasing type safety.")
        ("ghc-text" ,ghc-text)
        ("ghc-temporary" ,ghc-temporary)))
     (home-page "https://github.com/fpco/haskell-filesystem")
-    (synopsis "Consistent filesystem interaction across GHC versions")
+    (synopsis "Consistent file system interaction across GHC versions")
     (description
      "This is a small wrapper around the directory, unix, and Win32 packages,
 for use with system-filepath.  It provides a consistent API to the various
@@ -6424,7 +6424,7 @@ increasing type safety.")
        ("ghc-chell" ,ghc-chell)
        ("ghc-temporary" ,ghc-temporary)))
     (home-page "https://github.com/fpco/haskell-filesystem")
-    (synopsis "Consistent filesystem interaction across GHC versions")
+    (synopsis "Consistent file system interaction across GHC versions")
     (description
      "This is a small wrapper around the directory, unix, and Win32 packages,
 for use with system-filepath.  It provides a consistent API to the various
@@ -6744,7 +6744,7 @@ accessed or modified.")
     (synopsis "Cross platform library for file change notification.")
     (description "Cross platform library for file creation, modification, and
 deletion notification. This library builds upon existing libraries for platform
-specific Windows, Mac, and Linux filesystem event notification.")
+specific Windows, Mac, and Linux file system event notification.")
     (license license:bsd-3)))
 
 (define-public ghc-ieee754

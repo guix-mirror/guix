@@ -132,10 +132,10 @@ single file can be mounted.")
        ;; FIXME: Tests require 'run-parts' which is not in Guix yet.
        #:tests? #f))
     (home-page "https://github.com/ReproducibleBuilds/disorderfs")
-    (synopsis "FUSE filesystem that introduces non-determinism")
+    (synopsis "FUSE file system that introduces non-determinism")
     (description
-     "An overlay FUSE filesystem that introduces non-determinism
-into filesystem metadata.  For example, it can randomize the order
+     "An overlay FUSE file system that introduces non-determinism
+into file system metadata.  For example, it can randomize the order
 in which directory entries are read.  This is useful for detecting
 non-determinism in the build process.")
     (license license:gpl3+)))
@@ -201,7 +201,7 @@ non-determinism in the build process.")
        ("zlib" ,zlib)))
     (home-page "https://www.gluster.org")
     (synopsis "Distributed file system")
-    (description "GlusterFS is a distributed scalable network filesystem
+    (description "GlusterFS is a distributed scalable network file system
 suitable for data-intensive tasks such as cloud storage and media streaming.
 It allows rapid provisioning of additional storage based on your storage
 consumption needs.  It incorporates automatic failover as a primary feature.

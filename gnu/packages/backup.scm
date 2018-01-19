@@ -418,7 +418,7 @@ rdiff-backup is easy to use and settings have sensible defaults.")
        ("rsync" ,rsync)))
     (home-page "http://rsnapshot.org")
     (synopsis "Deduplicating snapshot backup utility based on rsync")
-    (description "rsnapshot is a filesystem snapshot utility based on rsync.
+    (description "rsnapshot is a file system snapshot utility based on rsync.
 rsnapshot makes it easy to make periodic snapshots of local machines, and
 remote machines over SSH.  To reduce the disk space required for each backup,
 rsnapshot uses hard links to deduplicate identical files.")
@@ -811,7 +811,7 @@ any special software, on top of SSH.")
     (synopsis "Fast, disk based, rotating network backup system")
     (description
      "With dirvish you can maintain a set of complete images of your
-filesystems with unattended creation and expiration.  A dirvish backup vault
+file systems with unattended creation and expiration.  A dirvish backup vault
 is like a time machine for your data. ")
     (license (license:fsf-free "file://COPYING"
                                "Open Software License 2.0"))))

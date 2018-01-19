@@ -88,7 +88,7 @@
      (define pipefs-directory (pipefs-configuration-mount-point config))
 
      (shepherd-service
-      (documentation "Mount the pipefs pseudo filesystem.")
+      (documentation "Mount the pipefs pseudo file system.")
       (provision '(rpc-pipefs))
 
       (start #~(lambda ()

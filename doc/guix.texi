@@ -3695,10 +3695,10 @@ Go build mechanisms}.
 The user is expected to provide a value for the key @code{#:import-path}
 and, in some cases, @code{#:unpack-path}.  The
 @url{https://golang.org/doc/code.html#ImportPaths, import path}
-corresponds to the filesystem path expected by the package's build
+corresponds to the file system path expected by the package's build
 scripts and any referring packages, and provides a unique way to
 refer to a Go package.  It is typically based on a combination of the
-package source code's remote URI and filesystem hierarchy structure.  In
+package source code's remote URI and file system hierarchy structure.  In
 some cases, you will need to unpack the package's source code to a
 different directory structure than the one indicated by the import path,
 and @code{#:unpack-path} should be used in such cases.
@@ -15848,7 +15848,7 @@ The backend to store the keys in.  Can be @code{'pem} or @code{'pkcs11}.
 @item @code{config} (default: @code{"/var/lib/knot/keys/keys"})
 The configuration string of the backend.  An example for the PKCS#11 is:
 @code{"pkcs11:token=knot;pin-value=1234 /gnu/store/.../lib/pkcs11/libsofthsm2.so"}.
-For the pem backend, the string reprensents a path in the filesystem.
+For the pem backend, the string reprensents a path in the file system.
 
 @end table
 @end deftp
