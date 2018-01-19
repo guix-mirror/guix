@@ -605,7 +605,7 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
 (define-public escpr
   (package
     (name "escpr")
-    (version "1.6.17")
+    (version "1.6.18")
     ;; XXX: This currently works.  But it will break as soon as a newer
     ;; version is available since the URLs for older versions are not
     ;; preserved.  An alternative source will be added as soon as
@@ -613,12 +613,12 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
     (source (origin
               (method url-fetch)
               ;; The uri has to be chopped up in order to satisfy guix lint.
-              (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/06/66/09/"
-                                  "4ac2bf69bb1ddf4a9ad525596615cbb40fe4dad5/"
-                                  "epson-inkjet-printer-escpr-1.6.17-1lsb3.2.tar.gz"))
+              (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/06/86/80/"
+                                  "9955e43f3aead20366851d24cea65de779cf5aa7/"
+                                  "epson-inkjet-printer-escpr-1.6.18-1lsb3.2.tar.gz"))
               (sha256
                (base32
-                "0m6v1wdavw4r25jfywqchsx0v9ss1l5fr8vq9d0d8cmjnz8mqblv"))))
+                "137jf52dhi5v2rkmlw4b73f7r7f98m61dpgsb7yvqs2f0yhsjsb3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
