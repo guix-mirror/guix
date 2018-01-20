@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -66,7 +66,7 @@
 
 
 (define (shepherd-boot-gexp services)
-  (mlet %store-monad ((shepherd-conf (shepherd-configuration-file services)))
+  (with-monad %store-monad
     (return #~(begin
                 ;; Keep track of the booted system.
                 (false-if-exception (delete-file "/run/booted-system"))
@@ -84,7 +84,8 @@
 
                 ;; Start shepherd.
                 (execl #$(file-append shepherd "/bin/shepherd")
-                       "shepherd" "--config" #$shepherd-conf)))))
+                       "shepherd" "--config"
+                       #$(shepherd-configuration-file services))))))
 
 (define shepherd-root-service-type
   (service-type
@@ -203,25 +204,24 @@ stored."
 
 (define (shepherd-service-file service)
   "Return a file defining SERVICE."
-  (gexp->file (shepherd-service-file-name service)
-              (with-imported-modules %default-imported-modules
-                #~(begin
-                    (use-modules #$@(shepherd-service-modules service))
+  (scheme-file (shepherd-service-file-name service)
+               (with-imported-modules %default-imported-modules
+                 #~(begin
+                     (use-modules #$@(shepherd-service-modules service))
 
-                    (make <service>
-                      #:docstring '#$(shepherd-service-documentation service)
-                      #:provides '#$(shepherd-service-provision service)
-                      #:requires '#$(shepherd-service-requirement service)
-                      #:respawn? '#$(shepherd-service-respawn? service)
-                      #:start #$(shepherd-service-start service)
-                      #:stop #$(shepherd-service-stop service))))))
+                     (make <service>
+                       #:docstring '#$(shepherd-service-documentation service)
+                       #:provides '#$(shepherd-service-provision service)
+                       #:requires '#$(shepherd-service-requirement service)
+                       #:respawn? '#$(shepherd-service-respawn? service)
+                       #:start #$(shepherd-service-start service)
+                       #:stop #$(shepherd-service-stop service))))))
 
 (define (shepherd-configuration-file services)
   "Return the shepherd configuration file for SERVICES."
   (assert-valid-graph services)
 
-  (mlet %store-monad ((files (mapm %store-monad
-                                   shepherd-service-file services)))
+  (let ((files (map shepherd-service-file services)))
     (define config
       #~(begin
           (use-modules (srfi srfi-34)
@@ -252,7 +252,7 @@ stored."
                                        (filter shepherd-service-auto-start?
                                                services)))))))
 
-    (gexp->file "shepherd.conf" config)))
+    (scheme-file "shepherd.conf" config)))
 
 (define* (shepherd-service-lookup-procedure services
                                             #:optional
