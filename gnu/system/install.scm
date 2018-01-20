@@ -379,6 +379,14 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                      nvi                          ;:wq!
                      %base-packages))))
 
+(define* (agetty-default-service #:optional (tty "ttyS0"))
+  "Return an agetty-service on the given TTY"
+  (agetty-service (agetty-configuration
+                   (extra-options '("-L"))
+                   (baud-rate "115200")
+                   (term "vt100")
+                   (tty tty))))
+
 (define beaglebone-black-installation-os
   (operating-system
     (inherit installation-os)
@@ -391,16 +399,8 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                      ;; This module is required to mount the sd card.
                      #:extra-modules (list "omap_hsmmc")
                      rest)))
-    (services (append
-               ;; mingetty does not work on serial lines.
-               ;; Use agetty with board-specific serial parameters.
-               (list (agetty-service
-                      (agetty-configuration
-                       (extra-options '("-L"))
-                       (baud-rate "115200")
-                       (term "vt100")
-                       (tty "ttyO0"))))
-               (operating-system-user-services installation-os)))))
+    (services (cons* (agetty-default-service "ttyO0")
+                     (operating-system-user-services installation-os)))))
 
 (define a20-olinuxino-lime2-emmc-installation-os
   (operating-system
@@ -409,14 +409,8 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                  (bootloader u-boot-a20-olinuxino-lime2-bootloader)
                  (target "/dev/mmcblk1"))) ; eMMC storage
     (kernel linux-libre)
-    (services (append
-               (list (agetty-service
-                      (agetty-configuration
-                       (extra-options '("-L"))
-                       (baud-rate "115200")
-                       (term "vt100")
-                       (tty "ttyS0"))))
-               (operating-system-user-services installation-os)))))
+    (services (cons* (agetty-default-service "ttyS0")
+                     (operating-system-user-services installation-os)))))
 
 (define a20-olinuxino-micro-installation-os
   (operating-system
@@ -425,14 +419,8 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                  (bootloader u-boot-a20-olinuxino-lime2-bootloader)
                  (target "/dev/mmcblk0"))) ; SD card storage
     (kernel linux-libre)
-    (services (append
-               (list (agetty-service
-                      (agetty-configuration
-                       (extra-options '("-L"))
-                       (baud-rate "115200")
-                       (term "vt100")
-                       (tty "ttyS0"))))
-               (operating-system-user-services installation-os)))))
+    (services (cons* (agetty-default-service "ttyS0")
+                     (operating-system-user-services installation-os)))))
 
 (define banana-pi-m2-ultra-installation-os
   (operating-system
@@ -441,14 +429,8 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                  (bootloader u-boot-banana-pi-m2-ultra-bootloader)
                  (target "/dev/mmcblk1"))) ; eMMC storage
     (kernel linux-libre)
-    (services (append
-               (list (agetty-service
-                      (agetty-configuration
-                       (extra-options '("-L"))
-                       (baud-rate "115200")
-                       (term "vt100")
-                       (tty "ttyS0"))))
-               (operating-system-user-services installation-os)))))
+    (services (cons* (agetty-default-service "ttyS0")
+                     (operating-system-user-services installation-os)))))
 
 ;; Return the default os here so 'guix system' can consume it directly.
 installation-os
