@@ -362,11 +362,12 @@ downloads, download scheduling, download rate limiting.")
        #:tests? #f))                            ; no tests
     (home-page "https://github.com/Rudde/mktorrent")
     (synopsis "Utility to create BitTorrent metainfo files")
-    (description "mktorrent is a simple command-line utility to create
-BitTorrent @dfn{metainfo} files, often known simply as @dfn{torrents}, from
-both single files and whole directories.  It can add multiple trackers and web
-seed URLs, and set the @code{private} flag to disallow advertisement through
-the distributed hash table (DHT) and Peer Exchange.  Hashing is multi-threaded
+    (description
+     "mktorrent is a simple command-line utility to create BitTorrent
+@dfn{metainfo} files, often known simply as @dfn{torrents}, from both single
+files and whole directories.  It can add multiple trackers and web seed URLs,
+and set the @code{private} flag to disallow advertisement through the
+distributed hash table (@dfn{DHT}) and Peer Exchange.  Hashing is multi-threaded
 and will take advantage of multiple processor cores where possible.")
     (license (list l:public-domain      ; sha1.*, used to build without OpenSSL
                    l:gpl2+))))          ; with permission to link with OpenSSL
