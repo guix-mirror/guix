@@ -523,10 +523,10 @@ SMPTE 314M.")
     (inputs
      `(("libebml" ,libebml)))
     (home-page "https://www.matroska.org")
-    (synopsis "C++ libary to parse Matroska files (.mkv and .mka)")
+    (synopsis "C++ library to parse Matroska files (.mkv and .mka)")
     (description
      "Matroska aims to become the standard of multimedia container formats.
-It is based on EBML (Extensible Binary Meta Language), a binary derivative
+It is based on @dfn{EBML} (Extensible Binary Meta Language), a binary derivative
 of XML.  EBML enables the Matroska Development Team to gain significant
 advantages in terms of future format extensibility, without breaking file
 support in old parsers.
