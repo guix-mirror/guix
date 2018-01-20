@@ -728,7 +728,7 @@ Machine Protocol.")
 (define-public lookingglass
   (package
    (name "lookingglass")
-   (version "a9")
+   (version "a10")
    (source
     (origin
      (method url-fetch)
@@ -737,7 +737,7 @@ Machine Protocol.")
      (file-name (string-append name "-" version))
      (sha256
       (base32
-       "015chy4x94x4dd5831d7n0gada8rhahmdx7bdbdhajlzivi3kjcw"))))
+       "0zlxg9ibzr0a598wr5nl1pb4l7mzsqn8ip72v4frph0vwsm5il6c"))))
    (build-system gnu-build-system)
    (inputs `(("fontconfig" ,fontconfig)
              ("glu" ,glu)
