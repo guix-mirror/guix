@@ -400,7 +400,7 @@ and will take advantage of multiple processor cores where possible.")
               ("openssl" ,openssl)))
     (native-inputs `(("python" ,python-2)
                      ("pkg-config" ,pkg-config)))
-    (home-page "http://www.rasterbar.com/products/libtorrent/")
+    (home-page "https://www.libtorrent.org/")
     (synopsis "Feature complete BitTorrent implementation")
     (description
      "libtorrent-rasterbar is a feature complete C++ BitTorrent implementation
