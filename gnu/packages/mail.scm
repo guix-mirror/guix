@@ -15,14 +15,14 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -429,7 +429,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.1.4")
+    (version "7.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -437,7 +437,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0m34iks3l9p6shqkgfhfpiccglm6gk5nj98x20pvahl58nclmzn6"))))
+                "1qa3km3s3yhmpgzh76dnzwn22aa8fh39814zgnlyhs07l23ffa4f"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -1916,14 +1916,14 @@ transfer protocols.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "6.0.2p1")
+    (version "6.0.3p1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.opensmtpd.org/archives/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1b4h64w45hpmfq5721smhg4s0shs64gbcjqjpx3fbiw4hz8bdy9a"))))
+                "10bsfsnlg9d9i6l2izdnxp05s3ri8fvwzqxvx1jmarc852382619"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -1937,10 +1937,10 @@ transfer protocols.")
        ("groff" ,groff)))
     (arguments
      `(#:configure-flags
-       (list "--with-table-db" "--localstatedir=/var"
+       (list "--with-table-db" "--with-auth-pam" "--localstatedir=/var"
              "--with-user-smtpd=smtpd" "--with-user-queue=smtpq"
              "--with-group-queue=smtpq"
-             "--with-path-socket=/var/run"
+             "--with-path-socket=/var/run" ; not default (./configure lies)
              "--with-path-CAfile=/etc/ssl/certs/ca-certificates.crt")
        #:phases
        (modify-phases %standard-phases
@@ -2066,7 +2066,7 @@ the GNU Mailman 3 REST API.")
 (define-public mlmmj
   (package
     (name "mlmmj")
-    (version "1.2.19.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -2074,7 +2074,7 @@ the GNU Mailman 3 REST API.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "1piwvcxkqadjwk5x8jicaiyz9nngmaj3w13ghdqgaki32xd7zk9v"))))
+         "0hpj10qad821ci11si8xc2qnmkzfn90y13s43fm4fca38f0qjp8w"))))
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl))) ; For "contrib/web/"

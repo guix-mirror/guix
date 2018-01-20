@@ -5781,7 +5781,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
        ("libXt" ,libxt)
        ("xproto" ,xproto)
        ("libXaw" ,libxaw)))
-    (home-page "http://invisible-island.net/xterm/")
+    (home-page "https://invisible-island.net/xterm/")
     (synopsis "Terminal emulator for the X Window System")
     (description
      "The xterm program is a terminal emulator for the X Window System.  It
@@ -5923,7 +5923,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.2.1")
+    (version "2.2.3")
     (source
      (origin
        (method url-fetch)
@@ -5931,7 +5931,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "052w92w21ywgip5p90nifn8vxqzg09by4a0ai22znhqm5mqh7qc1"))))
+         "03cq16cfffm5f62g1xc3makr03b5wjjfy6zlwag70pc3g0k6n6jh"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)

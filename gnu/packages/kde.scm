@@ -236,15 +236,16 @@ plugins, as well as code to create plugins, or complete applications.")
 (define-public krita
   (package
     (name "krita")
-    (version "3.3.2.1")
+    (version "3.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://kde/stable/krita/"
-                    "3.3.2/" name "-" version ".tar.xz"))
+                    (version-prefix version 3)
+                    "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0i3l27cfi1h486m74xf4ynk0pwx32xaqraa91a0g1bpj1jxf2mg5"))))
+                "0pc6hnakkqy81x5b5ncivaps6hqv43i50sjwgi3i3cz9j8rlxh5y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f

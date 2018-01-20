@@ -678,3 +678,40 @@ Python.")
 
 (define-public python2-ecpy
   (package-with-python2 python-ecpy))
+
+(define-public python-josepy
+  (package
+    (name "python-josepy")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "josepy" version))
+              (sha256
+               (base32
+                "1k0ahzzaq2rrjiifwbhbp7vm8z4zk0ipgiqwicil80kzlf6bhj4z"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The tests require pytest >= 3.2, which is not yet packaged.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-six" ,python-six)))
+;; TODO Enable when we have pytest >= 3.2.
+;    (native-inputs
+;     `(("python-coverage" ,python-coverage)
+;       ("python-flake8" ,python-flake8)
+;       ("python-isort" ,python-isort)
+;       ("python-mock" ,python-mock)
+;       ("python-pytest" ,python-pytest-3.0)
+;       ("python-pytest-cov" ,python-pytest-cov)
+;       ("python-pytest-cache" ,python-pytest-cache)
+;       ("python-pytest-flake8" ,python-pytest-flake8)))
+    (home-page "https://github.com/certbot/josepy")
+    (synopsis "JOSE protocol implementation in Python")
+    (description "This package provides a Python implementation of the JOSE
+protocol (Javascript Object Signing and Encryption).")
+    (license license:asl2.0)))
+
+(define-public python2-josepy
+  (package-with-python2 python-josepy))

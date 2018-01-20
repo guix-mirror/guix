@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -896,16 +897,16 @@ interface to select the best such procedures to use on a given system.")
 (define-public harminv
   (package
     (name "harminv")
-    (version "1.4")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append
-                "http://ab-initio.mit.edu/harminv/harminv-"
-                version ".tar.gz"))
+               (string-append "https://github.com/stevengj/harminv/"
+                              "releases/download/v" version "/"
+                              name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1pmm8d6fx9ahhnk7w12bfa6zx3afbkg4gkvlvgwhpjxbcrvrp3jk"))))
+                "0w1n4d249vlpda0hi6z1v13qp21vlbp3ykn0m8qg4rd5132j7fg1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -920,7 +921,7 @@ interface to select the best such procedures to use on a given system.")
      `(("fortran" ,gfortran)))
     (inputs
      `(("lapack" ,lapack)))
-    (home-page "http://ab-initio.mit.edu/wiki/index.php/Harminv")
+    (home-page "https://github.com/stevengj/harminv")
     (synopsis "Harmonic inversion solver")
     (description
      "Harminv is a free program (and accompanying library) to solve the problem of

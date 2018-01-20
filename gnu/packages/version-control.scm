@@ -138,14 +138,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
    ;; to be updated as well.
-   (version "2.15.1")
+   (version "2.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0p04linqdywdf7m1hqa904fzqvgzplsxlzdqrn96j1j5gpyr174r"))))
+              "1y1hdr8ydff5q7y762cwfdgaxam4mxvir6nrw3g51mmkcr77c40d"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -158,7 +158,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0mi609plzqqwx271hr9m5j4syggqx255bbzml6ca9j5fadywysvc"))))))
+            "0k5bviwff2q3vri8v6n2a71sxm83gcskzy6wr2z01pb7xfk28hl9"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -582,10 +582,10 @@ collaboration using typical untrusted file hosts or services.")
        ("git:src"
         ,(origin
            (method url-fetch)
-           (uri "mirror://kernel.org/software/scm/git/git-2.10.4.tar.xz")
+           (uri "mirror://kernel.org/software/scm/git/git-2.10.5.tar.xz")
            (sha256
             (base32
-             "1pni4mgih5w42813dxljl61s7xmcpdnar34d9m4548hzpljjyd4l"))))
+             "1r2aa19gnrvm2y4fqcvpw1g9l72n48axqmpgv18s6d0y2p72vhzj"))))
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
@@ -1183,7 +1183,7 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
                (base32
                 "1vjmda2zfjxg0qkaj8hfqa8g6bfwnn1ja8696rxrjgqq4w69wd95"))))
     (build-system gnu-build-system)
-    (home-page "http://invisible-island.net/diffstat/")
+    (home-page "https://invisible-island.net/diffstat/")
     (synopsis "Make histograms from the output of @command{diff}")
     (description
      "Diffstat reads the output of @command{diff} and displays a histogram of

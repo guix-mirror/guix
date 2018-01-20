@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
@@ -79,17 +79,17 @@ things the parser might find in the XML document (like start tags).")
 (define-public libebml
   (package
     (name "libebml")
-    (version "1.3.4")
+    (version "1.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/"
-                           name "/" name "-" version ".tar.bz2"))
+                           name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "11zka6z9ncywyjr1gfm5cnii33ln7y3w6s86kiacchip2g7kw3f5"))))
+         "005a0ipqnfbsq47zrc61zszi439jw32q5xd6dc1jyb3lc0zl266q"))))
     (build-system gnu-build-system)
-    (home-page "https://www.matroska.org")
+    (home-page "https://matroska-org.github.io/libebml/")
     (synopsis "C++ libary to parse EBML files")
     (description "libebml is a C++ library to read and write EBML (Extensible
 Binary Meta Language) files.  EBML was designed to be a simplified binary
@@ -128,7 +128,7 @@ project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
 
 (define-public python-libxml2
-  (package (inherit libxml2)
+  (package/inherit libxml2
     (name "python-libxml2")
     (build-system python-build-system)
     (arguments
@@ -937,18 +937,28 @@ Libxml2).")
 (define-public minixml
   (package
     (name "minixml")
-    (version "2.10")
+    (version "2.11")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/tarbomb)
               (uri (string-append "https://github.com/michaelrsweet/mxml/"
-                                  "releases/download/release-" version
+                                  "releases/download/v" version
                                   "/mxml-" version ".tar.gz"))
               (sha256
                (base32
-                "14bqfq4lymhb31snz6wsvzhlavy0573v1nki1lbngiyxcj5zazr6"))))
+                "13xsw8vvkxd10vca42ccdyl9rs64lcvhbfz57aknpl3xcfn8mxma"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f))  ;no "check" target
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-permissions
+           ;; FIXME: url-fetch/tarbomb resets all permissions to 555/444.
+           (lambda _
+             (for-each
+              (lambda (file)
+                (chmod file #o644))
+              (find-files "doc" "\\."))
+             #t)))
+       #:tests? #f))                    ; tests are run during build
     (home-page "https://michaelrsweet.github.io/mxml")
     (synopsis "Small XML parsing library")
     (description

@@ -41,7 +41,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
@@ -76,6 +76,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -470,6 +471,52 @@ pidof, tty, taskset, pmap.")
 
 (define-public python2-psutil
   (package-with-python2 python-psutil))
+
+(define-public python-shapely
+  (package
+    (name "python-shapely")
+    (version "1.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Shapely" version))
+       (sha256
+        (base32
+         "0svc58dzcw9gj92b4sgq35sdxkf85z0qwlzxarkzq4bp3h8jy58l"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (inputs
+     `(("geos" ,geos)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-geos-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((geos (assoc-ref inputs "geos"))
+                   (glibc (assoc-ref inputs ,(if (%current-target-system)
+                                                 "cross-libc" "libc"))))
+               (substitute* "shapely/geos.py"
+                 (("_lgeos = load_dll\\('geos_c', fallbacks=.*\\)")
+                  (string-append "_lgeos = load_dll('geos_c', fallbacks=['"
+                                 geos "/lib/libgeos_c.so'])"))
+                 (("free = load_dll\\('c'\\)\\.free")
+                  (string-append "free = load_dll('c', fallbacks=['"
+                                 glibc "/lib/libc.so.6']).free"))))
+             #t)))))
+    (home-page "https://github.com/Toblerity/Shapely")
+    (synopsis "Library for the manipulation and analysis of geometric objects")
+    (description "Shapely is a Python package for manipulation and analysis of
+planar geometric objects.  It is based on the @code{GEOS} library.")
+    (license license:bsd-3)))
+
+(define-public python2-shapely
+  (package-with-python2 python-shapely))
 
 (define-public python-clyent
   (package
@@ -3255,6 +3302,7 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        ;; object. For this reason we need to import both libraries.
        ;; https://pythonhosted.org/cairocffi/cffi_api.html#converting-pycairo
        ("python-pycairo" ,python-pycairo)
+       ("python-pyqt" ,python-pyqt)
        ("python-cairocffi" ,python-cairocffi)))
     (inputs
      `(("libpng" ,libpng)
@@ -3264,7 +3312,6 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        ("glib" ,glib)
        ;; FIXME: Add backends when available.
        ;("python-wxpython" ,python-wxpython)
-       ("python-pyqt" ,python-pyqt)
        ("tcl" ,tcl)
        ("tk" ,tk)))
     (native-inputs
@@ -4297,7 +4344,7 @@ standard library.")
        (base32 "19l2pp1c64ansr89l3cqh19jdi2ixhssdzx0vz4n6r52a6i281is"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no tests
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "Vestigial utilities from IPython")
     (description
      "This package provides retired utilities from IPython.  No packages
@@ -4334,7 +4381,7 @@ away.")
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-nose" ,python-nose)))
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "Configuration system for Python applications")
     (description
      "Traitlets is a framework that lets Python classes have attributes with
@@ -4422,7 +4469,7 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
     (propagated-inputs
      ;; imported at runtime during connect
      `(("python-jupyter-client" ,python-jupyter-client)))
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "IPython Kernel for Jupyter")
     (description
      "This package provides the IPython kernel for Jupyter.")
@@ -4568,7 +4615,7 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
             (substitute* "./IPython/core/tests/test_magic.py"
               (("def test_dirops\\(\\):" all)
                (string-append "@dec.skipif(True)\n" all))))))))
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "IPython is a tool for interactive computing in Python")
     (description
      "IPython provides a rich architecture for interactive computing with:
@@ -6488,7 +6535,7 @@ interactive computing.")
     (native-inputs
      `(("python-certifi" ,python-certifi)
        ("python-nose" ,python-nose)))
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "IPython HTML widgets for Jupyter")
     (description "This package provides interactive HTML widgets for Jupyter
 notebooks.")
@@ -6516,7 +6563,7 @@ notebooks.")
        ("python-ipython" ,python-ipython)
        ("python-traitlets" ,python-traitlets)
        ("python-widgetsnbextension" ,python-widgetsnbextension)))
-    (home-page "http://ipython.org")
+    (home-page "https://ipython.org")
     (synopsis "IPython HTML widgets for Jupyter")
     (description "Ipywidgets are interactive HTML widgets for Jupyter
 notebooks and the IPython kernel.  Notebooks come alive when interactive

@@ -26,7 +26,7 @@
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -2400,14 +2400,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.14")
+    (version "0.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
-                "07wgcvg038l88gxvjr0gjpjhyk743w22x1rqghz3gkmif0g70say"))))
+                "1x7jw2ldgkknyxg7x9fhnqkary691icnysmi3xw0g2fjrvllzhqw"))))
     (build-system emacs-build-system)
     (arguments '(#:include '("\\.el$" "\\.wsdl$" "\\.info$")))
     (propagated-inputs
@@ -4309,16 +4309,16 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "20171224")
+    (version "20180103")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/org-"
+              (uri (string-append "https://orgmode.org/elpa/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "1s995y3aizzaldpqz6jg73w8c9kmdbn30chkslwylg3p98as1jsj"))))
+                "1hyw9sigcv9wn37y2icmhf1czf0s3dgvsmn36355l95zsw7hnvgj"))))
     (build-system emacs-build-system)
-    (home-page "http://orgmode.org/")
+    (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
 lists, and project planning with a fast and effective plain-text system.  It
@@ -4332,11 +4332,11 @@ reproducible research.")
     (name "emacs-org-contrib")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://orgmode.org/elpa/org-plus-contrib-"
+              (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
                                   (package-version emacs-org) ".tar"))
               (sha256
                (base32
-                "0lamkw5npcm0640c36zqdv8py5rbpr0pk1i4qdmfgrngy64v9f75"))))
+                "164i2asqh34p1g3iqsn7rziyxbi1ys8fwdmn7nsw5xph8qszv9zj"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -5951,6 +5951,53 @@ pair of minor modes which suppress all mouse events by intercepting them and
 running a customisable handler command (@code{ignore} by default). ")
     (license license:gpl3+)))
 
+(define-public emacs-json-reformat
+  (package
+    (name "emacs-json-reformat")
+    (version "0.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/gongo/json-reformat/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11fbq4scrgr7m0iwnzcrn2g7xvqwm2gf82sa7zy1l0nil7265p28"))
+       (patches (search-patches "emacs-json-reformat-fix-tests.patch"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-undercover" ,emacs-undercover)))
+    (inputs
+     `(("emacs-dash" ,emacs-dash)         ; for tests
+       ("emacs-shut-up" ,emacs-shut-up))) ; for tests
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-L" (string-append
+                                   (assoc-ref inputs "emacs-undercover")
+                                   "/share/emacs/site-lisp/guix.d/undercover-"
+                                   ,(package-version emacs-undercover))
+                             "-L" (string-append
+                                   (assoc-ref inputs "emacs-dash")
+                                   "/share/emacs/site-lisp/guix.d/dash-"
+                                   ,(package-version emacs-dash))
+                             "-L" (string-append
+                                   (assoc-ref inputs "emacs-shut-up")
+                                   "/share/emacs/site-lisp/guix.d/shut-up-"
+                                   ,(package-version emacs-shut-up))
+                             "-l" "test/test-helper.el"
+                             "-l" "test/json-reformat-test.el"
+                             "-f" "ert-run-tests-batch-and-exit"))
+             #t)))))
+    (home-page "https://github.com/gongo/json-reformat")
+    (synopsis "Reformatting tool for JSON")
+    (description "@code{json-reformat} provides a reformatting tool for
+@url{http://json.org/, JSON}.")
+    (license license:gpl3+)))
+
 (define-public emacs-json-snatcher
   (package
     (name "emacs-json-snatcher")
@@ -5969,6 +6016,29 @@ running a customisable handler command (@code{ignore} by default). ")
     (synopsis "Grabs the path to JSON values in a JSON file")
     (description "@code{emacs-json-snatcher} grabs the path to JSON values in
 a @url{http://json.org/, JSON} file.")
+    (license license:gpl3+)))
+
+(define-public emacs-json-mode
+  (package
+    (name "emacs-json-mode")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/joshwnj/json-mode/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06h45p4cn767pk9sqi2zb1c65wy5gyyijqxzpglp80zwxhvajdz5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-json-reformat" ,emacs-json-reformat)
+       ("emacs-json-snatcher" ,emacs-json-snatcher)))
+    (home-page "https://github.com/joshwnj/json-mode")
+    (synopsis "Major mode for editing JSON files")
+    (description "@code{json-mode} extends the builtin js-mode syntax
+highlighting.")
     (license license:gpl3+)))
 
 (define-public emacs-restclient

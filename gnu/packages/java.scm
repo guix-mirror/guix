@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1833,15 +1833,15 @@ IcedTea build harness.")
                         (snippet remove-archives)))))
     (package
       (name "clojure")
-      (version "1.8.0")
+      (version "1.9.0")
       (source
        (origin
          (method url-fetch)
          (uri
-          (string-append "http://repo1.maven.org/maven2/org/clojure/clojure/"
-                         version "/clojure-" version ".zip"))
+          (string-append "https://github.com/clojure/clojure/archive/clojure-"
+                         version ".tar.gz"))
          (sha256
-          (base32 "1nip095fz5c492sw15skril60i1vd21ibg6szin4jcvyy3xr6cym"))
+          (base32 "0xjbzcw45z32vsn9pifp7ndysjzqswp5ig0jkjpivigh2ckkdzha"))
          (modules '((guix build utils)))
          (snippet remove-archives)))
       (build-system ant-build-system)
@@ -1871,12 +1871,12 @@ IcedTea build harness.")
                         (error "failed to unpack tarball" name)))
                   (copy-recursively (string-append name "/src/main/clojure/")
                                     "src/clj/"))
-                '("data-generators-src"
-                  "java-classpath-src"
+                '("core-specs-alpha-src"
+                  "data-generators-src"
+                  "spec-alpha-src"
                   "test-check-src"
                   "test-generative-src"
-                  "tools-namespace-src"
-                  "tools-reader-src"))
+                  "tools-namespace-src"))
                #t))
            ;; The javadoc target is not built by default.
            (add-after 'build 'build-doc
@@ -1908,14 +1908,18 @@ IcedTea build harness.")
                  #t))))))
       ;; The native-inputs below are needed to run the tests.
       (native-inputs
-       `(("data-generators-src"
+       `(("core-specs-alpha-src"
+          ,(submodule "core.specs.alpha/archive/core.specs.alpha-"
+                      "0.1.24"
+                      "0v2a0svf1ar2y42ajxwsjr7zmm5j7pp2zwrd2jh3k7xzd1p9x1fv"))
+         ("data-generators-src"
           ,(submodule "data.generators/archive/data.generators-"
                       "0.1.2"
                       "0kki093jp4ckwxzfnw8ylflrfqs8b1i1wi9iapmwcsy328dmgzp1"))
-         ("java-classpath-src"
-          ,(submodule "java.classpath/archive/java.classpath-"
-                      "0.2.3"
-                      "0sjymly9xh1lkvwn5ygygpsfwz4dabblnlq0c9bx76rkvq62fyng"))
+         ("spec-alpha-src"
+          ,(submodule "spec.alpha/archive/spec.alpha-"
+                      "0.1.143"
+                      "00alf0347licdn773w2jarpllyrbl52qz4d8mw61anjksacxylzz"))
          ("test-check-src"
           ,(submodule "test.check/archive/test.check-"
                       "0.9.0"
@@ -1927,11 +1931,7 @@ IcedTea build harness.")
          ("tools-namespace-src"
           ,(submodule "tools.namespace/archive/tools.namespace-"
                       "0.2.11"
-                      "10baak8v0hnwz2hr33bavshm7y49mmn9zsyyms1dwjz45p5ymhy0"))
-         ("tools-reader-src"
-          ,(submodule "tools.reader/archive/tools.reader-"
-                      "1.0.0"
-                      "1lafblmmj4hkg0aqrf19qkdw9wdcsh3qxmn6cbkmnzbhffpyv2lv"))))
+                      "10baak8v0hnwz2hr33bavshm7y49mmn9zsyyms1dwjz45p5ymhy0"))))
       (home-page "https://clojure.org/")
       (synopsis "Lisp dialect running on the JVM")
       (description "Clojure is a dynamic, general-purpose programming language,
@@ -3837,7 +3837,7 @@ Custom formats can be created using a fluent style API.")
     (arguments
      `(#:tests? #f ; no tests
        #:jar-name "osgi-annotation.jar"))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Annotation module of OSGi framework")
     (description
      "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -3864,7 +3864,7 @@ components.")
        #:jar-name "osgi-core.jar"))
     (inputs
      `(("java-osgi-annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Core module of OSGi framework")
     (description
      "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -3892,7 +3892,7 @@ the OSGi Core module.")
     (inputs
      `(("java-osgi-annotation" ,java-osgi-annotation)
        ("java-osgi-core" ,java-osgi-core)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGi service event module")
     (description
      "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5346,7 +5346,7 @@ used to generate this API.")
        ("java-datanucleus-javax-persistence" ,java-datanucleus-javax-persistence)
        ("microemulator" ,java-microemulator-cldc)
        ("servlet" ,java-classpathx-servletapi)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Compendium specification module of OSGi framework")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5374,7 +5374,7 @@ in compiling bundles.")
        #:tests? #f)); no tests
     (inputs
      `(("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Support annotations for osgi-service-component")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5400,7 +5400,7 @@ the support annotations for osgi-service-component.")
        #:tests? #f)); no tests
     (inputs
      `(("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Data Transfer Objects")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5431,7 +5431,7 @@ objects of the listed types or aggregates.")
     (inputs
      `(("annotation" ,java-osgi-annotation)
        ("dto" ,java-osgi-dto)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI Resource")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5459,7 +5459,7 @@ the definition of common types in osgi packages.")
     (arguments
      `(#:jar-name "osgi-namespace-contract.jar"
        #:tests? #f)); no tests
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Contract Capability and Requirement Namespace")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5487,7 +5487,7 @@ the names for the attributes and directives for a namespace with contracts.")
     (arguments
      `(#:jar-name "osgi-namespace-extendent.jar"
        #:tests? #f)); no tests
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Extender Capability and Requirement Namespace")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5515,7 +5515,7 @@ the names for the attributes and directives for an extender namespace.")
     (arguments
      `(#:jar-name "osgi-namespace-service.jar"
        #:tests? #f)); no tests
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Service Capability and Requirement Namespace")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5542,7 +5542,7 @@ the names for the attributes and directives for a service namespace.")
        #:tests? #f)); no tests
     (inputs
      `(("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI Util Function")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5570,7 +5570,7 @@ an interface for a function that accepts a single argument and produces a result
     (inputs
      `(("annotation" ,java-osgi-annotation)
        ("function" ,java-osgi-util-function)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Promise of a value")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5598,7 +5598,7 @@ value.  It handles the interactions for asynchronous processing.")
        #:tests? #f)); no tests
     (inputs
      `(("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Support annotations for metatype")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5627,7 +5627,7 @@ the support annotations for metatype.")
      `(("annotation" ,java-osgi-annotation)
        ("promise" ,java-osgi-util-promise)
        ("resource" ,java-osgi-resource)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI service repository")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5655,7 +5655,7 @@ a repository service that contains resources.")
      `(("annotation" ,java-osgi-annotation)
        ("resource" ,java-osgi-resource)
        ("dto" ,java-osgi-dto)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGi framework")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5681,7 +5681,7 @@ and service platform for the Java programming language.")
        #:tests? #f)); no tests
     (inputs
      `(("java-osgi-framework" ,java-osgi-framework)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Provides methods for bundles to write messages to the log")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5706,7 +5706,7 @@ the log service.")
     (arguments
      `(#:jar-name "osgi-service-jdbc.jar"
        #:tests? #f)); no tests
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Factory for JDBC connection factories")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5741,7 +5741,7 @@ factories for getting JDBC connections:
     (inputs
      `(("annotation" ,java-osgi-annotation)
        ("resource" ,java-osgi-resource)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI Resolver service")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5770,7 +5770,7 @@ by the caller.")
     (inputs
      `(("framework" ,java-osgi-framework)
        ("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "Bundle tracking")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5798,7 +5798,7 @@ bundle tracking utility classes.")
     (inputs
      `(("framework" ,java-osgi-framework)
        ("annotation" ,java-osgi-annotation)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI Configuration Management")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -5825,7 +5825,7 @@ utility classes for the configuration of services.")
        #:tests? #f)); no tests
     (inputs
      `(("framework" ,java-osgi-framework)))
-    (home-page "http://www.osgi.org")
+    (home-page "https://www.osgi.org")
     (synopsis "OSGI Package Administration")
     (description
       "OSGi, for Open Services Gateway initiative framework, is a module system
@@ -7414,7 +7414,13 @@ done to the IDE or continuous integration servers which simplifies adoption.")
        #:source-dir "powermock-core/src/main/java"
        #:test-dir "powermock-core/src/test"
        #:tests? #f; requires powermock-api
-       #:jdk ,icedtea-8))
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "powermock-core/src/main/resources"
+                               "build/classes"))))))
     (inputs
      `(("reflect" ,java-powermock-reflect)
        ("javassist" ,java-jboss-javassist)))
@@ -7463,7 +7469,15 @@ done to the IDE or continuous integration servers which simplifies adoption.")
      `(#:jar-name "java-powermock-modules-junit4.jar"
        #:jdk ,icedtea-8
        #:source-dir "powermock-modules/powermock-module-junit4/src/main/java"
-       #:test-dir "powermock-modules/powermock-module-junit4/src/test"))
+       #:test-dir "powermock-modules/powermock-module-junit4/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-junit-detection
+           (lambda _
+             ;; Our junit version is 4.12-SNAPSHOT
+             (substitute* (find-files "powermock-modules/powermock-module-junit4"
+                                      "PowerMockJUnit4MethodValidator.java")
+               (("4.12") "4.12-SNAPSHOT")))))))
     (inputs
      `(("core" ,java-powermock-core)
        ("reflect" ,java-powermock-reflect)

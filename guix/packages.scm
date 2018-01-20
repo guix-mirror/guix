@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -789,7 +789,8 @@ when CUT? returns true for a given package."
           (location (package-location p))
           (inputs (map rewrite (package-inputs p)))
           (native-inputs (map rewrite (package-native-inputs p)))
-          (propagated-inputs (map rewrite (package-propagated-inputs p)))))))
+          (propagated-inputs (map rewrite (package-propagated-inputs p)))
+          (replacement (and=> (package-replacement p) proc))))))
 
   replace)
 

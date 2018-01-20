@@ -709,8 +709,8 @@ and TARGET arguments."
   "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
 bootloader; BOOTLOADER-TAGET is the target for the bootloader; TARGET is the
 target root directory; IMAGE-SIZE is the size of the image to be built, for
-the 'vm-image' and 'disk-image' actions.  The root filesystem is created as a
-FILE-SYSTEM-TYPE filesystem.  FULL-BOOT? is used for the 'vm' action; it
+the 'vm-image' and 'disk-image' actions.  The root file system is created as a
+FILE-SYSTEM-TYPE file system.  FULL-BOOT? is used for the 'vm' action; it
 determines whether to boot directly to the kernel or to the bootloader.
 
 When DERIVATIONS-ONLY? is true, print the derivation file name(s) without

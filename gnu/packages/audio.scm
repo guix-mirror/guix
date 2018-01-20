@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -705,7 +705,7 @@ language and software synthesizer.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("fftw" ,fftw)))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "C++ wrapper around the ALSA API")
     (description
      "clalsadrv is a C++ wrapper around the ALSA API simplifying access to
@@ -744,7 +744,7 @@ ALSA PCM devices.")
                (("/usr/bin/install") (which "install"))
                (("/bin/rm") "#"))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA ambisonics plugins")
     (description
      "The AMB plugins are a set of LADSPA ambisonics plugins, mainly to be
@@ -781,7 +781,7 @@ horizontal rotator, square, hexagon and cube decoders.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "Chorus, phaser, and vintage high-pass and low-pass filters")
     (description
      "This package provides various LADSPA plugins.  @code{cs_chorus} and
@@ -821,7 +821,7 @@ the non-linear circuit elements of their original analog counterparts.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA reverb plugin")
     (description
      "This package provides a stereo reverb LADSPA plugin based on the
@@ -857,7 +857,7 @@ well-known greverb.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA four-band parametric equalizer plugin")
     (description
      "This package provides a LADSPA plugin for a four-band parametric
@@ -902,7 +902,7 @@ for stage use.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA stereo width plugin")
     (description
      "This package provides a LADSPA plugin to manipulate the stereo width of
@@ -939,7 +939,7 @@ audio signals.")
                (("/usr") (assoc-ref outputs "out"))
                (("/bin/cp") (which "cp")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA plugin for synthesizer oscillators")
     (description
      "The @code{blvco} LADSPA plugin provides three anti-aliased oscillators:
@@ -983,7 +983,7 @@ output of analog synthesizers such as the Moog Voyager.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA Autowah effect plugin")
     (description
      "This package provides a LADSPA plugin for a Wah effect with envelope
@@ -1019,7 +1019,7 @@ follower.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA stereo reverb plugin")
     (description
      "This package provides a LADSPA plugin for a stereo reverb effect.")
@@ -2739,7 +2739,7 @@ result.")
          ;; no configure script
          (delete 'configure))))
     (inputs `(("fftwf" ,fftwf)))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "Fast, partitioned convolution engine library")
     (description
      "Zita convolver is a C++ library providing a real-time convolution
@@ -2786,7 +2786,7 @@ engine.")
                                     "/lib/libzita-resampler.so.1"))))
          ;; no configure script
          (delete 'configure))))
-    (home-page "http://kokkinizita.linuxaudio.org/linuxaudio/zita-resampler/resampler.html")
+    (home-page "https://kokkinizita.linuxaudio.org/linuxaudio/zita-resampler/resampler.html")
     (synopsis "C++ library for resampling audio signals")
     (description
      "Libzita-resampler is a C++ library for resampling audio signals.  It is
@@ -2830,7 +2830,7 @@ provide high-quality sample rate conversion.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("fftw" ,fftw)))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "C++ wrapper around the ALSA API")
     (description
      "Zita-alsa-pcmi is a C++ wrapper around the ALSA API.  It provides easy
@@ -2987,7 +2987,7 @@ code, used in @code{libtoxcore}.")
 (define-public gsm
   (package
     (name "gsm")
-    (version "1.0.14")
+    (version "1.0.17")
     (source
      (origin
        (method url-fetch)
@@ -2996,7 +2996,7 @@ code, used in @code{libtoxcore}.")
                        "-" version ".tar.gz"))
        (sha256
         (base32
-         "0b1mx69jq88wva3wk0hi6fcl5a52qhnq2f9p3f3jdh5k61ma252q"))))
+         "00bns0d4wwrvc60lj2w7wz4yk49q1f6rpdrwqzrxsha9d78mfnl5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tst"

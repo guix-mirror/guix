@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -291,18 +291,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
          "020yk7f1hw48clmf5501z3xv9shsdchyymcv0y2cci2c1xvr1mim"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f ;; No testsuite.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-bin-es_dump_restore
-           (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/es_dump_restore")
-               `("GEM_PATH" ":" prefix (,(string-append
-                                          (getenv "GEM_PATH")
-                                          ":"
-                                          (getenv "GEM_HOME")))))
-             #t)))))
+     '(#:tests? #f)) ;; No testsuite.
     (propagated-inputs
      `(("ruby-httpclient" ,ruby-httpclient)
        ("ruby-multi-json" ,ruby-multi-json)
@@ -475,8 +464,8 @@ applications.")
                    ;; individual executable files, with some being hundreds of
                    ;; megabytes in size.
                    (begin
-		     (apply
-                      invoke `("scons" ,@common-options "dbtest" "unittests"))
+                     (apply
+                       invoke `("scons" ,@common-options "dbtest" "unittests"))
                      (substitute* "build/unittests.txt"
                        ;; TODO: Don't run the async_stream_test, as it hangs
                        (("^build\\/opt\\/mongo\\/executor\\/async\\_stream\\_test\n$")
@@ -485,8 +474,8 @@ applications.")
                        ;; Expected 0UL != disks.size() (0 != 0) @src/mongo/util/procparser_test.cpp:476
                        (("^build\\/opt\\/mongo\\/util\\/procparser\\_test\n$")
                         ""))
-		     (invoke "python" "buildscripts/resmoke.py"
-			     "--suites=dbtest,unittests"
+                     (invoke "python" "buildscripts/resmoke.py"
+                             "--suites=dbtest,unittests"
                              (format #f  "--jobs=~a" (parallel-job-count)))))))
            (replace 'install
              (lambda _
@@ -509,7 +498,7 @@ RDBMS systems (which are deep in functionality).")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.20")
+    (version "5.7.21")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -521,7 +510,7 @@ RDBMS systems (which are deep in functionality).")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "11v4g3igigv3zvknv67qml8in6fjrbs2vnr3q6bg6f62nydm95sk"))))
+               "1dq9bgnajf7cq3mrjkwv6w5nwslhs26lkrw56i7w4fbsq9wm087s"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

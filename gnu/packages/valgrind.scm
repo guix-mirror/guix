@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,14 +32,14 @@
 (define-public valgrind
   (package
     (name "valgrind")
-    (version "3.12.0")
+    (version "3.13.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://valgrind.org/downloads/valgrind-"
+              (method url-fetch)
+             (uri (string-append "ftp://sourceware.org/pub/valgrind/valgrind-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "18bnrw9b1d55wi1wnl68n25achsp9w48n51n1xw4fwjjnaal7jk7"))
+               "0fqc3684grrbxwsic1rc5ryxzxmigzjx9p5vf3lxa37h0gpq0rnp"))
              (patches (search-patches "valgrind-enable-arm.patch"
                                       "valgrind-glibc-compat.patch"))))
     (build-system gnu-build-system)
@@ -64,9 +65,11 @@
                (mkdir-p dest)
                (rename-file orig dest)
                #t))))))
-    (inputs `(;; GDB is needed to provide a sane default for `--db-command'.
-              ("gdb" ,gdb)))
-    (native-inputs `(("perl" ,perl)))
+    (inputs
+     ;; GDB is needed to provide a sane default for `--db-command'.
+     `(("gdb" ,gdb)))
+    (native-inputs
+     `(("perl" ,perl)))
     (home-page "http://www.valgrind.org/")
     (synopsis "Debugging and profiling tool suite")
     (description

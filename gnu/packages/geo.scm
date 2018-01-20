@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,7 @@
 (define-public geos
   (package
     (name "geos")
-    (version "3.6.1")
+    (version "3.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.osgeo.org/geos/geos-"
@@ -45,7 +46,7 @@
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1icz31kd5sml2kdxhjznvmv33zfr6nig9l0i6bdcz9q9g8x4wbja"))))
+                "0ak5szby29l9l0vy43dm5z2g92xzdky20q1gc1kah1fnhkgi6nh4"))))
     (build-system gnu-build-system)
     (arguments `(#:phases
                  (modify-phases %standard-phases

@@ -358,25 +358,18 @@ MACHINE."
     (parameterize ((current-build-output-port (build-log-port)))
       (build-derivations store (list drv))))
 
-  (retrieve-files* outputs store)
+  (retrieve-files* outputs store
+
+                   ;; We cannot use the 'import-paths' RPC here because we
+                   ;; already hold the locks for FILES.
+                   #:import
+                   (lambda (port)
+                     (restore-file-set port
+                                       #:log-port (current-error-port)
+                                       #:lock? #f)))
+
   (format (current-error-port) "done with offloaded '~a'~%"
           (derivation-file-name drv)))
-
-(define (retrieve-files* files remote)
-  "Retrieve FILES from REMOTE and import them using 'restore-file-set'."
-  (let-values (((port count)
-                (file-retrieval-port files remote)))
-    (format #t (N_ "retrieving ~a store item from '~a'...~%"
-                   "retrieving ~a store items from '~a'...~%" count)
-            count (remote-store-host remote))
-
-    ;; We cannot use the 'import-paths' RPC here because we already
-    ;; hold the locks for FILES.
-    (let ((result (restore-file-set port
-                                    #:log-port (current-error-port)
-                                    #:lock? #f)))
-      (close-port port)
-      result)))
 
 
 ;;;
@@ -407,7 +400,7 @@ allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
            +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
            (match (string-tokenize line)
              ((one five fifteen . x)
-              (let* ((raw        (string->number five))
+              (let* ((raw        (string->number one))
                      (jobs       (build-machine-parallel-builds machine))
                      (normalized (/ raw jobs)))
                 (format (current-error-port) "load on machine '~a' is ~s\
@@ -549,8 +542,7 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
   "Bail out if NODE is not running Guile."
   (match (node-guile-version node)
     (#f
-     (leave (G_ "Guile could not be started on '~a'~%")
-            name))
+     (report-guile-error name))
     ((? string? version)
      ;; Note: The version string already contains the word "Guile".
      (info (G_ "'~a' is running ~a~%")
@@ -558,18 +550,34 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
 
 (define (assert-node-has-guix node name)
   "Bail out if NODE lacks the (guix) module, or if its daemon is not running."
-  (match (node-eval node
-                    '(begin
-                       (use-modules (guix))
-                       (with-store store
-                         (add-text-to-store store "test"
-                                            "Hello, build machine!"))))
-    ((? string? str)
-     (info (G_ "Guix is usable on '~a' (test returned ~s)~%")
-           name str))
-    (x
-     (leave (G_ "failed to use Guix module on '~a' (test returned ~s)~%")
-            name x))))
+  (catch 'node-repl-error
+    (lambda ()
+      (match (node-eval node
+                        '(begin
+                           (use-modules (guix))
+                           (and add-text-to-store 'alright)))
+        ('alright #t)
+        (_ (report-module-error name))))
+    (lambda (key . args)
+      (report-module-error name)))
+
+  (catch 'node-repl-error
+    (lambda ()
+      (match (node-eval node
+                        '(begin
+                           (use-modules (guix))
+                           (with-store store
+                             (add-text-to-store store "test"
+                                                "Hello, build machine!"))))
+        ((? string? str)
+         (info (G_ "Guix is usable on '~a' (test returned ~s)~%")
+               name str))
+        (x
+         (leave (G_ "failed to talk to guix-daemon on '~a' (test returned ~s)~%")
+                name x))))
+    (lambda (key . args)
+      (leave (G_ "remove evaluation on '~a' failed:~{ ~s~}~%")
+             args))))
 
 (define %random-state
   (delay

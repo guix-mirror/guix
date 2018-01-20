@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -299,7 +300,7 @@ menu to select one of the installed operating systems.")
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.4.5")
+    (version "1.4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -307,11 +308,7 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "08gnl39i4xy3dm8iqwlz2ygx0ml1bgc5kpiys5ll1wvah1j72b04"))
-              ;; Fix build and tests on 32 bits platforms.
-              ;; Will probably be fixed in 1.4.6 release.
-              (patches (search-patches "dtc-format-modifier.patch"
-                                       "dtc-32-bits-check.patch"))))
+                "0zkvih0fpwvk31aqyyfy9kn13nbi76c21ihax15p6h1wrjzh48rq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -327,7 +324,7 @@ menu to select one of the installed operating systems.")
              "INSTALL=install")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure))))         ; no configure script
     (home-page "https://www.devicetree.org")
     (synopsis "Compiles device tree source files")
     (description "@command{dtc} compiles

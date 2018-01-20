@@ -74,11 +74,6 @@
             tor-service
             tor-service-type
 
-            bitlbee-configuration
-            bitlbee-configuration?
-            bitlbee-service
-            bitlbee-service-type
-
             wicd-service-type
             wicd-service
 
@@ -735,114 +730,6 @@ See @uref{https://www.torproject.org/docs/tor-hidden-service.html.en, the Tor
 project's documentation} for more information."
   (service tor-hidden-service-type
            (hidden-service name mapping)))
-
-
-;;;
-;;; BitlBee.
-;;;
-
-(define-record-type* <bitlbee-configuration>
-  bitlbee-configuration make-bitlbee-configuration
-  bitlbee-configuration?
-  (bitlbee bitlbee-configuration-bitlbee
-           (default bitlbee))
-  (interface bitlbee-configuration-interface
-             (default "127.0.0.1"))
-  (port bitlbee-configuration-port
-        (default 6667))
-  (extra-settings bitlbee-configuration-extra-settings
-                  (default "")))
-
-(define bitlbee-shepherd-service
-  (match-lambda
-    (($ <bitlbee-configuration> bitlbee interface port extra-settings)
-     (let ((conf (plain-file "bitlbee.conf"
-                             (string-append "
-  [settings]
-  User = bitlbee
-  ConfigDir = /var/lib/bitlbee
-  DaemonInterface = " interface "
-  DaemonPort = " (number->string port) "
-" extra-settings))))
-
-       (with-imported-modules (source-module-closure
-                               '((gnu build shepherd)
-                                 (gnu system file-systems)))
-         (list (shepherd-service
-                (provision '(bitlbee))
-
-                ;; Note: If networking is not up, then /etc/resolv.conf
-                ;; doesn't get mapped in the container, hence the dependency
-                ;; on 'networking'.
-                (requirement '(user-processes networking))
-
-                (modules '((gnu build shepherd)
-                           (gnu system file-systems)))
-                (start #~(make-forkexec-constructor/container
-                          (list #$(file-append bitlbee "/sbin/bitlbee")
-                                "-n" "-F" "-u" "bitlbee" "-c" #$conf)
-
-                          #:pid-file "/var/run/bitlbee.pid"
-                          #:mappings (list (file-system-mapping
-                                            (source "/var/lib/bitlbee")
-                                            (target source)
-                                            (writable? #t)))))
-                (stop  #~(make-kill-destructor)))))))))
-
-(define %bitlbee-accounts
-  ;; User group and account to run BitlBee.
-  (list (user-group (name "bitlbee") (system? #t))
-        (user-account
-         (name "bitlbee")
-         (group "bitlbee")
-         (system? #t)
-         (comment "BitlBee daemon user")
-         (home-directory "/var/empty")
-         (shell (file-append shadow "/sbin/nologin")))))
-
-(define %bitlbee-activation
-  ;; Activation gexp for BitlBee.
-  #~(begin
-      (use-modules (guix build utils))
-
-      ;; This directory is used to store OTR data.
-      (mkdir-p "/var/lib/bitlbee")
-      (let ((user (getpwnam "bitlbee")))
-        (chown "/var/lib/bitlbee"
-               (passwd:uid user) (passwd:gid user)))))
-
-(define bitlbee-service-type
-  (service-type (name 'bitlbee)
-                (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          bitlbee-shepherd-service)
-                       (service-extension account-service-type
-                                          (const %bitlbee-accounts))
-                       (service-extension activation-service-type
-                                          (const %bitlbee-activation))))
-                (default-value (bitlbee-configuration))
-                (description
-                 "Run @url{http://bitlbee.org,BitlBee}, a daemon that acts as
-a gateway between IRC and chat networks.")))
-
-(define* (bitlbee-service #:key (bitlbee bitlbee)
-                          (interface "127.0.0.1") (port 6667)
-                          (extra-settings ""))
-  "Return a service that runs @url{http://bitlbee.org,BitlBee}, a daemon that
-acts as a gateway between IRC and chat networks.
-
-The daemon will listen to the interface corresponding to the IP address
-specified in @var{interface}, on @var{port}.  @code{127.0.0.1} means that only
-local clients can connect, whereas @code{0.0.0.0} means that connections can
-come from any networking interface.
-
-In addition, @var{extra-settings} specifies a string to append to the
-configuration file."
-  (service bitlbee-service-type
-           (bitlbee-configuration
-            (bitlbee bitlbee)
-            (interface interface) (port port)
-            (extra-settings extra-settings))))
 
 
 ;;;

@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,7 +94,7 @@ and they are executed on lists of files, hosts, users or other items.")
 (define-public slurm
   (package
    (name "slurm")
-   (version "16.05.11")
+   (version "17.11.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -101,12 +102,12 @@ and they are executed on lists of files, hosts, users or other items.")
                   version ".tar.bz2"))
             (sha256
              (base32
-              "0c63mvh13wsp6jlydaz98v35iwg53mk94ynpx9dqn2z4gl53k5y7"))
-            (patches (search-patches
-                      "slurm-configure-remove-nonfree-contribs.patch"))
+              "18yakb8kmhb16n0cv3zhjv8ahvsk9p0max8mmr2flb2c65fawks6"))
             (modules '((guix build utils)))
             (snippet
              '(begin
+                (substitute* "configure.ac"
+                  (("^[[:space:]]+contribs/.*$") ""))
                 (delete-file-recursively "contribs")
                 #t))))
    ;; FIXME: More optional inputs could be added,
@@ -136,9 +137,9 @@ and they are executed on lists of files, hosts, users or other items.")
             (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))
       #:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'autogen
-          (lambda _ (zero? (system* "autoconf"))))))) ; configure.ac was patched
-   (home-page "http://slurm.schedmd.com/")
+        (add-after 'unpack 'autoconf
+          (lambda _ (invoke "autoconf")))))) ; configure.ac was patched
+   (home-page "https://slurm.schedmd.com/")
    (synopsis "Workload manager for cluster computing")
    (description
     "SLURM is a fault-tolerant and highly scalable cluster management and job
@@ -147,7 +148,12 @@ resources (computer nodes) to users for some duration of time, provides a
 framework for starting, executing, and monitoring work (typically a parallel
 job) on a set of allocated nodes, and arbitrates contention for resources
 by managing a queue of pending work.")
-   (license license:gpl2+)))
+   (license (list license:bsd-2       ; src/common/log.[ch], src/common/uthash
+                  license:expat       ; slurm/pmi.h
+                  license:isc         ; src/common/strlcpy.c
+                  license:lgpl2.1+    ; hilbert.[ch], src/common/slurm_time.h
+                  license:zlib        ; src/common/strnatcmp.c
+                  license:gpl2+))))   ; the rest, often with OpenSSL exception
 
 (define-public slurm-drmaa
   (package

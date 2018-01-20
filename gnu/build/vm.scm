@@ -262,7 +262,7 @@ actual /dev name based on DEVICE."
 
 (define* (create-ext-file-system partition type
                                  #:key label uuid)
-  "Create an ext-family filesystem of TYPE on PARTITION.  If LABEL is true,
+  "Create an ext-family file system of TYPE on PARTITION.  If LABEL is true,
 use that as the volume name.  If UUID is true, use it as the partition UUID."
   (format #t "creating ~a partition...\n" type)
   (unless (zero? (apply system* (string-append "mkfs." type)
@@ -277,8 +277,8 @@ use that as the volume name.  If UUID is true, use it as the partition UUID."
 
 (define* (create-fat-file-system partition
                                  #:key label uuid)
-  "Create a FAT filesystem on PARTITION.  The number of File Allocation Tables
-will be determined based on filesystem size.  If LABEL is true, use that as the
+  "Create a FAT file system on PARTITION.  The number of File Allocation Tables
+will be determined based on file system size.  If LABEL is true, use that as the
 volume name."
   ;; FIXME: UUID is ignored!
   (format #t "creating FAT partition...\n")
@@ -425,7 +425,7 @@ GRUB configuration and OS-DRV as the stuff in it."
                             "run=/tmp/root/run"
                             ;; /mnt is used as part of the installation
                             ;; process, as the mount point for the target
-                            ;; filesystem, so create it.
+                            ;; file system, so create it.
                             "mnt=/tmp/root/mnt"
                             "--"
                             "-volid" ,(string-upcase volume-id)

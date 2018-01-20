@@ -250,49 +250,47 @@ random access nor for in-place modification.")
 (define-public rdup
   (package
     (name "rdup")
-    (version "1.1.14")
+    (version "1.1.15")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://archive.miek.nl/projects/rdup/rdup-"
-                           version ".tar.bz2"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://github.com/miekg/rdup/archive/"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "0aklwd9v7ix0m4ayl762sil685f42cwljzx3jz5skrnjaq32npmj"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Some test scripts are missing shebangs, which cause "could not
-        ;; execute" errors.  Add shebangs.
-        '(for-each
-          (lambda (testscript)
-            (with-atomic-file-replacement
-                (string-append "testsuite/rdup/" testscript)
-              (lambda (in out)
-                (begin
-                  (format out "#!/bin/sh\n" )
-                  (dump-port in out)))))
-          '("rdup.hardlink.helper"
-            "rdup.hardlink-strip.helper"
-            "rdup.hardlink-strip2.helper"
-            "rdup.pipeline.helper")))))
+         "1jr91hgcf0rrpanqlwws72ql9db6d6grs2i122ki1s4bx0vqqyvq"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+
+       ;; For tests.
        ("dejagnu" ,dejagnu)))
     (inputs
      `(("glib" ,glib)
        ("pcre" ,pcre)
        ("libarchive" ,libarchive)
+       ("mcrypt" ,mcrypt)
        ("nettle" ,nettle)))
     (arguments
      `(#:parallel-build? #f             ;race conditions
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'remove-Werror
-           ;; rdup uses a deprecated function from libarchive
+         (add-after 'unpack 'bootstrap
            (lambda _
-             (substitute* "GNUmakefile"
-               (("^(CFLAGS=.*)-Werror" _ front) front))
+             (invoke "autoreconf")))
+         (add-before 'build 'qualify-inputs
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This script is full of pitfalls.  Fix some that particularly
+             ;; affect Guix users & leave the rest as reader excercises.
+             (substitute* "rdup-simple"
+               ;; Use the input ‘mcrypt’, not whatever's in $PATH at run time.
+               (("([' ])mcrypt " all delimiter)
+                (string-append delimiter (which "mcrypt") " "))
+               ;; Avoid frivolous dependency on ‘which’ with a shell builtin.
+               (("which") "command -v"))
              #t))
          (add-before 'check 'pre-check
            (lambda _
@@ -300,7 +298,7 @@ random access nor for in-place modification.")
              (substitute* "testsuite/rdup/rdup.rdup-up-t-with-file.exp"
                (("/bin/cat") (which "cat")))
              #t)))))
-    (home-page "http://archive.miek.nl/projects/rdup/index.html")
+    (home-page "https://github.com/miekg/rdup")
     (synopsis "Provide a list of files to backup")
     (description
      "Rdup is a utility inspired by rsync and the plan9 way of doing backups.
@@ -406,7 +404,7 @@ rdiff-backup is easy to use and settings have sensible defaults.")
        ("rsync" ,rsync)))
     (home-page "http://rsnapshot.org")
     (synopsis "Deduplicating snapshot backup utility based on rsync")
-    (description "rsnapshot is a filesystem snapshot utility based on rsync.
+    (description "rsnapshot is a file system snapshot utility based on rsync.
 rsnapshot makes it easy to make periodic snapshots of local machines, and
 remote machines over SSH.  To reduce the disk space required for each backup,
 rsnapshot uses hard links to deduplicate identical files.")
@@ -797,7 +795,7 @@ any special software, on top of SSH.")
     (synopsis "Fast, disk based, rotating network backup system")
     (description
      "With dirvish you can maintain a set of complete images of your
-filesystems with unattended creation and expiration.  A dirvish backup vault
+file systems with unattended creation and expiration.  A dirvish backup vault
 is like a time machine for your data. ")
     (license (license:fsf-free "file://COPYING"
                                "Open Software License 2.0"))))

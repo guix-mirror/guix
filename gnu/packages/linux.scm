@@ -370,8 +370,8 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 (define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
 
-(define %linux-libre-version "4.14.13")
-(define %linux-libre-hash "1a1wkl4xn2jsjvdnszv5gmg794waiir6x178q85qykninfbigfzx")
+(define %linux-libre-version "4.14.14")
+(define %linux-libre-hash "0s135a5bdggsj2vhpfscmiyjgw2lzgprfk5ypba1aaqv7mrwwrm7")
 
 ;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
@@ -384,14 +384,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.76"
-                    "1ms026dp8r1cv8rbc98nfc331xggwdz1dafv89ack8d80qrhg1y1"
+  (make-linux-libre "4.9.77"
+                    "1lar2nmk1njz2lb73j64wwwc6sxx6ik5jm6lpiz1wav7avs1wix3"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.111"
-                    "1yxii8csdxpxbspbz5gd768zjzfv9x0h22hdk8dbw4c9nq09z0zc"
+  (make-linux-libre "4.4.112"
+                    "12qnbqn6n984c0cwbwi26znmhw8pasxsfy1qyh5s1pzqx3k4q2h2"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -917,7 +917,7 @@ trace of all the system calls made by a another process/program.")
     (arguments
      ;; Compilation uses -Werror by default, but it fails.
      '(#:configure-flags '("--disable-werror")))
-    (home-page "http://www.ltrace.org/")
+    (home-page "https://www.ltrace.org/")
     (synopsis "Library call tracer for Linux")
     (description
      "ltrace intercepts and records dynamic library calls which are called by
@@ -1417,7 +1417,7 @@ transparently through a bridge.")
                (mkdir-p dest)
                (zero? (system* "tar" "xf" (assoc-ref inputs "libnl3-doc")
                                "--strip-components=1" "-C" dest))))))))
-    (home-page "http://www.infradead.org/~tgr/libnl/")
+    (home-page "https://www.infradead.org/~tgr/libnl/")
     (synopsis "NetLink protocol library suite")
     (description
      "The libnl suite is a collection of libraries providing APIs to netlink
@@ -2493,7 +2493,7 @@ particular the 'perf' command.")
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
-    (home-page "http://ghedo.github.io/pflask/")
+    (home-page "https://ghedo.github.io/pflask/")
     (synopsis "Simple tool for creating Linux namespace containers")
     (description "pflask is a simple tool for creating Linux namespace
 containers.  It can be used for running a command or even booting an OS inside
@@ -2573,7 +2573,7 @@ WLAN, Bluetooth and mobile broadband.")
     (version "1.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/acpiclient/acpiclient/" 
+              (uri (string-append "mirror://sourceforge/acpiclient/acpiclient/"
                                   version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -3610,7 +3610,7 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
                (("^DOCBOOKTOMAN.*$")
                 "DOCBOOKTOMAN = true\n"))
              #t)))))
-    (home-page "http://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
+    (home-page "https://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
     (synopsis "Tools for loading and managing Linux kernel modules")
     (description
      "Tools for loading and managing Linux kernel modules, such as `modprobe',
@@ -4209,7 +4209,7 @@ userspace queueing component and the logging subsystem.")
      "PRoot is a user-space implementation of @code{chroot}, @code{mount --bind},
 and @code{binfmt_misc}.  This means that users don't need any privileges or
 setup to do things like using an arbitrary directory as the new root
-filesystem, making files accessible somewhere else in the file system
+file system, making files accessible somewhere else in the file system
 hierarchy, or executing programs built for another CPU architecture
 transparently through QEMU user-mode.  Also, developers can use PRoot as a
 generic process instrumentation engine thanks to its extension mechanism.
@@ -4296,10 +4296,10 @@ NexGen, Rise, and SiS CPUs.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/JasonFerrara/jmtpfs")
-    (synopsis "Use a FUSE filesystem to access data over MTP")
-    (description "jmtpfs uses FUSE (filesystem in userspace) to provide access
+    (synopsis "Use a FUSE file system to access data over MTP")
+    (description "jmtpfs uses FUSE (file system in userspace) to provide access
 to data over the Media Transfer Protocol (MTP).  Unprivileged users can mount
-the MTP device as a filesystem.")
+the MTP device as a file system.")
     (license license:gpl3)))
 
 (define-public procenv
@@ -4437,7 +4437,7 @@ interfaces in parallel environments.")
              (let ((out (assoc-ref outputs "out")))
                (mkdir-p (string-append out "/share/man/man1"))
                #t))))))
-    (home-page "http://bisqwit.iki.fi/source/snapscreenshot.html")
+    (home-page "https://bisqwit.iki.fi/source/snapscreenshot.html")
     (synopsis "Take screenshots of one or more Linux text consoles")
     (description
      "snapscreenshot saves a screenshot of one or more Linux text consoles as a

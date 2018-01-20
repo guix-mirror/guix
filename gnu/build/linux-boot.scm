@@ -188,7 +188,7 @@ with the given MAJOR number, starting with MINOR."
     (lambda args
       (apply report-system-error name args))))
 
-;; Create a device node like the <device-node> passed here on the filesystem.
+;; Create a device node like the <device-node> passed here on the file system.
 (define create-device-node
   (match-lambda
     (($ <device-node> xname type major minor module)

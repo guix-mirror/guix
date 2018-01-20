@@ -9,6 +9,7 @@
 # Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+# Copyright © 2018 ng0 <ng0@n0.is>
 #
 # This file is part of GNU Guix.
 #
@@ -426,6 +427,9 @@ dist_bashcompletion_DATA = etc/completion/bash/guix
 
 # Zsh completion file.
 dist_zshcompletion_DATA = etc/completion/zsh/_guix
+
+# Fish completion file.
+dist_fishcompletion_DATA = etc/completion/fish/guix.fish
 
 EXTRA_DIST =						\
   HACKING						\

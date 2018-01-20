@@ -160,7 +160,7 @@
        ("go-github-com-zillode-notify" ,go-github-com-zillode-notify)
        ;; For tests
        ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
-    (synopsis "Decentralized continuous filesystem synchronization")
+    (synopsis "Decentralized continuous file system synchronization")
     (description "Syncthing is a peer-to-peer file synchronization tool that
 supports a wide variety of computing platforms.  It uses the Block Exchange
 Protocol.")
@@ -1873,7 +1873,7 @@ Authentication and Privacy Infrastructure).")
       (propagated-inputs
        `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
       (synopsis "Filesystem event notification library")
-      (description "This package provides @code{notify}, a filesystem event
+      (description "This package provides @code{notify}, a file system event
 notification library in Go.")
       (home-page "https://github.com/zillode/notify")
       (license expat))))

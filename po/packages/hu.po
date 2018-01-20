@@ -2,13 +2,13 @@
 # Copyright (C) 2014, 2017 Free Software Foundation, Inc.
 # This file is distributed under the same license as the guix package.
 #
-# Balázs Úr <urbalazs@gmail.com>, 2014, 2017.
+# Balázs Úr <urbalazs@gmail.com>, 2014, 2017, 2018.
 msgid ""
 msgstr ""
 "Project-Id-Version: guix-packages 0.14.0\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2017-11-28 08:56+0100\n"
-"PO-Revision-Date: 2017-12-17 13:31+0100\n"
+"PO-Revision-Date: 2018-01-10 11:26+0100\n"
 "Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
 "Language-Team: Hungarian <translation-team-hu@lists.sourceforge.net>\n"
 "Language: hu\n"
@@ -341,17 +341,19 @@ msgstr ""
 
 #: gnu/packages/audio.scm:904
 msgid "LADSPA stereo width plugin"
-msgstr ""
+msgstr "LADSPA sztereó szélesség bővítmény"
 
 #: gnu/packages/audio.scm:906
 msgid ""
 "This package provides a LADSPA plugin to manipulate the stereo width of\n"
 "audio signals."
 msgstr ""
+"Ez a csomag egy LADSPA bővítményt biztosít a hangjelek sztereó szélességének\n"
+"módosításához."
 
 #: gnu/packages/audio.scm:941
 msgid "LADSPA plugin for synthesizer oscillators"
-msgstr ""
+msgstr "LADSPA bővítmény szintetizátor oszcillátorokhoz"
 
 #: gnu/packages/audio.scm:943
 msgid ""
@@ -367,20 +369,34 @@ msgid ""
 "All oscillators are low-pass filtered to provide waveforms similar to the\n"
 "output of analog synthesizers such as the Moog Voyager."
 msgstr ""
+"A @code{blvco} LADSPA bővítmény három simított oszcillátort biztosít:\n"
+"\n"
+"@enumerate\n"
+"@item Pulse-VCO, egy dirac impulzus oszcillátor lapos amplitúdó spektrummal\n"
+"@item Saw-VCO, egy fűrészfog oszcillátor 1/F-es amplitúdó spektrummal\n"
+"@item Rec-VCO, egy négyzet / négyszögjel oszcillátor\n"
+"@end enumerate\n"
+"\n"
+"\n"
+"Minden oszcillátor aluláteresztő szűrővel szűrt, hogy az olyan analóg\n"
+"szintetizátorok kimenetéhez hasonló hullámformákat biztosítsanak, mint\n"
+"például a Moog Voyager."
 
 #: gnu/packages/audio.scm:985
 msgid "LADSPA Autowah effect plugin"
-msgstr ""
+msgstr "LADSPA Autowah hatás bővítmény"
 
 #: gnu/packages/audio.scm:987
 msgid ""
 "This package provides a LADSPA plugin for a Wah effect with envelope\n"
 "follower."
-msgstr "Ez a csomag egy LADSPA bővítményt biztosít egy borítékkövető Wah hatáshoz."
+msgstr ""
+"Ez a csomag egy LADSPA bővítményt biztosít egy burokkövetővel rendelkező\n"
+"Wah hatáshoz."
 
 #: gnu/packages/audio.scm:1021
 msgid "LADSPA stereo reverb plugin"
-msgstr ""
+msgstr "LADSPA sztereó visszhang bővítmény"
 
 #: gnu/packages/audio.scm:1023
 msgid "This package provides a LADSPA plugin for a stereo reverb effect."
@@ -388,7 +404,7 @@ msgstr "Ez a csomag egy LADSPA bővítményt biztosít egy sztereó visszhang ha
 
 #: gnu/packages/audio.scm:1061
 msgid "SoundFont synthesizer"
-msgstr ""
+msgstr "SoundFont szintetizátor"
 
 #: gnu/packages/audio.scm:1063
 msgid ""
@@ -397,38 +413,47 @@ msgid ""
 "device.  It is the software analogue of a MIDI synthesizer.  FluidSynth can\n"
 "also play midifiles using a Soundfont."
 msgstr ""
+"A FluidSynth a SoundFont 2 specifikáción alapuló valósidejű szoftveres\n"
+"szintetizátor. A FluidSynth olvassa és kezeli a MIDI bemeneti eszközökről\n"
+"érkező MIDI eseményeket. Ez egy MIDI szintetizátor szoftveres megfelelője.\n"
+"A FluidSynth képes midi fájlok lejátszására is egy Soundfont használatával."
 
 #: gnu/packages/audio.scm:1094
 msgid "MPEG-4 and MPEG-2 AAC decoder"
-msgstr ""
+msgstr "MPEG-4 és MPEG-2 AAC dekódoló"
 
 #: gnu/packages/audio.scm:1096
 msgid ""
 "FAAD2 is an MPEG-4 and MPEG-2 AAC decoder supporting LC, Main, LTP, SBR,\n"
 "PS, and DAB+."
 msgstr ""
+"Az FAAD2 egy MPEG-4 és MPEG-2 AAC dekódoló, amely támogatja az LC, Main,\n"
+"LTP, SBR, PS és DAB+ formátumokat."
 
 #: gnu/packages/audio.scm:1125
 msgid "Signal processing language"
-msgstr ""
+msgstr "Jelfeldolgozó nyelv"
 
 #: gnu/packages/audio.scm:1127
 msgid "Faust is a programming language for realtime audio signal processing."
-msgstr ""
+msgstr "A Faust egy programozási nyelv a valós idejű hangjelfeldolgozáshoz."
 
 #: gnu/packages/audio.scm:1207
 msgid "GUS compatible patches for MIDI players"
-msgstr ""
+msgstr "GUS kompatibilis javítócsomagok MIDI lejátszókhoz"
 
 #: gnu/packages/audio.scm:1209
 msgid ""
 "FreePats is a project to create a free and open set of GUS compatible\n"
 "patches that can be used with softsynths such as Timidity and WildMidi."
 msgstr ""
+"A FreePats egy projekt a szabad és nyílt összetételű GUS kompatibilis\n"
+"javítócsomagok létrehozásához, amelyeket olyan szintetizátor programokkal\n"
+"lehet használni, mint például a Timidity vagy a WildMidi."
 
 #: gnu/packages/audio.scm:1261
 msgid "Virtual guitar amplifier"
-msgstr ""
+msgstr "Virtuális gitárerősítő"
 
 #: gnu/packages/audio.scm:1262
 msgid ""
@@ -440,10 +465,17 @@ msgid ""
 "from a simple noise gate to modulation effects like flanger, phaser or\n"
 "auto-wah."
 msgstr ""
+"A Guitarix egy virtuális gitárerősítő JACK alkalmazás. A Guitarix a gitárról\n"
+"érkező jelet úgy értelmezi mint a hangkártyáról származó mono hangjelet. A\n"
+"bemenetet egy fő erősítő és egy rack-szakasz dolgozza fel. Mindkettő külön\n"
+"irányítható, és a JACK segítségével feldolgozott sztereójelet állít elő. A\n"
+"rack több mint 25 beépített modulból származó hatással tölthető fel,\n"
+"beleértve az egyszerű zajkapuktól az olyan modulációs hatásokig, mint\n"
+"például flanger, fézer vagy auto-wah hatás."
 
 #: gnu/packages/audio.scm:1316
 msgid "Audio effects processor"
-msgstr ""
+msgstr "Hanghatás feldolgozó"
 
 #: gnu/packages/audio.scm:1318
 msgid ""
@@ -456,10 +488,19 @@ msgid ""
 "stereo while it does not apply internal band-limiting filtering, and thus is\n"
 "well suited to all musical instruments and vocals."
 msgstr ""
+"A Rakarrack egy funkció gazdag, többhatásos feldolgozó, amely egy gitár\n"
+"hangeffektus pedálkészletet emulál. A hatások között tömörítő, széthúzó,\n"
+"zajkapu, kiegyenlítők, gerjesztő, flanger, kórus, különféle késleltetés és\n"
+"visszhang hatás, torzító modulok és még sok más található. A legtöbb\n"
+"hatásmotor a kiváló ZynAddSubFX szoftveres szintetizátorban található\n"
+"modulokból épül fel. Az előbeállítások és a felhasználói felület gitárra\n"
+"van optimalizálva, de a Rakarrack sztereó jelfeldolgozást hajt végre,\n"
+"miközben nem alkalmaz belső sávkorlátozó szűrést, így bármilyen hangszerhez\n"
+"és énekhanghoz is tökéletesen megfelelő."
 
 #: gnu/packages/audio.scm:1369
 msgid "LV2 convolution reverb"
-msgstr ""
+msgstr "LV2 konvolúciós visszhang"
 
 #: gnu/packages/audio.scm:1371
 msgid ""
@@ -467,10 +508,14 @@ msgid ""
 "especially for creating reverb effects.  It supports impulse responses with 1,\n"
 "2 or 4 channels, in any soundfile format supported by libsndfile."
 msgstr ""
+"Az IR egy kis késleltetésű, valós idejű, nagy teljesítményű jelkonvolver,\n"
+"kifejezetten visszhang hatások létrehozásához. Támogatja az 1, 2 és 4\n"
+"csatornás impulzusválaszokat a libsndfile által támogatott bármely\n"
+"hangfájlformátumban."
 
 #: gnu/packages/audio.scm:1401
 msgid "JACK audio connection kit"
-msgstr ""
+msgstr "JACK hangkapcsolati készlet"
 
 #: gnu/packages/audio.scm:1403
 msgid ""
@@ -481,10 +526,17 @@ msgid ""
 "professional audio work.  This means that it focuses on two key areas:\n"
 "synchronous execution of all clients, and low latency operation."
 msgstr ""
+"A JACK egy alacsony késleltetésű hangkiszolgáló. Számos különböző\n"
+"alkalmazást képes összekapcsolni egy hangeszközzel, valamint lehetővé\n"
+"teszi, hogy az alkalmazások a hangokat egymással megosszák. A JACK abban\n"
+"különbözik a többi hangkiszolgálótól, hogy kezdettől fogva professzionális\n"
+"zenei munkához megfelelőnek tervezték. Ez azt jelenti, hogy két kulcs\n"
+"területre fekteti a hangsúlyt: az összes ügyfél egyidejű végrehajtására és\n"
+"az alacsony késleltetésű működésre."
 
 #: gnu/packages/audio.scm:1509
 msgid "Simple LV2 host for JACK"
-msgstr ""
+msgstr "Egyszerű LV2 kiszolgáló a JACK-hez"
 
 #: gnu/packages/audio.scm:1511
 msgid ""
@@ -492,20 +544,27 @@ msgid ""
 "plugins and exposes their ports as JACK ports, essentially making any LV2\n"
 "plugin function as a JACK application."
 msgstr ""
+"A Jalv egy egyszerű, de teljes felszereltségű LV2 kiszolgáló a JACK-hez.\n"
+"LV2 bővítményeket futtat, és az átirataikat elérhetővé teszi JACK\n"
+"átiratokként, lényegében ezzel bármely LV2 bővítményfunkciót JACK\n"
+"alkalmazássá alakítva."
 
 #: gnu/packages/audio.scm:1554
 msgid "Linux Audio Developer's Simple Plugin API (LADSPA)"
-msgstr ""
+msgstr "Linux hangszerkesztők egyszerű bővítmény API-ja (LADSPA)"
 
 #: gnu/packages/audio.scm:1556
 msgid ""
 "LADSPA is a standard that allows software audio processors and effects\n"
 "to be plugged into a wide range of audio synthesis and recording packages."
 msgstr ""
+"A LADSPA egy olyan szabvány, amely lehetővé teszi a szoftveres\n"
+"hangfeldolgozók és hatások bővítményként való alkalmazását számos\n"
+"hangszintetizátor és hangrögzítő csomag számára."
 
 #: gnu/packages/audio.scm:1602
 msgid "Audio application session manager"
-msgstr ""
+msgstr "Hang alkalmazás munkamenet-kezelő"
 
 #: gnu/packages/audio.scm:1604
 msgid ""
@@ -514,10 +573,14 @@ msgid ""
 "applications, restoring program state (i.e. loaded patches) and the\n"
 "connections between them."
 msgstr ""
+"A LASH egy munkamenet-kezelő rendszer a hang alkalmazásokhoz. Lehetővé\n"
+"teszi a több összekapcsolt alkalmazásból álló hang munkamenetek mentését és\n"
+"visszaállítását, a program állapotának (azaz a betöltött javítócsomagok) és\n"
+"a köztük lévő kapcsolatok visszaállítását."
 
 #: gnu/packages/audio.scm:1625
 msgid "Bauer stereophonic-to-binaural DSP"
-msgstr ""
+msgstr "Bauer sztereofonikus -> binaurális DSP"
 
 #: gnu/packages/audio.scm:1627
 msgid ""
@@ -526,20 +589,27 @@ msgid ""
 "for headphone prolonged listening to disable superstereo fatigue without\n"
 "essential distortions."
 msgstr ""
+"A Bauer sztereofonikus -> binaurális DSP (bs2b) programkönyvtárat és\n"
+"bővítményeket arra tervezték, hogy a sztereó hangfelvételek fejhallgatós\n"
+"hallgatási élményét javítsa. Javasolt a hosszabb ideig tartó fejhallgató\n"
+"használatnál, hogy megkímélje a szupersztereó hatás okozta fáradástól\n"
+"lényeges torzítás nélkül."
 
 #: gnu/packages/audio.scm:1650
 msgid "Implementation of the Open Sound Control protocol"
-msgstr ""
+msgstr "Az Open Sound Control protokoll megvalósítása"
 
 #: gnu/packages/audio.scm:1652
 msgid ""
 "liblo is a lightweight library that provides an easy to use\n"
 "implementation of the Open Sound Control (OSC) protocol."
 msgstr ""
+"A liblo egy könnyűsúlyú programkönyvtár, amely az Open Sound Control (OSC)\n"
+"protokoll egy könnyen használható megvalósítását nyújtja."
 
 #: gnu/packages/audio.scm:1674
 msgid "Python bindings for liblo"
-msgstr ""
+msgstr "Python kötések a liblo programkönyvtárhoz"
 
 #: gnu/packages/audio.scm:1676
 msgid ""
@@ -548,10 +618,17 @@ msgid ""
 "to send and receive OSC messages using a nice and simple Python API.  Also\n"
 "included are the command line utilities @code{send_osc} and @code{dump_osc}."
 msgstr ""
+"A Pyliblo egy Python csomagoló a liblo Open Sound Control (OSC)\n"
+"programkönyvtárhoz. Támogatja a liblo szinte teljes funkcionalitását,\n"
+"lehetővé téve, hogy OSC üzeneteket küldjön és fogadjon egy szép és egyszerű\n"
+"Python API használatával. Tartalmazza a @code{send_osc} és a @code{dump_osc}\n"
+"parancssori segédprogramokat is."
 
 #: gnu/packages/audio.scm:1717
 msgid "Library to simplify use of LV2 plugins in applications"
 msgstr ""
+"Programkönyvtár az LV2 bővítmények használatának egyszerűsítésére az\n"
+"alkalmazásokban"
 
 #: gnu/packages/audio.scm:1719
 msgid ""
@@ -559,10 +636,14 @@ msgid ""
 "for applications.  Lilv is the successor to SLV2, rewritten to be\n"
 "significantly faster and have minimal dependencies."
 msgstr ""
+"A Lilv egy C programkönyvtár, amely a lehető legegyszerűbbé teszi az LV2\n"
+"bővítmények használatát az alkalmazások számára. A Lilv az SLV2 utódja,\n"
+"amelyet újraírtak, hogy lényegesen gyorsabb legyen és a lehető legkevesebb\n"
+"függőséggel rendelkezzen."
 
 #: gnu/packages/audio.scm:1745
 msgid "LV2 audio plugin specification"
-msgstr ""
+msgstr "LV2 hang bővítmény specifikáció"
 
 #: gnu/packages/audio.scm:1747
 msgid ""
@@ -571,26 +652,30 @@ msgid ""
 "add functionality to support the needs of increasingly powerful audio\n"
 "software."
 msgstr ""
+"Az LV2 egy nyílt specifikáció hang bővítményekhez és kiszolgáló\n"
+"alkalmazásokhoz. Lényegében az LV2 egy egyszerű stabil felület olyan\n"
+"kiterjesztésekkel együtt, amelyek funkcionalitást adnak az egyre nagyobb\n"
+"teljesítményű hangprogramok támogatásához."
 
 #: gnu/packages/audio.scm:1797
 msgid "LV2 port of the mda Piano plugin"
-msgstr ""
+msgstr "Az mda Piano bővítmény LV2 átirata"
 
 #: gnu/packages/audio.scm:1798
 msgid "An LV2 port of the mda Piano VSTi."
-msgstr ""
+msgstr "Az mda Piano VSTi LV2 átirata."
 
 #: gnu/packages/audio.scm:1811
 msgid "LV2 port of the mda EPiano plugin"
-msgstr ""
+msgstr "Az mda EPiano bővítmény LV2 átirata"
 
 #: gnu/packages/audio.scm:1812
 msgid "An LV2 port of the mda EPiano VSTi."
-msgstr ""
+msgstr "Az mda EPiano VSTi LV2 átirata."
 
 #: gnu/packages/audio.scm:1857
 msgid "C++ libraries for LV2 plugins"
-msgstr ""
+msgstr "C++ programkönyvtárak LV2 bővítményekhez"
 
 #: gnu/packages/audio.scm:1859
 msgid ""
@@ -598,10 +683,13 @@ msgid ""
 "extensions into easy to use C++ classes.  It is the successor of\n"
 "lv2-c++-tools."
 msgstr ""
+"Az LV2 eszközkészlet (LVTK) olyan programkönyvtárakat tartalmaz, amelyek\n"
+"becsomagolják az LV2 C API-t és kiterjesztéseket egyszerűen használható C++\n"
+"osztályokba. Ez az lv2-c++-tools utódja."
 
 #: gnu/packages/audio.scm:1900
 msgid "3D audio API"
-msgstr ""
+msgstr "3D hang API"
 
 #: gnu/packages/audio.scm:1902
 msgid ""
@@ -612,58 +700,74 @@ msgid ""
 "through the EFX extension.  It also facilitates streaming audio, multi-channel\n"
 "buffers, and audio capture."
 msgstr ""
+"Az OpenAL hanglejátszási képességeket biztosít egy virtuális 3D-s\n"
+"környezetben. Távolsági csillapítás, doppler eltolódás és irányított\n"
+"hangsugárzók is vannak az API által kezelt funkciók között. A fejlettebb\n"
+"hatások (beleértve a légelnyelést, okklúziót és környezeti visszhangot) az\n"
+"EFX kiterjesztésen keresztül érhetők el. Leegyszerűsíti a műsorszórást, a\n"
+"több csatornás pufferelést és hangfelvételt is."
 
 #: gnu/packages/audio.scm:1932
 msgid "Free implementation of OpenAL's ALUT standard"
-msgstr ""
+msgstr "Az OpenAL ALUT szabványának szabad megvalósítása"
 
 #: gnu/packages/audio.scm:1933
 msgid "freealut is the OpenAL Utility Toolkit."
-msgstr ""
+msgstr "A freealut az OpenAL segédprogram eszközkészlet."
 
 #: gnu/packages/audio.scm:1962
 msgid "Modular patch bay for audio and MIDI systems"
-msgstr ""
+msgstr "Moduláris patch panel hang- és MIDI rendszerekhez"
 
 #: gnu/packages/audio.scm:1964
 msgid ""
 "Patchage is a modular patch bay for audio and MIDI systems based on JACK\n"
 "and ALSA."
 msgstr ""
+"A Patchage egy moduláris patch panel JACK-en és ALSA-n alapuló hang- és MIDI\n"
+"rendszerekhez."
 
 #: gnu/packages/audio.scm:1990
 msgid "Jack server control application"
-msgstr ""
+msgstr "Jack kiszolgáló vezérlő alkalmazás"
 
 #: gnu/packages/audio.scm:1991
 msgid ""
 "Control a Jack server.  Allows you to plug various sources\n"
 "into various outputs and to start, stop and configure jackd"
 msgstr ""
+"Egy Jack kiszolgáló vezérlése. Lehetővé teszi, hogy számos jelforrást\n"
+"kapcsoljon a különféle kimenetekre, valamint elindítsa, leállítsa és\n"
+"beállítsa a jackd démont."
 
 #: gnu/packages/audio.scm:2017
 msgid "Real-time audio utility library"
-msgstr ""
+msgstr "Valós idejű hang segédprogramkönyvtár"
 
 #: gnu/packages/audio.scm:2019
 msgid ""
 "Raul (Real-time Audio Utility Library) is a C++ utility library primarily\n"
 "aimed at audio/musical applications."
 msgstr ""
+"A Raul (valós idejű hang segédprogramkönyvtár) egy C++ segédprogramkönyvtár,\n"
+"amelynek elsődleges célterülete a hang- és zenei alkalmazások."
 
 #: gnu/packages/audio.scm:2062
 msgid "Audio time-stretching and pitch-shifting library"
-msgstr ""
+msgstr "Hang időnyújtó és hangmagasság-eltoló programkönyvtár"
 
 #: gnu/packages/audio.scm:2064
 msgid ""
 "Rubber Band is a library and utility program that permits changing the\n"
 "tempo and pitch of an audio recording independently of one another."
 msgstr ""
+"A Rubber Band egy olyan programkönyvtár és segédprogram, amely lehetővé\n"
+"teszi egy hangfelvétel tempójának és hangmagasságának egymástól függetlenül\n"
+"történő megváltoztatását."
 
 #: gnu/packages/audio.scm:2112
 msgid "Cross-platform MIDI library for C++"
-msgstr ""
+msgstr "Keresztplatformos MIDI programkönyvtár C++ nyelvhez"
 
 #: gnu/packages/audio.scm:2114
 msgid ""
@@ -671,20 +775,27 @@ msgid ""
 "classes) that provide a common cross-platform API for realtime MIDI\n"
 "input/output."
 msgstr ""
+"Az RtMidi C++ osztályok gyűjteménye (RtMidiIn, RtMidiOut és az API-ra\n"
+"jellemző osztályok), amelyek egy közös, keresztplatformos API-t biztosítanak\n"
+"valós idejű MIDI bemenethez és kimenethez."
 
 #: gnu/packages/audio.scm:2139
 msgid "Library for serialising LV2 atoms to/from RDF"
-msgstr ""
+msgstr "Programkönyvtár LV2 atomok RDF sorbafejtésére és visszafejtésére"
 
 #: gnu/packages/audio.scm:2141
 msgid ""
 "Sratom is a library for serialising LV2 atoms to/from RDF, particularly\n"
 "the Turtle syntax."
 msgstr ""
+"A Sratom egy programkönyvtár LV2 atomok RDF sorbafejtésére és\n"
+"visszafejtésére, különösen a Turtle szintaxis használatával."
 
 #: gnu/packages/audio.scm:2169
 msgid "Library for loading and wrapping LV2 plugin UIs"
 msgstr ""
+"Programkönyvtár LV2 bővítmények felhasználói felületeinek betöltéséhez és\n"
+"csomagolásához"
 
 #: gnu/packages/audio.scm:2171
 msgid ""
@@ -697,10 +808,22 @@ msgid ""
 "\n"
 "Suil currently supports every combination of Gtk, Qt, and X11."
 msgstr ""
+"A Suil egy könnyűsúlyú C programkönyvtár LV2 bővítmények felhasználói\n"
+"felületeinek betöltéséhez és csomagolásához.\n"
+"\n"
+"A Suil lehetővé teszi egy eszköztár felhasználói felületének betöltését egy\n"
+"másik eszköztár által használt kiszolgálón. Az API-t kifejezetten úgy\n"
+"tervezték, hogy a kiszolgálóknak ne kelljen az egyes eszköztárakat\n"
+"külön-külön támogatni – ha a Suil támogat egy adott eszköztárat, akkor az\n"
+"abban az eszköztárban lévő felhasználói felületek automatikusan működni\n"
+"fognak az összes olyan kiszolgálón, amelyek Suil programkönyvtárat\n"
+"használnak.\n"
+"\n"
+"A Suil jelenleg a Gtk, a Qt és az X11 összes kombinációját támogatja."
 
 #: gnu/packages/audio.scm:2228
 msgid "Software synthesizer for playing MIDI files"
-msgstr ""
+msgstr "Szoftveres szintetizátor MIDI fájlok lejátszásához"
 
 #: gnu/packages/audio.scm:2230
 msgid ""
@@ -710,10 +833,16 @@ msgid ""
 "can not only play sounds, but also can save the generated waveforms into hard\n"
 "disks as various audio file formats."
 msgstr ""
+"A TiMidity++ egy szoftveres szintetizátor. Képes MIDI fájlok lejátszására\n"
+"úgy, hogy PCM hullámforma adatokká alakítja azokat, hozzáadva a MIDI\n"
+"adatokat a digitális hangszer adatfájlokhoz, ezután valós időben\n"
+"szintetizálja, majd lejátssza azokat. Nem csak hangok lejátszására képes,\n"
+"hanem el is tudja menteni az előállított hullámformákat a merevlemezre\n"
+"különféle hangfájl formátumként."
 
 #: gnu/packages/audio.scm:2268
 msgid "Modular and extensible audio processing system"
-msgstr ""
+msgstr "Moduláris és bővíthető hangfeldolgozó rendszer"
 
 #: gnu/packages/audio.scm:2270
 msgid ""
@@ -721,20 +850,27 @@ msgid ""
 "descriptive information from audio data — typically referred to as audio\n"
 "analysis plugins or audio feature extraction plugins."
 msgstr ""
+"A Vamp egy hangfeldolgozó bővítményrendszer az olyan bővítményekhez, amelyek\n"
+"leíró jellegű információkat nyernek ki a hangadatokból — jellemzően hang\n"
+"analízis bővítményekként vagy hangjellemző-kinyerő bővítményekként\n"
+"hivatkoznak rájuk."
 
 #: gnu/packages/audio.scm:2309
 msgid "Library for time stretching and pitch scaling of audio"
-msgstr ""
+msgstr "Programkönyvtár a hang idejének nyújtásához és hangmagasságának skálázásához"
 
 #: gnu/packages/audio.scm:2311
 msgid ""
 "SBSMS (Subband Sinusoidal Modeling Synthesis) is software for time\n"
 "stretching and pitch scaling of audio.  This package contains the library."
 msgstr ""
+"Az SBSMS (Subband Sinusoidal Modeling Synthesis) egy szoftver a hang\n"
+"idejének nyújtásához és hangmagasságának skálázásához. Ez a csomag a\n"
+"programkönyvtárat tartalmazza."
 
 #: gnu/packages/audio.scm:2330
 msgid "Hybrid lossless audio codec"
-msgstr ""
+msgstr "Hibrid veszteségmentes hangkodek"
 
 #: gnu/packages/audio.scm:2332
 msgid ""
@@ -742,10 +878,13 @@ msgid ""
 "compression modes.  This package contains command-line programs and library to\n"
 "encode and decode wavpack files."
 msgstr ""
+"A WavPack egy hangtömörítési formátum veszteségmentes, veszteséges és\n"
+"hibrid tömörítési módokkal. Ez a csomag parancssori programokat és egy\n"
+"programkönyvtárat tartalmaz wavpack fájlok kódolásához és dekódolásához."
 
 #: gnu/packages/audio.scm:2351
 msgid "Mod file playing library"
-msgstr ""
+msgstr "Mod fájl lejátszó programkönyvtár"
 
 #: gnu/packages/audio.scm:2353
 msgid ""
@@ -754,10 +893,14 @@ msgid ""
 "supported.  Optional features include high-quality resampling, bass expansion,\n"
 "surround and reverb."
 msgstr ""
+"A libmodplug programkönyvtár mod zenei fájlokat alakít át nyers hangadatokká\n"
+"a lejátszáshoz vagy átalakításhoz. A mod, .s3m, .it, .xm és számos kevésbé\n"
+"ismert formátum támogatott. A választható funkciók között megtalálható a jó\n"
+"minőségű újramintavételezés, a basszus kiemelés, a térhatás és a visszhang."
 
 #: gnu/packages/audio.scm:2372
 msgid "Module player library"
-msgstr ""
+msgstr "Module lejátszó programkönyvtár"
 
 #: gnu/packages/audio.scm:2374
 msgid ""
@@ -765,10 +908,14 @@ msgid ""
 "over 90 mainstream and obscure module formats including Protracker (MOD),\n"
 "Scream Tracker 3 (S3M), Fast Tracker II (XM), and Impulse Tracker (IT)."
 msgstr ""
+"A libxmp egy module fájlokat PCM adatokká alakító programkönyvtár. Több mint\n"
+"90 fővonalbeli és kevésbé ismert module formátumot támogat, beleértve a\n"
+"Protracker (MOD), Scream Tracker 3 (S3M), Fast Tracker II (XM) és az Impulse\n"
+"Tracker (IT) fájlokat."
 
 #: gnu/packages/audio.scm:2397
 msgid "Extended module player"
-msgstr ""
+msgstr "Kiterjesztett module lejátszó"
 
 #: gnu/packages/audio.scm:2399
 msgid ""
@@ -776,10 +923,16 @@ msgid ""
 "obscure module formats, including Protracker MOD, Fasttracker II XM, Scream\n"
 "Tracker 3 S3M and Impulse Tracker IT files."
 msgstr ""
+"Az Xmp egy hordozható module lejátszó, amely több mint 90 fővonalbeli és\n"
+"kevésbé ismert module formátumokat támogat, beleértve a Protracker (MOD),\n"
+"Fasttracker II (XM), Scream Tracker 3 (S3M) és az Impulse Tracker (IT)\n"
+"fájlokat."
 
 #: gnu/packages/audio.scm:2430
 msgid "Audio processing library for changing tempo, pitch and playback rate"
 msgstr ""
+"Hangfeldolgozó programkönyvtár a tempó, a hangmagasság és a visszajátszási\n"
+"sebesség megváltoztatásához"
 
 #: gnu/packages/audio.scm:2432
 msgid ""
@@ -788,10 +941,16 @@ msgid ""
 "application developers writing sound processing tools that require tempo/pitch\n"
 "control functionality, or just for playing around with the sound effects."
 msgstr ""
+"A SoundTouch egy hangfeldolgozó programkönyvtár a hangfolyamok vagy\n"
+"hangfájlok tempójának, hangmagasságának és visszajátszási sebességének\n"
+"megváltoztatásához. A célközönsége elsősorban azok az alkalmazásfejlesztők,\n"
+"akik olyan hangfeldolgozó eszközöket készítenek, amelyeknek szükségük van a\n"
+"tempó/hangmagasság vezérlő funkcionalitásra, vagy csak hanghatásokkal\n"
+"játszanak."
 
 #: gnu/packages/audio.scm:2469
 msgid "Sound processing utility"
-msgstr ""
+msgstr "Hangfeldolgozó segédprogram"
 
 #: gnu/packages/audio.scm:2471
 msgid ""
@@ -800,20 +959,27 @@ msgid ""
 "apply various effects to these sound files, and, as an added bonus, SoX\n"
 "can play and record audio files."
 msgstr ""
+"A SoX (Sound eXchange) egy parancssori segédprogram, amely képes különféle\n"
+"számítógépes hangfájl és egyéb formátum átalakításra. Képes ezekre a\n"
+"hangfájlokra különféle hanghatásokat is alkalmazni, valamint hozzáadott\n"
+"funkcióként a SoX képes lejátszani és rögzíteni a hangfájlokat."
 
 #: gnu/packages/audio.scm:2494
 msgid "One-dimensional sample-rate conversion library"
-msgstr ""
+msgstr "Egydimenziós mintavételezési gyakoriság átalakító programkönyvtár"
 
 #: gnu/packages/audio.scm:2496
 msgid ""
 "The SoX Resampler library (libsoxr) performs one-dimensional sample-rate\n"
 "conversion.  It may be used, for example, to resample PCM-encoded audio."
 msgstr ""
+"A SoX Resampler programkönyvtár (libsoxr) egydimenziós mintavételezési\n"
+"gyakoriság átalakítást hajt végre. Használható például PCM kódolású hang\n"
+"újramintavételezésére."
 
 #: gnu/packages/audio.scm:2526
 msgid "MPEG Audio Layer 2 (MP2) encoder"
-msgstr ""
+msgstr "MPEG Audio Layer 2 (MP2) kódoló"
 
 #: gnu/packages/audio.scm:2528
 msgid ""
@@ -821,10 +987,13 @@ msgid ""
 "tooLAME by Mike Cheng, which in turn is based upon the ISO dist10 code and\n"
 "portions of LAME."
 msgstr ""
+"A TwoLAME egy optimalizált MPEG Audio Layer 2 (MP2) kódoló, amely Mike Cheng\n"
+"tooLAME programján alapul, amelyet felváltva az ISO dist10 kód és a LAME\n"
+"bizonyos részei alapján fejlesztettek."
 
 #: gnu/packages/audio.scm:2567
 msgid "Audio I/O library"
-msgstr ""
+msgstr "Hang ki- és bemeneti programkönyvtár"
 
 #: gnu/packages/audio.scm:2569
 msgid ""
@@ -832,20 +1001,25 @@ msgid ""
 "to record and/or play sound using a callback function or a blocking read/write\n"
 "interface."
 msgstr ""
+"A PortAudio egy hordozható C/C++ hang ki- és bemeneti programkönyvtár, amely\n"
+"egyszerű API-t biztosít hangok felvételéhez és lejátszásához visszahívó\n"
+"függvények vagy blokkoló olvasó/író felületek használatával."
 
 #: gnu/packages/audio.scm:2599
 msgid "Graphical user interface for FluidSynth"
-msgstr ""
+msgstr "Grafikus felhasználói felület a FluidSynth szintetizátorhoz"
 
 #: gnu/packages/audio.scm:2601
 msgid ""
 "Qsynth is a GUI front-end application for the FluidSynth SoundFont\n"
 "synthesizer written in C++."
 msgstr ""
+"A Qsynth egy C++-ban írt grafikus felhasználó felület előtérprogram\n"
+"alkalmazás a FluidSynth SoundFont szintetizátorhoz."
 
 #: gnu/packages/audio.scm:2638
 msgid "Networked audio system"
-msgstr ""
+msgstr "Hálózati hangrendszer"
 
 #: gnu/packages/audio.scm:2640
 msgid ""
@@ -853,10 +1027,13 @@ msgid ""
 "directly to a different computer on your LAN network.  It is an audio daemon\n"
 "with a much different focus than most other audio daemons."
 msgstr ""
+"Az RSound lehetővé teszi, hogy hangot küldjön egy alkalmazásból, és\n"
+"közvetlenül átvigye a helyi hálózat valamelyik másik számítógépére. Ez egy\n"
+"hangdémon, amely jelentősen különbözik a legtöbb egyéb hangdémontól."
 
 #: gnu/packages/audio.scm:2671
 msgid "JACK audio frequency analyzer and display"
-msgstr ""
+msgstr "JACK hangfrekvencia elemző és kijelző"
 
 #: gnu/packages/audio.scm:2673
 msgid ""
@@ -864,20 +1041,25 @@ msgid ""
 "Connection Kit.  It can display the FFT of any input, modify it and output the\n"
 "result."
 msgstr ""
+"Az XJackFreak egy hangelemző és kiegyenlítő eszköz a JACK hangkapcsolati\n"
+"készlethez. Képes bármely bement gyors Fourier transzformáltjának\n"
+"megjelenítésére, módosítására és az eredmény lejátszására."
 
 #: gnu/packages/audio.scm:2717
 msgid "Fast, partitioned convolution engine library"
-msgstr ""
+msgstr "Gyors, particionált konvolúciós motor programkönyvtár"
 
 #: gnu/packages/audio.scm:2719
 msgid ""
 "Zita convolver is a C++ library providing a real-time convolution\n"
 "engine."
 msgstr ""
+"A Zita konvolver egy C++ programkönyvtár, amely egy valós idejű konvolúciós\n"
+"motort biztosít."
 
 #: gnu/packages/audio.scm:2764
 msgid "C++ library for resampling audio signals"
-msgstr ""
+msgstr "C++ programkönyvtár hangjelek újramintavételezéséhez"
 
 #: gnu/packages/audio.scm:2766
 msgid ""
@@ -885,6 +1067,10 @@ msgid ""
 "designed to be used within a real-time processing context, to be fast, and to\n"
 "provide high-quality sample rate conversion."
 msgstr ""
+"A libzita-resampler egy C++ programkönyvtár hangjelek\n"
+"újramintavételezéséhez. Arra tervezték, hogy valós idejű\n"
+"feldolgozókörnyezetben használják, gyors legyen és jó minőségű\n"
+"mintavételezési gyakoriság átalakítást biztosítson."
 
 #: gnu/packages/audio.scm:2810
 msgid ""
@@ -893,10 +1079,14 @@ msgid ""
 "open, initialise and use a hw: device in mmap mode, and providing floating\n"
 "point audio data."
 msgstr ""
+"A zita-alsa-pcmi egy C++ csomagoló az ALSA API-hoz. Egyszerű hozzáférést\n"
+"biztosít az ALSA PCM eszközökhöz, sok olyan funkcióra ügyel, amelyek a\n"
+"hardver megnyitásához, előkészítéséhez és használatához szükségesek:\n"
+"például mmap módú eszközök és lebegőpontos hangadatok megadása."
 
 #: gnu/packages/audio.scm:2841
 msgid "Cue and toc file parsers and utilities"
-msgstr ""
+msgstr "Cue és toc fájlfeldolgozók és segédprogramok"
 
 #: gnu/packages/audio.scm:2842
 msgid ""
@@ -905,10 +1095,14 @@ msgid ""
 "files are a way to represent the layout of a data or audio CD in a\n"
 "machine-readable ASCII format."
 msgstr ""
+"A Cuetools olyan programok gyűjteménye, amelyek hasznosak a CUE munkalapok\n"
+"(cue) és tartalomjegyzék (toc) fájlok módosításához és használatához. A CUE\n"
+"és TOC fájlok módot adnak arra, hogy az adat vagy hang CD-k kiosztását egy\n"
+"számítógép által olvasható ASCII formátumban jelenítse meg."
 
 #: gnu/packages/audio.scm:2861
 msgid "WAVE audio data processing tool"
-msgstr ""
+msgstr "WAVE hangadat-feldolgozó eszköz"
 
 #: gnu/packages/audio.scm:2862
 msgid ""
@@ -918,20 +1112,28 @@ msgid ""
 "module to handle that particular file type.  It can also generate CUE files, and\n"
 "use them split WAVE data into multiple files."
 msgstr ""
+"Az shntool egy többcélú WAVE adatfeldolgozó és kiértékelő segédprogram. A\n"
+"fájlformátumokat absztrakcióval választották el a program magjától, így\n"
+"bármilyen WAVE adatokat tartalmazó fájl feldolgozására képes (akár\n"
+"tömörített, akár nem), feltéve, hogy rendelkezésre áll egy, az adott\n"
+"fájltípust kezelni képes formátummodul. Képes CUE fájlok előállítására is,\n"
+"valamint azok használatával a WAVE adatokat több fájlba tudja darabolni."
 
 #: gnu/packages/audio.scm:2900
 msgid "DTS Coherent Acoustics decoder"
-msgstr ""
+msgstr "DTS koherens akusztikus dekódoló"
 
 #: gnu/packages/audio.scm:2901
 msgid ""
 "Dcadec is a DTS Coherent Acoustics surround sound decoder\n"
 "with support for HD extensions."
 msgstr ""
+"A Dcadec egy DTS koherens akusztikus környezeti hang dekódoló HD\n"
+"kiterjesztések támogatásával."
 
 #: gnu/packages/audio.scm:2922
 msgid "Tool to adjust loudness of media files"
-msgstr ""
+msgstr "Segédprogram médiafájlok hangosságának beállításához"
 
 #: gnu/packages/audio.scm:2924
 msgid ""
@@ -939,10 +1141,13 @@ msgid ""
 "flavors EBU R128, ATSC A/85, and ReplayGain 2.0.  It helps normalizing the\n"
 "loudness of audio and video files to the same level."
 msgstr ""
+"A BS1770GAIN egy hangosságvizsgáló, amely megfelel az ITU-R BS.1770-es\n"
+"szabványnak és az EBU R128, ATSC A/85 és ReplayGain 2.0 mellékszabványainak.\n"
+"Segít azonos szintre hozni a hang- és videofájlok hangosságát."
 
 #: gnu/packages/audio.scm:2955
 msgid "Lightweight audio filtering library"
-msgstr ""
+msgstr "Könnyűsúlyú hangszűrő programkönyvtár"
 
 #: gnu/packages/audio.scm:2956
 msgid ""
@@ -1204,9 +1409,9 @@ msgstr ""
 "fájlban. A minta megadható alap vagy kiterjesztett reguláris kifejezésként,\n"
 "illetve rögzített szövegként. Alapértelmezetten az illeszkedő szöveg\n"
 "egyszerűen kiírásra kerül a képernyőre, viszont a kimenet nagymértékben\n"
-"testre szabható a beágyazáshoz, például sorok számozásához. A GNU grep számos\n"
-"kiterjesztést nyújt a szabványos segédprogramokon túl, beleértve például a\n"
-"rekurzív könyvtárkeresést."
+"testre szabható a beágyazáshoz, például sorok számozásához. A GNU grep\n"
+"számos kiterjesztést nyújt a szabványos segédprogramokon túl, beleértve\n"
+"például a rekurzív könyvtárkeresést."
 
 #: gnu/packages/base.scm:134
 msgid "Stream editor"
@@ -4083,15 +4288,15 @@ msgstr ""
 
 #: gnu/packages/games.scm:4691
 msgid "Data files for 0ad"
-msgstr ""
+msgstr "Adatfájlok a 0ad játékhoz"
 
 #: gnu/packages/games.scm:4692
 msgid "0ad-data provides the data files required by the game 0ad."
-msgstr ""
+msgstr "A 0ad-data biztosítja a 0ad játékhoz szükséges adatfájlokat."
 
 #: gnu/packages/games.scm:4814
 msgid "3D real-time strategy game of ancient warfare"
-msgstr ""
+msgstr "Az ősi hadviselés 3D-s, valós idejű stratégiai játéka"
 
 #: gnu/packages/games.scm:4815
 msgid ""
@@ -4287,7 +4492,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:200
 msgid "CD/DVD burning tool for Gnome"
-msgstr ""
+msgstr "CD/DVD író eszköz a GNOME-hoz"
 
 #: gnu/packages/gnome.scm:201
 msgid ""
@@ -4295,6 +4500,10 @@ msgid ""
 "Desktop.  It is designed to be as simple as possible and has some unique\n"
 "features to enable users to create their discs easily and quickly."
 msgstr ""
+"A Brasero egy GNOME asztali környezethez készült CD/DVD író alkalmazás. Az\n"
+"alkalmazást minél egyszerűbben használhatónak tervezték, de mégis\n"
+"rendelkezik egyedi jellemzőkkel, amelyekkel a felhasználók egyszerűen és\n"
+"gyorsan hozhatnak létre lemezeket."
 
 #: gnu/packages/gnome.scm:276
 msgid "Simple backup tool, for regular encrypted backups"
@@ -5372,6 +5581,8 @@ msgid ""
 "While aiming at simplicity and ease of use, gedit is a\n"
 "powerful general purpose text editor."
 msgstr ""
+"Noha az egyszerűségre és egyszerű felhasználhatóságra törekszik, a gedit\n"
+"egy hatékony általános célú szövegszerkesztő."
 
 #: gnu/packages/gnome.scm:4693
 msgid "Display graphical dialog boxes from shell scripts"
@@ -6506,10 +6717,21 @@ msgid ""
 "each of those has further dependencies, all of the prerequisites for the\n"
 "program can be installed in one go."
 msgstr ""
+"A Guildhall a Guile Scheme nyelvhez írt csomagkezelő. Egy független\n"
+"kézművesek egyesületének szövetsége. A városháza (guildhall) az a hely,\n"
+"ahol találkoznak. Ennek a városházának az a célja, hogy egy virtuális teret\n"
+"hozzon létre a Guile mágusoknak és az utazó népnek, hogy kódot osszanak meg.\n"
+"\n"
+"Egy adott szinten a Guildhall lehetővé teszi a Scheme modulok és programok\n"
+"megosztását az interneten, és olyan kódok telepítését, amelyet mások\n"
+"osztottak meg. A Guildhall képes kezelni a függőségeket, így amikor egy\n"
+"programnak számos programkönyvtárra van szüksége, és azoknak további\n"
+"függőségeik vannak, akkor a program összes előkövetelménye egyszerre\n"
+"telepíthető."
 
 #: gnu/packages/guile.scm:473
 msgid "Web application framework written in Guile"
-msgstr ""
+msgstr "Guile nyelven írt webes alkalmazás-keretrendszer"
 
 #: gnu/packages/guile.scm:474
 msgid ""
@@ -6522,10 +6744,19 @@ msgid ""
 "frameworks, session management, URL-remapping for RESTful, page caching, and\n"
 "more."
 msgstr ""
+"A GNU Artanis egy Guile Scheme nyelven írt webes alkalmazás-keretrendszer.\n"
+"A webes alkalmazás-keretrendszer (WAF) egy olyan szoftver-keretrendszer,\n"
+"amelyet arra terveztek, hogy támogassa a dinamikus weboldalak,\n"
+"webalkalmazások, webszolgáltatások és webes erőforrások fejlesztését. A\n"
+"keretrendszer célja, hogy csökkentse a webes fejlesztésekben elvégzett\n"
+"gyakori tevékenységekhez kapcsolódó felesleges munkát. Az Artanis számos\n"
+"eszközt biztosít a webes fejlesztéshez: adatbázis-hozzáférést, sablonozó\n"
+"keretrendszereket, munkamenet-kezelést, URL újraleképezést RESTful\n"
+"oldalakhoz, oldal gyorsítótárazást és egyebeket."
 
 #: gnu/packages/guile.scm:500
 msgid "Framework for building readers for GNU Guile"
-msgstr ""
+msgstr "Keretrendszer olvasók összeállításához a GNU Guile számára"
 
 #: gnu/packages/guile.scm:502
 msgid ""
@@ -6541,20 +6772,32 @@ msgid ""
 "hopefully more powerful and flexible (for instance, one may instantiate as\n"
 "many readers as needed)."
 msgstr ""
+"A Guile-Reader egy egyszerű keretrendszer olvasók összeállításához a GNU\n"
+"Guile számára.\n"
+"\n"
+"Az ötlete, hogy leegyszerűsítse azokat az összeállítási eljárásokat, amelyek\n"
+"a Guile olvasási eljárásait kiterjesztik. Különféle szintaxisváltozatot\n"
+"támogató olvasók egyszerűen írhatók, valószínűleg a szabványos Scheme\n"
+"olvasók meglévő „token olvasói” újrafelhasználásával. Például használható a\n"
+"Skribilo R5RS-éből származó dokumentumszintaxisának megvalósításához.\n"
+"\n"
+"A Guile-Reader megközelítése hasonló a Common Lisp „olvasótáblájához”, de\n"
+"remélhetőleg hatékonyabb és rugalmasabb (például valaki annyi olvasót\n"
+"példányosíthat, amennyi csak szükséges)."
 
 #: gnu/packages/guile.scm:556
 msgid "Guile bindings to ncurses"
-msgstr ""
+msgstr "Guile kötések az ncurses programkönyvtárhoz"
 
 #: gnu/packages/guile.scm:558
 msgid ""
 "guile-ncurses provides Guile language bindings for the ncurses\n"
 "library."
-msgstr ""
+msgstr "A guile-ncurses Guile nyelvi kötéseket biztosít az ncurses programkönyvtárhoz."
 
 #: gnu/packages/guile.scm:585
 msgid "Run jobs at scheduled times"
-msgstr ""
+msgstr "Feladatok futtatása ütemezett időpontokban"
 
 #: gnu/packages/guile.scm:587
 msgid ""
@@ -6563,10 +6806,14 @@ msgid ""
 "Guile, so its configuration can be written in Scheme; the original cron\n"
 "format is also supported."
 msgstr ""
+"A GNU Mcron a Vixie cron teljes helyettesítése. Arra használják, hogy\n"
+"ütemezetten futtasson feladatokat, mint például óránként vagy minden hétfőn.\n"
+"Az Mcron Guile nyelven íródott, így a beállításait lehet Scheme nyelven\n"
+"írni. Az eredeti cron formátum is támogatott."
 
 #: gnu/packages/guile.scm:674
 msgid "Guile parser library for the iCalendar format"
-msgstr ""
+msgstr "Guile feldolgozó programkönyvtár az iCalendar formátumhoz"
 
 #: gnu/packages/guile.scm:676
 msgid ""
@@ -6575,10 +6822,16 @@ msgid ""
 "\n"
 "The library is shipped with documentation in Info format and usage examples."
 msgstr ""
+"A Guile-ICS egy tisztán Scheme nyelven írt iCalendar (RFC5545)\n"
+"formátumfeldolgozó programkönyvtár. A programkönyvtár használható iCalendar\n"
+"adatok olvasásához és írásához.\n"
+"\n"
+"A programkönyvtár Info formátumban lévő dokumentációval és használati\n"
+"példákkal érkezik."
 
 #: gnu/packages/guile.scm:711
 msgid "Collection of useful Guile Scheme modules"
-msgstr ""
+msgstr "Hasznos Guile Scheme modulok gyűjteménye"
 
 #: gnu/packages/guile.scm:713
 msgid ""
@@ -6587,10 +6840,15 @@ msgid ""
 "modules into a coherent library.  Think \"a down-scaled, limited-scope CPAN\n"
 "for Guile\"."
 msgstr ""
+"A Guile-Lib gyűjteményt a tiszta rendszerű Guile modulok gyűjtőhelyének\n"
+"szánják, amely lehetővé teszi az embereknek, hogy együttműködve integrálják\n"
+"az általános Guile moduljaikat egy összefüggő programkönyvtárba. Gondoljon\n"
+"rá úgy, mint egy „lecsökkentett, korlátozott hatókörű CPAN tárolóra a Guile\n"
+"nyelvhez”."
 
 #: gnu/packages/guile.scm:754
 msgid "JSON module for Guile"
-msgstr ""
+msgstr "JSON modul a Guile nyelvhez"
 
 #: gnu/packages/guile.scm:756
 msgid ""
@@ -6604,10 +6862,19 @@ msgid ""
 "@item Allows JSON pretty printing.\n"
 "@end itemize\n"
 msgstr ""
+"A Guile-JSON JSON dokumentumok feldolgozását és összeállítását támogatja a\n"
+"specifikációk szerint. Ezek a fő funkciói:\n"
+"\n"
+"@itemize\n"
+"@item Szigorúan megfelel a @uref{http://json.org, specifikációnak}.\n"
+"@item JSON dokumentumok összeállítása programokból makrókon keresztül.\n"
+"@item Unicode támogatás a karakterláncokhoz.\n"
+"@item Lehetővé teszi a szépített JSON kiíratást.\n"
+"@end itemize\n"
 
 #: gnu/packages/guile.scm:843
 msgid "MiniKanren declarative logic system, packaged for Guile"
-msgstr ""
+msgstr "MiniKanren deklaratív logikai rendszer a Guile nyelvhez csomagolva"
 
 #: gnu/packages/guile.scm:845
 msgid ""
@@ -6621,12 +6888,22 @@ msgid ""
 "\n"
 "See http://minikanren.org/ for more on miniKanren generally."
 msgstr ""
+"A MiniKanren egy relációs programozási kiterjesztés a Scheme programozási\n"
+"nyelvhez, amelyet a pedagógiai célokra megfelelő Kanren kisebb verziójaként\n"
+"írtak. Ez szerepel a Dan Friedman, William Byrd és Oleg Kiselyov által írt\n"
+"The Reasoned Schemer című könyvben.\n"
+"\n"
+"Ez Ian Price miniKanren r6rs csomagolt verziója, amely kissé eltér a\n"
+"fővonalbeli miniKanren programtól.\n"
+"\n"
+"Nézze meg a http://minikanren.org/ oldalt, ha többet szeretne tudni a\n"
+"miniKanren programról."
 
 #: gnu/packages/guile.scm:916
 msgid ""
 "Minimal implementation of incremental computation in Guile\n"
 "Scheme"
-msgstr ""
+msgstr "A növekményes számítás minimalista megvalósítása Guile Scheme nyelven"
 
 #: gnu/packages/guile.scm:918
 msgid ""
@@ -6638,6 +6915,14 @@ msgid ""
 "microAdapton.  Both miniAdapton and microAdapton are designed to be easy to\n"
 "understand, extend, and port to host languages other than Scheme."
 msgstr ""
+"Ez a csomag a miniAdapton teljes Scheme megvalósítását biztosítja, amely\n"
+"megvalósítja az Adapton rendszer teljes funkcionalitását a növekményes\n"
+"számításhoz (ismert még önszabályozó számításként is). Az Adapton\n"
+"rendszerhez hasonlóan a miniAdapton is lehetővé teszi a programozóknak, hogy\n"
+"biztonságosan ötvözzék a mutációt és az emlékezést. A miniAdapton egy még\n"
+"egyszerűbb rendszerre, a microAdapton rendszerre épült. Mind a miniAdapton,\n"
+"mind a microAdapton úgy lett megtervezve, hogy egyszerűen megérthető,\n"
+"bővíthető és átírható legyen a Scheme nyelvtől eltérő egyéb nyelvekhez."
 
 #: gnu/packages/guile.scm:1002
 msgid "S-expression based regular expressions"

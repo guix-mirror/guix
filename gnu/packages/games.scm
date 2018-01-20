@@ -349,6 +349,13 @@ tired of cows, a variety of other ASCII-art messengers are available.")
     `(("prboom-plus" ,prboom-plus)))
    (home-page "https://freedoom.github.io/")
    (synopsis "Free content game based on the Doom engine")
+   (native-search-paths
+    (list (search-path-specification
+           (variable "DOOMWADDIR")
+           (files '("share/games/doom")))
+          (search-path-specification
+           (variable "DOOMWADPATH")
+           (files '("share/games/doom")))))
    (description
     "The Freedoom project aims to create a complete free content first person
 shooter game.  Freedoom by itself is just the raw material for a game: it must

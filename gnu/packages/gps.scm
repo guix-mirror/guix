@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,7 +47,15 @@
                     version ".orig.tar.gz"))
               (sha256
                (base32
-                "0xf7wmy2m29g2lm8lqc74yf8rf7sxfl3cfwbk7dpf0yf42pb0b6w"))))
+                "0xf7wmy2m29g2lm8lqc74yf8rf7sxfl3cfwbk7dpf0yf42pb0b6w"))
+              (snippet
+               '(begin
+                  ;; Delete files under GPL-compatible licences but never used
+                  ;; on GNU systems, rather than bloating the LICENSE field.
+                  (with-directory-excursion "gpsbabel"
+                    (delete-file "gui/serial_mac.cc")           ; Apple MIT
+                    (delete-file "mingw/include/ddk/hidsdi.h")) ; public domain
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -76,7 +85,7 @@
     (native-inputs
      `(("which" ,which)
        ("libxml2" ,libxml2)))              ;'xmllint' needed for the KML tests
-    (home-page "http://www.gpsbabel.org/")
+    (home-page "https://www.gpsbabel.org/")
     (synopsis "Convert and exchange data with GPS and map programs")
     (description
      "GPSBabel converts waypoints, tracks, and routes between hundreds of
@@ -84,7 +93,8 @@ popular GPS receivers and mapping programs.  It contains extensive data
 manipulation abilities making it a convenient for server-side processing or as
 the back-end for other tools.  It does not convert, transfer, send, or
 manipulate maps.")
-    (license license:gpl2+)))
+    (license (list license:expat        ; shapelib/*.[ch]
+                   license:gpl2+))))    ; everything else
 
 (define-public gpscorrelate
   ;; This program is "lightly maintained", so to speak, so we end up taking it

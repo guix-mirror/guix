@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -359,23 +359,23 @@ stack traces.")
 (define-public lcov
   (package
     (name "lcov")
-    (version "1.12")
+    (version "1.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/ltp/Coverage%20Analysis"
                                   "/LCOV-" version "/lcov-" version ".tar.gz"))
               (sha256
                (base32
-                "19wfifdpxxivhq9adbphanjfga9bg9spms9v7c3589wndjff8x5l"))))
+                "08wabnb0gcjqk0qc65a6cgbbmz6b8lvam3p7byh0dk42hj3jr5s4"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list (string-append "PREFIX=" out)
-                            (string-append "BIN_DIR=" out "/bin")
-                            (string-append "MAN_DIR=" out "/share/man")))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))
-       #:tests? #f))                              ;no 'check' target
+     '(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))           ; no configure script
+       #:tests? #f))                    ; no 'check' target
     (inputs `(("perl" ,perl)))
     (home-page "http://ltp.sourceforge.net/coverage/lcov.php")
     (synopsis "Code coverage tool that enhances GNU gcov")

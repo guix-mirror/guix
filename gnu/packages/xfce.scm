@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,7 +69,7 @@
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs `(("gtk+" ,gtk+-2)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "GTK+ theme engine for Xfce")
     (description
      "Default GTK+ engine and themes for Xfce Desktop Environment.")
@@ -91,7 +92,7 @@
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (propagated-inputs `(("glib" ,glib))) ; required by libxfce4util-1.0.pc
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Basic utility library for Xfce")
     (description
      "A general-purpose utility library with core application support for the
@@ -135,7 +136,7 @@ Xfce Desktop Environment.")
        ("dbus-glib" ,dbus-glib)))
     (inputs
      `(("libxfce4util" ,libxfce4util)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Configuration storage and query system for Xfce")
     (description
      "Settings daemon for Xfce, implemented as a D-Bus-based configuration
@@ -169,7 +170,7 @@ storage system.")
               ;; but will lead to a conflict with gtk+.
               ("gtk+-2" ,gtk+-2)
               ("startup-notification" ,startup-notification)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Widgets library for Xfce")
     (description
      "Libxfce4ui is the replacement of the old libxfcegui4 library.  It is used
@@ -198,7 +199,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
     (inputs
      `(("libxfce4ui" ,libxfce4ui)
        ("perl-uri" ,perl-uri)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Extension library for Xfce")
     (description
      "An extension library to Xfce.  While Xfce comes with quite a few libraries
@@ -227,7 +228,7 @@ development.")
      `(("gtk+" ,gtk+-2)))
     (propagated-inputs
      `(("libxfce4ui" ,libxfce4ui))) ; required by garcon-gtk2-1.pc
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Implementation of the freedesktop.org menu specification")
     (description
      "Garcon is a freedesktop.org compliant menu implementation based on
@@ -263,7 +264,7 @@ merging features essential for loading menus modified with menu editors.")
        ("libgsf" ,libgsf)
        ("poppler" ,poppler)
        ("gstreamer" ,gstreamer)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "D-Bus service for applications to request thumbnails")
     (description
      "Tumbler is a D-Bus service for applications to request thumbnails for
@@ -301,7 +302,7 @@ management D-Bus specification.")
      (list (search-path-specification
             (variable "X_XFCE4_LIB_DIRS")
             (files '("lib/xfce4")))))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Xfce desktop panel")
     (description
      "Desktop panel for Xfce, which contains program launchers, window buttons,
@@ -330,7 +331,7 @@ applications menu, workspace switcher and more.")
               ("libxfce4ui" ,libxfce4ui)
               ("xfce4-panel" ,xfce4-panel)))
     (home-page
-     "http://goodies.xfce.org/projects/panel-plugins/xfce4-battery-plugin")
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-battery-plugin")
     (synopsis "Battery monitor panel plugin for Xfce4")
     (description
      "A battery monitor panel plugin for Xfce4, compatible with APM and ACPI.")
@@ -360,7 +361,7 @@ applications menu, workspace switcher and more.")
        ("libxtst" ,libxtst)
        ("xfce4-panel" ,xfce4-panel)))
     (home-page
-     "http://goodies.xfce.org/projects/panel-plugins/xfce4-clipman-plugin")
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-clipman-plugin")
     (synopsis "Clipboard manager for Xfce")
     (description
      "Clipman is a clipboard manager for Xfce.  It keeps the clipboard contents
@@ -391,7 +392,7 @@ matching them against regular expressions.")
        ("libxfce4ui" ,libxfce4ui)
        ("pulseaudio" ,pulseaudio)
        ("xfce4-panel" ,xfce4-panel)))
-    (home-page "http://git.xfce.org/panel-plugins/xfce4-pulseaudio-plugin/")
+    (home-page "https://git.xfce.org/panel-plugins/xfce4-pulseaudio-plugin/")
     (synopsis "PulseAudio panel plugin for Xfce")
     (description
      "Xfce PulseAudio plugin is a plugin for the Xfce panel which provides a
@@ -424,7 +425,7 @@ keys for controlling the audio volume.")
        ("libxfce4ui" ,libxfce4ui)
        ("libxklavier" ,libxklavier)
        ("xfce4-panel" ,xfce4-panel)))
-    (home-page "http://git.xfce.org/panel-plugins/xfce4-xkb-plugin/")
+    (home-page "https://git.xfce.org/panel-plugins/xfce4-xkb-plugin/")
     (synopsis "XKB layout switching panel plug-in for Xfce")
     (description
      "Xfce XKB plugin makes it possible to set up and use multiple
@@ -458,7 +459,7 @@ per window.")
      `(("garcon" ,garcon)
        ("gtk+" ,gtk+-2)
        ("libxfce4ui" ,libxfce4ui)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Xfce application finder")
     (description
      "Application finder for Xfce, it will show the applications installed on
@@ -506,7 +507,7 @@ your system in categories, so you can quickly find and launch them.")
        ("libsm" ,libsm)
        ("libwnck" ,libwnck-2)
        ("libxfce4ui" ,libxfce4ui)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Xfce session manager")
     (description
      "Session manager for Xfce, it will restore your session on startup and
@@ -541,7 +542,7 @@ allows you to shutdown the computer from Xfce.")
        ("libxfce4ui" ,libxfce4ui)
        ("upower" ,upower)
        ("xf86-input-libinput" ,xf86-input-libinput)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Xfce settings manager")
     (description
      "Settings manager for Xfce, it can control various aspects of the desktop
@@ -572,7 +573,7 @@ like appearance, display, keyboard and mouse settings.")
        ("pcre" ,pcre)
        ("xfce4-panel" ,xfce4-panel)
        ("startup-notification" ,startup-notification)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Xfce file manager")
     (description
      "A modern file manager for graphical desktop, aiming to be easy-to-use and
@@ -599,7 +600,7 @@ fast.")
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
        ("libxfce4ui" ,libxfce4ui)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Removable media manager for Thunar")
     (description
      "Thunar-volman is an extension for the Thunar File Manager, which enables
@@ -632,7 +633,7 @@ and import the new pictures from your camera.")
        ("libxdamage" ,libxdamage)
        ("libxfce4ui" ,libxfce4ui)
        ("libxrandr" ,libxrandr)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Xfce window manager")
     (description
      "Window manager for Xfce, it handles the placement of windows
@@ -662,7 +663,7 @@ on the screen.")
        ("libwnck" ,libwnck-2)
        ("libxfce4ui" ,libxfce4ui)
        ("thunar" ,thunar)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Xfce desktop manager")
     (description
      "Desktop manager for Xfce, it sets the background color or image with
@@ -673,7 +674,7 @@ devices and folders.")
 (define-public xfce4-terminal
   (package
     (name "xfce4-terminal")
-    (version "0.8.3")
+    (version "0.8.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/" name "/"
@@ -681,7 +682,7 @@ devices and folders.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1w8jvi9nw00aki825mm8f7wpkhxxicw4f6j9v4ka71z8p2ry9rj0"))))
+                "1mw1v20a9r8figl5m93jfp16x64bfj8yjmy5s5kbdw501425camw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -689,7 +690,7 @@ devices and folders.")
     (inputs
      `(("libxfce4ui" ,libxfce4ui)
        ("vte" ,vte)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Xfce terminal emulator")
     (description
      "A lightweight and easy to use terminal emulator for Xfce.  Features
@@ -744,7 +745,7 @@ on your desktop.")
     (native-search-paths
      ;; For finding panel plugins.
      (package-native-search-paths xfce4-panel))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Desktop environment (meta-package)")
     (description
      "Xfce is a lightweight desktop environment.  It aims to be fast and low on
@@ -774,7 +775,7 @@ system resources, while still being visually appealing and user friendly.")
        ("upower" ,upower)
        ("libnotify" ,libnotify)
        ("libxfce4ui" ,libxfce4ui)))
-    (home-page "http://www.xfce.org/")
+    (home-page "https://www.xfce.org/")
     (synopsis "Xfce Power Manager")
     (description
      "This is a power manager for the Xfce desktop.  It manages the power
@@ -809,7 +810,7 @@ inhibit interface which allows applications to prevent automatic sleep.")
        ("libxfce4ui" ,libxfce4ui)
        ("librsvg" ,librsvg)
        ("tumbler" ,tumbler)))
-    (home-page "http://docs.xfce.org/apps/ristretto/start")
+    (home-page "https://docs.xfce.org/apps/ristretto/start")
     (synopsis "Fast and lightweight picture-viewer")
     (description
      "The Ristretto Image Viewer is an application that can be used to view,
@@ -837,7 +838,7 @@ the desktop wallpaper.")
     (inputs
      `(("libwnck" ,libwnck-2)
        ("gtk+" ,gtk+-2)))
-    (home-page "http://goodies.xfce.org/projects/applications/xfce4-taskmanager")
+    (home-page "https://goodies.xfce.org/projects/applications/xfce4-taskmanager")
     (synopsis "Easy to use task manager")
     (description
      "This is a task manager for the Xfce desktop.  It displays the CPU and
@@ -866,7 +867,7 @@ memory usage graphically, and it can display processes as a tree.")
        ("libnotify" ,libnotify)
        ("popt" ,popt)
        ("xfce4-panel" ,xfce4-panel)))
-    (home-page "http://www.xfce.org/projects/")
+    (home-page "https://www.xfce.org/projects/")
     (synopsis "Simple calendar application with reminders")
     (description
      "This is a simple calendar application for the Xfce desktop.  Orage has

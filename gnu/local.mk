@@ -17,6 +17,7 @@
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
+# Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -345,6 +346,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/python.scm			\
   %D%/packages/python-crypto.scm		\
   %D%/packages/python-web.scm			\
+  %D%/packages/toys.scm				\
   %D%/packages/tryton.scm			\
   %D%/packages/qt.scm				\
   %D%/packages/ragel.scm			\
@@ -611,8 +613,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
   %D%/packages/patches/doxygen-test.patch			\
-  %D%/packages/patches/dtc-format-modifier.patch		\
-  %D%/packages/patches/dtc-32-bits-check.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
   %D%/packages/patches/eigen-arm-neon-fixes.patch		\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
@@ -620,6 +620,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
+  %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
   %D%/packages/patches/emacs-highlight-stages-add-gexp.patch	\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
@@ -812,6 +813,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.0-evbuffer-add-use-last-with-datap.patch	\
   %D%/packages/patches/libevent-2.1-dns-tests.patch		\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
+  %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
   %D%/packages/patches/libgit2-0.25.1-mtime-0.patch		\
   %D%/packages/patches/libgdata-fix-tests.patch			\
@@ -871,7 +873,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/luminance-hdr-qt-printer.patch		\
   %D%/packages/patches/lvm2-static-link.patch			\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
-  %D%/packages/patches/lxterminal-CVE-2016-10369.patch		\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
@@ -908,6 +909,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nfs-utils-missing-headers.patch		\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ninja-zero-mtime.patch			\
+  %D%/packages/patches/node-test-http2-server-rst-stream.patch	\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
@@ -1064,7 +1066,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-sigusr1.patch			\
   %D%/packages/patches/slim-reset.patch				\
   %D%/packages/patches/slim-login.patch				\
-  %D%/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
   %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
@@ -1089,6 +1090,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tipp10-fix-compiling.patch		\
   %D%/packages/patches/tipp10-remove-license-code.patch		\
   %D%/packages/patches/tk-find-library.patch			\
+  %D%/packages/patches/transmission-fix-dns-rebinding-vuln.patch	\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tophat-build-with-later-seqan.patch	\
@@ -1122,7 +1124,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/vsearch-unbundle-cityhash.patch		\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
-  %D%/packages/patches/webkitgtk-mitigate-spectre.patch		\
   %D%/packages/patches/weechat-python.patch			\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\

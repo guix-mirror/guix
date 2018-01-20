@@ -29,51 +29,38 @@
   #:use-module (gnu services networking)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:export (%test-nginx
+  #:export (%test-httpd
+            %test-nginx
             %test-php-fpm))
 
 (define %index.html-contents
-  ;; Contents of the /index.html file served by nginx.
-  "Hello, nginx!")
+  ;; Contents of the /index.html file.
+  "Hello, guix!")
 
 (define %make-http-root
   ;; Create our server root in /srv.
   #~(begin
       (mkdir "/srv")
-      (call-with-output-file "/srv/index.html"
+      (mkdir "/srv/http")
+      (call-with-output-file "/srv/http/index.html"
         (lambda (port)
           (display #$%index.html-contents port)))))
 
-(define %nginx-servers
-  ;; Server blocks.
-  (list (nginx-server-configuration
-         (root "/srv")
-         (listen '("8042" "443 ssl")))))
-
-(define %nginx-os
-  ;; Operating system under test.
-  (simple-operating-system
-   (dhcp-client-service)
-   (service nginx-service-type
-            (nginx-configuration
-             (log-directory "/var/log/nginx")
-             (server-blocks %nginx-servers)))
-   (simple-service 'make-http-root activation-service-type
-                   %make-http-root)))
-
-(define* (run-nginx-test #:optional (http-port 8042))
+(define* (run-webserver-test name test-os #:key (log-file #f) (http-port 8080))
   "Run tests in %NGINX-OS, which has nginx running and listening on
 HTTP-PORT."
   (define os
     (marionette-operating-system
-     %nginx-os
+     test-os
      #:imported-modules '((gnu services herd)
                           (guix combinators))))
+
+  (define forwarded-port 8080)
 
   (define vm
     (virtual-machine
      (operating-system os)
-     (port-forwardings `((8080 . ,http-port)))))
+     (port-forwardings `((,http-port . ,forwarded-port)))))
 
   (define test
     (with-imported-modules '((gnu build marionette))
@@ -90,48 +77,92 @@ HTTP-PORT."
           (mkdir #$output)
           (chdir #$output)
 
-          (test-begin "nginx")
+          (test-begin #$name)
 
-          ;; Wait for nginx to be up and running.
-          (test-eq "service running"
-            'running!
+          (test-assert #$(string-append name " service running")
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'nginx)
-                'running!)
-             marionette))
-
-          ;; Make sure the PID file is created.
-          (test-assert "PID file"
-            (marionette-eval
-             '(file-exists? "/var/run/nginx/pid")
+                (match (start-service '#$(string->symbol name))
+                  (#f #f)
+                  (('service response-parts ...)
+                   (match (assq-ref response-parts 'running)
+                     ((#t) #t)
+                     ((pid) (number? pid))))))
              marionette))
 
           ;; Retrieve the index.html file we put in /srv.
           (test-equal "http-get"
             '(200 #$%index.html-contents)
-            (let-values (((response text)
-                          (http-get "http://localhost:8080/index.html"
-                                    #:decode-body? #t)))
+            (let-values
+                (((response text)
+                  (http-get #$(simple-format
+                               #f "http://localhost:~A/index.html" forwarded-port)
+                            #:decode-body? #t)))
               (list (response-code response) text)))
 
-          ;; There should be a log file in here.
-          (test-assert "log file"
-            (marionette-eval
-             '(file-exists? "/var/log/nginx/access.log")
-             marionette))
+          #$@(if log-file
+                 `((test-assert ,(string-append "log file exists " log-file)
+                     (marionette-eval
+                      '(file-exists? ,log-file)
+                      marionette)))
+                 '())
 
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 
-  (gexp->derivation "nginx-test" test))
+  (gexp->derivation (string-append name "-test") test))
+
+
+;;;
+;;; HTTPD
+;;;
+
+(define %httpd-os
+  (simple-operating-system
+   (dhcp-client-service)
+   (service httpd-service-type
+            (httpd-configuration
+             (config
+              (httpd-config-file
+               (listen '("8080"))))))
+   (simple-service 'make-http-root activation-service-type
+                   %make-http-root)))
+
+(define %test-httpd
+  (system-test
+   (name "httpd")
+   (description "Connect to a running HTTPD server.")
+   (value (run-webserver-test name %httpd-os
+                              #:log-file "/var/log/httpd/error_log"))))
+
+
+;;;
+;;; NGINX
+;;;
+
+(define %nginx-servers
+  ;; Server blocks.
+  (list (nginx-server-configuration
+         (listen '("8080")))))
+
+(define %nginx-os
+  ;; Operating system under test.
+  (simple-operating-system
+   (dhcp-client-service)
+   (service nginx-service-type
+            (nginx-configuration
+             (log-directory "/var/log/nginx")
+             (server-blocks %nginx-servers)))
+   (simple-service 'make-http-root activation-service-type
+                   %make-http-root)))
 
 (define %test-nginx
   (system-test
    (name "nginx")
    (description "Connect to a running NGINX server.")
-   (value (run-nginx-test))))
+   (value (run-webserver-test name %nginx-os
+                              #:log-file "/var/log/nginx/access.log"))))
 
 
 ;;;

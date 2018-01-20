@@ -261,11 +261,11 @@ volume descriptor from ~s"
   "Return the raw contents of DEVICE's iso9660 primary volume descriptor
 as a bytevector, or #f if DEVICE does not contain an iso9660 file system."
   ;; Start reading at sector 16.
-  ;; Since we are not sure that the device contains an ISO9660 filesystem,
+  ;; Since we are not sure that the device contains an ISO9660 file system,
   ;; we have to find that out first.
   (if (read-superblock device (* 2048 16) 2048 iso9660-superblock?)
       (read-iso9660-primary-volume-descriptor device (* 2048 16))
-      #f)) ; Device does not contain an iso9660 filesystem.
+      #f)) ; Device does not contain an iso9660 file system.
 
 (define (iso9660-superblock-uuid sblock)
   "Return the modification time of an iso9660 primary volume descriptor

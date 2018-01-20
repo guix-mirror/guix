@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -487,7 +487,7 @@ device-specific programs to convert and print many types of files.")
 (define-public foomatic-filters
   (package
     (name "foomatic-filters")
-    (version "4.0.12")
+    (version "4.0.17")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -495,7 +495,7 @@ device-specific programs to convert and print many types of files.")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "17w26r15094j4fqifa7f7i7jad4gsy9zdlq69kffrykcw31qx3q8"))
+                "1qrkgbm5jay2r7sh9qbyf0aiyrsl1mdc844hxf7fhw95a0zfbqm2"))
               (patches
                (search-patches "foomatic-filters-CVE-2015-8327.patch"
                                "foomatic-filters-CVE-2015-8560.patch"))))
@@ -536,17 +536,15 @@ printer/driver specific, but spooler-independent PPD file.")
 
 (define-public foo2zjs
   (package
-    ;; The tarball is called "foo2zjs", but the web page talks about
-    ;; "foo2xqx".  Go figure!
     (name "foo2zjs")
-    (version "201709")
+    (version "20171202")
     (source (origin
               (method url-fetch)
               ;; XXX: This is an unversioned URL!
               (uri "http://foo2zjs.rkkda.com/foo2zjs.tar.gz")
               (sha256
                (base32
-                "0amjj3jr6s6h7crzxyx11v31sj0blz7k5c2vycz4gn8cxlmk3c7w"))))
+                "10m1ksbzqsrsl4faqyl73ahfnj2hv1y3zrmr366zvjg7w3l6ag5n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -592,18 +590,22 @@ printer/driver specific, but spooler-independent PPD file.")
     (native-inputs
      `(("bc" ,bc)
        ("groff" ,groff)))
-    (home-page "http://foo2xqx.rkkda.com/")
-    (synopsis "Printer driver for XQX stream protocol")
+    (home-page "http://foo2zjs.rkkda.com/")
+    (synopsis "Printer driver for ZjStream-based printers")
     (description
-     "This package provides a printer driver notably for the ZJS and XQX
-protocols, which cover printers made by Konica, HP (LaserJet), Oki, Samsung,
-and more.  See @file{README} for details.")
-    (license license:gpl2+)))
+     "foo2zjs is a printer driver for printers that use the Zenographics
+ZjStream wire protocol for their print data, often erroneously referred to as
+winprinters or GDI printers.
+
+It supports Minolta/QMS@tie{}Magicolor, Minolta@tie{}Color@tie{}PageWorks/Pro,
+HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
+    (license (list license:expat        ; icc2ps/*.[ch]
+                   license:gpl2+))))    ; everything else
 
 (define-public escpr
   (package
     (name "escpr")
-    (version "1.6.17")
+    (version "1.6.18")
     ;; XXX: This currently works.  But it will break as soon as a newer
     ;; version is available since the URLs for older versions are not
     ;; preserved.  An alternative source will be added as soon as
@@ -611,12 +613,12 @@ and more.  See @file{README} for details.")
     (source (origin
               (method url-fetch)
               ;; The uri has to be chopped up in order to satisfy guix lint.
-              (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/06/66/09/"
-                                  "4ac2bf69bb1ddf4a9ad525596615cbb40fe4dad5/"
-                                  "epson-inkjet-printer-escpr-1.6.17-1lsb3.2.tar.gz"))
+              (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/06/86/80/"
+                                  "9955e43f3aead20366851d24cea65de779cf5aa7/"
+                                  "epson-inkjet-printer-escpr-1.6.18-1lsb3.2.tar.gz"))
               (sha256
                (base32
-                "0m6v1wdavw4r25jfywqchsx0v9ss1l5fr8vq9d0d8cmjnz8mqblv"))))
+                "137jf52dhi5v2rkmlw4b73f7r7f98m61dpgsb7yvqs2f0yhsjsb3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

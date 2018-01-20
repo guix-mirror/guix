@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,7 +91,8 @@ cameras (CRW/CR2, NEF, RAF, DNG, and others).")
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libexif/libexif/"
                                   version "/libexif-" version ".tar.bz2"))
-              (patches (search-patches "libexif-CVE-2017-7544.patch"))
+              (patches (search-patches "libexif-CVE-2016-6328.patch"
+                                       "libexif-CVE-2017-7544.patch"))
               (sha256
                (base32
                 "06nlsibr3ylfwp28w8f5466l6drgrnydgxrm4jmxzrmk5svaxk8n"))))
@@ -105,14 +107,14 @@ data as produced by digital cameras.")
 (define-public libgphoto2
   (package
     (name "libgphoto2")
-    (version "2.5.11")
+    (version "2.5.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/libgphoto/"
                                   version "/libgphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ap070zz6l4kn2mbyxb1yj4x5ar8hpdbmf2pvjxgnly1ss319dkz"))))
+                "01i95av28d0szyvx6l2gjv039r3205wjwjr91nfimq132rnl2mz7"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
@@ -136,14 +138,14 @@ from digital cameras.")
 (define-public gphoto2
   (package
     (name "gphoto2")
-    (version "2.5.11")
+    (version "2.5.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/gphoto/" version
                                   "/gphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "1sgr6rsvzzagcwhc8fxbnvz3k02wr2hab0vrbvcb04k5l3b48a1r"))))
+                "0xsa12k5fz49v8y4h3zahzr427a3ylxaf0k7hybrkp43g4i1lmxf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -163,7 +165,7 @@ from digital cameras.")
                 (which "env")))
              #t)))
 
-       ;; FIXME: There are 2 test failures, most likely related to the build
+       ;; FIXME: There is 1 test failure, most likely related to the build
        ;; environment.
        #:tests? #f))
 

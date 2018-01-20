@@ -1145,12 +1145,12 @@ access to mpv's powerful playback capabilities.")
     (synopsis "VP8/VP9 video codec")
     (description "libvpx is a codec for the VP8/VP9 video compression format.")
     (license license:bsd-3)
-    (home-page "http://www.webmproject.org/")))
+    (home-page "https://www.webmproject.org/")))
 
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.01.07")
+    (version "2018.01.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1158,7 +1158,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1dp1yk93mngih50p1zjbh8bi5pqh10wicjcmmrdp73cpcp2i2398"))))
+                "16mdy83s8h1hw1qdbcv6anrgg9zxfw1da22fxjx53pr2x0ywwbsf"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2677,3 +2677,47 @@ It counts more than 100 plugins.")
                    ;; src/filter/ndvi/ndvi.cpp
                    ;; src/filter/facedetect/facedetect.cpp
                    license:lgpl2.1+))))
+
+(define-public motion
+  (package
+    (name "motion")
+    (version "4.1.1")
+    (home-page "https://motion-project.github.io/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Motion-Project/motion/archive/"
+                    "release-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1qm4i8zrqafl60sv2frhixvkd0wh0r5jfcrj5i6gha7yplsvjx10"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,(autoconf-wrapper))
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ("ffmpeg" ,ffmpeg)
+       ("sqlite" ,sqlite)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'bootstrap
+                    (lambda _
+                      (patch-shebang "version.sh")
+                      (invoke "autoreconf" "-vfi"))))
+       #:configure-flags '("--sysconfdir=/etc")
+       #:make-flags (list (string-append "sysconfdir="
+                                         (assoc-ref %outputs "out")
+                                         "/etc"))
+
+       #:tests? #f))                              ;no 'check' target
+    (synopsis "Detect motion from video signals")
+    (description
+     "Motion is a program that monitors the video signal from one or more
+cameras and is able to detect if a significant part of the picture has
+changed.  Or in other words, it can detect motion.")
+
+    ;; Some files say "version 2" and others "version 2 or later".
+    (license license:gpl2)))

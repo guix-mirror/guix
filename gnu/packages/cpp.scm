@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,9 +22,15 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages autotools))
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls))
 
 (define-public libzen
   (package
@@ -58,3 +65,36 @@
 strings, configuration, bit streams, threading, translation, and cross-platform
 operating system functions.")
     (license license:zlib)))
+
+(define-public rct
+  (let* ((commit "b3e6f41d9844ef64420e628e0c65ed98278a843a")
+         (revision "1")
+         (version (git-version "0.0.0" revision commit)))
+    (package
+      (name "rct")
+      (version version)
+      (home-page "https://github.com/Andersbakken/rct")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1m2931jacka27ghnpgf1z1plkkr64z0pga4r4zdrfpp2d7xnrdvb"))
+                (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:configure-flags
+         '("-DWITH_TESTS=ON")))           ; To run the test suite
+      (native-inputs
+       `(("cppunit" ,cppunit)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("openssl" ,openssl)
+         ("zlib" ,zlib)))
+      (synopsis "C++ library providing Qt-like APIs on top of the STL")
+      (description "Rct is a set of C++ tools that provide nicer (more Qt-like)
+ APIs on top of Standard Template Library (@dfn{STL}) classes.")
+      (license (list license:expat        ; cJSON
+                     license:bsd-4)))))   ; everything else (LICENSE.txt)

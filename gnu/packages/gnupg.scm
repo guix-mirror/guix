@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -359,7 +360,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.9.0")
+    (version "1.10.0")
     (source
      (origin
       (method url-fetch)
@@ -367,7 +368,7 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "1ssc0gs02r4fasabk7c6v6r865k2j02mpb5g1vkpbmzsigdzwa8v"))))
+        "14q619lxbk64vz7lih5gjb928qm28jrnn1h3yhsrrff3jw8yv3qs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnupg" ,gnupg)))
@@ -376,15 +377,6 @@ libskba (working with X.509 certificates and CMS data).")
      `(("libgpg-error" ,libgpg-error)))
     (inputs
      `(("libassuan" ,libassuan)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'patch-cmake-file
-           (lambda _
-             ;; Work around <https://bugs.gnupg.org/gnupg/issue2877>.
-             (substitute* "lang/cpp/src/GpgmeppConfig.cmake.in"
-               (("@libsuffix@") ".so"))
-             #t)))))
     (home-page "https://www.gnupg.org/related_software/gpgme/")
     (synopsis "Library providing simplified access to GnuPG functionality")
     (description

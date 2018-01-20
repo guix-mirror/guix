@@ -99,7 +99,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.11.2")
+    (version "9.11.2-P1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -107,7 +107,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0yn7wgi2y8mpmvbjbkl4va7p0xsnn48m4yjx6ynb1hzp423asikz"))))
+                "04hjvwvs7ssgj69lqparx0wj0w3xkc0x8y2iv62kzjighd41bhyf"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -284,7 +284,7 @@ asynchronous fashion.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.6.7")
+    (version "1.6.8")
     (source
      (origin
        (method url-fetch)
@@ -292,7 +292,7 @@ asynchronous fashion.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "17qwfmlls0w9kpkya3dlpn44b3kr87wsswzg3gawc13hh8yx8ysf"))))
+         "0jfxhh4gc5amhndikskz1s7da27ycn442j3l20bm992n7zijid73"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs

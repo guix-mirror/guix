@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +28,9 @@
   #:use-module (ssh session)
   #:use-module (ssh dist)
   #:use-module (ssh dist node)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
@@ -38,9 +40,11 @@
             connect-to-remote-daemon
             send-files
             retrieve-files
+            retrieve-files*
             remote-store-host
 
-            file-retrieval-port))
+            report-guile-error
+            report-module-error))
 
 ;;; Commentary:
 ;;;
@@ -102,42 +106,36 @@ Throw an error on failure."
     ;; hack.
     `(begin
        (use-modules (ice-9 match) (rnrs io ports)
-                    (rnrs bytevectors) (system foreign))
-
-       (define read!
-         ;; XXX: We would use 'get-bytevector-some' but it always returns a
-         ;; single byte in Guile <= 2.2.3---see <https://bugs.gnu.org/30066>.
-         ;; This procedure works around it.
-         (let ((proc (pointer->procedure int
-                                         (dynamic-func "read" (dynamic-link))
-                                         (list int '* size_t))))
-           (lambda (port bv)
-             (proc (fileno port) (bytevector->pointer bv)
-                   (bytevector-length bv)))))
+                    (rnrs bytevectors))
 
        (let ((sock   (socket AF_UNIX SOCK_STREAM 0))
              (stdin  (current-input-port))
-             (stdout (current-output-port))
-             (buffer (make-bytevector 65536)))
-         (setvbuf stdin _IONBF)
+             (stdout (current-output-port)))
          (setvbuf stdout _IONBF)
+
+         ;; Use buffered ports so that 'get-bytevector-some' returns up to the
+         ;; whole buffer like read(2) would--see <https://bugs.gnu.org/30066>.
+         (setvbuf stdin _IOFBF 65536)
+         (setvbuf sock _IOFBF 65536)
+
          (connect sock AF_UNIX ,socket-name)
 
          (let loop ()
            (match (select (list stdin sock) '() '())
              ((reads () ())
               (when (memq stdin reads)
-                (match (read! stdin buffer)
-                  ((? zero?)                      ;EOF
+                (match (get-bytevector-some stdin)
+                  ((? eof-object?)
                    (primitive-exit 0))
-                  (count
-                   (put-bytevector sock buffer 0 count))))
+                  (bv
+                   (put-bytevector sock bv)
+                   (force-output sock))))
               (when (memq sock reads)
-                (match (read! sock buffer)
-                  ((? zero?)                      ;EOF
+                (match (get-bytevector-some sock)
+                  ((? eof-object?)
                    (primitive-exit 0))
-                  (count
-                   (put-bytevector stdout buffer 0 count))))
+                  (bv
+                   (put-bytevector stdout bv))))
               (loop))
              (_
               (primitive-exit 1)))))))
@@ -234,6 +232,10 @@ be read.  When RECURSIVE? is true, the closure of FILES is exported."
              (unless (null? invalid)
                (write `(invalid-items ,invalid))
                (exit 1))
+
+             ;; TODO: When RECURSIVE? is true, we could send the list of store
+             ;; items in the closure so that the other end can filter out
+             ;; those it already has.
 
              (write '(exporting))                 ;we're ready
              (force-output)
@@ -339,10 +341,11 @@ to the length of FILES.)"
              (&message
               (message (format #f fmt args ...))))))))
 
-(define* (retrieve-files local files remote
-                         #:key recursive? (log-port (current-error-port)))
-  "Retrieve FILES from REMOTE and import them using the 'import-paths' RPC on
-LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
+(define* (retrieve-files* files remote
+                          #:key recursive? (log-port (current-error-port))
+                          (import (const #f)))
+  "Pass IMPORT an input port from which to read the sequence of FILES coming
+from REMOTE.  When RECURSIVE? is true, retrieve the closure of FILES."
   (let-values (((port count)
                 (file-retrieval-port files remote
                                      #:recursive? recursive?)))
@@ -352,25 +355,16 @@ LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
                       "retrieving ~a store items from '~a'...~%" count)
                count (remote-store-host remote))
 
-       (let ((result (import-paths local port)))
-         (close-port port)
-         result))
+       (dynamic-wind
+         (const #t)
+         (lambda ()
+           (import port))
+         (lambda ()
+           (close-port port))))
       ((? eof-object?)
-       (raise-error (G_ "failed to start Guile on remote host '~A': exit code ~A")
-                    (remote-store-host remote)
-                    (channel-get-exit-status port)
-                    (=> (G_ "Make sure @command{guile} can be found in
-@code{$PATH} on the remote host.  Run @command{ssh ~A guile --version} to
-check.")
-                        (remote-store-host remote))))
+       (report-guile-error (remote-store-host remote)))
       (('module-error . _)
-       ;; TRANSLATORS: Leave "Guile" untranslated.
-       (raise-error (G_ "Guile modules not found on remote host '~A'")
-                    (remote-store-host remote)
-                    (=> (G_ "Make sure @code{GUILE_LOAD_PATH} includes Guix'
-own module directory.  Run @command{ssh ~A env | grep GUILE_LOAD_PATH} to
-check.")
-                        (remote-store-host remote))))
+       (report-module-error (remote-store-host remote)))
       (('connection-error file code . _)
        (raise-error (G_ "failed to connect to '~A' on remote host '~A': ~a")
                     file (remote-store-host remote) (strerror code)))
@@ -385,5 +379,37 @@ check.")
       (_
        (raise-error (G_ "failed to retrieve store items from '~a'")
                     (remote-store-host remote))))))
+
+(define* (retrieve-files local files remote
+                         #:key recursive? (log-port (current-error-port)))
+  "Retrieve FILES from REMOTE and import them using the 'import-paths' RPC on
+LOCAL.  When RECURSIVE? is true, retrieve the closure of FILES."
+  (retrieve-files* (remove (cut valid-path? local <>) files)
+                   remote
+                   #:recursive? recursive?
+                   #:log-port log-port
+                   #:import (lambda (port)
+                              (import-paths local port))))
+
+
+;;;
+;;; Error reporting.
+;;;
+
+(define (report-guile-error host)
+  (raise-error (G_ "failed to start Guile on remote host '~A'") host
+               (=> (G_ "Make sure @command{guile} can be found in
+@code{$PATH} on the remote host.  Run @command{ssh ~A guile --version} to
+check.")
+                   host)))
+
+(define (report-module-error host)
+  "Report an error about missing Guix modules on HOST."
+  ;; TRANSLATORS: Leave "Guile" untranslated.
+  (raise-error (G_ "Guile modules not found on remote host '~A'") host
+               (=> (G_ "Make sure @code{GUILE_LOAD_PATH} includes Guix'
+own module directory.  Run @command{ssh ~A env | grep GUILE_LOAD_PATH} to
+check.")
+                   host)))
 
 ;;; ssh.scm ends here

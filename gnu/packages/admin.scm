@@ -502,9 +502,9 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "9")
-         (bind-patch-version "10")
+         (bind-patch-version "11")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "3")      ; for patch release, e.g. "6"
+         (bind-release-version "1")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -514,14 +514,14 @@ connection alive.")
                                       bind-release-version)))
     (package
       (name "isc-dhcp")
-      (version "4.3.5")
+      (version "4.3.6")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "http://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "0m7rwxvpb7xrmfl9ynpckhl0hi0xgm9bq1fmbp2r68sxy5mr75gb"))))
+                  "06vgxhm6agzkp6r1jy10467vrfw2rzcp2mnkcph7ydziciisy7m4"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
@@ -620,7 +620,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "00yh1d5shrq7y0kfwacax4f8dc0akaa2fha430j92n7mshms65m1"))))
+                      "1a4g6nzzrbmhngdgvgv1jjq4fm06m8fwc2a0gskkchplxl7dva20"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -853,7 +853,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.21p2")
+    (version "1.8.22")
     (source (origin
               (method url-fetch)
               (uri
@@ -863,7 +863,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0s33szq6q59v5s377l4v6ybsdy7pfq6sz7y364j4x09ssdn79ibl"))
+                "00pxp74xkwdcmrjwy55j0k8p684jk1zx3nzdc11v30q8q8kwnmkj"))
               (modules '((guix build utils)))
               (snippet
                '(delete-file-recursively "lib/zlib"))))
@@ -1078,7 +1078,7 @@ network, which causes enabled computers to power on.")
 (define-public dmidecode
   (package
     (name "dmidecode")
-    (version "3.0")
+    (version "3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1086,7 +1086,7 @@ network, which causes enabled computers to power on.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0iby0xfk5x3cdr0x0gxj5888jjyjhafvaq0l79civ73jjfqmphvy"))))
+                "1h0sg0lxa15nzf8s7884p6q7p6md9idm0c79wyqmk32l4ndwwrnp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -1142,16 +1142,16 @@ development, not the kernel implementation of ACPI.")
 (define-public stress
   (package
     (name "stress")
-    (version "1.0.1")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://debian/pool/main/s/stress/stress_"
                                   version ".orig.tar.gz"))
               (sha256
                (base32
-                "1v9vnzlihqfjsxa93hdbrq72pqqk00dkylmlg8jpxhm7s1w9qfl1"))))
+                "0nw210jajk38m3y7h8s130ps2qsbz7j75wab07hi2r3hlz14yzh5"))))
     (build-system gnu-build-system)
-    (home-page "http://packages.debian.org/wheezy/stress")
+    (home-page "https://packages.debian.org/sid/stress")
     (synopsis "Impose load on and stress test a computer system")
     (description
      "Stress is a tool that imposes a configurable amount of CPU, memory, I/O,
@@ -1216,7 +1216,7 @@ characters can be replaced as well, as can UTF-8 characters.")
        ("e2fsprogs" ,e2fsprogs)
        ("libjpeg" ,libjpeg)
        ("ncurses" ,ncurses)))
-    (home-page "http://www.cgsecurity.org/wiki/TestDisk")
+    (home-page "https://www.cgsecurity.org/wiki/TestDisk")
     (synopsis "Data recovery tool")
     (description
      "TestDisk is a program for data recovery, primarily designed to help
@@ -1308,7 +1308,7 @@ track changes in important system configuration files.")
                 "0ssvnh4cvhya0c1j6k6192zvqcq7nc0x01fb5nwhr0prfqr0i8j8"))))
     (build-system gnu-build-system)
     (inputs `(("python" ,python)))
-    (home-page "http://people.redhat.com/sgrubb/libcap-ng/")
+    (home-page "https://people.redhat.com/sgrubb/libcap-ng/")
     (synopsis "Library for more easily working with POSIX capabilities")
     (description
      "The libcap-ng library is intended to make programming with POSIX
