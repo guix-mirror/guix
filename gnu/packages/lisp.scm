@@ -262,7 +262,8 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32 "0qjv3z274rbdmb941hy03hl63f4z7bmci234f8dyz4skgfr82d3i"))
-       (patches (search-patches "clisp-remove-failing-test.patch"))))
+       (patches (search-patches "clisp-glibc-2.26.patch"
+                                "clisp-remove-failing-test.patch"))))
     (build-system gnu-build-system)
     (inputs `(("libffcall" ,libffcall)
               ("ncurses" ,ncurses)

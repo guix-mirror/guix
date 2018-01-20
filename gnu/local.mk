@@ -581,6 +581,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
   %D%/packages/patches/clementine-use-openssl.patch		\
+  %D%/packages/patches/clisp-glibc-2.26.patch			\
   %D%/packages/patches/clisp-remove-failing-test.patch		\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/clx-remove-demo.patch			\
