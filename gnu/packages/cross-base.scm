@@ -202,7 +202,9 @@ target that libc."
               (patches
                (append
                 (origin-patches (package-source xgcc))
-                (cons (search-patch "gcc-cross-environment-variables.patch")
+                (cons (if (version>=? (package-version xgcc) "6.0")
+                          (search-patch "gcc-6-cross-environment-variables.patch")
+                          (search-patch "gcc-cross-environment-variables.patch"))
                       (cross-gcc-patches target))))
               (modules '((guix build utils)))
               (snippet
