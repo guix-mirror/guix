@@ -37,6 +37,7 @@
   #:use-module (gnu packages disk)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
@@ -335,7 +336,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2017.11")
+    (version "2018.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -343,11 +344,12 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "01bcsah5imy6m3fbjwhqywxg0pfk5fl8ks9ylb7kv3zmrb9qy0ba"))))
+                "1nidnnjprgxdhiiz7gmaj8cgcf52l5gbv64cmzjq4gmkjirmk3wk"))))
     (native-inputs
      `(("bc" ,bc)
-       ("dtc" ,dtc)
-       ("python-2" ,python-2)))
+       ;("dtc" ,dtc) ; they have their own incompatible copy.
+       ("python-2" ,python-2)
+       ("swig" ,swig)))
     (build-system  gnu-build-system)
     (home-page "http://www.denx.de/wiki/U-Boot/")
     (synopsis "ARM bootloader")
@@ -366,7 +368,7 @@ also initializes the boards (RAM etc).")
       (name (string-append "u-boot-" (string-downcase board)))
       (native-inputs
        `(,@(if (not same-arch?)
-             `(("cross-gcc" ,(cross-gcc triplet))
+             `(("cross-gcc" ,(cross-gcc triplet #:xgcc gcc-7))
                ("cross-binutils" ,(cross-binutils triplet)))
              '())
          ,@(package-native-inputs u-boot)))
