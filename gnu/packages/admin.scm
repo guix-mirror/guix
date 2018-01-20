@@ -2111,9 +2111,9 @@ buffers.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             ;; Don't run configure in this phase
+             ;; Don't run configure in this phase.
              (setenv "NOCONFIGURE" "1")
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (inputs
      `(("util-macros" ,util-macros)
        ("libdrm" ,libdrm)
