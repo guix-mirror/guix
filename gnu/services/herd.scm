@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -83,7 +83,12 @@ return the socket."
 (define-syntax-rule (with-shepherd connection body ...)
   "Evaluate BODY... with CONNECTION bound to an open socket to PID 1."
   (let ((connection (open-connection)))
-    body ...))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        body ...)
+      (lambda ()
+        (close-port connection)))))
 
 (define-condition-type &shepherd-error &error
   shepherd-error?)
