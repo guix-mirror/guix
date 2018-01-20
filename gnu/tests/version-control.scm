@@ -88,8 +88,6 @@
   (let ((base-os
          (simple-operating-system
           (dhcp-client-service)
-          (service nginx-service-type)
-          (service fcgiwrap-service-type)
           (service cgit-service-type
                    (cgit-configuration
                     (nginx %cgit-configuration-nginx)))

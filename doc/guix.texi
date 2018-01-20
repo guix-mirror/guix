@@ -10342,9 +10342,8 @@ with the default settings, for commonly encountered log files.
 
 (operating-system
   ;; @dots{}
-  (services (cons* (service mcron-service-type)
-                   (service rottlog-service-type)
-                   %base-services)))
+  (services (cons (service rottlog-service-type)
+                  %base-services)))
 @end lisp
 
 @defvr {Scheme Variable} rottlog-service-type
@@ -18269,8 +18268,6 @@ The following example will configure the service with default values.
 By default, Cgit can be accessed on port 80 (@code{http://localhost:80}).
 
 @example
-(service nginx-service-type)
-(service fcgiwrap-service-type)
 (service cgit-service-type)
 @end example
 

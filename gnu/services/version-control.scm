@@ -263,7 +263,11 @@ access to exported repositories under @file{/srv/git}."
     (list (service-extension activation-service-type
                              cgit-activation)
           (service-extension nginx-service-type
-                             cgit-configuration-nginx-config)))
+                             cgit-configuration-nginx-config)
+
+          ;; Make sure fcgiwrap is instantiated.
+          (service-extension fcgiwrap-service-type
+                             (const #t))))
    (default-value (cgit-configuration))
    (description
     "Run the Cgit web interface, which allows users to browse Git

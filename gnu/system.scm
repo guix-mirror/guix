@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -492,8 +492,9 @@ a container or that of a \"bare metal\" system."
 (define* (operating-system-services os #:key container?)
   "Return all the services of OS, including \"internal\" services that do not
 explicitly appear in OS."
-  (append (operating-system-user-services os)
-          (essential-services os #:container? container?)))
+  (instantiate-missing-services
+   (append (operating-system-user-services os)
+           (essential-services os #:container? container?))))
 
 
 ;;;

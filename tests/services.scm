@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,6 +120,36 @@
                     (eq? (missing-target-service-error-service c)
                          s))))
       (fold-services (list s) #:target-type t1)
+      #f)))
+
+(test-assert "instantiate-missing-services"
+  (let* ((t1 (service-type (name 't1) (extensions '())
+                           (default-value 'dflt)
+                           (compose concatenate)
+                           (extend cons)))
+         (t2 (service-type (name 't2)
+                           (extensions
+                            (list (service-extension t1 list)))))
+         (s1 (service t1 'hey!))
+         (s2 (service t2 42)))
+    (and (lset= equal?
+                (list (service t1) s2)
+                (instantiate-missing-services (list s2)))
+         (equal? (list s1 s2)
+                 (instantiate-missing-services (list s1 s2))))))
+
+(test-assert "instantiate-missing-services, no default value"
+  (let* ((t1 (service-type (name 't1) (extensions '())))
+         (t2 (service-type (name 't2)
+                           (extensions
+                            (list (service-extension t1 list)))))
+         (s  (service t2 42)))
+    (guard (c ((missing-target-service-error? c)
+               (and (eq? (missing-target-service-error-target-type c)
+                         t1)
+                    (eq? (missing-target-service-error-service c)
+                         s))))
+      (instantiate-missing-services (list s))
       #f)))
 
 (test-assert "shepherd-service-lookup-procedure"
