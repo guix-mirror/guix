@@ -91,7 +91,8 @@ cameras (CRW/CR2, NEF, RAF, DNG, and others).")
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libexif/libexif/"
                                   version "/libexif-" version ".tar.bz2"))
-              (patches (search-patches "libexif-CVE-2017-7544.patch"))
+              (patches (search-patches "libexif-CVE-2016-6328.patch"
+                                       "libexif-CVE-2017-7544.patch"))
               (sha256
                (base32
                 "06nlsibr3ylfwp28w8f5466l6drgrnydgxrm4jmxzrmk5svaxk8n"))))
