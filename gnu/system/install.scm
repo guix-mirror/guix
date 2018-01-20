@@ -44,6 +44,7 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
   #:export (installation-os
+            a20-olinuxino-lime2-emmc-installation-os
             banana-pi-m2-ultra-installation-os
             beaglebone-black-installation-os))
 
@@ -398,6 +399,22 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                        (baud-rate "115200")
                        (term "vt100")
                        (tty "ttyO0"))))
+               (operating-system-user-services installation-os)))))
+
+(define a20-olinuxino-lime2-emmc-installation-os
+  (operating-system
+    (inherit installation-os)
+    (bootloader (bootloader-configuration
+                 (bootloader u-boot-a20-olinuxino-lime2-bootloader)
+                 (target "/dev/mmcblk1"))) ; eMMC storage
+    (kernel linux-libre)
+    (services (append
+               (list (agetty-service
+                      (agetty-configuration
+                       (extra-options '("-L"))
+                       (baud-rate "115200")
+                       (term "vt100")
+                       (tty "ttyS0"))))
                (operating-system-user-services installation-os)))))
 
 (define banana-pi-m2-ultra-installation-os

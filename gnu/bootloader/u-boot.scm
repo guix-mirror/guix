@@ -28,6 +28,7 @@
   #:use-module (guix records)
   #:use-module (guix utils)
   #:export (u-boot-bootloader
+            u-boot-a20-olinuxino-lime2-bootloader
             u-boot-banana-pi-m2-ultra-bootloader
             u-boot-beaglebone-black-bootloader))
 
@@ -81,6 +82,11 @@
   (bootloader
    (inherit u-boot-bootloader)
    (installer install-allwinner-u-boot)))
+
+(define u-boot-a20-olinuxino-lime2-bootloader
+  (bootloader
+   (inherit u-boot-allwinner-bootloader)
+   (package u-boot-a20-olinuxino-lime2)))
 
 (define u-boot-banana-pi-m2-ultra-bootloader
   (bootloader
