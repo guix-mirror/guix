@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
@@ -886,6 +886,29 @@ designed to work well in user interface environments.")
     (home-page "http://mozilla.github.io/Fira/")
     (synopsis "Mozilla's Fira Sans Font")
     (description "This is the typeface used by Mozilla in Firefox OS.")
+    (license license:silofl1.1)))
+
+(define-public font-fira-code
+  (package
+    (name "font-fira-code")
+    (version "1.204")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append "https://github.com/tonsky/FiraCode/releases/"
+                                  "download/" version
+                                  "/FiraCode_" version ".zip"))
+              (sha256
+               (base32
+                "17wky221b3igrqhmxgmqiyv1xdfn0nw471vzhpkrvv1w2w1w1k18"))))
+    (build-system font-build-system)
+    (home-page "https://mozilla.github.io/Fira/")
+    (synopsis "Monospaced font with programming ligatures")
+    (description
+     "Fira Code is an extension of the Fira Mono font containing a set of ligatures
+for common programming multi-character combinations.  This is just a font rendering
+feature: underlying code remains ASCII-compatible.  This helps to read and understand
+code faster.  For some frequent sequences like .. or //, ligatures allow us to
+correct spacing.")
     (license license:silofl1.1)))
 
 (define-public font-awesome
