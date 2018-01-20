@@ -311,6 +311,33 @@ of device actions, such as installing and debugging apps, and it provides access
 to a Unix shell that can run commands on the connected device or emulator.")
     (license license:asl2.0)))
 
+(define-public mkbootimg
+  (package
+    (name "mkbootimg")
+    (version (android-platform-version))
+    (source (origin
+              (inherit (android-platform-system-core version))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source
+           (lambda _ (chdir "mkbootimg") #t))
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "mkbootimg" bin)
+               #t))))))
+    (home-page "https://developer.android.com/studio/command-line/adb.html")
+    (synopsis "Tool to create Android boot images")
+    (description "This package provides a tool to create Android Boot
+Images.")
+    (license license:asl2.0)))
+
 (define-public android-udev-rules
   (package
     (name "android-udev-rules")
