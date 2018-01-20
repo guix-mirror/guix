@@ -365,7 +365,9 @@ also initializes the boards (RAM etc).")
                       `#f)))
     (package
       (inherit u-boot)
-      (name (string-append "u-boot-" (string-downcase board)))
+      (name (string-append "u-boot-"
+                           (string-replace-substring (string-downcase board)
+                                                     "_" "-")))
       (native-inputs
        `(,@(if (not same-arch?)
              `(("cross-gcc" ,(cross-gcc triplet #:xgcc gcc-7))
