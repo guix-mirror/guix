@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
-;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -362,6 +362,94 @@ be paired with a compatible game engine (such as @code{prboom-plus}) to be
 played.  Freedoom complements the Doom engine with free levels, artwork, sound
 effects and music to make a completely free game.")
    (license license:bsd-3)))
+
+(define-public golly
+  (package
+    (name "golly")
+    (version "3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/golly/golly-"
+                                  version "/golly-" version
+                                  "-src.tar.gz"))
+              (sha256
+               (base32
+                "0dn74k3rylhx023n047lz4z6qrqijfcxi0b6jryqklhmm2n532f7"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list "CC=gcc"
+                          (string-append "GOLLYDIR="
+                                         (assoc-ref %outputs "out")
+                                         "/share/golly"))
+       #:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; For some reason, setting the PYTHON_SHLIB make flag doesn't
+             ;; properly set the path to the Python shared library. This
+             ;; substitution acheives the same end by different means.
+             (substitute* "gui-wx/wxprefs.cpp"
+               (("pythonlib = wxT\\(STRINGIFY\\(PYTHON_SHLIB\\)\\)")
+                (string-append "pythonlib = \""
+                               (assoc-ref inputs "python")
+                               "/lib/libpython-2.7.so\"")))
+             #t))
+         (replace 'build
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (with-directory-excursion "gui-wx"
+               (apply invoke `("make" ,@make-flags "-f" "makefile-gtk")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/golly"))
+                    (pixmaps (string-append out "/share/pixmaps"))
+                    (share (string-append out "/share/golly")))
+               (for-each (lambda (binary)
+                           (install-file binary bin))
+                         '("bgolly" "golly"))
+               (for-each (lambda (document)
+                           (install-file
+                            (string-append "docs/" document ".html")
+                            doc))
+                         '("License" "ReadMe" "ToDo"))
+               (install-file "gui-wx/icons/appicon.xpm" pixmaps)
+               (for-each (lambda (folder)
+                           (copy-recursively
+                            folder
+                            (string-append share "/" folder)))
+                         '("Help" "Patterns" "Rules" "Scripts")))
+             #t)))))
+    (native-inputs
+     `(("lua" ,lua)))
+    (inputs
+     `(("glu" ,glu)
+       ("mesa" ,mesa)
+       ("python" ,python-2)
+       ("wxwidgets" ,wxwidgets-gtk2)
+       ("zlib" ,zlib)))
+    (home-page "http://golly.sourceforge.net/")
+    (synopsis "Software for exploring cellular automata")
+    (description
+     "Golly simulates Conway's Game of Life and many other types of cellular
+automata.  The following features are available:
+@enumerate
+@item Support for bounded and unbounded universes, with cells of up to 256
+  states.
+@item Support for multiple algorithms, including Bill Gosper's Hashlife
+  algorithm.
+@item Loading patterns from BMP, PNG, GIF and TIFF image files.
+@item Reading RLE, macrocell, Life 1.05/1.06, dblife and MCell files.
+@item Scriptable via Lua or Python.
+@item Extracting patterns, rules and scripts from zip files.
+@item Downloading patterns, rules and scripts from online archives.
+@item Pasting patterns from the clipboard.
+@item Unlimited undo/redo.
+@item Configurable keyboard shortcuts.
+@item Auto fit option to keep patterns within the view.
+@end enumerate")
+    (license license:gpl2+)))
 
 (define-public meandmyshadow
   (package
