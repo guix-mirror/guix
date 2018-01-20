@@ -31,7 +31,8 @@
             u-boot-a20-olinuxino-lime2-bootloader
             u-boot-a20-olinuxino-micro-bootloader
             u-boot-banana-pi-m2-ultra-bootloader
-            u-boot-beaglebone-black-bootloader))
+            u-boot-beaglebone-black-bootloader
+            u-boot-nintendo-nes-classic-edition-bootloader))
 
 (define install-u-boot
   #~(lambda (bootloader device mount-point)
@@ -83,6 +84,11 @@
   (bootloader
    (inherit u-boot-bootloader)
    (installer install-allwinner-u-boot)))
+
+(define u-boot-nintendo-nes-classic-edition-bootloader
+  (bootloader
+    (inherit u-boot-allwinner-bootloader)
+    (package u-boot-nintendo-nes-classic-edition)))
 
 (define u-boot-a20-olinuxino-lime2-bootloader
   (bootloader

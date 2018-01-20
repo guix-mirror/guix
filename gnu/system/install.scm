@@ -47,7 +47,8 @@
             a20-olinuxino-lime2-emmc-installation-os
             a20-olinuxino-micro-installation-os
             banana-pi-m2-ultra-installation-os
-            beaglebone-black-installation-os))
+            beaglebone-black-installation-os
+            nintendo-nes-classic-edition-installation-os))
 
 ;;; Commentary:
 ;;;
@@ -428,6 +429,11 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
 (define banana-pi-m2-ultra-installation-os
   (embedded-installation-os u-boot-banana-pi-m2-ultra-bootloader
                             "/dev/mmcblk1" ; eMMC storage
+                            "ttyS0"))
+
+(define nintendo-nes-classic-edition-installation-os
+  (embedded-installation-os u-boot-nintendo-nes-classic-edition-bootloader
+                            "/dev/mmcblk0" ; SD card (solder it yourself)
                             "ttyS0"))
 
 ;; Return the default os here so 'guix system' can consume it directly.
