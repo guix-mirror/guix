@@ -24,6 +24,7 @@
 
 (define-module (gnu packages android)
   #:use-module (guix packages)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -35,7 +36,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages version-control)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages linux))
 
 ;; The Makefiles that we add are largely based on the Debian
 ;; packages.  They are licensed under GPL-2 and have copyright:
@@ -439,3 +441,38 @@ parts of the development workflow.  Repo is not meant to replace Git, only to
 make it easier to work with Git.  The repo command is an executable Python
 script that you can put anywhere in your path.")
     (license license:asl2.0)))
+
+(define-public abootimg
+  (package
+    (name "abootimg")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://http.debian.net/debian/pool/main/a/abootimg/"
+                           "abootimg_" version ".orig.tar.gz"))
+       (sha256
+        (base32 "0sfc2k011l1ymv97821w89391gnqdh8pp0haz4sdcm5hx0axv2ba"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+        (replace 'configure
+          (lambda _
+            (setenv "CC" "gcc")
+            #t))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin")))
+              (install-file "abootimg" bin)
+              #t))))))
+    (inputs
+     `(("libblkid" ,util-linux)))
+    (home-page "https://ac100.grandou.net/abootimg")
+    (synopsis "Tool for manipulating Android Boot Images")
+    (description "This package provides a tool for manipulating old Android
+Boot Images.  @code{abootimg} can work directly on block devices, or, the
+safest way, on a file image.")
+    (license license:gpl2+)))
