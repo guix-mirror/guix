@@ -27,6 +27,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages bash)
@@ -420,3 +421,38 @@ complexity of working with shared libraries across platforms.")
     (description (package-description libtool))
     (home-page (package-home-page libtool))
     (license lgpl2.1+)))
+
+(define-public pyconfigure
+  (package
+    (name "pyconfigure")
+    (version "0.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/pyconfigure/pyconfigure-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0kxi9bg7l6ric39vbz9ykz4a21xlihhh2zcc3297db8amvhqwhrp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-python
+           (lambda _
+             (substitute* "pyconf.in"
+               (("/usr/bin/env python") (which "python3")))
+             #t)))))
+    (inputs
+     `(("python" ,python-3)))
+    (synopsis "@command{configure} interface for Python-based packages")
+    (description
+     "GNU pyconfigure provides template files for easily implementing
+standards-compliant configure scripts and Makefiles for Python-based packages.
+It is designed to work alongside existing Python setup scripts, making it easy
+to integrate into existing projects.  Powerful and flexible Autoconf macros
+are available, allowing you to easily make adjustments to the installation
+procedure based on the capabilities of the target computer.")
+    (home-page "https://www.gnu.org/software/pyconfigure/manual/")
+    (license
+     (fsf-free
+      "https://www.gnu.org/prep/maintain/html_node/License-Notices-for-Other-Files.html"))))
