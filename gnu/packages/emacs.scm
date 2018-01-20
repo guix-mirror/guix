@@ -6463,7 +6463,7 @@ It supports dired buffers and opens them in tree mode at destination.")
 It is meant to quickly generate linear ranges, e.g. 5, 6, 7, 8.  Some elisp
 proficiency is an advantage, since you can transform your numeric range with
 an elisp expression.")
-  (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-bash-completion
   (package
