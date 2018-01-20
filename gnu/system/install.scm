@@ -387,50 +387,48 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                    (term "vt100")
                    (tty tty))))
 
-(define beaglebone-black-installation-os
+(define* (embedded-installation-os bootloader bootloader-target tty
+                                   #:key (extra-modules '()))
+  "Return an installation os for embedded systems.
+The initrd gets the extra modules EXTRA-MODULES.
+A getty is provided on TTY.
+The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
   (operating-system
     (inherit installation-os)
     (bootloader (bootloader-configuration
-                 (bootloader u-boot-beaglebone-black-bootloader)
-                 (target "/dev/sda")))
+                 (bootloader bootloader)
+                 (target bootloader-target)))
     (kernel linux-libre)
     (initrd (lambda (fs . rest)
               (apply base-initrd fs
-                     ;; This module is required to mount the sd card.
-                     #:extra-modules (list "omap_hsmmc")
+                     #:extra-modules extra-modules
                      rest)))
-    (services (cons* (agetty-default-service "ttyO0")
+    (services (cons* (agetty-default-service tty)
                      (operating-system-user-services installation-os)))))
+
+(define beaglebone-black-installation-os
+  (embedded-installation-os u-boot-beaglebone-black-bootloader
+                            "/dev/sda"
+                            "ttyO0"
+                            #:extra-modules
+                            ;; This module is required to mount the sd card.
+                            '("omap_hsmmc")))
+
 
 (define a20-olinuxino-lime2-emmc-installation-os
-  (operating-system
-    (inherit installation-os)
-    (bootloader (bootloader-configuration
-                 (bootloader u-boot-a20-olinuxino-lime2-bootloader)
-                 (target "/dev/mmcblk1"))) ; eMMC storage
-    (kernel linux-libre)
-    (services (cons* (agetty-default-service "ttyS0")
-                     (operating-system-user-services installation-os)))))
+  (embedded-installation-os u-boot-a20-olinuxino-lime2-bootloader
+                            "/dev/mmcblk1" ; eMMC storage
+                            "ttyS0"))
 
 (define a20-olinuxino-micro-installation-os
-  (operating-system
-    (inherit installation-os)
-    (bootloader (bootloader-configuration
-                 (bootloader u-boot-a20-olinuxino-lime2-bootloader)
-                 (target "/dev/mmcblk0"))) ; SD card storage
-    (kernel linux-libre)
-    (services (cons* (agetty-default-service "ttyS0")
-                     (operating-system-user-services installation-os)))))
+  (embedded-installation-os u-boot-a20-olinuxino-micro-bootloader
+                            "/dev/mmcblk0" ; SD card storage
+                            "ttyS0"))
 
 (define banana-pi-m2-ultra-installation-os
-  (operating-system
-    (inherit installation-os)
-    (bootloader (bootloader-configuration
-                 (bootloader u-boot-banana-pi-m2-ultra-bootloader)
-                 (target "/dev/mmcblk1"))) ; eMMC storage
-    (kernel linux-libre)
-    (services (cons* (agetty-default-service "ttyS0")
-                     (operating-system-user-services installation-os)))))
+  (embedded-installation-os u-boot-banana-pi-m2-ultra-bootloader
+                            "/dev/mmcblk1" ; eMMC storage
+                            "ttyS0"))
 
 ;; Return the default os here so 'guix system' can consume it directly.
 installation-os
