@@ -29,6 +29,7 @@
   #:use-module (guix utils)
   #:export (u-boot-bootloader
             u-boot-a20-olinuxino-lime2-bootloader
+            u-boot-a20-olinuxino-micro-bootloader
             u-boot-banana-pi-m2-ultra-bootloader
             u-boot-beaglebone-black-bootloader))
 
@@ -87,6 +88,11 @@
   (bootloader
    (inherit u-boot-allwinner-bootloader)
    (package u-boot-a20-olinuxino-lime2)))
+
+(define u-boot-a20-olinuxino-micro-bootloader
+  (bootloader
+   (inherit u-boot-allwinner-bootloader)
+   (package u-boot-a20-olinuxino-micro)))
 
 (define u-boot-banana-pi-m2-ultra-bootloader
   (bootloader

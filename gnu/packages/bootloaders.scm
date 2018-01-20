@@ -431,6 +431,9 @@ also initializes the boards (RAM etc).")
 (define-public u-boot-a20-olinuxino-lime2
   (make-u-boot-package "A20-OLinuXino-Lime2" "arm-linux-gnueabihf"))
 
+(define-public u-boot-a20-olinuxino-micro
+  (make-u-boot-package "A20-OLinuXino_MICRO" "arm-linux-gnueabihf"))
+
 (define-public vboot-utils
   (package
     (name "vboot-utils")
