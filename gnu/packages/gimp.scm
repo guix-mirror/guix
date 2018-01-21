@@ -48,11 +48,14 @@
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
-                                        "0.1/babl-" version ".tar.bz2")
-                         (string-append "http://ftp.gtk.org/pub/babl/0.1/babl-"
-                                        version ".tar.bz2")
-                         (string-append "ftp://ftp.gtk.org/pub/babl/0.1/babl-"
-                                        version ".tar.bz2")))
+                                        (version-major+minor version)
+                                        "/babl-" version ".tar.bz2")
+                         (string-append "http://ftp.gtk.org/pub/babl/"
+                                        (version-major+minor version)
+                                        "/babl-" version ".tar.bz2")
+                         (string-append "ftp://ftp.gtk.org/pub/babl/"
+                                        (version-major+minor version)
+                                        "/babl-" version ".tar.bz2")))
               (sha256
                (base32
                 "11pfbyzq20596p9sgwraxspg3djg1jzz6wvz4bapf0yyr97jiyd0"))))
