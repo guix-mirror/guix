@@ -9253,7 +9253,8 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
                                     "/include/SDL2"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("git" ,git)
+       ("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)))
     (inputs
      `(("gstreamer" ,gstreamer)
