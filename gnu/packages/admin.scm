@@ -187,6 +187,49 @@ interface and is based on GNU Guile.")
     (home-page "https://www.gnu.org/software/shepherd/")
     (properties '((ftp-server . "alpha.gnu.org")))))
 
+(define-public daemontools
+  (package
+    (name "daemontools")
+    (version "0.76")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://cr.yp.to/" name "/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07scvw88faxkscxi91031pjkpccql6wspk4yrlnsbrrb5c0kamd5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;; No tests as far as I can tell.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir ,(string-append  name "-" version))))
+         (delete 'configure)
+         (add-before 'build 'patch
+           (lambda _
+             (substitute* "src/error.h"
+               (("extern int errno;")
+                "#include <errno.h>"))))
+         (replace 'build
+           (lambda _
+             (invoke "package/compile")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "command"))))))))
+    (synopsis "Tools for managing UNIX style services")
+    (description
+     "@code{daemontools} is a collection of tools for managing UNIX
+services.")
+    (license license:public-domain)
+    (home-page "https://cr.yp.to/daemontools.html")))
+
 (define-public dfc
   (package
    (name "dfc")
