@@ -6465,6 +6465,40 @@ proficiency is an advantage, since you can transform your numeric range with
 an elisp expression.")
     (license license:gpl3+)))
 
+(define-public emacs-emojify
+  (package
+    (name "emacs-emojify")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/iqbalansari/emacs-emojify/"
+                           "releases/download/v" version "/emojify-"
+                           version ".tar"))
+       (sha256
+        (base32
+         "0k84v2d2bkiwcky9fi1yyprgkj46g7wh6pyl9gzmcd7sqv051d5n"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-data
+           (lambda* (#:key  outputs #:allow-other-keys)
+             (copy-recursively "data"
+                               (string-append (assoc-ref outputs "out")
+                                              "/share/emacs/site-lisp/guix.d/"
+                                              "emojify-" ,version "/data"))
+             #t)))))
+    (propagated-inputs
+     `(("emacs-ht" ,emacs-ht)))
+    (home-page "https://github.com/iqbalansari/emacs-emojify")
+    (synopsis "Display emojis in Emacs")
+    (description "This package displays emojis in Emacs similar to how Github,
+Slack, and other websites do.  It can display plain ASCII like @code{:)} as
+well as Github-style emojis like @code{:smile:}.  It provides a minor mode
+@code{emojify-mode} to enable the display of emojis in a buffer.")
+    (license license:gpl3+)))
+
 (define-public emacs-bash-completion
   (package
    (name "emacs-bash-completion")
