@@ -6546,6 +6546,33 @@ needs to be refreshed, the code handles it automatically and stores the new
 value of the access token.")
     (license license:gpl3+)))
 
+(define-public emacs-circe
+  (package
+    (name "emacs-circe")
+    (version "2.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jorgenschaefer/circe.git")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "19h3983zy3f15cgs86irvbdzz55qyjm48qd7gjlzcxplr7vnnh0j"))))
+    (build-system emacs-build-system)
+    ;; In order to securely connect to an IRC server using TLS, Circe requires
+    ;; the GnuTLS binary.
+    (propagated-inputs
+     `(("gnutls" ,gnutls)))
+    (home-page "https://github.com/jorgenschaefer/circe")
+    (synopsis "Client for IRC in Emacs")
+    (description "Circe is a Client for IRC in Emacs.  It integrates well with
+the rest of the editor, using standard Emacs key bindings and indicating
+activity in channels in the status bar so it stays out of your way unless you
+want to use it.")
+    (license license:gpl3+)))
+
 (define-public emacs-bash-completion
   (package
    (name "emacs-bash-completion")
