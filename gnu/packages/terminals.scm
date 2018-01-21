@@ -53,6 +53,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
@@ -573,6 +574,35 @@ eye-candy, customizable, and reasonably lightweight.")
 It's a terminal emulator with few dependencies, so you don't need a full GNOME
 desktop installed to have a decent terminal emulator.")
     (license license:gpl2)))
+
+(define-public go-github.com-nsf-termbox-go
+  (let ((commit "4ed959e0540971545eddb8c75514973d670cf739")
+        (revision "0"))
+    (package
+      (name "go-github.com-nsf-termbox-go")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/nsf/termbox-go.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1vx64i1mg660if3wwm81p4b7lzxfb3qbr39i7misdyld3fc486p9"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/nsf/termbox-go"))
+      (propagated-inputs
+       `(("go-github.com-mattn-go-runewidth"
+          ,go-github.com-mattn-go-runewidth)))
+      (synopsis "@code{termbox} provides a minimal API for text-based user
+interfaces")
+      (description
+       "Termbox is a library that provides a minimalistic API which allows the
+programmer to write text-based user interfaces.")
+      (home-page "https://github.com/nsf/termbox-go")
+      (license license:expat))))
 
 (define-public go-golang.org-x-crypto-ssh-terminal
   (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
