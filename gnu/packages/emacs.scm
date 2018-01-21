@@ -6521,6 +6521,31 @@ writers, to write applications that use WebSockets, and is not useful by
 itself.")
     (license license:gpl3+)))
 
+(define-public emacs-oauth2
+  (package
+    (name "emacs-oauth2")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/oauth2-"
+                           version ".el"))
+       (sha256
+        (base32
+         "0ydkc9jazsnbbvfhd47mql52y7k06n3z7r0naqxkwb99j9blqsmp"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/oauth2.html")
+    (synopsis "OAuth 2.0 authorization protocol implementation")
+    (description
+     "This package provides an Elisp implementation of the OAuth 2.0 draft.
+The main entry point is @code{oauth2-auth-and-store} which will return a token
+structure.  This token structure can be then used with
+@code{oauth2-url-retrieve-synchronously} or @code{oauth2-url-retrieve} to
+retrieve any data that need OAuth authentication to be accessed.  If the token
+needs to be refreshed, the code handles it automatically and stores the new
+value of the access token.")
+    (license license:gpl3+)))
+
 (define-public emacs-bash-completion
   (package
    (name "emacs-bash-completion")
