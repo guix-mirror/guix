@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,14 +115,14 @@ are already there.")
         ("which" ,which)))
     (home-page "https://direnv.net/")
     (synopsis "Environment switcher for the shell")
-    (description "direnv can hook into bash, zsh, tcsh and fish shell to load
+    (description
+     "direnv can hook into the bash, zsh, tcsh, and fish shells to load
 or unload environment variables depending on the current directory.  This
-allows project-specific environment variables without using the ~/.profile
-file.
+allows project-specific environment variables without using @file{~/.profile}.
 
-Before each prompt, direnv checks for the existence of a .envrc file in the
-current and parent directories.  This file is then used to alter the
-environmental variables of the current shell.")
+Before each prompt, direnv checks for the existence of a @file{.envrc} file in
+the current and parent directories.  This file is then used to alter the
+environment variables of the current shell.")
     (license expat)))
 
 (define-public fzy
