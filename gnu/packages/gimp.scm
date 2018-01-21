@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,13 +60,13 @@
     (home-page "http://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
     (description
-     "Babl is a dynamic, any to any, pixel format translation library.
-It allows converting between different methods of storing pixels known as
-pixel formats that have with different bitdepths and other data
-representations, color models and component permutations.
+     "Babl is a dynamic, any-to-any pixel format translation library.
+It allows converting between different methods of storing pixels, known as
+@dfn{pixel formats}, that have different bit depths and other data
+representations, color models, and component permutations.
 
 A vocabulary to formulate new pixel formats from existing primitives is
-provided as well as the framework to add new color models and data types.")
+provided, as well as a framework to add new color models and data types.")
     (license license:lgpl3+)))
 
 (define-public gegl
