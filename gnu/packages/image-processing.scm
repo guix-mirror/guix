@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,7 +86,7 @@ licences similar to the Modified BSD licence."))))
 (define-public mia
   (package
     (name "mia")
-    (version "2.4.4")
+    (version "2.4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/mia/mia/"
@@ -93,7 +94,7 @@ licences similar to the Modified BSD licence."))))
                                   "/mia-" version ".tar.xz"))
               (sha256
                (base32
-                "124gvf8nkls59mlnx8ynq00n9zrah7a54gsywafx7qmfr0y95ra7"))))
+                "0j4nd5z7i3v199jh7hqqhwd4g7snchizkc7rhzanpvngqg91m1pb"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
