@@ -6573,6 +6573,35 @@ activity in channels in the status bar so it stays out of your way unless you
 want to use it.")
     (license license:gpl3+)))
 
+(define-public emacs-slack
+  (let ((commit "58b1309255563819ee8f83f625af49ac0353bed1")
+        (revision "1"))
+    (package
+      (name "emacs-slack")
+      (version (string-append "0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/yuya373/emacs-slack.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1bj43ircd9djk4i58qwxvmcbhzybxb954k52l80pk441ffk8v4vx"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-alert" ,emacs-alert)
+         ("emacs-emojify" ,emacs-emojify)
+         ("emacs-request" ,emacs-request)
+         ("emacs-websocket" ,emacs-websocket)
+         ("emacs-oauth2" ,emacs-oauth2)
+         ("emacs-circe" ,emacs-circe)))
+      (home-page "https://github.com/yuya373/emacs-slack")
+      (synopsis "Slack client for Emacs")
+      (description "This package provides an Emacs client for the Slack
+messaging service.")
+      (license license:gpl3+))))
+
 (define-public emacs-bash-completion
   (package
    (name "emacs-bash-completion")
