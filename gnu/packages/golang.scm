@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -196,10 +197,10 @@
     (home-page "https://golang.org/")
     (synopsis "Compiler and libraries for Go, a statically-typed language")
     (description "Go, also commonly referred to as golang, is an imperative
-programming language.  Designed primarily for systems programming, it is a
-compiled, statically typed language in the tradition of C and C++, with
-garbage collection, various safety features and in the style of communicating
-sequential processes (CSP) concurrent programming features added.")
+programming language designed primarily for systems programming.  Go is a
+compiled, statically typed language in the tradition of C and C++, but adds
+garbage collection, various safety features, and concurrent programming features
+in the style of communicating sequential processes (@dfn{CSP}).")
     (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
     (license license:bsd-3)))
 
