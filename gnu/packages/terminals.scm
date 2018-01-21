@@ -609,3 +609,31 @@ desktop installed to have a decent terminal emulator.")
 with terminals in Go.")
       (home-page "https://go.googlesource.com/crypto/")
       (license license:bsd-3))))
+
+(define-public go-github.com-howeyc-gopass
+  (let ((commit "bf9dde6d0d2c004a008c27aaee91170c786f6db8")
+        (revision "0"))
+    (package
+      (name "go-github.com-howeyc-gopass")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/howeyc/gopass.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1jxzyfnqi0h1fzlsvlkn10bncic803bfhslyijcxk55mgh297g45"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/howeyc/gopass"))
+      (propagated-inputs
+       `(("go-golang.org-x-crypto-ssh-terminal"
+          ,go-golang.org-x-crypto-ssh-terminal)))
+      (synopsis "Retrieve password from a terminal or piped input in Go")
+      (description
+       "@code{gopass} is a Go package for retrieving a password from user
+terminal or piped input.")
+      (home-page "https://github.com/howeyc/gopass")
+      (license license:isc))))
