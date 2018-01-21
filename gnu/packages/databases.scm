@@ -49,6 +49,7 @@
 
 (define-module (gnu packages databases)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
@@ -94,6 +95,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
@@ -172,6 +174,50 @@ either single machines or networked clusters.")
 store key/value pairs in a file in a manner similar to the Unix dbm library
 and provides interfaces to the traditional file format.")
     (license license:gpl3+)))
+
+(define-public go-gopkg.in-mgo.v2
+  (package
+    (name "go-gopkg.in-mgo.v2")
+    (version "2016.08.01")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/go-mgo/mgo")
+                    (commit (string-append "r" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rwbi1z63w43b0z9srm8m7iz1fdwx7bq7n2mz862d6liiaqa59jd"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "gopkg.in/mgo.v2"
+       ;; TODO: The tests fail as MongoDB fails to start
+       ;; Error parsing command line: unrecognised option '--chunkSize'
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'reset-gzip-timestamps)
+         (add-before 'check 'start-mongodb
+           (lambda* (#:key tests? #:allow-other-keys)
+             (or (not tests?)
+                 (with-directory-excursion "src/gopkg.in/mgo.v2"
+                   (invoke "make" "startdb")))))
+         (add-after 'check 'stop'mongodb
+           (lambda* (#:key tests? #:allow-other-keys)
+             (or (not tests?)
+                 (with-directory-excursion "src/gopkg.in/mgo.v2"
+                   (invoke "make" "stopdb"))))))))
+    (native-inputs
+     `(("go-gopkg.in-check.v1" ,go-gopkg.in-check.v1)
+       ("mongodb" ,mongodb)
+       ("daemontools" ,daemontools)))
+    (synopsis "@code{mgo} offers a rich MongoDB driver for Go.")
+    (description
+     "@code{mgo} (pronounced as mango) is a MongoDB driver for the Go language.
+It implements a rich selection of features under a simple API following
+standard Go idioms.")
+    (home-page "http://labix.org/mgo")
+    (license license:bsd-2)))
 
 (define-public bdb
   (package
