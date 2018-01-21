@@ -9203,21 +9203,20 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
 (define-public python-kivy
   (package
     (name "python-kivy")
-    (version "1.9.1")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "kivy" version))
+       (uri (pypi-uri "Kivy" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0zk3g1j1z0lzcm9d0k1lprrs95zr8n8k5pdg3p5qlsn26jz4bg19"))))
+         "1394zh6kvf7k5d8vlzxcsfcailr3q59xwg9b1n7qaf25bvyq1h98"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f              ; Tests require many optional packages
        #:phases
        (modify-phases %standard-phases
-         (replace 'build (lambda _ (zero? (system* "make" "force"))))
          (add-after 'patch-generated-file-shebangs 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "KIVY_SDL2_PATH"
