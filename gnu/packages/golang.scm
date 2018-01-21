@@ -471,3 +471,28 @@ functionality is similar to the go builtin @code{flag} package, but
 way of specifying command line options.")
     (home-page "https://github.com/jessevdk/go-flags")
     (license license:bsd-3)))
+
+(define-public go-gopkg.in-tomb.v2
+  (let ((commit "d5d1b5820637886def9eef33e03a27a9f166942c")
+        (revision "0"))
+    (package
+      (name "go-gopkg.in-tomb.v2")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/go-tomb/tomb.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1sv15sri99szkdz1bkh0ir46w9n8prrwx5hfai13nrhkawfyfy10"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "gopkg.in/tomb.v2"))
+      (synopsis "@code{tomb} handles clean goroutine tracking and termination")
+      (description
+       "The @code{tomb} package handles clean goroutine tracking and
+termination.")
+      (home-page "https://gopkg.in/tomb.v2")
+      (license license:bsd-3))))
