@@ -26,12 +26,13 @@
 (define-module (gnu packages code)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
@@ -43,6 +44,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages bash))
 
 ;;; Tools to deal with source code: metrics, cross-references, etc.
@@ -393,28 +395,43 @@ functionality such as HTML output.")
     (name "rtags")
     (version "2.16")
     (home-page "https://github.com/Andersbakken/rtags")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit "8ef7554852541eced514c56d5e39d6073f7a2ef9")
-
-                    ;; FIXME: This fetches bundled copies of Lua, RCT, and
-                    ;; Selene.
-                    (recursive? #t)))
-              (sha256
-               (base32
-                "12r7lsqdmcbs9864a6dpblvifqvmfxhvxippyhfnnm2ai5ra80nc"))
-              (file-name (git-file-name name version))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append home-page "/archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (patches (search-patches "rtags-separate-rct.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Part of spliting rct with rtags.
+        ;; Substitute #include "rct/header.h" with #include <rct/header.h>.
+        '(with-directory-excursion "src"
+           (delete-file-recursively "rct")        ;remove bundled copy
+           (let ((files (find-files "." ".*\\.cpp|.*\\.h")))
+             (substitute* files
+               (("#include ?\"rct/(.*.h)\"" all header)
+                (string-append "#include <rct/" header ">"))))))
+       (sha256
+        (base32
+         "17rkci3mmiw93qc32b9x76pg57b0lx80avr6wnmh190jx8n3v3wy"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("-DBUILD_TESTING=FALSE"
-                           "-DRTAGS_NO_ELISP_FILES=1")
+     '(#:configure-flags
+       '("-DRTAGS_NO_ELISP_FILES=1"
+         "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+         "-DCMAKE_CXX_FLAGS=-std=c++11"
+         "-DBUILD_TESTING=FALSE")
        #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("clang" ,clang)
+     `(("bash-completion" ,bash-completion)
+       ("clang" ,clang)
        ("llvm" ,llvm)
-       ("bash-completion" ,bash-completion)))
+       ("lua" ,lua)
+       ("rct" ,rct)
+       ("selene" ,selene)))
     (synopsis "Indexer for the C language family with Emacs integration")
     (description
      "RTags is a client/server application that indexes C/C++ code and keeps a

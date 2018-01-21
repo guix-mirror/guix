@@ -1067,6 +1067,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rsync-CVE-2017-17433-fix-tests.patch			\
   %D%/packages/patches/rsync-CVE-2017-17434-pt1.patch			\
   %D%/packages/patches/rsync-CVE-2017-17434-pt2.patch			\
+  %D%/packages/patches/rtags-separate-rct.patch			\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-concurrent-test-arm.patch		\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
