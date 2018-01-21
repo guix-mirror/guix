@@ -45,6 +45,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12393,3 +12394,26 @@ and works only with Python 2 and NumPy < 1.9.")
 
 (define-public python2-phonenumbers
   (package-with-python2 python-phonenumbers))
+
+(define-public python-yapf
+  (package
+    (name "python-yapf")
+    (version "0.20.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "yapf" version))
+       (sha256
+        (base32
+         "0s7l6afzxvpx39kzd0lwshlaxw8m4fwh4iy0rlmav4vipr3g46dx"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/google/yapf")
+    (synopsis "Formatter for Python code")
+    (description "YAPF is a formatter for Python code.  It's based off of
+@dfn{clang-format}, developed by Daniel Jasper.  In essence, the algorithm
+takes the code and reformats it to the best formatting that conforms to the
+style guide, even if the original code didn't violate the style guide.")
+    (license license:asl2.0)))
+
+(define-public python2-yapf
+  (package-with-python2 python-yapf))
