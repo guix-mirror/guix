@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -297,6 +297,12 @@ valid."
       (((? string?) (? string?) ...) 'list)       ; only build selected list of packages
       (_ 'all)))                                  ; build everything
 
+  (define systems
+    (match (assoc-ref arguments 'systems)
+      (#f              %hydra-supported-systems)
+      ((lst ...)       lst)
+      ((? string? str) (call-with-input-string str read))))
+
   (define (cross-jobs system)
     (define (from-32-to-64? target)
       ;; Return true if SYSTEM is 32-bit and TARGET is 64-bit.  This hack
@@ -387,4 +393,4 @@ valid."
                          '()))
                     (else
                      (error "unknown subset" subset))))
-                %hydra-supported-systems)))
+                systems)))
