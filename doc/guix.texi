@@ -43,7 +43,7 @@ Copyright @copyright{} 2017 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
-Copyright @copyright{} 2017 Arun Isaac@*
+Copyright @copyright{} 2017, 2018 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling
 
@@ -249,6 +249,7 @@ Services
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
 * Version Control Services::    Providing remote access to Git repositories.
+* Game Services::                Game servers.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -9575,6 +9576,7 @@ declaration.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
 * Version Control Services::    Providing remote access to Git repositories.
+* Game Services::                Game servers.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -18200,6 +18202,37 @@ service will redirect all HTTP traffic on @code{git.my-host.org} to
 HTTPS.  You will also need to add an @code{fcgiwrap} proxy to your
 system services.  @xref{Web Services}.
 @end deffn
+
+@node Game Services
+@subsubsection Game Services
+
+@subsubheading The Battle for Wesnoth Service
+@cindex wesnothd
+@uref{https://wesnoth.org, The Battle for Wesnoth} is a fantasy, turn
+based tactical strategy game, with several single player campaigns, and
+multiplayer games (both networked and local).
+
+@defvar {Scheme Variable} wesnothd-service-type
+Service type for the wesnothd service.  Its value must be a
+@code{wesnothd-configuration} object.  To run wesnothd in the default
+configuration, instantiate it as:
+
+@example
+(service wesnothd-service-type)
+@end example
+@end defvar
+
+@deftp {Data Type} wesnothd-configuration
+Data type representing the configuration of @command{wesnothd}.
+
+@table @asis
+@item @code{package} (default: @code{wesnoth-server})
+The wesnoth server package to use.
+
+@item @code{port} (default: @code{15000})
+The port to bind the server to.
+@end table
+@end deftp
 
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services
