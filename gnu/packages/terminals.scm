@@ -31,6 +31,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -572,3 +573,39 @@ eye-candy, customizable, and reasonably lightweight.")
 It's a terminal emulator with few dependencies, so you don't need a full GNOME
 desktop installed to have a decent terminal emulator.")
     (license license:gpl2)))
+
+(define-public go-golang.org-x-crypto-ssh-terminal
+  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
+        (revision "0"))
+    (package
+      (name "go-golang.org-x-crypto-ssh-terminal")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/crypto")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "golang.org/x/crypto/ssh/terminal"
+         #:unpack-path "golang.org/x/crypto"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map (lambda (file)
+                      (make-file-writable file))
+                    (find-files
+                     (string-append (assoc-ref outputs "out")
+                                    "/src/golang.org/x/crypto/ed25519/testdata")
+                     ".*\\.gz$"))
+               #t)))))
+      (synopsis "Support functions for dealing with terminals in Go")
+      (description "@code{terminal} provides support functions for dealing
+with terminals in Go.")
+      (home-page "https://go.googlesource.com/crypto/")
+      (license license:bsd-3))))
