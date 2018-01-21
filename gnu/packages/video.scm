@@ -1181,7 +1181,8 @@ access to mpv's powerful playback capabilities.")
                           (("'etc/")
                            (string-append "'" prefix "/etc/"))
                           (("'share/")
-                           (string-append "'" prefix "/share/")))))))))
+                           (string-append "'" prefix "/share/")))
+                        #t))))))
     (synopsis "Download videos from YouTube.com and other sites")
     (description
      "Youtube-dl is a small command-line program to download videos from
