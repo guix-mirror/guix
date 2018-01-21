@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2014, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +27,8 @@
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xiph)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (ice-9 match))
 
 (define-public orpheus
   (package
@@ -62,13 +63,14 @@
                (setenv "CONFIG_SHELL" (which "bash"))
                (setenv "SHELL" (which "bash"))
                (setenv "LIBS" "-logg")     ;doesn't declare its use of libogg
-               (zero?
-                (system* "./configure" (string-append "--prefix=" out)
-                                       ,@(if (string=? "mips64el-linux"
-                                                       (%current-system))
-                                             '("--host=mips64el-unknown-linux-gnu")
-                                             '())
-                         )))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       ,@(match (%current-system)
+                                ("mips64el-linux"
+                                 '("--host=mips64el-unknown-linux-gnu"))
+                                ("aarch64-linux"
+                                 '("--build=aarch64-unknown-linux-gnu"))
+                                (_ `()))))))
          (add-after 'configure 'configure-players
            (lambda* (#:key inputs #:allow-other-keys)
              ;; To avoid propagating the mpg321 and vorbis-tools inputs, we can
