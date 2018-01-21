@@ -6499,6 +6499,28 @@ well as Github-style emojis like @code{:smile:}.  It provides a minor mode
 @code{emojify-mode} to enable the display of emojis in a buffer.")
     (license license:gpl3+)))
 
+(define-public emacs-websocket
+  (package
+    (name "emacs-websocket")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/websocket-"
+                           version ".tar"))
+       (sha256
+        (base32
+         "0dcxmnnm8z7cvsc7nkb822a1g6w03klp7cijjnfq0pz84p3w9cd9"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/websocket.html")
+    (synopsis "Emacs WebSocket client and server")
+    (description "This is an Elisp library for WebSocket clients to talk to
+WebSocket servers, and for WebSocket servers to accept connections from
+WebSocket clients.  This library is designed to be used by other library
+writers, to write applications that use WebSockets, and is not useful by
+itself.")
+    (license license:gpl3+)))
+
 (define-public emacs-bash-completion
   (package
    (name "emacs-bash-completion")
