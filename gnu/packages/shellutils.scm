@@ -112,7 +112,7 @@ are already there.")
     (native-inputs
       `(("go" ,go)
         ("which" ,which)))
-    (home-page "http://direnv.net/")
+    (home-page "https://direnv.net/")
     (synopsis "Environment switcher for the shell")
     (description "direnv can hook into bash, zsh, tcsh and fish shell to load
 or unload environment variables depending on the current directory.  This
