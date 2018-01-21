@@ -25,7 +25,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -1889,6 +1889,29 @@ advantages and disadvantages against different types of attacks.  Units gain
 experience and advance levels, and are carried over from one scenario to the
 next campaign.")
     (license license:gpl2+)))
+
+(define-public wesnoth-server
+  (package
+    (inherit wesnoth)
+    (name "wesnoth-server")
+    (inputs
+     `(("boost" ,boost)
+       ("sdl-net" ,sdl-net)))
+    (arguments
+     (append
+      (substitute-keyword-arguments (package-arguments wesnoth)
+        ((#:configure-flags configure-flags)
+         `(append ,configure-flags (list "-DENABLE_GAME=OFF"))))
+      `(#:phases
+        (modify-phases %standard-phases
+          ;; Delete game assets not required by the server.
+          (add-after 'install 'delete-data
+            (lambda* (#:key outputs #:allow-other-keys)
+              (delete-file-recursively (string-append (assoc-ref outputs "out")
+                                                      "/share/wesnoth"))))))))
+    (synopsis "Dedicated @emph{Battle for Wesnoth} server")
+    (description "This package contains a dedicated server for @emph{The
+Battle for Wesnoth}.")))
 
 (define-public dosbox
   (package
