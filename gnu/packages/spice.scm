@@ -240,7 +240,7 @@ which allows users to view a desktop computing environment.")
 environments which allows you to view a computing 'desktop' environment
 not only on the machine where it is running, but from anywhere on the
 Internet and from a wide variety of machine architectures.")
-    (home-page "http://www.spice-space.org")
+    (home-page "https://www.spice-space.org")
     (license (list license:lgpl2.1+ license:lgpl2.0+))))
 
 (define-public spice-vdagent
@@ -291,7 +291,7 @@ Internet and from a wide variety of machine architectures.")
     (synopsis "Spice agent for Linux")
     (description "Spice-vdagent enables sharing the clipboard and guest display
 resolution scaling on graphical console window resize.")
-    (home-page "http://www.spice-space.org")
+    (home-page "https://www.spice-space.org")
     (license license:gpl3+)))
 
 (define-public virt-viewer
