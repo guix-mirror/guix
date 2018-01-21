@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,7 +143,7 @@ which allows users to view a desktop computing environment.")
 (define-public spice-gtk
   (package
     (name "spice-gtk")
-    (version "0.33")
+    (version "0.34")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -150,7 +151,7 @@ which allows users to view a desktop computing environment.")
                 "spice-gtk-" version ".tar.bz2"))
               (sha256
                (base32
-                "0fdgx9k4vgmasp8i2n0swrkapq8f212igcg7wsgvr3mbhsvk7bvx"))))
+                "1vknp72pl6v6nf3dphhwp29hk6gv787db2pmyg4m312z2q0hwwp9"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("gstreamer" ,gstreamer)
