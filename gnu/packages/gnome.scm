@@ -686,7 +686,15 @@ GNOME Desktop.")
                               "/manpages/docbook.xsl")))
             (setenv "XML_CATALOG_FILES"
                     (string-append (assoc-ref inputs "docbook-xml")
-                                   "/xml/dtd/docbook/catalog.xml")))))))
+                                   "/xml/dtd/docbook/catalog.xml"))
+
+            ;; Rerun the whole thing to avoid version mismatch ("This is
+            ;; Automake 1.15.1, but the definition used by this
+            ;; AM_INIT_AUTOMAKE comes from Automake 1.15.").  Note: we don't
+            ;; use 'autoreconf' because it insists on running 'libtoolize'.
+            (invoke "autoconf")
+            (invoke "aclocal")
+            (invoke "automake" "-ac"))))))
     (inputs
      `(("libgcrypt" ,libgcrypt)
        ("linux-pam" ,linux-pam)
