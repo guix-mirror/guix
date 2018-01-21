@@ -44,7 +44,7 @@
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.38")
+    (version "0.1.40")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
@@ -58,7 +58,7 @@
                                         "/babl-" version ".tar.bz2")))
               (sha256
                (base32
-                "11pfbyzq20596p9sgwraxspg3djg1jzz6wvz4bapf0yyr97jiyd0"))))
+                "08cdl6rcfvkhqsnhb214xzr0wbrv0956xzlrzqxcb1k1madgjanh"))))
     (build-system gnu-build-system)
     (home-page "http://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
