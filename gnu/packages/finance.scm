@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -720,3 +721,34 @@ agent.")
     (description "This package allows using KeepKey as a hardware SSH/GPG
 agent.")
     (license license:lgpl3)))
+
+(define-public python-stdnum
+  (package
+    (name "python-stdnum")
+    (version "1.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-stdnum" version))
+       (sha256
+        (base32
+         "0hvr47q32xbyiznpmbg4r8rcvxhnf0lwf33hcpnynyik57djy5np"))))
+    (build-system python-build-system)
+    (home-page
+     "https://arthurdejong.org/python-stdnum/")
+    (synopsis
+     "Python module to handle standardized number and code formats")
+    (description
+     "This is a Python library that aims to provide functions to handle,
+parse and validate standard numbers.
+The module supports more than 100 different number formats
+amongst which a great number of VAT and other tax numbers,
+personal identity and company identification codes,
+international standard numbers (ISBN, IBAN, EAN, etc.)
+and various other formats.
+The module also inclused implementations of the Verhoeff,
+Luhn and family of ISO/IEC 7064 check digit algorithms. ")
+    (license license:lgpl2.1+)))
+
+(define-public python2-stdnum
+  (package-with-python2 python-stdnum))
