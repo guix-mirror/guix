@@ -93,6 +93,40 @@ and security.")
     (description "This package is the client component of Tryton.")
     (license license:gpl3+)))
 
+(define-public python-trytond-country
+  (package
+  (name "python-trytond-country")
+  (version "4.6.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "trytond_country" version))
+      (sha256
+        (base32
+          "11c9mw2scbjn7c6yhlwh5ml266f0s31lh4jwj6gh7vl1shs3isr3"))))
+  (build-system python-build-system)
+  (arguments
+   `(#:phases
+     (modify-phases %standard-phases
+       (add-before 'check 'preparations
+         (lambda _
+           (setenv "DB_NAME" ":memory:")
+           #t)))))
+  (propagated-inputs
+   `(("python-trytond" ,python-trytond)
+     ("python-wrapt" ,python-wrapt)
+     ("python-werkzeug" ,python-werkzeug)
+     ("python-sql" ,python-sql)
+     ("python-polib" ,python-polib)
+     ("python-dateutil" ,python-dateutil)
+     ("python-genshi" ,python-genshi)
+     ("python-relatorio" ,python-relatorio)
+     ("python-magic" ,python-magic)))
+  (home-page "http://www.tryton.org/")
+  (synopsis "Tryton module with countries")
+  (description "This package provides a Tryton module with countries.")
+  (license license:gpl3+)))
+
 (define-public python-proteus
   (package
     (name "python-proteus")
