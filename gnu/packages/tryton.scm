@@ -62,7 +62,8 @@
        (modify-phases %standard-phases
          (add-before 'check 'preparations
            (lambda _
-             (setenv "DB_NAME" ":memory:"))))))
+             (setenv "DB_NAME" ":memory:")
+             #t)))))
     (home-page "https://www.tryton.org/")
     (synopsis "Server component of Tryton")
     (description "Tryton is a three-tier high-level general purpose
