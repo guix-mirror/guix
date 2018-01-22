@@ -137,6 +137,8 @@
     (build-system scons-build-system)
     (arguments
      `(#:tests? #f  ;no tests
+       #:scons-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:scons ,scons-python2
        #:phases
        (modify-phases %standard-phases
