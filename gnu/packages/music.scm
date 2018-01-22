@@ -134,11 +134,11 @@
               (sha256
                (base32
                 "1cs3z6frx2ch7rm5ammx9p0rxcjrbj1vq14hvcbimpaw39rdsn3d"))))
-    (build-system gnu-build-system)
+    (build-system scons-build-system)
     (arguments
      `(#:tests? #f  ;no tests
+       #:scons ,scons-python2
        #:phases
-       ;; TODO: Add scons-build-system and use it here.
        (modify-phases %standard-phases
          (delete 'configure)
          (add-after 'unpack 'scons-propagate-environment
@@ -161,26 +161,18 @@
                                " or \"score/\" in file"
                                " or \"Documentation/\" in file")))
              #t))
-         (replace 'build (lambda _ (zero? (system* "scons"))))
-         (replace 'install
+         (add-after 'install 'fix-directory-permissions
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (and
-                (zero? (system* "scons"
-                                (string-append "prefix=" out)
-                                "install"))
-                ;; Fix directory permissions
-                (begin
-                  (chmod (string-append out "/share/Aria/Documentation") #o555)
-                  (chmod (string-append out "/share/Aria/score") #o555)
-                  #t))))))))
+               (chmod (string-append out "/share/Aria/Documentation") #o555)
+               (chmod (string-append out "/share/Aria/score") #o555)
+               #t))))))
     (inputs
      `(("wxwidgets" ,wxwidgets)
        ("glib" ,glib)
        ("alsa-lib" ,alsa-lib)))
     (native-inputs
-     `(("scons" ,scons-python2)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://ariamaestosa.sourceforge.net/")
     (synopsis "MIDI sequencer and editor")
     (description
