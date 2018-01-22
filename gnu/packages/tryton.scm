@@ -92,3 +92,24 @@ and security.")
     (synopsis "Client component of Tryton")
     (description "This package is the client component of Tryton.")
     (license license:gpl3+)))
+
+(define-public python-proteus
+  (package
+    (name "python-proteus")
+    (version "4.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "proteus" version))
+       (sha256
+        (base32
+         "0flkf1vxbhz51b7bq31dn7q9mlkli3pmpbzfhsxfqpf6laghbkqg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)))
+    (home-page "http://www.tryton.org/")
+    (synopsis
+     "Library to access a Tryton server as a client")
+    (description
+     "This package provides a library to access Tryton server as a client.")
+    (license license:lgpl3+)))
