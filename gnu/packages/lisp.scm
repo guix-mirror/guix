@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -270,10 +270,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
               ("readline" ,readline)
               ("libsigsegv" ,libsigsegv)))
     (arguments
-     '(;; XXX The custom configure script does not cope well when passed
-       ;; --build=<triplet>.
-       #:configure-flags '("CFLAGS=-falign-functions=4"
-                           "--enable-portability"
+     '(#:configure-flags '("--enable-portability"
                            "--with-dynamic-ffi"
                            "--with-dynamic-modules"
                            "--with-module=bindings/glibc"
