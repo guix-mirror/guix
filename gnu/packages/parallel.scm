@@ -76,10 +76,10 @@
              #t))
          (add-after 'install 'post-install-test
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* (string-append
-                              (assoc-ref outputs "out") "/bin/parallel")
-                             "echo"
-                             ":::" "1" "2" "3")))))))
+             (invoke (string-append
+                      (assoc-ref outputs "out") "/bin/parallel")
+                     "echo"
+                     ":::" "1" "2" "3"))))))
     (inputs
      `(("perl" ,perl)
        ("procps" ,procps)))
