@@ -32,21 +32,20 @@
 (define-public trytond
   (package
     (name "trytond")
-    (version "4.4.1")
+    (version "4.6.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://downloads.tryton.org/4.4/trytond-"
-             version ".tar.gz"))
+       (uri (pypi-uri "trytond" version))
        (sha256
         (base32
-         "15gm34qwj5fpnkqvrxzndl8653zbczhsa76dm1gi4cqj1r29bbpr"))))
+         "0asc3pd37h8ky8j66iqxr0fv0k6mpjcwxwm0xgm5hrdi32l5cdda"))))
     (build-system python-build-system)
     (inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
        ("python-polib" ,python-polib)
+       ("python-magic" ,python-magic)
        ;; there's no python-mysql in Guix right now
        ;; so python-psycopg2 (postgresql) only for now
        ("python-psycopg2" ,python-psycopg2)
