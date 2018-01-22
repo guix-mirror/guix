@@ -179,7 +179,7 @@
        ("glib" ,glib)
        ("alsa-lib" ,alsa-lib)))
     (native-inputs
-     `(("scons" ,scons)
+     `(("scons" ,scons-python2)
        ("pkg-config" ,pkg-config)))
     (home-page "http://ariamaestosa.sourceforge.net/")
     (synopsis "MIDI sequencer and editor")
