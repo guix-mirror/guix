@@ -73,16 +73,14 @@ and security.")
 (define-public tryton
   (package
     (name "tryton")
-    (version "4.4.0")
+    (version "4.6.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://downloads.tryton.org/4.4/tryton-"
-             version ".tar.gz"))
+       (uri (pypi-uri "tryton" version))
        (sha256
         (base32
-         "1lklcz5fs6rkrd7z2m2f5gz4fdwzkgnhg2hyvzp20kdsvi33bq2j"))))
+         "0bamr040np02gfjk8c734rw3mbgg75irfgpdcl2npgkdzyw1ksf9"))))
     (build-system python-build-system)
     (inputs
      `(("python2-chardet" ,python2-chardet)
