@@ -28,6 +28,7 @@
   #:use-module (guix records)
   #:use-module (guix utils)
   #:export (u-boot-bootloader
+            u-boot-a20-olinuxino-lime-bootloader
             u-boot-a20-olinuxino-lime2-bootloader
             u-boot-a20-olinuxino-micro-bootloader
             u-boot-banana-pi-m2-ultra-bootloader
@@ -89,6 +90,11 @@
   (bootloader
     (inherit u-boot-allwinner-bootloader)
     (package u-boot-nintendo-nes-classic-edition)))
+
+(define u-boot-a20-olinuxino-lime-bootloader
+  (bootloader
+   (inherit u-boot-allwinner-bootloader)
+   (package u-boot-a20-olinuxino-lime)))
 
 (define u-boot-a20-olinuxino-lime2-bootloader
   (bootloader

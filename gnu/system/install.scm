@@ -44,6 +44,7 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
   #:export (installation-os
+            a20-olinuxino-lime-installation-os
             a20-olinuxino-lime2-emmc-installation-os
             a20-olinuxino-micro-installation-os
             banana-pi-m2-ultra-installation-os
@@ -415,6 +416,11 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
                             ;; This module is required to mount the sd card.
                             '("omap_hsmmc")))
 
+
+(define a20-olinuxino-lime-sd-installation-os
+  (embedded-installation-os u-boot-a20-olinuxino-lime-bootloader
+                            "/dev/mmcblk0" ; SD card storage
+                            "ttyS0"))
 
 (define a20-olinuxino-lime2-emmc-installation-os
   (embedded-installation-os u-boot-a20-olinuxino-lime2-bootloader
