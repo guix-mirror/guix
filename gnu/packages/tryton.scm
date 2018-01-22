@@ -21,6 +21,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages finance)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -126,6 +127,43 @@ and security.")
   (synopsis "Tryton module with countries")
   (description "This package provides a Tryton module with countries.")
   (license license:gpl3+)))
+
+(define-public python-trytond-party
+  (package
+    (name "python-trytond-party")
+    (version "4.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_party" version))
+       (sha256
+        (base32
+         "0fbf4kxywiglcdsx9ppjg7nxw87915mb6bpn1jn652gk949rdww5"))))
+    (build-system python-build-system)
+    ;; XXX The tests seem to require Proteus. But Proteus tests seem to
+    ;; require trytond-party.
+    (arguments
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-trytond" ,python-trytond)
+       ("python-trytond-country" ,python-trytond-country)
+       ("python-stdnum" ,python-stdnum)
+       ("python-sql" ,python-sql)
+       ("python-wrapt" ,python-wrapt)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-polib" ,python-polib)
+       ("python-dateutil" ,python-dateutil)
+       ("python-genshi" ,python-genshi)
+       ("python-relatorio" ,python-relatorio)
+       ("python-magic" ,python-magic)
+       ("python-phonenumbers" ,python-phonenumbers)))
+    (home-page "http://www.tryton.org/")
+    (synopsis
+     "Tryton module for parties and addresses")
+    (description
+     "This package provides a Tryton module for (counter)parties and
+addresses.")
+    (license license:gpl3+)))
 
 (define-public python-proteus
   (package
