@@ -36,7 +36,7 @@
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
-;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
+;;; Copyright © 2017, 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
@@ -12370,3 +12370,26 @@ and normal mode analysis, but also basic routines for implementing new methods
 for simulation and analysis.  The library is currently not actively maintained
 and works only with Python 2 and NumPy < 1.9.")
     (license license:cecill-c)))
+
+(define-public python-phonenumbers
+  (package
+    (name "python-phonenumbers")
+    (version "8.8.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "phonenumbers" version))
+       (sha256
+        (base32
+         "1lhhxmx3hk0b5891nc0p82dl5bq2w9cqbawmh8j5zy587af2j6fq"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/daviddrysdale/python-phonenumbers")
+    (synopsis
+     "Python library for dealing with international phone numbers")
+    (description
+     "This package provides a Python port of Google's libphonenumber library.")
+    (license license:asl2.0)))
+
+(define-public python2-phonenumbers
+  (package-with-python2 python-phonenumbers))
