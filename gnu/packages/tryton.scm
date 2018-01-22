@@ -29,9 +29,9 @@
   #:use-module (guix download)
   #:use-module (guix build-system python))
 
-(define-public trytond
+(define-public python-trytond
   (package
-    (name "trytond")
+    (name "python-trytond")
     (version "4.6.2")
     (source
      (origin
