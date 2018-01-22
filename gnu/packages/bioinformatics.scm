@@ -5563,6 +5563,11 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source-dir
            (lambda _ (chdir "source") #t))
+         (add-after 'enter-source-dir 'make-reproducible
+           (lambda _
+             (substitute* "Makefile"
+               (("(COMPILATION_TIME_PLACE=\")(.*)(\")" _ pre mid post)
+                (string-append pre "Built with Guix" post)))))
          (add-after 'enter-source-dir 'do-not-use-bundled-htslib
            (lambda _
              (substitute* "Makefile"
