@@ -8093,15 +8093,14 @@ is made as zipfile like as possible.")
 (define-public python-magic
   (package
     (name "python-magic")
-    (version "0.4.3")
+    (version "0.4.15")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/ahupp/python-magic/archive/"
-                           version ".tar.gz"))
+       (uri (pypi-uri "python-magic" version))
        (sha256
         (base32
-         "17bgy92i7sb021f2s4mw1dcvpm6p1mi9jihridwy1pyn8mzvpjgk"))
+         "1mgwig9pnzgkf86q9ji9pnc99bngms15lfszq5rgqb9db07mqxpk"))
        (file-name (string-append name "-" version "-checkout"))))
     (build-system python-build-system)
     (arguments
@@ -8119,31 +8118,33 @@ is made as zipfile like as possible.")
      ;; expected.
      '(#:tests? #f
        #:phases (modify-phases %standard-phases
-         ;; Replace a specific method call with a hard-coded
-         ;; path to the necessary libmagic.so file in the
-         ;; store.  If we don't do this, then the method call
-         ;; will fail to find the libmagic.so file, which in
-         ;; turn will cause any application using
-         ;; python-magic to fail.
-         (add-before 'build 'hard-code-path-to-libmagic
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((file (assoc-ref inputs "file")))
-               (substitute* "magic.py"
-                 (("ctypes.util.find_library\\('magic'\\)")
-                  (string-append "'" file "/lib/libmagic.so'")))
-           #t)))
-         (add-before 'install 'disable-egg-compression
-           (lambda _
-             (let ((port (open-file "setup.cfg" "a")))
-               (display "\n[easy_install]\nzip_ok = 0\n"
-                        port)
-               (close-port port)
-               #t))))))
+                  ;; Replace a specific method call with a hard-coded
+                  ;; path to the necessary libmagic.so file in the
+                  ;; store.  If we don't do this, then the method call
+                  ;; will fail to find the libmagic.so file, which in
+                  ;; turn will cause any application using
+                  ;; python-magic to fail.
+                  (add-before 'build 'hard-code-path-to-libmagic
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((file (assoc-ref inputs "file")))
+                        (substitute* "magic.py"
+                          (("ctypes.util.find_library\\('magic'\\)")
+                           (string-append "'" file "/lib/libmagic.so'")))
+                        #t)))
+                  (add-before 'install 'disable-egg-compression
+                    (lambda _
+                      (let ((port (open-file "setup.cfg" "a")))
+                        (display "\n[easy_install]\nzip_ok = 0\n"
+                                 port)
+                        (close-port port)
+                        #t))))))
     (inputs
      ;; python-magic needs to be able to find libmagic.so.
      `(("file" ,file)))
-    (home-page "https://github.com/ahupp/python-magic")
-    (synopsis "File type identification using libmagic")
+    (home-page
+     "https://github.com/ahupp/python-magic")
+    (synopsis
+     "File type identification using libmagic")
     (description
      "This module uses ctypes to access the libmagic file type
 identification library.  It makes use of the local magic database and
