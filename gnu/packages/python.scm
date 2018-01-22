@@ -11117,18 +11117,20 @@ information.")
 (define-public python-relatorio
   (package
     (name "python-relatorio")
-    (version "0.6.4")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "relatorio" version))
        (sha256
         (base32
-         "0lincq79mzgazwd9gh41dybjh9c3n87r83pl8nk3j79aihyfk84z"))))
+         "1na6hlhz1awi1hbjg1gyclq0khz42iz90wvdjw7mmj655788bpxx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lxml" ,python-lxml)
        ("python-genshi" ,python-genshi)))
+    (native-inputs
+     `(("python-magic" ,python-magic)))
     (home-page "https://relatorio.tryton.org/")
     (synopsis "Templating library able to output ODT and PDF files")
     (description "Relatorio is a templating library which provides a way to
