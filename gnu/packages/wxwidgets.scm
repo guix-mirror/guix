@@ -69,7 +69,7 @@
        ("libsm" ,libsm)
        ("libtiff" ,libtiff)
        ("mesa" ,mesa)
-       ("webkitgtk" ,webkitgtk)
+       ("webkitgtk" ,webkitgtk-2.4)
        ("sdl" ,sdl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
