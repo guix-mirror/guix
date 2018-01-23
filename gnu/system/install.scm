@@ -417,7 +417,7 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
                             '("omap_hsmmc")))
 
 
-(define a20-olinuxino-lime-sd-installation-os
+(define a20-olinuxino-lime-installation-os
   (embedded-installation-os u-boot-a20-olinuxino-lime-bootloader
                             "/dev/mmcblk0" ; SD card storage
                             "ttyS0"))
