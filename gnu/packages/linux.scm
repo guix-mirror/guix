@@ -672,7 +672,7 @@ slabtop, and skill.")
 (define-public usbutils
   (package
     (name "usbutils")
-    (version "008")
+    (version "009")
     (source
      (origin
       (method url-fetch)
@@ -680,7 +680,7 @@ slabtop, and skill.")
                           "usbutils-" version ".tar.xz"))
       (sha256
        (base32
-        "132clk14j4nm8crln2jymdbbc2vhzar2j2hnxyh05m79pbq1lx24"))))
+        "0q3iavmak2bs9xw486w4xfbjl0hbzii93ssgpr95mxmm9kjz1gwb"))))
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)
