@@ -1311,10 +1311,11 @@ compresser/decompresser.")
        ("java-snappy" ,java-snappy)
        ("hamcrest" ,java-hamcrest-core)
        ("testng" ,java-testng)))
-    (synopsis "Java port of snappy")
-    (description "Iq80-snappy is a rewrite (port) of Snappy writen in pure
-Java.  This compression code produces a byte-for-byte exact copy of the output
-created by the original C++ code, and extremely fast.")
+    (synopsis "Java port of the Snappy (de)compressor")
+    (description
+     "Iq80-snappy is a port of the Snappy compressor and decompressor rewritten
+in pure Java.  This compression code produces a byte-for-byte exact copy of the
+output created by the original C++ code, and is extremely fast.")
     (license license:asl2.0)))
 
 (define-public java-jbzip2

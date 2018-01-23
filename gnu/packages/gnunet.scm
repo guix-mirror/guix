@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -205,7 +205,8 @@ authentication and support for SSL3 and TLS.")
       ("pkg-config" ,pkg-config)
       ("python" ,python-2)))
    (arguments
-    `(#:configure-flags (list "--disable-ntlm-wb")
+    `(#:configure-flags (list "--disable-ntlm-wb"
+                              "--with-ca-bundle=/etc/ssl/certs/ca-certificates.crt")
       #:test-target "test"
       #:parallel-tests? #f
       #:phases
@@ -226,8 +227,7 @@ authentication and support for SSL3 and TLS.")
               (("/bin/sh") (which "sh")))
 
             ;; Make test output more verbose.
-            (zero? (system* "make" "-C" "tests" "test"))
-            #t)))))
+            (invoke "make" "-C" "tests" "test"))))))
    (synopsis "Microfork of cURL with support for the HTTP/HTTPS/GnuTLS subset of cURL")
    (description
     "Gnurl is a microfork of cURL, a command line tool for transferring data
@@ -325,7 +325,7 @@ kinds of basic applications for the foundation of a GNU internet.")
        '(#:phases (modify-phases %standard-phases
                     (add-after 'unpack 'bootstrap
                       (lambda _
-                        (zero? (system* "autoreconf" "-vfi")))))))
+                        (invoke "autoreconf" "-vfi"))))))
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("autoconf" ,(autoconf-wrapper))
                        ("automake" ,automake)))

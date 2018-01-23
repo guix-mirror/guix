@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -196,10 +197,10 @@
     (home-page "https://golang.org/")
     (synopsis "Compiler and libraries for Go, a statically-typed language")
     (description "Go, also commonly referred to as golang, is an imperative
-programming language.  Designed primarily for systems programming, it is a
-compiled, statically typed language in the tradition of C and C++, with
-garbage collection, various safety features and in the style of communicating
-sequential processes (CSP) concurrent programming features added.")
+programming language designed primarily for systems programming.  Go is a
+compiled, statically typed language in the tradition of C and C++, but adds
+garbage collection, various safety features, and concurrent programming features
+in the style of communicating sequential processes (@dfn{CSP}).")
     (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
     (license license:bsd-3)))
 
@@ -207,7 +208,7 @@ sequential processes (CSP) concurrent programming features added.")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.9.2")
+    (version "1.9.3")
     (source
      (origin
        (method url-fetch)
@@ -215,7 +216,7 @@ sequential processes (CSP) concurrent programming features added.")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "1p23n4xzbknl3bbhlckbvxbhpxknd5rn0i2szmn9i2dcz15ihpv6"))))
+         "1bj73hrr7jjdg0w6snwkqb5y3yrlks5nrs2lgnkyy0hyx7b0lgaf"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -299,13 +300,6 @@ sequential processes (CSP) concurrent programming features added.")
                  ;; note the target script is generated at build time.
                  (substitute* "../misc/cgo/testcarchive/carchive_test.go"
                    (("#!/usr/bin/env") (string-append "#!" (which "env"))))
-
-                 ;; Escape braces in test data to workaround test failure. For
-                 ;; more information:
-                 ;; https://github.com/golang/go/issues/20007
-                 ;; FIXME: remove this once we upgrade to 1.9
-                 (substitute* "cmd/vet/testdata/copylock_func.go"
-                   (("struct\\{lock sync.Mutex\\}") "struct\\{lock sync.Mutex\\}"))
 
                  (substitute* "net/lookup_unix.go"
                    (("/etc/protocols") (string-append net-base "/etc/protocols")))

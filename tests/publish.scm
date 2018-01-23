@@ -111,6 +111,10 @@
            (sleep 1)
            (loop (- i 1))))))
 
+(define %gzip-magic-bytes
+  ;; Magic bytes of gzip file.
+  #vu8(#x1f #x8b))
+
 ;; Wait until the two servers are ready.
 (wait-until-ready 6789)
 
@@ -212,6 +216,18 @@ FileSize: ~a~%"
        (call-with-gzip-input-port nar
          (cut restore-file <> temp)))
      (call-with-input-file temp read-string))))
+
+(unless (zlib-available?)
+  (test-skip 1))
+(test-equal "/nar/gzip/* is really gzip"
+  %gzip-magic-bytes
+  ;; Since 'gzdopen' (aka. 'call-with-gzip-input-port') transparently reads
+  ;; uncompressed gzip, the test above doesn't check whether it's actually
+  ;; gzip.  This is what this test does.  See <https://bugs.gnu.org/30184>.
+  (let ((nar (http-get-port
+              (publish-uri
+               (string-append "/nar/gzip/" (basename %item))))))
+    (get-bytevector-n nar (bytevector-length %gzip-magic-bytes))))
 
 (unless (zlib-available?)
   (test-skip 1))

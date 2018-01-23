@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -199,7 +200,7 @@ and many other languages.")
 (define-public wxsvg
   (package
     (name "wxsvg")
-    (version "1.5.11")
+    (version "1.5.12")
     (source
      (origin
        (method url-fetch)
@@ -207,7 +208,7 @@ and many other languages.")
                             version "/wxsvg-" version ".tar.bz2"))
        (sha256
         (base32
-         "0m3ff8mjiq4hvy8rmxyc9fkpf24xwxhvr3a6jmvr2q5zc41xhz7x"))))
+         "1hn3h9kzsjs4wimlpknzjfgn7q0n792hh7v3mshjgsjxdcrckzan"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets-3.1)

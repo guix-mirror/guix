@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,9 +73,6 @@ topology functions.")
                    license:zlib              ; tests/xmltester/tinyxml/*
                    license:public-domain)))) ; include/geos/timeval.h
 
-;;; FIXME GNOME Maps only runs within GNOME. On i3, it fails with this error:
-;;; (org.gnome.Maps:8568): GLib-GIO-ERROR **: Settings schema
-;;; 'org.gnome.desktop.interface' is not installed
 (define-public gnome-maps
   (package
     (name "gnome-maps")
@@ -122,13 +120,19 @@ topology functions.")
      `(("folks" ,folks)
        ("libchamplain" ,libchamplain)
        ("libgee" ,libgee)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("libgweather" ,libgweather)
        ("libxml2" ,libxml2)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib-networking" ,glib-networking)
        ("geoclue" ,geoclue)
        ("geocode-glib" ,geocode-glib)
        ("gfbgraph" ,gfbgraph)
        ("gjs" ,gjs)
        ("glib" ,glib)
        ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("rest" ,rest)
        ("webkitgtk" ,webkitgtk)))
     (propagated-inputs

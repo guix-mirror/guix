@@ -68,7 +68,7 @@ operating system functions.")
 
 (define-public rct
   (let* ((commit "b3e6f41d9844ef64420e628e0c65ed98278a843a")
-         (revision "1")
+         (revision "2")
          (version (git-version "0.0.0" revision commit)))
     (package
       (name "rct")
@@ -82,11 +82,13 @@ operating system functions.")
                 (sha256
                  (base32
                   "1m2931jacka27ghnpgf1z1plkkr64z0pga4r4zdrfpp2d7xnrdvb"))
+                (patches (search-patches "rct-add-missing-headers.patch"))
                 (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
        '(#:configure-flags
-         '("-DWITH_TESTS=ON")))           ; To run the test suite
+         '("-DWITH_TESTS=ON"            ; To run the test suite
+           "-DRCT_RTTI_ENABLED=ON")))
       (native-inputs
        `(("cppunit" ,cppunit)
          ("pkg-config" ,pkg-config)))

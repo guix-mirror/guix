@@ -47,7 +47,7 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20171222")
+    (version "20180122")
     (source
      (origin
       (method url-fetch)
@@ -55,7 +55,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1p3r6dlhy49q3y468kf65nqdp0knqw41vwga9rprrvi04kywgj4v"))))
+        "1wkbppb4mc56grl6jsp803sf0hm7mg5ff7qmxalp7sd0vxqw41p9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -76,10 +76,10 @@
              #t))
          (add-after 'install 'post-install-test
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* (string-append
-                              (assoc-ref outputs "out") "/bin/parallel")
-                             "echo"
-                             ":::" "1" "2" "3")))))))
+             (invoke (string-append
+                      (assoc-ref outputs "out") "/bin/parallel")
+                     "echo"
+                     ":::" "1" "2" "3"))))))
     (inputs
      `(("perl" ,perl)
        ("procps" ,procps)))

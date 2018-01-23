@@ -90,10 +90,10 @@ things the parser might find in the XML document (like start tags).")
          "005a0ipqnfbsq47zrc61zszi439jw32q5xd6dc1jyb3lc0zl266q"))))
     (build-system gnu-build-system)
     (home-page "https://matroska-org.github.io/libebml/")
-    (synopsis "C++ libary to parse EBML files")
-    (description "libebml is a C++ library to read and write EBML (Extensible
-Binary Meta Language) files.  EBML was designed to be a simplified binary
-extension of XML for the purpose of storing and manipulating data in a
+    (synopsis "C++ library to parse EBML files")
+    (description "libebml is a C++ library to read and write @dfn{EBML}
+(Extensible Binary Meta Language) files.  EBML was designed to be a simplified
+binary extension of XML for the purpose of storing and manipulating data in a
 hierarchical form with variable field lengths.")
     (license license:lgpl2.1)))
 

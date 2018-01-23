@@ -21,6 +21,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages finance)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -29,24 +30,23 @@
   #:use-module (guix download)
   #:use-module (guix build-system python))
 
-(define-public trytond
+(define-public python-trytond
   (package
-    (name "trytond")
-    (version "4.4.1")
+    (name "python-trytond")
+    (version "4.6.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://downloads.tryton.org/4.4/trytond-"
-             version ".tar.gz"))
+       (uri (pypi-uri "trytond" version))
        (sha256
         (base32
-         "15gm34qwj5fpnkqvrxzndl8653zbczhsa76dm1gi4cqj1r29bbpr"))))
+         "0asc3pd37h8ky8j66iqxr0fv0k6mpjcwxwm0xgm5hrdi32l5cdda"))))
     (build-system python-build-system)
     (inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
        ("python-polib" ,python-polib)
+       ("python-magic" ,python-magic)
        ;; there's no python-mysql in Guix right now
        ;; so python-psycopg2 (postgresql) only for now
        ("python-psycopg2" ,python-psycopg2)
@@ -62,7 +62,8 @@
        (modify-phases %standard-phases
          (add-before 'check 'preparations
            (lambda _
-             (setenv "DB_NAME" ":memory:"))))))
+             (setenv "DB_NAME" ":memory:")
+             #t)))))
     (home-page "https://www.tryton.org/")
     (synopsis "Server component of Tryton")
     (description "Tryton is a three-tier high-level general purpose
@@ -74,16 +75,14 @@ and security.")
 (define-public tryton
   (package
     (name "tryton")
-    (version "4.4.0")
+    (version "4.6.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://downloads.tryton.org/4.4/tryton-"
-             version ".tar.gz"))
+       (uri (pypi-uri "tryton" version))
        (sha256
         (base32
-         "1lklcz5fs6rkrd7z2m2f5gz4fdwzkgnhg2hyvzp20kdsvi33bq2j"))))
+         "0bamr040np02gfjk8c734rw3mbgg75irfgpdcl2npgkdzyw1ksf9"))))
     (build-system python-build-system)
     (inputs
      `(("python2-chardet" ,python2-chardet)
@@ -95,3 +94,106 @@ and security.")
     (synopsis "Client component of Tryton")
     (description "This package is the client component of Tryton.")
     (license license:gpl3+)))
+
+(define-public python-trytond-country
+  (package
+  (name "python-trytond-country")
+  (version "4.6.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "trytond_country" version))
+      (sha256
+        (base32
+          "11c9mw2scbjn7c6yhlwh5ml266f0s31lh4jwj6gh7vl1shs3isr3"))))
+  (build-system python-build-system)
+  (arguments
+   `(#:phases
+     (modify-phases %standard-phases
+       (add-before 'check 'preparations
+         (lambda _
+           (setenv "DB_NAME" ":memory:")
+           #t)))))
+  (propagated-inputs
+   `(("python-trytond" ,python-trytond)
+     ("python-wrapt" ,python-wrapt)
+     ("python-werkzeug" ,python-werkzeug)
+     ("python-sql" ,python-sql)
+     ("python-polib" ,python-polib)
+     ("python-dateutil" ,python-dateutil)
+     ("python-genshi" ,python-genshi)
+     ("python-relatorio" ,python-relatorio)
+     ("python-magic" ,python-magic)))
+  (home-page "http://www.tryton.org/")
+  (synopsis "Tryton module with countries")
+  (description "This package provides a Tryton module with countries.")
+  (license license:gpl3+)))
+
+(define-public python-trytond-party
+  (package
+    (name "python-trytond-party")
+    (version "4.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_party" version))
+       (sha256
+        (base32
+         "0fbf4kxywiglcdsx9ppjg7nxw87915mb6bpn1jn652gk949rdww5"))))
+    (build-system python-build-system)
+    ;; XXX The tests seem to require Proteus. But Proteus tests seem to
+    ;; require trytond-party.
+    (arguments
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-trytond" ,python-trytond)
+       ("python-trytond-country" ,python-trytond-country)
+       ("python-stdnum" ,python-stdnum)
+       ("python-sql" ,python-sql)
+       ("python-wrapt" ,python-wrapt)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-polib" ,python-polib)
+       ("python-dateutil" ,python-dateutil)
+       ("python-genshi" ,python-genshi)
+       ("python-relatorio" ,python-relatorio)
+       ("python-magic" ,python-magic)
+       ("python-phonenumbers" ,python-phonenumbers)))
+    (home-page "http://www.tryton.org/")
+    (synopsis
+     "Tryton module for parties and addresses")
+    (description
+     "This package provides a Tryton module for (counter)parties and
+addresses.")
+    (license license:gpl3+)))
+
+(define-public python-proteus
+  (package
+    (name "python-proteus")
+    (version "4.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "proteus" version))
+       (sha256
+        (base32
+         "0flkf1vxbhz51b7bq31dn7q9mlkli3pmpbzfhsxfqpf6laghbkqg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-trytond-party" ,python-trytond-party)
+       ("python-trytond-country" ,python-trytond-country)
+       ("python-trytond" ,python-trytond)
+       ("python-stdnum" ,python-stdnum)
+       ("python-sql" ,python-sql)
+       ("python-wrapt" ,python-wrapt)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-polib" ,python-polib)
+       ("python-genshi" ,python-genshi)
+       ("python-relatorio" ,python-relatorio)
+       ("python-magic" ,python-magic)))
+    (home-page "http://www.tryton.org/")
+    (synopsis
+     "Library to access a Tryton server as a client")
+    (description
+     "This package provides a library to access Tryton server as a client.")
+    (license license:lgpl3+)))

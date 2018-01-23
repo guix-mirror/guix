@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,14 +80,14 @@ slsh, which is part of the S-Lang distribution.")
 (define-public newt
   (package
     (name "newt")
-    (version "0.52.18")
+    (version "0.52.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pagure.io/releases/"
                                   name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07n9f2mqsjfj35wx5ldhvl9sqcjqpcl0g4fdd9mawmny9rihw6vp"))))
+                "1g3dpfnvaw7vljbr7nzq1rl88d6r8cmrvvng9inphgzwxxmvlrld"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (inputs
@@ -100,8 +101,9 @@ slsh, which is part of the S-Lang distribution.")
        ;; Set the correct RUNPATH in binaries.
        (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        #:make-flags
-       ;; configure does not allow us to override this variable from the
-       ;; command-line.  Fortunately, the Makefile does, so provide it here.
+       ;; configure uses a hard-coded search of /usr/include/python* to set
+       ;; this variable, and does not allow us to override it from the
+       ;; command line.  Fortunately, the Makefile does, so provide it here.
        (list (string-append "PYTHONVERS=python"
                             ,(version-major+minor (package-version python))))
        #:phases

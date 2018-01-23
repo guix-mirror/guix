@@ -1840,3 +1840,24 @@ plots in @code{ggplot2}.")
 attractive command line interfaces (CLIs).  It includes tools for drawing
 rules, boxes, trees, and Unicode symbols with ASCII alternatives.")
     (license license:expat)))
+
+(define-public r-argparser
+  (package
+    (name "r-argparser")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "argparser" version))
+       (sha256
+        (base32
+         "0s1wxshx4jk69wfxhycx973q6y8cmqrfymyjklhq1i8xrj0kmmx9"))))
+    (build-system r-build-system)
+    (home-page "https://bitbucket.org/djhshih/argparser")
+    (synopsis "Command-line argument parser")
+    (description
+     "This package provides a cross-platform command-line argument parser
+written purely in R with no external dependencies.  It is useful with the
+Rscript front-end and facilitates turning an R script into an executable
+script.")
+    (license license:gpl3+)))

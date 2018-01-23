@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -718,3 +719,25 @@ static files.")
 lower the barrier of entry, providing tools to enable teams to work towards
 higher quality while welcoming newcomers.")
     (license license:gpl3+)))
+
+(define-public python-django-tagging
+  (package
+    (name "python-django-tagging")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-tagging" version))
+       (sha256
+        (base32
+         "0s7b4v45j783yaxs7rni10k24san0ya77nqz4s7zdf3jhfpk42r1"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/Fantomas42/django-tagging")
+    (synopsis "Generic tagging application for Django")
+    (description "This package provides a generic tagging application for
+Django projects, which allows association of a number of tags with any
+@code{Model} instance and makes retrieval of tags simple.")
+    (license license:bsd-3)))
+
+(define-public python2-django-tagging
+  (package-with-python2 python-django-tagging))

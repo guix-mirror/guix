@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 ng0 <ng0@n0.is>
-;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -644,3 +644,49 @@ Korn Shell programming language and a successor to the Public Domain Korn
 Shell (pdksh).")
     (license (list miros
                    isc)))) ; strlcpy.c
+
+(define-public oil-shell
+  (package
+    (name "oil-shell")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.oilshell.org/download/oil-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0j4fyn6xjaf29xqyzm09ahazmq9v1hkxv4kps7n3lzdfr32a4kk9"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; the tests are not distributed in the tarballs
+       #:strip-binaries? #f ; the binaries cannot be stripped
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-compiler-invocation
+           (lambda _
+             (substitute* "configure"
+               ((" cc ") " gcc "))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "CC" "gcc")
+               ;; The configure script doesn't recognize CONFIG_SHELL.
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (invoke "./configure" (string-append "--prefix=" out)
+                       "--with-readline"))))
+         (add-before 'install 'make-destination
+           (lambda _
+             ;; The build scripts don't create the destination directory.
+             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin")))))))
+    (inputs
+     `(("readline" ,readline)))
+    (synopsis "Bash-compatible Unix shell")
+    (description "Oil is a Unix / POSIX shell, compatible with Bash.  It
+implements the Oil language, which is a new shell language to which Bash can be
+automatically translated.  The Oil language is a superset of Bash.  It also
+implements the OSH language, a statically-parseable language based on Bash as it
+is commonly written.")
+    (home-page "https://www.oilshell.org/")
+    (license (list psfl ; The Oil sources include a patched Python 2 source tree
+                   asl2.0))))

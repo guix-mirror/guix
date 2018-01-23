@@ -40,7 +40,7 @@ Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017 Marius Bakke@*
 Copyright @copyright{} 2017 Hartmut Goebel@*
 Copyright @copyright{} 2017 Maxim Cournoyer@*
-Copyright @copyright{} 2017 Tobias Geerinckx-Rice@*
+Copyright @copyright{} 2017, 2018 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
 Copyright @copyright{} 2017 Arun Isaac@*
@@ -4005,12 +4005,12 @@ Apart from that, the build system also adds the following phases:
 @table @code
 
 @item fix-runpath
-This phase tries to locate the local directories in the package being build,
-which has libraries that some of the binaries need.  If any are found, they will
-be added to the programs @code{RUNPATH}.  It is needed because
-@code{meson-for-build} keeps the @code{RUNPATH} of binaries and libraries from
-when they are build, but often that is not the @code{RUNPATH} we want.
-Therefor it is also shrinked to the minimum needed by the program.
+This phase ensures that all binaries can find the libraries they need.
+It searches for required libraries in subdirectories of the package being
+built, and adds those to @code{RUNPATH} where needed.  It also removes
+references to libraries left over from the build phase by
+@code{meson-for-build}, such as test dependencies, that aren't actually
+required for the program to run.
 
 @item glib-or-gtk-wrap
 This phase is the phase provided by @code{glib-or-gtk-build-system}, and it
@@ -10342,9 +10342,8 @@ with the default settings, for commonly encountered log files.
 
 (operating-system
   ;; @dots{}
-  (services (cons* (service mcron-service-type)
-                   (service rottlog-service-type)
-                   %base-services)))
+  (services (cons (service rottlog-service-type)
+                  %base-services)))
 @end lisp
 
 @defvr {Scheme Variable} rottlog-service-type
@@ -18269,8 +18268,6 @@ The following example will configure the service with default values.
 By default, Cgit can be accessed on port 80 (@code{http://localhost:80}).
 
 @example
-(service nginx-service-type)
-(service fcgiwrap-service-type)
 (service cgit-service-type)
 @end example
 

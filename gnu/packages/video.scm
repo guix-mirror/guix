@@ -523,10 +523,10 @@ SMPTE 314M.")
     (inputs
      `(("libebml" ,libebml)))
     (home-page "https://www.matroska.org")
-    (synopsis "C++ libary to parse Matroska files (.mkv and .mka)")
+    (synopsis "C++ library to parse Matroska files (.mkv and .mka)")
     (description
      "Matroska aims to become the standard of multimedia container formats.
-It is based on EBML (Extensible Binary Meta Language), a binary derivative
+It is based on @dfn{EBML} (Extensible Binary Meta Language), a binary derivative
 of XML.  EBML enables the Matroska Development Team to gain significant
 advantages in terms of future format extensibility, without breaking file
 support in old parsers.
@@ -1150,7 +1150,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.01.18")
+    (version "2018.01.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1158,7 +1158,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "16mdy83s8h1hw1qdbcv6anrgg9zxfw1da22fxjx53pr2x0ywwbsf"))))
+                "14ggjxnhc2sxc93h7d5k3z4n35n5q3ffsif97np0ar93x5z3zgn5"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1181,11 +1181,12 @@ access to mpv's powerful playback capabilities.")
                           (("'etc/")
                            (string-append "'" prefix "/etc/"))
                           (("'share/")
-                           (string-append "'" prefix "/share/")))))))))
+                           (string-append "'" prefix "/share/")))
+                        #t))))))
     (synopsis "Download videos from YouTube.com and other sites")
     (description
      "Youtube-dl is a small command-line program to download videos from
-YouTube.com and a few more sites.")
+YouTube.com and many more sites.")
     (home-page "https://yt-dl.org")
     (license license:public-domain)))
 

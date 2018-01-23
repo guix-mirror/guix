@@ -112,7 +112,7 @@ is used in some video games and movies.")
 (define-public deutex
   (package
    (name "deutex")
-   (version "5.1.0")
+   (version "5.1.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/Doom-Utils/" name
@@ -120,7 +120,7 @@ is used in some video games and movies.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0hwkm0q2w16ddmiwh7x3jcfp58zjb40a5dh7c3sybwm9bar37pn1"))))
+              "0yqzlb3imkdzy8yd7xc69xk9ajf4dhiz3a9ssphyf4c9rcr440wj"))))
    (build-system gnu-build-system)
    (native-inputs `(("asciidoc" ,asciidoc)))
    (home-page "https://github.com/Doom-Utils/deutex")
@@ -1069,6 +1069,10 @@ games.")
     (arguments
      `(#:scons ,scons-python2
        #:scons-flags (list "platform=x11"
+                           ,@(if (string-prefix? "aarch64" (or (%current-target-system)
+                                                               (%current-system)))
+                               `("CCFLAGS=-DNO_THREADS")
+                               '())
                            ;; Avoid using many of the bundled libs.
                            ;; Note: These options can be found in the SConstruct file.
                            "builtin_freetype=no"

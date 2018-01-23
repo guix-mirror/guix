@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -340,14 +340,15 @@ downloads, download scheduling, download rate limiting.")
 (define-public mktorrent
   (package
     (name "mktorrent")
-    (version "1.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/mktorrent/mktorrent/"
-                                  version "/" name "-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/Rudde/mktorrent/archive/v"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "17qi3nfky240pq6qcmf5qg324mxm83vk9r3nvsdhsvinyqm5d3kg"))))
+                "1j9qc4fxa9isnaygqk6jazsiklqywl2wcs95b8dx01963407bx6h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -359,13 +360,14 @@ downloads, download scheduling, download rate limiting.")
                           "USE_LONG_OPTIONS=1"
                           "USE_PTHREADS=1")
        #:tests? #f))                            ; no tests
-    (home-page "http://mktorrent.sourceforge.net/")
+    (home-page "https://github.com/Rudde/mktorrent")
     (synopsis "Utility to create BitTorrent metainfo files")
-    (description "mktorrent is a simple command-line utility to create
-BitTorrent @dfn{metainfo} files, often known simply as @dfn{torrents}, from
-both single files and whole directories.  It can add multiple trackers and web
-seed URLs, and set the @code{private} flag to disallow advertisement through
-the distributed hash table (DHT) and Peer Exchange.  Hashing is multi-threaded
+    (description
+     "mktorrent is a simple command-line utility to create BitTorrent
+@dfn{metainfo} files, often known simply as @dfn{torrents}, from both single
+files and whole directories.  It can add multiple trackers and web seed URLs,
+and set the @code{private} flag to disallow advertisement through the
+distributed hash table (@dfn{DHT}) and Peer Exchange.  Hashing is multi-threaded
 and will take advantage of multiple processor cores where possible.")
     (license (list l:public-domain      ; sha1.*, used to build without OpenSSL
                    l:gpl2+))))          ; with permission to link with OpenSSL
@@ -373,7 +375,7 @@ and will take advantage of multiple processor cores where possible.")
 (define-public libtorrent-rasterbar
   (package
     (name "libtorrent-rasterbar")
-    (version "1.1.5")
+    (version "1.1.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -383,7 +385,7 @@ and will take advantage of multiple processor cores where possible.")
                 "/libtorrent-rasterbar-" version ".tar.gz"))
               (sha256
                (base32
-                "0c398b7hsa5dvj4m0jc8h7mn0m3nawmagb6c5c7ml5c9hc338c8h"))))
+                "1vr1a7smkwh7dc7jb9n68i0cg59wxhgywxc9kxpbs8fi9c04vixp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -399,7 +401,7 @@ and will take advantage of multiple processor cores where possible.")
               ("openssl" ,openssl)))
     (native-inputs `(("python" ,python-2)
                      ("pkg-config" ,pkg-config)))
-    (home-page "http://www.rasterbar.com/products/libtorrent/")
+    (home-page "https://www.libtorrent.org/")
     (synopsis "Feature complete BitTorrent implementation")
     (description
      "libtorrent-rasterbar is a feature complete C++ BitTorrent implementation

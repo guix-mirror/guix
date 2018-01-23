@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -164,7 +165,7 @@ script.")
 (define-public graphicsmagick
   (package
     (name "graphicsmagick")
-    (version "1.3.27")
+    (version "1.3.28")
     (source (origin
               (method url-fetch)
               (uri
@@ -176,7 +177,7 @@ script.")
                                  "/GraphicsMagick-" version ".tar.xz")))
               (sha256
                (base32
-                "0rq35p3rml10cxz2z4s7xcfsilhhk19mmy094g3ivz0fg797hcnh"))))
+                "0jlrrimrajcmwp7llivyj14qnzb1mpqd8vw95dl6zbx5m2lnhall"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

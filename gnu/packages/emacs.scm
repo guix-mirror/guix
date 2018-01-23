@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
@@ -3169,15 +3169,16 @@ perspective only its buffers are available by default.")
 (define-public emacs-request
   (package
     (name "emacs-request")
-    (version "0.2.0")
+    (version "0.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/tkf/emacs-request/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tkf/emacs-request.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
-               (base32 "0sll9g9x15jxrdr58pdxx4iz74rnjd43q521iqm890i6hmkrgwap"))))
+               (base32
+                "0wyxqbb35yqf6ci47531lk32d6fppamx9d8826kdz983vm87him7"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tkf/emacs-request")
     (synopsis "Package for speaking HTTP in Emacs Lisp")
@@ -6463,7 +6464,7 @@ It supports dired buffers and opens them in tree mode at destination.")
 It is meant to quickly generate linear ranges, e.g. 5, 6, 7, 8.  Some elisp
 proficiency is an advantage, since you can transform your numeric range with
 an elisp expression.")
-  (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-bash-completion
   (package

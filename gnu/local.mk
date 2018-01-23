@@ -836,6 +836,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
+  %D%/packages/patches/libsndfile-CVE-2017-12562.patch		\
   %D%/packages/patches/libssh-hostname-parser-bug.patch		\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
@@ -1037,6 +1038,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/raptor2-heap-overflow.patch		\
   %D%/packages/patches/ratpoison-shell.patch			\
   %D%/packages/patches/rcs-5.9.4-noreturn.patch			\
+  %D%/packages/patches/rct-add-missing-headers.patch		\
   %D%/packages/patches/readline-link-ncurses.patch		\
   %D%/packages/patches/readline-6.2-CVE-2014-2524.patch		\
   %D%/packages/patches/readline-7.0-mingw.patch			\
@@ -1049,6 +1051,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rsync-CVE-2017-17433-fix-tests.patch			\
   %D%/packages/patches/rsync-CVE-2017-17434-pt1.patch			\
   %D%/packages/patches/rsync-CVE-2017-17434-pt2.patch			\
+  %D%/packages/patches/rtags-separate-rct.patch			\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-concurrent-test-arm.patch		\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \

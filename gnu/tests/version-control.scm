@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -88,8 +88,6 @@
   (let ((base-os
          (simple-operating-system
           (dhcp-client-service)
-          (service nginx-service-type)
-          (service fcgiwrap-service-type)
           (service cgit-service-type
                    (cgit-configuration
                     (nginx %cgit-configuration-nginx)))
@@ -130,8 +128,25 @@ HTTP-PORT."
 
           (test-begin "cgit")
 
+          ;; XXX: Shepherd reads the config file *before* binding its control
+          ;; socket, so /var/run/shepherd/socket might not exist yet when the
+          ;; 'marionette' service is started.
+          (test-assert "shepherd socket ready"
+            (marionette-eval
+             `(begin
+                (use-modules (gnu services herd))
+                (let loop ((i 10))
+                  (cond ((file-exists? (%shepherd-socket-file))
+                         #t)
+                        ((> i 0)
+                         (sleep 1)
+                         (loop (- i 1)))
+                        (else
+                         'failure))))
+             marionette))
+
           ;; Wait for nginx to be up and running.
-          (test-eq "service running"
+          (test-eq "nginx running"
             'running!
             (marionette-eval
              '(begin
@@ -141,7 +156,7 @@ HTTP-PORT."
              marionette))
 
           ;; Wait for fcgiwrap to be up and running.
-          (test-eq "service running"
+          (test-eq "fcgiwrap running"
             'running!
             (marionette-eval
              '(begin

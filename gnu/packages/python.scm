@@ -36,7 +36,7 @@
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
-;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
+;;; Copyright © 2017, 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
@@ -45,6 +45,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7645,6 +7646,35 @@ alternative when librabbitmq is not available.")
                    #:tests? #f
                    ,@(package-arguments amqp))))))
 
+(define-public python-txamqp
+  (package
+    (name "python-txamqp")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "txAMQP" version))
+       (sha256
+        (base32
+         "1r43a66dd547mz40ikymm8y3d480cidy560fj81qc0jk4lncgmmr"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-twisted" ,python-twisted)))
+    (home-page "https://github.com/txamqp/txamqp")
+    (synopsis "Communicate with AMQP peers and brokers using Twisted")
+    (description
+     "This package provides a Python library for communicating with AMQP peers
+and brokers using the asynchronous networking framework Twisted.  It contains
+all the necessary code to connect, send and receive messages to/from an
+AMQP-compliant peer or broker (Qpid, OpenAMQ, RabbitMQ) using Twisted.  It
+also includes support for using Thrift RPC over AMQP in Twisted
+applications.")
+    (license license:asl2.0)))
+
+(define-public python2-txamqp
+  (package-with-python2 python-txamqp))
+
 (define-public python-kombu
   (package
     (name "python-kombu")
@@ -8111,15 +8141,14 @@ is made as zipfile like as possible.")
 (define-public python-magic
   (package
     (name "python-magic")
-    (version "0.4.3")
+    (version "0.4.15")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/ahupp/python-magic/archive/"
-                           version ".tar.gz"))
+       (uri (pypi-uri "python-magic" version))
        (sha256
         (base32
-         "17bgy92i7sb021f2s4mw1dcvpm6p1mi9jihridwy1pyn8mzvpjgk"))
+         "1mgwig9pnzgkf86q9ji9pnc99bngms15lfszq5rgqb9db07mqxpk"))
        (file-name (string-append name "-" version "-checkout"))))
     (build-system python-build-system)
     (arguments
@@ -8137,31 +8166,33 @@ is made as zipfile like as possible.")
      ;; expected.
      '(#:tests? #f
        #:phases (modify-phases %standard-phases
-         ;; Replace a specific method call with a hard-coded
-         ;; path to the necessary libmagic.so file in the
-         ;; store.  If we don't do this, then the method call
-         ;; will fail to find the libmagic.so file, which in
-         ;; turn will cause any application using
-         ;; python-magic to fail.
-         (add-before 'build 'hard-code-path-to-libmagic
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((file (assoc-ref inputs "file")))
-               (substitute* "magic.py"
-                 (("ctypes.util.find_library\\('magic'\\)")
-                  (string-append "'" file "/lib/libmagic.so'")))
-           #t)))
-         (add-before 'install 'disable-egg-compression
-           (lambda _
-             (let ((port (open-file "setup.cfg" "a")))
-               (display "\n[easy_install]\nzip_ok = 0\n"
-                        port)
-               (close-port port)
-               #t))))))
+                  ;; Replace a specific method call with a hard-coded
+                  ;; path to the necessary libmagic.so file in the
+                  ;; store.  If we don't do this, then the method call
+                  ;; will fail to find the libmagic.so file, which in
+                  ;; turn will cause any application using
+                  ;; python-magic to fail.
+                  (add-before 'build 'hard-code-path-to-libmagic
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((file (assoc-ref inputs "file")))
+                        (substitute* "magic.py"
+                          (("ctypes.util.find_library\\('magic'\\)")
+                           (string-append "'" file "/lib/libmagic.so'")))
+                        #t)))
+                  (add-before 'install 'disable-egg-compression
+                    (lambda _
+                      (let ((port (open-file "setup.cfg" "a")))
+                        (display "\n[easy_install]\nzip_ok = 0\n"
+                                 port)
+                        (close-port port)
+                        #t))))))
     (inputs
      ;; python-magic needs to be able to find libmagic.so.
      `(("file" ,file)))
-    (home-page "https://github.com/ahupp/python-magic")
-    (synopsis "File type identification using libmagic")
+    (home-page
+     "https://github.com/ahupp/python-magic")
+    (synopsis
+     "File type identification using libmagic")
     (description
      "This module uses ctypes to access the libmagic file type
 identification library.  It makes use of the local magic database and
@@ -9250,21 +9281,20 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
 (define-public python-kivy
   (package
     (name "python-kivy")
-    (version "1.9.1")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "kivy" version))
+       (uri (pypi-uri "Kivy" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0zk3g1j1z0lzcm9d0k1lprrs95zr8n8k5pdg3p5qlsn26jz4bg19"))))
+         "1394zh6kvf7k5d8vlzxcsfcailr3q59xwg9b1n7qaf25bvyq1h98"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f              ; Tests require many optional packages
        #:phases
        (modify-phases %standard-phases
-         (replace 'build (lambda _ (zero? (system* "make" "force"))))
          (add-after 'patch-generated-file-shebangs 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "KIVY_SDL2_PATH"
@@ -9272,7 +9302,8 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
                                     "/include/SDL2"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("git" ,git)
+       ("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)))
     (inputs
      `(("gstreamer" ,gstreamer)
@@ -11134,18 +11165,20 @@ information.")
 (define-public python-relatorio
   (package
     (name "python-relatorio")
-    (version "0.6.4")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "relatorio" version))
        (sha256
         (base32
-         "0lincq79mzgazwd9gh41dybjh9c3n87r83pl8nk3j79aihyfk84z"))))
+         "1na6hlhz1awi1hbjg1gyclq0khz42iz90wvdjw7mmj655788bpxx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lxml" ,python-lxml)
        ("python-genshi" ,python-genshi)))
+    (native-inputs
+     `(("python-magic" ,python-magic)))
     (home-page "https://relatorio.tryton.org/")
     (synopsis "Templating library able to output ODT and PDF files")
     (description "Relatorio is a templating library which provides a way to
@@ -12348,7 +12381,7 @@ not actively maintained and works only with Python 2 and NumPy < 1.9.")
 (define-public python2-mmtk
   (package
     (name "python2-mmtk")
-    (version "2.7.10")
+    (version "2.7.11")
     (source
      (origin
        (method url-fetch)
@@ -12357,7 +12390,7 @@ not actively maintained and works only with Python 2 and NumPy < 1.9.")
        (file-name (string-append "MMTK-" version ".tar.gz"))
        (sha256
         (base32
-         "1k4gsd50zja89dbzgy3aji7h4zpvbvdfrds7rxr3whqrsgcffnir"))))
+         "1d0nnjx4lwsvh8f99vv1r6gi50d93yba0adkz8b4zgv4za4c5862"))))
     (build-system python-build-system)
     (native-inputs
      `(("netcdf" ,netcdf)))
@@ -12385,3 +12418,49 @@ and normal mode analysis, but also basic routines for implementing new methods
 for simulation and analysis.  The library is currently not actively maintained
 and works only with Python 2 and NumPy < 1.9.")
     (license license:cecill-c)))
+
+(define-public python-phonenumbers
+  (package
+    (name "python-phonenumbers")
+    (version "8.8.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "phonenumbers" version))
+       (sha256
+        (base32
+         "1lhhxmx3hk0b5891nc0p82dl5bq2w9cqbawmh8j5zy587af2j6fq"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/daviddrysdale/python-phonenumbers")
+    (synopsis
+     "Python library for dealing with international phone numbers")
+    (description
+     "This package provides a Python port of Google's libphonenumber library.")
+    (license license:asl2.0)))
+
+(define-public python2-phonenumbers
+  (package-with-python2 python-phonenumbers))
+
+(define-public python-yapf
+  (package
+    (name "python-yapf")
+    (version "0.20.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "yapf" version))
+       (sha256
+        (base32
+         "0s7l6afzxvpx39kzd0lwshlaxw8m4fwh4iy0rlmav4vipr3g46dx"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/google/yapf")
+    (synopsis "Formatter for Python code")
+    (description "YAPF is a formatter for Python code.  It's based off of
+@dfn{clang-format}, developed by Daniel Jasper.  In essence, the algorithm
+takes the code and reformats it to the best formatting that conforms to the
+style guide, even if the original code didn't violate the style guide.")
+    (license license:asl2.0)))
+
+(define-public python2-yapf
+  (package-with-python2 python-yapf))
