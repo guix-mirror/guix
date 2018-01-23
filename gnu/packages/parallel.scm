@@ -55,7 +55,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1wkkqghdjp9j2aqnrfh57kad1w41gdg7knhhlciczkm853f4d0sw"))))
+        "1wkbppb4mc56grl6jsp803sf0hm7mg5ff7qmxalp7sd0vxqw41p9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
