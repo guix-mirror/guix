@@ -227,8 +227,7 @@ authentication and support for SSL3 and TLS.")
               (("/bin/sh") (which "sh")))
 
             ;; Make test output more verbose.
-            (zero? (system* "make" "-C" "tests" "test"))
-            #t)))))
+            (invoke "make" "-C" "tests" "test"))))))
    (synopsis "Microfork of cURL with support for the HTTP/HTTPS/GnuTLS subset of cURL")
    (description
     "Gnurl is a microfork of cURL, a command line tool for transferring data
@@ -326,7 +325,7 @@ kinds of basic applications for the foundation of a GNU internet.")
        '(#:phases (modify-phases %standard-phases
                     (add-after 'unpack 'bootstrap
                       (lambda _
-                        (zero? (system* "autoreconf" "-vfi")))))))
+                        (invoke "autoreconf" "-vfi"))))))
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("autoconf" ,(autoconf-wrapper))
                        ("automake" ,automake)))
