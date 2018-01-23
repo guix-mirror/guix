@@ -6894,3 +6894,27 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
 @code{ogg123}, @code{speexdec}, @code{timidity}, @code{mikmod} and
 @code{afplay}.")
     (license license:gpl2+)))
+
+(define-public groovy-emacs-modes
+  (package
+    (name "groovy-emacs-modes")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Groovy-Emacs-Modes/" name
+                    "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15j0hnkx9nppjzda5cqsxxz5f3bq9hc4xfyjcdypzqiypcvmpa39"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes")
+    (synopsis "Groovy related modes for Emacs")
+    (description
+     "This package provides @code{groovy-mode} for syntax highlighing in
+Groovy source files, REPL integration with run-groovy and Grails project
+navigation with the grails mode.")
+    (license license:gpl3+)))
