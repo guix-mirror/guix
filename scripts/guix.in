@@ -1,4 +1,5 @@
-#!@GUILE@ --no-auto-compile
+#!@GUILE@ \
+--no-auto-compile -e main -s
 -*- scheme -*-
 !#
 ;;; GNU Guix --- Functional package management for GNU
@@ -25,34 +26,34 @@
 ;; It's okay to import modules from core Guile though.
 (use-modules (srfi srfi-26))
 
-(let ()
-  (define-syntax-rule (push! elt v) (set! v (cons elt v)))
+(define-syntax-rule (push! elt v) (set! v (cons elt v)))
 
-  (define (maybe-augment-load-paths!)
-    (unless (getenv "GUIX_UNINSTALLED")
-      (push! "@guilemoduledir@" %load-path)
-      (push! "@guileobjectdir@" %load-compiled-path)
-      (let ((updates-dir (and=> (or (getenv "XDG_CONFIG_HOME")
-                                    (and=> (getenv "HOME")
-                                           (cut string-append <> "/.config")))
-                                (cut string-append <> "/guix/latest"))))
-        (when (and updates-dir (file-exists? updates-dir))
-          ;; XXX: Currently 'guix pull' puts both .scm and .go files in
-          ;; UPDATES-DIR.
-          (push! updates-dir %load-path)
-          (push! updates-dir %load-compiled-path)))))
+(define (augment-load-paths!)
+  ;; Add installed modules to load-path.
+  (push! "@guilemoduledir@" %load-path)
+  (push! "@guileobjectdir@" %load-compiled-path)
 
-  (define (run-guix-main)
-    (let ((guix-main (module-ref (resolve-interface '(guix ui))
-                                 'guix-main)))
-      (bindtextdomain "guix" "@localedir@")
-      (bindtextdomain "guix-packages" "@localedir@")
-      (apply guix-main (command-line))))
+  ;; Add modules fetched by 'guix pull' to load-path.
+  (let ((updates-dir (and=> (or (getenv "XDG_CONFIG_HOME")
+                                (and=> (getenv "HOME")
+                                       (cut string-append <> "/.config")))
+                            (cut string-append <> "/guix/latest"))))
+    (when (and=> updates-dir file-exists?)
+      ;; XXX: Currently 'guix pull' puts both .scm and .go files in
+      ;; UPDATES-DIR.
+      (push! updates-dir %load-path)
+      (push! updates-dir %load-compiled-path))))
 
-  (maybe-augment-load-paths!)
+(define* (main #:optional (args (command-line)))
+  (unless (getenv "GUIX_UNINSTALLED")
+    (augment-load-paths!))
 
-  ;; XXX: It would be more convenient to change it to:
-  ;;   (exit (run-guix-main))
-  ;; but since the 'guix' command is not updated by 'guix pull', we cannot
-  ;; really do it now.
-  (run-guix-main))
+  (let ((guix-main (module-ref (resolve-interface '(guix ui))
+                               'guix-main)))
+    (bindtextdomain "guix" "@localedir@")
+    (bindtextdomain "guix-packages" "@localedir@")
+    ;; XXX: It would be more convenient to change it to:
+    ;;   (exit (apply guix-main (command-line)))
+    ;; but since the 'guix' command is not updated by 'guix pull', we cannot
+    ;; really do it now.
+    (apply guix-main args)))
