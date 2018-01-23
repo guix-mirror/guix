@@ -12334,7 +12334,7 @@ not actively maintained and works only with Python 2 and NumPy < 1.9.")
 (define-public python2-mmtk
   (package
     (name "python2-mmtk")
-    (version "2.7.10")
+    (version "2.7.11")
     (source
      (origin
        (method url-fetch)
@@ -12343,7 +12343,7 @@ not actively maintained and works only with Python 2 and NumPy < 1.9.")
        (file-name (string-append "MMTK-" version ".tar.gz"))
        (sha256
         (base32
-         "1k4gsd50zja89dbzgy3aji7h4zpvbvdfrds7rxr3whqrsgcffnir"))))
+         "1d0nnjx4lwsvh8f99vv1r6gi50d93yba0adkz8b4zgv4za4c5862"))))
     (build-system python-build-system)
     (native-inputs
      `(("netcdf" ,netcdf)))
