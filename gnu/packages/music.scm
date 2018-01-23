@@ -1181,6 +1181,14 @@ add_library( rapidjson INTERFACE IMPORTED )"))
                              "exclude:Score/ViewFilter/ViewFilter"
                              "exclude:Formats/PowerTabOldImport/Directions"
                              ))))
+         ;; FIXME: This bug has been fixed upstream, but no release has been
+         ;; made yet.  See https://github.com/powertab/powertabeditor/issues/257
+         (add-after 'unpack 'fix-boost-bug
+           (lambda _
+             (substitute* "source/score/voiceutils.cpp"
+               (("boost::rational<int> duration\\(4, pos.getDurationType\\(\\)\\);")
+                "boost::rational<int> duration(4, static_cast<int>(pos.getDurationType()));"))
+             #t))
          (add-before 'configure 'remove-third-party-libs
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Link with required static libraries, because we're not
