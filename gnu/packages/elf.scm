@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,14 +33,14 @@
 (define-public elfutils
   (package
     (name "elfutils")
-    (version "0.169")
+    (version "0.170")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://sourceware.org/elfutils/ftp/"
                                   version "/elfutils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1hiv1yqig3292dwqhrwsxwk3qjalxp5fpl8yphwbfwh8ng3zl4ll"))
+                "0rp0r54z44is49c594qy7hr211nhb00aa5y7z74vsybbaxslg10z"))
               (patches (search-patches "elfutils-tests-ptrace.patch"))))
     (build-system gnu-build-system)
 
