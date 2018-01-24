@@ -759,7 +759,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/icecat-bug-1415133.patch			\
   %D%/packages/patches/icecat-bug-1414945.patch			\
   %D%/packages/patches/icecat-bug-1424373-pt2.patch		\
-  %D%/packages/patches/icecat-bug-1427870-spectre-mitigation.patch	\
   %D%/packages/patches/icu4c-CVE-2017-7867-CVE-2017-7868.patch	\
   %D%/packages/patches/icu4c-CVE-2017-14952.patch		\
   %D%/packages/patches/icu4c-reset-keyword-list-iterator.patch	\
