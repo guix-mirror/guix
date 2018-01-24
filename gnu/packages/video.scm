@@ -1714,30 +1714,6 @@ pixel motion compensation, lumi masking, trellis quantization, and H.263, MPEG
 and custom quantization matrices.")
     (license license:gpl2+)))
 
-(define-public livestreamer
-  (package
-    (name "livestreamer")
-    (version "1.12.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/chrippa/livestreamer/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append "livestreamer-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1fp3d3z2grb1ls97smjkraazpxnvajda2d1g1378s6gzmda2jvjd"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; tests rely on external web servers
-    (propagated-inputs
-     `(("python-requests" ,python-requests)))
-    (synopsis "Internet video stream viewer")
-    (description "Livestreamer is a command-line utility that extracts streams
-from various services and pipes them into a video playing application.")
-    (home-page "http://livestreamer.io/")
-    (license license:bsd-2)))
-
 (define-public streamlink
   (package
     (name "streamlink")
@@ -1766,6 +1742,9 @@ from various services and pipes them into a video playing application.")
     (description "Streamlink is command-line utility that extracts streams
 from sites like Twitch.tv and pipes them into a video player of choice.")
     (license license:bsd-2)))
+
+(define-public livestreamer
+  (deprecated-package "livestreamer" streamlink))
 
 (define-public mlt
   (package
