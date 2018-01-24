@@ -1715,15 +1715,14 @@ indicators, code completion and call tips.")
          (replace 'configure
            (lambda* (#:key outputs configure-flags #:allow-other-keys)
              (chdir "Python")
-             (and (apply invoke "python3" "configure.py"
-                         configure-flags)
-                  ;; Install to the right directory
-                  (begin
-                    (substitute* '("Makefile"
-                                   "Qsci/Makefile")
-                      (("\\$\\(INSTALL_ROOT\\)/gnu/store/[^/]+")
-                       (assoc-ref outputs "out")))
-                    #t)))))))
+             (apply invoke "python3" "configure.py"
+                    configure-flags)
+             ;; Install to the right directory
+             (substitute* '("Makefile"
+                            "Qsci/Makefile")
+               (("\\$\\(INSTALL_ROOT\\)/gnu/store/[^/]+")
+                (assoc-ref outputs "out")))
+             #t)))))
     (inputs
      `(("qscintilla" ,qscintilla)
        ("python" ,python)
