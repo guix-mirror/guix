@@ -1657,7 +1657,7 @@ contain over 620 classes.")
 (define-public qscintilla
   (package
     (name "qscintilla")
-    (version "2.10.1")
+    (version "2.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pyqt/QScintilla2/"
@@ -1665,7 +1665,7 @@ contain over 620 classes.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0r7s7ndblv3jc0xig1y4l64b6mfr879cdv3zwdndn27rj6fqmycp"))))
+                "1l2ylsv6s3wfhyx7qr5cxgkwwwhvbrpd2k7akgm9bvbyf4h1vcql"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1685,7 +1685,7 @@ contain over 620 classes.")
                   (string-append out "/lib/qt$${QT_MAJOR_VERSION}"))
                  (("\\$\\$\\[QT_HOST_DATA\\]")
                  (string-append out "/lib/qt$${QT_MAJOR_VERSION}")))
-               (zero? (system* "qmake"))))))))
+               (invoke "qmake")))))))
     (native-inputs `(("qtbase" ,qtbase)))
     (home-page "http://www.riverbankcomputing.co.uk/software/qscintilla/intro")
     (synopsis "Qt port of the Scintilla C++ editor control")
@@ -1715,8 +1715,8 @@ indicators, code completion and call tips.")
          (replace 'configure
            (lambda* (#:key outputs configure-flags #:allow-other-keys)
              (chdir "Python")
-             (and (zero? (apply system* "python3" "configure.py"
-                                configure-flags))
+             (and (apply invoke "python3" "configure.py"
+                         configure-flags)
                   ;; Install to the right directory
                   (begin
                     (substitute* '("Makefile"
