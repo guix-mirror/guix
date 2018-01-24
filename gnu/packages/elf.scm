@@ -62,8 +62,8 @@
     (synopsis "Linker and ELF manipulation tools")
     (description
      "This package provides command-line tools to manipulate binaries in the
-Executable and Linkable Format (ELF).  This includes ld, ar, objdump,
-addr2line, and more.")
+Executable and Linkable Format (@dfn{ELF}).  This includes @command{ld},
+@command{ar}, @command{objdump}, @command{addr2line}, and more.")
 
     ;; Libraries are dual-licensed LGPLv3.0+ | GPLv2, and programs are GPLv3+.
     (license lgpl3+)))
