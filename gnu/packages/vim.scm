@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -758,12 +758,12 @@ refactor Vim in order to:
                (delete-file-recursively (string-append vifm "/vim")))
              #t)))))
     (native-inputs
-     `(("groff" ,groff) ; for the documentation
-       ("perl" ,perl)))
+     `(("groff" ,groff))) ; for the documentation
     (inputs
      `(("libx11" ,libx11)
-       ("ncurses" ,ncurses)))
-    (home-page "http://vifm.info/")
+       ("ncurses" ,ncurses)
+       ("perl" ,perl)))
+    (home-page "https://vifm.info/")
     (synopsis "Flexible vi-like file manager using ncurses")
     (description "Vifm is a file manager providing a @command{vi}-like usage
 experience.  It has similar keybindings and modes (e.g. normal, command line,
