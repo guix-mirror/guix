@@ -93,10 +93,10 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
      ;; appropriately.
      '(#:configure-flags '("--localstatedir=/var")))
     (home-page "https://github.com/lathiat/nss-mdns")
-    (synopsis "The mDNS Name Service Switch (NSS) plug-in")
+    (synopsis "Multicast DNS Name Service Switch (@dfn{NSS}) plug-in")
     (description
-     "Nss-mdns is a plug-in for the Name Service Switch (NSS) functionality
-of the GNU C Library, providing host name resolution via Multicast DNS (mDNS).
-It allows for name resolution by programs in the ad-hoc mDNS domain
-'.local'.")
+     "Nss-mdns is a plug-in for the GNU C Library's Name Service Switch
+(@dfn{NSS}) that resolves host names via multicast DNS (@dfn{mDNS}).  It is
+most often used in home and other small networks without a local name server,
+to resolve host names in the @samp{.local} top-level domain.")
     (license lgpl2.1+)))
