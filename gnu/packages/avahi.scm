@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,35 +77,22 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
 (define-public nss-mdns
   (package
     (name "nss-mdns")
-    (version "0.10")
+    (version "0.11")
     (source (origin
               (method url-fetch)
-              (uri (list
-                    (string-append
-                     "mirror://debian/pool/main/n/nss-mdns/nss-mdns_"
-                     version ".orig.tar.gz")
-                    "http://pkgs.fedoraproject.org/repo/pkgs/nss-mdns/nss-mdns-0.10.tar.gz/03938f17646efbb50aa70ba5f99f51d7/nss-mdns-0.10.tar.gz"
-
-                    ;; This used to be the canonical URL but it vanished.
-                    ;; See <http://bugs.gnu.org/18704>.
-                    ;; (string-append
-                    ;;  "http://0pointer.de/lennart/projects/nss-mdns/nss-mdns-"
-                    ;;  version ".tar.gz")
-                    ))
+              (uri (string-append "https://github.com/lathiat/nss-mdns"
+                                  "/releases/download/v" version "/"
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0vgs6j0qsl0mwzh5a0m0bykr7x6bx79vnbyn0r3q289rghp3qs0y"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "14jwy6mklzgjz3mfmw67mxhszrw9d3d3yjjhg87j4crci6m19i39"))))
     (build-system gnu-build-system)
     (arguments
      ;; The Avahi daemon socket is expected by src/Makefile.am to be at
      ;; "$(localstatedir)/run/avahi-daemon/socket", so set $(localstatedir)
      ;; appropriately.
      '(#:configure-flags '("--localstatedir=/var")))
-
-    ;; XXX: Stale URL, missing replacement.  See <http://bugs.gnu.org/18704>.
-    (home-page "http://0pointer.de/lennart/projects/nss-mdns/")
-
+    (home-page "https://github.com/lathiat/nss-mdns")
     (synopsis "The mDNS Name Service Switch (NSS) plug-in")
     (description
      "Nss-mdns is a plug-in for the Name Service Switch (NSS) functionality
