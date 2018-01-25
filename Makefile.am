@@ -446,6 +446,9 @@ dist_zshcompletion_DATA = etc/completion/zsh/_guix
 # Fish completion file.
 dist_fishcompletion_DATA = etc/completion/fish/guix.fish
 
+# SELinux policy
+dist_selinux_policy_DATA = etc/guix-daemon.cil
+
 EXTRA_DIST =						\
   HACKING						\
   ROADMAP						\

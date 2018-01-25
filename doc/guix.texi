@@ -21,7 +21,7 @@ Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
-Copyright @copyright{} 2015, 2016, 2017 Ricardo Wurmus@*
+Copyright @copyright{} 2015, 2016, 2017, 2018 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017 Chris Marusich@*
 Copyright @copyright{} 2016, 2017 Efraim Flashner@*
@@ -123,6 +123,7 @@ Setting Up the Daemon
 
 * Build Environment Setup::     Preparing the isolated build environment.
 * Daemon Offload Setup::        Offloading builds to remote machines.
+* SELinux Support::             Using an SELinux policy for the daemon.
 
 Package Management
 
@@ -754,6 +755,7 @@ the daemon to download pre-built binaries.
 @menu
 * Build Environment Setup::     Preparing the isolated build environment.
 * Daemon Offload Setup::        Offloading builds to remote machines.
+* SELinux Support::             Using an SELinux policy for the daemon.
 @end menu
 
 @node Build Environment Setup
@@ -1080,6 +1082,92 @@ main node:
 # guix offload status
 @end example
 
+
+@node SELinux Support
+@subsection SELinux Support
+
+@cindex SELinux, daemon policy
+@cindex mandatory access control, SELinux
+@cindex security, guix-daemon
+Guix includes an SELinux policy file at @file{etc/guix-daemon.cil} that
+can be installed on a system where SELinux is enabled, in order to label
+Guix files and to specify the expected behavior of the daemon.  Since
+GuixSD does not provide an SELinux base policy, the daemon policy cannot
+be used on GuixSD.
+
+@subsubsection Installing the SELinux policy
+@cindex SELinux, policy installation
+To install the policy run this command as root:
+
+@example
+semodule -i etc/guix-daemon.cil
+@end example
+
+Then relabel the file system with @code{restorecon} or by a different
+mechanism provided by your system.
+
+Once the policy is installed, the file system has been relabeled, and
+the daemon has been restarted, it should be running in the
+@code{guix_daemon_t} context.  You can confirm this with the following
+command:
+
+@example
+ps -Zax | grep guix-daemon
+@end example
+
+Monitor the SELinux log files as you run a command like @code{guix build
+hello} to convince yourself that SELinux permits all necessary
+operations.
+
+@subsubsection Limitations
+@cindex SELinux, limitations
+
+This policy is not perfect.  Here is a list of limitations or quirks
+that should be considered when deploying the provided SELinux policy for
+the Guix daemon.
+
+@enumerate
+@item
+@code{guix_daemon_socket_t} isn’t actually used.  None of the socket
+operations involve contexts that have anything to do with
+@code{guix_daemon_socket_t}.  It doesn’t hurt to have this unused label,
+but it would be preferrable to define socket rules for only this label.
+
+@item
+@code{guix gc} cannot access arbitrary links to profiles.  By design,
+the file label of the destination of a symlink is independent of the
+file label of the link itself.  Although all profiles under
+$localstatedir are labelled, the links to these profiles inherit the
+label of the directory they are in.  For links in the user’s home
+directory this will be @code{user_home_t}.  But for links from the root
+user’s home directory, or @file{/tmp}, or the HTTP server’s working
+directory, etc, this won’t work.  @code{guix gc} would be prevented from
+reading and following these links.
+
+@item
+The daemon’s feature to listen for TCP connections might no longer work.
+This might require extra rules, because SELinux treats network sockets
+differently from files.
+
+@item
+Currently all files with a name matching the regular expression
+@code{/gnu/store/.+-(guix-.+|profile)/bin/guix-daemon} are assigned the
+label @code{guix_daemon_exec_t}; this means that @emph{any} file with
+that name in any profile would be permitted to run in the
+@code{guix_daemon_t} domain.  This is not ideal.  An attacker could
+build a package that provides this executable and convince a user to
+install and run it, which lifts it into the @code{guix_daemon_t} domain.
+At that point SELinux could not prevent it from accessing files that are
+allowed for processes in that domain.
+
+We could generate a much more restrictive policy at installation time,
+so that only the @emph{exact} file name of the currently installed
+@code{guix-daemon} executable would be labelled with
+@code{guix_daemon_exec_t}, instead of using a broad regular expression.
+The downside is that root would have to install or upgrade the policy at
+installation time whenever the Guix package that provides the
+effectively running @code{guix-daemon} executable is upgraded.
+@end enumerate
 
 @node Invoking guix-daemon
 @section Invoking @command{guix-daemon}
