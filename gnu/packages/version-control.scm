@@ -1755,8 +1755,8 @@ network protocols, and core version control algorithms.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/acaudwell/Gource/archive/"
-                    "gource-" version ".tar.gz"))
+                    "https://github.com/acaudwell/Gource/releases/download"
+                    "/gource-" version "/gource-" version ".tar.gz"))
               (sha256
                (base32
                 "1llqwdnfa1pff8bxk27qsqff1fcg0a9kfdib0rn7p28vl21n1cgj"))))
