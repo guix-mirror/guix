@@ -3875,7 +3875,7 @@ ISRCs and the MCN (=UPC/EAN) from disc.")
              version "/libmusicbrainz-" version ".tar.gz"))
        (sha256
         (base32
-         "0ikb9igyyk28jm34raxfzkw2qyn4nzzwsymdyprp7cmvi6g2ajb7"))     ))
+         "0ikb9igyyk28jm34raxfzkw2qyn4nzzwsymdyprp7cmvi6g2ajb7"))))
     (build-system cmake-build-system)
     (arguments `(#:phases
                  (modify-phases %standard-phases
