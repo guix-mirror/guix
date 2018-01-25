@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +24,8 @@
   #:use-module (guix download)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages multiprecision)
-  #:use-module (gnu packages ncurses))
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl))
 
 (define-public gnucobol
   (package
@@ -42,11 +43,26 @@
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
-                                              "/lib"))))
+                                              "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'place-cobol85-test-suite
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((newcob (assoc-ref inputs "newcob")))
+               (copy-file newcob "tests/cobol85/newcob.val.Z")))))
+       #:test-target "checkall"))
+    (native-inputs
+     `(("perl" ,perl)))
     (inputs
      `(("bdb" ,bdb)
        ("gmp" ,gmp)
-       ("ncurses" ,ncurses)))
+       ("ncurses" ,ncurses)
+       ("newcob" ,(origin
+                    (method url-fetch)
+                    (uri "http://www.itl.nist.gov/div897/ctg/suites/newcob.val.Z")
+                    (sha256
+                     (base32
+                      "1yb1plmv4firfnbb119r2vh1hay221w1ya34nyz0qwsxppfr56hy"))))))
     (build-system gnu-build-system)
     (home-page "https://savannah.gnu.org/projects/gnucobol/")
     (synopsis "A modern COBOL compiler")
