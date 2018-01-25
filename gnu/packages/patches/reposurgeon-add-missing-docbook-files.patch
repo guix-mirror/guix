@@ -1,0 +1,22 @@
+Author: Tobias Geerinckx-Rice <me@tobias.gr>
+Upstream issue: <https://gitlab.com/esr/reposurgeon/merge_requests/101>
+
+Two files required to build the documentation (including man pages) are
+not included in the latest reposurgeon release, breaking ‘make all’.
+
+Luckily, they are tiny:
+
+--- a/docbook-extra.xml	1970-01-01 01:00:00.000000000 +0100
++++ b/docbook-extra.xml	2018-01-25 00:17:18.236727017 +0100
+@@ -0,0 +1,5 @@
++<?xml version='1.0'?>
++<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
++<xsl:param name="variablelist.term.separator"></xsl:param>
++<xsl:param name="variablelist.term.break.after">1</xsl:param>
++</xsl:stylesheet>
+diff -Naur reposurgeon-3.43/nofooter.conf reposurgeon-3.43-b/nofooter.conf
+--- a/nofooter.conf	1970-01-01 01:00:00.000000000 +0100
++++ b/nofooter.conf	2018-01-25 00:23:15.384498847 +0100
+@@ -0,0 +1,2 @@
++[footer-text]
++ 
