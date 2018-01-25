@@ -2039,7 +2039,7 @@ with Python.")
     (version "2.5.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/fidelram/deepTools/"
+              (uri (string-append "https://github.com/deeptools/deepTools/"
                                   "archive/" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
@@ -2058,7 +2058,7 @@ with Python.")
      `(("python-mock" ,python-mock)   ;for tests
        ("python-nose" ,python-nose)   ;for tests
        ("python-pytz" ,python-pytz))) ;for tests
-    (home-page "https://github.com/fidelram/deepTools")
+    (home-page "https://github.com/deeptools/deepTools")
     (synopsis "Tools for normalizing and visualizing deep-sequencing data")
     (description
      "DeepTools addresses the challenge of handling the large amounts of data
