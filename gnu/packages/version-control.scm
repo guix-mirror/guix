@@ -1330,9 +1330,9 @@ any project with more than one developer, is one of Aegis's major functions.")
                         "reposurgeon-add-missing-docbook-files.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ;no test suite distributed
-       #:make-flags
-       (list (string-append "target=" (assoc-ref %outputs "out")))
+     `(#:make-flags
+       (list "ECHO=echo"
+             (string-append "target=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-inputs
@@ -1341,8 +1341,10 @@ any project with more than one developer, is one of Aegis's major functions.")
                (substitute* "reposurgeon"
                  (("/usr/share/zoneinfo")
                   (string-append tzdata "/share/zoneinfo")))
+               (substitute* "test/svn-to-svn"
+                 (("/bin/echo") "echo"))
                #t)))
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (add-before 'build 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* (find-files "." "\\.xml$")
@@ -1350,6 +1352,11 @@ any project with more than one developer, is one of Aegis's major functions.")
                 (string-append (assoc-ref inputs "docbook-xml")
                                "/xml/dtd/docbook/docbookx.dtd")))
              #t))
+         (add-before 'check 'set-up-test-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((tzdata (assoc-ref inputs "tzdata")))
+               (setenv "TZDIR" (string-append tzdata "/share/zoneinfo"))
+               #t)))
          (add-after 'install 'install-emacs-data
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "reposurgeon-mode.el"
@@ -1359,11 +1366,18 @@ any project with more than one developer, is one of Aegis's major functions.")
      `(("python" ,python-wrapper)
        ("tzdata" ,tzdata)))
     (native-inputs
-     `(("asciidoc" ,asciidoc)
+     `( ;; For building documentation.
+       ("asciidoc" ,asciidoc)
        ("docbook-xml" ,docbook-xml)
        ("docbook-xsl" ,docbook-xsl)
        ("libxml2" ,libxml2)
-       ("xmlto" ,xmlto)))
+       ("xmlto" ,xmlto)
+
+       ;; For tests.
+       ("cvs" ,cvs)
+       ("git" ,git)
+       ("mercurial" ,mercurial)
+       ("subversion" ,subversion)))
     (home-page "http://www.catb.org/~esr/reposurgeon/")
     (synopsis "Edit version-control repository history")
     (description "Reposurgeon enables risky operations that version-control
