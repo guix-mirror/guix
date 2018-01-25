@@ -283,6 +283,14 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("bc" ,bc)
        ("openssl" ,openssl)
        ("kmod" ,kmod)
+       ;; On x86, build with GCC-7 for full retpoline support.
+       ;; FIXME: Remove this when our default compiler has retpoline support.
+       ,@(match (system->linux-architecture
+                 (or (%current-target-system) (%current-system)))
+           ((or "x86_64" "i386")
+            `(("gcc" ,gcc-7)))
+           (_
+            '()))
        ,@(match (and configuration-file
                      (configuration-file
                       (system->linux-architecture
