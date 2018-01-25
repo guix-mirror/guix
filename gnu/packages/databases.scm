@@ -112,7 +112,7 @@
     (version "1.1.6")
     (source (origin
       (method url-fetch)
-      (uri (string-append "https://github.com/garlik/4store/archive/v"
+      (uri (string-append "https://github.com/4store/4store/archive/v"
                           version ".tar.gz"))
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
@@ -145,7 +145,7 @@
            (lambda _
              (zero? (system* "sh" "autogen.sh")))))))
     ;; http://www.4store.org has been down for a while now.
-    (home-page "https://github.com/garlik/4store")
+    (home-page "https://github.com/4store/4store")
     (synopsis "Clustered RDF storage and query engine")
     (description "4store is a RDF/SPARQL store written in C, supporting
 either single machines or networked clusters.")
