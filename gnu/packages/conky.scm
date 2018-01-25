@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,15 +25,16 @@
   #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg))
 
 (define-public conky
   (package
     (name "conky")
-    (version "1.10.6")
+    (version "1.10.7")
     (source
      (origin
        (method url-fetch)
@@ -40,15 +42,12 @@
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1jk0my7z45vz9vd8958d27nkk4kvr53k7wyf6cz2x9xjc0lri02c"))))
+        (base32 "1b06rigfjxnaidkabkyf8mdh9k3jm11nj547lb5liwi2ql4rdfr3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
        #:configure-flags
-       '("-DRELEASE=true"
-         ;; XXX: it checks ncurses with pkg-config.
-         ;; TODO: add 'ncurses.pc' to the ncurses package.
-         "-DBUILD_NCURSES=false")
+       (list "-DRELEASE=true")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-freetype-to-search-path
@@ -67,12 +66,14 @@
              #t)))))
     (inputs
      `(("freetype" ,freetype)
-       ("ncurses" ,ncurses)
+       ("imlib2" ,imlib2)
        ("libx11" ,libx11)
        ("libxdamage" ,libxdamage)
+       ("libxext" ,libxext)
        ("libxft" ,libxft)
        ("libxinerama" ,libxinerama)
-       ("lua" ,lua)))
+       ("lua" ,lua)
+       ("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/brndnmtthws/conky")
