@@ -4157,7 +4157,7 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
@@ -4165,7 +4165,7 @@ re-use code and to avoid re-inventing the wheel.")
                             "libnftnl-" version ".tar.bz2"))
         (sha256
          (base32
-          "0f10cfiyl4c0f8k3brxfrw28x7a6qvrakaslg4jgqncwxycxggg6"))))
+          "0d9nkdbdck8sg6msysqyv3m9kjr9sjif5amf26dfa0g3mqjdihgy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
