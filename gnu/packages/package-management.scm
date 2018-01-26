@@ -61,6 +61,7 @@
   #:use-module (gnu packages xml)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix gexp)
@@ -811,21 +812,29 @@ on top of GNU Guix.")
 (define-public gcab
   (package
     (name "gcab")
-    (version "0.7")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1vxdsiky3492zlyrym02sdwf09y19rl2z5h5iin7qm0wizw5wvm1"))))
-    (build-system gnu-build-system)
+                "1ji8j8pnxqaycbp9ydi2zq7gcr02c2vw4qnc198i6jwy9zkh2x19"))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     `(("glib:bin" ,glib "bin")         ; for glib-mkenums
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (inputs
      `(("glib" ,glib)
        ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags
+       ;; XXX This ‘documentation’ is for developers, and fails informatively:
+       ;; Error in gtkdoc helper script: 'gtkdoc-mkhtml' failed with status 5
+       (list "-Ddocs=false"
+             "-Dintrospection=false")))
     (home-page "https://wiki.gnome.org/msitools") ; no dedicated home page
     (synopsis "Microsoft Cabinet file manipulation library")
     (description
