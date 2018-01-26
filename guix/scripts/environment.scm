@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -160,6 +161,9 @@ COMMAND or an interactive shell in that environment.\n"))
   (display (G_ "
   -N, --network          allow containers to access the network"))
   (display (G_ "
+  -P, --link-profile     link environment profile to ~/.guix-profile within
+                         an isolated container"))
+  (display (G_ "
       --share=SPEC       for containers, share writable host file system
                          according to SPEC"))
   (display (G_ "
@@ -243,6 +247,9 @@ COMMAND or an interactive shell in that environment.\n"))
          (option '(#\N "network") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'network? #t result)))
+         (option '(#\P "link-profile") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'link-profile? #t result)))
          (option '("share") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'file-system-mapping
@@ -404,18 +411,20 @@ environment variables are cleared before setting the new ones."
            ((_ . status) status)))))
 
 (define* (launch-environment/container #:key command bash user-mappings
-                                       profile paths network?)
+                                       profile paths link-profile? network?)
   "Run COMMAND within a container that features the software in PROFILE.
 Environment variables are set according to PATHS, a list of native search
 paths.  The global shell is BASH, a file name for a GNU Bash binary in the
 store.  When NETWORK?, access to the host system network is permitted.
 USER-MAPPINGS, a list of file system mappings, contains the user-specified
-host file systems to mount inside the container."
+host file systems to mount inside the container.  LINK-PROFILE? creates a
+symbolic link from ~/.guix-profile to the environment profile."
   (mlet %store-monad ((reqs (inputs->requisites
                              (list (direct-store-path bash) profile))))
     (return
-     (let* ((cwd (getcwd))
-            (passwd (getpwuid (getuid)))
+     (let* ((cwd      (getcwd))
+            (passwd   (getpwuid (getuid)))
+            (home-dir (passwd:dir passwd))
             ;; Bind-mount all requisite store items, user-specified mappings,
             ;; /bin/sh, the current working directory, and possibly networking
             ;; configuration files within the container.
@@ -460,8 +469,13 @@ host file systems to mount inside the container."
 
             ;; Create a dummy home directory under the same name as on the
             ;; host.
-            (mkdir-p (passwd:dir passwd))
-            (setenv "HOME" (passwd:dir passwd))
+            (mkdir-p home-dir)
+            (setenv "HOME" home-dir)
+
+            ;; If requested, link $GUIX_ENVIRONMENT to $HOME/.guix-profile;
+            ;; this allows programs expecting that path to continue working as
+            ;; expected within a container.
+            (when link-profile? (link-environment profile home-dir))
 
             ;; Create a dummy /etc/passwd to satisfy applications that demand
             ;; to read it, such as 'git clone' over SSH, a valid use-case when
@@ -490,6 +504,18 @@ host file systems to mount inside the container."
           #:namespaces (if network?
                            (delq 'net %namespaces) ; share host network
                            %namespaces)))))))
+
+(define (link-environment profile home-dir)
+  "Create a symbolic link from HOME-DIR/.guix-profile to PROFILE."
+  (let ((profile-dir (string-append home-dir "/.guix-profile")))
+    (catch 'system-error
+      (lambda ()
+        (symlink profile profile-dir))
+      (lambda args
+        (if (= EEXIST (system-error-errno args))
+            (leave (G_ "cannot link profile: '~a' already exists within container~%")
+                   profile-dir)
+            (apply throw args))))))
 
 (define (environment-bash container? bootstrap? system)
   "Return a monadic value in the store monad for the version of GNU Bash
@@ -564,6 +590,7 @@ message if any test fails."
     (let* ((opts       (parse-args args))
            (pure?      (assoc-ref opts 'pure))
            (container? (assoc-ref opts 'container?))
+           (link-prof? (assoc-ref opts 'link-profile?))
            (network?   (assoc-ref opts 'network?))
            (bootstrap? (assoc-ref opts 'bootstrap?))
            (system     (assoc-ref opts 'system))
@@ -596,6 +623,9 @@ message if any test fails."
                         eq?)))
 
       (when container? (assert-container-features))
+
+      (when (and (not container?) link-prof?)
+        (leave (G_ "'--link-profile' cannot be used without '--container'~%")))
 
       (with-store store
         (set-build-options-from-command-line store opts)
@@ -646,6 +676,7 @@ message if any test fails."
                                                   #:user-mappings mappings
                                                   #:profile profile
                                                   #:paths paths
+                                                  #:link-profile? link-prof?
                                                   #:network? network?)))
                  (else
                   (return

@@ -46,7 +46,8 @@ Copyright @copyright{} 2017 Andy Wingo@*
 Copyright @copyright{} 2017, 2018 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
-Copyright @copyright{} 2018 Oleg Pykhalov
+Copyright @copyright{} 2018 Oleg Pykhalov@*
+Copyright @copyright{} 2018 Mike Gerwitz
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1572,7 +1573,7 @@ To be able to use such full names for the TrueType fonts installed in
 your Guix profile, you need to extend the font path of the X server:
 
 @example
-xset +fp ~/.guix-profile/share/fonts/truetype
+xset +fp `readlink -f ~/.guix-profile/share/fonts/truetype`
 @end example
 
 @cindex @code{xlsfonts}
@@ -7295,6 +7296,22 @@ has root privileges in the context of the container.
 For containers, share the network namespace with the host system.
 Containers created without this flag only have access to the loopback
 device.
+
+@item --link-profile
+@itemx -P
+For containers, link the environment profile to
+@file{~/.guix-profile} within the container.  This is equivalent to
+running the command @command{ln -s $GUIX_ENVIRONMENT ~/.guix-profile}
+within the container.  Linking will fail and abort the environment if
+the directory already exists, which will certainly be the case if
+@command{guix environment} was invoked in the user's home directory.
+
+Certain packages are configured to look in
+@code{~/.guix-profile} for configuration files and data;@footnote{For
+example, the @code{fontconfig} package inspects
+@file{~/.guix-profile/share/fonts} for additional fonts.}
+@code{--link-profile} allows these programs to behave as expected within
+the environment.
 
 @item --expose=@var{source}[=@var{target}]
 For containers, expose the file system @var{source} from the host system
