@@ -510,15 +510,15 @@ SMPTE 314M.")
 (define-public libmatroska
   (package
     (name "libmatroska")
-    (version "1.4.7")
+    (version "1.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/"
-                           name "/" name "-" version ".tar.bz2"))
+                           name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1yi5cnv13nhl27xyqayd5l3sf0j3swfj3apzibv71yg9pariwi26"))))
+         "14n9sw974prr3yp4yjb7aadi6x2yz5a0hjw8fs3qigy5shh2piyq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
