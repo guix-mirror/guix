@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,14 +33,14 @@
 (define-public ncdc
   (package
     (name "ncdc")
-    (version "1.19")
+    (version "1.20")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://dev.yorhel.nl/download/ncdc-" version
                            ".tar.gz"))
        (sha256 (base32
-                "1wgvqwfxq9kc729h2r528n55821w87sfbm4h21mr6pvkpfw30hf2"))))
+                "0ccn7dqbqpqsbglqyalz32c20rjvf1pw0zr88jyvd2b2vxbqi6ca"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,bzip2)
