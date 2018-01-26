@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -56,6 +56,7 @@
   #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -79,6 +80,7 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages less)
   #:use-module (gnu packages lisp)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages gnome)
@@ -95,6 +97,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
@@ -1340,7 +1343,11 @@ can solve two kinds of problems:
        ("zlib" ,zlib)
        ("curl" ,curl)
        ("texinfo" ,texinfo)
-       ("graphicsmagick" ,graphicsmagick)))
+       ("graphicsmagick" ,graphicsmagick)
+       ("suitesparse" ,suitesparse)
+       ("libsndfile" ,libsndfile)
+       ("portaudio" ,portaudio)
+       ("alsa-lib" ,alsa-lib)))
     (native-inputs
      `(("lzip" ,lzip)
        ("gfortran" ,gfortran)
