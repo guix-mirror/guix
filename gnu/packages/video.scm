@@ -2007,7 +2007,7 @@ making @dfn{screencasts}.")
 (define-public simplescreenrecorder
   (package
     (name "simplescreenrecorder")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
      (origin
        (method url-fetch)
@@ -2016,8 +2016,8 @@ making @dfn{screencasts}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0v8w35n8w772s08w7k0icynqdsdakbrcanbgx6j847bfqfsg21gg"))))
-    (build-system gnu-build-system)
+         "1gnf9wbiq2fcbqcn1a5nfmp8r0nxrrlgh2wly2mfkkwymynhx0pk"))))
+    (build-system cmake-build-system)
     ;; Although libx11, libxfixes, libxext are listed as build dependencies in
     ;; README.md, the program builds and functions properly without them.
     ;; As a result, they are omitted. Please add them back if problems appear.
@@ -2028,8 +2028,12 @@ making @dfn{screencasts}.")
        ("jack" ,jack-1)
        ("libxi" ,libxi)
        ("pulseaudio" ,pulseaudio)
-       ("qt" ,qt-4))) ; README.md: using Qt 5 causes some stability issues
+       ("qt" ,qt)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list "-DWITH_QT5=TRUE")
+       #:tests? #f))                    ; no test suite
     ;; Using HTTPS causes part of the page to be displayed improperly.
     (home-page "http://www.maartenbaert.be/simplescreenrecorder/")
     (synopsis "Screen recorder")
