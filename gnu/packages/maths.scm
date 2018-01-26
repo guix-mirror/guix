@@ -20,7 +20,7 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -2812,7 +2812,7 @@ environments.")
 (define-public openspecfun
   (package
     (name "openspecfun")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
@@ -2821,14 +2821,15 @@ environments.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1y5b2h6f2k72536kym3vzy3li3bhpd23x463g7hdmjdi3cncavz1"))))
+         "1rs1bv8jq751fv9vq79890wqf9xlbjc7lvz3ighzyfczbyjcf18m"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f  ;no "check" target
+     '(#:tests? #f                      ; no "check" target
        #:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       ;; no configure script
-       #:phases (modify-phases %standard-phases (delete 'configure))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
     (inputs
      `(("fortran" ,gfortran)))
     (home-page "https://github.com/JuliaLang/openspecfun")
