@@ -2513,10 +2513,10 @@ and ITU-T H.222.0.")
   (package
     (name "ffms2")
     (version "2.23")
-    (home-page "https://github.com/FFMS/ffms2/")
+    (home-page "https://github.com/FFMS/ffms2")
     (source (origin
               (method url-fetch)
-              (uri (string-append home-page "archive/" version ".tar.gz"))
+              (uri (string-append home-page "/archive/" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
