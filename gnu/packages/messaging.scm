@@ -483,7 +483,7 @@ compromised.")
        ("zlib" ,zlib)
        ("icu4c" ,icu4c)
        ("cyrus-sasl" ,cyrus-sasl)))
-    (home-page "http://znc.in")
+    (home-page "https://znc.in")
     (synopsis "IRC network bouncer")
     (description "ZNC is an IRC network bouncer or BNC.  It can detach the
 client from the actual IRC server, and also from selected channels.  Multiple
