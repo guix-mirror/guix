@@ -51,7 +51,7 @@
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://dev.yorhel.nl/ncdc")
+    (home-page "https://dev.yorhel.nl/ncdc")
     (synopsis
      "Lightweight direct connect client with a friendly ncurses interface")
     (description
