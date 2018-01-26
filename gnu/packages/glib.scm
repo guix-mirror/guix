@@ -719,7 +719,7 @@ programming langauage.  It also contains the utility
 (define-public appstream-glib
   (package
     (name "appstream-glib")
-    (version "0.7.4")
+    (version "0.7.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://people.freedesktop.org/~hughsient/"
@@ -727,7 +727,7 @@ programming langauage.  It also contains the utility
                                   "appstream-glib-" version ".tar.xz"))
               (sha256
                (base32
-                "09f8lq8nkr3gaws7fc3pzyz12lhz771l1p7lv8ni8z1gi470r7d0"))))
+                "0ps80cbqnf3q86rvz3ajqjssdgkjc9kmynqf0wxqfir7ayc9y9ag"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -746,10 +746,10 @@ programming langauage.  It also contains the utility
        ("util-linux" ,util-linux)))     ; for libuuid
     (arguments
      `(#:configure-flags
-       (list "-Denable-dep11=false"
-             "-Denable-introspection=false" ; avoid g-ir-scanner dependency
-             "-Denable-rpm=false"
-             "-Denable-stemmer=false")
+       (list "-Ddep11=false"
+             "-Dintrospection=false"    ; avoid g-ir-scanner dependency
+             "-Drpm=false"
+             "-Dstemmer=false")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-tests
