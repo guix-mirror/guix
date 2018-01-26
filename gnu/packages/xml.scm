@@ -960,7 +960,7 @@ XSL-T processor.  It also performs any necessary post-processing.")
        ("libltdl" ,libltdl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.libexpat.org/")
+    (home-page "https://www.aleksey.com/xmlsec/")
     (synopsis "XML Security Library")
     (description
      "The XML Security Library is a C library based on Libxml2.  It
