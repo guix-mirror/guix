@@ -164,6 +164,10 @@ COMMAND or an interactive shell in that environment.\n"))
   -P, --link-profile     link environment profile to ~/.guix-profile within
                          an isolated container"))
   (display (G_ "
+  -u, --user=USER        instead of copying the name and home of the current
+                         user into an isolated container, use the name USER
+                         with home directory /home/USER"))
+  (display (G_ "
       --share=SPEC       for containers, share writable host file system
                          according to SPEC"))
   (display (G_ "
@@ -250,6 +254,10 @@ COMMAND or an interactive shell in that environment.\n"))
          (option '(#\P "link-profile") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'link-profile? #t result)))
+         (option '(#\u "user") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'user arg
+                               (alist-delete 'user result eq?))))
          (option '("share") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'file-system-mapping
@@ -410,43 +418,50 @@ environment variables are cleared before setting the new ones."
     (pid (match (waitpid pid)
            ((_ . status) status)))))
 
-(define* (launch-environment/container #:key command bash user-mappings
+(define* (launch-environment/container #:key command bash user user-mappings
                                        profile paths link-profile? network?)
   "Run COMMAND within a container that features the software in PROFILE.
 Environment variables are set according to PATHS, a list of native search
 paths.  The global shell is BASH, a file name for a GNU Bash binary in the
 store.  When NETWORK?, access to the host system network is permitted.
 USER-MAPPINGS, a list of file system mappings, contains the user-specified
-host file systems to mount inside the container.  LINK-PROFILE? creates a
-symbolic link from ~/.guix-profile to the environment profile."
+host file systems to mount inside the container.  If USER is not #f, each
+target of USER-MAPPINGS will be re-written relative to '/home/USER', and USER
+will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
+~/.guix-profile to the environment profile."
   (mlet %store-monad ((reqs (inputs->requisites
                              (list (direct-store-path bash) profile))))
     (return
      (let* ((cwd      (getcwd))
-            (passwd   (getpwuid (getuid)))
+            (home     (getenv "HOME"))
+            (passwd   (mock-passwd (getpwuid (getuid))
+                                   user
+                                   bash))
             (home-dir (passwd:dir passwd))
             ;; Bind-mount all requisite store items, user-specified mappings,
             ;; /bin/sh, the current working directory, and possibly networking
             ;; configuration files within the container.
             (mappings
-             (append user-mappings
-                     ;; Current working directory.
-                     (list (file-system-mapping
-                            (source cwd)
-                            (target cwd)
-                            (writable? #t)))
-                     ;; When in Rome, do as Nix build.cc does: Automagically
-                     ;; map common network configuration files.
-                     (if network?
-                         %network-file-mappings
-                         '())
-                     ;; Mappings for the union closure of all inputs.
-                     (map (lambda (dir)
-                            (file-system-mapping
-                             (source dir)
-                             (target dir)
-                             (writable? #f)))
-                          reqs)))
+             (override-user-mappings
+              user home
+              (append user-mappings
+                      ;; Current working directory.
+                      (list (file-system-mapping
+                             (source cwd)
+                             (target cwd)
+                             (writable? #t)))
+                      ;; When in Rome, do as Nix build.cc does: Automagically
+                      ;; map common network configuration files.
+                      (if network?
+                          %network-file-mappings
+                          '())
+                      ;; Mappings for the union closure of all inputs.
+                      (map (lambda (dir)
+                             (file-system-mapping
+                              (source dir)
+                              (target dir)
+                              (writable? #f)))
+                           reqs))))
             (file-systems (append %container-file-systems
                                   (map file-system-mapping->bind-mount
                                        mappings))))
@@ -467,8 +482,7 @@ symbolic link from ~/.guix-profile to the environment profile."
                       ;; The same variables as in Nix's 'build.cc'.
                       '("TMPDIR" "TEMPDIR" "TMP" "TEMP"))
 
-            ;; Create a dummy home directory under the same name as on the
-            ;; host.
+            ;; Create a dummy home directory.
             (mkdir-p home-dir)
             (setenv "HOME" home-dir)
 
@@ -495,7 +509,7 @@ symbolic link from ~/.guix-profile to the environment profile."
 
             ;; For convenience, start in the user's current working
             ;; directory rather than the root directory.
-            (chdir cwd)
+            (chdir (override-user-dir user home cwd))
 
             (primitive-exit/status
              ;; A container's environment is already purified, so no need to
@@ -504,6 +518,60 @@ symbolic link from ~/.guix-profile to the environment profile."
           #:namespaces (if network?
                            (delq 'net %namespaces) ; share host network
                            %namespaces)))))))
+
+(define (mock-passwd passwd user-override shell)
+  "Generate mock information for '/etc/passwd'.  If USER-OVERRIDE is not '#f',
+it is expected to be a string representing the mock username; it will produce
+a user of that name, with a home directory of '/home/USER-OVERRIDE', and no
+GECOS field.  If USER-OVERRIDE is '#f', data will be inherited from PASSWD.
+In either case, the shadow password and UID/GID are cleared, since the user
+runs as root within the container.  SHELL will always be used in place of the
+shell in PASSWD.
+
+The resulting vector is suitable for use with Guile's POSIX user procedures.
+
+See passwd(5) for more information each of the fields."
+  (if user-override
+      (vector
+       user-override
+        "x" "0" "0"  ;; no shadow, user is now root
+        ""           ;; no personal information
+        (user-override-home user-override)
+        shell)
+      (vector
+       (passwd:name passwd)
+        "x" "0" "0"  ;; no shadow, user is now root
+        (passwd:gecos passwd)
+        (passwd:dir passwd)
+        shell)))
+
+(define (user-override-home user)
+  "Return home directory for override user USER."
+  (string-append "/home/" user))
+
+(define (override-user-mappings user home mappings)
+  "If a username USER is provided, rewrite each HOME prefix in file system
+mappings MAPPINGS to a home directory determined by 'override-user-dir';
+otherwise, return MAPPINGS."
+  (if (not user)
+      mappings
+      (map (lambda (mapping)
+             (let ((target (file-system-mapping-target mapping)))
+               (if (string-prefix? home target)
+                   (file-system-mapping
+                    (source    (file-system-mapping-source mapping))
+                    (target    (override-user-dir user home target))
+                    (writable? (file-system-mapping-writable? mapping)))
+                   mapping)))
+           mappings)))
+
+(define (override-user-dir user home dir)
+  "If username USER is provided, overwrite string prefix HOME in DIR with a
+directory determined by 'user-override-home'; otherwise, return DIR."
+  (if (and user (string-prefix? home dir))
+      (string-append (user-override-home user)
+                     (substring dir (string-length home)))
+      dir))
 
 (define (link-environment profile home-dir)
   "Create a symbolic link from HOME-DIR/.guix-profile to PROFILE."
@@ -592,6 +660,7 @@ message if any test fails."
            (container? (assoc-ref opts 'container?))
            (link-prof? (assoc-ref opts 'link-profile?))
            (network?   (assoc-ref opts 'network?))
+           (user       (assoc-ref opts 'user))
            (bootstrap? (assoc-ref opts 'bootstrap?))
            (system     (assoc-ref opts 'system))
            (command    (or (assoc-ref opts 'exec)
@@ -626,6 +695,8 @@ message if any test fails."
 
       (when (and (not container?) link-prof?)
         (leave (G_ "'--link-profile' cannot be used without '--container'~%")))
+      (when (and (not container?) user)
+        (leave (G_ "'--user' cannot be used without '--container'~%")))
 
       (with-store store
         (set-build-options-from-command-line store opts)
@@ -673,6 +744,7 @@ message if any test fails."
                                             "/bin/sh"))))
                     (launch-environment/container #:command command
                                                   #:bash bash-binary
+                                                  #:user user
                                                   #:user-mappings mappings
                                                   #:profile profile
                                                   #:paths paths

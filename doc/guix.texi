@@ -7286,10 +7286,11 @@ Attempt to build for @var{system}---e.g., @code{i686-linux}.
 @cindex container
 Run @var{command} within an isolated container.  The current working
 directory outside the container is mapped inside the container.
-Additionally, a dummy home directory is created that matches the current
-user's home directory, and @file{/etc/passwd} is configured accordingly.
-The spawned process runs as the current user outside the container, but
-has root privileges in the context of the container.
+Additionally, unless overridden with @code{--user}, a dummy home
+directory is created that matches the current user's home directory, and
+@file{/etc/passwd} is configured accordingly.  The spawned process runs
+as the current user outside the container, but has root privileges in
+the context of the container.
 
 @item --network
 @itemx -N
@@ -7312,6 +7313,31 @@ example, the @code{fontconfig} package inspects
 @file{~/.guix-profile/share/fonts} for additional fonts.}
 @code{--link-profile} allows these programs to behave as expected within
 the environment.
+
+@item --user=@var{user}
+@itemx -u @var{user}
+For containers, use the username @var{user} in place of the current
+user.  The generated @file{/etc/passwd} entry within the container will
+contain the name @var{user}; the home directory will be
+@file{/home/USER}; and no user GECOS data will be copied.  @var{user}
+need not exist on the system.
+
+Additionally, any shared or exposed path (see @code{--share} and
+@code{--expose} respectively) whose target is within the current user's
+home directory will be remapped relative to @file{/home/USER}; this
+includes the automatic mapping of the current working directory.
+
+@example
+# will expose paths as /home/foo/wd, /home/foo/test, and /home/foo/target
+cd $HOME/wd
+guix environment --container --user=foo \
+     --expose=$HOME/test \
+     --expose=/tmp/target=$HOME/target
+@end example
+
+While this will limit the leaking of user identity through home paths
+and each of the user fields, this is only one useful component of a
+broader privacy/anonymity solution---not one in and of itself.
 
 @item --expose=@var{source}[=@var{target}]
 For containers, expose the file system @var{source} from the host system

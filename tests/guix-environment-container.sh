@@ -109,6 +109,17 @@ rm $tmpdir/mounts
              -- guile -c "$linktest"
 )
 
+# Test that user can be mocked.
+usertest='(exit (and (string=? (getenv "HOME") "/home/foognu")
+                     (string=? (passwd:name (getpwuid 0)) "foognu")
+                     (file-exists? "/home/foognu/umock")))'
+touch "$tmpdir/umock"
+HOME="$tmpdir" guix environment --bootstrap --container --user=foognu \
+     --ad-hoc guile-bootstrap --pure \
+     --share="$tmpdir/umock" \
+     -- guile -c "$usertest"
+
+
 # Check the exit code.
 
 abnormal_exit_code="
