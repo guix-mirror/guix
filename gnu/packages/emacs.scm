@@ -4854,6 +4854,32 @@ To make YASnippet aware of these snippets, add the above directory to
 @code{yas-snippet-dirs}.")
       (license license:expat))))
 
+(define-public emacs-helm-c-yasnippet
+  (let ((commit "65ca732b510bfc31636708aebcfe4d2d845b59b0")
+        (revision "1"))
+    (package
+      (name "emacs-helm-c-yasnippet")
+      (version (string-append "0.6.7" "-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-jp/helm-c-yasnippet")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1cbafjqlzxbg19xfdqsinsh7afq58gkf44rsg1qxfgm8g6zhr7f8"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-yasnippet" ,emacs-yasnippet)))
+      (home-page "https://github.com/emacs-jp/helm-c-yasnippet")
+      (synopsis "Helm integration for Yasnippet")
+      (description "This Emacs library provides Helm interface for
+Yasnippet.")
+      (license license:gpl2+))))
+
 (define-public emacs-memoize
   (package
    (name "emacs-memoize")
