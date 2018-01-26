@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 André <eu@euandre.org>
@@ -1318,22 +1318,33 @@ any project with more than one developer, is one of Aegis's major functions.")
 (define-public reposurgeon
   (package
     (name "reposurgeon")
-    (version "3.37")
+    (version "3.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/" name "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "14asjg4xy3mhh5z0r3k7c1wv9y803j2zfq32g5q5m95sf7yzygan"))))
+                "1af0z14wcm4bk5a9ysinbwq2fp3lf5f7i8mvwh7286hr3fnagcaz"))
+              (patches (search-patches
+                        "reposurgeon-add-missing-docbook-files.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ;no test suite distributed
-       #:make-flags
-       (list (string-append "target=" (assoc-ref %outputs "out")))
+     `(#:make-flags
+       (list "ECHO=echo"
+             (string-append "target=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (add-after 'unpack 'patch-inputs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((tzdata (assoc-ref inputs "tzdata")))
+               (substitute* "reposurgeon"
+                 (("/usr/share/zoneinfo")
+                  (string-append tzdata "/share/zoneinfo")))
+               (substitute* "test/svn-to-svn"
+                 (("/bin/echo") "echo"))
+               #t)))
+         (delete 'configure)            ; no configure script
          (add-before 'build 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* (find-files "." "\\.xml$")
@@ -1341,19 +1352,32 @@ any project with more than one developer, is one of Aegis's major functions.")
                 (string-append (assoc-ref inputs "docbook-xml")
                                "/xml/dtd/docbook/docbookx.dtd")))
              #t))
+         (add-before 'check 'set-up-test-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((tzdata (assoc-ref inputs "tzdata")))
+               (setenv "TZDIR" (string-append tzdata "/share/zoneinfo"))
+               #t)))
          (add-after 'install 'install-emacs-data
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "reposurgeon-mode.el"
                            (string-append (assoc-ref outputs "out")
                                           "/share/emacs/site-lisp")))))))
     (inputs
-     `(("python" ,python-wrapper)))
+     `(("python" ,python-wrapper)
+       ("tzdata" ,tzdata)))
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("docbook-xml" ,docbook-xml-4.1.2)
+     `( ;; For building documentation.
+       ("asciidoc" ,asciidoc)
+       ("docbook-xml" ,docbook-xml)
        ("docbook-xsl" ,docbook-xsl)
        ("libxml2" ,libxml2)
-       ("xmlto" ,xmlto)))
+       ("xmlto" ,xmlto)
+
+       ;; For tests.
+       ("cvs" ,cvs)
+       ("git" ,git)
+       ("mercurial" ,mercurial)
+       ("subversion" ,subversion)))
     (home-page "http://www.catb.org/~esr/reposurgeon/")
     (synopsis "Edit version-control repository history")
     (description "Reposurgeon enables risky operations that version-control
@@ -1753,8 +1777,8 @@ network protocols, and core version control algorithms.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/acaudwell/Gource/archive/"
-                    "gource-" version ".tar.gz"))
+                    "https://github.com/acaudwell/Gource/releases/download"
+                    "/gource-" version "/gource-" version ".tar.gz"))
               (sha256
                (base32
                 "1llqwdnfa1pff8bxk27qsqff1fcg0a9kfdib0rn7p28vl21n1cgj"))))

@@ -809,8 +809,8 @@ all of them.  Currently supported window managers include:
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/engla/keybinder/releases/"
-                           "download/v" version "/keybinder-"
+       (uri (string-append "https://github.com/kupferlauncher/keybinder"
+                           "/releases/download/v" version "/keybinder-"
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
@@ -828,7 +828,7 @@ all of them.  Currently supported window managers include:
     (description
      "Keybinder is a library for registering global keyboard shortcuts.
 Keybinder works with GTK-based applications using the X Window System.")
-    (home-page "https://github.com/engla/keybinder")
+    (home-page "https://github.com/kupferlauncher/keybinder")
     (license license:gpl2+)))
 
 (define-public spectrwm

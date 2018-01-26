@@ -6466,6 +6466,143 @@ proficiency is an advantage, since you can transform your numeric range with
 an elisp expression.")
     (license license:gpl3+)))
 
+(define-public emacs-emojify
+  (package
+    (name "emacs-emojify")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/iqbalansari/emacs-emojify/"
+                           "releases/download/v" version "/emojify-"
+                           version ".tar"))
+       (sha256
+        (base32
+         "0k84v2d2bkiwcky9fi1yyprgkj46g7wh6pyl9gzmcd7sqv051d5n"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-data
+           (lambda* (#:key  outputs #:allow-other-keys)
+             (copy-recursively "data"
+                               (string-append (assoc-ref outputs "out")
+                                              "/share/emacs/site-lisp/guix.d/"
+                                              "emojify-" ,version "/data"))
+             #t)))))
+    (propagated-inputs
+     `(("emacs-ht" ,emacs-ht)))
+    (home-page "https://github.com/iqbalansari/emacs-emojify")
+    (synopsis "Display emojis in Emacs")
+    (description "This package displays emojis in Emacs similar to how Github,
+Slack, and other websites do.  It can display plain ASCII like @code{:)} as
+well as Github-style emojis like @code{:smile:}.  It provides a minor mode
+@code{emojify-mode} to enable the display of emojis in a buffer.")
+    (license license:gpl3+)))
+
+(define-public emacs-websocket
+  (package
+    (name "emacs-websocket")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/websocket-"
+                           version ".tar"))
+       (sha256
+        (base32
+         "0dcxmnnm8z7cvsc7nkb822a1g6w03klp7cijjnfq0pz84p3w9cd9"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/websocket.html")
+    (synopsis "Emacs WebSocket client and server")
+    (description "This is an Elisp library for WebSocket clients to talk to
+WebSocket servers, and for WebSocket servers to accept connections from
+WebSocket clients.  This library is designed to be used by other library
+writers, to write applications that use WebSockets, and is not useful by
+itself.")
+    (license license:gpl3+)))
+
+(define-public emacs-oauth2
+  (package
+    (name "emacs-oauth2")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/oauth2-"
+                           version ".el"))
+       (sha256
+        (base32
+         "0ydkc9jazsnbbvfhd47mql52y7k06n3z7r0naqxkwb99j9blqsmp"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/oauth2.html")
+    (synopsis "OAuth 2.0 authorization protocol implementation")
+    (description
+     "This package provides an Elisp implementation of the OAuth 2.0 draft.
+The main entry point is @code{oauth2-auth-and-store} which will return a token
+structure.  This token structure can be then used with
+@code{oauth2-url-retrieve-synchronously} or @code{oauth2-url-retrieve} to
+retrieve any data that need OAuth authentication to be accessed.  If the token
+needs to be refreshed, the code handles it automatically and stores the new
+value of the access token.")
+    (license license:gpl3+)))
+
+(define-public emacs-circe
+  (package
+    (name "emacs-circe")
+    (version "2.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jorgenschaefer/circe.git")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "19h3983zy3f15cgs86irvbdzz55qyjm48qd7gjlzcxplr7vnnh0j"))))
+    (build-system emacs-build-system)
+    ;; In order to securely connect to an IRC server using TLS, Circe requires
+    ;; the GnuTLS binary.
+    (propagated-inputs
+     `(("gnutls" ,gnutls)))
+    (home-page "https://github.com/jorgenschaefer/circe")
+    (synopsis "Client for IRC in Emacs")
+    (description "Circe is a Client for IRC in Emacs.  It integrates well with
+the rest of the editor, using standard Emacs key bindings and indicating
+activity in channels in the status bar so it stays out of your way unless you
+want to use it.")
+    (license license:gpl3+)))
+
+(define-public emacs-slack
+  (let ((commit "58b1309255563819ee8f83f625af49ac0353bed1")
+        (revision "1"))
+    (package
+      (name "emacs-slack")
+      (version (string-append "0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/yuya373/emacs-slack.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1bj43ircd9djk4i58qwxvmcbhzybxb954k52l80pk441ffk8v4vx"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-alert" ,emacs-alert)
+         ("emacs-emojify" ,emacs-emojify)
+         ("emacs-request" ,emacs-request)
+         ("emacs-websocket" ,emacs-websocket)
+         ("emacs-oauth2" ,emacs-oauth2)
+         ("emacs-circe" ,emacs-circe)))
+      (home-page "https://github.com/yuya373/emacs-slack")
+      (synopsis "Slack client for Emacs")
+      (description "This package provides an Emacs client for the Slack
+messaging service.")
+      (license license:gpl3+))))
+
 (define-public emacs-bash-completion
   (package
    (name "emacs-bash-completion")

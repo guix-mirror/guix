@@ -283,6 +283,14 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("bc" ,bc)
        ("openssl" ,openssl)
        ("kmod" ,kmod)
+       ;; On x86, build with GCC-7 for full retpoline support.
+       ;; FIXME: Remove this when our default compiler has retpoline support.
+       ,@(match (system->linux-architecture
+                 (or (%current-target-system) (%current-system)))
+           ((or "x86_64" "i386")
+            `(("gcc" ,gcc-7)))
+           (_
+            '()))
        ,@(match (and configuration-file
                      (configuration-file
                       (system->linux-architecture
@@ -396,8 +404,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.48"
-                    "13ii6ixcm46hzk1ns6n4hrrv4dyc0n3wvj2qhmxi178akdcgbn8a"
+  (make-linux-libre "4.1.49"
+                    "0dklmqj6ayjlkz97b811zdvpgb3yppahinji9l9jmkz4ssi7a1gs"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -4062,7 +4070,7 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
@@ -4070,7 +4078,7 @@ re-use code and to avoid re-inventing the wheel.")
                             "libnftnl-" version ".tar.bz2"))
         (sha256
          (base32
-          "0f10cfiyl4c0f8k3brxfrw28x7a6qvrakaslg4jgqncwxycxggg6"))))
+          "0d9nkdbdck8sg6msysqyv3m9kjr9sjif5amf26dfa0g3mqjdihgy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -4087,7 +4095,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.8")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
@@ -4095,7 +4103,7 @@ used by nftables.")
                            "/files/nftables-" version ".tar.bz2"))
        (sha256
         (base32
-         "16iq9x0qxikdhp1nan500rk33ycqddl1k57876m4dfv3n7kqhnrz"))))
+         "1i1gfy8l7qyhc5vlrpp63s0n5kybmc9pi4dywiq8rmkhrrnddsla"))))
     (build-system gnu-build-system)
     (inputs `(("bison", bison)
               ("flex", flex)

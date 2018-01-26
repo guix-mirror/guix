@@ -35,10 +35,13 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages man)
   #:use-module (gnu packages nettle)
@@ -56,8 +59,10 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix gexp)
@@ -784,3 +789,65 @@ on top of GNU Guix.")
     ;; the web interface modules in gwl/ are licensed AGPL3+,
     ;; and the fonts included in this package are licensed OFL1.1.
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
+
+(define-public gcab
+  (package
+    (name "gcab")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1ji8j8pnxqaycbp9ydi2zq7gcr02c2vw4qnc198i6jwy9zkh2x19"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")         ; for glib-mkenums
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("glib" ,glib)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags
+       ;; XXX This ‘documentation’ is for developers, and fails informatively:
+       ;; Error in gtkdoc helper script: 'gtkdoc-mkhtml' failed with status 5
+       (list "-Ddocs=false"
+             "-Dintrospection=false")))
+    (home-page "https://wiki.gnome.org/msitools") ; no dedicated home page
+    (synopsis "Microsoft Cabinet file manipulation library")
+    (description
+     "The libgcab library provides GObject functions to read, write, and modify
+Microsoft cabinet (.@dfn{CAB}) files.")
+    (license (list license:gpl2+        ; tests/testsuite.at
+                   license:lgpl2.1+)))) ; the rest
+
+(define-public msitools
+  (package
+    (name "msitools")
+    (version "0.97")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0pn6izlgwi4ngpk9jk2n38gcjjpk29nm15aad89bg9z3k9n2hnrs"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gcab" ,gcab)
+       ("glib" ,glib)
+       ("libgsf" ,libgsf)
+       ("libxml2" ,libxml2)
+       ("uuid" ,util-linux)))
+    (home-page "https://wiki.gnome.org/msitools")
+    (synopsis "Windows Installer file manipulation tool")
+    (description
+     "msitools is a collection of command-line tools to inspect, extract, build,
+and sign Windows@tie{}Installer (.@dfn{MSI}) files.  It aims to be a solution
+for packaging and deployment of cross-compiled Windows applications.")
+    (license license:lgpl2.1+)))

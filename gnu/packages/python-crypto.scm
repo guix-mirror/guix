@@ -715,3 +715,46 @@ protocol (Javascript Object Signing and Encryption).")
 
 (define-public python2-josepy
   (package-with-python2 python-josepy))
+
+(define-public python-pycryptodome
+  (package
+    (name "python-pycryptodome")
+    (version "3.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pycryptodome" version))
+       (sha256
+        (base32
+         "1xrsd6ql4w0ypkxnsg3fivs3r3z6dd93x44lhvam7jzh3gixzn0q"))))
+    (build-system python-build-system)
+    (home-page "https://www.pycryptodome.org")
+    (synopsis "Cryptographic library for Python")
+    (description "This package provides a cryptographic library for Python.
+
+It brings the following enhancements with respect to the last official version
+of PyCrypto:
+
+@itemize
+@item Authenticated encryption modes (GCM, CCM, EAX, SIV, OCB)
+@item Accelerated AES on Intel platforms via AES-NI
+@item First class support for PyPy
+@item Elliptic curves cryptography (NIST P-256 curve only)
+@item Better and more compact API (nonce and iv attributes for ciphers,
+automatic generation of random nonces and IVs, simplified CTR cipher mode, and
+more)
+@item SHA-3 (including SHAKE XOFs) and BLAKE2 hash algorithms
+@item Salsa20 and ChaCha20 stream ciphers
+@item scrypt and HKDF
+@item Deterministic (EC)DSA
+@item Password-protected PKCS#8 key containers
+@item Shamir’s Secret Sharing scheme
+@item Random numbers get sourced directly from the OS (and not from a CSPRNG
+in userspace)
+@item Cleaner RSA and DSA key generation (largely based on FIPS 186-4)
+@item Major clean ups and simplification of the code base
+@end itemize\n")
+    (license license:bsd-2)))
+
+(define-public python2-pycryptodome
+  (package-with-python2 python-pycryptodome))

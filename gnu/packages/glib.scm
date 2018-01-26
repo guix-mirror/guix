@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,19 +36,23 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix download)
@@ -710,7 +715,7 @@ programming langauage.  It also contains the utility
 (define-public appstream-glib
   (package
     (name "appstream-glib")
-    (version "0.6.7")
+    (version "0.7.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://people.freedesktop.org/~hughsient/"
@@ -718,30 +723,35 @@ programming langauage.  It also contains the utility
                                   "appstream-glib-" version ".tar.xz"))
               (sha256
                (base32
-                "08mrf4k0jhnpdd4fig2grmi2vbxkgdhrwk0d0zq0j1wp5ip7arwp"))))
-    (build-system gnu-build-system)
+                "0ps80cbqnf3q86rvz3ajqjssdgkjc9kmynqf0wxqfir7ayc9y9ag"))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")         ; for glib-compile-resources
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("gcab" ,gcab)
        ("glib" ,glib)
+       ("gperf" ,gperf)
        ("gtk+" ,gtk+)
        ("json-glib" ,json-glib)
        ("libarchive" ,libarchive)
        ("libsoup" ,libsoup)
-       ("nettle" ,nettle)
-       ("util-linux" ,util-linux)))
+       ("libyaml" ,libyaml)
+       ("util-linux" ,util-linux)))     ; for libuuid
     (arguments
      `(#:configure-flags
-       '("--disable-firmware" "--disable-dep11")
+       (list "-Ddep11=false"
+             "-Dintrospection=false"    ; avoid g-ir-scanner dependency
+             "-Drpm=false"
+             "-Dstemmer=false")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-tests
            (lambda _
              (substitute* "libappstream-glib/as-self-test.c"
-               (("g_test_add_func.*as_test_store_local_appdata_func);") "")
-               (("g_test_add_func.*as_test_store_speed_appdata_func);") "")
-               (("g_test_add_func.*as_test_store_speed_desktop_func);") ""))
+               (("g_test_add_func.*as_test_store_local_appdata_func);") ""))
              #t)))))
     (home-page "https://github.com/hughsie/appstream-glib")
     (synopsis "Library for reading and writing AppStream metadata")

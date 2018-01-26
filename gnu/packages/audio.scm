@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3263,4 +3264,55 @@ the following features:
     (description "@code{cli-visualizer} displays fast-Fourier
 transforms (FFTs) of the sound being played, as well as other graphical
 representations.")
+    (license license:expat)))
+
+(define-public cava
+  (package
+    (name "cava")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/karlstav/cava/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1p24lz3h4d0h82ffylqr7mq8a8x1c66flm2r2bsv1liw51n1rma2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("ncurses" ,ncurses)
+       ("pulseaudio" ,pulseaudio)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "PREFIX=" %output)
+             (string-append "FONT_DIR=" %output "/usr/share/consolefonts"))
+       #:make-flags
+       (let ((lib (string-append %output "/lib")))
+         (list (string-append "cava_LDFLAGS = -L" lib " -Wl,-rpath " lib)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "HOME" (getcwd))
+             (invoke "sh" "autogen.sh")))
+         (add-before 'build 'make-cava-ldflags
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))))
+         (add-after 'install 'data
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each (lambda (file)
+                         (install-file file
+                                       (string-append (assoc-ref outputs "out")
+                                                      "/share/doc/examples")))
+                       (find-files "example_files")))))))
+    (home-page "https://karlstav.github.io/cava/")
+    (synopsis "Console audio visualizer for ALSA, MPD, and PulseAudio")
+    (description "C.A.V.A. is a bar audio spectrum visualizer for the terminal
+using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
     (license license:expat)))

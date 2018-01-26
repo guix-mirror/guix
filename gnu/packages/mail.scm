@@ -1144,6 +1144,7 @@ facilities for checking incoming mail.")
        (uri (string-append "https://www.dovecot.org/releases/"
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
+       (patches (search-patches "dovecot-CVE-2017-15132.patch"))
        (sha256 (base32
                 "10c5myzgys866c3x6jdr1s9x9pqnjd5vpyz8z384sph21m3wnq6y"))))
     (build-system gnu-build-system)
