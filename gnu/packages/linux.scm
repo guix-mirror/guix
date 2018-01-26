@@ -4587,8 +4587,9 @@ relevant @file{/dev/vcs*} file(s).")
          (delete 'configure)            ; no configure script
          (add-after 'build 'build-documentation
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" "-C" "doc"
-                           make-flags))))
+             (apply invoke "make" "-C" "doc"
+                    make-flags)
+             #t))
          (add-after 'build 'qualify-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((pnmtopng (assoc-ref inputs "pnmtopng"))
