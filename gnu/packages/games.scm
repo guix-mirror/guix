@@ -1710,7 +1710,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("libjpeg" ,libjpeg)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://supertuxkart.net")
+    (home-page "https://supertuxkart.net/")
     (synopsis "3D kart racing game")
     (description "SuperTuxKart is a 3D kart racing game, with a focus on
 having fun over realism.  You can play with up to 4 friends on one PC, racing
