@@ -8526,7 +8526,7 @@ of a package:
 @end lisp
 
 @findex specification->package
-Referring to packages by variable name, like @var{tcpdump} above, has
+Referring to packages by variable name, like @code{bind} above, has
 the advantage of being unambiguous; it also allows typos and such to be
 diagnosed right away as ``unbound variables''.  The downside is that one
 needs to know which module defines which package, and to augment the
