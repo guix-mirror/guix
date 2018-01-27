@@ -8868,3 +8868,29 @@ A summary of features for comparison to other file finding modules:
 As a convenience, the PIR module is an empty subclass of this one that is less
 arduous to type for one-liners.")
     (license asl2.0)))
+
+(define-public perl-pod-constants
+  (package
+    (name "perl-pod-constants")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MG/MGV/Pod-Constants-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1njgr2zly9nrwvfrjhgk9dqq48as1pmbb2rs4bh3irvla75v7azg"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Pod-Constants/")
+    (synopsis "Include constants from POD")
+    (description "This module allows you to specify those constants that
+should be documented in your POD, and pull them out a run time in a fairly
+arbitrary fashion.
+
+Pod::Constants uses Pod::Parser to do the parsing of the source file.  It has
+to open the source file it is called from, and does so directly either by
+lookup in %INC or by assuming it is $0 if the caller is @code{main}
+(or it can't find %INC{caller()}).")
+    (license artistic2.0)))
