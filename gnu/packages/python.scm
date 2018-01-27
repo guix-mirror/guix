@@ -4861,19 +4861,20 @@ interfaces in an easy and portable manner.")
 (define-public python-networkx
   (package
     (name "python-networkx")
-    (version "1.11")
+    (version "2.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "networkx" version))
+       (uri (pypi-uri "networkx" version ".zip"))
        (sha256
-        (base32 "1f74s56xb4ggixiq0vxyfxsfk8p20c7a099lpcf60izv1php03hd"))))
+        (base32 "1ccb8mfz4m821k9y0cigkbq42q2sbb4dj5fbjshp0awp32j2q9v4"))))
     (build-system python-build-system)
     ;; python-decorator is needed at runtime
     (propagated-inputs
      `(("python-decorator" ,python-decorator)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-nose" ,python-nose)
+       ("unzip" ,unzip)))
     (home-page "http://networkx.github.io/")
     (synopsis "Python module for creating and manipulating graphs and networks")
     (description
