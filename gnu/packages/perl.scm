@@ -18,6 +18,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8817,3 +8818,53 @@ till 5pm\" and \"on the second Tuesday of the month\" and \"between 4pm and
 4:15pm\" and \"in the first half of each minute\" and \"in January of
 1998\".")
     (license perl-license)))
+
+(define-public perl-path-iterator-rule
+  (package
+    (name "perl-path-iterator-rule")
+    (version "1.012")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Path-Iterator-Rule-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1z76avwvwgv4bw28kzx79mmb4449s5l345sn0wljq3dbf4wqigd1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-file-pushd" ,perl-file-pushd)
+       ("perl-path-tiny" ,perl-path-tiny)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-filename" ,perl-test-filename)))
+    (propagated-inputs
+     `(("perl-number-compare" ,perl-number-compare)
+       ("perl-text-glob" ,perl-text-glob)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/Path-Iterator-Rule/")
+    (synopsis "Iterative, recursive file finder")
+    (description "Path::Iterator::Rule iterates over files and directories to
+identify ones matching a user-defined set of rules.  The API is based heavily
+on File::Find::Rule, but with more explicit distinction between matching rules
+and options that influence how directories are searched.  A
+Path::Iterator::Rule object is a collection of rules (match criteria) with
+methods to add additional criteria.  Options that control directory traversal
+are given as arguments to the method that generates an iterator.
+
+A summary of features for comparison to other file finding modules:
+
+@itemize
+@item provides many helper methods for specifying rules
+@item offers (lazy) iterator and flattened list interfaces
+@item custom rules implemented with callbacks
+@item breadth-first (default) or pre- or post-order depth-first searching
+@item follows symlinks (by default, but can be disabled)
+@item directories visited only once (no infinite loop; can be disabled)
+@item doesn't chdir during operation
+@item provides an API for extensions
+@end itemize
+
+As a convenience, the PIR module is an empty subclass of this one that is less
+arduous to type for one-liners.")
+    (license asl2.0)))
