@@ -410,6 +410,28 @@ exception based code.  It is built with Test::Builder and plays happily with
 Test::More and friends.")
     (license perl-license)))
 
+(define-public perl-test-failwarnings
+  (package
+    (name "perl-test-failwarnings")
+    (version "0.008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Test-FailWarnings-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0vx9chcp5x8m0chq574p9fnfckh5gl94j7904rh9v17n568fyd6s"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (home-page "http://search.cpan.org/dist/Test-FailWarnings/")
+    (synopsis "Add test failures if warnings are caught")
+    (description
+     "Test::FailWarnings adds test failures if warnings are caught.")
+    (license asl2.0)))
+
 (define-public perl-test-fatal
   (package
     (name "perl-test-fatal")
