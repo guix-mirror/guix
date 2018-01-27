@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -205,8 +205,7 @@ authentication and support for SSL3 and TLS.")
       ("pkg-config" ,pkg-config)
       ("python" ,python-2)))
    (arguments
-    `(#:configure-flags (list "--disable-ntlm-wb"
-                              "--with-ca-bundle=/etc/ssl/certs/ca-certificates.crt")
+    `(#:configure-flags (list "--disable-ntlm-wb")
       #:test-target "test"
       #:parallel-tests? #f
       #:phases
