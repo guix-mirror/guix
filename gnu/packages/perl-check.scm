@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -455,6 +456,28 @@ testing exception-throwing code with about the same amount of typing.")
     (description "This module creates a Fake ShareDir for your modules
 for testing.")
     (license perl-license)))
+
+(define-public perl-test-filename
+  (package
+    (name "perl-test-filename")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Test-Filename-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1gpw4mjw68gnby8s4cifvbz6g2923xsc189jkw9d27i8qv20qiba"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-path-tiny" ,perl-path-tiny)))
+    (home-page "http://search.cpan.org/dist/Test-Filename/")
+    (synopsis "Portable filename comparison")
+    (description "Test::Filename provides functions to convert all path
+separators automatically.")
+    (license asl2.0)))
 
 (define-public perl-test-files
   (package
