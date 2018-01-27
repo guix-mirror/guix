@@ -24,6 +24,7 @@
                 #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 x11))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
@@ -90,7 +91,9 @@ rich set of boolean query operators.")
        #:make-flags
        (list (string-append "pkgpylibdir="
                             (assoc-ref %outputs "out")
-                            "/lib/python3.5/site-packages/xapian"))))
+                            "/lib/python" ,(version-major+minor
+                                            (package-version python))
+                            "/site-packages/xapian"))))
     (inputs
      `(("python" ,python)
        ("python-sphinx" ,python-sphinx) ; for documentation
