@@ -55,3 +55,27 @@ expression patterns related to legal software licenses.
 
 Regexp::Pattern is a convention for organizing reusable regex patterns.")
     (license gpl3+)))
+
+(define-public perl-string-copyright
+  (package
+    (name "perl-string-copyright")
+    (version "0.003005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JO/JONASS/String-Copyright-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "12c6x4c10gr46ryc3dpwgfi6wggmgy4a1ls2hwhcpdm3wvzy5619"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-number-range" ,perl-number-range)))
+    (propagated-inputs
+     `(("perl-exporter-tiny" ,perl-exporter-tiny)))
+    (home-page "http://search.cpan.org/dist/String-Copyright/")
+    (synopsis "Representation of text-based copyright statements")
+    (description "String::Copyright Parses common styles of copyright
+statements and serializes in normalized format.")
+    (license gpl3+)))
