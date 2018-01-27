@@ -2852,14 +2852,14 @@ objects.")
 (define-public python-colormath
   (package
     (name "python-colormath")
-    (version "2.1.1")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "colormath" version))
        (sha256
         (base32
-         "01wp5xwm0a89wdm1dc9rr1ij90idzdiiipxdj1yslhqzkhnjnfh0"))))
+         "05qjycgxp3p2f9n6lmic68sxmsyvgnnlyl4z9w7dl9s56jphaiix"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-networkx" ,python-networkx)
