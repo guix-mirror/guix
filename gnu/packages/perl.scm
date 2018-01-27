@@ -6026,6 +6026,26 @@ collector daemon in use at Etsy.com.")
 subroutine, which you can call with a value to be tested against.")
     (license (package-license perl))))
 
+(define-public perl-number-range
+  (package
+    (name "perl-number-range")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/L/LA/LARRYSH/Number-Range-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0999xvs3w2xprs14q4shqndjf2m6mzvhzdljgr61ddjaqhd84gj3"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Number-Range/")
+    (synopsis "Perl extension defining ranges of numbers")
+    (description "Number::Range is an object-oriented interface to test if a
+number exists in a given range, and to be able to manipulate the range.")
+    (license (package-license perl))))
+
 (define-public perl-object-signature
   (package
     (name "perl-object-signature")
