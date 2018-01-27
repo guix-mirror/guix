@@ -4891,6 +4891,9 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
              "-DENABLE_GOOGLE=OFF"          ;disable Google Contacts support
              "-DENABLE_GOOGLE_AUTH=OFF"     ;disable Google authentication
              "-DENABLE_VALA_BINDINGS=ON"
+             ;; FIXME: Building against ICU 60 requires C++11 or higher.  Remove
+             ;; this when our default compiler is >= GCC6.
+             "-DCMAKE_CXX_FLAGS=-std=gnu++11"
              "-DENABLE_INTROSPECTION=ON")   ;required for Vala bindings
        #:phases
        (modify-phases %standard-phases
