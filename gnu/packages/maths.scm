@@ -1387,6 +1387,31 @@ Work may be performed both at the interactive command-line as well as via
 script files.")
     (license license:gpl3+)))
 
+(define-public qtoctave
+  (package (inherit octave)
+    (name "qtoctave")
+    (inputs
+     `(("qscintilla" ,qscintilla)
+       ("qt" ,qtbase)
+       ,@(package-inputs octave)))
+    (native-inputs
+     `(("qttools" , qttools) ;for lrelease
+       ,@(package-native-inputs octave)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments octave)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'patch-qscintilla-library-name
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; The QScintilla library that the Octave configure script tries
+               ;; to link with should be named libqscintilla-qt5.so, but the
+               ;; QScintilla input provides the shared library as
+               ;; libqscintilla2_qt5.so.
+               (substitute* "configure"
+                 (("qscintilla2-qt5")
+                  "qscintilla2_qt5"))
+               #t))))))))
+
 (define-public opencascade-oce
   (package
     (name "opencascade-oce")
