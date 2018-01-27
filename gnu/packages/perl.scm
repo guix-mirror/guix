@@ -8894,3 +8894,25 @@ to open the source file it is called from, and does so directly either by
 lookup in %INC or by assuming it is $0 if the caller is @code{main}
 (or it can't find %INC{caller()}).")
     (license artistic2.0)))
+
+(define-public perl-regexp-pattern
+  (package
+    (name "perl-regexp-pattern")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/P/PE/PERLANCAR/Regexp-Pattern-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0rwpl6dxd1yl2ng3d4jdy68jz3mggmdl35rphrw1x619sm1aa876"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (home-page "http://search.cpan.org/dist/Regexp-Pattern/")
+    (synopsis "Collection of regexp patterns")
+    (description "Regexp::Pattern is a convention for organizing reusable
+regexp patterns in modules.")
+    (license (package-license perl))))
