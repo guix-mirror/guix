@@ -249,6 +249,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/libffcall.scm			\
   %D%/packages/libffi.scm			\
   %D%/packages/libftdi.scm			\
+  %D%/packages/license.scm			\
   %D%/packages/calendar.scm			\
   %D%/packages/libidn.scm			\
   %D%/packages/libphidget.scm			\
