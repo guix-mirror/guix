@@ -1813,6 +1813,32 @@ an \"unless\" regular expression.  If the text in question matches the
 like split on newlines unless newlines are embedded in quotes.")
     (license (package-license perl))))
 
+(define-public perl-data-section
+  (package
+    (name "perl-data-section")
+    (version "0.200007")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RJ/RJBS/Data-Section-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1pmlxca0a8sv2jjwvhwgqavq6iwys6kf457lby4anjp3f1dpx4yd"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-failwarnings" ,perl-test-failwarnings)))
+    (propagated-inputs
+     `(("perl-mro-compat" ,perl-mro-compat)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "http://search.cpan.org/dist/Data-Section/")
+    (synopsis "Read multiple hunks of data out of your DATA section")
+    (description "This package provides a Perl library to read multiple hunks
+of data out of your DATA section.")
+    (license (package-license perl))))
+
 (define-public perl-data-stag
   (package
     (name "perl-data-stag")
