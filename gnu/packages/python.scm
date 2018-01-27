@@ -2876,14 +2876,14 @@ objects.")
 (define-public python-spectra
   (package
     (name "python-spectra")
-    (version "0.0.8")
+    (version "0.0.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "spectra" version))
        (sha256
         (base32
-         "0n87kzhpkml2s2q91rdkl8wz2kkv5b0bkrgww45lxa5vq34qh6w5"))))
+         "1f322x914bhkg6r5gv1vmnir3iy0k5kih0fd2gp3rdkw32jn5cwf"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
