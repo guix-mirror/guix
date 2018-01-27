@@ -770,7 +770,7 @@ otherwise simply ignore them."
                           #:reporter (progress-reporter/file
                                       (uri-abbreviation uri) size))
               (newline)))
-          #t)))
+          file)))
       ((ftp)
        (false-if-exception* (ftp-fetch uri file
                                        #:timeout timeout)))
