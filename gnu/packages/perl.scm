@@ -6915,6 +6915,28 @@ run from within a source-controlled directory.")
 CamelCase and back again.")
     (license (package-license perl))))
 
+(define-public perl-string-escape
+  (package
+    (name "perl-string-escape")
+    (version "2010.002")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/E/EV/EVO/String-Escape-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "12ls7f7847i4qcikkp3skwraqvjphjiv2zxfhl5d49326f5myr7x"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/String-Escape/")
+    (synopsis "Backslash escapes, quoted phrase, word elision, etc.")
+    (description "This module provides a flexible calling interface to some
+frequently-performed string conversion functions, including applying and
+expanding standard C/Unix-style backslash escapes like \n and \t, wrapping and
+removing double-quotes, and truncating to fit within a desired length.")
+    (license (package-license perl))))
+
 (define-public perl-string-rewriteprefix
   (package
     (name "perl-string-rewriteprefix")
