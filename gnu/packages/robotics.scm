@@ -22,10 +22,16 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages avahi)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages sdl))
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages xml))
 
 (define-public enki
   ;; Previous versions use Qt4 and are unsuitable for Aseba.
@@ -65,3 +71,56 @@ hundred times faster than real-time.")
       ;; citation, but that sentence is written as not being part of the
       ;; license (fortunately).
       (license license:gpl2+))))
+
+(define-public aseba
+  ;; Use the commit that allows us to build with Qt5.
+  (let ((commit "3b35de80d5fdd47592b1c01d57e1f4ef37c5e5ea")
+        (revision "0"))
+    (package
+      (name "aseba")
+      (version (git-version "1.6.0" revision commit))
+      (home-page "https://github.com/aseba-community/aseba")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)
+                                    (recursive? #t))) ;for Blockly
+                (sha256
+                 (base32
+                  "0j31lmc9f0ksvkh0md2fgsz92hcsrwnrqqcynamizs2ah8iwlqi5"))
+                (file-name (string-append name "-" version "-checkout"))
+                (modules '((guix build utils)))
+                (snippet
+                 ;; Add missing Qt5::Network.
+                 '(substitute* "targets/playground/CMakeLists.txt"
+                    (("target_link_libraries(.*)\\$\\{EXTRA_LIBS\\}" _ middle)
+                     (string-append "target_link_libraries" middle
+                                    " Qt5::Network ${EXTRA_LIBS}"))))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("valgrind" ,valgrind)))                 ;for tests
+      (inputs
+       `(("dashel" ,dashel)
+         ("enki" ,enki)
+         ("protobuf" ,protobuf)                   ;for logging
+         ("qtbase" ,qtbase)
+         ("qtsvg" ,qtsvg)
+         ("qttools" ,qttools)              ;for libQt5Help, needed by "studio"
+         ("qtwebkit" ,qtwebkit)
+         ("qtx11extras" ,qtx11extras)
+         ("eudev" ,eudev)
+         ("libxml2" ,libxml2)
+         ("sdl2" ,sdl2)
+         ("avahi" ,avahi)))            ;XXX: we need the libdnssd compat layer
+      (synopsis "Event-based robot programming tools")
+      (description
+       "Aseba means @dfn{actuator and sensor event-based architecture}.
+It is a set of tools which allow beginners to program robots easily and
+efficiently.  It includes robot simulators, a programming language, and a
+visual programming language (VPL) that is notably used together with the
+Thymio educational robot.")
+
+      ;; Source file headers say "version 3.0" without "or any later version".
+      (license license:lgpl3))))
