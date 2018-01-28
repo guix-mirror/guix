@@ -1676,7 +1676,7 @@ as well as other related problems such as the singular value decomposition.
 The emphasis of the software is on methods and techniques appropriate for
 problems in which the associated matrices are sparse, for example, those
 arising after the discretization of partial differential equations.")
-    (license license:lgpl3)))
+    (license license:bsd-2)))
 
 (define-public slepc-complex
   (package (inherit slepc)
