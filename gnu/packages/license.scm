@@ -79,3 +79,27 @@ Regexp::Pattern is a convention for organizing reusable regex patterns.")
     (description "String::Copyright Parses common styles of copyright
 statements and serializes in normalized format.")
     (license gpl3+)))
+
+(define-public perl-software-license
+  (package
+    (name "perl-software-license")
+    (version "0.103013")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/L/LE/LEONT/Software-License-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1wqgh7vdlc966amlrq0b2szz18lnrl9rfh8wlf7v0hqg74vxjh96"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-try-tiny" ,perl-try-tiny)))
+    (propagated-inputs
+     `(("perl-data-section" ,perl-data-section)
+       ("perl-text-template" ,perl-text-template)))
+    (home-page "http://search.cpan.org/dist/Software-License/")
+    (synopsis "Templated software licenses")
+    (description "This package provides templated software licenses.")
+    (license (package-license perl))))
