@@ -410,6 +410,27 @@ all known commands are checked.")
 compiling the surrounding scope.")
     (license (package-license perl))))
 
+(define-public perl-b-hooks-op-check
+  (package
+    (name "perl-b-hooks-op-check")
+    (version "0.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/E/ET/ETHER/B-Hooks-OP-Check-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1kfdv25gn6yik8jrwik4ajp99gi44s6idcvyyrzhiycyynzd3df7"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)))
+    (home-page "http://search.cpan.org/dist/B-Hooks-OP-Check/")
+    (synopsis "Wrap OP check callbacks")
+    (description "This module allows you to wrap OP check callbacks.")
+    (license (package-license perl))))
+
 (define-public perl-b-keywords
   (package
     (name "perl-b-keywords")
