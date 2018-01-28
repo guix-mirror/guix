@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -865,7 +865,7 @@ designed to work well in user interface environments.")
                (base32
                 "1z65x0dw5dq6rs6p9wyfrir50rlh95vgzsxr8jcd40nqazw4jhpi"))))
     (build-system font-build-system)
-    (home-page "http://mozilla.github.io/Fira/")
+    (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Mozilla's monospace font")
     (description "This is the typeface used by Mozilla in Firefox OS.")
     (license license:silofl1.1)))
@@ -883,7 +883,7 @@ designed to work well in user interface environments.")
                (base32
                 "1r6zdnqqp4bgq5nmgqbj0vvj7x1h9w912851ggbl9wc7fdjnjqnq"))))
     (build-system font-build-system)
-    (home-page "http://mozilla.github.io/Fira/")
+    (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Mozilla's Fira Sans Font")
     (description "This is the typeface used by Mozilla in Firefox OS.")
     (license license:silofl1.1)))
