@@ -973,6 +973,34 @@ cannot connect to the specified hosts and ports, the exception is caught and
 reported, and the tests skipped.")
     (license perl-license)))
 
+(define-public perl-test-roo
+  (package
+    (name "perl-test-roo")
+    (version "1.004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Test-Roo-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1mnym49j1lj7gzylma5b6nr4vp75rmgz2v71904v01xmxhy9l4i1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (propagated-inputs
+     `(("perl-indirect" ,perl-indirect)
+       ("perl-moo" ,perl-moo)
+       ("perl-moox-types-mooselike" ,perl-moox-types-mooselike)
+       ("perl-multidimensional" ,perl-multidimensional)
+       ("perl-strictures" ,perl-strictures)
+       ("perl-sub-install" ,perl-sub-install)))
+    (home-page "http://search.cpan.org/dist/Test-Roo/")
+    (synopsis "Composable, reusable tests with roles and Moo")
+    (description "Test::Roo provides composable, reusable tests with roles.")
+    (license asl2.0)))
+
 (define-public perl-test-script
   (package
     (name "perl-test-script")
