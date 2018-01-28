@@ -11322,16 +11322,16 @@ CUPS service will generate a self-signed certificate if needed, for
 secure connections to the print server.
 
 Suppose you want to enable the Web interface of CUPS and also add
-support for HP printers @i{via} the @code{hplip} package.  You can do
-that directly, like this (you need to use the @code{(gnu packages cups)}
-module):
+support for Epson printers @i{via} the @code{escpr} package and for HP
+printers @i{via} the @code{hplip} package.  You can do that directly,
+like this (you need to use the @code{(gnu packages cups)} module):
 
 @example
 (service cups-service-type
          (cups-configuration
            (web-interface? #t)
            (extensions
-             (list cups-filters hplip))))
+             (list cups-filters escpr hplip))))
 @end example
 
 The available configuration parameters follow.  Each parameter
