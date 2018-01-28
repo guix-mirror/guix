@@ -3030,6 +3030,30 @@ and alternative installers with the `installler` option.  But it's written in
 only about 40% as many lines of code and with zero non-core dependencies.")
     (license (package-license perl))))
 
+(define-public perl-extutils-depends
+  (package
+    (name "perl-extutils-depends")
+    (version "0.405")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/X/XA/XAOC/ExtUtils-Depends-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0b4ab9qmcihsfs2ajhn5qzg7nhazr68v3r0zvb7076smswd41mla"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-number-delta"
+        ,perl-test-number-delta)))
+    (home-page "http://search.cpan.org/dist/ExtUtils-Depends/")
+    (synopsis "Easily build XS extensions that depend on XS extensions")
+    (description "ExtUtils::Depends builds XS extensions that depend on XS
+extensions")
+    (license (package-license perl))))
+
 (define-public perl-extutils-installpaths
   (package
     (name "perl-extutils-installpaths")
