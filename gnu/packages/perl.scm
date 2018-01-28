@@ -5993,6 +5993,32 @@ Certificate Authority certificates in a form that can be consumed by modules
 and libraries based on OpenSSL.")
     (license mpl2.0)))
 
+(define-public perl-multidimensional
+  (package
+    (name "perl-multidimensional")
+    (version "0.013")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/I/IL/ILMARI/multidimensional-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "02p5zv68i39hnkmzzxsk1fi7xy56pfcsslrd7yqwzhq74czcw81x"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
+       ("perl-extutils-depends" ,perl-extutils-depends)))
+    (propagated-inputs
+     `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
+       ("perl-lexical-sealrequirehints" ,perl-lexical-sealrequirehints)))
+    (home-page "http://search.cpan.org/dist/multidimensional/")
+    (synopsis "Disable multidimensional array emulation")
+    (description
+     "Multidimensional disables multidimensional array emulation.")
+    (license (package-license perl))))
+
 (define-public perl-mro-compat
   (package
     (name "perl-mro-compat")
