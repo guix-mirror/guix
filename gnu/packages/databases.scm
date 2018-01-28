@@ -3,7 +3,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
@@ -978,6 +978,15 @@ zero-configuration, transactional SQL database engine.  SQLite is the most
 widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
+
+;; This is used by Tracker.
+(define-public sqlite-with-fts5
+  (package (inherit sqlite)
+    (name "sqlite-with-fts5")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sqlite)
+       ((#:configure-flags flags)
+        `(cons "--enable-fts5" ,flags))))))
 
 ;; This is used by Clementine.
 (define-public sqlite-with-fts3
