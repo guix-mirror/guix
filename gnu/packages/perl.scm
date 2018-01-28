@@ -3954,6 +3954,26 @@ dependencies for CPAN distributions.  These dependencies get bundled into the
 inc directory within a distribution and are used by Makefile.PL or Build.PL.")
     (license asl2.0)))
 
+(define-public perl-indirect
+  (package
+    (name "perl-indirect")
+    (version "0.38")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/V/VP/VPIT/indirect-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "13k5a8p903m8x3pcv9qqkzvnb8gpgq36cr3dvn3lk1ngsi9w5ydy"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/indirect/")
+    (synopsis "Lexically warn about using the indirect method call syntax")
+    (description
+     "Indirect warns about using the indirect method call syntax.")
+    (license (package-license perl))))
+
 (define-public perl-io-captureoutput
   (package
     (name "perl-io-captureoutput")
