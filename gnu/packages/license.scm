@@ -103,3 +103,58 @@ statements and serializes in normalized format.")
     (synopsis "Templated software licenses")
     (description "This package provides templated software licenses.")
     (license (package-license perl))))
+
+(define-public licensecheck
+  (package
+    (name "licensecheck")
+    (version "3.0.33")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/J/JO/JONASS/App-Licensecheck-"
+                    "v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0wydxb2jks1k3bxkcp7p0pazh5v3awbbcf6haplvwzkkayszhgs4"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-regexp-pattern" ,perl-regexp-pattern)
+       ("perl-software-license" ,perl-software-license)
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-test-roo" ,perl-test-roo)
+       ("perl-test-script" ,perl-test-script)
+       ("perl-universal-require" ,perl-universal-require)
+       ("perl-number-range" ,perl-number-range)
+       ("perl-sub-quote" ,perl-sub-quote)))
+    (propagated-inputs
+     `(("perl-getopt-long-descriptive" ,perl-getopt-long-descriptive)
+       ("perl-moo" ,perl-moo-2)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-path-iterator-rule" ,perl-path-iterator-rule)
+       ("perl-path-tiny" ,perl-path-tiny)
+       ("perl-pod-constants" ,perl-pod-constants)
+       ("perl-regexp-pattern-license" ,perl-regexp-pattern-license)
+       ("perl-sort-key" ,perl-sort-key)
+       ("perl-strictures" ,perl-strictures-2)
+       ("perl-string-copyright" ,perl-string-copyright)
+       ("perl-string-escape" ,perl-string-escape)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-module-runtime" ,perl-module-runtime)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (perllib (string-append out "/lib/perl5/site_perl/"
+                                            ,(package-version perl))))
+               (wrap-program (string-append out "/bin/licensecheck")
+                 `("PERL5LIB" ":"
+                   prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))
+               #t))))))
+    (home-page "http://search.cpan.org/dist/App-Licensecheck/")
+    (synopsis "License checker for source files")
+    (description "Licensecheck attempts to determine the license that applies
+to each file passed to it, by searching the start of the file for text
+belonging to various licenses.")
+    (license (package-license perl))))
