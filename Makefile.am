@@ -450,6 +450,7 @@ EXTRA_DIST =						\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
   bin/guix.in						\
+  etc/guix-install.sh					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\
