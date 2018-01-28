@@ -7051,6 +7051,20 @@ on the length of the size.")
 run from within a source-controlled directory.")
     (license (package-license perl))))
 
+;; Some packages don't yet work with this newer version of ‘strictures’.
+(define-public perl-strictures-2
+  (package
+    (inherit perl-strictures)
+    (version "2.000003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+                           "strictures-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08mgvf1d2651gsg3jgjfs13878ndqa4ji8vfsda9f7jjd84ymy17"))))))
+
 (define-public perl-string-camelcase
   (package
     (name "perl-string-camelcase")
