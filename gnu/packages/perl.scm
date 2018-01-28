@@ -4292,6 +4292,29 @@ either uses the first module it finds or throws an error.")
 versa.")
     (license (package-license perl))))
 
+(define-public perl-lexical-sealrequirehints
+  (package
+    (name "perl-lexical-sealrequirehints")
+    (version "0.011")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Lexical-SealRequireHints-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0fh1arpr0hsj7skbn97yfvbk22pfcrpcvcfs15p5ss7g338qx4cy"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page "http://search.cpan.org/dist/Lexical-SealRequireHints/")
+    (synopsis "Prevent leakage of lexical hints")
+    (description
+     "Lexical::SealRequireHints prevents leakage of lexical hints")
+    (license (package-license perl))))
+
 (define-public perl-log-any
   (package
     (name "perl-log-any")
