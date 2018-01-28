@@ -8539,6 +8539,27 @@ UNIVERSAL::can() as a function, which it is not.")
 UNIVERSAL::isa as a function.")
     (license (package-license perl))))
 
+(define-public perl-universal-require
+  (package
+    (name "perl-universal-require")
+    (version "0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/N/NE/NEILB/UNIVERSAL-require-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1v9qdg80ng6dzyzs7cn8sb6mn8ym042i32lcnpd478b7g6l3d9xj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/UNIVERSAL-require/")
+    (synopsis "Require modules from a variable")
+    (description "This module lets you require other modules where the module
+name is in a variable, something you can't do with the @code{require}
+built-in.")
+    (license (package-license perl))))
+
 (define-public perl-variable-magic
   (package
     (name "perl-variable-magic")
