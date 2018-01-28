@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
+;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2488,6 +2489,48 @@ websites such as Libre.fm.")
 
 (define-public python2-pylast
   (package-with-python2 python-pylast))
+
+(define-public instantmusic
+  (let ((commit "300891d09c703525215fa5a116b9294af1c923c8")
+        (revision "1"))
+    (package
+      (name "instantmusic")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/yask123/Instant-Music-Downloader.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0j7qivaa04bpdz3anmgci5833dgiyfqqwq9fdrpl9m68b34gl773"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("eyed3", eyed3)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("youtube-dl" ,youtube-dl)))
+    (arguments
+     '(#:modules ((guix build python-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'change-directory
+                    (lambda _
+                      (chdir "instantmusic-0.1") #t))
+                  (add-before 'check 'fix-file-permissions
+                    (lambda _
+                      ;; Fix some read-only files that would cause a build failure
+                      (for-each (cut chmod <> #o644)
+                                (find-files "instantmusic.egg-info"
+                                            "PKG-INFO|.*\\.txt"))
+                      #t)))))
+    (home-page "http://iyask.me/Instant-Music-Downloader/")
+    (synopsis "Command-line program to download a song from YouTube")
+    (description "InstantMusic downloads a song from YouTube in MP3 format.
+Songs can be searched by artist, name or even by a part of the song text.")
+    (license license:expat))))
 
 (define-public beets
   (package
