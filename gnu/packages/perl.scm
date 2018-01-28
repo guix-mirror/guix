@@ -344,6 +344,31 @@ autovivification for some constructs and optionally throws a warning or an
 error when it would have happened.")
     (license (package-license perl))))
 
+(define-public perl-bareword-filehandles
+  (package
+    (name "perl-bareword-filehandles")
+    (version "0.005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/I/IL/ILMARI/bareword-filehandles-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0fdirls2pg7d6ymvlzzz59q3dy6hgh08k0qpr2mw51w127s8rav6"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
+       ("perl-extutils-depends" ,perl-extutils-depends)))
+    (propagated-inputs
+     `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
+       ("perl-lexical-sealrequirehints" ,perl-lexical-sealrequirehints)))
+    (home-page "http://search.cpan.org/dist/bareword-filehandles/")
+    (synopsis "Disables bareword filehandles")
+    (description "This module disables bareword filehandles.")
+    (license (package-license perl))))
+
 (define-public perl-base
   (package
     (name "perl-base")
