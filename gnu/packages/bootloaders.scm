@@ -372,7 +372,7 @@ also initializes the boards (RAM etc).")
        `(,@(if (not same-arch?)
              `(("cross-gcc" ,(cross-gcc triplet #:xgcc gcc-7))
                ("cross-binutils" ,(cross-binutils triplet)))
-             '())
+             `(("gcc-7" ,gcc-7)))
          ,@(package-native-inputs u-boot)))
       (arguments
        `(#:modules ((ice-9 ftw) (guix build utils) (guix build gnu-build-system))
