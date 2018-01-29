@@ -183,9 +183,9 @@ may also simplify input method development.")
       ("automake" ,automake)
       ("glib" ,glib "bin")
       ("libtool" ,libtool)))
-   (synopsis "Chinese Pinyin and ZhuYin input methods for IBus")
+   (synopsis "Chinese pinyin and ZhuYin input methods for IBus")
    (description
-    "This package includes a Chinese Pinyin input method and a Chinese
+    "This package includes a Chinese pinyin input method and a Chinese
 ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
    (home-page "https://github.com/libpinyin/ibus-libpinyin")
    (license gpl2+)))
@@ -230,7 +230,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
-    (synopsis "Library to handle Chinese Pinyin")
+    (synopsis "Library to handle Chinese pinyin")
     (description
      "The libpinyin C++ library provides algorithms needed for sentence-based
 Chinese pinyin input methods.")
