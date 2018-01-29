@@ -358,8 +358,8 @@ structs in the Go programming language.")
     (license (package-license go-github-com-gogo-protobuf))))
 
 (define-public go-github-com-gogo-protobuf
-  (let ((commit "35b81a066e522fb86ece043a8ef1dbfa10b4fed1")
-        (revision "1"))
+  (let ((commit "160de10b2537169b5ae3e7e221d28269ef40d311")
+        (revision "2"))
     (package
       (name "go-github-com-gogo-protobuf")
       (version (git-version "0.5" revision commit))
@@ -371,7 +371,7 @@ structs in the Go programming language.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "194k6cls2g654df54x5rzrn5nqrfk8yz1jymm667ajjvzcplidja"))))
+                  "0hxq28sgxym04rv0q40gpwkh4ni359q21hq3g78wwxwx4qfd4zwm"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/gogo/protobuf/proto"
