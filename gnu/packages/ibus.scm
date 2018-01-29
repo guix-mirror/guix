@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -193,7 +194,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
 (define-public libpinyin
   (package
     (name "libpinyin")
-    (version "2.1.0")
+    (version "2.1.91")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -202,7 +203,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1iijpin65cmgawfx7sfdw1anmabljva0af1f9gx8ad6b4slhvknn"))))
+                "1yr4zyz3rwvmvj6bh8pc54hbp4rd2xk3g06y38z220fshx2l8pwf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
