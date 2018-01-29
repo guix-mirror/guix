@@ -51,6 +51,7 @@
              ((guix scripts system) #:select (read-operating-system))
              ((guix scripts pack)
               #:select (lookup-compressor self-contained-tarball))
+             (gnu bootloader)
              (gnu bootloader u-boot)
              (gnu packages)
              (gnu packages gcc)
