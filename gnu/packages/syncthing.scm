@@ -1953,3 +1953,30 @@ approximate quantiles over an unbounded data stream within low memory and CPU
 bounds.")
       (home-page "https://github.com/beorn7/perks")
       (license expat))))
+
+(define-public go-github-com-golang-protobuf-proto
+  (let ((commit "1e59b77b52bf8e4b449a57e6f79f21226d571845")
+        (revision "0"))
+    (package
+      (name "go-github-com-golang-protobuf-proto")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/golang/protobuf.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "19bkh81wnp6njg3931wky6hsnnl2d1ig20vfjxpv450sd3k6yys8"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/golang/protobuf/proto"
+         #:unpack-path "github.com/golang/protobuf"
+         #:tests? #f ; requires unpackaged golang.org/x/sync/errgroup
+         ))
+      (synopsis "Go support for Protocol Buffers")
+      (description "This package provides Go support for the Protocol Buffers
+data serialization format.")
+      (home-page "https://github.com/golang/protobuf")
+      (license bsd-3))))
