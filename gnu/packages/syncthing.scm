@@ -2180,3 +2180,28 @@ instrumenting application code, and one for creating clients that talk to the
 Prometheus HTTP API.")
       (home-page "https://github.com/prometheus/client_golang")
       (license asl2.0))))
+
+(define* (go-github-com-prometheus-union
+           #:optional (packages (list go-github-com-client-golang-prometheus
+                                      go-github-com-client-golang-prometheus-promhttp)))
+  (package
+    (name "go-github-com-prometheus-union")
+    (version (package-version go-github-com-client-golang-prometheus))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories))))))
+    (inputs (map (lambda (package)
+                   (list (package-name package) package))
+                 packages))
+    (synopsis "Union of Go Prometheus libraries")
+    (description "This is a union of Go Prometheus libraries")
+    (home-page (package-home-page go-github-com-client-golang-prometheus))
+    (license (package-license go-github-com-client-golang-prometheus))))
