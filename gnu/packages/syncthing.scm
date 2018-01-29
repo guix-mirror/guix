@@ -1980,3 +1980,30 @@ bounds.")
 data serialization format.")
       (home-page "https://github.com/golang/protobuf")
       (license bsd-3))))
+
+(define-public go-github-com-prometheus-client-model-go
+  (let ((commit "99fa1f4be8e564e8a6b613da7fa6f46c9edafc6c")
+        (revision "0"))
+    (package
+      (name "go-github-com-prometheus-client-model-go")
+      (version (git-version "0.0.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/prometheus/client_model.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "19y4ywsivhpxj7ikf2j0gm9k3cmyw37qcbfi78n526jxcc7kw998"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/prometheus/client_model/go"
+         #:unpack-path "github.com/prometheus/client_model"))
+      (propagated-inputs
+       `(("go-github-com-golang-protobuf-proto"
+          ,go-github-com-golang-protobuf-proto)))
+      (synopsis "Data model artifacts for Prometheus")
+      (description "This package provides data model artifacts for Prometheus.")
+      (home-page "https://github.com/prometheus/client_model")
+      (license asl2.0))))
