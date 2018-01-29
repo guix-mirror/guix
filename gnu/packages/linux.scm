@@ -378,16 +378,25 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 (define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
 
-(define %linux-libre-version "4.14.15")
-(define %linux-libre-hash "0s94d51bym3zipxf40xjzq943b7b2x4ba1gp3j7l5npj5nr2xiy8")
-
 ;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
+(define %linux-libre-version "4.15")
+(define %linux-libre-hash "11h1954mkyy2wc0c9jd9dxysqq9wrjr6jmsxdysdd73g50a6amg6")
+
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
+                    %linux-compatible-systems
+                    #:configuration-file kernel-config))
+
+(define %linux-libre-4.14-version "4.14.15")
+(define %linux-libre-4.14-hash "0s94d51bym3zipxf40xjzq943b7b2x4ba1gp3j7l5npj5nr2xiy8")
+
+(define-public linux-libre-4.14
+  (make-linux-libre %linux-libre-4.14-version
+                    %linux-libre-4.14-hash
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -416,9 +425,23 @@ It has been modified to remove all non-free binary blobs.")
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
+(define-public linux-libre-arm-generic-4.14
+  (make-linux-libre %linux-libre-4.14-version
+                    %linux-libre-4.14-hash
+                    '("armhf-linux")
+                    #:defconfig "multi_v7_defconfig"
+                    #:extra-version "arm-generic"))
+
 (define-public linux-libre-arm-omap2plus
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
+                    '("armhf-linux")
+                    #:defconfig "omap2plus_defconfig"
+                    #:extra-version "arm-omap2plus"))
+
+(define-public linux-libre-arm-omap2plus-4.14
+  (make-linux-libre %linux-libre-4.14-version
+                    %linux-libre-4.14-hash
                     '("armhf-linux")
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
