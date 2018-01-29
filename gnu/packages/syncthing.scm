@@ -2081,3 +2081,27 @@ message streaming.")
 Prometheus metrics.")
       (home-page "https://github.com/prometheus/common")
       (license asl2.0))))
+
+(define-public go-github-com-prometheus-procfs
+  (let ((commit "b15cd069a83443be3154b719d0cc9fe8117f09fb")
+        (revision "0"))
+    (package
+      (name "go-github-com-prometheus-procfs")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/prometheus/procfs.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1cr45wg2m40bj2za8f32mq09rjlcnk5kfam0h0hr8wcb015k4wxj"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/prometheus/procfs"))
+      (synopsis "Go library for reading @file{/proc}")
+      (description "This Go package @code{procfs} provides functions to retrieve
+system, kernel and process metrics from the pseudo-filesystem @file{/proc}.")
+      (home-page "https://github.com/prometheus/procfs")
+      (license asl2.0))))
