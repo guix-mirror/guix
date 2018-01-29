@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -131,7 +131,8 @@
        ;; ("fuse" ,fuse)
        ("ncurses" ,ncurses)))
     (native-inputs
-     `(("unifont" ,unifont)
+     `(("pkg-config" ,pkg-config)
+       ("unifont" ,unifont)
        ("bison" ,bison)
        ;; Due to a bug in flex >= 2.6.2, GRUB must be built with an older flex:
        ;; <http://lists.gnu.org/archive/html/grub-devel/2017-02/msg00133.html>
