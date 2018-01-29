@@ -8192,7 +8192,7 @@ parted /dev/sda set 1 esp on
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
 GuixSD only supports ext4 and btrfs file systems.  In particular, code
-that reads partition UUIDs and labels only works for these file system
+that reads file system UUIDs and labels only works for these file system
 types.}.  For the ESP, if you have one and assuming it is
 @file{/dev/sda2}, run:
 
@@ -8233,7 +8233,7 @@ root file system):
 mount LABEL=my-root /mnt
 @end example
 
-Also mount any other partitions you would like to use on the target
+Also mount any other file systems you would like to use on the target
 system relative to this path.  If you have @file{/boot} on a separate
 partition for example, mount it at @file{/mnt/boot} now so it is found
 by @code{guix system init} afterwards.
@@ -8320,7 +8320,7 @@ to a mounted EFI partition, like @code{/boot/efi}, and do make sure the
 path is actually mounted.
 
 @item
-Be sure that your partition labels match the value of their respective
+Be sure that your file system labels match the value of their respective
 @code{device} fields in your @code{file-system} configuration, assuming
 your @code{file-system} configuration sets the value of @code{title} to
 @code{'label}.
@@ -8617,7 +8617,7 @@ instead of full-blown desktop environments would look like this:
 @include os-config-lightweight-desktop.texi
 @end lisp
 
-This example refers to the @file{/boot/efi} partition by its UUID,
+This example refers to the @file{/boot/efi} file system by its UUID,
 @code{1234-ABCD}.  Replace this UUID with the right UUID on your system,
 as returned by the @command{blkid} command.
 
@@ -8881,8 +8881,8 @@ interpreted.
 
 When it is the symbol @code{device}, then the @code{device} field is
 interpreted as a file name; when it is @code{label}, then @code{device}
-is interpreted as a partition label name; when it is @code{uuid},
-@code{device} is interpreted as a partition unique identifier (UUID).
+is interpreted as a file system label name; when it is @code{uuid},
+@code{device} is interpreted as a file system unique identifier (UUID).
 
 UUIDs may be converted from their string representation (as shown by the
 @command{tune2fs -l} command) using the @code{uuid} form@footnote{The
@@ -8900,8 +8900,8 @@ like this:
   (device (uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")))
 @end example
 
-The @code{label} and @code{uuid} options offer a way to refer to disk
-partitions without having to hard-code their actual device
+The @code{label} and @code{uuid} options offer a way to refer to file
+systems without having to hard-code their actual device
 name@footnote{Note that, while it is tempting to use
 @file{/dev/disk/by-uuid} and similar device names to achieve the same
 result, this is not recommended: These special device nodes are created
@@ -18626,7 +18626,7 @@ initialization system.
 
 @item --root=@var{root}
 Mount @var{root} as the root file system.  @var{root} can be a
-device name like @code{/dev/sda1}, a partition label, or a partition
+device name like @code{/dev/sda1}, a file system label, or a file system
 UUID.
 
 @item --system=@var{system}
@@ -18667,7 +18667,7 @@ the root file system specified on the kernel command line via @code{--root}.
 @var{file-systems} are mounted (@pxref{Mapped Devices}).
 @var{helper-packages} is a list of packages to be copied in the initrd. It may
 include @code{e2fsck/static} or other packages needed by the initrd to check
-root partition.
+the root file system.
 
 When @var{qemu-networking?} is true, set up networking with the standard QEMU
 parameters.  When @var{virtio?} is true, load additional modules so that the
