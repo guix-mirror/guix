@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
-;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +28,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.43")
+    (version "0.14.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -36,7 +36,11 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "175xkc4i00axxljc5kgkr30lm1s9hfmz0hrzrsl91rpwpbh500mv"))))
+                "0fxq52w1b05928xp0a333rg23fabj0nykgg7v4gz01f3vrxyydi1"))
+              (modules '((guix build utils)))
+              ;; Delete bundled ("vendored") free software source code.
+              (snippet
+                '(delete-file-recursively "vendor"))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
@@ -49,18 +53,6 @@
        #:install-source? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-bundled-source-code
-           (lambda _
-             ;; Keep the bundled cznic libraries. There are some "internal"
-             ;; cznic libraries that complicate the use of non-bundled copies.
-             (rename-file "src/github.com/syncthing/syncthing/vendor/github.com/cznic"
-                          "cznic")
-             (delete-file-recursively "src/github.com/syncthing/syncthing/vendor")
-             (mkdir-p "src/github.com/syncthing/syncthing/vendor/github.com/")
-             (rename-file "cznic"
-                          "src/github.com/syncthing/syncthing/vendor/github.com/cznic")
-             #t))
-
          (add-before 'build 'increase-test-timeout
            (lambda _
              (substitute* "src/github.com/syncthing/syncthing/build.go"
@@ -129,11 +121,9 @@
        ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
        ("go-github-com-ccding-go-stun"
         ,go-github-com-ccding-go-stun)
+       ("go-github-com-prometheus-union" ,(go-github-com-prometheus-union))
        ("go-github-com-chmduquesne-rollinghash-adler32"
         ,go-github-com-chmduquesne-rollinghash-adler32)
-;       ("go-github-com-cznic-ql" ,go-github-com-cznic-ql) ; bundled
-       ; Used by bundled ql
-       ("go-github-com-edsrzf-mmap-go" ,go-github-com-edsrzf-mmap-go)
        ("go-github-com-gobwas-glob" ,go-github-com-gobwas-glob)
        ("go-github-com-gogo-protobuf-union"
         ,(go-github-com-gogo-protobuf-union))
