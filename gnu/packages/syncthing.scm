@@ -2038,3 +2038,46 @@ extensions for the Go language, namely support for record length-delimited
 message streaming.")
       (home-page "https://github.com/matttproud/golang_protobuf_extensions")
       (license asl2.0))))
+
+(define-public go-github-com-prometheus-common-expfmt
+  (let ((commit "2e54d0b93cba2fd133edc32211dcc32c06ef72ca")
+        (revision "0"))
+    (package
+      (name "go-github-com-prometheus-common-expfmt")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/prometheus/common.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "14kn5w7imcxxlfdqxl21fsnlf1ms7200g3ldy29hwamldv8qlm7j"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/prometheus/common/expfmt"
+         #:unpack-path "github.com/prometheus/common"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map (lambda (file)
+                      (make-file-writable file))
+                    (find-files
+                      (string-append (assoc-ref outputs "out")
+                                     "/src/github.com/prometheus/common/expfmt/testdata/")
+                      ".*\\.gz$"))
+               #t)))))
+      (propagated-inputs
+       `(("go-github-com-golang-protobuf-proto"
+          ,go-github-com-golang-protobuf-proto)
+         ("go-github-com-matttproud-golang-protobuf-extensions-pbutil"
+          ,go-github-com-matttproud-golang-protobuf-extensions-pbutil)
+         ("go-github-com-prometheus-client-model-go"
+          ,go-github-com-prometheus-client-model-go)))
+      (synopsis "Prometheus metrics")
+      (description "This package provides tools for reading and writing
+Prometheus metrics.")
+      (home-page "https://github.com/prometheus/common")
+      (license asl2.0))))
