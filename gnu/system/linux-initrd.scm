@@ -290,7 +290,6 @@ loaded at boot time in the order in which they appear."
       "usb-storage" "uas"                     ;for the installation image etc.
       "usbhid" "hid-generic" "hid-apple"      ;keyboards during early boot
       "dm-crypt" "xts" "serpent_generic" "wp512" ;for encrypted root partitions
-      "nvme"                                     ;for new SSD NVMe devices
       "nls_iso8859-1"                            ;for `mkfs.fat`, et.al
       ,@(if (string-match "^(x86_64|i[3-6]86)-" (%current-system))
             '("pata_acpi" "pata_atiixp"    ;for ATA controllers
