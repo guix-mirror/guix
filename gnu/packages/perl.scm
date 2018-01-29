@@ -7305,6 +7305,30 @@ specification is omitted in the name, then the current package is used.  The
 return value is the sub.")
     (license (package-license perl))))
 
+(define-public perl-sub-quote
+  (package
+    (name "perl-sub-quote")
+    (version "2.004000")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/H/HA/HAARG/Sub-Quote-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1zrh3apxsw1ks25zkh9dcn00656rsvq4mimqz3w8p37s2c1m4qaq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-sub-name" ,perl-sub-name)))
+    (home-page "http://search.cpan.org/dist/Sub-Quote/")
+    (synopsis "Efficient generation of subroutines via string eval")
+    (description "Sub::Quote provides an efficient generation of subroutines
+via string eval.")
+    (license (package-license perl))))
+
 (define-public perl-sub-uplevel
   (package
     (name "perl-sub-uplevel")
