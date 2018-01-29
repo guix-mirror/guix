@@ -1927,3 +1927,29 @@ notification library in Go.")
 Erasure Coding in Go.")
     (home-page "https://github.com/klauspost/reedsolomon")
     (license expat))))
+
+(define-public go-github-com-beorn7-perks-quantile
+  (let ((commit "4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9")
+        (revision "0"))
+    (package
+      (name "go-github-com-beorn7-perks-quantile")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/beorn7/perks.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1hrybsql68xw57brzj805xx2mghydpdiysv3gbhr7f5wlxj2514y"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/beorn7/perks/quantile"
+         #:unpack-path "github.com/beorn7/perks"))
+      (synopsis "Compute approximate quantiles over an unbounded data stream")
+      (description "Perks contains the Go package @code{quantile} that computes
+approximate quantiles over an unbounded data stream within low memory and CPU
+bounds.")
+      (home-page "https://github.com/beorn7/perks")
+      (license expat))))
