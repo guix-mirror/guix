@@ -166,7 +166,7 @@ system.")
   (define (adjust-bootloader os)
     (if (member system %u-boot-systems)
       (operating-system (inherit os)
-        (bootloader (bootloader-configuration
+        (bootloader ((@ (gnu bootloader) bootloader-configuration)
                      (bootloader u-boot-bootloader)
                      (target "/dev/null"))))
       os))
