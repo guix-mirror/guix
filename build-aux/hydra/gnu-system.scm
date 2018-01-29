@@ -163,29 +163,33 @@ system.")
   (define MiB
     (expt 2 20))
 
-  (define (adjust-bootloader os)
-    (if (member system %u-boot-systems)
-      (operating-system (inherit os)
-        (bootloader ((@ (gnu bootloader) bootloader-configuration)
-                     (bootloader u-boot-bootloader)
-                     (target "/dev/null"))))
-      os))
-
   (if (member system %guixsd-supported-systems)
-      (list (->job 'usb-image
-                   (run-with-store store
-                     (mbegin %store-monad
-                       (set-guile-for-build (default-guile))
-                       (system-disk-image (adjust-bootloader installation-os)
-                                          #:disk-image-size
-                                          (* 1024 MiB)))))
-            (->job 'iso9660-image
-                   (run-with-store store
-                     (mbegin %store-monad
-                       (set-guile-for-build (default-guile))
-                       (system-disk-image installation-os
-                                          #:file-system-type
-                                          "iso9660")))))
+      (if (member system %u-boot-systems)
+          (list (->job 'flash-image
+                       (run-with-store store
+                         (mbegin %store-monad
+                           (set-guile-for-build (default-guile))
+                           (system-disk-image
+                            (operating-system (inherit os)
+                             (bootloader (bootloader-configuration
+                                          (bootloader u-boot-bootloader)
+                                          (target #f))))
+                            #:disk-image-size
+                            (* 1024 MiB))))))
+          (list (->job 'usb-image
+                       (run-with-store store
+                         (mbegin %store-monad
+                           (set-guile-for-build (default-guile))
+                           (system-disk-image installation-os
+                                              #:disk-image-size
+                                              (* 1024 MiB)))))
+                (->job 'iso9660-image
+                       (run-with-store store
+                         (mbegin %store-monad
+                           (set-guile-for-build (default-guile))
+                           (system-disk-image installation-os
+                                              #:file-system-type
+                                              "iso9660"))))))
       '()))
 
 (define (system-test-jobs store system)
