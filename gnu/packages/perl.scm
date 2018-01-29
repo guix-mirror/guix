@@ -36,6 +36,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages perl)
+  #:use-module (srfi srfi-1)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
   #:use-module (guix packages)
@@ -5119,6 +5120,37 @@ It allows one to concisely define objects and roles with a convenient syntax
 that avoids the details of Perl's object system.  Moo contains a subset of
 Moose and is optimised for rapid startup.")
     (license (package-license perl))))
+
+;; Some packages don't yet work with this newer version of ‘Moo’.
+(define-public perl-moo-2
+  (package
+    (inherit perl-moo)
+    (name "perl-moo-2")
+    (version "2.003004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+                           "Moo-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qciprcgb4661g2g4ks0fxkx5gbjvn7h9yfg0nzflqz9z0jvdfzq"))))
+    (propagated-inputs
+     `(("perl-role-tiny" ,perl-role-tiny-2)
+       ("perl-sub-name" ,perl-sub-name)
+       ("perl-sub-quote" ,perl-sub-quote)
+       ("perl-strictures" ,perl-strictures-2)
+       ,@(alist-delete "perl-strictures"
+                       (alist-delete "perl-role-tiny"
+                                     (package-propagated-inputs perl-moo)))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-perl-search-path
+           (lambda _
+             ;; Use perl-strictures for testing.
+             (setenv "MOO_FATAL_WARNINGS" "=1")
+             #t)))))))
 
 (define-public perl-moose
   (package
