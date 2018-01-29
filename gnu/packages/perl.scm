@@ -6812,6 +6812,20 @@ and @code{deserialize_regexp}.")
     (description "Role::Tiny is a minimalist role composition tool.")
     (license (package-license perl))))
 
+;; Some packages don't yet work with this newer version of ‘Role::Tiny’.
+(define-public perl-role-tiny-2
+  (package
+    (inherit perl-role-tiny)
+    (version "2.000006")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+                           "Role-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10p3sc639c0nj56bb77a2wg8samyyl8sqpliv3n8c0jaj2642wyc"))))))
+
 (define-public perl-safe-isa
   (package
     (name "perl-safe-isa")
