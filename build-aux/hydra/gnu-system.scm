@@ -170,7 +170,7 @@ system.")
                          (mbegin %store-monad
                            (set-guile-for-build (default-guile))
                            (system-disk-image
-                            (operating-system (inherit os)
+                            (operating-system (inherit installation-os)
                              (bootloader (bootloader-configuration
                                           (bootloader u-boot-bootloader)
                                           (target #f))))
