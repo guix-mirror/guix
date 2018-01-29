@@ -2105,3 +2105,39 @@ Prometheus metrics.")
 system, kernel and process metrics from the pseudo-filesystem @file{/proc}.")
       (home-page "https://github.com/prometheus/procfs")
       (license asl2.0))))
+
+(define-public go-github-com-client-golang-prometheus-promhttp
+  (let ((commit "180b8fdc22b4ea7750bcb43c925277654a1ea2f3")
+        (revision "0"))
+    (package
+      (name "go-github-com-client-golang-prometheus-promhttp")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/prometheus/client_golang.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1kkfx1j9ka18ydsmdi2cdy3hs39c22b39mbc4laykmj2x93lmbdp"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:tests? #f ; The tests require internet access
+         #:import-path "github.com/prometheus/client_golang/prometheus/promhttp"
+         #:unpack-path "github.com/prometheus/client_golang"))
+      (propagated-inputs
+       `(("go-github-com-beorn7-perks-quantile"
+          ,go-github-com-beorn7-perks-quantile)
+         ("go-github-com-golang-protobuf-proto"
+          ,go-github-com-golang-protobuf-proto)
+         ("go-github-com-prometheus-client-model-go"
+          ,go-github-com-prometheus-client-model-go)
+         ("go-github-com-prometheus-common-expfmt"
+          ,go-github-com-prometheus-common-expfmt)
+         ("go-github-com-prometheus-procfs" ,go-github-com-prometheus-procfs)))
+      (synopsis "HTTP server and client tools for Prometheus")
+      (description "This package @code{promhttp} provides HTTP client and
+server tools for Prometheus metrics.")
+      (home-page "https://github.com/prometheus/client_golang")
+      (license asl2.0))))
