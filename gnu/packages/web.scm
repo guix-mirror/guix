@@ -4044,14 +4044,14 @@ a pure C99 library.")
 (define-public uwsgi
   (package
     (name "uwsgi")
-    (version "2.0.12")
+    (version "2.0.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://projects.unbit.it/downloads/uwsgi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02g46dnw5j1iw8fsq392bxbk8d21b9pdgb3ypcinv3b4jzdm2srh"))))
+                "1zvj28wp3c1hacpd4c6ra5ilwvvfq3l8y6gn8i7mnncpddlzjbjp"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (arguments
