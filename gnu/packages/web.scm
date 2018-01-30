@@ -258,7 +258,7 @@ Interface} specification.")
     (synopsis "HTTP and reverse proxy server")
     (description
      "Nginx (\"engine X\") is a high-performance web and reverse proxy server
-created by Igor Sysoev.  It can be used both as a standalone web server
+created by Igor Sysoev.  It can be used both as a stand-alone web server
 and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;; Almost all of nginx is distributed under the bsd-2 license.
     ;; The exceptions are:
