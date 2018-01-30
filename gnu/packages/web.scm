@@ -4995,7 +4995,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.4")
+    (version "10.7")
     (source
      (origin
        (method url-fetch)
@@ -5007,7 +5007,7 @@ functions of Tidy.")
         '(delete-file-recursively "mbedtls"))
        (sha256
         (base32
-         "0m2llzm72s29c32abnj03532m85fawvi8ybjpx6s3mgvx2yvq3p4"))))
+         "0x2zfc8kc6c7rl4gwymwmg13w1c60biv6c6c9fvzpnl59bc9jgin"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; No tests included
