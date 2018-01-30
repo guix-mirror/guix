@@ -1056,7 +1056,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "2.1.4")
+    (version "3.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1064,7 +1064,8 @@ games.")
                               version "-stable.tar.gz"))
               (file-name (string-append name "-" version))
               (sha256
-               (base32 "1mz89nafc1m7srbqvy7iagxrxmqvf5hbqi7i0lwaapkx6q0kpkq7"))))
+               (base32
+                "1jhp269n1a7c663v2555444icbjwzscj4r8cq4rrrap7r7dr4hyc"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
@@ -1140,6 +1141,7 @@ games.")
               ("libwebp" ,libwebp)
               ("libx11" ,libx11)
               ("libxcursor" ,libxcursor)
+              ("libxi" ,libxi)
               ("libxinerama" ,libxinerama)
               ("libxrandr" ,libxrandr)
               ("mesa" ,mesa)
