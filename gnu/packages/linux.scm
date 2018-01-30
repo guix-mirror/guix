@@ -4419,6 +4419,7 @@ the MTP device as a file system.")
       (base32 "0dvscyf47i3j5ay0amncqmqw9kd916689r2pqdvpnsrhp6j46zp1"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--disable-silent-rules")))
+   (native-inputs `(("pkg-config" ,pkg-config)))
    (inputs `(("expat" ,expat) ("libcap" ,libcap) ("check" ,check)
              ("groff" ,groff)           ; for tests
              ("libselinux" ,libselinux)))
