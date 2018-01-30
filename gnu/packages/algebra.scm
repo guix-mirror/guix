@@ -589,6 +589,29 @@ cosine/ sine transforms or DCT/DST).")
                (base32
                 "0wsms8narnbhfsa8chdflv2j9hzspvflblnqdn7hw8x5xdzrnq1v"))))))
 
+(define-public fftw-avx
+  (package
+    (inherit fftw-3.3.7)
+    (name "fftw-avx")
+    (arguments
+     (substitute-keyword-arguments (package-arguments fftw-3.3.7)
+       ((#:configure-flags flags ''())
+        ;; Enable AVX & co.  See details at:
+        ;; <http://fftw.org/fftw3_doc/Installation-on-Unix.html>.
+        `(append '("--enable-avx" "--enable-avx2" "--enable-avx512"
+                   "--enable-avx-128-fma")
+                 ,flags))
+       ((#:substitutable? _ #f)
+        ;; To run the tests, we must have a CPU that supports all these
+        ;; extensions.  Since we cannot be sure that machines in the build
+        ;; farm support them, disable substitutes altogether.
+        #f)
+       ((#:phases _)
+        ;; Since we're not providing binaries, let '-mtune=native' through.
+        '%standard-phases)))
+    (synopsis "Computing the discrete Fourier transform (AVX2-optimized)")
+    (supported-systems '("x86_64-linux"))))
+
 (define-public eigen
   (package
     (name "eigen")
