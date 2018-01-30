@@ -4152,7 +4152,7 @@ you'd expect.")
 (define-public uhttpmock
   (package
     (name "uhttpmock")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -4160,7 +4160,7 @@ you'd expect.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0vniyx341pnnmvxmqacc49k0g7h9a9nhknfslidrqmxj5lm1ini6"))))
+         "163py4klka423x7li2b685gmg3a6hjf074mlff2ajhmi3l0lm8x6"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
