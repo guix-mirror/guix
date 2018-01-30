@@ -1309,7 +1309,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
@@ -1317,12 +1317,23 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0fl5cxfj870rwqmmz3s04wh7wnabb7rnynfj1v3sz37ln8frm7qg"))))
+                "1zxfnw1xbghcj7b3zz5djndv6gwssxda19cz1lrlqrkg8577r7kd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-bdjava-jar")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'refer-to-libxml2-in-.pc-file
+           ;; Avoid the need to propagate libxml2 by referring to it
+           ;; directly, as is already done for fontconfig & freetype.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libxml2 (assoc-ref inputs "libxml2")))
+               (substitute* "configure"
+                 ((" libxml-2.0") ""))
+               (substitute* "src/libbluray.pc.in"
+                 (("^Libs.private:" field)
+                  (string-append field " -L" libxml2 "/lib -lxml2")))
+               #t)))
          (add-before 'build 'fix-dlopen-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libaacs (assoc-ref inputs "libaacs"))
