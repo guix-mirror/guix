@@ -1475,7 +1475,7 @@ encapsulated.")
 (define-public libdvdcss
   (package
     (name "libdvdcss")
-    (version "1.4.0")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/pub/"
@@ -1483,7 +1483,7 @@ encapsulated.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0nl45ifc4xcb196snv9d6hinfw614cqpzcqp92dg43c0hickg290"))))
+                "1b7awvyahivglp7qmgx2g5005kc5npv257gw7wxdprjsnx93f1zb"))))
     (build-system gnu-build-system)
     (home-page "https://www.videolan.org/developers/libdvdcss.html")
     (synopsis "Library for accessing DVDs as block devices")
