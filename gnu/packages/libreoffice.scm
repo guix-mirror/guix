@@ -946,6 +946,12 @@ and to return information on pronunciations, meanings and synonyms.")
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((xmlsec (assoc-ref inputs "xmlsec-src")))
                  (substitute*
+                   "sdext/source/pdfimport/xpdfwrapper/pdfioutdev_gpl.cxx"
+                   ;; This header was renamed in Poppler 0.62.0.
+                   (("UTF8.h") "UnicodeMapFuncs.h")
+                   ;; And mapUCS2() was renamed to mapUTF16().
+                   (("UCS2") "UTF16"))
+                 (substitute*
                    (list "sysui/CustomTarget_share.mk"
                          "solenv/gbuild/gbuild.mk"
                          "solenv/gbuild/platform/unxgcc.mk")
