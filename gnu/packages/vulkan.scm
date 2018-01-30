@@ -149,7 +149,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-icd-loader
   (package
     (name "vulkan-icd-loader")
-    (version "1.0.61.1")
+    (version "1.0.65.2")
     (source
      (origin
        (method url-fetch)
@@ -158,7 +158,7 @@ interpretation of the specifications for these languages.")
              "archive/sdk-" version ".tar.gz"))
        (sha256
         (base32
-         "05g60hk30sbc4rwkh7nrgqdk6hfsi4hwxs54yrysrzr18xpfb8j7"))))
+         "1ivvmb977n2xp95v3sryhflvryy3mxrcwrd1hnr2dmri40vg1sl8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
