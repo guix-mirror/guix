@@ -55,7 +55,7 @@
            (lambda _
              (substitute* "Makefile.in" (("/bin/") ""))
              #t)))))
-    (home-page "http://heasarc.gsfc.nasa.gov/fitsio/fitsio.html")
+    (home-page "https://heasarc.gsfc.nasa.gov/fitsio/fitsio.html")
     (synopsis "Library for reading and writing FITS files")
     (description "CFITSIO provides simple high-level routines for reading and
 writing @dfn{FITS} (Flexible Image Transport System) files that insulate the
