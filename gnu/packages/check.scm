@@ -308,6 +308,36 @@ normally do not detect.  The goal is to detect only real errors in the code
       (home-page "https://github.com/go-check/check")
       (license license:bsd-2))))
 
+(define-public go-github.com-smartystreets-gunit
+  (package
+    (name "go-github.com-smartystreets-gunit")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/smartystreets/gunit")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00m4zg0kdj49mnpmf9klb44ba71p966xsk6zknrzqgfc8119f35z"))))
+    (build-system go-build-system)
+    (arguments
+     '(;; TODO: This package depends on go-github.com-smartystreets-assertions
+       ;; for running the tests, but go-github.com-smartystreets-assertions
+       ;; depends on this package, so break this loop by not running the tests
+       ;; for this package.
+       #:tests? #f
+       #:import-path "github.com/smartystreets/gunit"))
+    (synopsis "Testing tool for Go, in the style of xUnit")
+    (description
+     "@code{gunit} allows the test author to use a struct as the scope for a
+group of related test cases, in the style of xUnit fixtures.  This makes
+extraction of setup/teardown behavior (as well as invoking the system under
+test) much simpler.")
+    (home-page "https://github.com/smartystreets/gunit")
+    (license license:expat)))
+
 (define-public googletest
   (package
     (name "googletest")
