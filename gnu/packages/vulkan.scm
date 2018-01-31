@@ -22,8 +22,10 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages pkg-config)
@@ -194,3 +196,79 @@ and the ICD.")
     (license (list license:asl2.0       ;LICENSE.txt
                    (license:x11-style "file://COPYRIGHT.txt")
                    license:bsd-3))))
+
+(define-public shaderc
+  (let ((commit "773ec22d49f40b7161820f29d953be4a7e40190d")
+        (revision "1"))
+    (package
+     (name "shaderc")
+     (version (string-append "0.0-" revision "." (string-take commit 9)))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/google/shaderc")
+             (commit commit)))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0b41inb1czxv3mciip0lfdxv19ccx2ys31fivfywjn2q8va1gd1f"))))
+     (build-system meson-build-system)
+     (arguments
+      `(#:tests? #f ;; Tests don't work yet.
+        #:phases
+        (modify-phases %standard-phases
+          (replace 'configure
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((out (assoc-ref outputs "out")))
+                     ;; Remove various lines and touch build-version.inc or
+                     ;; configuring won't work.
+                     (invoke "touch" "glslc/src/build-version.inc")
+                     (substitute* "CMakeLists.txt" (("..PYTHON_EXE..*") ""))
+                     (substitute* "CMakeLists.txt"
+                                  ((".*update_build_version.py..*") ""))
+                     (substitute* "CMakeLists.txt"
+                                  ((".*add_custom_target.build-version.*") ""))
+                     (substitute* "CMakeLists.txt"
+                                  ((".*spirv-tools_SOURCE_DIR.*glslang_SOURCE_DIR.*")
+                                   ""))
+                     (substitute* "CMakeLists.txt"
+                                  ((".*Update build-version.inc.*") ""))
+                     (substitute* "CMakeLists.txt" ((".*--check.*") ""))
+                     (substitute* "glslc/src/main.cc" ((".*build-version.inc.*")
+                                                       "\"1\""))
+                     (invoke "cmake" "-GNinja" "-DCMAKE_BUILD_TYPE=Release"
+                                     "-DSHADERC_SKIP_TESTS=ON"
+                                     "-DCMAKE_INSTALL_LIBDIR=lib"
+                                     (string-append "-DCMAKE_INSTALL_PREFIX="
+                                                    out)))))
+          (add-after 'unpack 'unpack-sources
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (let ((spirv-tools-source (assoc-ref %build-inputs
+                                                            "spirv-tools-source"))
+                             (spirv-headers-source (assoc-ref %build-inputs
+                                                              "spirv-headers-source"))
+                             (glslang-source (assoc-ref %build-inputs
+                                                        "glslang-source")))
+                         (mkdir-p "third-party/spirv-tools")
+                         (copy-recursively spirv-tools-source
+                                           "third_party/spirv-tools")
+                         (mkdir-p "third-party/spirv-tools/external/spirv-headers")
+                         (copy-recursively spirv-headers-source
+                                           (string-append "third_party/spirv-tools"
+                                                          "/external/spirv-headers"))
+                         (mkdir-p "third-party/glslang")
+                         (copy-recursively glslang-source
+                                           "third_party/glslang")
+                         #t))))))
+     (inputs `(("python" ,python)))
+     (native-inputs `(("cmake" ,cmake)
+                      ("glslang-source", (package-source glslang))
+                      ("pkg-config", pkg-config)
+                      ("spirv-headers-source", (package-source spirv-headers))
+                      ("spirv-tools-source", (package-source spirv-tools))))
+     (home-page "https://github.com/google/shaderc")
+     (synopsis "Tools for shader compilation")
+     (description "Shaderc is a collection of tools, libraries and tests for
+shader compilation.")
+     (license license:asl2.0))))
