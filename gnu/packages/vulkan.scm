@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,8 +31,10 @@
   #:use-module (gnu packages xorg))
 
 (define-public spirv-headers
-  (let ((commit "98b01515724c428d0f0a5d01deffcce0f5f5e61c")
-        (revision "1"))
+  ;; Keep updated in accordance with
+  ;; https://github.com/google/shaderc/blob/known-good/known_good.json
+  (let ((commit "061097878467b8e040fbf153a837d844ef9f9f96")
+        (revision "2"))
     (package
       (name "spirv-headers")
       (version (string-append "0.0-" revision "." (string-take commit 9)))
@@ -44,7 +46,7 @@
                (commit commit)))
          (sha256
           (base32
-           "15bknwkv3xwmjs3lmkp282a1wrp0da1b4lp45i4yiav04zmqygj2"))
+           "0bf9h6xc5fkncxnadwmqvpsjh7sdgns6is8prv1gvlfzrkvpjj17"))
          (file-name (string-append name "-" version "-checkout"))))
       (build-system cmake-build-system)
       (arguments
