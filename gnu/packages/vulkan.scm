@@ -74,36 +74,41 @@ and for the GLSL.std.450 extended instruction set.
                                commit "/LICENSE"))))))
 
 (define-public spirv-tools
-  (package
-    (name "spirv-tools")
-    (version "2017.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/KhronosGroup/SPIRV-Tools/archive/v"
-                           version ".tar.gz"))
+  ;; Keep updated in accordance with
+  ;; https://github.com/google/shaderc/blob/known-good/known_good.json
+  (let ((commit "90862fe4b1c6763b32ce683d2d32c2f281f577cf")
+        (revision "1"))
+    (package
+     (name "spirv-tools")
+     (version (string-append "0.0-" revision "." (string-take commit 9)))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/SPIRV-Tools")
+             (commit commit)))
        (sha256
         (base32
-         "009vflaa71a7xhvmm23f4sdbcgdkl1k4facqkwsg6djha2sdpsqq"))
-       (file-name (string-append name "-" version ".tar.gz"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags (list (string-append "-DCMAKE_INSTALL_LIBDIR="
-                                              (assoc-ref %outputs "out")
-                                              "/lib")
-                               (string-append "-DSPIRV-Headers_SOURCE_DIR="
-                                              (assoc-ref %build-inputs
-                                                         "spirv-headers")))))
-    (inputs `(("spirv-headers" ,spirv-headers)))
-    (native-inputs `(("pkg-config", pkg-config)
-                     ("python" ,python)))
-    (home-page "https://github.com/KhronosGroup/SPIRV-Tools")
-    (synopsis "API and commands for processing SPIR-V modules")
-    (description
-     "The SPIR-V Tools project provides an API and commands for processing
+         "1yq8ab6f52wcxm2azzmx70nqz8l35izd45830aikjkk1jfzmzabb"))
+       (file-name (string-append name "-" version "-checkout"))))
+     (build-system cmake-build-system)
+     (arguments
+      `(#:configure-flags (list (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                               (assoc-ref %outputs "out")
+                                               "/lib")
+                                (string-append "-DSPIRV-Headers_SOURCE_DIR="
+                                               (assoc-ref %build-inputs
+                                                          "spirv-headers")))))
+     (inputs `(("spirv-headers" ,spirv-headers)))
+     (native-inputs `(("pkg-config", pkg-config)
+                      ("python" ,python)))
+     (home-page "https://github.com/KhronosGroup/SPIRV-Tools")
+     (synopsis "API and commands for processing SPIR-V modules")
+     (description
+      "The SPIR-V Tools project provides an API and commands for processing
 SPIR-V modules.  The project includes an assembler, binary module parser,
 disassembler, validator, and optimizer for SPIR-V.")
-    (license license:asl2.0)))
+     (license license:asl2.0))))
 
 (define-public glslang
   ;; Version 3.0 is too old for vulkan-icd-loader. Use a recent git commit
