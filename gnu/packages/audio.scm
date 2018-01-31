@@ -1646,6 +1646,33 @@ essential distortions.")
 implementation of the Open Sound Control (OSC) protocol.")
     (license license:lgpl2.1+)))
 
+(define-public python-pyaudio
+  (package
+    (name "python-pyaudio")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://pypi.python.org/packages/ab/42/"
+         "b4f04721c5c5bfc196ce156b3c768998ef8c0ae3654ed29ea5020c749a6b"
+         "/PyAudio-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0x7vdsigm7xgvyg3shd3lj113m8zqj2pxmrgdyj66kmnw0qdxgwk"))))
+    (build-system python-build-system)
+    (inputs
+     `(("portaudio" ,portaudio)))
+    (home-page "https://people.csail.mit.edu/hubert/pyaudio/")
+    (synopsis "Bindings for PortAudio v19")
+    (description "This package provides bindings for PortAudio v19, the
+cross-platform audio input/output stream library.")
+    (license license:expat)))
+
+(define-public python2-pyaudio
+  (package-with-python2 python-pyaudio))
+
 (define-public python-pyliblo
   (package
     (name "python-pyliblo")
