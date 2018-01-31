@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 David Craven <david@craven.ch>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -24,6 +24,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -33,6 +34,7 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
@@ -309,3 +311,76 @@ coreboot.")
 Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
     (license (list license:expat
                    license:bsd-2 license:bsd-3 license:bsd-4))))
+
+(define* (make-arm-trusted-firmware platform #:optional (arch "aarch64"))
+  (package
+    (name (string-append "arm-trusted-firmware-" platform))
+    (version "1.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               ;; There are only GitHub generated release snapshots.
+               (url "https://github.com/ARM-software/arm-trusted-firmware.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name "arm-trusted-firmware" version))
+       (sha256
+        (base32
+         "1gm0bn2llzfzz9bfsz11fhwxj5lxvyrq7bc13fjj033nljzxn7k8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure script
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (bin (find-files "." ".*\\.bin$")))
+               (for-each
+                 (lambda (file)
+                   (install-file file out))
+                 bin))
+             #t)))
+       #:make-flags (list (string-append "PLAT=" ,platform)
+                          ,@(if (and (not (string-prefix? "aarch64"
+                                                          (%current-system)))
+                                     (string-prefix? "aarch64" arch))
+                              `("CROSS_COMPILE=aarch64-linux-gnu-")
+                              '())
+                          ,@(if (and (not (string-prefix? "armhf"
+                                                          (%current-system)))
+                                     (string-prefix? "armhf" arch))
+                              `("CROSS_COMPILE=arm-linux-gnueabihf-")
+                              '())
+                          "DEBUG=1")
+       #:tests? #f)) ; no tests
+    (native-inputs
+     `(,@(if (and (not (string-prefix? "aarch64" (%current-system)))
+                  (string-prefix? "aarch64" arch))
+           ;; gcc-7 since it is used for u-boot, which needs gcc-7.
+           `(("cross-gcc" ,(cross-gcc "aarch64-linux-gnu" #:xgcc gcc-7))
+             ("cross-binutils" ,(cross-binutils "aarch64-linux-gnu")))
+           '())
+       ,@(if (and (not (string-prefix? "armhf" (%current-system)))
+                  (string-prefix? "armhf" arch))
+           ;; gcc-7 since it is used for u-boot, which needs gcc-7.
+           `(("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf" #:xgcc gcc-7))
+             ("cross-binutils" ,(cross-binutils "arm-linux-gnueabihf")))
+           '())
+        ))
+    (home-page "https://github.com/ARM-software/arm-trusted-firmware")
+    (synopsis "Implementation of \"secure world software\"")
+    (description
+     "ARM Trusted Firmware provides a reference implementation of secure world
+software for ARMv7A and ARMv8-A, including a Secure Monitor executing at
+@dfn{Exception Level 3} (EL3).  It implements various ARM interface standards,
+such as:
+@enumerate
+@item The Power State Coordination Interface (PSCI)
+@item Trusted Board Boot Requirements (TBBR, ARM DEN0006C-1)
+@item SMC Calling Convention
+@item System Control and Management Interface
+@item Software Delegated Exception Interface (SDEI)
+@end enumerate\n")
+    (license (list license:bsd-3
+                   license:bsd-2)))) ; libfdt
