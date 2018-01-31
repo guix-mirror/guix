@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages gcc)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -157,3 +159,41 @@ are both guaranteed, thanks to interval computation, and accurate, thanks to
 multiple-precision arithmetic.")
     (license lgpl2.1+)
     (home-page "https://perso.ens-lyon.fr/nathalie.revol/software.html")))
+
+(define-public qd
+  (package
+    (name "qd")
+    (version "2.3.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://crd.lbl.gov/~dhbailey/mpdist/qd-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0vkihcj9fyv2cycq8515713gbs3yskhmivy8bznvx72i6ddnn2c1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (arguments
+     `(#:configure-flags `("--disable-enable_fma" ;weird :/
+                           "--enable-shared"
+                           ,,@(if (string-prefix? "aarch64"
+                                                  (or (%current-target-system)
+                                                      (%current-system)))
+                                  ;; XXX: The qd_test test fails numerical
+                                  ;; accuracy checks for 'dd_real::exp()' on
+                                  ;; aarch64 with GCC 5.4 at -O2.  Disabling
+                                  ;; expensive optimizations lets it pass.
+                                  '("CXXFLAGS=-O3 -fno-expensive-optimizations")
+                                  '("CXXFLAGS=-O3")))))
+    (home-page "http://crd-legacy.lbl.gov/~dhbailey/mpdist/")
+    (synopsis "Double-double and quad-double library")
+    (description "This package supports both a double-double
+datatype (approx. 32 decimal digits) and a quad-double datatype (approx. 64
+decimal digits).  The computational library is written in C++.  Both C++ and
+Fortran-90 high-level language interfaces are provided to permit one to
+convert an existing C++ or Fortran-90 program to use the library with only
+minor changes to the source code.  In most cases only a few type statements
+and (for Fortran-90 programs) read/write statements need to be changed.  PSLQ
+and numerical quadrature programs are included.")
+    (license bsd-3)))
