@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
@@ -257,7 +257,7 @@ cloc can handle a greater variety of programming languages.")
 (define-public the-silver-searcher
   (package
     (name "the-silver-searcher")
-    (version "2.0.0")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -265,7 +265,7 @@ cloc can handle a greater variety of programming languages.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "04wm3r5p2mgv8mdkvysak0d5199h5y0yzl032624brfxpzmqfcq0"))))
+                "1m0mih1x4jpswc8ganhqh0gmwbmd2hzmz7402mxfh19s3kcjnrfl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
