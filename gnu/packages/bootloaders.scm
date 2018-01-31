@@ -401,7 +401,7 @@ also initializes the boards (RAM etc).")
                                                                  suffix-len))))))
                        #f)))))
            (replace 'install
-             (lambda* (#:key outputs make-flags #:allow-other-keys)
+             (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (libexec (string-append out "/libexec"))
                       (uboot-files (append
