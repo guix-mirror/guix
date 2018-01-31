@@ -55,7 +55,7 @@
     (home-page "http://heasarc.gsfc.nasa.gov/fitsio/fitsio.html")
     (synopsis "Library for reading and writing FITS files")
     (description "CFITSIO provides simple high-level routines for reading and
-writing FITS (Flexible Image Transport System) files that insulate the
+writing @dfn{FITS} (Flexible Image Transport System) files that insulate the
 programmer from the internal complexities of the FITS format. CFITSIO also
 provides many advanced features for manipulating and filtering the information
 in FITS files.")
