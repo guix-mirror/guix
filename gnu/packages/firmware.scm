@@ -384,3 +384,23 @@ such as:
 @end enumerate\n")
     (license (list license:bsd-3
                    license:bsd-2)))) ; libfdt
+
+(define-public arm-trusted-firmware-pine64-plus
+  (let ((base (make-arm-trusted-firmware "sun50iw1p1"))
+        ;; Vendor's arm trusted firmware branch hasn't been upstreamed yet.
+        (commit "ae78724247a01560164d607ed66db111c74d8df0")
+        (revision "1"))
+    (package
+      (inherit base)
+      (name "arm-trusted-firmware-pine64-plus")
+      (version (string-append "1.2-" revision "." (string-take commit 7)))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/apritzel/arm-trusted-firmware.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "0r4xnlq7v9khjfcg6gqp7nmrmnw4z1r8bipwdr07png1dcbb8214")))))))
