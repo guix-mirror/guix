@@ -393,7 +393,7 @@ functionality such as HTML output.")
 (define-public rtags
   (package
     (name "rtags")
-    (version "2.16")
+    (version "2.18")
     (home-page "https://github.com/Andersbakken/rtags")
     (source
      (origin
@@ -414,7 +414,7 @@ functionality such as HTML output.")
                 (string-append "#include <rct/" header ">"))))))
        (sha256
         (base32
-         "17rkci3mmiw93qc32b9x76pg57b0lx80avr6wnmh190jx8n3v3wy"))))
+         "0scjbp1z201q8njvrxqz7lk2m9b6k2rxd5q1shrng6532r7ndif2"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
