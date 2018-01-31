@@ -422,7 +422,7 @@ also initializes the boards (RAM etc).")
                (let* ((out (assoc-ref outputs "out"))
                       (libexec (string-append out "/libexec"))
                       (uboot-files (append
-                                    (find-files "." ".*\\.(bin|efi|img|spl)$")
+                                    (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb)$")
                                     (find-files "." "^MLO$"))))
                  (mkdir-p libexec)
                  (install-file ".config" libexec)
