@@ -54,6 +54,7 @@
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match))
@@ -227,7 +228,32 @@ integrate Windows applications into your desktop.")
                 "1pjaxj7h3q6y356np908fvsx0bf7yx5crqvgl4hza6gfssdmsr5r"))))
     (inputs `(("gtk+", gtk+)
               ("libva", libva)
+              ("vulkan-icd-loader" ,vulkan-icd-loader)
               ,@(package-inputs wine)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'hardcode-libvulkan-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((libvulkan (string-append (assoc-ref %build-inputs
+                               "vulkan-icd-loader") "/lib/libvulkan.so")))
+               ;; Hard-code the path to libvulkan.so.
+               (substitute* "dlls/vulkan/vulkan_thunks.c" (("libvulkan.so")
+                            libvulkan))
+               #t)))
+         (add-after 'configure 'patch-dlopen-paths
+           ;; Hardcode dlopened sonames to absolute paths.
+           (lambda _
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-so (lambda (soname)
+                               (search-path library-path soname))))
+               (substitute* "include/config.h"
+                 (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
+                  (format #f "~a\"~a\"" defso (find-so soname))))
+               #t))))
+       ,@(strip-keyword-arguments '(#:phases)
+                                  (package-arguments wine))))
     (synopsis "Implementation of the Windows API (staging branch, 32-bit only)")
     (description "Wine-Staging is the testing area of Wine.  It
 contains bug fixes and features, which have not been integrated into
