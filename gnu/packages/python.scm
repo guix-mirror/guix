@@ -26,7 +26,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
@@ -8561,28 +8561,73 @@ are synchronized with data exchanges on \"channels\".")
 (define-public python-gevent
   (package
     (name "python-gevent")
-    (version "1.1.1")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gevent" version))
               (sha256
                (base32
-                "1smf3kvidpdiyi2c81alal74p2zm0clrm6xbyy6y1k9a3f2vkrbf"))
+                "0bbbjvi423y9k9xagrcsimnayaqymg6f2dj76m9z3mjpkjpci4a7"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; unbunding libev and c-ares
-                  (for-each delete-file-recursively '("libev" "c-ares"))
-                  ;; fixing testsuite
-                  (call-with-output-file "greentest/__init__.py" noop)
-                  (substitute* "greentest/testrunner.py"
-                    (("import util") "from . import util")
-                    (("from util import log") "from .util import log"))))))
+                  (delete-file-recursively "deps")
+                  #t))))
     (build-system python-build-system)
+    (arguments
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'unpack-libev
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (mkdir-p "deps/libev")
+                      ;; FIXME: gevent requires building libev, even though
+                      ;; it only links against the proper one.
+                      (invoke "tar" "-xf" (assoc-ref inputs "libev-source")
+                              "--strip-components=1" "-C" "deps/libev")))
+                  (add-before 'patch-source-shebangs 'patch-hard-coded-paths
+                    (lambda _
+                      (substitute* "src/gevent/subprocess.py"
+                        (("/bin/sh") (which "sh")))
+                      (for-each (lambda (file)
+                                  (substitute* file
+                                    (("/bin/sh") (which "sh"))
+                                    (("/bin/true") (which "true"))))
+                                (find-files "src/greentest" "\\.py$"))
+                      #t))
+                  (add-before 'build 'do-not-use-bundled-sources
+                    (lambda _
+                      (setenv "CONFIG_SHELL" (which "bash"))
+                      (setenv "LIBEV_EMBED" "false")
+                      (setenv "CARES_EMBED" "false")
+                      (setenv "EMBED" "false")
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      ;; Make sure the build directory is on PYTHONPATH.
+                      (setenv "PYTHONPATH"
+                              (string-append
+                               (getenv "PYTHONPATH") ":"
+                               (getcwd) "/build/"
+                               (car (scandir "build" (cut string-prefix? "lib." <>)))))
+                      (with-directory-excursion "src/greentest"
+                        ;; XXX: Many tests require network access.  Instead we only
+                        ;; run known-good tests.  Unfortunately we cannot use
+                        ;; recursion here since this directory also contains
+                        ;; Python-version-specific subfolders.
+                        (apply invoke "python" "testrunner.py" "--config"
+                               "known_failures.py"
+                               (scandir "." (cut regexp-exec
+                                                 (make-regexp "test_+(subprocess|core)")
+                                                 <>)))))))))
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)))
     (native-inputs
-     `(("python-six" ,python-six)))
+     `(("libev-source" ,(package-source libev))
+       ("python-six" ,python-six)))
     (inputs
      `(("c-ares" ,c-ares)
        ("libev" ,libev)))
