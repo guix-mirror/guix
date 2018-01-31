@@ -111,10 +111,10 @@ disassembler, validator, and optimizer for SPIR-V.")
      (license license:asl2.0))))
 
 (define-public glslang
-  ;; Version 3.0 is too old for vulkan-icd-loader. Use a recent git commit
-  ;; until the next stable version.
-  (let ((commit "471bfed0621162a7513fc24a51e8a1ccc2e640ff")
-        (revision "1"))
+  ;; Keep updated in accordance with
+  ;; https://github.com/google/shaderc/blob/known-good/known_good.json
+  (let ((commit "b5b08462442239e6537315ea1405b6afcd53043e")
+        (revision "2"))
     (package
       (name "glslang")
       (version (string-append "3.0-" revision "." (string-take commit 9)))
@@ -126,7 +126,7 @@ disassembler, validator, and optimizer for SPIR-V.")
                (commit commit)))
          (sha256
           (base32
-           "0m2vljmrqppp80ghbbwfnayqw2canxlcjhgy6jw9xjdssln0d3pd"))
+           "08imby3hciisshzacrkx8s56lx4fxm7dad06xxaxxcapinmqrvwk"))
          (file-name (string-append name "-" version "-checkout"))))
       (build-system cmake-build-system)
       (arguments
