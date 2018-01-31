@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -3652,3 +3652,56 @@ parametrized transition systems with states represented as arrays indexed by
 an arbitrary number of processes.  Cache coherence protocols and mutual
 exclusion algorithms are typical examples of such systems.")
     (license license:asl2.0)))
+
+(define-public elemental
+  (package
+    (name "elemental")
+    (version "0.87.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/elemental/Elemental/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nfp82w22pi8x8fg9sc37z8kf84dqi1dhxp8bbk7571y4aygvv3v"))))
+    (build-system cmake-build-system)
+    (home-page "http://libelemental.org")
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (inputs
+     `(("blas" ,openblas)
+       ("gfortran:lib" ,gfortran "lib")
+       ("gmp" ,gmp)
+       ("lapack" ,lapack)
+       ("metis" ,metis)
+       ("mpc" ,mpc)
+       ("mpfr" ,mpfr)
+       ("mpi" ,openmpi)
+       ("qd" ,qd)))
+    (arguments
+     `(#:build-type "Release"           ;default RelWithDebInfo not supported
+       #:configure-flags `("-DEL_DISABLE_PARMETIS:BOOL=YES"
+                           "-DEL_AVOID_COMPLEX_MPI:BOOL=NO"
+                           "-DEL_CACHE_WARNINGS:BOOL=YES"
+                           "-DEL_TESTS:BOOL=YES"
+                           "-DCMAKE_INSTALL_LIBDIR=lib"
+                           "-DGFORTRAN_LIB=gfortran")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'setup-tests
+                    (lambda _
+                      ;; Parallelism is done at the MPI layer.
+                      (setenv "OMP_NUM_THREADS" "1")
+                      #t))
+                  (add-after 'install 'remove-tests
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Tests are installed, with no easy configuration
+                      ;; switch to prevent this, so delete them.
+                      (delete-file-recursively
+                       (string-append (assoc-ref outputs "out") "/bin"))
+                      #t)))))
+    (synopsis "Dense and sparse-direct linear algebra and optimization")
+    (description "Elemental is a modern C++ library for distributed-memory
+dense and sparse-direct linear algebra, conic optimization, and lattice
+reduction.")
+    (license license:bsd-2)))
