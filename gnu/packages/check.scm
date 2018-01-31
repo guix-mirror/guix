@@ -338,6 +338,31 @@ test) much simpler.")
     (home-page "https://github.com/smartystreets/gunit")
     (license license:expat)))
 
+(define-public go-github.com-smartystreets-assertions
+  (package
+    (name "go-github.com-smartystreets-assertions")
+    (version "1.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/smartystreets/assertions")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1j0adgbykl55rf2945g0n5bmqdsnjcqlx5dcmpfh4chki43hiwg9"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/smartystreets/assertions"))
+    (native-inputs
+     `(("go-github.com-smartystreets-gunit" ,go-github.com-smartystreets-gunit)))
+    (synopsis "Assertions for testing with Go")
+    (description
+     "The @code{assertions} package provides convinient assertion functions
+for writing tests in Go.")
+    (home-page "https://github.com/smartystreets/assertions")
+    (license license:expat)))
+
 (define-public googletest
   (package
     (name "googletest")
