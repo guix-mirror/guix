@@ -49,6 +49,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages time)
@@ -1177,9 +1178,9 @@ seamlessly into your existing Python unit testing work flow.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (invoke "py.test"))))))
+             (invoke "python" "lit.py" "tests"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("llvm" ,llvm)))
     (home-page "https://llvm.org/")
     (synopsis "LLVM Software Testing Tool")
     (description "@code{lit} is a portable tool for executing LLVM and Clang
