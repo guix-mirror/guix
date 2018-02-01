@@ -1115,15 +1115,17 @@ access to mpv's powerful playback capabilities.")
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.6.1")
+    (version "1.7.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://storage.googleapis.com/"
-                                  "downloads.webmproject.org/releases/webm/"
-                                  name "-" version ".tar.bz2"))
+              ;; XXX: Upstream does not provide tarballs for > 1.6.1.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://chromium.googlesource.com/webm/libvpx")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "06d8hqjkfs6wl45qf4pwh1kpbvkx6cwywd5y8d4lgagvjwm0qb0w"))
+                "0vvh89hvp8qg9an9vcmwb7d9k3nixhxaz6zi65qdjnd0i56kkcz6"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
