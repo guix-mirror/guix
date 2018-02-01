@@ -707,7 +707,7 @@ static files.")
        ("stemming" ,python2-stemming)
        ("translate-toolkit" ,python2-translate-toolkit)))
     (native-inputs
-     `(("python2-pytest-warnings" ,python2-pytest-warnings)
+     `(("python2-pytest" ,python2-pytest)
        ("python2-pytest-django" ,python2-pytest-django)
        ("python2-pytest-catchlog" ,python2-pytest-catchlog)
        ("python2-pytest-cov" ,python2-pytest-cov)
