@@ -25,7 +25,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
@@ -1391,10 +1391,15 @@ recognize TestCases.")
     (description
      "Python-pytest-warnings is a pytest plugin to list Python warnings in
 pytest report.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest-warnings))
+                  ;; This package is part of pytest as of version 3.1.0.
+                  (superseded . ,python-pytest)))))
 
 (define-public python2-pytest-warnings
-  (package-with-python2 python-pytest-warnings))
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-pytest-warnings)))
+           (properties `((superseded . ,python2-pytest)))))
 
 (define-public python-pytest-capturelog
   (package
