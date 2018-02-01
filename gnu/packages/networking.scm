@@ -1618,7 +1618,7 @@ displays the results in real time.")
        ("openssl" ,openssl)))
     (native-inputs
      `(("coreutils" ,coreutils)
-       ("tzdata" ,tzdata-2017a)))
+       ("tzdata" ,tzdata-for-tests)))
     (synopsis "IKEv1/v2 keying daemon")
     (description "StrongSwan is an IPsec implementation originally based upon
 the FreeS/WAN project.  It contains support for IKEv1, IKEv2, MOBIKE, IPv6,
