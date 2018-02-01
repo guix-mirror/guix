@@ -62,7 +62,7 @@
              (zero? (system* "python" "tests/runtests.py")))))))
     ;; TODO: Install extras/django_bash_completion.
     (native-inputs
-     `(("tzdata", tzdata)
+     `(("tzdata", tzdata-for-tests)
        ;; bcrypt and argon2-cffi are extra requirements not yet in guix
        ;;("python-argon2-cffi" ,python-argon2-cffi) ; >= 16.1.0
        ;;("python-bcrypt" ,python-bcrypt) ; not py-bcrypt!
