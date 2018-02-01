@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -167,16 +167,15 @@ implementation offers several extensions over the standard utility.")
 (define-public tar
   (package
    (name "tar")
-   (version "1.29")
+   (version "1.30")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "097hx7sbzp8qirl4m930lw84kn0wmxhmq7v1qpra3mrg0b8cyba0"))
-            (patches (search-patches "tar-CVE-2016-6321.patch"
-                                     "tar-skip-unreliable-tests.patch"))))
+              "1lyjyk8z8hdddsxw0ikchrsfg3i0x3fsh7l63a8jgaz1n7dr5gzi"))
+            (patches (search-patches "tar-skip-unreliable-tests.patch"))))
    (build-system gnu-build-system)
    ;; Note: test suite requires ~1GiB of disk space.
    (arguments
