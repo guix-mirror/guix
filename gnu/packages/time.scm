@@ -13,7 +13,6 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,14 +142,14 @@ Pendulum instances.")
 (define-public python-dateutil
   (package
     (name "python-dateutil")
-    (version "2.6.1")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-dateutil" version))
        (sha256
         (base32
-         "1jkahssf0ir5ssxc3ydbp8cpv77limn8d4s77szb2nrgl2r3h749"))))
+         "1lhq0hxjc3cfha101q02ld5ijlpfyjn2w1yh7wvpiy367pgzi8k2"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
