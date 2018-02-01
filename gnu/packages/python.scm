@@ -5446,14 +5446,14 @@ complexity of Python source code.")
 (define-public python-flake8-polyfill
   (package
     (name "python-flake8-polyfill")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "flake8-polyfill" version))
        (sha256
         (base32
-         "02gn2wxvh9vnf7m7dld7ca4l60mg5c370hv3swwppkngwaqmcw67"))))
+         "1nlf1mkqw856vi6782qcglqhaacb23khk9wkcgn55npnjxshhjz4"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -5467,6 +5467,7 @@ complexity of Python source code.")
     (native-inputs
      `(("python-flake8" ,python-flake8)
        ("python-mock" ,python-mock)
+       ("python-pep8" ,python-pep8)
        ("python-pycodestyle" ,python-pycodestyle)
        ("python-pytest" ,python-pytest)))
     (home-page "https://gitlab.com/pycqa/flake8-polyfill")
