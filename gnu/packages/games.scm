@@ -5239,6 +5239,54 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
     (home-page "http://quakespasm.sourceforge.net/")
     (license license:gpl2+)))
 
+(define-public vkquake
+  (package
+    (inherit quakespasm)
+    (name "vkquake")
+    (version "0.97.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Novum/vkQuake/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p0nh2v2ilylw62fxc5qpfcmyhs0s64w8sgh036nc6kn21kbjc0d"))))
+    (arguments
+     `(#:make-flags
+       (let ((vulkanlib (string-append (assoc-ref %build-inputs
+                                                  "vulkan-icd-loader") "/lib")))
+         (list "CC=gcc"
+               "MP3LIB=mpg123"
+               "USE_CODEC_FLAC=1"
+               "USE_CODEC_MIKMOD=1"
+               "USE_SDL2=1"
+               (string-append "LDFLAGS=-Wl,-rpath=" vulkanlib)
+               "-CQuake"))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'unpack 'fix-makefile-paths
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((vulkan (assoc-ref %build-inputs
+                                               "vulkan-icd-loader"))
+                            (out (assoc-ref outputs "out")))
+                        (mkdir-p (string-append out "/bin"))
+                        (substitute* "Quake/Makefile" ((" /usr")
+                                                       (string-append " " out)))
+                        (substitute* "Quake/Makefile" (("/games")
+                                                       (string-append "/bin")))
+                        (substitute* "Quake/Makefile" (("..VULKAN_SDK.") vulkan))
+                        #t))))
+       ,@(strip-keyword-arguments '(#:make-flags #:phases)
+                                  (package-arguments quakespasm))))
+    (inputs `(("vulkan-icd-loader" ,vulkan-icd-loader)
+              ,@(package-inputs quakespasm)))
+    (description "vkquake is a modern engine for id software's Quake 1.
+It includes support for 64 bit CPUs, custom music playback, a new sound driver,
+some graphical niceities, and numerous bug-fixes and other improvements.")
+    (home-page "https://github.com/Novum/vkQuake")))
+
 (define-public yamagi-quake2
   (package
     (name "yamagi-quake2")
