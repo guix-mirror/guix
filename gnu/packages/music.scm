@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1050,22 +1050,10 @@ complete studio.")
          (add-after 'unpack 'fix-configuration
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "default.config"
-               (("csound=csound")
-                (string-append "csound="
-                               (assoc-ref inputs "csound")
-                               "/bin/csound"))
-               (("/usr/bin/aplay")
-                (string-append (assoc-ref inputs "aplay")
-                               "/bin/aplay"))
-               (("/usr/bin/timidity")
-                (string-append (assoc-ref inputs "timidity")
-                               "/bin/timidity"))
-               (("/usr/bin/mpg123")
-                (string-append (assoc-ref inputs "mpg123")
-                               "/bin/mpg123"))
-               (("/usr/bin/ogg123")
-                (string-append (assoc-ref inputs "ogg123")
-                               "/bin/ogg123")))
+               (("/usr/bin/aplay" "aplay"))
+               (("/usr/bin/timidity") "timidity")
+               (("/usr/bin/mpg123") "mpg123")
+               (("/usr/bin/ogg123") "ogg123"))
              #t))
          (add-before 'build 'patch-python-shebangs
            (lambda _
@@ -1105,13 +1093,7 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
        ("pygtk" ,python2-pygtk)
        ("gettext" ,gettext-minimal)
        ("gtk" ,gtk+)
-       ("lilypond" ,lilypond)
-       ;; players needed at runtime
-       ("aplay" ,alsa-utils)
-       ("csound" ,csound) ; optional, needed for some exercises
-       ("mpg123" ,mpg123)
-       ("ogg123" ,vorbis-tools)
-       ("timidity" ,timidity++)))
+       ("lilypond" ,lilypond)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("txt2man" ,txt2man)
