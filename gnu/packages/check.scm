@@ -1577,6 +1577,15 @@ JSON APIs with Behave.")
           (base32
             "11x5nx5b4wdq04s7vj1gcdl07jvvkfb37p0r5lg773gr5rr8mj6h"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-setup.py
+                    (lambda _
+                      ;; Six is only required for tests and later versions
+                      ;; work fine.
+                      (substitute* "setup.py"
+                        (("six==1.10.0") "six"))
+                      #t)))))
     (propagated-inputs
      `(("python-colorama" ,python-colorama)
        ("python-termstyle" ,python-termstyle)))
