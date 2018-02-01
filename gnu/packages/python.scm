@@ -822,15 +822,15 @@ Python 3 support.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://bitbucket.org/emptypage/uniseg-python/"
-                           "get/rel-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "uniseg" version ".zip"))
        (sha256
         (base32
-         "1df4gddnj2a0v8z35wb2ra5vvh1f1qyxs8fgd25c8g64031mna6x"))))
+         "05jsazvz6nbmh6l3v1rph5ydkqn1hzx1pyggdyvgp2qgmgrnmiz2"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; The test suite requires network access.
+    (native-inputs
+     `(("unzip" ,unzip)))
     (home-page
      "https://bitbucket.org/emptypage/uniseg-python")
     (synopsis

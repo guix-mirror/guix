@@ -4855,6 +4855,32 @@ To make YASnippet aware of these snippets, add the above directory to
 @code{yas-snippet-dirs}.")
       (license license:expat))))
 
+(define-public emacs-helm-c-yasnippet
+  (let ((commit "65ca732b510bfc31636708aebcfe4d2d845b59b0")
+        (revision "1"))
+    (package
+      (name "emacs-helm-c-yasnippet")
+      (version (string-append "0.6.7" "-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-jp/helm-c-yasnippet")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1cbafjqlzxbg19xfdqsinsh7afq58gkf44rsg1qxfgm8g6zhr7f8"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-yasnippet" ,emacs-yasnippet)))
+      (home-page "https://github.com/emacs-jp/helm-c-yasnippet")
+      (synopsis "Helm integration for Yasnippet")
+      (description "This Emacs library provides Helm interface for
+Yasnippet.")
+      (license license:gpl2+))))
+
 (define-public emacs-memoize
   (package
    (name "emacs-memoize")
@@ -6869,3 +6895,27 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
 @code{ogg123}, @code{speexdec}, @code{timidity}, @code{mikmod} and
 @code{afplay}.")
     (license license:gpl2+)))
+
+(define-public groovy-emacs-modes
+  (package
+    (name "groovy-emacs-modes")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Groovy-Emacs-Modes/" name
+                    "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15j0hnkx9nppjzda5cqsxxz5f3bq9hc4xfyjcdypzqiypcvmpa39"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes")
+    (synopsis "Groovy related modes for Emacs")
+    (description
+     "This package provides @code{groovy-mode} for syntax highlighing in
+Groovy source files, REPL integration with run-groovy and Grails project
+navigation with the grails mode.")
+    (license license:gpl3+)))

@@ -179,17 +179,17 @@ Interface} specification.")
     (name "nginx")
     ;; Consider updating the nginx-docs package if the nginx package is
     ;; updated.
-    (version "1.12.2")
+    (version "1.13.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "05h4rwja7170z0l979yjghy9i9ichllwhicylzpmmyyml6fkfprh"))))
+                "1ib4hkngj9z7pl73lnn96d85m7v2wwb56nkypwx7d6pm3z1vc444"))))
     (build-system gnu-build-system)
-    (inputs `(("pcre" ,pcre)
-              ("openssl" ,openssl)
+    (inputs `(("openssl" ,openssl)
+              ("pcre" ,pcre)
               ("zlib" ,zlib)))
     (arguments
      `(#:tests? #f                      ; no test target
@@ -230,7 +230,8 @@ Interface} specification.")
                (setenv "CC" "gcc")
                (format #t "environment variable `CC' set to `gcc'~%")
                (format #t "configure flags: ~s~%" flags)
-               (zero? (apply system* "./configure" flags)))))
+               (apply invoke "./configure" flags)
+               #t)))
          (add-after 'install 'install-man-page
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -251,12 +252,13 @@ Interface} specification.")
                (rename-file (string-append out "/conf")
                             (string-append share "/conf"))
                (rename-file (string-append out "/html")
-                            (string-append share "/html"))))))))
+                            (string-append share "/html"))
+               #t))))))
     (home-page "https://nginx.org")
     (synopsis "HTTP and reverse proxy server")
     (description
      "Nginx (\"engine X\") is a high-performance web and reverse proxy server
-created by Igor Sysoev.  It can be used both as a standalone web server
+created by Igor Sysoev.  It can be used both as a stand-alone web server
 and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;; Almost all of nginx is distributed under the bsd-2 license.
     ;; The exceptions are:
@@ -343,7 +345,8 @@ documentation.")
                    (("#banner           \\{ background:     black;")
                     "#banner           { background:     black;
                             display:     none;"))
-                 (zero? (system* "make")))))
+                 (invoke "make")
+                 #t)))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((output (assoc-ref outputs "out")))
@@ -494,7 +497,7 @@ libraries for working with JNLP applets.")
 (define-public jansson
   (package
     (name "jansson")
-    (version "2.9")
+    (version "2.10")
     (source (origin
              (method url-fetch)
              (uri
@@ -502,7 +505,7 @@ libraries for working with JNLP applets.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "19fjgfwjfj99rqa3kf96x5rssj88siazggksgrikd6h4r9sd1l0a"))))
+               "0iv4rxsnamqm3ldpg7dyhjq0x9cp023nc7ac820jdd3pwb8ml8bq"))))
     (build-system gnu-build-system)
     (home-page "http://www.digip.org/jansson/")
     (synopsis "JSON C library")
@@ -4044,14 +4047,14 @@ a pure C99 library.")
 (define-public uwsgi
   (package
     (name "uwsgi")
-    (version "2.0.12")
+    (version "2.0.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://projects.unbit.it/downloads/uwsgi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02g46dnw5j1iw8fsq392bxbk8d21b9pdgb3ypcinv3b4jzdm2srh"))))
+                "1zvj28wp3c1hacpd4c6ra5ilwvvfq3l8y6gn8i7mnncpddlzjbjp"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (arguments
@@ -4152,7 +4155,7 @@ you'd expect.")
 (define-public uhttpmock
   (package
     (name "uhttpmock")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -4160,7 +4163,7 @@ you'd expect.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0vniyx341pnnmvxmqacc49k0g7h9a9nhknfslidrqmxj5lm1ini6"))))
+         "163py4klka423x7li2b685gmg3a6hjf074mlff2ajhmi3l0lm8x6"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -4896,7 +4899,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.39")
+  (version "5.44")
   (source
     (origin
       (method url-fetch)
@@ -4904,7 +4907,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1vjdn32iw11zqsygwxbjmqgs4644dk3ql1h8ap890ls6a1x0i318"))))
+        "1692y69wl7j6yjgnrrzclgzb34bxsaxjzl1dfy47vms7pdfk42lr"))))
   (build-system gnu-build-system)
   (inputs `(("openssl" ,openssl)))
   (arguments
@@ -4995,7 +4998,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.4")
+    (version "10.7")
     (source
      (origin
        (method url-fetch)
@@ -5007,7 +5010,7 @@ functions of Tidy.")
         '(delete-file-recursively "mbedtls"))
        (sha256
         (base32
-         "0m2llzm72s29c32abnj03532m85fawvi8ybjpx6s3mgvx2yvq3p4"))))
+         "0x2zfc8kc6c7rl4gwymwmg13w1c60biv6c6c9fvzpnl59bc9jgin"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; No tests included

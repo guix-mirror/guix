@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -100,3 +101,26 @@ operating system functions.")
  APIs on top of Standard Template Library (@dfn{STL}) classes.")
       (license (list license:expat        ; cJSON
                      license:bsd-4)))))   ; everything else (LICENSE.txt)
+
+(define-public dashel
+  (package
+    (name "dashel")
+    (version "1.3.3")
+    (home-page "https://github.com/aseba-community/dashel")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ckzac1rsw3cxmpdpwcqv46jyp7risk5ybq6jjiizbqn7labf6dw"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))                    ;no tests
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "Data stream helper encapsulation library")
+    (description
+     "Dashel is a data stream helper encapsulation C++ library.  It provides a
+unified access to TCP/UDP sockets, serial ports, console, and files streams.
+It also allows a server application to wait for any activity on any
+combination of these streams.")
+    (license license:bsd-3)))

@@ -357,6 +357,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/re2c.scm				\
   %D%/packages/readline.scm			\
   %D%/packages/regex.scm				\
+  %D%/packages/robotics.scm			\
   %D%/packages/rrdtool.scm			\
   %D%/packages/rsync.scm			\
   %D%/packages/ruby.scm				\
@@ -997,6 +998,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-deterministic-build-info.patch	\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-3-fix-tests.patch			\
+  %D%/packages/patches/python-axolotl-AES-fix.patch		\
   %D%/packages/patches/python-dendropy-fix-tests.patch		\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-genshi-add-support-for-python-3.4-AST.patch	\
@@ -1045,11 +1047,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
   %D%/packages/patches/rsem-makefile.patch			\
-  %D%/packages/patches/rsync-CVE-2017-16548.patch			\
-  %D%/packages/patches/rsync-CVE-2017-17433.patch			\
-  %D%/packages/patches/rsync-CVE-2017-17433-fix-tests.patch			\
-  %D%/packages/patches/rsync-CVE-2017-17434-pt1.patch			\
-  %D%/packages/patches/rsync-CVE-2017-17434-pt2.patch			\
   %D%/packages/patches/rtags-separate-rct.patch			\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-concurrent-test-arm.patch		\
@@ -1091,7 +1088,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/tipp10-fix-compiling.patch		\
   %D%/packages/patches/tipp10-remove-license-code.patch		\
   %D%/packages/patches/tk-find-library.patch			\
-  %D%/packages/patches/transmission-fix-dns-rebinding-vuln.patch	\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tophat-build-with-later-seqan.patch	\

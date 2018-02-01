@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,7 +73,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module ((srfi srfi-1) #:prefix srfi-1:))
 
 ;;; Commentary:
 ;;;
@@ -689,31 +691,43 @@ format is also supported.")
          ("pkg-config" ,pkg-config)
          ("texinfo" ,texinfo)
          ("help2man" ,help2man)))
+      (inputs
+       `(("guile-2.2" ,guile-2.2)
+         ,@(srfi-1:alist-delete "guile" (package-inputs mcron))))
       (arguments
        `(#:modules ((ice-9 match) (ice-9 ftw)
                     ,@%gnu-build-system-modules)
-
-         #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (zero? (system* "autoreconf" "-vfi"))))
-                    (add-after 'install 'wrap-mcron
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        ;; Wrap the 'mcron' command to refer to the right
-                        ;; modules.
-                        (let* ((out  (assoc-ref outputs "out"))
-                               (bin  (string-append out "/bin"))
-                               (site (string-append
-                                      out "/share/guile/site")))
-                          (match (scandir site)
-                            (("." ".." version)
-                             (let ((modules (string-append site "/" version)))
-                               (wrap-program (string-append bin "/mcron")
-                                 `("GUILE_LOAD_PATH" ":" prefix
-                                   (,modules))
-                                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                                   (,modules)))
-                               #t))))))))))))
+         ;; When building the targets in parallel, help2man tries to generate
+         ;; the manpage from ./cron --help before it is built, which fails.
+         #:parallel-build? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'use-guile-2.2
+             (lambda _
+               (substitute* "configure.ac"
+                 (("PKG_CHECK_MODULES\\(\\[GUILE\\],.*$")
+                  "PKG_CHECK_MODULES([GUILE], [guile-2.2])\n"))
+               #t))
+           (add-after 'use-guile-2.2 'bootstrap
+             (lambda _
+               (invoke "autoreconf" "-vfi")))
+           (add-after 'install 'wrap-mcron
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Wrap the 'mcron' command to refer to the right
+               ;; modules.
+               (let* ((out  (assoc-ref outputs "out"))
+                      (bin  (string-append out "/bin"))
+                      (site (string-append
+                             out "/share/guile/site")))
+                 (match (scandir site)
+                   (("." ".." version)
+                    (let ((modules (string-append site "/" version)))
+                      (wrap-program (string-append bin "/mcron")
+                        `("GUILE_LOAD_PATH" ":" prefix
+                          (,modules))
+                        `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                          (,modules)))
+                      #t))))))))))))
 
 (define-public guile-ics
   (package

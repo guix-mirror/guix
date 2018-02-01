@@ -60,6 +60,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial))
 
@@ -269,6 +270,30 @@ in the code.  Cppcheck primarily detects the types of bugs that the compilers
 normally do not detect.  The goal is to detect only real errors in the code
 (i.e. have zero false positives).")
     (license license:gpl3+)))
+
+(define-public go-gopkg.in-check.v1
+  (let ((commit "20d25e2804050c1cd24a7eea1e7a6447dd0e74ec")
+        (revision "0"))
+    (package
+      (name "go-gopkg.in-check.v1")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/go-check/check.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0k1m83ji9l1a7ng8a7v40psbymxasmssbrrhpdv2wl4rhs0nc3np"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "gopkg.in/check.v1"))
+      (synopsis "Rich testing extension for Go's testing package")
+      (description
+       "@code{check} is a rich testing extension for Go's testing package.")
+      (home-page "https://github.com/go-check/check")
+      (license license:bsd-2))))
 
 (define-public googletest
   (package

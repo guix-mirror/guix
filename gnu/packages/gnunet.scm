@@ -185,13 +185,13 @@ authentication and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.57.0")
+   (version "7.58.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gnunet/" name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0cl2x1jddnhn1z8gd75w6k7lb6pymn5rf2vqgl2vdkbxsz677z07"))))
+              "1yyswsz0csplqi8hlhqaxlafqn5kh5016j8k2gaxziv4cb343znx"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ; 1.5 MiB of man3 pages
@@ -205,8 +205,7 @@ authentication and support for SSL3 and TLS.")
       ("pkg-config" ,pkg-config)
       ("python" ,python-2)))
    (arguments
-    `(#:configure-flags (list "--disable-ntlm-wb"
-                              "--with-ca-bundle=/etc/ssl/certs/ca-certificates.crt")
+    `(#:configure-flags (list "--disable-ntlm-wb")
       #:test-target "test"
       #:parallel-tests? #f
       #:phases

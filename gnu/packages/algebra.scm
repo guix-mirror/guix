@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -516,6 +516,7 @@ a C program.")
     (license license:bsd-3)))
 
 (define-public fftw
+  ;; TODO: Make this 3.3.7 (see below) on the next upgrade cycle.
   (package
     (name "fftw")
     (version "3.3.5")
@@ -574,6 +575,42 @@ cosine/ sine transforms or DCT/DST).")
     (description
      (string-append (package-description fftw)
                     "  With OpenMPI parallelism support."))))
+
+(define-public fftw-3.3.7
+  ;; TODO: Make this the default 'fftw' on the next upgrade cycle.
+  (package
+    (inherit fftw)
+    (version "3.3.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://ftp.fftw.org/pub/fftw/fftw-"
+                                  version".tar.gz"))
+              (sha256
+               (base32
+                "0wsms8narnbhfsa8chdflv2j9hzspvflblnqdn7hw8x5xdzrnq1v"))))))
+
+(define-public fftw-avx
+  (package
+    (inherit fftw-3.3.7)
+    (name "fftw-avx")
+    (arguments
+     (substitute-keyword-arguments (package-arguments fftw-3.3.7)
+       ((#:configure-flags flags ''())
+        ;; Enable AVX & co.  See details at:
+        ;; <http://fftw.org/fftw3_doc/Installation-on-Unix.html>.
+        `(append '("--enable-avx" "--enable-avx2" "--enable-avx512"
+                   "--enable-avx-128-fma")
+                 ,flags))
+       ((#:substitutable? _ #f)
+        ;; To run the tests, we must have a CPU that supports all these
+        ;; extensions.  Since we cannot be sure that machines in the build
+        ;; farm support them, disable substitutes altogether.
+        #f)
+       ((#:phases _)
+        ;; Since we're not providing binaries, let '-mtune=native' through.
+        '%standard-phases)))
+    (synopsis "Computing the discrete Fourier transform (AVX2-optimized)")
+    (supported-systems '("x86_64-linux"))))
 
 (define-public eigen
   (package

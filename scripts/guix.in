@@ -1,6 +1,5 @@
 #!@GUILE@ \
 --no-auto-compile -e main -s
--*- scheme -*-
 !#
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
@@ -57,3 +56,7 @@
     ;; but since the 'guix' command is not updated by 'guix pull', we cannot
     ;; really do it now.
     (apply guix-main args)))
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:

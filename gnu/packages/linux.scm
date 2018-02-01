@@ -378,12 +378,12 @@ It has been modified to remove all non-free binary blobs.")
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
 (define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
 
-(define %linux-libre-version "4.14.15")
-(define %linux-libre-hash "0s94d51bym3zipxf40xjzq943b7b2x4ba1gp3j7l5npj5nr2xiy8")
-
 ;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
+
+(define %linux-libre-version "4.15")
+(define %linux-libre-hash "11h1954mkyy2wc0c9jd9dxysqq9wrjr6jmsxdysdd73g50a6amg6")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -391,15 +391,24 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
+(define %linux-libre-4.14-version "4.14.16")
+(define %linux-libre-4.14-hash "0qigj0wjm2pdjsz99mqmvf52m9qfkab8hiasdbvkby9dq59h4smd")
+
+(define-public linux-libre-4.14
+  (make-linux-libre %linux-libre-4.14-version
+                    %linux-libre-4.14-hash
+                    %linux-compatible-systems
+                    #:configuration-file kernel-config))
+
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.78"
-                    "12j7nxz92krq2ax7rii4pr6y1pr37n7ml692kqifpzpbzqm5yb9k"
+  (make-linux-libre "4.9.79"
+                    "1dvig7yixnmnrzbkjj41q8z1k3b7mk03a7kn33347cik185vq73p"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.113"
-                    "17l5gw99ph312k0x4d3f08zlsp1ljr6c1mp0xvqp1257gnz84bgb"
+  (make-linux-libre "4.4.114"
+                    "1xhwisv98vdi02lbi3sr2kvywfq5ibbisz5487202qqcrf1x95jx"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -416,9 +425,23 @@ It has been modified to remove all non-free binary blobs.")
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
+(define-public linux-libre-arm-generic-4.14
+  (make-linux-libre %linux-libre-4.14-version
+                    %linux-libre-4.14-hash
+                    '("armhf-linux")
+                    #:defconfig "multi_v7_defconfig"
+                    #:extra-version "arm-generic"))
+
 (define-public linux-libre-arm-omap2plus
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
+                    '("armhf-linux")
+                    #:defconfig "omap2plus_defconfig"
+                    #:extra-version "arm-omap2plus"))
+
+(define-public linux-libre-arm-omap2plus-4.14
+  (make-linux-libre %linux-libre-4.14-version
+                    %linux-libre-4.14-hash
                     '("armhf-linux")
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
@@ -1155,7 +1178,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.14.1")
+    (version "4.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1163,7 +1186,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0rq0n7yxb0hmk0s6wx5awzjgf7ikjbibd0a5ix20ldfcmxlc0fnl"))))
+                "0mc3g4kj7h3jhwz2b2gdf41gp6bhqn7axh4mnyvhkdnpk5m63m28"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -2017,14 +2040,14 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.02.176")
+    (version "2.02.177")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
                                   version ".tgz"))
               (sha256
                (base32
-                "0wx4rvy4frdmb66znh2xms2j2n06sm361ki6l5ks4y1ciii87kny"))
+                "1wl0isn0yz5wvglwylnlqkppafwmvhliq5bd92vjqp5ir4za49a0"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3499,7 +3522,7 @@ such as frequency and voltage scaling.")
 (define-public haveged
   (package
     (name "haveged")
-    (version "1.9.1")
+    (version "1.9.2")
     (source
      (origin
        (method url-fetch)
@@ -3507,7 +3530,7 @@ such as frequency and voltage scaling.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "059pxlfd4l5dqhd6r3lynzfz4wby2f17294fy17pi9j2jpnn68ww"))))
+         "0w5ypz6451msckivjriwyw8djydlwffam7x23xh626s2vzdrlzgp"))))
     (build-system gnu-build-system)
     (home-page "http://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
@@ -4324,6 +4347,7 @@ the MTP device as a file system.")
       (base32 "0dvscyf47i3j5ay0amncqmqw9kd916689r2pqdvpnsrhp6j46zp1"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--disable-silent-rules")))
+   (native-inputs `(("pkg-config" ,pkg-config)))
    (inputs `(("expat" ,expat) ("libcap" ,libcap) ("check" ,check)
              ("groff" ,groff)           ; for tests
              ("libselinux" ,libselinux)))
@@ -4456,20 +4480,15 @@ relevant @file{/dev/vcs*} file(s).")
 (define-public fbcat
   (package
     (name "fbcat")
-    (version "0.5")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jwilk/fbcat/releases/download/"
                            version "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "1dla1na3nf3s4xy0p6w0v54zipg1x8c14yqsw8w9qjzhchr4caxw"))))
+        (base32 "0pj9hxmwhbz6kmd7847yx2jh1scl9l25zgndyi8s9vlzdkq2q8d7"))))
     (build-system gnu-build-system)
-    (native-inputs
-     ;; For building the man pages.
-     `(("docbook-xml" ,docbook-xml)
-       ("docbook-xsl" ,docbook-xsl)
-       ("xsltproc" ,libxslt)))
     (inputs
      ;; The ‘fbgrab’ wrapper can use one of several PPM-to-PNG converters.  We
      ;; choose netpbm simply because it's the smallest.  It still adds ~94 MiB
@@ -4477,23 +4496,13 @@ relevant @file{/dev/vcs*} file(s).")
      `(("pnmtopng" ,netpbm)))
     (outputs (list "out" "fbgrab"))
     (arguments
-     `(#:make-flags (list "CC=gcc")
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-docbook-location
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "doc/Makefile"
-               (("http://docbook.sourceforge.net/release/xsl/current")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl))))
-             #t))
          (delete 'configure)            ; no configure script
-         (add-after 'build 'build-documentation
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" "-C" "doc"
-                           make-flags))))
          (add-after 'build 'qualify-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((pnmtopng (assoc-ref inputs "pnmtopng"))
@@ -4504,17 +4513,17 @@ relevant @file{/dev/vcs*} file(s).")
                  (("pnmtopng" all)
                   (string-append pnmtopng "/bin/" all)))
                #t)))
-         (replace 'install
-           ;; The Makefile lacks an ‘install’ target.  Install files manually.
+         (add-after 'install 'split-fbgrab-output
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (out:fbgrab (assoc-ref outputs "fbgrab")))
-               (install-file "fbcat" (string-append out "/bin"))
-               (install-file "doc/fbcat.1"
-                             (string-append out "/share/man/man1"))
-               (install-file "fbgrab" (string-append out:fbgrab "/bin"))
-               (install-file "doc/fbgrab.1"
-                             (string-append out:fbgrab "/share/man/man1"))
+               (for-each (lambda (file)
+                           (let ((old (string-append out "/" file))
+                                 (new (string-append out:fbgrab "/" file)))
+                             (mkdir-p (dirname new))
+                             (rename-file old new)))
+                         (list "bin/fbgrab"
+                               "share/man/man1/fbgrab.1"))
                #t))))))
     (home-page "https://jwilk.net/software/fbcat")
     (synopsis "Take a screenshot of the contents of the Linux framebuffer")

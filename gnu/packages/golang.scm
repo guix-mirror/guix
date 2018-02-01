@@ -446,3 +446,53 @@ interfaces in Go.  The goal is to enable developers to write fast and
 distributable command line applications in an expressive way.")
       (home-page "https://github.com/davidjpeacock/cli")
       (license license:expat))))
+
+(define-public go-github.com-jessevdk-go-flags
+  (package
+    (name "go-github.com-jessevdk-go-flags")
+    (version "1.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jessevdk/go-flags")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1jk2k2l10lwrn1r3nxdvbs0yz656830j4khzirw8p4ahs7c5zz36"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/jessevdk/go-flags"))
+    (synopsis "Go library for parsing command line arguments")
+    (description
+     "The @code{flags} package provides a command line option parser.  The
+functionality is similar to the go builtin @code{flag} package, but
+@code{flags} provides more options and uses reflection to provide a succinct
+way of specifying command line options.")
+    (home-page "https://github.com/jessevdk/go-flags")
+    (license license:bsd-3)))
+
+(define-public go-gopkg.in-tomb.v2
+  (let ((commit "d5d1b5820637886def9eef33e03a27a9f166942c")
+        (revision "0"))
+    (package
+      (name "go-gopkg.in-tomb.v2")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/go-tomb/tomb.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1sv15sri99szkdz1bkh0ir46w9n8prrwx5hfai13nrhkawfyfy10"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "gopkg.in/tomb.v2"))
+      (synopsis "@code{tomb} handles clean goroutine tracking and termination")
+      (description
+       "The @code{tomb} package handles clean goroutine tracking and
+termination.")
+      (home-page "https://gopkg.in/tomb.v2")
+      (license license:bsd-3))))

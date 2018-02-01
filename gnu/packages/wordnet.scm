@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -55,6 +55,12 @@
                                "CFLAGS=-DUSE_INTERP_RESULT -O2")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'build-libwn-PIC
+           (lambda _
+             ;; GNU Dico links libWN.a in its wordnet.so plugin, so it needs
+             ;; PIC.
+             (invoke "make" "-C" "lib" "CFLAGS=-O2 -g -fPIC"
+                     "LDFLAGS=-fPIC")))
          (add-after 'install 'post-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))

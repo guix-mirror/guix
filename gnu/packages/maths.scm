@@ -20,7 +20,7 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1605,7 +1605,7 @@ scientific applications modeled by partial differential equations.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.8.0")
+    (version "3.8.2")
     (source
      (origin
        (method url-fetch)
@@ -1613,7 +1613,7 @@ scientific applications modeled by partial differential equations.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0qyrsdndfdw2g0jmj9iskxj3j20zlkplhv26288s079dhm7cr365"))))
+         "04zd48p43rnvg68p6cp28zll0px5whglc5v0sc3s6vdj1v920z8y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1642,7 +1642,7 @@ scientific applications modeled by partial differential equations.")
               (format #t "configure flags: ~s~%" flags)
               (setenv "SLEPC_DIR" (getcwd))
               (setenv "PETSC_DIR" (assoc-ref inputs "petsc"))
-              (zero? (apply system* "./configure" flags)))))
+              (invoke "./configure" flags))))
          (add-after 'install 'delete-doc
           ;; TODO: SLEPc installs HTML documentation alongside headers in
           ;; $out/include.  We'd like to move them to share/doc, but delete
@@ -1671,7 +1671,7 @@ as well as other related problems such as the singular value decomposition.
 The emphasis of the software is on methods and techniques appropriate for
 problems in which the associated matrices are sparse, for example, those
 arising after the discretization of partial differential equations.")
-    (license license:lgpl3)))
+    (license license:bsd-2)))
 
 (define-public slepc-complex
   (package (inherit slepc)
@@ -2806,7 +2806,7 @@ environments.")
 (define-public openspecfun
   (package
     (name "openspecfun")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
@@ -2815,14 +2815,15 @@ environments.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1y5b2h6f2k72536kym3vzy3li3bhpd23x463g7hdmjdi3cncavz1"))))
+         "1rs1bv8jq751fv9vq79890wqf9xlbjc7lvz3ighzyfczbyjcf18m"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f  ;no "check" target
+     '(#:tests? #f                      ; no "check" target
        #:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       ;; no configure script
-       #:phases (modify-phases %standard-phases (delete 'configure))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
     (inputs
      `(("fortran" ,gfortran)))
     (home-page "https://github.com/JuliaLang/openspecfun")

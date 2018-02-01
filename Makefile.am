@@ -3,7 +3,7 @@
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2015, 2017 Alex Kost <alezost@gmail.com>
 # Copyright © 2016, 2018 Mathieu Lirzin <mthl@gnu.org>
-# Copyright © 2016, 2017 Mark H Weaver <mhw@netris.org>
+# Copyright © 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017 Leo Famulari <leo@famulari.name>
 # Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -254,6 +254,9 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
+  gnu/packages/aux-files/linux-libre/4.15-arm.conf	\
+  gnu/packages/aux-files/linux-libre/4.15-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.15-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.14-arm.conf	\
   gnu/packages/aux-files/linux-libre/4.14-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.14-x86_64.conf	\
@@ -450,6 +453,7 @@ EXTRA_DIST =						\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
   bin/guix.in						\
+  etc/guix-install.sh					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\

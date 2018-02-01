@@ -386,7 +386,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -394,7 +394,7 @@ support.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1xxvy5xyi32pbdva1hp05xq5l8403ck8hqdkv52lbscy92avvvp8"))))
+                "102vw13iw1kbjj6h2sm8gl1jfvmqgq0zddd6hdmqagza5b6w32k3"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -1056,7 +1056,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "2.1.4")
+    (version "3.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1064,7 +1064,8 @@ games.")
                               version "-stable.tar.gz"))
               (file-name (string-append name "-" version))
               (sha256
-               (base32 "1mz89nafc1m7srbqvy7iagxrxmqvf5hbqi7i0lwaapkx6q0kpkq7"))))
+               (base32
+                "1jhp269n1a7c663v2555444icbjwzscj4r8cq4rrrap7r7dr4hyc"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
@@ -1140,6 +1141,7 @@ games.")
               ("libwebp" ,libwebp)
               ("libx11" ,libx11)
               ("libxcursor" ,libxcursor)
+              ("libxi" ,libxi)
               ("libxinerama" ,libxinerama)
               ("libxrandr" ,libxrandr)
               ("mesa" ,mesa)

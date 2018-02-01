@@ -73,7 +73,14 @@
        (modify-phases %standard-phases
          (delete 'configure)
          (add-after 'unpack 'enter-dir
-           (lambda _ (chdir ,name) #t)))))
+           (lambda _ (chdir ,name) #t))
+         (add-after 'enter-dir 'portability
+           (lambda _
+             (substitute* "src/ibpkeys.c"
+               (("#include \"ibpkey_internal.h\"" line)
+                (string-append line "\n#include <inttypes.h>\n"))
+               (("%#lx") "%#\" PRIx64 \""))
+             #t)))))
     (native-inputs
      `(("flex" ,flex)))
     (home-page "https://selinuxproject.org/")
@@ -101,6 +108,7 @@ boolean settings).")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (delete 'portability)
          (add-after 'unpack 'enter-dir
            (lambda _ (chdir ,name) #t)))))
     (inputs
@@ -136,6 +144,7 @@ module into a binary representation.")
                 ,flags))
        ((#:phases phases)
         `(modify-phases ,phases
+           (delete 'portability)
            (replace 'enter-dir
              (lambda _ (chdir ,name) #t))
            (add-after 'enter-dir 'remove-Werror
@@ -187,6 +196,7 @@ the core SELinux management utilities.")
                 ,flags))
        ((#:phases phases)
         `(modify-phases ,phases
+           (delete 'portability)
            (replace 'enter-dir
              (lambda _ (chdir ,name) #t))
            (add-after 'build 'pywrap
@@ -228,6 +238,7 @@ binary policies.")
                  ,flags)))
        ((#:phases phases)
         `(modify-phases ,phases
+           (delete 'portability)
            (replace 'enter-dir
              (lambda _ (chdir ,name) #t))))))
     (inputs
@@ -250,6 +261,7 @@ binary policies.")
        ,@(substitute-keyword-arguments (package-arguments libsepol)
            ((#:phases phases)
             `(modify-phases ,phases
+               (delete 'portability)
                (replace 'enter-dir
                  (lambda _ (chdir "python/sepolgen") #t))
                ;; By default all Python files would be installed to
@@ -310,6 +322,7 @@ based on required access.")
      `(#:tests? #f ; the test target causes a rebuild
        #:phases
        (modify-phases %standard-phases
+         (delete 'portability)
          (add-after 'unpack 'set-SEPOL-variable
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "SEPOL"
@@ -372,6 +385,7 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (delete 'portability)
          (add-after 'unpack 'enter-dir
            (lambda _ (chdir ,name) #t))
          (add-after 'enter-dir 'ignore-/usr-tests

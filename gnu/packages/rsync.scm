@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,22 +33,14 @@
 (define-public rsync
   (package
    (name "rsync")
-   (version "3.1.2")
+   (version "3.1.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://rsync.samba.org/ftp/rsync/src/rsync-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1hm1q04hz15509f0p9bflw4d6jzfvpm1d36dxjwihk1wzakn5ypc"))
-            (patches (search-patches "rsync-CVE-2017-16548.patch"
-                                     "rsync-CVE-2017-17433.patch"
-                                     "rsync-CVE-2017-17433-fix-tests.patch"
-                                     "rsync-CVE-2017-17434-pt1.patch"
-                                     "rsync-CVE-2017-17434-pt2.patch"
-                                     ))
-            ))
-   (properties `((lint-hidden-cve . ("CVE-2017-15994")))) ; introduced after 3.1.2
+              "1h0011dj6jgqpgribir4anljjv7bbrdcs8g91pbsmzf5zr75bk2m"))))
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)
              ("acl" ,acl)))

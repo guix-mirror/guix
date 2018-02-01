@@ -23,6 +23,7 @@
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -510,15 +511,15 @@ SMPTE 314M.")
 (define-public libmatroska
   (package
     (name "libmatroska")
-    (version "1.4.7")
+    (version "1.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/"
-                           name "/" name "-" version ".tar.bz2"))
+                           name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1yi5cnv13nhl27xyqayd5l3sf0j3swfj3apzibv71yg9pariwi26"))))
+         "14n9sw974prr3yp4yjb7aadi6x2yz5a0hjw8fs3qigy5shh2piyq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1114,32 +1115,33 @@ access to mpv's powerful playback capabilities.")
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.6.1")
+    (version "1.7.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://storage.googleapis.com/"
-                                  "downloads.webmproject.org/releases/webm/"
-                                  name "-" version ".tar.bz2"))
+              ;; XXX: Upstream does not provide tarballs for > 1.6.1.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://chromium.googlesource.com/webm/libvpx")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "06d8hqjkfs6wl45qf4pwh1kpbvkx6cwywd5y8d4lgagvjwm0qb0w"))
+                "0vvh89hvp8qg9an9vcmwb7d9k3nixhxaz6zi65qdjnd0i56kkcz6"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "CONFIG_SHELL" (which "bash"))
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "LDFLAGS"
-                       (string-append "-Wl,-rpath=" out "/lib"))
-               (zero? (system* "./configure"
-                               "--enable-shared"
+     `(#:configure-flags (list "--enable-shared"
                                "--as=yasm"
                                ;; Limit size to avoid CVE-2015-1258
                                "--size-limit=16384x16384"
-                               (string-append "--prefix=" out)))))))
+                               (string-append "--prefix=" (assoc-ref %outputs "out")))
+       #:make-flags  (list (string-append "LDFLAGS=-Wl,-rpath="
+                                          (assoc-ref %outputs "out") "/lib"))
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key configure-flags #:allow-other-keys)
+                      ;; The configure script does not understand some of the GNU
+                      ;; options, so we only add the flags specified above.
+                      (apply invoke  "./configure" configure-flags))))
        #:tests? #f)) ; no check target
     (native-inputs
      `(("perl" ,perl)
@@ -1152,7 +1154,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.01.21")
+    (version "2018.01.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1160,7 +1162,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "14ggjxnhc2sxc93h7d5k3z4n35n5q3ffsif97np0ar93x5z3zgn5"))))
+                "14vbm8pr6xdrdbk8j9k4v82rnalbdpk2lcm7n9wj6z6d441ymji9"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1309,7 +1311,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
@@ -1317,12 +1319,23 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0fl5cxfj870rwqmmz3s04wh7wnabb7rnynfj1v3sz37ln8frm7qg"))))
+                "1zxfnw1xbghcj7b3zz5djndv6gwssxda19cz1lrlqrkg8577r7kd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-bdjava-jar")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'refer-to-libxml2-in-.pc-file
+           ;; Avoid the need to propagate libxml2 by referring to it
+           ;; directly, as is already done for fontconfig & freetype.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libxml2 (assoc-ref inputs "libxml2")))
+               (substitute* "configure"
+                 ((" libxml-2.0") ""))
+               (substitute* "src/libbluray.pc.in"
+                 (("^Libs.private:" field)
+                  (string-append field " -L" libxml2 "/lib -lxml2")))
+               #t)))
          (add-before 'build 'fix-dlopen-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libaacs (assoc-ref inputs "libaacs"))
@@ -1464,7 +1477,7 @@ encapsulated.")
 (define-public libdvdcss
   (package
     (name "libdvdcss")
-    (version "1.4.0")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/pub/"
@@ -1472,7 +1485,7 @@ encapsulated.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0nl45ifc4xcb196snv9d6hinfw614cqpzcqp92dg43c0hickg290"))))
+                "1b7awvyahivglp7qmgx2g5005kc5npv257gw7wxdprjsnx93f1zb"))))
     (build-system gnu-build-system)
     (home-page "https://www.videolan.org/developers/libdvdcss.html")
     (synopsis "Library for accessing DVDs as block devices")
@@ -1703,30 +1716,6 @@ pixel motion compensation, lumi masking, trellis quantization, and H.263, MPEG
 and custom quantization matrices.")
     (license license:gpl2+)))
 
-(define-public livestreamer
-  (package
-    (name "livestreamer")
-    (version "1.12.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/chrippa/livestreamer/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append "livestreamer-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1fp3d3z2grb1ls97smjkraazpxnvajda2d1g1378s6gzmda2jvjd"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; tests rely on external web servers
-    (propagated-inputs
-     `(("python-requests" ,python-requests)))
-    (synopsis "Internet video stream viewer")
-    (description "Livestreamer is a command-line utility that extracts streams
-from various services and pipes them into a video playing application.")
-    (home-page "http://livestreamer.io/")
-    (license license:bsd-2)))
-
 (define-public streamlink
   (package
     (name "streamlink")
@@ -1755,6 +1744,9 @@ from various services and pipes them into a video playing application.")
     (description "Streamlink is command-line utility that extracts streams
 from sites like Twitch.tv and pipes them into a video player of choice.")
     (license license:bsd-2)))
+
+(define-public livestreamer
+  (deprecated-package "livestreamer" streamlink))
 
 (define-public mlt
   (package
@@ -2007,7 +1999,7 @@ making @dfn{screencasts}.")
 (define-public simplescreenrecorder
   (package
     (name "simplescreenrecorder")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
      (origin
        (method url-fetch)
@@ -2016,8 +2008,8 @@ making @dfn{screencasts}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0v8w35n8w772s08w7k0icynqdsdakbrcanbgx6j847bfqfsg21gg"))))
-    (build-system gnu-build-system)
+         "1gnf9wbiq2fcbqcn1a5nfmp8r0nxrrlgh2wly2mfkkwymynhx0pk"))))
+    (build-system cmake-build-system)
     ;; Although libx11, libxfixes, libxext are listed as build dependencies in
     ;; README.md, the program builds and functions properly without them.
     ;; As a result, they are omitted. Please add them back if problems appear.
@@ -2028,8 +2020,12 @@ making @dfn{screencasts}.")
        ("jack" ,jack-1)
        ("libxi" ,libxi)
        ("pulseaudio" ,pulseaudio)
-       ("qt" ,qt-4))) ; README.md: using Qt 5 causes some stability issues
+       ("qt" ,qt)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list "-DWITH_QT5=TRUE")
+       #:tests? #f))                    ; no test suite
     ;; Using HTTPS causes part of the page to be displayed improperly.
     (home-page "http://www.maartenbaert.be/simplescreenrecorder/")
     (synopsis "Screen recorder")
@@ -2518,10 +2514,10 @@ and ITU-T H.222.0.")
   (package
     (name "ffms2")
     (version "2.23")
-    (home-page "https://github.com/FFMS/ffms2/")
+    (home-page "https://github.com/FFMS/ffms2")
     (source (origin
               (method url-fetch)
-              (uri (string-append home-page "archive/" version ".tar.gz"))
+              (uri (string-append home-page "/archive/" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32

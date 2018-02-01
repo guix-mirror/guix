@@ -31,6 +31,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -52,6 +53,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
@@ -572,3 +574,96 @@ eye-candy, customizable, and reasonably lightweight.")
 It's a terminal emulator with few dependencies, so you don't need a full GNOME
 desktop installed to have a decent terminal emulator.")
     (license license:gpl2)))
+
+(define-public go-github.com-nsf-termbox-go
+  (let ((commit "4ed959e0540971545eddb8c75514973d670cf739")
+        (revision "0"))
+    (package
+      (name "go-github.com-nsf-termbox-go")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/nsf/termbox-go.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1vx64i1mg660if3wwm81p4b7lzxfb3qbr39i7misdyld3fc486p9"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/nsf/termbox-go"))
+      (propagated-inputs
+       `(("go-github.com-mattn-go-runewidth"
+          ,go-github.com-mattn-go-runewidth)))
+      (synopsis "@code{termbox} provides a minimal API for text-based user
+interfaces")
+      (description
+       "Termbox is a library that provides a minimalistic API which allows the
+programmer to write text-based user interfaces.")
+      (home-page "https://github.com/nsf/termbox-go")
+      (license license:expat))))
+
+(define-public go-golang.org-x-crypto-ssh-terminal
+  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
+        (revision "0"))
+    (package
+      (name "go-golang.org-x-crypto-ssh-terminal")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/crypto")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "golang.org/x/crypto/ssh/terminal"
+         #:unpack-path "golang.org/x/crypto"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map (lambda (file)
+                      (make-file-writable file))
+                    (find-files
+                     (string-append (assoc-ref outputs "out")
+                                    "/src/golang.org/x/crypto/ed25519/testdata")
+                     ".*\\.gz$"))
+               #t)))))
+      (synopsis "Support functions for dealing with terminals in Go")
+      (description "@code{terminal} provides support functions for dealing
+with terminals in Go.")
+      (home-page "https://go.googlesource.com/crypto/")
+      (license license:bsd-3))))
+
+(define-public go-github.com-howeyc-gopass
+  (let ((commit "bf9dde6d0d2c004a008c27aaee91170c786f6db8")
+        (revision "0"))
+    (package
+      (name "go-github.com-howeyc-gopass")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/howeyc/gopass.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1jxzyfnqi0h1fzlsvlkn10bncic803bfhslyijcxk55mgh297g45"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/howeyc/gopass"))
+      (propagated-inputs
+       `(("go-golang.org-x-crypto-ssh-terminal"
+          ,go-golang.org-x-crypto-ssh-terminal)))
+      (synopsis "Retrieve password from a terminal or piped input in Go")
+      (description
+       "@code{gopass} is a Go package for retrieving a password from user
+terminal or piped input.")
+      (home-page "https://github.com/howeyc/gopass")
+      (license license:isc))))

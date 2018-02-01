@@ -924,7 +924,7 @@ XSL-T processor.  It also performs any necessary post-processing.")
        ("libltdl" ,libltdl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.libexpat.org/")
+    (home-page "https://www.aleksey.com/xmlsec/")
     (synopsis "XML Security Library")
     (description
      "The XML Security Library is a C library based on Libxml2.  It
@@ -1095,7 +1095,7 @@ XSLT and EXSLT.")
 (define-public html-xml-utils
  (package
    (name "html-xml-utils")
-   (version "7.4")
+   (version "7.5")
    (source
     (origin
       (method url-fetch)
@@ -1104,7 +1104,7 @@ XSLT and EXSLT.")
             version ".tar.gz"))
       (sha256
        (base32
-        "04pgrahsfawnzd9pilvirs05pfdgsd7qwvw4dvkb42rgybhw6h95"))))
+        "0cbmqa9c4bc4ikk7vmgd65ixh2pl9mr336c4his3m8l7rgsjnh8n"))))
    (build-system gnu-build-system)
    (home-page "https://www.w3.org/Tools/HTML-XML-utils/")
    (synopsis "Command line utilities to manipulate HTML and XML files")

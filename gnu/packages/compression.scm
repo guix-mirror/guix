@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
@@ -2060,3 +2062,29 @@ faster by plzip, unless the @code{-b} option was used: lzip usually produces
 single-member files which can't be decompressed in parallel.")
     (license (list license:bsd-2        ; arg_parser.{cc,h}
                    license:gpl2+))))    ; everything else
+
+(define-public innoextract
+  (package
+   (name "innoextract")
+   (version "1.6")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/dscharrer/innoextract/archive/"
+                         version ".tar.gz"))
+     (sha256
+      (base32
+       "08sp5vbfjvq1irhhraqkn5m2x1z209r4axhx7laf1adcw30ccapi"))
+     (file-name (string-append name "-" version ".tar.gz"))))
+   (build-system cmake-build-system)
+   (arguments
+    `(#:tests? #f)) ;; No tests available.
+   (inputs `(("boost" ,boost)
+             ("libiconv" ,libiconv)
+             ("xz" ,xz)))
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (home-page "https://constexpr.org/innoextract/")
+   (synopsis "Tool for extracting Inno Setup installers")
+   (description "innoextract allows extracting Inno Setup installers under
+non-Windows systems without running the actual installer using wine.")
+   (license license:zlib)))

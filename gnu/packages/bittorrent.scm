@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
@@ -60,17 +60,15 @@
 (define-public transmission
   (package
     (name "transmission")
-    (version "2.92")
+    (version "2.93")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://transmission.cachefly.net/transmission-"
-                    version ".tar.xz"))
-              ;; CVE-2018-5702
-              (patches (search-patches "transmission-fix-dns-rebinding-vuln.patch"))
+                    "https://github.com/transmission/transmission-releases/raw/"
+                    "master/transmission-" version ".tar.xz"))
               (sha256
                (base32
-                "0pykmhi7pdmzq47glbj8i2im6iarp4wnj4l1pyvsrnba61f0939s"))))
+                "02xrp49gsv4jkbzp37qrwlnb9nlja08s92dyvgdbr6a4187945c8"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out"                      ; library and command-line interface
                "gui"))                    ; graphical user interface
