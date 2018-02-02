@@ -619,6 +619,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-disable-failing-tests.patch	\
   %D%/packages/patches/einstein-build.patch			\
+  %D%/packages/patches/emacs-browse-at-remote-cgit-gnu.patch	\
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
