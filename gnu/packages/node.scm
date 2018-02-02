@@ -41,14 +41,14 @@
 (define-public node
   (package
     (name "node")
-    (version "9.3.0")
+    (version "9.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "19g2pc196rxlj9k5bwhqxdjddvicsx385w7yj6alq9l82lmqycxp"))))
+                "0rx947ibcfpa0lf93nayfrmjls7r7svqsq87z0xmjzf8fb9361r4"))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO: Purge the bundled copies from the source.
@@ -89,8 +89,10 @@
                          "test/parallel/test-eslint-buffer-constructor.js"
                          "test/parallel/test-eslint-documented-errors.js"
                          "test/parallel/test-eslint-inspector-check.js"
+                         "test/parallel/test-eslint-lowercase-name-for-primitive.js"
                          "test/parallel/test-eslint-no-unescaped-regexp-dot.js"
                          "test/parallel/test-eslint-no-let-in-for-declaration.js"
+                         "test/parallel/test-eslint-number-isnan.js"
                          "test/parallel/test-eslint-prefer-assert-iferror.js"
                          "test/parallel/test-eslint-prefer-assert-methods.js"
                          "test/parallel/test-eslint-prefer-common-expectserror.js"
@@ -110,8 +112,8 @@
                          "test/parallel/test-dns-resolveany.js"
                          "test/parallel/test-cluster-master-error.js"
                          "test/parallel/test-cluster-master-kill.js"
+                         "test/parallel/test-net-listen-after-destroying-stdin.js"
                          "test/parallel/test-npm-install.js"
-                         "test/parallel/test-regress-GH-746.js"
                          "test/sequential/test-child-process-emfile.js"
                          "test/sequential/test-benchmark-child-process.js"
                          "test/sequential/test-http-regr-gh-2928.js"))
