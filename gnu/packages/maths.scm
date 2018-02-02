@@ -1647,7 +1647,7 @@ scientific applications modeled by partial differential equations.")
               (format #t "configure flags: ~s~%" flags)
               (setenv "SLEPC_DIR" (getcwd))
               (setenv "PETSC_DIR" (assoc-ref inputs "petsc"))
-              (invoke "./configure" flags))))
+              (apply invoke "./configure" flags))))
          (add-after 'install 'delete-doc
           ;; TODO: SLEPc installs HTML documentation alongside headers in
           ;; $out/include.  We'd like to move them to share/doc, but delete
