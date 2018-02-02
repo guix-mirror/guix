@@ -6435,7 +6435,7 @@ Idris.")
     (license license:gpl3+)))
 
 (define-public emacs-browse-at-remote
-  (let ((commit "b5cff7971ca8bbb966e3acd9b7e5c4c007f94215")
+  (let ((commit "31dcf77d7c89a12f230e2b2332585db2c44530ef")
         (revision "1"))
     (package
       (name "emacs-browse-at-remote")
@@ -6449,7 +6449,7 @@ Idris.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "16ms9703m15dfxg6ap4mdw7msf8z5rzsdhba51dwivfpjxg7n52c"))))
+                  "017cb8lf7zbg0jmr7zxzd7d5kz2jy35cvw5vcpdmq1fdr3wqwkgj"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-f" ,emacs-f)
