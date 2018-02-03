@@ -7058,3 +7058,41 @@ navigation with the grails mode.")
 @code{org-tree-slide-mode} to enter the slideshow mode, and then @kbd{C->} and
 @kbd{C-<} to jump to the next and previous slide.")
       (license license:gpl3+))))
+
+(define-public emacs-scratch-el
+  (let ((commit "2cdf2b841ce7a0987093f65b0cc431947549f897")
+        (revision "1"))
+    (package
+      (name "emacs-scratch-el")
+      (version (git-version "1.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ieure/scratch-el.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0wscsndynjmnliajqaz28r1ww81j8wh84zwaaswx51abhwgl0idf"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("texinfo" ,texinfo)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (unless (invoke "makeinfo" "scratch.texi")
+                 (error "makeinfo failed"))
+               (install-file "scratch.info"
+                             (string-append (assoc-ref outputs "out")
+                                            "/share/info"))
+               #t)))))
+      (home-page "https://github.com/ieure/scratch-el/")
+      (synopsis "Create scratch buffers with the same mode as current buffer")
+      (description "Scratch is an extension to Emacs that enables one to create
+scratch buffers that are in the same mode as the current buffer.  This is
+notably useful when working on code in some language; you may grab code into a
+scratch buffer, and, by virtue of this extension, do so using the Emacs
+formatting rules for that language.")
+      (license license:bsd-2))))
