@@ -48,6 +48,7 @@
               (sha256
                (base32
                 "0xf7wmy2m29g2lm8lqc74yf8rf7sxfl3cfwbk7dpf0yf42pb0b6w"))
+              (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Delete files under GPL-compatible licences but never used
