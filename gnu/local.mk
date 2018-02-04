@@ -798,7 +798,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-manpage-minus-not-hyphen.patch	\
   %D%/packages/patches/kobodeluxe-midicon-segmentation-fault.patch	\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
-  %D%/packages/patches/ktexteditor-5.39.0-autotests-dependencies.patch	\
   %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/lcms-CVE-2016-10165.patch		\
   %D%/packages/patches/ldc-disable-tests.patch			\
