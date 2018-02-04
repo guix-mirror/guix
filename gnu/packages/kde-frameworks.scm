@@ -1777,7 +1777,7 @@ asynchronous jobs.")
        ("kwindowsystem" ,kwindowsystem)
        ("phonon" ,phonon)
        ("qtbase" ,qtbase)
-       ;; TODO: qtspeech (new in Qt 5.9)
+       ("qtspeech" ,qtspeech)
        ;; TODO: Think about adding dbusmenu-qt5 from
        ;; https://launchpad.net/libdbusmenu-qt
        ("qtx11extras" ,qtx11extras)))
