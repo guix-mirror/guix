@@ -465,7 +465,7 @@ with a ksysguardd daemon, which may also run on a remote system.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://download.kde.org/stable/qca/" version
+        (uri (string-append "mirror://kde/stable/qca/" version
                             "/src/qca-" version ".tar.xz"))
         (sha256
          (base32
