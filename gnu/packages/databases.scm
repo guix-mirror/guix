@@ -2627,51 +2627,71 @@ transforms idiomatic python function calls to well-formed SQL queries.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "095nc57k4m4iyim0x3fgpw681qba123iyl4qz7xysbv5ngbr19mc"))))
+               "1bcsz5cvj39a7nsxsfqmz9igrw33j6yli9kffigqyscs52amw7x1"))))
     (build-system go-build-system)
     (arguments
-     `(#:unpack-path "github.com/mongodb"
-       #:import-path "github.com/mongodb/mongo-tools"
+     `(#:import-path "github.com/mongodb/mongo-tools"
+       #:modules ((srfi srfi-1)
+                  (guix build go-build-system)
+                  (guix build utils))
        #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'delete-bundled-source-code
-           (lambda _
-             (delete-file-recursively
-              "src/github.com/mongodb/mongo-tools/vendor")
-             #t))
-
-         ;; We don't need to install the source code for end-user application
-         (delete 'install-source)
-
-         (replace 'build
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let build ((tools
-                          '("bsondump" "mongodump" "mongoexport" "mongofiles"
-                            "mongoimport" "mongooplog" "mongorestore"
-                            "mongostat" "mongotop")))
-               (if (null? tools)
-                   #t
-                   (if (let* ((tool (car tools))
-                              (command
-                               `("go" "install" "-v"
+       (let ((all-tools
+              '("bsondump" "mongodump" "mongoexport" "mongofiles"
+                "mongoimport" "mongooplog" "mongorestore"
+                "mongostat" "mongotop")))
+         (modify-phases %standard-phases
+           (add-after 'unpack 'delete-bundled-source-code
+             (lambda _
+               (delete-file-recursively
+                "src/github.com/mongodb/mongo-tools/vendor")
+               #t))
+           ;; We don't need to install the source code for end-user applications
+           (delete 'install-source)
+           (replace 'build
+             (lambda _
+               (every (lambda (tool)
+                        (let ((command
+                               `("go" "build"
+                                 ;; This is where the tests expect to find the
+                                 ;; executables
+                                 "-o" ,(string-append
+                                        "src/github.com/mongodb/mongo-tools/bin/"
+                                        tool)
+                                 "-v"
                                  "-tags=\"ssl sasl\""
                                  "-ldflags"
                                  "-extldflags=-Wl,-z,now,-z,relro"
                                  ,(string-append
                                    "src/github.com/mongodb/mongo-tools/"
                                    tool "/main/" tool ".go"))))
-                         (simple-format #t "build: running ~A\n"
-                                        (string-join command))
-                         (zero? (apply system* command)))
-                       (build (cdr tools))
-                       #f))))))))
+                          (simple-format #t "build: running ~A\n"
+                                         (string-join command))
+                          (apply invoke command)))
+                      all-tools)))
+           (replace 'check
+             (lambda _
+               (with-directory-excursion "src"
+                 (every (lambda (tool)
+                          (invoke
+                           "go" "test" "-v"
+                           (string-append "github.com/mongodb/mongo-tools/" tool)))
+                        all-tools))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (for-each (lambda (tool)
+                           (install-file
+                            (string-append "src/github.com/mongodb/mongo-tools/bin/" tool)
+                            (string-append (assoc-ref outputs "out")
+                                           "/bin")))
+                         all-tools)))))))
     (native-inputs
      `(("go-github.com-howeyc-gopass" ,go-github.com-howeyc-gopass)
        ("go-github.com-jessevdk-go-flags" ,go-github.com-jessevdk-go-flags)
        ("go-golang.org-x-crypto-ssh-terminal" ,go-golang.org-x-crypto-ssh-terminal)
        ("go-gopkg.in-mgo.v2" ,go-gopkg.in-mgo.v2)
        ("go-gopkg.in-tomb.v2" ,go-gopkg.in-tomb.v2)
-       ("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)))
+       ("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)
+       ("go-github.com-smartystreets-goconvey" ,go-github.com-smartystreets-goconvey)))
     (home-page "https://github.com/mongodb/mongo-tools")
     (synopsis "Various tools for interacting with MongoDB and BSON")
     (description

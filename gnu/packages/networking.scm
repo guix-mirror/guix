@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -327,14 +327,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "4.13")
+    (version "4.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1flwz4x76ajxigadq9knxgwr778g03y3qfx6c7rflc3x020a7hdp"))))
+                "06pr3s7wg2pbvfbf7js61bgh3caff4qf50nqqk3cgz9z90rgvxvi"))))
     (build-system gnu-build-system)
     (home-page "https://www.kernel.org/pub/software/network/ethtool/")
     (synopsis "Display or change Ethernet device settings")
@@ -1026,7 +1026,7 @@ library remains flexible, portable, and easily embeddable.")
 (define-public sslh
   (package
     (name "sslh")
-    (version "1.18")
+    (version "1.19b")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/yrutschle/sslh/archive/v"
@@ -1034,10 +1034,10 @@ library remains flexible, portable, and easily embeddable.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vzw7a7s9lhspbn5zn3hw8hir4pkjgbd68yys4hfsnjp1h7bzjpn"))))
+                "0p0zfy5ifzj7508zqidgkf8g43frm7l5xcs5s6v7132lypcsbd4k"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(;; Tests dependencies.
+     `(;; Test dependencies.
        ("lcov" ,lcov)
        ("perl" ,perl)
        ("perl-io-socket-inet6" ,perl-io-socket-inet6)
@@ -1047,6 +1047,7 @@ library remains flexible, portable, and easily embeddable.")
     (inputs
      `(("libcap" ,libcap)
        ("libconfig" ,libconfig)
+       ("pcre" ,pcre)
        ("tcp-wrappers" ,tcp-wrappers)))
     (arguments
      '(#:phases
@@ -1076,7 +1077,7 @@ library remains flexible, portable, and easily embeddable.")
                           "USELIBWRAP=1"
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:test-target "test"))
-    (home-page "http://www.rutschle.net/tech/sslh.shtml")
+    (home-page "https://www.rutschle.net/tech/sslh/README.html")
     (synopsis "Applicative network protocol demultiplexer")
     (description
      "sslh is a network protocol demultiplexer.  It acts like a switchboard,

@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -160,9 +161,7 @@ libcdio.")
     (inputs
      `(("acl" ,acl)
        ("readline" ,readline)
-       ("bzip2" ,bzip2)
-       ("zlib" ,zlib)
-       ("libcdio" ,libcdio)))
+       ("zlib" ,zlib)))
     (home-page "https://www.gnu.org/software/xorriso/")
     (synopsis "Create, manipulate, burn ISO-9660 file systems")
     (description
@@ -694,3 +693,54 @@ distributed with CD images and are used to describe how tracks are
 laid out on the image.")
     (home-page "https://www.gnu.org/software/ccd2cue/")
     (license gpl3+)))
+
+(define-public libburn
+  (package
+    (name "libburn")
+    (version "1.4.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://files.libburnia-project.org/releases/"
+                                 "libburn-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0wbh49s3az3sfpai09z1zdgynq7wnwrk31v5589033274nmzldlx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://dev.lovelyhq.com/libburnia/libburn")
+    (synopsis "Library for reading and writing optical discs")
+    (description
+     "Libburn is a library for reading and writing optical discs.
+Supported media are: CD-R, CD-RW, DVD-RAM, DVD+RW, DVD+R, DVD+R/DL,
+DVD-RW, DVD-R, DVD-R/DL, BD-R, and BD-RE.")
+    (license gpl2)))
+
+(define-public libisofs
+  (package
+    (name "libisofs")
+    (version "1.4.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://files.libburnia-project.org/releases/"
+                                 "libisofs-" version ".tar.gz"))
+             (sha256
+              (base32
+               "02m5g6lbmmkh2xc5xzq5zaf3ma6v31gls66aj886b3cq9qw0paql"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)
+       ("acl" ,acl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://dev.lovelyhq.com/libburnia/libisofs")
+    (synopsis "Library to create ISO 9660 images")
+    (description
+     "Libisofs creates ISO 9660 (also known as ECMA-119) filesystem images
+which can either be written to POSIX file objects or handed over to
+libburn for being written directly to optical media.
+It can read metadata of ISO 9660 filesystems, manipulate them, and use them
+to produce new complete filesystem images or add-on images to be appended
+to the read filesystem image.
+Supported extensions to ISO 9660 are Rock Ridge, Joliet, AAIP, zisofs.")
+    (license gpl2+)))

@@ -9,6 +9,7 @@
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
@@ -51,6 +53,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
@@ -848,15 +851,14 @@ to the other.")
 (define-public ocaml-findlib
   (package
     (name "ocaml-findlib")
-    (version "1.6.1")
+    (version "1.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.camlcity.org/download/"
                                   "findlib" "-" version ".tar.gz"))
               (sha256
                (base32
-                "02abg1lsnwvjg3igdyb8qjgr5kv1nbwl4gaf8mdinzfii5p82721"))
-              (patches (search-patches "ocaml-findlib-make-install.patch"))))
+                "12xx8si1qv3xz90qsrpazjjk4lc1989fzm97rsmc4diwla7n15ni"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)
@@ -878,6 +880,12 @@ to the other.")
                         "-mandir" (string-append out "/share/man")
                         "-sitelib" (string-append out "/lib/ocaml/site-lib")
                         "-with-toolbox"))))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (zero? (system* "make" "install"
+                                        (string-append "OCAML_CORE_STDLIB="
+                                                       out "/lib/ocaml/site-lib"))))))
                   (add-after 'install 'remove-camlp4
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
@@ -897,28 +905,6 @@ allows the user to enter queries on the command-line.  In order to simplify
 compilation and linkage, there are new frontends of the various OCaml
 compilers that can directly deal with packages.")
     (license license:x11)))
-
-(define-public ocaml-findlib-1.7.3
-  (package
-    (inherit ocaml-findlib)
-    (version "1.7.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.camlcity.org/download/"
-                                  "findlib" "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "12xx8si1qv3xz90qsrpazjjk4lc1989fzm97rsmc4diwla7n15ni"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments ocaml-findlib)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (zero? (system* "make" "install"
-                                 (string-append "OCAML_CORE_STDLIB="
-                                                out))))))))))))
 
 (define-public ocaml4.01-findlib
   (package
@@ -3726,7 +3712,7 @@ instead of bindings to a C library.")
        ("cppo" ,ocaml-cppo)
        ("jbuilder" ,ocaml-jbuilder)))
     (propagated-inputs
-     `(("findlib" ,ocaml-findlib-1.7.3)
+     `(("ocaml-findlib" ,ocaml-findlib)
        ("lambda-term" ,ocaml-lambda-term)
        ("lwt" ,ocaml-lwt)
        ("react" ,ocaml-react)
@@ -3738,6 +3724,139 @@ instead of bindings to a C library.")
 terminal or in Emacs.  It supports line editing, history, real-time and context
 sensitive completion, colors, and more.")
     (license license:bsd-3)))
+
+(define-public ocaml-integers
+  (package
+    (name "ocaml-integers")
+    (version "0.2.2")
+    (home-page "https://github.com/ocamllabs/ocaml-integers")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page
+                                  "/releases/download/v0.2.2/integers-"
+                                  version ".tbz"))
+              (file-name (string-append name "-" version ".tbz"))
+              (sha256
+               (base32
+                "08b1ljw88ny3l0mdq6xmffjk8anfc77igryva5jz1p6f4f746ywk"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:build-flags (list "build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("topkg" ,ocaml-topkg)
+       ("opam", opam)))
+    (synopsis "Various signed and unsigned integer types for OCaml")
+    (description "The ocaml-integers library provides a number of 8-, 16-, 32-
+and 64-bit signed and unsigned integer types, together with aliases such as
+long and size_t whose sizes depend on the host platform.")
+    (license license:expat)))
+
+(define-public ocaml-ctypes
+  (package
+   (name "ocaml-ctypes")
+   (version "0.13.1")
+   (home-page "https://github.com/ocamllabs/ocaml-ctypes")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append home-page "/archive/" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "17w0pr5k0zjcjns4y9n36rjpfl35zhvp3h8ggqs9lz12qhshdk2m"))))
+   (build-system ocaml-build-system)
+   (arguments
+    `(#:make-flags
+      (list (string-append "INSTALL_HEADERS = $(wildcard $($(PROJECT).dir)/*.h)"))
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (inputs
+    `(("libffi" ,libffi)
+      ("ounit" ,ocaml-ounit)
+      ("integers" ,ocaml-integers)
+      ("lwt" ,ocaml-lwt)
+      ("topkg" ,ocaml-topkg)
+      ("opam", opam)))
+   (synopsis "Library for binding to C libraries using pure OCaml")
+   (description "Ctypes is a library for binding to C libraries using pure
+OCaml.  The primary aim is to make writing C extensions as straightforward as
+possible.  The core of ctypes is a set of combinators for describing the
+structure of C types -- numeric types, arrays, pointers, structs, unions and
+functions.  You can use these combinators to describe the types of the
+functions that you want to call, then bind directly to those functions -- all
+without writing or generating any C!")
+   (license license:expat)))
+
+(define-public ocaml-ocb-stubblr
+  (package
+   (name "ocaml-ocb-stubblr")
+   (version "0.1.1")
+   (home-page "https://github.com/pqwy/ocb-stubblr")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   home-page "/releases/download/v0.1.1/ocb-stubblr-"
+                   version ".tbz"))
+             (file-name (string-append name "-" version ".tbz"))
+             (sha256
+              (base32
+               "167b7x1j21mkviq8dbaa0nmk4rps2ilvzwx02igsc2706784z72f"))))
+   (build-system ocaml-build-system)
+   (arguments
+    `(#:build-flags (list "build" "--tests" "true")
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))
+   (inputs
+    `(("topkg" ,ocaml-topkg)
+      ("opam", opam)))
+   (native-inputs
+    `(("astring" ,ocaml-astring)))
+   (synopsis "OCamlbuild plugin for C stubs")
+   (description "Ocb-stubblr is about ten lines of code that you need to
+repeat over, over, over and over again if you are using ocamlbuild to build
+OCaml projects that contain C stubs.")
+   (license license:isc)))
+
+(define-public ocaml-tsdl
+  (package
+    (name "ocaml-tsdl")
+    (version "0.9.1")
+    (home-page "http://erratique.ch/software/tsdl")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/releases/tsdl-"
+                                  version ".tbz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08bb97fhvz829fb0sgjn2p20mp7b04v98zy2qxpk2w390a6c4b34"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:build-flags '("build")
+       #:tests? #f; tests require a display device
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("opam" ,opam)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("topkg" ,ocaml-topkg)
+       ("result" ,ocaml-result)
+       ("sdl2" ,sdl2)
+       ("integers" ,ocaml-integers)
+       ("ctypes" ,ocaml-ctypes)))
+    (synopsis "Thin bindings to SDL for OCaml")
+    (description "Tsdl is an OCaml library providing thin bindings to the
+cross-platform SDL C library.")
+    (license license:isc)))
 
 (define-public coq-flocq
   (package

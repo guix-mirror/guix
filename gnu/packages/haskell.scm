@@ -42,6 +42,7 @@
   #:use-module (gnu packages haskell-crypto)
   #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
@@ -2069,6 +2070,28 @@ lines continued at an indented level below.")
     (description "IP Routing Table is a tree of IP ranges to search one of
 them on the longest match base.  It is a kind of TRIE with one way branching
 removed.  Both IPv4 and IPv6 are supported.")
+    (license license:bsd-3)))
+
+(define-public ghc-iwlib
+  (package
+    (name "ghc-iwlib")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/iwlib/iwlib-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0khmfwql4vwj55idsxmhjhrbqzfir3g9wm5lmpvnf77mm95cfpdz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("wireless-tools" ,wireless-tools)))
+    (home-page "https://github.com/jaor/iwlib")
+    (synopsis "Haskell binding to the iw wireless networking library")
+    (description
+     "IWlib is a thin Haskell binding to the iw C library.  It provides
+information about the current wireless network connections, and adapters on
+supported systems.")
     (license license:bsd-3)))
 
 (define-public ghc-regex-base

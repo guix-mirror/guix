@@ -496,3 +496,26 @@ way of specifying command line options.")
 termination.")
       (home-page "https://gopkg.in/tomb.v2")
       (license license:bsd-3))))
+
+(define-public go-github.com-jtolds-gls
+  (package
+    (name "go-github.com-jtolds-gls")
+    (version "4.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jtolds/gls")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vm37pvn0k4r6d3m620swwgama63laz8hhj3pyisdhxwam4m2g1h"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/jtolds/gls"))
+    (synopsis "@code{gls} provides Goroutine local storage")
+    (description
+     "The @code{gls} package provides a way to store a retrieve values
+per-goroutine.")
+    (home-page "https://github.com/jtolds/gls")
+    (license license:expat)))

@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -503,27 +504,34 @@ tiled on several screens.")
 (define-public xmobar
   (package
     (name "xmobar")
-    (version "0.24.5")
+    (version "0.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sdzfj2wa4wpig1i2i5n9qpwm90jp88qifsmaa7j37yhhs6snfir"))))
+                "0382r4vzqkz76jlp2069rdbwf4gh1a22r9w4rkphcn5qflw0dlb6"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-http" ,ghc-http)
+     `(("ghc-hinotify" ,ghc-hinotify)
+       ("ghc-http" ,ghc-http)
+       ("ghc-iwlib" ,ghc-iwlib)
        ("ghc-parsec" ,ghc-parsec)
        ("ghc-regex-compat" ,ghc-regex-compat)
        ("ghc-stm" ,ghc-stm)
        ("ghc-x11-xft" ,ghc-x11-xft)
-       ("ghc-hinotify" ,ghc-hinotify)
-       ("libxpm" ,libxpm)
-       ("wireless-tools" ,wireless-tools)))
+       ("libxpm" ,libxpm)))
     (arguments
      `(#:configure-flags
-       '("--flags=with_utf8 with_xft with_xpm with_inotify with_iwlib")))
+       (list (string-append "--flags="
+                            (string-join (list "with_inotify"
+                                               "with_iwlib"
+                                               "with_utf8"
+                                               "with_weather"
+                                               "with_xft"
+                                               "with_xpm")
+                                         " ")))))
     (home-page "http://xmobar.org")
     (synopsis "Minimalistic text based status bar")
     (description

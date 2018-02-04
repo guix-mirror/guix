@@ -1199,3 +1199,71 @@ that's clean and modern, and can express a wide range of voices & feelings.
 It comes in 7 incremental weights:
 ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
     (license license:silofl1.1)))
+
+(define-public culmus
+  (package
+    (name "culmus")
+    (version "0.132")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://sourceforge.net/projects/"
+                            "culmus/files/culmus/" version "/culmus-src-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "1djxalm26r7bcq33ckmfa15xfs6pmqzvcl64d5lqa1dl01bl4j4z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (let ((compile
+                    (lambda (name ext)
+                      (zero? (system*
+                              "fontforge" "-lang=ff"
+                              "-c" (string-append "Open('" name "');"
+                                                  "Generate('"
+                                                  (basename name "sfd") ext
+                                                  "')"))))))
+               ;; This part based on the fonts shipped in the non-source package.
+               (every (lambda (name)
+                        (compile name "ttf"))
+                      (find-files "." "^[^Nachlieli].*\\.sfd$"))
+               (every (lambda (name)
+                        (compile name "otf"))
+                      (find-files "." "^Nachlieli.*\\.sfd$"))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref %outputs "out"))
+                    (ttf     (string-append out "/share/fonts/truetype"))
+                    (otf     (string-append out "/share/fonts/opentype"))
+                    (license (string-append out "/share/doc/" ,name)))
+               (for-each (lambda (file)
+                           (install-file file ttf))
+                         (find-files "." "\\.ttf$"))
+               (for-each (lambda (file)
+                           (install-file file otf))
+                         (find-files "." "\\.otf$"))
+               (for-each (lambda (file)
+                           (install-file file license))
+                         '("GNU-GPL" "LICENSE" "LICENSE-BITSTREAM"))
+               #t))))))
+    (native-inputs
+     `(("fontforge" ,fontforge)))
+    (home-page "http://culmus.sourceforge.net/")
+    (synopsis "TrueType Hebrew Fonts for X11")
+    (description "14 Hebrew trivial families.  Contain ASCII glyphs from various
+sources.  Those families provide a basic set of a serif (Frank Ruehl), sans
+serif (Nachlieli) and monospaced (Miriam Mono) trivials.  Also included Miriam,
+Drugulin, Aharoni, David, Hadasim etc.  Cantillation marks support is
+available in Keter YG.")
+    (license license:gpl2))) ; consult the LICENSE file included

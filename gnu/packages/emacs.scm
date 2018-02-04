@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -6436,7 +6436,7 @@ Idris.")
     (license license:gpl3+)))
 
 (define-public emacs-browse-at-remote
-  (let ((commit "b5cff7971ca8bbb966e3acd9b7e5c4c007f94215")
+  (let ((commit "31dcf77d7c89a12f230e2b2332585db2c44530ef")
         (revision "1"))
     (package
       (name "emacs-browse-at-remote")
@@ -6450,7 +6450,7 @@ Idris.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "16ms9703m15dfxg6ap4mdw7msf8z5rzsdhba51dwivfpjxg7n52c"))))
+                  "017cb8lf7zbg0jmr7zxzd7d5kz2jy35cvw5vcpdmq1fdr3wqwkgj"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-f" ,emacs-f)
@@ -6919,3 +6919,25 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
 Groovy source files, REPL integration with run-groovy and Grails project
 navigation with the grails mode.")
     (license license:gpl3+)))
+
+(define-public org-tree-slide
+  (let ((commit "dff8f1a4a64c8dd0a1fde0b0131e2fe186747134")
+        (revision "0"))
+    (package
+      (name "emacs-org-tree-slide")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/takaxp/org-tree-slide")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "153bg0x7ypla11pq51jmsgzfjklwwnrq56xgpbfhk1j16xwz9hyf"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Presentation tool for org-mode")
+      (description
+       "Org-tree-slide provides a slideshow mode to view org-mode files.  Use
+@code{org-tree-slide-mode} to enter the slideshow mode, and then @kbd{C->} and
+@kbd{C-<} to jump to the next and previous slide.")
+      (license license:gpl3+))))

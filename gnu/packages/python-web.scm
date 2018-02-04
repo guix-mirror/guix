@@ -1215,14 +1215,14 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 (define-public awscli
   (package
    (name "awscli")
-   (version "1.11.185")
+   (version "1.14.32")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri name version))
      (sha256
       (base32
-       "18rskl6sla456z4hkq2gmmm03fqc4rqw5pfiqdyc7a2v9kljv4ah"))))
+       "09i82nf43pv5v598wvbj4nk1bfc64wp7xzlx5ykaca5m40lkarz0"))))
    (build-system python-build-system)
    (propagated-inputs
     `(("python-colorama" ,python-colorama)

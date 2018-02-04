@@ -50,6 +50,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages time)
@@ -294,6 +295,87 @@ normally do not detect.  The goal is to detect only real errors in the code
        "@code{check} is a rich testing extension for Go's testing package.")
       (home-page "https://github.com/go-check/check")
       (license license:bsd-2))))
+
+(define-public go-github.com-smartystreets-gunit
+  (package
+    (name "go-github.com-smartystreets-gunit")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/smartystreets/gunit")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00m4zg0kdj49mnpmf9klb44ba71p966xsk6zknrzqgfc8119f35z"))))
+    (build-system go-build-system)
+    (arguments
+     '(;; TODO: This package depends on go-github.com-smartystreets-assertions
+       ;; for running the tests, but go-github.com-smartystreets-assertions
+       ;; depends on this package, so break this loop by not running the tests
+       ;; for this package.
+       #:tests? #f
+       #:import-path "github.com/smartystreets/gunit"))
+    (synopsis "Testing tool for Go, in the style of xUnit")
+    (description
+     "@code{gunit} allows the test author to use a struct as the scope for a
+group of related test cases, in the style of xUnit fixtures.  This makes
+extraction of setup/teardown behavior (as well as invoking the system under
+test) much simpler.")
+    (home-page "https://github.com/smartystreets/gunit")
+    (license license:expat)))
+
+(define-public go-github.com-smartystreets-assertions
+  (package
+    (name "go-github.com-smartystreets-assertions")
+    (version "1.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/smartystreets/assertions")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1j0adgbykl55rf2945g0n5bmqdsnjcqlx5dcmpfh4chki43hiwg9"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/smartystreets/assertions"))
+    (native-inputs
+     `(("go-github.com-smartystreets-gunit" ,go-github.com-smartystreets-gunit)))
+    (synopsis "Assertions for testing with Go")
+    (description
+     "The @code{assertions} package provides convinient assertion functions
+for writing tests in Go.")
+    (home-page "https://github.com/smartystreets/assertions")
+    (license license:expat)))
+
+(define-public go-github.com-smartystreets-goconvey
+  (package
+    (name "go-github.com-smartystreets-goconvey")
+    (version "1.6.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/smartystreets/goconvey")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ph18rkl3ns3fgin5i4j54w5a69grrmf3apcsmnpdn1wlrbs3dxh"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/smartystreets/goconvey"))
+    (propagated-inputs
+     `(("go-github.com-jtolds-gls" ,go-github.com-jtolds-gls)
+       ("go-github.com-smartystreets-assertions" ,go-github.com-smartystreets-assertions)))
+    (synopsis "Go testing tool with both a web and terminal user interface")
+    (description
+     "GoConvey is a testing tool for Go. It integrates with go test, can show
+test coverage and has a web user interface that will refresh automatically.")
+    (home-page "https://github.com/smartystreets/goconvey")
+    (license license:expat)))
 
 (define-public googletest
   (package
