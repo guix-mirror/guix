@@ -491,7 +491,7 @@ cards.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://download.kde.org/stable/snorenotify/"
+        (uri (string-append "mirror://kde/stable/snorenotify/"
                             version "/src/snorenotify-" version ".tar.xz"))
         (sha256
          (base32
