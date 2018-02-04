@@ -367,7 +367,7 @@ other special events for a geographical region.")
 (define-public libkomparediff2
   (package
     (name "libkomparediff2")
-    (version "16.08.2")
+    (version "17.12.1")
     (source
       (origin
         (method url-fetch)
@@ -376,7 +376,7 @@ other special events for a geographical region.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1lafifrwfxvn0jwhz67kwv7m38lm4syips3fq77rwcvfhmkiijmh"))))
+          "0jd700pjw51vyan5d22k6j60jgb95pfn2nvwz2nfs2f4xlsly1hz"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
