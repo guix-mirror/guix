@@ -3035,8 +3035,8 @@ library.")
        ("kservice" ,kservice)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
-       ;; TODO: qtspeech (new in Qt 5.9)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase)
+       ("qtspeech", qtspeech)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
