@@ -243,7 +243,7 @@ Phonon-GStreamer is a backend based on the GStreamer multimedia library.")
 (define-public kpmcore
   (package
     (name "kpmcore")
-    (version "2.2.1")
+    (version "3.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -252,7 +252,7 @@ Phonon-GStreamer is a backend based on the GStreamer multimedia library.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1blila6ncqbmzhycx3szrbkxc000pzh62956mw5ihxvhrqpncg2p"))))
+                "0s6v0jfrhjg31ri5p6h9n4w29jvasf5dj954j3vfpzl91lygmmmq"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
