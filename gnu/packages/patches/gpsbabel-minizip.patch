@@ -1,0 +1,13 @@
+Patch taken from https://sources.debian.org/data/main/g/gpsbabel/1.5.3-2/debian/patches/use_minizip.
+
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -120,7 +120,7 @@ LIBOBJS = queue.o route.o waypt.o filter
+ 	  src/core/usasciicodec.o\
+ 	  src/core/ziparchive.o \
+ 	  $(GARMIN) $(JEEPS) $(SHAPE) @ZLIB@ $(FMTS) $(FILTERS)
+-OBJS = main.o globals.o $(LIBOBJS) @FILEINFO@
++OBJS = main.o globals.o $(MINIZIP) $(LIBOBJS) @FILEINFO@
+ 
+ DEPFILES = $(OBJS:.o=.d)
+ 

@@ -25,6 +25,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
@@ -38,7 +39,7 @@
 (define-public gpsbabel
   (package
     (name "gpsbabel")
-    (version "1.5.2")
+    (version "1.5.4")
     (source (origin
               (method url-fetch)
               ;; XXX: Downloads from gpsbabel.org are hidden behind a POST, so
@@ -48,17 +49,21 @@
                     version ".orig.tar.gz"))
               (sha256
                (base32
-                "0xf7wmy2m29g2lm8lqc74yf8rf7sxfl3cfwbk7dpf0yf42pb0b6w"))
+                "19hykxhyl567gf8qcrl33qhv95w0g4vxw9r3h9b8d8plx9bnaf8l"))
+              (patches (search-patches
+                        "gpsbabel-minizip.patch"
+                        ;; XXX: Remove this patch on the next release.
+                        "gpsbabel-qstring.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Delete files under GPL-compatible licences but never used
                   ;; on GNU systems, rather than bloating the LICENSE field.
-                  (with-directory-excursion "gpsbabel"
-                    (delete-file "gui/serial_mac.cc")           ; Apple MIT
-                    (delete-file "mingw/include/ddk/hidsdi.h")) ; public domain
+                  (delete-file "gui/serial_mac.cc")           ; Apple MIT
+                  (delete-file "mingw/include/ddk/hidsdi.h") ; public domain
                   #t))))
     (build-system gnu-build-system)
+    ;; TODO: "make doc" requires Docbook & co.
     (arguments
      `(#:configure-flags
        '("--with-zlib=system"
@@ -66,13 +71,6 @@
          ;; recent binutils:
          ;; https://codereview.qt-project.org/#/c/111787/
          "CXXFLAGS=-std=gnu++11 -fPIC")
-       #:phases
-       (modify-phases %standard-phases
-        (add-before 'configure 'pre-configure
-                    (lambda _
-                      (chdir "gpsbabel"))))
-                    ;; TODO: "make doc" requires Docbook & co.
-
        ;; On i686, 'raymarine.test' fails because of a rounding error:
        ;; <http://hydra.gnu.org/build/133040>.  As a workaround, disable tests
        ;; on these platforms.
