@@ -2289,23 +2289,40 @@ net/http library.")
 (define-public ruby-multi-json
   (package
     (name "ruby-multi-json")
-    (version "1.12.2")
+    (version "1.13.1")
     (source
      (origin
        (method url-fetch)
-       (uri (rubygems-uri "multi_json" version))
+       ;; Tests are not distributed at rubygems.org so download from GitHub
+       ;; instead.
+       (uri (string-append "https://github.com/intridea/multi_json/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1raim9ddjh672m32psaa9niw67ywzjbxbdb8iijx3wv9k5b0pk2x"))))
+         "1s64xqvrnrxmb59v6b2kchnisawg5ai9ky1w60dy6z6ws9la1xv4"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ;; No testsuite included in the gem.
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-signing-key-reference
+           (lambda _
+             (substitute* "multi_json.gemspec"
+               ((".*spec.signing_key.*") ""))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-json-pure" ,ruby-json-pure)
+       ("ruby-oj" ,ruby-oj)
+       ("ruby-yajl-ruby" ,ruby-yajl-ruby)))
     (synopsis "Common interface to multiple JSON libraries for Ruby")
     (description
      "This package provides a common interface to multiple JSON libraries,
 including Oj, Yajl, the JSON gem (with C-extensions), the pure-Ruby JSON gem,
 NSJSONSerialization, gson.rb, JrJackson, and OkJson.")
-    (home-page "http://github.com/intridea/multi_json")
+    (home-page "https://github.com/intridea/multi_json")
     (license license:expat)))
 
 (define-public ruby-arel
