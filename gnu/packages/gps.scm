@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -171,3 +172,51 @@ useful in measurements where Global Positioning System (GPS) is not available,
 such as underground.  It features the ability to adjust in local Cartesian
 coordinates as well as partial support for adjustments in global coordinate systems.")
     (license license:gpl3+)))
+
+(define-public gpxsee
+  (package
+    (name "gpxsee")
+    (version "4.19")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/tumic0/GPXSee/archive/"
+                              version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00j0gjldw1kn3i45dppld1pz8r4s1g7lw89k7gfvvqbjjyjih1wg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; Use lrelease to convert TS translation files into QM files.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (for-each (lambda (file)
+                         (system* "lrelease" file))
+                       (find-files "lang" "\\.ts"))
+             (substitute* "src/config.h"
+               (("/usr/share/gpxsee")
+                (string-append
+                 (assoc-ref outputs "out") "/share/gpxsee")))
+             (invoke "qmake"
+                     (string-append "PREFIX="
+                                    (assoc-ref outputs "out")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/gpxsee/")))
+               (install-file "GPXSee" (string-append out "/bin/GPXSee"))
+               (install-file "pkg/maps.txt" share))
+             #t)))))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (home-page "http://www.gpxsee.org")
+    (synopsis "GPX file viewer and analyzer")
+    (description
+     "GPXSee is a Qt-based GPS log file viewer and analyzer that supports GPX,
+TCX, KML, FIT, IGC and NMEA files.")
+    (license license:gpl3)))
