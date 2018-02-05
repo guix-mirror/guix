@@ -1050,7 +1050,7 @@ complete studio.")
          (add-after 'unpack 'fix-configuration
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "default.config"
-               (("/usr/bin/aplay" "aplay"))
+               (("/usr/bin/aplay") "aplay")
                (("/usr/bin/timidity") "timidity")
                (("/usr/bin/mpg123") "mpg123")
                (("/usr/bin/ogg123") "ogg123"))
