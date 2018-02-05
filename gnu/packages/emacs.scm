@@ -3230,6 +3230,63 @@ another (presumably currently running) Emacs Lisp file.")
 after buffer changes.")
     (license license:gpl3+)))
 
+(define-public emacs-realgud
+  (package
+    (name "emacs-realgud")
+    (version "1.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/realgud-"
+                           version ".tar"))
+       (sha256
+        (base32
+         "1nc8km339ip90h1j55ahfga03v7x7rh4iycmw6yrxyzir68vwn7c"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-autogen-script
+           (lambda _
+             (substitute* "autogen.sh"
+               (("./configure") "sh configure"))))
+         (add-after 'fix-autogen-script 'autogen
+           (lambda _
+             (setenv "CONFIG_SHELL" "sh")
+             (invoke "sh" "autogen.sh")))
+         (add-after 'fix-autogen-script 'set-home
+           (lambda _
+             (setenv "HOME" (getenv "TMPDIR"))))
+         (add-before 'patch-el-files 'remove-realgud-pkg.el
+           (lambda _
+             ;; XXX: This file is auto-generated at some point and causes
+             ;; substitute* to crash during the `patch-el-files' phase with:
+             ;; ERROR: In procedure stat: No such file or directory:
+             ;; "./realgud-pkg.el"
+             (delete-file "./realgud-pkg.el")
+             ;; FIXME: `patch-el-files' crashes on this file with error:
+             ;; unable to locate "bashdb".
+             (delete-file "./test/test-regexp-bashdb.el"))))
+       #:include (cons* ".*\\.el$" %default-include)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("emacs-test-simple" ,emacs-test-simple)))
+    (propagated-inputs
+     `(("emacs-load-relative" ,emacs-load-relative)
+       ("emacs-loc-changes" ,emacs-loc-changes)))
+    (home-page "https://github.com/realgud/realgud/")
+    (synopsis
+     "Modular front-end for interacting with external debuggers")
+    (description
+     "RealGUD is a modular, extensible GNU Emacs front-end for interacting
+with external debuggers.  It integrates various debuggers such as gdb, pdb,
+ipdb, jdb, lldb, bashdb, zshdb, etc. and allows to visually step code in the
+sources.  Unlike GUD, it also supports running multiple debug sessions in
+parallel.")
+    (license license:gpl3+)))
+
 (define-public emacs-request
   (package
     (name "emacs-request")
