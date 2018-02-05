@@ -3186,6 +3186,30 @@ alleviates the need for context macros, enclosing specifications or required
 test tags.  It supports both interactive and non-interactive use.")
     (license license:gpl3+)))
 
+(define-public emacs-load-relative
+  (package
+    (name "emacs-load-relative")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/load-relative-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1hfxb2436jdsi9wfmsv47lkkpa5galjf5q81bqabbsv79rv59dps"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/rocky/emacs-load-relative")
+    (synopsis "Emacs Lisp relative file loading related functions")
+    (description
+     "Provides functions which facilitate writing multi-file Emacs packages
+and running from the source tree without having to \"install\" code or fiddle
+with @{load-path}.
+
+The main function, @code{load-relative}, loads an Emacs Lisp file relative to
+another (presumably currently running) Emacs Lisp file.")
+    (license license:gpl3+)))
+
 (define-public emacs-request
   (package
     (name "emacs-request")
