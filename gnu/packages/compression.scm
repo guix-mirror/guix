@@ -1377,6 +1377,7 @@ It can be used as a replacement for the Apache @code{CBZip2InputStream} /
                   (delete-file-recursively "CPP/7zip/Compress/Rar")
                   #t))
               (patches (search-patches "p7zip-CVE-2016-9296.patch"
+                                       "p7zip-CVE-2017-17969.patch"
                                        "p7zip-remove-unused-code.patch"))))
     (build-system gnu-build-system)
     (arguments
