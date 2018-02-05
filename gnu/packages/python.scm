@@ -45,6 +45,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Ethan R. Jones <ethanrjones97@gmail.com
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -12417,3 +12418,35 @@ style guide, even if the original code didn't violate the style guide.")
 
 (define-public python2-yapf
   (package-with-python2 python-yapf))
+
+(define-public python-gyp
+  (let ((commit "5e2b3ddde7cda5eb6bc09a5546a76b00e49d888f")
+        (revision "0"))
+    (package
+      (name "python-gyp")
+      ;; Google does not release versions,
+      ;; based on second most recent commit date.
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         ;; Google does not release tarballs,
+         ;; git checkout is needed.
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://chromium.googlesource.com/external/gyp")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0fr7nxcrk292djmxzpcjaphnsd123k31gp8jnd91vwknhq6snmv9"))))
+      (build-system python-build-system)
+      (home-page "https://gyp.gsrc.io/")
+      (synopsis "GYP is a Meta-Build system")
+      (description
+       "GYP builds build systems for large, cross platform applications.
+It can be used to generate XCode projects, Visual Studio projects, Ninja build
+files, and Makefiles.")
+      (license license:bsd-3))))
+
+(define-public python2-gyp
+  (package-with-python2 python-gyp))
