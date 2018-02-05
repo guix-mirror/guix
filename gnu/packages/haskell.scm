@@ -10,7 +10,7 @@
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
-;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -74,7 +74,7 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "http://git.elephly.net/software/yale-haskell.git")
+                      (url "https://git.elephly.net/software/yale-haskell.git")
                       (commit commit)))
                 (file-name (string-append "yale-haskell-" commit "-checkout"))
                 (sha256
@@ -98,7 +98,7 @@
                #t)))))
       (inputs
        `(("clisp" ,clisp)))
-      (home-page "http://git.elephly.net/software/yale-haskell.git")
+      (home-page "https://git.elephly.net/software/yale-haskell.git")
       (synopsis "Port of the Yale Haskell system to CLISP")
       (description "This package provides the Yale Haskell system running on
 top of CLISP.")
@@ -455,7 +455,7 @@ determine the hostname.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://hackage.haskell.org/package/libxml/"
+       (uri (string-append "https://hackage.haskell.org/package/libxml/"
                            "libxml-" version ".tar.gz"))
        (sha256
         (base32
@@ -469,7 +469,7 @@ determine the hostname.")
        `(,(string-append "--extra-include-dirs="
                          (assoc-ref %build-inputs "libxml2")
                          "/include/libxml2"))))
-    (home-page "http://hackage.haskell.org/package/libxml")
+    (home-page "https://hackage.haskell.org/package/libxml")
     (synopsis "Haskell bindings to libxml2")
     (description
      "This library provides minimal Haskell binding to libxml2.")
@@ -659,7 +659,7 @@ nothing.")
      `(("hspec-discover" ,hspec-discover)
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-quickcheck" ,ghc-quickcheck)))
-    (home-page "http://www.haskell.org/haddock/")
+    (home-page "https://www.haskell.org/haddock/")
     (synopsis "Library exposing some functionality of Haddock")
     (description
      "Haddock is a documentation-generation tool for Haskell libraries.  These
@@ -692,7 +692,7 @@ the ‘haddock’ package.")
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hspec" ,ghc-hspec)
        ("hspec-discover" ,hspec-discover)))
-    (home-page "http://www.haskell.org/haddock/")
+    (home-page "https://www.haskell.org/haddock/")
     (synopsis "API for documentation-generation tool Haddock")
     (description "This package provides an API to Haddock, the
 documentation-generation tool for Haskell libraries.")
@@ -743,7 +743,7 @@ documentation-generation tool for Haskell libraries.")
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("ghc-haddock-test" ,ghc-haddock-test)))
-    (home-page "http://www.haskell.org/haddock/")
+    (home-page "https://www.haskell.org/haddock/")
     (synopsis
      "Documentation-generation tool for Haskell libraries")
     (description
@@ -766,7 +766,7 @@ documentation-generation tool for Haskell libraries.")
          "1dpcf6w3cf1sfl9bnlsx04x7aghw029glj5d05qzrsnms2rlw8iq"))))
     (build-system haskell-build-system)
     (home-page
-     "http://twanvl.nl/blog/haskell/simple-reflection-of-expressions")
+     "https://twanvl.nl/blog/haskell/simple-reflection-of-expressions")
     (synopsis
      "Simple reflection of expressions containing variables")
     (description
@@ -822,7 +822,7 @@ package are to parse or generate Haskell 98 code.")
          "0bi1cs9b8ir33h1fl6x2xw4ymygapqbr713ridpf7rmk2wa7jqqs"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
-    (home-page "http://www.haskell.org/alex/")
+    (home-page "https://www.haskell.org/alex/")
     (synopsis
      "Tool for generating lexical analysers in Haskell")
     (description
@@ -906,7 +906,7 @@ tool lex or flex for C/C++.")
     (description
      "Concatenative gives Haskell Factor-style combinators and arrows for
 postfix notation.  For more information on stack based languages, see
-@uref{http://concatenative.org}.")
+@uref{https://concatenative.org}.")
     (license license:bsd-3)))
 
 (define-public ghc-happy
@@ -1314,7 +1314,7 @@ arithmetic.")
        ("ghc-fixed" ,ghc-fixed)
        ("glu" ,glu)
        ("ghc-text" ,ghc-text)))
-    (home-page "http://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://www.haskell.org/haskellwiki/Opengl")
     (synopsis "Raw Haskell bindings for the OpenGL graphics system")
     (description "OpenGLRaw is a raw Haskell binding for the OpenGL 4.5
 graphics system and lots of OpenGL extensions.  It is basically a 1:1 mapping
@@ -1347,7 +1347,7 @@ found at runtime, a userError is thrown.")
        ("ghc-opengl" ,ghc-opengl)
        ("ghc-openglraw" ,ghc-openglraw)
        ("freeglut" ,freeglut)))
-    (home-page "http://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://www.haskell.org/haskellwiki/Opengl")
     (synopsis "Haskell bindings for the OpenGL Utility Toolkit")
     (description "This library provides Haskell bindings for the OpenGL
 Utility Toolkit, a window system-independent toolkit for writing OpenGL
@@ -1371,7 +1371,7 @@ programs.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-openglraw" ,ghc-openglraw)))
-    (home-page "http://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://www.haskell.org/haskellwiki/Opengl")
     (synopsis "Raw Haskell bindings GLU")
     (description "GLURaw is a raw Haskell binding for the GLU 1.3 OpenGL
 utility library.  It is basically a 1:1 mapping of GLU's C API, intended as a
@@ -1399,7 +1399,7 @@ basis for a nicer interface.")
        ("ghc-gluraw" ,ghc-gluraw)
        ("ghc-statevar" ,ghc-statevar)
        ("ghc-openglraw" ,ghc-openglraw)))
-    (home-page "http://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://www.haskell.org/haskellwiki/Opengl")
     (synopsis "Haskell bindings for the OpenGL graphics system")
     (description "This package provides Haskell bindings for the OpenGL
 graphics system (GL, version 4.5) and its accompanying utility library (GLU,
@@ -1632,7 +1632,7 @@ versions of GHC (i.e., < 6.10).")
       ("ghc-random" ,ghc-random)
       ("ghc-stm" ,ghc-stm)
       ("ghc-zlib" ,ghc-zlib)))
-   (home-page "http://www.haskell.org/cabal/")
+   (home-page "https://www.haskell.org/cabal/")
    (synopsis "Command-line interface for Cabal and Hackage")
    (description
     "The cabal command-line program simplifies the process of managing
@@ -1690,7 +1690,7 @@ configuration.  This library provides the common bits for writing custom
 for various monad transformers, inspired by the paper 'Functional Programming
 with Overloading and Higher-Order Polymorphism', by Mark P Jones, in 'Advanced
 School of Functional Programming', 1995.  See
-@uref{http://web.cecs.pdx.edu/~mpj/pubs/springschool.html, the paper}.")
+@uref{https://web.cecs.pdx.edu/~mpj/pubs/springschool.html, the paper}.")
     (license license:bsd-3)))
 
 (define-public ghc-paths
@@ -3032,7 +3032,7 @@ for Haskell.")
          "0qk741yqnpd69sksgks2vb7zi50rglp9m498lzw4sh268a017rsi"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-exceptions" ,ghc-exceptions)))
-    (home-page "http://www.github.com/batterseapower/temporary")
+    (home-page "https://www.github.com/batterseapower/temporary")
     (synopsis "Temporary file and directory support")
     (description "The functions for creating temporary files and directories
 in the Haskelll base library are quite limited.  This library just repackages
@@ -3058,7 +3058,7 @@ installed.")
     (build-system haskell-build-system)
     (inputs `(("ghc-exceptions" ,ghc-exceptions)))
     (home-page
-     "http://www.github.com/feuerbach/temporary")
+     "https://www.github.com/feuerbach/temporary")
     (synopsis
      "Portable temporary file and directory support")
     (description
@@ -3206,7 +3206,7 @@ variety of traversals.")
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-quickcheck" ,ghc-quickcheck)))
-    (home-page "http://web.engr.oregonstate.edu/~erwig/fgl/haskell")
+    (home-page "https://web.engr.oregonstate.edu/~erwig/fgl/haskell")
     (synopsis
      "Martin Erwig's Functional Graph Library")
     (description "The functional graph library, FGL, is a collection of type
@@ -3928,7 +3928,7 @@ interoperate with code that uses the new implementation.")
        ("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
-    (home-page "http://jaspervdj.be/blaze")
+    (home-page "https://jaspervdj.be/blaze")
     (synopsis "Fast markup combinator library for Haskell")
     (description "This library provides core modules of a markup combinator
 library for Haskell.")
@@ -4699,7 +4699,7 @@ monad transformer (instead of the IO monad).")
     (synopsis "Test interactive Haskell examples")
     (description "The doctest program checks examples in source code comments.
 It is modeled after doctest for Python, see
-@uref{http://docs.python.org/library/doctest.html, the Doctest website}.")
+@uref{https://docs.python.org/library/doctest.html, the Doctest website}.")
     (license license:expat)))
 
 (define-public ghc-doctest-0.12
@@ -4873,7 +4873,7 @@ in migrated modules.")
     (description "This package provides @code{Data.Scientific}, which provides
 the number type @code{Scientific}.  Scientific numbers are arbitrary precision
 and space efficient.  They are represented using
-@uref{http://en.wikipedia.org/wiki/Scientific_notation, scientific
+@uref{https://en.wikipedia.org/wiki/Scientific_notation, scientific
 notation}.")
     (license license:bsd-3)))
 
@@ -5033,7 +5033,7 @@ it can parse and apply LaTeX macros.")
     (description
      "This package is an enhancement of the @code{Text.Regex} library,
 providing the PCRE backend to accompany regex-base, with bundled code from
-@url{http://www.pcre.org}.")
+@url{https://www.pcre.org}.")
     (license license:bsd-3)))
 
 (define-public ghc-diff
@@ -5052,7 +5052,7 @@ providing the PCRE backend to accompany regex-base, with bundled code from
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
-    (home-page "http://hub.darcs.net/sterlingclover/Diff")
+    (home-page "https://hub.darcs.net/sterlingclover/Diff")
     (synopsis "O(ND) diff algorithm in Haskell")
     (description
      "This package provides an implementation of the standard diff algorithm,
@@ -5085,7 +5085,7 @@ and utilities for pretty printing.")
     (description
      "Highlighting-kate is a syntax highlighting library with support for
 nearly one hundred languages.  The syntax parsers are automatically generated
-from @uref{http://kate-editor.org/, Kate syntax descriptions}, so any syntax
+from @uref{https://kate-editor.org/, Kate syntax descriptions}, so any syntax
 supported by Kate can be added.  An (optional) command-line program is
 provided, along with a utility for generating new parsers from Kate XML syntax
 descriptions.")
@@ -5663,7 +5663,7 @@ TIFF and GIF formats.")
     (synopsis "Lua language interpreter embedding in Haskell")
     (description
      "The Scripting.Lua module is a wrapper of the Lua language interpreter as
-described in @url{http://www.lua.org/}.")
+described in @url{https://www.lua.org/}.")
     (license license:expat)))
 
 (define-public ghc-hslua-module-text
@@ -5984,7 +5984,7 @@ provided.  Skylighting is intended to be the successor to highlighting-kate.")
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://pandoc.org")
+    (home-page "https://pandoc.org")
     (synopsis "Conversion between markup formats")
     (description
      "Pandoc is a Haskell library for converting from one markup format to
@@ -6033,7 +6033,7 @@ MODS-format XML intermediate.")
         (base32
          "0av4c3qvwbkbzrjrrg601ay9pds7wscqqp2lc2z78mv2lllap3g3"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/rfc5051")
+    (home-page "https://hackage.haskell.org/package/rfc5051")
     (synopsis "Simple unicode collation as per RFC5051")
     (description
      "This library implements @code{unicode-casemap}, the simple, non
@@ -6287,7 +6287,7 @@ been observed, so this library should be suitable for high performance scenarios
         (base32
          "03a9ix1fcx08viwv2jg5ndw1qbkydyyrmjvqr9wasmcik9x1wv3g"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/data-ordlist")
+    (home-page "https://hackage.haskell.org/package/data-ordlist")
     (synopsis "Set and bag operations on ordered lists")
     (description
      "This module provides set and multiset operations on ordered lists.")
@@ -6390,7 +6390,7 @@ inspired by libtre.")
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
-    (home-page "http://hub.darcs.net/shelarcy/regex-compat-tdfa")
+    (home-page "https://hub.darcs.net/shelarcy/regex-compat-tdfa")
     (synopsis "Unicode Support version of Text.Regex, using regex-tdfa")
     (description
      "One module layer over @code{regex-tdfa} to replace @code{Text.Regex}.
@@ -6422,7 +6422,7 @@ this problem.")
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
        ("ghc-tasty-th" ,ghc-tasty-th)))
-    (home-page "http://hackage.haskell.org/package/sandi")
+    (home-page "https://hackage.haskell.org/package/sandi")
     (synopsis "Data encoding library")
     (description "Reasonably fast data encoding library.")
     (license license:bsd-3)))
@@ -6447,7 +6447,7 @@ this problem.")
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
-    (home-page "http://hub.darcs.net/ganesh/bytestring-handle")
+    (home-page "https://hub.darcs.net/ganesh/bytestring-handle")
     (synopsis "ByteString-backed Handles")
     (description "ByteString-backed Handles") ; There is no description
     (license license:bsd-3)))
@@ -6474,7 +6474,7 @@ this problem.")
        ("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
        ("ghc-array" ,ghc-array)))
-    (home-page "http://hackage.haskell.org/package/tar")
+    (home-page "https://hackage.haskell.org/package/tar")
     (synopsis "Reading, writing and manipulating \".tar\" archive files")
     (description
      "This library is for working with \\\"@.tar@\\\" archive files.
@@ -6500,7 +6500,7 @@ an index.")
         (base32
          "1qkhi8ssf8c4jnmrw9dzym3igqbzq7h48iisaykdfzdsm09qfh3c"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/transformers")
+    (home-page "https://hackage.haskell.org/package/transformers")
     (synopsis "Concrete functor and monad transformers")
     (description
      "A portable library of functor and monad transformers, inspired by the paper
@@ -6586,7 +6586,7 @@ an executable.")
         (base32
          "0qyv20gqy9pb1acy700ahv70lc6vprcwb26cc7fcpcs4scsc7irm"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/patience")
+    (home-page "https://hackage.haskell.org/package/patience")
     (synopsis "Patience diff and longest increasing subsequence")
     (description
      "This library implements the 'patience diff' algorithm, as well as the
@@ -6610,7 +6610,7 @@ performance, nice output for humans, and simplicity of implementation.")
         (base32
          "1wdhskwa6dw8qljbvwpyxj8ca6y95q2np7z4y4q6bpf4anmd5794"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/monads-tf")
+    (home-page "https://hackage.haskell.org/package/monads-tf")
     (synopsis "Monad classes, using type families")
     (description
      "Monad classes using type families, with instances for various monad transformers,
@@ -6671,7 +6671,7 @@ from using 'String' to 'ByteString'.")
       (base32
        "1qmn1778xzg07jg9nx4k1spdz2llivpblf6wwrps1qpqjhsac5cd"))))
   (build-system haskell-build-system)
-  (home-page "http://www.haskell.org/haskellwiki/Colour")
+  (home-page "https://www.haskell.org/haskellwiki/Colour")
   (synopsis "Model for human colour perception")
   (description
    "This package provides a data type for colours and transparency.
@@ -6694,7 +6694,7 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
         (base32
          "0ffhanigxrx5wpin8l0wfp7d24lpgsjwj0hxrfp8bpy2wj1snxny"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/directory")
+    (home-page "https://hackage.haskell.org/package/directory")
     (synopsis "Platform-agnostic library for file system operations")
     (description
      "This library provides a basic set of operations for manipulating
@@ -6724,7 +6724,7 @@ files and directories in a portable way.")
              (substitute* "System/Process/Posix.hs"
                (("/bin/sh") (which "sh")))
              #t)))))
-    (home-page "http://hackage.haskell.org/package/process")
+    (home-page "https://hackage.haskell.org/package/process")
     (synopsis "System process libraries")
     (description
      "This package contains libraries for dealing with system processes.")
@@ -6746,7 +6746,7 @@ files and directories in a portable way.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-text" ,ghc-text)))
-    (home-page "http://hackage.haskell.org/package/wl-pprint-text")
+    (home-page "https://hackage.haskell.org/package/wl-pprint-text")
     (synopsis "Wadler/Leijen Pretty Printer for Text values")
     (description
      "A clone of wl-pprint for use with the text library.")
@@ -6772,7 +6772,7 @@ files and directories in a portable way.")
      `(("ghc-fgl" ,ghc-fgl)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hspec" ,ghc-hspec)))
-    (home-page "http://hackage.haskell.org/package/fgl-arbitrary")
+    (home-page "https://hackage.haskell.org/package/fgl-arbitrary")
     (synopsis "QuickCheck support for fgl")
     (description
      "Provides Arbitrary instances for fgl graphs to avoid adding a
@@ -6809,7 +6809,7 @@ for generating graph-like data structures.")
     (synopsis "Bindings to Graphviz for graph visualisation")
     (description
      "This library provides bindings for the Dot language used by
-the @uref{http://graphviz.org/, Graphviz} suite of programs for
+the @uref{https://graphviz.org/, Graphviz} suite of programs for
 visualising graphs, as well as functions to call those programs.
 Main features of the graphviz library include:
 
@@ -6840,7 +6840,7 @@ and edge labels with positional information, etc.
          "12v83s2imxb3p2crnlzrpjh0nk6lpysw9bdk9yahs6f37csa5jaj"))))
     (build-system haskell-build-system)
     (home-page
-     "http://hackage.haskell.org/package/array")
+     "https://hackage.haskell.org/package/array")
     (synopsis "Mutable and immutable arrays")
     (description
      "In addition to providing the @code{Data.Array} module, this package also defines
@@ -7204,7 +7204,7 @@ which can't be decoded in the current locale encoding.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://hackage.haskell.org/package/storable-complex/storable-complex-"
+             "https://hackage.haskell.org/package/storable-complex/storable-complex-"
              version ".tar.gz"))
        (sha256
         (base32 "01kwwkpbfjrv26vj83cd92px5qbq1bpgxj0r45534aksqhany1xb"))))
@@ -7224,7 +7224,7 @@ and Fortran complex data types.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://hackage.haskell.org/package/hmatrix/hmatrix-"
+             "https://hackage.haskell.org/package/hmatrix/hmatrix-"
              version ".tar.gz"))
        (sha256
         (base32 "07zkwvg872hfk6jyn4s54ws8mvclynazaxf7fsbqi16dmf9dn61c"))))
@@ -7254,7 +7254,7 @@ numerical computations based on BLAS and LAPACK.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://hackage.haskell.org/package/hmatrix-gsl/hmatrix-gsl-"
+             "https://hackage.haskell.org/package/hmatrix-gsl/hmatrix-gsl-"
              version ".tar.gz"))
        (sha256
         (base32 "0mflm7zg6c6a5vy092pa429rzpyv5drc1589r3x4fbmvcyqc79gx"))))
@@ -7281,7 +7281,7 @@ using GSL.")
        (method url-fetch)
        (uri
         (string-append
-         "http://hackage.haskell.org/package/hmatrix-special/hmatrix-special-"
+         "https://hackage.haskell.org/package/hmatrix-special/hmatrix-special-"
          version ".tar.gz"))
        (sha256
         (base32 "0kpcqdchi7ikzhqacy4rh4dxz3v37paxyb84wqa66sysb72wkabj"))))
@@ -7304,7 +7304,7 @@ functions for Haskell.")
        (method url-fetch)
        (uri
         (string-append
-         "http://hackage.haskell.org/package/hmatrix-gsl-stats/hmatrix-gsl-stats-"
+         "https://hackage.haskell.org/package/hmatrix-gsl-stats/hmatrix-gsl-stats-"
          version ".tar.gz"))
        (sha256
         (base32 "1gslgk58lzin43cvbpivhw7nrn9qyaa6qwhy1z9ypvyal5p8n3sa"))))
@@ -7329,7 +7329,7 @@ interface for statistics based on hmatrix and GSL.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://hackage.haskell.org/package/easyplot/easyplot-"
+             "https://hackage.haskell.org/package/easyplot/easyplot-"
              version ".tar.gz"))
        (sha256
         (base32 "18kndgvdj2apjpfga6fp7m16y1gx8zrwp3c5vfj03sx4v6jvciqk"))))
@@ -7339,7 +7339,7 @@ interface for statistics based on hmatrix and GSL.")
      `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'fix-setup-suffix
                     (lambda _ (rename-file "Setup.lhs" "Setup.hs") #t)))))
-    (home-page "http://hub.darcs.net/scravy/easyplot")
+    (home-page "https://hub.darcs.net/scravy/easyplot")
     (synopsis "Haskell plotting library based on gnuplot")
     (description "This package provides a plotting library for
 Haskell, using gnuplot for rendering.")
@@ -7353,7 +7353,7 @@ Haskell, using gnuplot for rendering.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://hackage.haskell.org/package/hashtables/hashtables-"
+             "https://hackage.haskell.org/package/hashtables/hashtables-"
              version ".tar.gz"))
        (sha256
         (base32 "1b6w9xznk42732vpd8ili60k12yq190xnajgga0iwbdpyg424lgg"))))
@@ -7383,7 +7383,7 @@ a set of wrappers to use the hash tables in the IO monad.")
        (sha256
         (base32 "1vf2g1gac3rm32g97rl0fll51m88q7ry4m6khnl5j47qsmx24r9l"))))
     (build-system haskell-build-system)
-    (home-page "http://www.haskell.org/haskellwiki/Record_access")
+    (home-page "https://www.haskell.org/haskellwiki/Record_access")
     (synopsis
      "Haskell utilities for accessing and manipulating fields of records")
     (description "This package provides Haskell modules for accessing and
@@ -7404,7 +7404,7 @@ manipulating fields of records.")
         (base32 "0yp030vafbpddl27m606aibbbr5ar5j5bsv4bksscz3cq4yq5j10"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-data-accessor" ,ghc-data-accessor)))
-    (home-page "http://www.haskell.org/haskellwiki/Record_access")
+    (home-page "https://www.haskell.org/haskellwiki/Record_access")
     (synopsis "Use Accessor to access state in transformers State monad")
     (description "This package provides Haskell modules to allow use of
 Accessor to access state in transformers State monad.")
@@ -7456,7 +7456,7 @@ helper functions for Lists, Maybes, Tuples, Functions.")
                (substitute* "os/generic/Graphics/Gnuplot/Private/OS.hs"
                  (("(gnuplotName = ).*$" all cmd)
                   (string-append cmd "\"" gnuplot "/bin/gnuplot\"")))))))))
-    (home-page "http://www.haskell.org/haskellwiki/Gnuplot")
+    (home-page "https://www.haskell.org/haskellwiki/Gnuplot")
     (synopsis "2D and 3D plots using gnuplot")
     (description "This package provides a Haskell module for creating 2D and
 3D plots using gnuplot.")
@@ -7543,7 +7543,7 @@ for general types.")
                (base32
                 "0n4nvj3dbj9gxfnprgish45asn9z4dipv9j98s8i7g2n8yb3xhmm"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/terminal-size")
+    (home-page "https://hackage.haskell.org/package/terminal-size")
     (synopsis "Get terminal window height and width")
     (description "Get terminal window height and width without ncurses
 dependency.")
@@ -7566,7 +7566,7 @@ dependency.")
     (native-inputs
      `(("ghc-happy" ,ghc-happy)
        ("ghc-alex" ,ghc-alex)))
-    (home-page "http://visq.github.io/language-c/")
+    (home-page "https://visq.github.io/language-c/")
     (synopsis "Analysis and generation of C code")
     (description
      "Language C is a Haskell library for the analysis and generation of C code.
@@ -7681,7 +7681,7 @@ files in Haskell.")
        ("ghc-old-locale" ,ghc-old-locale)))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://software.complete.org/hslogger")
+    (home-page "https://software.complete.org/hslogger")
     (synopsis "Logging framework for Haskell, similar to Python's logging module")
     (description "Hslogger lets each log message have a priority and source be
 associated with it.  The programmer can then define global handlers that route
@@ -7725,7 +7725,7 @@ handled safely, this is what you're left with.")
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-text" ,ghc-text)
        ("ghc-parsec" ,ghc-parsec)))
-    (home-page "http://hackage.haskell.org/package/json")
+    (home-page "https://hackage.haskell.org/package/json")
     (synopsis "Serializes Haskell data to and from JSON")
     (description "This package provides a parser and pretty printer for
 converting between Haskell values and JSON.
@@ -7810,7 +7810,7 @@ are the bottleneck of web servers.")
         (base32
          "1v31xiaivrrn0q2jz8919wvkjplv1kxna5ajhsj701fqxm1i5vhj"))))
     (build-system haskell-build-system)
-    (home-page "http://hackage.haskell.org/package/hex")
+    (home-page "https://hackage.haskell.org/package/hex")
     (synopsis "Convert strings into hexadecimal and back")
     (description "This package provides conversion functions between
 bytestrings and their hexademical representation.")
@@ -7842,7 +7842,7 @@ bytestrings and their hexademical representation.")
     (home-page "https://github.com/bttr/psqueues")
     (synopsis "Pure priority search queues")
     (description "The psqueues package provides
-@uref{http://en.wikipedia.org/wiki/Priority_queue, Priority Search Queues} in
+@uref{https://en.wikipedia.org/wiki/Priority_queue, Priority Search Queues} in
 three different flavors:
 
 @itemize
@@ -7851,13 +7851,13 @@ fast insertion, deletion and lookup.  This implementation is based on Ralf
 Hinze's @uref{http://citeseer.ist.psu.edu/hinze01simple.html, A Simple
 Implementation Technique for Priority Search Queues}.
 
-Hence, it is similar to the @uref{http://hackage.haskell.org/package/PSQueue,
+Hence, it is similar to the @uref{https://hackage.haskell.org/package/PSQueue,
 PSQueue} library, although it is considerably faster and provides a slightly
 different API.
 
 @item @code{IntPSQ p v} is a far more efficient implementation.  It fixes the
 key type to @code{Int} and uses a
-@code{http://en.wikipedia.org/wiki/Radix_tree, radix tree} (like @code{IntMap})
+@code{https://en.wikipedia.org/wiki/Radix_tree, radix tree} (like @code{IntMap})
 with an additional min-heap property.
 
 @item @code{HashPSQ k p v} is a fairly straightforward extension
@@ -8510,7 +8510,7 @@ IPv4, IPv6 and MAC addresses.")
     (synopsis "Haskell type definitions for UUIDs")
     (description "This Haskell library contains type definitions for
 @dfn{Universally Unique Identifiers} or
-@uref{http://en.wikipedia.org/wiki/UUID, UUIDs}, and basic conversion
+@uref{https://en.wikipedia.org/wiki/UUID, UUIDs}, and basic conversion
 functions.")
     (license license:bsd-3)))
 
