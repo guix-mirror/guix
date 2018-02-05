@@ -2882,7 +2882,7 @@ alternative to Marshal for Object serialization. ")
        ("ruby-hoe" ,ruby-hoe)
        ("ruby-rspec" ,ruby-rspec)))
     (inputs
-     `(("postgresql" ,postgresql)))
+     `(("postgresql" ,postgresql-9.6)))
     (synopsis "Ruby interface to PostgreSQL")
     (description "Pg is the Ruby interface to the PostgreSQL RDBMS.  It works
 with PostgreSQL 8.4 and later.")
