@@ -3193,6 +3193,43 @@ unacceptable HTML and/or CSS from a string.")
     (home-page "https://github.com/rgrove/sanitize/")
     (license license:expat)))
 
+(define-public ruby-oj
+  (package
+    (name "ruby-oj")
+    (version "3.6.7")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Version on rubygems.org does not contain Rakefile, so download from
+       ;; GitHub instead.
+       (uri (string-append "https://github.com/ohler55/oj/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x28ga72jxlnmsd8g8c0fw81vlh54r0qgagw2lxsd3x3la091g2h"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "test_all"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-bundler
+           (lambda _
+             (substitute* "Rakefile"
+               (("Bundler\\.with_clean_env") "1.times")
+               (("bundle exec ") "")))))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "JSON parser for Ruby optimized for speed")
+    (description
+     "Oj is a JSON parser and generator for Ruby, where the encoding and
+decoding of JSON is implemented as a C extension to Ruby.")
+    (home-page "http://www.ohler.com/oj")
+    (license (list license:expat     ; Ruby code
+                   license:bsd-3)))) ; extension code
+
 (define-public ruby-ox
   (package
     (name "ruby-ox")
