@@ -3658,6 +3658,42 @@ features such as filtering and fine grained logging.")
     (home-page "https://github.com/pjotrp/bioruby-logger-plugin")
     (license license:expat)))
 
+(define-public ruby-yajl-ruby
+  (package
+    (name "ruby-yajl-ruby")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "yajl-ruby" version))
+       (sha256
+        (base32
+         "16v0w5749qjp13xhjgr2gcsvjv6mf35br7iqwycix1n2h7kfcckf"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-test-to-update-load-path
+           (lambda _
+             (substitute* "spec/parsing/large_number_spec.rb"
+               (("require \"yajl\"")
+                "$LOAD_PATH << 'lib'; require 'yajl'"))
+             #t)))))
+     (native-inputs
+      `(("ruby-rake-compiler" ,ruby-rake-compiler)
+        ("ruby-rspec" ,ruby-rspec)))
+     (synopsis "Streaming JSON parsing and encoding library for Ruby")
+     (description
+      "Ruby C bindings to the Yajl JSON stream-based parser library.  The API
+is compatible with the JSON gem, so yajl-ruby can act as a drop in
+replacement.
+
+A modified copy of yajl is used, and included in the package.")
+     (home-page "https://github.com/brianmario/yajl-ruby")
+     (license (list license:expat     ; Ruby code, yajl_ext.c and yajl_ext.h
+                    license:bsd-3)))) ; Included, modified copy of yajl
+
 (define-public ruby-yard
   (package
     (name "ruby-yard")
