@@ -3165,6 +3165,27 @@ perspective only its buffers are available by default.")
     ;; the Expat license.
     (license license:gpl3+)))
 
+(define-public emacs-test-simple
+  (package
+    (name "emacs-test-simple")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/test-simple-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1yd61jc9ds95a5n09052kwc5gasy57g4lxr0jsff040brlyi9czz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rocky/emacs-test-simple")
+    (synopsis "Simple unit test framework for Emacs Lisp")
+    (description
+     "Test Simple is a simple unit test framework for Emacs Lisp.  It
+alleviates the need for context macros, enclosing specifications or required
+test tags.  It supports both interactive and non-interactive use.")
+    (license license:gpl3+)))
+
 (define-public emacs-request
   (package
     (name "emacs-request")
