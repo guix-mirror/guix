@@ -4911,3 +4911,24 @@ thing this library does today is convert org-mode files to HTML or Textile or
 Markdown.")
     (home-page "https://github.com/wallyqs/org-ruby")
     (license license:expat)))
+
+(define-public ruby-rake
+  (package
+    (name "ruby-rake")
+    (version "12.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rake" version))
+       (sha256
+        (base32
+         "190p7cs8zdn07mjj6xwwsdna3g0r98zs4crz7jh2j2q5b0nbxgjf"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Rake is a Make-like program implemented in Ruby")
+    (description
+     "Rake is a Make-like program where tasks and dependencies are specified
+in standard Ruby syntax.")
+    (home-page "https://github.com/ruby/rake")
+    (license license:expat)))
