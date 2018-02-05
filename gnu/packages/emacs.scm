@@ -3210,6 +3210,26 @@ The main function, @code{load-relative}, loads an Emacs Lisp file relative to
 another (presumably currently running) Emacs Lisp file.")
     (license license:gpl3+)))
 
+(define-public emacs-loc-changes
+  (package
+    (name "emacs-loc-changes")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/loc-changes-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1x8fn8vqasayf1rb8a6nma9n6nbvkx60krmiahyb05vl5rrsw6r3"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rocky/emacs-loc-changes")
+    (synopsis "Keeps track of positions even after buffer changes")
+    (description
+     "This Emacs package provides a mean to track important buffer positions
+after buffer changes.")
+    (license license:gpl3+)))
+
 (define-public emacs-request
   (package
     (name "emacs-request")
