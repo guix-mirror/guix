@@ -2325,6 +2325,32 @@ NSJSONSerialization, gson.rb, JrJackson, and OkJson.")
     (home-page "https://github.com/intridea/multi_json")
     (license license:expat)))
 
+(define-public ruby-multi-test
+  (package
+    (name "ruby-multi-test")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "multi_test" version))
+       (sha256
+        (base32
+         "1sx356q81plr67hg16jfwz9hcqvnk03bd9n75pmdw8pfxjfy1yxd"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; Tests require different sets of specific gem versions to be available,
+       ;; and there is no gemfile that specifies the newest versions of
+       ;; dependencies to be tested.
+       #:tests? #f))
+    (synopsis
+     "Interface to testing libraries loaded into a running Ruby process")
+    (description
+     "@code{multi_test} provides a uniform interface onto whatever testing
+libraries that have been loaded into a running Ruby process to help control
+rogue test/unit/autorun requires.")
+    (home-page "https://github.com/cucumber/multi_test")
+    (license license:expat)))
+
 (define-public ruby-arel
   (package
     (name "ruby-arel")
