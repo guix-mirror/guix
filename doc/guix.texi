@@ -6358,6 +6358,19 @@ are many packages, though, for which it lacks a method to determine
 whether a new upstream release is available.  However, the mechanism is
 extensible, so feel free to get in touch with us to add a new method!
 
+Sometimes the upstream name differs from the package name used in Guix,
+and @command{guix refresh} needs a little help.  Most updaters honor the
+@code{upstream-name} property in package definitions, which can be used
+to that effect:
+
+@example
+(define-public network-manager
+  (package
+    (name "network-manager")
+    ;; @dots{}
+    (properties '((upstream-name . "NetworkManager")))))
+@end example
+
 When passed @code{--update}, it modifies distribution source files to
 update the version numbers and source tarball hashes of those package
 recipes (@pxref{Defining Packages}).  This is achieved by downloading
