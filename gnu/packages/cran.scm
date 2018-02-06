@@ -1951,3 +1951,24 @@ traveling salesman problem).")
 assignment problem} (QAP).  Currently only a simulated annealing heuristic is
 available.")
     (license license:gpl3)))
+
+(define-public r-gclus
+  (package
+    (name "r-gclus")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gclus" version))
+       (sha256
+        (base32
+         "02ba6zj9bjwrzykamjp40ajynx9xjx9h2i85n0ym0r5lcki4x6fn"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-cluster" ,r-cluster)))
+    (home-page "http://cran.r-project.org/web/packages/gclus/")
+    (synopsis "Clustering graphics")
+    (description "This package orders panels in scatterplot matrices and
+parallel coordinate displays by some merit index.  It contains various indices
+of merit, ordering functions, and enhanced versions of @code{pairs} and
+@code{parcoord} which color panels according to their merit level.")
+    (license license:gpl2+)))
