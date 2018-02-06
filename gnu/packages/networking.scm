@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -464,12 +464,12 @@ and up to 1 Mbit/s downstream.")
          "08sp2gzv09rar1a5mnfmbc24pqvhpqqmz2hnmv436n7v7d09qy2d"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; Does not exist
+     `(#:tests? #f                      ; no test suite
        #:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; No configure
+         (delete 'configure)            ; no configure script
          (add-before 'build 'setenv
            (lambda _
              (setenv "HAVE_ICONV" "1")
@@ -481,11 +481,16 @@ and up to 1 Mbit/s downstream.")
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (synopsis "Improved whois client")
-    (description "This whois client is intelligent and can
-automatically select the appropriate whois server for most queries.
-Because of historical reasons this also includes a tool called mkpasswd
-which can be used to encrypt a password with @code{crypt(3)}.")
+    (synopsis "Intelligent client for the WHOIS directory service")
+    (description
+      "whois searches for an object in a @dfn{WHOIS} (RFC 3912) database.
+It is commonly used to look up the registered users or assignees of an Internet
+resource, such as a domain name, an IP address block, or an autonomous system.
+It can automatically select the appropriate server for most queries.
+
+For historical reasons, this package also includes @command{mkpasswd}, which
+encrypts passwords using @code{crypt(3)} and is unrelated to the Expect command
+of the same name.")
     (home-page "https://github.com/rfc1036/whois")
     (license license:gpl2+)))
 
