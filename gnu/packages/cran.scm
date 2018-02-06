@@ -1998,3 +1998,37 @@ It can also run Shiny applications locally and take screenshots of the
 application; and it can render and screenshot static as well as interactive R
 Markdown documents.")
     (license license:gpl2)))
+
+(define-public r-seriation
+  (package
+    (name "r-seriation")
+    (version "1.2-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "seriation" version))
+       (sha256
+        (base32
+         "1q6hw4hjw224b4y0dc0j630v2pgj6sn455nwkilb70w8k31hpk92"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-colorspace" ,r-colorspace)
+       ("r-dendextend" ,r-dendextend)
+       ("r-gclus" ,r-gclus)
+       ("r-gplots" ,r-gplots)
+       ("r-mass" ,r-mass)
+       ("r-qap" ,r-qap)
+       ("r-registry" ,r-registry)
+       ("r-tsp" ,r-tsp)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://s2.smu.edu/IDA/seriation/")
+    (synopsis "Infrastructure for ordering objects using seriation")
+    (description
+     "This package provides infrastructure for seriation with an
+implementation of several seriation/sequencing techniques to reorder matrices,
+dissimilarity matrices, and dendrograms.  It also provides (optimally)
+reordered heatmaps, color images and clustering visualizations like
+dissimilarity plots, and visual assessment of cluster tendency plots (VAT and
+iVAT).")
+    (license license:gpl3)))
