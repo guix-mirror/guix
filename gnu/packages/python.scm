@@ -12448,3 +12448,34 @@ files, and Makefiles.")
 
 (define-public python2-gyp
   (package-with-python2 python-gyp))
+
+(define-public python-whatever
+  (package
+    (name "python-whatever")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Suor/whatever/archive/" version
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "1iqvnaf0zpc6b4rvbqq4xy45mszcscyzpzknv8wg6j84pbp22sap"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+        (replace 'check
+          (lambda _
+            (invoke "py.test"))))))
+    (native-inputs
+     `(("python-pytest-3.0" ,python-pytest-3.0)))
+    (home-page "http://github.com/Suor/whatever")
+    (synopsis "Make anonymous functions by partial application of operators")
+    (description "@code{whatever} provides an easy way to make anonymous
+functions by partial application of operators.")
+    (license license:bsd-3)))
+
+(define-public python2-whatever
+  (package-with-python2 python-whatever))
