@@ -228,6 +228,12 @@
              #t))
          (add-before 'check 'disable-broken-tests
            (lambda _
+             ;; Adjust expected error messages to match what current libgit2
+             ;; provides.
+             (substitute* "test/libgit2.jl"
+               (("Invalid Content-Type") "invalid Content-Type")
+               (("Failed to resolve path") "failed to resolve path"))
+
              (substitute* "test/choosetests.jl"
                ;; These tests fail, probably because some of the input
                ;; binaries have been stripped and thus backtraces don't look
