@@ -1931,3 +1931,23 @@ timeout.  It can also poll several processes at once.")
 algorithms for the @dfn{traveling salesperson problem}(TSP) (also known as the
 traveling salesman problem).")
     (license license:gpl3)))
+
+(define-public r-qap
+  (package
+    (name "r-qap")
+    (version "0.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qap" version))
+       (sha256
+        (base32
+         "0d2d1ni1camixyi45lfy00f4pn3p063k7bsi8gj5scp6n15mdgb0"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/qap/")
+    (synopsis "Heuristics for the quadratic assignment problem (QAP)")
+    (description "This package implements heuristics for the @dfn{quadratic
+assignment problem} (QAP).  Currently only a simulated annealing heuristic is
+available.")
+    (license license:gpl3)))
