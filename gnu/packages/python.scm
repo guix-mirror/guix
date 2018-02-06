@@ -5688,15 +5688,13 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.2")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://bitbucket.org/nikratio/python-llfuse/downloads/"
-                    "llfuse-" version ".tar.bz2"))
+              (uri (pypi-uri "llfuse" version ".tar.bz2"))
               (sha256
                (base32
-                "11hms1x68bf1bqbqy7w3wpffqsd3jkgricmzrc1hrnwkswfzzlr4"))))
+                "0qxvnbz41bpvpc1vbi8qkhmpr9gj1qrrp5jdj085iqibd8l2l9cn"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
