@@ -12532,3 +12532,26 @@ Examples are:
 
 (define-public python2-funcy
   (package-with-python2 python-funcy))
+
+(define-public python-isoweek
+  (package
+    (name "python-isoweek")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "isoweek" version))
+       (sha256
+        (base32
+         "1s7zsf0pab0l9gn6456qadnz5i5h90hafcjwnhx5mq23qjxggwvk"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/gisle/isoweek")
+    (synopsis "Objects representing a week")
+    (description "The @code{isoweek} module provide the class Week that
+implements the week definition of ISO 8601.  This standard also defines
+a notation for identifying weeks; yyyyWww (where the W is a literal).
+Week instances stringify to this form.")
+    (license license:bsd-3)))
+
+(define-public python2-isoweek
+  (package-with-python2 python-isoweek))
