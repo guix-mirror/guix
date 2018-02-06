@@ -1881,3 +1881,32 @@ script.")
      "This package allows the user to specify debug messages as special string
 constants, and control debugging of packages via environment variables.")
     (license license:expat)))
+
+(define-public r-processx
+  (package
+    (name "r-processx")
+    (version "2.0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "processx" version))
+       (sha256
+        (base32
+         "0yw23lp9xjvbpswzghkmjiayw7p19hbvmgv58k3i6b8g5nav4qcg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-crayon" ,r-crayon)
+       ("r-debugme" ,r-debugme)
+       ("r-r6" ,r-r6)))
+    (home-page "https://github.com/r-lib/processx3")
+    (synopsis "Execute and control system processes")
+    (description
+     "This package provides portable tools to run system processes in the
+background.  It can check if a background process is running; wait on a
+background process to finish; get the exit status of finished processes; kill
+background processes and their children; restart processes.  It can read the
+standard output and error of the processes, using non-blocking connections.
+@code{processx} can poll a process for standard output or error, with a
+timeout.  It can also poll several processes at once.")
+    (license license:expat)))
