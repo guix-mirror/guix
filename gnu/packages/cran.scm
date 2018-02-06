@@ -2032,3 +2032,43 @@ reordered heatmaps, color images and clustering visualizations like
 dissimilarity plots, and visual assessment of cluster tendency plots (VAT and
 iVAT).")
     (license license:gpl3)))
+
+(define-public r-heatmaply
+  (package
+    (name "r-heatmaply")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "heatmaply" version))
+       (sha256
+        (base32
+         "03p2caclhfgqgpx3wwck5h06jy3mxgs05gjmwkb7hmwghkjh41jc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-colorspace" ,r-colorspace)
+       ("r-dendextend" ,r-dendextend)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gplots" ,r-gplots)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plotly" ,r-plotly)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape2" ,r-reshape2)
+       ("r-scales" ,r-scales)
+       ("r-seriation" ,r-seriation)
+       ("r-viridis" ,r-viridis)
+       ("r-webshot" ,r-webshot)))
+    (home-page "https://cran.r-project.org/package=heatmaply")
+    (synopsis "Interactive cluster heat maps using plotly")
+    (description "Heatmaps are used in many fields for visualizing
+observations, correlations, missing values patterns, and more.  Interactive
+heatmaps allow the inspection of specific value by hovering the mouse over a
+cell, as well as zooming into a region of the heatmap by dragging a rectangle
+around the relevant area.  This work is based on the @code{ggplot2} and
+@code{plotly.js} engine.  It produces similar heatmaps as @code{heatmap.2} or
+@code{d3heatmap}, with the advantage of speed, the ability to zoom from the
+dendrogram panes, and the placing of factor variables in the sides of the
+heatmap.")
+    (license (list license:gpl2 license:gpl3))))
