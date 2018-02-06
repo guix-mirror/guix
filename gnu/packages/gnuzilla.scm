@@ -414,6 +414,8 @@ security standards.")
       (patches
        (list
         (search-patch "icecat-avoid-bundled-libraries.patch")
+        (search-patch "icecat-use-system-harfbuzz.patch")
+        (search-patch "icecat-use-system-graphite2.patch")
         (mozilla-patch "icecat-bug-546387.patch"         "d13e3fefb76e" "1b760r0bg2ydbl585wlmajljh1nlisrwxvjws5b28a3sgjy01i6k")
         (mozilla-patch "icecat-bug-1350152.patch"        "f822bda79c28" "1wf56169ca874shr6r7qx40s17h2gwj7ngmpyylrpmd1c6hipvsj")
         (mozilla-patch "icecat-bug-1388166.patch"        "fbb0bdb191d5" "1y8wpj38vw1dd6f375s9i0mrk9bd8z8gz5g70p4qynfllpkn072d")
@@ -556,11 +558,6 @@ security standards.")
                       ;;   * speex
                       ;;   * soundtouch (not yet in guix)
                       ;;
-                      ;; TODO: Use system harfbuzz.  Waiting for:
-                      ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=847568>
-                      ;;
-                      ;; TODO: Use system graphite2.
-                      ;;
                       "modules/freetype2"
                       "modules/zlib"
                       "modules/libbz2"
@@ -569,6 +566,8 @@ security standards.")
                       "media/libvpx"
                       "security/nss"
                       "gfx/cairo"
+                      "gfx/harfbuzz"
+                      "gfx/graphite2"
                       "js/src/ctypes/libffi"
                       "db/sqlite3"))
           ;; Delete .pyc files, typically present in icecat source tarballs
@@ -589,8 +588,10 @@ security standards.")
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("gtk+-2" ,gtk+-2)
+       ("graphite2" ,graphite2)
        ("pango" ,pango)
        ("freetype" ,freetype)
+       ("harfbuzz" ,harfbuzz)
        ("hunspell" ,hunspell)
        ("libcanberra" ,libcanberra)
        ("libgnome" ,libgnome)
@@ -660,6 +661,8 @@ security standards.")
                            "--with-system-icu"
                            "--with-system-nspr"
                            "--with-system-nss"
+                           "--with-system-harfbuzz"
+                           "--with-system-graphite2"
                            "--enable-system-pixman"
                            "--enable-system-cairo"
                            "--enable-system-ffi"
