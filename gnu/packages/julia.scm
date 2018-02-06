@@ -146,6 +146,12 @@
           (lambda* (#:key inputs #:allow-other-keys)
             (use-modules (ice-9 match))
             (substitute* "src/runtime_ccall.cpp"
+              ;; Patch out invocations of '/sbin/ldconfig' to avoid getting
+              ;; error messages about missing '/sbin/ldconfig' on GuixSD.
+              (("popen\\(.*ldconfig.*\\);")
+               "NULL;\n")
+
+              ;; Populate 'sonameMap'.
               (("jl_read_sonames.*;")
                (string-join
                 (map (match-lambda
