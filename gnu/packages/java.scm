@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -169,7 +169,8 @@ This package provides the classpath library.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--with-internal-libffi=no"
+       (list "--with-threading=switch" ; slower but prevents segfault
+             "--with-internal-libffi=no"
              "--with-internal-libpopt=no")
        #:phases
        (modify-phases %standard-phases
