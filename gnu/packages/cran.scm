@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -1861,3 +1861,23 @@ written purely in R with no external dependencies.  It is useful with the
 Rscript front-end and facilitates turning an R script into an executable
 script.")
     (license license:gpl3+)))
+
+(define-public r-debugme
+  (package
+    (name "r-debugme")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "debugme" version))
+       (sha256
+        (base32
+         "1c9sg55zvf10h8198jdnpamm6f66lzw3c3jnmdp9ls6na0j0xbjd"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-crayon" ,r-crayon)))
+    (home-page "https://github.com/r-lib/debugme#readme")
+    (synopsis "Debug R packages")
+    (description
+     "This package allows the user to specify debug messages as special string
+constants, and control debugging of packages via environment variables.")
+    (license license:expat)))
