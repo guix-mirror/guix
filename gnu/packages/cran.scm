@@ -1910,3 +1910,24 @@ standard output and error of the processes, using non-blocking connections.
 @code{processx} can poll a process for standard output or error, with a
 timeout.  It can also poll several processes at once.")
     (license license:expat)))
+
+(define-public r-tsp
+  (package
+    (name "r-tsp")
+    (version "1.1-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TSP" version))
+       (sha256
+        (base32
+         "03xxfr5kk4zhzpb1q1pwncdp0dhchm9b48wzhvvxn2dxf3mnby2w"))))
+    (properties `((upstream-name . "TSP")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-foreach" ,r-foreach)))
+    (home-page "https://cran.r-project.org/web/packages/TSP/")
+    (synopsis "Traveling salesperson problem (TSP)")
+    (description "This package provides basic infrastructure and some
+algorithms for the @dfn{traveling salesperson problem}(TSP) (also known as the
+traveling salesman problem).")
+    (license license:gpl3)))
