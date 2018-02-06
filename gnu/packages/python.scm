@@ -12479,3 +12479,56 @@ functions by partial application of operators.")
 
 (define-public python2-whatever
   (package-with-python2 python-whatever))
+
+(define-public python-funcy
+  (package
+    (name "python-funcy")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Suor/funcy/archive/" version
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "1fanxivsip29vgarw6dn39xym3q4pbxcpa11plpp548lvxajpahz"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "py.test"))))))
+    (native-inputs
+     `(("python-pytest-3.0" ,python-pytest-3.0)
+       ("python-pytest-warnings" ,python-pytest-warnings)
+       ("python-whatever" ,python-whatever)))
+    (home-page "http://github.com/Suor/funcy")
+    (synopsis "Functional tools")
+    (description "@code{funcy} is a library that provides functional tools.
+Examples are:
+@enumerate
+@item merge - Merges collections of the same type
+@item walk - Type-preserving map
+@item select - Selects a part of a collection
+@item take - Takes the first n items of a collection
+@item first - Takes the first item of a collection
+@item remove - Predicated-removes items of a collection
+@item concat - Concatenates two collections
+@item flatten - Flattens a collection with subcollections
+@item distinct - Returns only distinct items
+@item split - Predicated-splits a collection
+@item split_at - Splits a collection at a given item
+@item group_by - Groups items by group
+@item pairwise - Pairs off adjacent items
+@item partial - Partially-applies a function
+@item curry - Curries a function
+@item compose - Composes functions
+@item complement - Complements a predicate
+@item all_fn - \"all\" with predicate
+@end enumerate")
+    (license license:bsd-3)))
+
+(define-public python2-funcy
+  (package-with-python2 python-funcy))
