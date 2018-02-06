@@ -1972,3 +1972,29 @@ parallel coordinate displays by some merit index.  It contains various indices
 of merit, ordering functions, and enhanced versions of @code{pairs} and
 @code{parcoord} which color panels according to their merit level.")
     (license license:gpl2+)))
+
+(define-public r-webshot
+  (package
+    (name "r-webshot")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "webshot" version))
+       (sha256
+        (base32
+         "07r71zzmggp4jf92x4ws4wg6v1x98vaj01lsar85bnb30n5vx8gh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-processx" ,r-processx)
+       ("r-withr" ,r-withr)))
+    (home-page "https://github.com/wch/webshot/")
+    (synopsis "Take screenshots of web pages")
+    (description
+     "Webshot makes it easy to take screenshots of web pages from within R.
+It can also run Shiny applications locally and take screenshots of the
+application; and it can render and screenshot static as well as interactive R
+Markdown documents.")
+    (license license:gpl2)))
