@@ -10826,28 +10826,27 @@ in other versions.")
 
 (define-public python-mando
   (package
-  (name "python-mando")
-  (version "0.6.4")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (pypi-uri "mando" version))
-      (sha256
-        (base32
-          "0q6rl085q1hw1wic52pqfndr0x3nirbxnhqj9akdm5zhq2fv3zkr"))))
-  (build-system python-build-system)
-  (propagated-inputs
-   `(("python-rst2ansi" ,python-rst2ansi)
-     ("python-six" ,python-six)))
-  (native-inputs
-   `(("python-pytest" ,python-pytest)))
-  (home-page "https://mando.readthedocs.org/")
-  (synopsis
-    "Wrapper around argparse, allowing creation of complete CLI applications")
-  (description
-    "This package is a wrapper around argparse, allowing you to write complete CLI
- applications in seconds while maintaining all the flexibility.")
-  (license license:expat)))
+    (name "python-mando")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "mando" version))
+              (sha256
+               (base32
+                "0q6rl085q1hw1wic52pqfndr0x3nirbxnhqj9akdm5zhq2fv3zkr"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-rst2ansi" ,python-rst2ansi)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://mando.readthedocs.org/")
+    (synopsis
+     "Wrapper around argparse, allowing creation of complete CLI applications")
+    (description
+     "This package is a wrapper around argparse, allowing you to write complete CLI
+applications in seconds while maintaining all the flexibility.")
+    (license license:expat)))
 
 (define-public python2-mando
   (package-with-python2 python-mando))
