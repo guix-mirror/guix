@@ -11238,24 +11238,27 @@ for more filetypes can be easily added by creating plugins for them.")
 (define-public python-radon
   (package
     (name "python-radon")
-    (version "1.5.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "radon" version))
        (sha256
         (base32
-         "1h6jv36am0i827182a04ki6291lyx4kp957xfr5njgprj4nd0qsl"))))
+         "07gq5hq4nrffxnlnksws9hrx7fd001gam63j62i82gyfr23gvdym"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "radon/tests/run.py"))))))
     (propagated-inputs
      `(("python-colorama" ,python-colorama)
        ("python-flake8-polyfill" ,python-flake8-polyfill)
-       ("python-mando" ,python-mando-0.3.1)))
+       ("python-mando" ,python-mando)))
     (native-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-tox" ,python-tox)
-       ("python-pytest" ,python-pytest)
-       ("python-paramunittest" ,python-paramunittest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
     (home-page "https://radon.readthedocs.org/")
     (synopsis "Code Metrics in Python")
     (description "Radon is a Python tool which computes various code metrics.
