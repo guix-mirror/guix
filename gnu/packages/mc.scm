@@ -62,14 +62,25 @@
        (modify-phases %standard-phases
          (add-after 'patch-source-shebangs 'patch-FHS-file-names
            (lambda _
-             ;; Patch files to refer to executables in the store.
+             ;; Patch files to refer to executables in the store or $PATH.
              (substitute* "misc/mcedit.menu.in"
                (("#! /bin/sh") (string-append "#!" (which "sh")))
                (("/bin/bash") (which "bash")))
              (substitute* "misc/ext.d/misc.sh.in"
                (("/bin/cat") "cat"))
-             (substitute* "tests/src/vfs/extfs/helpers-list/Makefile.in"
+             (substitute* (list "lib/utilunix.c"
+                                "src/usermenu.c"
+                                "src/vfs/fish/fish.c"
+                                "tests/src/vfs/extfs/helpers-list/Makefile.in")
                (("/bin/sh") (which "sh")))
+             (substitute* "src/filemanager/ext.c"
+               (("/bin/rm") "rm")
+               (("/bin/sh") (which "sh")))
+
+             ;; There are other /bin/<shell>s hard-coded in this file, but they
+             ;; are never tried after bash (mc's first choice) is found.
+             (substitute* "lib/shell.c"
+               (("/bin/bash") (which "bash")))
              #t))
          (add-before 'check 'fix-tests
            (lambda _
