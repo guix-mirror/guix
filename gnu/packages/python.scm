@@ -2710,16 +2710,16 @@ between language specification and implementation aspects.")
 (define-public python-numpy
   (package
     (name "python-numpy")
-    (version "1.13.3")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/numpy/numpy/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+             "https://github.com/numpy/numpy/releases/download/v"
+             version "/numpy-" version ".tar.gz"))
        (sha256
         (base32
-         "1f25rbn6n4ia87spy18iwc76g36d9mimyl27p2lfaalgx897pf8x"))))
+         "1kh7y2ay21s9mcc11mq59g2f1yc75v152z2k2vlh0xmh9c9rjpf4"))))
     (build-system python-build-system)
     (inputs
      `(("openblas" ,openblas)
