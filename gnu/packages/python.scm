@@ -11925,21 +11925,19 @@ ignoring formatting changes.")
 (define-public python-tqdm
   (package
     (name "python-tqdm")
-    (version "4.15.0")
+    (version "4.19.5")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "tqdm" version))
          (sha256
            (base32
-             "0lwrmby8qz23gvqwkpivfrv4q8nfh90cz9ml6slwvwmcxxsdrhbf"))))
+             "0xvkffm77nqckk29xjy5fkqvig5b97vk7nzafp3cn36w4zqyccnz"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)
        ("python-nose" ,python-nose)
-       ("python-nose-timer" ,python-nose-timer)
-       ("python-coverage" ,python-coverage)
-       ("python-virtualenv" ,python-virtualenv)))
+       ("python-coverage" ,python-coverage)))
     (home-page "https://github.com/tqdm/tqdm")
     (synopsis "Fast, extensible progress meter")
     (description
