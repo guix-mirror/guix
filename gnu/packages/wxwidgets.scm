@@ -126,6 +126,14 @@ and many other languages.")
               ((#:configure-flags flags)
                `(cons "--enable-mediactrl" ,flags))))))
 
+(define-public wxwidgets-gtk2-3.1
+  (package (inherit wxwidgets-3.1)
+           (inputs `(("gtk+" ,gtk+-2)
+                     ,@(alist-delete
+                        "gtk+"
+                        (package-inputs wxwidgets-3.1))))
+           (name "wxwidgets-gtk2")))
+
 (define-public python2-wxpython
   (package
     (name "python2-wxpython")
