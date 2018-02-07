@@ -99,9 +99,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
           1))
 
 (define-public bash
-  (let* ((cppflags (string-join '("-DSYS_BASHRC='\"/etc/bashrc\"'"
-                                  "-DSYS_BASH_LOGOUT='\"/etc/bash_logout\"'"
-                                  "-DDEFAULT_PATH_VALUE='\"/no-such-path\"'"
+  (let* ((cppflags (string-join '("-DDEFAULT_PATH_VALUE='\"/no-such-path\"'"
                                   "-DSTANDARD_UTILS_PATH='\"/no-such-path\"'"
                                   "-DNON_INTERACTIVE_LOGIN_SHELLS"
                                   "-DSSH_SOURCE_BASHRC")
