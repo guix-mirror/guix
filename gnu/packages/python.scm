@@ -11929,10 +11929,18 @@ ignoring formatting changes.")
       "Make loops show a progress bar on the console by just wrapping any
 iterable with @code{|tqdm(iterable)|}.  Offers many options to define
 design and layout.")
-    (license (list license:mpl2.0 license:expat))))
+    (license (list license:mpl2.0 license:expat))
+    (properties `((python2-variant . ,(delay python2-tqdm))))))
 
 (define-public python2-tqdm
-  (package-with-python2 python-tqdm))
+  (let ((tqdm (package-with-python2
+               (strip-python2-variant python-tqdm))))
+    (package
+      (inherit tqdm)
+      (native-inputs
+       ;; FIXME: This should be propagated from python2-flake8 instead.
+       `(("python2-enum34" ,python2-enum34)
+         ,@(package-native-inputs tqdm))))))
 
 (define-public python-pkginfo
   (package
