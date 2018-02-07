@@ -707,17 +707,17 @@ supports coverage of subprocesses.")
 (define-public python-pytest-mock
   (package
     (name "python-pytest-mock")
-    (version "1.2")
+    (version "1.6.3")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "pytest-mock" version ".zip"))
+        (uri (pypi-uri "pytest-mock" version))
         (sha256
          (base32
-          "03zxar5drzm7ksqyrwypjaza3cri6wqvpr6iam92djvg6znp32gp"))))
+          "075v7b2wm5f839r1a30n21wfk5rfqp3d05q7zb9jlb2wmxki23cj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pytest-dev/pytest-mock/")
