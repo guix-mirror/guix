@@ -10827,20 +10827,20 @@ in other versions.")
 (define-public python-mando
   (package
   (name "python-mando")
-  (version "0.5")
+  (version "0.6.4")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "mando" version))
       (sha256
         (base32
-          "0q05h66439gqdmlk4jqm6xrwrzfdgs4mwk70barxhr2y83qbbdc0"))))
+          "0q6rl085q1hw1wic52pqfndr0x3nirbxnhqj9akdm5zhq2fv3zkr"))))
   (build-system python-build-system)
   (propagated-inputs
-   `(("python-rst2ansi" ,python-rst2ansi)))
+   `(("python-rst2ansi" ,python-rst2ansi)
+     ("python-six" ,python-six)))
   (native-inputs
-   `(("python-sphinx" ,python-sphinx-1.5.3)
-     ("python-paramunittest" ,python-paramunittest)))
+   `(("python-pytest" ,python-pytest)))
   (home-page "https://mando.readthedocs.org/")
   (synopsis
     "Wrapper around argparse, allowing creation of complete CLI applications")
