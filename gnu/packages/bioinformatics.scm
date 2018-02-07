@@ -8816,18 +8816,17 @@ replacement for strverscmp.")
 (define-public multiqc
   (package
     (name "multiqc")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "multiqc" version))
        (sha256
         (base32
-         "0fx1sx53znbgzfhbbiyd8j6cg5llpcsl5q5c45jy2c81d12piqfd"))))
+         "0ihx4rzmsfphv4byn05qv6f1y95g2dxs6viwziipl4wjk96acgm8"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-enum34" ,python-enum34)
-       ("python-jinja2" ,python-jinja2)
+     `(("python-jinja2" ,python-jinja2)
        ("python-simplejson" ,python-simplejson)
        ("python-pyyaml" ,python-pyyaml)
        ("python-click" ,python-click)
