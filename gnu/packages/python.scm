@@ -10851,23 +10851,6 @@ applications in seconds while maintaining all the flexibility.")
 (define-public python2-mando
   (package-with-python2 python-mando))
 
-(define-public python-mando-0.3.1
-  ;; python-radon (version 1.5.0) has a requirement
-  ;; for mando<0.4,>=0.3
-  (package
-    (inherit python-mando)
-    (name "python-mando")
-    (version "0.3.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/rubik/mando/archive/v"
-                           version
-                           ".tar.gz"))
-       (sha256
-        (base32
-         "17jlkdpqw22z1nyml5ybslilqkzmnk0dxxjml8bfghav1l5hbwd2"))))))
-
 (define-public python-fudge
   (package
     (name "python-fudge")
