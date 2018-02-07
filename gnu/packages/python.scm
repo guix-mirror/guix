@@ -5440,7 +5440,7 @@ complexity of Python source code.")
     (package (inherit base)
       (propagated-inputs
        `(("python2-configparser" ,python2-configparser)
-         ("python2-enum" ,python2-enum)
+         ("python2-enum34" ,python2-enum34)
           ,@(package-propagated-inputs base))))))
 
 (define-public python-flake8-polyfill
