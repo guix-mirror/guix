@@ -140,7 +140,7 @@ for configuration, scripting, and rapid prototyping.")
                           ,name)
                  #t)))))
          #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
-    (home-page "http://www.luajit.org/")
+    (home-page "https://www.luajit.org/")
     (synopsis "Just in time compiler for Lua programming language version 5.1")
     (description
      "LuaJIT is a Just-In-Time Compiler (JIT) for the Lua
@@ -436,7 +436,7 @@ Grammars (PEGs).")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs `(("lua", lua)))
-    (home-page "http://bitop.luajit.org/index.html")
+    (home-page "https://bitop.luajit.org/index.html")
     (synopsis "Bitwise operations on numbers for Lua")
     (description
      "Lua BitOp is a C extension module for Lua which adds bitwise operations
