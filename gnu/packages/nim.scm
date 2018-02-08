@@ -57,11 +57,13 @@
                #t))
            (replace 'build
              (lambda _
-               (zero? (system* "sh" "build.sh"))))
+               (invoke "sh" "build.sh")
+               #t))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
-                 (zero? (system* "./install.sh" out))))))))
+                 (invoke "./install.sh" out)
+                 #t))))))
     (home-page "https://nim-lang.org")
     (synopsis "Statically-typed, imperative programming language")
     (description "Nim (formerly known as Nimrod) is a statically-typed,
