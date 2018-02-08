@@ -598,7 +598,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/clisp-remove-failing-test.patch		\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/clx-remove-demo.patch			\
-  %D%/packages/patches/cmake-fix-tests.patch			\
   %D%/packages/patches/coda-use-system-libs.patch		\
   %D%/packages/patches/cool-retro-term-dont-check-uninit-member.patch	\
   %D%/packages/patches/cool-retro-term-fix-array-size.patch	\

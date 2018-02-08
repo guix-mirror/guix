@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +42,7 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.7.2")
+    (version "3.10.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.cmake.org/files/v"
@@ -49,8 +50,7 @@
                                  "/cmake-" version ".tar.gz"))
              (sha256
               (base32
-               "1q6a60695prpzzsmczm2xrgxdb61fyjznb04dr6yls6iwv24c4nw"))
-             (patches (search-patches "cmake-fix-tests.patch"))
+               "12r1ldq4l032d6f5gc22dlayck4cr29cczqsl9xf0vdm9anzml40"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -58,18 +58,31 @@
                  (with-directory-excursion "Utilities"
                    (for-each delete-file-recursively
                              '("cmbzip2"
-                               ;"cmcompress"
+                               ;; "cmcompress"
                                "cmcurl"
                                "cmexpat"
-                               ;"cmjsoncpp"
-                               ;"cmlibarchive"
+                               ;; "cmjsoncpp"
+                               ;; "cmlibarchive"
                                "cmliblzma"
-                               "cmlibuv"
+                               ;; "cmlibuv"
                                "cmzlib"))
                    #t)))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:make-flags
+       (let ((skipped-tests
+              (list "BundleUtilities" ; This test fails on Guix.
+                    "CTestTestSubdir" ; This test fails to build 2 of the 3 tests.
+                    "CMake.String" ; This test depends on clock being set to
+                                   ; current time, which is not the case in
+                                   ; the build environment.
+                    ;; These tests requires network access.
+                    "CTestCoverageCollectGCOV"
+                    "CTestTestUpload")))
+         (list
+          (string-append
+           "ARGS=--exclude-regex ^\\(" (string-join skipped-tests "\\|") "\\)$")))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-bin-sh
@@ -78,8 +91,6 @@
            ;; files.
            (substitute*
                '("Modules/CompilerId/Xcode-3.pbxproj.in"
-                 "Modules/CompilerId/Xcode-1.pbxproj.in"
-                 "Modules/CompilerId/Xcode-2.pbxproj.in"
                  "Modules/CPack.RuntimeScript.in"
                  "Source/cmakexbuild.cxx"
                  "Source/cmGlobalXCodeGenerator.cxx"
@@ -102,43 +113,45 @@
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system*
-                       "./configure"
-                       (string-append "--prefix=" out)
-                       "--system-libs"
-                       "--no-system-jsoncpp" ; FIXME: Circular dependency.
-                       ;; By default, the man pages and other docs land
-                       ;; in PREFIX/man and PREFIX/doc, but we want them
-                       ;; in share/{man,doc}.  Note that unlike
-                       ;; autoconf-generated configure scripts, cmake's
-                       ;; configure prepends "PREFIX/" to what we pass
-                       ;; to --mandir and --docdir.
-                       "--mandir=share/man"
-                       ,(string-append
-                         "--docdir=share/doc/cmake-"
-                         (version-major+minor version)))))))
+               (invoke
+                "./configure"
+                (string-append "--prefix=" out)
+                "--system-libs"
+                "--no-system-jsoncpp" ; FIXME: Circular dependency.
+                ;; By default, the man pages and other docs land
+                ;; in PREFIX/man and PREFIX/doc, but we want them
+                ;; in share/{man,doc}.  Note that unlike
+                ;; autoconf-generated configure scripts, cmake's
+                ;; configure prepends "PREFIX/" to what we pass
+                ;; to --mandir and --docdir.
+                "--mandir=share/man"
+                ,(string-append
+                  "--docdir=share/doc/cmake-"
+                  (version-major+minor version))))))
          (add-before 'check 'set-test-environment
            (lambda _
              ;; Get verbose output from failed tests.
              (setenv "CTEST_OUTPUT_ON_FAILURE" "TRUE")
+             ;; Parallel tests fail in the 3.10.2 release.
              ;; Run tests in parallel.
-             (setenv "CTEST_PARALLEL_LEVEL"
-                     (number->string (parallel-job-count)))
+             ;; (setenv "CTEST_PARALLEL_LEVEL"
+             ;;         (number->string (parallel-job-count)))
              #t)))))
     (inputs
-     `(("file"       ,file)
-       ("curl"       ,curl)
-       ("zlib"       ,zlib)
-       ("expat"      ,expat)
-       ("bzip2"      ,bzip2)
-       ("ncurses"    ,ncurses) ; required for ccmake
-       ("libuv"      ,libuv)
-       ("libarchive" ,libarchive)))
+     `(("bzip2" ,bzip2)
+       ("curl" ,curl)
+       ("expat" ,expat)
+       ("file" ,file)
+       ("libarchive" ,libarchive)
+       ("libuv" ,libuv)
+       ("ncurses" ,ncurses) ; required for ccmake
+       ("rhash" ,rhash)
+       ("zlib" ,zlib)))
     (native-search-paths
      (list (search-path-specification
-             (variable "CMAKE_PREFIX_PATH")
-             (files '("")))))
-    (home-page "https://www.cmake.org/")
+            (variable "CMAKE_PREFIX_PATH")
+            (files '("")))))
+    (home-page "https://cmake.org/")
     (synopsis "Cross-platform build system")
     (description
      "CMake is a family of tools designed to build, test and package software.
