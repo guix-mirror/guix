@@ -546,14 +546,14 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")             ; for gtester
-       ("emacs" ,emacs-minimal)))
+       ("emacs" ,emacs-minimal)
+       ("tzdata" ,tzdata-2017a)))   ;for mu/test/test-mu-query.c
     ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
      `(("xapian" ,xapian)
        ("guile" ,guile-2.2)
        ("glib" ,glib)
-       ("gmime" ,gmime)
-       ("tzdata" ,tzdata)))             ;for mu/test/test-mu-query.c
+       ("gmime" ,gmime)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
