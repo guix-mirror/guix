@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -663,3 +664,49 @@ that are faster than MD5, SHA-1, SHA-2, and SHA-3, yet are at least as secure
 as the latest standard, SHA-3.  It is an improved version of the SHA-3 finalist
 BLAKE.")
       (license license:public-domain))))
+
+(define-public rhash
+  (package
+    (name "rhash")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rhash/RHash/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bhz3xdl6r06k1bqigdjz42l31iqz2qdpg7zk316i7p2ra56iq4q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("\\$\\(DESTDIR\\)/etc")
+                (string-append (assoc-ref outputs "out") "/etc")))
+             #t))
+         (add-after 'build 'build-library
+           (lambda* (#:key outputs make-flags #:allow-other-keys)
+             (apply invoke "make" "lib-shared" make-flags)))
+         (add-after 'install 'install-library
+           (lambda* (#:key outputs make-flags #:allow-other-keys)
+             (apply invoke "make" "install-lib-shared" make-flags)
+             (apply invoke
+                    "make" "-C" "librhash" "install-headers"
+                    "install-so-link" make-flags)))
+         (add-after 'check 'check-library
+           (lambda* (#:key outputs make-flags #:allow-other-keys)
+             (apply invoke "make" "test-shared-lib" make-flags))))))
+    (home-page "https://sourceforge.net/projects/rhash/")
+    (synopsis "Utility for computing hash sums")
+    (description "RHash is a console utility for calculation and verification
+of magnet links and a wide range of hash sums like CRC32, MD4, MD5, SHA1,
+SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
+34.11-94, RIPEMD-160, HAS-160, EDON-R, Whirlpool and Snefru.")
+    (license (license:non-copyleft "file://COPYING"))))
