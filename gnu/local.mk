@@ -852,7 +852,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtiff-tiffgetfield-bugs.patch		\
   %D%/packages/patches/libtiff-tiffycbcrtorgb-integer-overflow.patch	\
   %D%/packages/patches/libtiff-tiffycbcrtorgbinit-integer-overflow.patch	\
-  %D%/packages/patches/libtirpc-CVE-2017-8779.patch		\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunistring-gnulib-multi-core.patch	\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\

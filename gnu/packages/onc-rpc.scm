@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,16 +31,15 @@
 (define-public libtirpc
   (package
     (name "libtirpc")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libtirpc/libtirpc/"
                                   version "/libtirpc-"
                                   version ".tar.bz2"))
-              (patches (search-patches "libtirpc-CVE-2017-8779.patch"))
               (sha256
                (base32
-                "17mqrdgsgp9m92pmq7bvr119svdg753prqqxmg4cnz5y657rfmji"))))
+                "1xchbxy0xql7yl7z4n1icj8r7dmly46i22fvm00vdjq64zlmqg3j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
