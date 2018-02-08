@@ -3729,12 +3729,12 @@ reduction.")
        ("mesa" ,mesa)
        ("qt" ,qt)))
     (build-system cmake-build-system)
-    (synopsis "toolset for the mCRL2 formal specification language")
+    (synopsis "Toolset for the mCRL2 formal specification language")
     (description
-     "mCRL2 (micro Common Representation Language 2) is a formal specification
-language for describing concurrent discrete event systems.  Its toolset
-supports analysis and automatic verification, linearisation, simulation,
-state-space exploration and generation and tools to optimise and analyse
+     "@dfn{mCRL2} (micro Common Representation Language 2) is a formal
+specification language for describing concurrent discrete event systems.  Its
+toolset supports analysis and automatic verification, linearisation, simulation,
+state-space exploration and generation, and tools to optimise and analyse
 specifications.  Also, state spaces can be manipulated, visualised and
 analysed.")
     (home-page "http://mcrl2.org")
