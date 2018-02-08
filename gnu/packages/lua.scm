@@ -127,9 +127,19 @@ for configuration, scripting, and rapid prototyping.")
               (patches (search-patches "luajit-no_ldconfig.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ;luajit is distributed without tests
-       #:phases (modify-phases %standard-phases (delete 'configure))
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+     `(#:tests? #f                      ; luajit is distributed without tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-after 'install 'create-luajit-symlink
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (with-directory-excursion bin
+                 (symlink ,(string-append name "-" version)
+                          ,name)
+                 #t)))))
+         #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
     (home-page "http://www.luajit.org/")
     (synopsis "Just in time compiler for Lua programming language version 5.1")
     (description
