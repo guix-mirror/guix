@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,11 +53,12 @@
         ("pkg-config" ,pkg-config)))
     (synopsis "Microsoft Word conversion library and utilities")
     (description
-      "wv converts Word 2,6,7,8,9 files to HTML and LaTeX.  The Word 2
-conversion is still incomplete (no formatting), but it will do a passable job
-extracting the text, which is what you probably want anyway.
+     "wv converts files written by Word 2000, 97, 95, and 6 (known internally as
+Word 9, 8, 7, and 6) to HTML or LaTeX.  Word 2 documents can still be converted
+to plain text but will lack formatting.
 
-libwv can be used as a library by third party programs, AbiWord uses it as its
-word importer, and KWord may use it in the future.")
+Othe programs can use wv as a library to convert Word documents to other
+formats.  AbiWord uses it as its Word importer, and KWord uses concepts and
+code from wv in theirs.")
     (home-page "http://wvware.sourceforge.net/")
     (license license:gpl2+)))
