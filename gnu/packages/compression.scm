@@ -1947,14 +1947,14 @@ algorithms in Java.")
 (define-public lunzip
   (package
     (name "lunzip")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/lzip/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "1ax3d9cp66z1qb9q7lfzg5bpx9630xrxgq9a5sw569wm0qqgpg2q"))))
+        (base32 "1iw59br6nsxs7l1p875h8w3vxwr04xfhg5zyal64crvamhxkj5kl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
