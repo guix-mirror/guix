@@ -3533,14 +3533,14 @@ functions.")
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "0.19.1")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scipy" version))
        (sha256
         (base32
-         "1rl411bvla6q7qfdb47fpdnyjhfgzl6smpha33n9ar1klykjr6m1"))))
+         "043djb3vyk6qripmyw30jhl0g8qza0fmar6wck10iv79l08izsl7"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
@@ -3551,11 +3551,12 @@ functions.")
        ("openblas" ,openblas)))
     (native-inputs
      `(("python-cython" ,python-cython)
-       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)
        ("python-sphinx" ,python-sphinx)
        ("python-numpydoc" ,python-numpydoc)
        ("gfortran" ,gfortran)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("which" ,which)))
     (outputs '("out" "doc"))
     (arguments
      `(#:phases
@@ -3584,7 +3585,11 @@ atlas_libs = openblas
              (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
                     (doc (string-append data "/doc/" ,name "-" ,version))
                     (html (string-append doc "/html"))
-                    (pyver ,(string-append "PYVER=")))
+                    (pyver ,(string-append "PYVER=" (version-major+minor
+                                                     (package-version python))))
+                    ;; By default it tries to run sphinx-build through the Python
+                    ;; interpreter which won't work with our shell wrapper.
+                    (sphinxbuild "SPHINXBUILD=LANG=C sphinx-build"))
                ;; Make installed package available for building the
                ;; documentation
                (add-installed-pythonpath inputs outputs)
@@ -3594,7 +3599,7 @@ atlas_libs = openblas
                    (("pngmath_use_preview = True")
                     "pngmath_use_preview = False"))
                  (mkdir-p html)
-                 (system* "make" "html" pyver)
+                 (invoke "make" "html" pyver sphinxbuild)
                  (with-directory-excursion "build/html"
                    (for-each (lambda (file)
                                (let* ((dir (dirname file))
@@ -3602,21 +3607,15 @@ atlas_libs = openblas
                                  (install-file file html)))
                              (find-files "." ".*")))))
              #t))
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             (substitute* "scipy/integrate/tests/test_quadpack.py"
-               (("libm.so") "libm.so.6"))
-             #t))
-           ;; Tests can only be run after the library has been installed and not
-           ;; within the source directory.
+         ;; Tests can only be run after the library has been installed and not
+         ;; within the source directory.
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (with-directory-excursion "/tmp"
-               (zero? (system* "python" "-c"
-                               "import scipy; scipy.test('full')")))
-             #t)))))
+               (invoke "python" "-c"
+                       "import scipy; scipy.test('full', verbose=2)")))))))
     (home-page "https://www.scipy.org/")
     (synopsis "The Scipy library provides efficient numerical routines")
     (description "The SciPy library is one of the core packages that make up
