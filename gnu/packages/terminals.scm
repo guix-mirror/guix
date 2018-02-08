@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
@@ -374,7 +374,7 @@ has no notion of what's interesing, but it's very good at that notifying part.")
 (define-public unibilium
   (package
     (name "unibilium")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
@@ -383,7 +383,7 @@ has no notion of what's interesing, but it's very good at that notifying part.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1n7a0jrlwhn9nnkna76sbnjrr808m0pmzbiwznmp7rhmjl4z2fk2"))))
+         "1hbf011d8nzsp7c96fidjiq8yw8zlxf6f1s050ii2yyampvb8ib0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
