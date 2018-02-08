@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,7 @@
 (define-public nim
   (package
     (name "nim")
-    (version "0.17.0")
+    (version "0.17.2")
     (source
      (origin
       (method url-fetch)
@@ -34,13 +35,13 @@
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "16vsmk4rqnkg9lc9h9jk62ps0x778cdqg6qrs3k6fv2g73cqvq9n"))))
+        "1gc2xk3ygmz9y4pm75pligssgw995a7gvnfpy445fjpw4d81pzxa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests.
        #:phases
          (modify-phases %standard-phases
-           (delete 'configure)
+           (delete 'configure)          ; no configure script
            (add-after 'unpack 'patch-installer
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
