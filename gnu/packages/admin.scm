@@ -1343,7 +1343,7 @@ track changes in important system configuration files.")
 (define-public libcap-ng
   (package
     (name "libcap-ng")
-    (version "0.7.4")
+    (version "0.7.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1351,7 +1351,7 @@ track changes in important system configuration files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0ssvnh4cvhya0c1j6k6192zvqcq7nc0x01fb5nwhr0prfqr0i8j8"))))
+                "0a0k484kwv0zilry2mbl9k56cnpdhsjxdxin17jas6kkyfy345aa"))))
     (build-system gnu-build-system)
     (inputs `(("python" ,python)))
     (home-page "https://people.redhat.com/sgrubb/libcap-ng/")
