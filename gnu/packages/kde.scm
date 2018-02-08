@@ -371,8 +371,8 @@ other special events for a geographical region.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://github.com/KDE/libkomparediff2/archive/v"
-                            version ".tar.gz"))
+        (uri (string-append "mirror://kde/stable/applications"
+                            "/" version "/src/" name "-" version ".tar.xz"))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
