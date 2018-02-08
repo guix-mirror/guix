@@ -34,7 +34,7 @@
 (define-public conky
   (package
     (name "conky")
-    (version "1.10.7")
+    (version "1.10.8")
     (source
      (origin
        (method url-fetch)
@@ -42,7 +42,7 @@
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1b06rigfjxnaidkabkyf8mdh9k3jm11nj547lb5liwi2ql4rdfr3"))))
+        (base32 "0mw8xbnxr0a7yq2smzi2nln2b5n0q571vdrq6mhvs5n84xd6bg9f"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
