@@ -1353,7 +1353,9 @@ track changes in important system configuration files.")
                (base32
                 "0a0k484kwv0zilry2mbl9k56cnpdhsjxdxin17jas6kkyfy345aa"))))
     (build-system gnu-build-system)
-    (inputs `(("python" ,python)))
+    (arguments
+     `(#:configure-flags
+       (list "--without-python")))
     (home-page "https://people.redhat.com/sgrubb/libcap-ng/")
     (synopsis "Library for more easily working with POSIX capabilities")
     (description
