@@ -280,14 +280,14 @@ engineers, musicians, soundtrack editors and composers.")
 (define-public audacity
   (package
     (name "audacity")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/audacity/audacity/archive"
                            "/Audacity-" version ".tar.gz"))
        (sha256
-        (base32 "09xpr4bjnainz1xmc35v3qg3dadjr9wv8bmn1p4y91aqyihnhjry"))
+        (base32 "1n05r8b4rnf9fas0py0is8cm97s3h65dgvqkk040aym5d1x6wd7z"))
        (patches (search-patches "audacity-build-with-system-portaudio.patch"))
        (modules '((guix build utils)))
        (snippet
