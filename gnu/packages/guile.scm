@@ -646,7 +646,9 @@ format is also supported.")
              (lambda _
                (substitute* "configure.ac"
                  (("PKG_CHECK_MODULES\\(\\[GUILE\\],.*$")
-                  "PKG_CHECK_MODULES([GUILE], [guile-2.2])\n"))
+                  "PKG_CHECK_MODULES([GUILE], [guile-2.2])\n")
+                 (("guile/site/2.0")
+                  "guile/site/2.2"))
                #t))
            (add-after 'use-guile-2.2 'bootstrap
              (lambda _
