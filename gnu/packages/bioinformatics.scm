@@ -10402,6 +10402,32 @@ problems in genomics, brain imaging, astrophysics, and data mining.")
     ;; Any version of the LGPL.
     (license license:lgpl3+)))
 
+(define-public r-hdf5array
+  (package
+    (name "r-hdf5array")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "HDF5Array" version))
+       (sha256
+        (base32
+         "0kcdza41saqv6vlpvqd841awbiwkg84lh0plx6c7fmfgbqv7a0jh"))))
+    (properties `((upstream-name . "HDF5Array")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-iranges" ,r-iranges)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/HDF5Array")
+    (synopsis "HDF5 back end for DelayedArray objects")
+    (description "This package provides an array-like container for convenient
+access and manipulation of HDF5 datasets.  It supports delayed operations and
+block processing.")
+    (license license:artistic2.0)))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
