@@ -1180,13 +1180,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
   %D%/packages/patches/libyaml-CVE-2014-9130.patch 		\
-  %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
-  %D%/packages/patches/zziplib-CVE-2017-5974.patch		\
-  %D%/packages/patches/zziplib-CVE-2017-5975.patch		\
-  %D%/packages/patches/zziplib-CVE-2017-5976.patch		\
-  %D%/packages/patches/zziplib-CVE-2017-5978.patch		\
-  %D%/packages/patches/zziplib-CVE-2017-5979.patch		\
-  %D%/packages/patches/zziplib-CVE-2017-5981.patch
+  %D%/packages/patches/zathura-plugindir-environment-variable.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in
