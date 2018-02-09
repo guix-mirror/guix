@@ -80,8 +80,8 @@
     (($ <certbot-configuration> package webroot hosts default-location)
      (with-imported-modules '((guix build utils))
        #~(begin
-	   (use-modules (guix build utils))
-	   (mkdir-p #$webroot)
+           (use-modules (guix build utils))
+           (mkdir-p #$webroot)
            (for-each
             (lambda (host)
               (unless (file-exists? (in-vicinity "/etc/letsencrypt/live" host))
