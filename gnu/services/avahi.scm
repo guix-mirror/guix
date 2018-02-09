@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -131,8 +131,10 @@ service switch (NSS) with support for @code{.local} host name resolution.")
                                             (const %avahi-accounts))
                          (service-extension activation-service-type
                                             (const %avahi-activation))
+
+                         ;; Use 0.10 due to <https://bugs.gnu.org/30396>.
                          (service-extension nscd-service-type
-                                            (const (list nss-mdns)))
+                                            (const (list nss-mdns-0.10)))
 
                          ;; Provide 'avahi-browse', 'avahi-resolve', etc. in
                          ;; the system profile.
