@@ -65,10 +65,10 @@
        (() '())
        (_
         (list
-         ;; Attempt to renew the certificates twice a week.
-         #~(job (lambda (now)
-                  (next-day-from (next-hour-from now '(3))
-                                 '(2 5)))
+         ;; Attempt to renew the certificates twice per day, at a random
+         ;; minute within the hour.  See
+         ;; https://certbot.eff.org/all-instructions/.
+         #~(job '(next-minute-from (next-hour '(0 12)) (list (random 60)))
                 (string-append #$package "/bin/certbot renew"
                                (string-concatenate
                                 (map (lambda (host)

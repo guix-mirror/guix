@@ -30,7 +30,7 @@ Copyright @copyright{} 2016, 2017 ng0@*
 Copyright @copyright{} 2016, 2017 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
-Copyright @copyright{} 2017 Clément Lassieur@*
+Copyright @copyright{} 2017, 2018 Clément Lassieur@*
 Copyright @copyright{} 2017 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017 Carlo Zancanaro@*
@@ -15734,6 +15734,12 @@ The certbot service automates this process: the initial key
 generation, the initial certification request to the Let's Encrypt
 service, the web server challenge/response integration, writing the
 certificate to disk, and the automated periodic renewals.
+
+Certbot is run twice a day, at a random minute within the hour.  It
+won't do anything until your certificates are due for renewal or
+revoked, but running it regularly would give your service a chance of
+staying online in case a Let's Encrypt-initiated revocation happened for
+some reason.
 
 @defvr {Scheme Variable} certbot-service-type
 A service type for the @code{certbot} Let's Encrypt client.
