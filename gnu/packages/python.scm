@@ -1066,24 +1066,48 @@ human-friendly syntax.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.19.2")
+    (version "0.22.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "0540cnbwy2hc4hv2sxfs8i47xi91qzvzxfn80dl785ibiicly3vg"))
-       (patches
-        (search-patches "python-pandas-skip-failing-tests.patch"))))
+        (base32 "0v0fi2i10kwnmlpsl6f1fgajcpx3q6766qf6xqi5kw3ivn8l1aa4"))))
     (build-system python-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build python-build-system)
+                  (ice-9 ftw)
+                  (srfi srfi-26))
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (let ((build-directory
+                             (string-append
+                              (getcwd) "/build/"
+                              (car (scandir "build"
+                                            (cut string-prefix? "lib." <>))))))
+                        (with-directory-excursion build-directory
+                          ;; Delete tests that require "moto" which is not yet in Guix.
+                          (for-each delete-file
+                                    '("pandas/tests/io/conftest.py"
+                                      "pandas/tests/io/json/test_compression.py"
+                                      "pandas/tests/io/test_excel.py"))
+                          (invoke "pytest" "-v" "pandas" "-k"
+                                  (string-append
+                                   "not network and not disabled"
+                                   ;; XXX: Due to the deleted tests above.
+                                   " and not test_read_s3_jsonl")))))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-pytz" ,python-pytz)
        ("python-dateutil" ,python-dateutil)))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-cython" ,python-cython)))
-    (home-page "http://pandas.pydata.org")
+     `(("python-cython" ,python-cython)
+       ("python-lxml" ,python-lxml)
+       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://pandas.pydata.org")
     (synopsis "Data structures for data analysis, time series, and statistics")
     (description
      "Pandas is a Python package providing fast, flexible, and expressive data
