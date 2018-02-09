@@ -87,16 +87,18 @@ communication, encryption, decryption, signatures, etc.")
 (define-public libmd
   (package
     (name "libmd")
-    (version "0.0.0")
+    (version "1.0.0")
     (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "https://archive.hadrons.org/software/libmd/libmd-"
-                  version
-                  ".tar.xz"))
+            (uri
+             (list
+              (string-append "https://archive.hadrons.org/software/libmd/libmd-"
+                             version ".tar.xz")
+              (string-append "https://libbsd.freedesktop.org/releases/libmd-"
+                             version ".tar.xz")))
             (sha256
              (base32
-              "121s73pgbqsnmy6xblbrkj9y44c5zzzpf2hcmh6zvcvg4dk26gzx"))))
+              "1iv45npzv0gncjgcpx5m081861zdqxw667ysghqb8721yrlyl6pj"))))
     (build-system gnu-build-system)
     (synopsis "Message Digest functions from BSD systems")
     (description
