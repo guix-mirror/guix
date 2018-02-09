@@ -177,7 +177,7 @@ Interface} specification.")
 (define-public nginx
   (package
     (name "nginx")
-    ;; Consider updating the nginx-docs package if the nginx package is
+    ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
     (version "1.13.8")
     (source (origin
@@ -310,13 +310,13 @@ documentation.")
       (license l:bsd-2))))
 
 (define-public nginx-documentation
-  ;; This documentation should be relevant for nginx-1.12.0
-  (let ((revision 1961)
-        (changeset "dd4b6c564e10"))
+  ;; This documentation should be relevant for nginx@1.13.8.
+  (let ((revision 2100)
+        (changeset "cfb7bd672d77"))
     (package
       (name "nginx-documentation")
       (version
-       (simple-format #f "2017-04-12-~A-~A" revision changeset))
+       (simple-format #f "2018-01-22-~A-~A" revision changeset))
       (source
        (origin (method hg-fetch)
                (uri (hg-reference
@@ -325,13 +325,13 @@ documentation.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "0rycfnnm2xkm777769h1zib428q45j64mx8nzzfzs4v07jbfc8m5"))))
+                 "096fcsc0wnfr847m7dwp17rivd3alxq7v9hq9s5lkfbhylmh18vm"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:tests? #f  ; No test suite
+       '(#:tests? #f                    ; no test suite
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)
+           (delete 'configure)          ; no configure script
            (replace 'build
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((output (assoc-ref outputs "out")))

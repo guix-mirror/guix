@@ -1188,10 +1188,11 @@ Guile's foreign function interface.")
   (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
 
 (define-public guile-sqlite3
-  (let ((commit "607721fe1174a299e45d457acacf94eefb964071"))
+  (let ((commit "21f35ca87517194d8fcc7ac166b5e77f5f5348b0")
+        (revision "2"))
     (package
       (name "guile-sqlite3")
-      (version (string-append "0.0-1." (string-take commit 7)))
+      (version (git-version "0.0" revision commit))
 
       ;; XXX: This used to be available read-only at
       ;; <https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/> but it
@@ -1204,7 +1205,7 @@ Guile's foreign function interface.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "09gaffhh5rawz5kdmqx2ahvj1ngvxddp469r18bmjz3sz8p0slj2"))
+                  "0m33di5gz0a6n6q380v1y8apm5hrynzyl4ri8ar4j202hwjqi1y2"))
                 (file-name (string-append name "-" version "-checkout"))
                 (modules '((guix build utils)))
                 (snippet

@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,14 +145,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.58")
+   (version "0.9.59")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1wq17qvizis7bsyvyw1gnfycvivssncngziddnyrbzv2dhvy24bs"))))
+              "0g4jgnv43yddr9yxrqg11632rip0lg5c53gmy5wy3c0i1dywv74v"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)

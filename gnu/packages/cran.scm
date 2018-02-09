@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -1861,3 +1861,214 @@ written purely in R with no external dependencies.  It is useful with the
 Rscript front-end and facilitates turning an R script into an executable
 script.")
     (license license:gpl3+)))
+
+(define-public r-debugme
+  (package
+    (name "r-debugme")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "debugme" version))
+       (sha256
+        (base32
+         "1c9sg55zvf10h8198jdnpamm6f66lzw3c3jnmdp9ls6na0j0xbjd"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-crayon" ,r-crayon)))
+    (home-page "https://github.com/r-lib/debugme#readme")
+    (synopsis "Debug R packages")
+    (description
+     "This package allows the user to specify debug messages as special string
+constants, and control debugging of packages via environment variables.")
+    (license license:expat)))
+
+(define-public r-processx
+  (package
+    (name "r-processx")
+    (version "2.0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "processx" version))
+       (sha256
+        (base32
+         "0yw23lp9xjvbpswzghkmjiayw7p19hbvmgv58k3i6b8g5nav4qcg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-crayon" ,r-crayon)
+       ("r-debugme" ,r-debugme)
+       ("r-r6" ,r-r6)))
+    (home-page "https://github.com/r-lib/processx3")
+    (synopsis "Execute and control system processes")
+    (description
+     "This package provides portable tools to run system processes in the
+background.  It can check if a background process is running; wait on a
+background process to finish; get the exit status of finished processes; kill
+background processes and their children; restart processes.  It can read the
+standard output and error of the processes, using non-blocking connections.
+@code{processx} can poll a process for standard output or error, with a
+timeout.  It can also poll several processes at once.")
+    (license license:expat)))
+
+(define-public r-tsp
+  (package
+    (name "r-tsp")
+    (version "1.1-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TSP" version))
+       (sha256
+        (base32
+         "03xxfr5kk4zhzpb1q1pwncdp0dhchm9b48wzhvvxn2dxf3mnby2w"))))
+    (properties `((upstream-name . "TSP")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-foreach" ,r-foreach)))
+    (home-page "https://cran.r-project.org/web/packages/TSP/")
+    (synopsis "Traveling salesperson problem (TSP)")
+    (description "This package provides basic infrastructure and some
+algorithms for the @dfn{traveling salesperson problem}(TSP) (also known as the
+traveling salesman problem).")
+    (license license:gpl3)))
+
+(define-public r-qap
+  (package
+    (name "r-qap")
+    (version "0.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qap" version))
+       (sha256
+        (base32
+         "0d2d1ni1camixyi45lfy00f4pn3p063k7bsi8gj5scp6n15mdgb0"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/qap/")
+    (synopsis "Heuristics for the quadratic assignment problem (QAP)")
+    (description "This package implements heuristics for the @dfn{quadratic
+assignment problem} (QAP).  Currently only a simulated annealing heuristic is
+available.")
+    (license license:gpl3)))
+
+(define-public r-gclus
+  (package
+    (name "r-gclus")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gclus" version))
+       (sha256
+        (base32
+         "02ba6zj9bjwrzykamjp40ajynx9xjx9h2i85n0ym0r5lcki4x6fn"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-cluster" ,r-cluster)))
+    (home-page "http://cran.r-project.org/web/packages/gclus/")
+    (synopsis "Clustering graphics")
+    (description "This package orders panels in scatterplot matrices and
+parallel coordinate displays by some merit index.  It contains various indices
+of merit, ordering functions, and enhanced versions of @code{pairs} and
+@code{parcoord} which color panels according to their merit level.")
+    (license license:gpl2+)))
+
+(define-public r-webshot
+  (package
+    (name "r-webshot")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "webshot" version))
+       (sha256
+        (base32
+         "07r71zzmggp4jf92x4ws4wg6v1x98vaj01lsar85bnb30n5vx8gh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-processx" ,r-processx)
+       ("r-withr" ,r-withr)))
+    (home-page "https://github.com/wch/webshot/")
+    (synopsis "Take screenshots of web pages")
+    (description
+     "Webshot makes it easy to take screenshots of web pages from within R.
+It can also run Shiny applications locally and take screenshots of the
+application; and it can render and screenshot static as well as interactive R
+Markdown documents.")
+    (license license:gpl2)))
+
+(define-public r-seriation
+  (package
+    (name "r-seriation")
+    (version "1.2-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "seriation" version))
+       (sha256
+        (base32
+         "1q6hw4hjw224b4y0dc0j630v2pgj6sn455nwkilb70w8k31hpk92"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-colorspace" ,r-colorspace)
+       ("r-dendextend" ,r-dendextend)
+       ("r-gclus" ,r-gclus)
+       ("r-gplots" ,r-gplots)
+       ("r-mass" ,r-mass)
+       ("r-qap" ,r-qap)
+       ("r-registry" ,r-registry)
+       ("r-tsp" ,r-tsp)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://s2.smu.edu/IDA/seriation/")
+    (synopsis "Infrastructure for ordering objects using seriation")
+    (description
+     "This package provides infrastructure for seriation with an
+implementation of several seriation/sequencing techniques to reorder matrices,
+dissimilarity matrices, and dendrograms.  It also provides (optimally)
+reordered heatmaps, color images and clustering visualizations like
+dissimilarity plots, and visual assessment of cluster tendency plots (VAT and
+iVAT).")
+    (license license:gpl3)))
+
+(define-public r-heatmaply
+  (package
+    (name "r-heatmaply")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "heatmaply" version))
+       (sha256
+        (base32
+         "03p2caclhfgqgpx3wwck5h06jy3mxgs05gjmwkb7hmwghkjh41jc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-colorspace" ,r-colorspace)
+       ("r-dendextend" ,r-dendextend)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gplots" ,r-gplots)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plotly" ,r-plotly)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape2" ,r-reshape2)
+       ("r-scales" ,r-scales)
+       ("r-seriation" ,r-seriation)
+       ("r-viridis" ,r-viridis)
+       ("r-webshot" ,r-webshot)))
+    (home-page "https://cran.r-project.org/package=heatmaply")
+    (synopsis "Interactive cluster heat maps using plotly")
+    (description "Heatmaps are used in many fields for visualizing
+observations, correlations, missing values patterns, and more.  Interactive
+heatmaps allow the inspection of specific value by hovering the mouse over a
+cell, as well as zooming into a region of the heatmap by dragging a rectangle
+around the relevant area.  This work is based on the @code{ggplot2} and
+@code{plotly.js} engine.  It produces similar heatmaps as @code{heatmap.2} or
+@code{d3heatmap}, with the advantage of speed, the ability to zoom from the
+dendrogram panes, and the placing of factor variables in the sides of the
+heatmap.")
+    (license (list license:gpl2 license:gpl3))))

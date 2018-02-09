@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,7 +87,7 @@
 (define-public expect
   (package
     (name "expect")
-    (version "5.45.3")
+    (version "5.45.4")
     (source
      (origin
       (method url-fetch)
@@ -94,7 +95,7 @@
                           version "/expect" version ".tar.gz"))
       (sha256
        (base32
-        "1s9ba7m0bmg6brn4x030y2xg7hqara1fr4hlrrllm54mf5xp2865"))))
+        "0d1cp5hggjl93xwc8h1y6adbnrvpkk0ywkd00inz9ndxn21xm9s9"))))
     (build-system gnu-build-system)
     (inputs
      `(;; TODO: Add these optional dependencies.

@@ -1386,6 +1386,7 @@ It can be used as a replacement for the Apache @code{CBZip2InputStream} /
                   (delete-file-recursively "CPP/7zip/Compress/Rar")
                   #t))
               (patches (search-patches "p7zip-CVE-2016-9296.patch"
+                                       "p7zip-CVE-2017-17969.patch"
                                        "p7zip-remove-unused-code.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -1632,7 +1633,7 @@ trade-off between compression ratio and speed, without affecting decompression
 speed.")
     (license (list license:bsd-3         ; the main top-level LICENSE file
                    license:bsd-2         ; many files explicitly state 2-Clause
-                   license:gpl2          ; the mail top-level COPYING file
+                   license:gpl2          ; the main top-level COPYING file
                    license:gpl3+         ; tests/gzip/*.sh
                    license:expat         ; lib/dictBuilder/divsufsort.[ch]
                    license:public-domain ; zlibWrapper/examples/fitblk*
@@ -1955,14 +1956,14 @@ algorithms in Java.")
 (define-public lunzip
   (package
     (name "lunzip")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/lzip/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "1ax3d9cp66z1qb9q7lfzg5bpx9630xrxgq9a5sw569wm0qqgpg2q"))))
+        (base32 "1iw59br6nsxs7l1p875h8w3vxwr04xfhg5zyal64crvamhxkj5kl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

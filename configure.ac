@@ -54,6 +54,13 @@ AC_ARG_WITH([fish-completion-dir],
   [fishcompletiondir='${datadir}/fish/vendor_completions.d'])
 AC_SUBST([fishcompletiondir])
 
+AC_ARG_WITH([selinux-policy-dir],
+  AC_HELP_STRING([--with-selinux-policy-dir=DIR],
+    [name of the SELinux policy directory]),
+  [selinux_policydir="$withval"],
+  [selinux_policydir='${datadir}/selinux/'])
+AC_SUBST([selinux_policydir])
+
 dnl Better be verbose.
 AC_MSG_CHECKING([for the store directory])
 AC_MSG_RESULT([$storedir])
@@ -272,7 +279,8 @@ esac
 AC_CONFIG_FILES([Makefile
                  po/guix/Makefile.in
                  po/packages/Makefile.in
-		 guix/config.scm])
+                 etc/guix-daemon.cil
+                 guix/config.scm])
 
 AC_CONFIG_FILES([test-env:build-aux/test-env.in], [chmod +x test-env])
 AC_CONFIG_FILES([pre-inst-env:build-aux/pre-inst-env.in],

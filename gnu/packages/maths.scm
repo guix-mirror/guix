@@ -22,6 +22,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
+;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,6 +94,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages scheme)
@@ -101,6 +103,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
@@ -3695,3 +3698,34 @@ exclusion algorithms are typical examples of such systems.")
 dense and sparse-direct linear algebra, conic optimization, and lattice
 reduction.")
     (license license:bsd-2)))
+
+(define-public mcrl2
+  (package
+    (name "mcrl2")
+    (version "201707.1.15162")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.mcrl2.org/download/devel/mcrl2-"
+                                  version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "1ziww2fchsklm25hl9p2mngssxfh9w07nc114cncqaxfibqp2p8f"))))
+    (native-inputs
+     `(("subversion" ,subversion)))
+    (inputs
+     `(("boost" ,boost)
+       ("glu" ,glu)
+       ("mesa" ,mesa)
+       ("qt" ,qt)))
+    (build-system cmake-build-system)
+    (synopsis "Toolset for the mCRL2 formal specification language")
+    (description
+     "@dfn{mCRL2} (micro Common Representation Language 2) is a formal
+specification language for describing concurrent discrete event systems.  Its
+toolset supports analysis and automatic verification, linearisation, simulation,
+state-space exploration and generation, and tools to optimise and analyse
+specifications.  Also, state spaces can be manipulated, visualised and
+analysed.")
+    (home-page "http://mcrl2.org")
+    (license license:boost1.0)))

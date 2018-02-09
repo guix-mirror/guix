@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
@@ -4422,7 +4422,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.27.1")
+    (version "0.27.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4430,7 +4430,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1jav7qv0s1v6wvd7x2ri85hjqnbswq883pnd228qhd6bhjbryp89"))))
+                "0g2vphhpxrljpy9sryfsgaayix807i1i9plj9bay72dk0zphqab2"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))

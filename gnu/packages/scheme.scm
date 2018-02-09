@@ -200,14 +200,14 @@ features an integrated Emacs-like editor and a large runtime library.")
 (define-public bigloo
   (package
     (name "bigloo")
-    (version "4.3a")
+    (version "4.3b")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "03rcqs6kvy2j5lqk4fidqay5qfyp474qqspbh6wk4qdbds6w599w"))
+               "1xpzxjlq5g8j3jrb908kfaaa0pkynk4rd083hzvb08amhy68sx07"))
              ;; Remove bundled libraries.
              (modules '((guix build utils)))
              (snippet
@@ -229,34 +229,37 @@ features an integrated Emacs-like editor and a large runtime library.")
                ((", @DATE@") ""))
              (substitute* "autoconf/osversion"
                (("^version.*$") "version=\"\"\n"))
+             (substitute* "comptime/Makefile"
+               (("\\$\\(LDCOMPLIBS\\)")
+                "$(LDCOMPLIBS) $(LDFLAGS)"))
 
              ;; The `configure' script doesn't understand options
              ;; of those of Autoconf.
              (let ((out (assoc-ref outputs "out")))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         ; use system libraries
-                         "--customgc=no"
-                         "--customunistring=no"
-                         "--customlibuv=no"
-                         (string-append"--mv=" (which "mv"))
-                         (string-append "--rm=" (which "rm"))
-                         "--cflags=-fPIC"
-                         (string-append "--ldflags=-Wl,-rpath="
-                                        (assoc-ref outputs "out")
-                                        "/lib/bigloo/" ,version)
-                         (string-append "--lispdir=" out
-                                        "/share/emacs/site-lisp")
-                         "--sharedbde=yes"
-                         "--sharedcompiler=yes")))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       ; use system libraries
+                       "--customgc=no"
+                       "--customunistring=no"
+                       "--customlibuv=no"
+                       (string-append"--mv=" (which "mv"))
+                       (string-append "--rm=" (which "rm"))
+                       "--cflags=-fPIC"
+                       (string-append "--ldflags=-Wl,-rpath="
+                                      (assoc-ref outputs "out")
+                                      "/lib/bigloo/" ,version)
+                       (string-append "--lispdir=" out
+                                      "/share/emacs/site-lisp")
+                       "--sharedbde=yes"
+                       "--sharedcompiler=yes"
+                       "--disable-patch"))))
          (add-after 'install 'install-emacs-modes
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (dir (string-append out "/share/emacs/site-lisp")))
-               (zero? (system* "make" "-C" "bmacs" "all" "install"
-                               (string-append "EMACSBRAND=emacs25")
-                               (string-append "EMACSDIR=" dir)))))))))
+               (invoke "make" "-C" "bmacs" "all" "install"
+                       (string-append "EMACSBRAND=emacs25")
+                       (string-append "EMACSDIR=" dir))))))))
     (inputs
      `(("emacs" ,emacs)                      ;UDE needs the X version of Emacs
        ("libgc" ,libgc)

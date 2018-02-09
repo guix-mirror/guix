@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages python)
   #:use-module (gnu packages bison)
@@ -43,19 +45,23 @@
 (define-public asciidoc
   (package
     (name "asciidoc")
-    (version "8.6.9")
+    (version "8.6.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/asciidoc/asciidoc/"
-                                  version "/asciidoc-" version ".tar.gz"))
+              (uri (string-append "https://github.com/asciidoc/asciidoc/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1w71nk527lq504njmaf0vzr93pgahkgzzxzglrq6bay8cw2rvnvq"))))
+                "10xrl1iwyvs8aqm0vzkvs3dnsn93wyk942kk4ppyl6w9imbzhlly"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                     ; no 'check' target
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (invoke "autoconf")))
          ;; Some XML-related binaries are required for asciidoc's proper usage.
          ;; Without these, asciidoc fails when parsing XML documents, either
          ;; reporting a missing "xmllint" binary or, when passed the
@@ -94,12 +100,14 @@ release/xsl/current")
                           (string-append (assoc-ref inputs "docbook-xml")
                                          "/xml/dtd/docbook/docbookx.dtd")))
                        #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)))
     (inputs `(("python" ,python-2)
               ("docbook-xml" ,docbook-xml)
               ("docbook-xsl" ,docbook-xsl)
               ("libxml2" ,libxml2)
               ("libxslt" ,libxslt)))
-    (home-page "http://www.methods.co.nz/asciidoc/")
+    (home-page "http://asciidoc.org/")
     (synopsis "Text-based document generation system")
     (description
      "AsciiDoc is a text document format for writing notes, documentation,

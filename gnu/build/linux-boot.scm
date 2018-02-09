@@ -42,7 +42,6 @@
             make-static-device-nodes
             configure-qemu-networking
 
-            bind-mount
             device-number
             boot-system))
 

@@ -9,7 +9,7 @@
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
-# Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
+# Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2016, 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -720,6 +720,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
   %D%/packages/patches/gpm-glibc-2.26.patch			\
+  %D%/packages/patches/gpsbabel-minizip.patch     		\
+  %D%/packages/patches/gpsbabel-qstring.patch     		\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groff-source-date-epoch.patch		\
@@ -758,6 +760,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
+  %D%/packages/patches/hwloc-tests-without-sysfs.patch		\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icecat-bug-1348660-pt5.patch		\
@@ -870,7 +873,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/lua51-pkgconfig.patch                    \
   %D%/packages/patches/lua-liblua-so.patch                      \
   %D%/packages/patches/luajit-no_ldconfig.patch			\
-  %D%/packages/patches/luajit-symlinks.patch			\
   %D%/packages/patches/luit-posix.patch				\
   %D%/packages/patches/luminance-hdr-qt-printer.patch		\
   %D%/packages/patches/lvm2-static-link.patch			\
@@ -890,6 +892,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
+  %D%/packages/patches/mpv-CVE-2018-6360-1.patch		\
+  %D%/packages/patches/mpv-CVE-2018-6360-2.patch		\
+  %D%/packages/patches/mpv-CVE-2018-6360-3.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/mongodb-support-unknown-linux-distributions.patch	\
   %D%/packages/patches/mozjs17-aarch64-support.patch		\
@@ -900,6 +905,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-version-detection.patch		\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-latest-openjpeg.patch	\
+  %D%/packages/patches/mupdf-CVE-2017-17858.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/net-tools-bitrot.patch			\
@@ -937,7 +943,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/osip-CVE-2017-7853.patch			\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
   %D%/packages/patches/owncloud-disable-updatecheck.patch	\
-  %D%/packages/patches/p7zip-CVE-2016-9296.patch			\
+  %D%/packages/patches/p7zip-CVE-2016-9296.patch		\
+  %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
   %D%/packages/patches/patchelf-page-size.patch			\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\

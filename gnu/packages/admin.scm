@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -256,18 +257,20 @@ graphs and can export its output to different formats.")
 (define-public htop
   (package
    (name "htop")
-   (version "2.0.2")
+   (version "2.1.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://hisham.hm/htop/releases/"
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
-              "11zlwadm6dpkrlfvf3z3xll26yyffa7qrxd1w72y1kl0rgffk6qp"))))
+              "0j07z0xm2gj1vzvbgh4323k4db9mr7drd7gw95mmpqi61ncvwq1j"))))
    (build-system gnu-build-system)
    (inputs
     `(("ncurses" ,ncurses)))
-   (home-page "http://htop.sourceforge.net/")
+   (native-inputs
+    `(("python" ,python-minimal-wrapper))) ; for scripts/MakeHeader.py
+   (home-page "https://hisham.hm/htop/")
    (synopsis "Interactive process viewer")
    (description
     "This is htop, an interactive process viewer.  It is a text-mode
@@ -519,6 +522,50 @@ programs and scripts.  At the same time, it is a feature-rich network debugging
 and exploration tool, since it can create almost any kind of connection you
 would need and has several interesting built-in capabilities.")
     (license license:gpl2+)))
+
+(define-public sipcalc
+  (package
+    (name "sipcalc")
+    (version "1.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.routemeister.net/projects"
+                           "/sipcalc/files/sipcalc" "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mv3wndj4z2bsshh2k8d5sy3j8wxzgf8mzmmkvj1k8gpcz37dm6g"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.routemeister.net/projects/sipcalc/")
+    (synopsis "Command-line IP subnet calculator")
+    (description
+     "Sipcalc is an advanced command-line IP subnet calculator.  It can take
+multiple forms of input (IPv4/IPv6/interface/hostname) and output a multitude
+of information about a given subnet.
+
+Features include:
+
+@itemize @bullet
+@item IPv4
+@itemize
+@item Retrieving of address information from interfaces.
+@item Classfull and CIDR output.
+@item Multiple address and netmask input and output formats (dotted quad, hex,
+number of bits).
+@item Output of broadcast address, network class, Cisco wildcard,
+hosts/range, network range.
+@item The ability to split a network based on a smaller netmask, now also with
+recursive runs on the generated subnets.  (also IPv6)
+@end itemize
+@item IPv6
+@itemize
+@item Compressed and expanded input and output addresses.
+@item Standard IPv6 network output.
+@item v4 in v6 output.
+@item Reverse DNS address generation.
+@end itemize
+@end itemize\n")
+    (license license:bsd-3)))
 
 (define-public alive
   (package
@@ -1340,7 +1387,7 @@ track changes in important system configuration files.")
 (define-public libcap-ng
   (package
     (name "libcap-ng")
-    (version "0.7.4")
+    (version "0.7.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1348,9 +1395,11 @@ track changes in important system configuration files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0ssvnh4cvhya0c1j6k6192zvqcq7nc0x01fb5nwhr0prfqr0i8j8"))))
+                "0a0k484kwv0zilry2mbl9k56cnpdhsjxdxin17jas6kkyfy345aa"))))
     (build-system gnu-build-system)
-    (inputs `(("python" ,python)))
+    (arguments
+     `(#:configure-flags
+       (list "--without-python")))
     (home-page "https://people.redhat.com/sgrubb/libcap-ng/")
     (synopsis "Library for more easily working with POSIX capabilities")
     (description

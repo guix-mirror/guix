@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;

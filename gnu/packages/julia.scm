@@ -146,6 +146,12 @@
           (lambda* (#:key inputs #:allow-other-keys)
             (use-modules (ice-9 match))
             (substitute* "src/runtime_ccall.cpp"
+              ;; Patch out invocations of '/sbin/ldconfig' to avoid getting
+              ;; error messages about missing '/sbin/ldconfig' on GuixSD.
+              (("popen\\(.*ldconfig.*\\);")
+               "NULL;\n")
+
+              ;; Populate 'sonameMap'.
               (("jl_read_sonames.*;")
                (string-join
                 (map (match-lambda
@@ -228,6 +234,12 @@
              #t))
          (add-before 'check 'disable-broken-tests
            (lambda _
+             ;; Adjust expected error messages to match what current libgit2
+             ;; provides.
+             (substitute* "test/libgit2.jl"
+               (("Invalid Content-Type") "invalid Content-Type")
+               (("Failed to resolve path") "failed to resolve path"))
+
              (substitute* "test/choosetests.jl"
                ;; These tests fail, probably because some of the input
                ;; binaries have been stripped and thus backtraces don't look

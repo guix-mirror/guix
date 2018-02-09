@@ -45,6 +45,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Ethan R. Jones <ethanrjones97@gmail.com
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -5740,15 +5741,13 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.2")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://bitbucket.org/nikratio/python-llfuse/downloads/"
-                    "llfuse-" version ".tar.bz2"))
+              (uri (pypi-uri "llfuse" version ".tar.bz2"))
               (sha256
                (base32
-                "11hms1x68bf1bqbqy7w3wpffqsd3jkgricmzrc1hrnwkswfzzlr4"))))
+                "0qxvnbz41bpvpc1vbi8qkhmpr9gj1qrrp5jdj085iqibd8l2l9cn"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
@@ -12502,3 +12501,142 @@ style guide, even if the original code didn't violate the style guide.")
 
 (define-public python2-yapf
   (package-with-python2 python-yapf))
+
+(define-public python-gyp
+  (let ((commit "5e2b3ddde7cda5eb6bc09a5546a76b00e49d888f")
+        (revision "0"))
+    (package
+      (name "python-gyp")
+      ;; Google does not release versions,
+      ;; based on second most recent commit date.
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         ;; Google does not release tarballs,
+         ;; git checkout is needed.
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://chromium.googlesource.com/external/gyp")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0fr7nxcrk292djmxzpcjaphnsd123k31gp8jnd91vwknhq6snmv9"))))
+      (build-system python-build-system)
+      (home-page "https://gyp.gsrc.io/")
+      (synopsis "GYP is a Meta-Build system")
+      (description
+       "GYP builds build systems for large, cross platform applications.
+It can be used to generate XCode projects, Visual Studio projects, Ninja build
+files, and Makefiles.")
+      (license license:bsd-3))))
+
+(define-public python2-gyp
+  (package-with-python2 python-gyp))
+
+(define-public python-whatever
+  (package
+    (name "python-whatever")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Suor/whatever/archive/" version
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "1iqvnaf0zpc6b4rvbqq4xy45mszcscyzpzknv8wg6j84pbp22sap"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+        (replace 'check
+          (lambda _
+            (invoke "py.test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "http://github.com/Suor/whatever")
+    (synopsis "Make anonymous functions by partial application of operators")
+    (description "@code{whatever} provides an easy way to make anonymous
+functions by partial application of operators.")
+    (license license:bsd-3)))
+
+(define-public python2-whatever
+  (package-with-python2 python-whatever))
+
+(define-public python-funcy
+  (package
+    (name "python-funcy")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Suor/funcy/archive/" version
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "1fanxivsip29vgarw6dn39xym3q4pbxcpa11plpp548lvxajpahz"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "py.test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-warnings" ,python-pytest-warnings)
+       ("python-whatever" ,python-whatever)))
+    (home-page "http://github.com/Suor/funcy")
+    (synopsis "Functional tools")
+    (description "@code{funcy} is a library that provides functional tools.
+Examples are:
+@enumerate
+@item merge - Merges collections of the same type
+@item walk - Type-preserving map
+@item select - Selects a part of a collection
+@item take - Takes the first n items of a collection
+@item first - Takes the first item of a collection
+@item remove - Predicated-removes items of a collection
+@item concat - Concatenates two collections
+@item flatten - Flattens a collection with subcollections
+@item distinct - Returns only distinct items
+@item split - Predicated-splits a collection
+@item split_at - Splits a collection at a given item
+@item group_by - Groups items by group
+@item pairwise - Pairs off adjacent items
+@item partial - Partially-applies a function
+@item curry - Curries a function
+@item compose - Composes functions
+@item complement - Complements a predicate
+@item all_fn - \"all\" with predicate
+@end enumerate")
+    (license license:bsd-3)))
+
+(define-public python2-funcy
+  (package-with-python2 python-funcy))
+
+(define-public python-isoweek
+  (package
+    (name "python-isoweek")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "isoweek" version))
+       (sha256
+        (base32
+         "1s7zsf0pab0l9gn6456qadnz5i5h90hafcjwnhx5mq23qjxggwvk"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/gisle/isoweek")
+    (synopsis "Objects representing a week")
+    (description "The @code{isoweek} module provide the class Week that
+implements the week definition of ISO 8601.  This standard also defines
+a notation for identifying weeks; yyyyWww (where the W is a literal).
+Week instances stringify to this form.")
+    (license license:bsd-3)))
+
+(define-public python2-isoweek
+  (package-with-python2 python-isoweek))

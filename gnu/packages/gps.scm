@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
@@ -37,7 +39,7 @@
 (define-public gpsbabel
   (package
     (name "gpsbabel")
-    (version "1.5.2")
+    (version "1.5.4")
     (source (origin
               (method url-fetch)
               ;; XXX: Downloads from gpsbabel.org are hidden behind a POST, so
@@ -47,17 +49,21 @@
                     version ".orig.tar.gz"))
               (sha256
                (base32
-                "0xf7wmy2m29g2lm8lqc74yf8rf7sxfl3cfwbk7dpf0yf42pb0b6w"))
+                "19hykxhyl567gf8qcrl33qhv95w0g4vxw9r3h9b8d8plx9bnaf8l"))
+              (patches (search-patches
+                        "gpsbabel-minizip.patch"
+                        ;; XXX: Remove this patch on the next release.
+                        "gpsbabel-qstring.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Delete files under GPL-compatible licences but never used
                   ;; on GNU systems, rather than bloating the LICENSE field.
-                  (with-directory-excursion "gpsbabel"
-                    (delete-file "gui/serial_mac.cc")           ; Apple MIT
-                    (delete-file "mingw/include/ddk/hidsdi.h")) ; public domain
+                  (delete-file "gui/serial_mac.cc")           ; Apple MIT
+                  (delete-file "mingw/include/ddk/hidsdi.h") ; public domain
                   #t))))
     (build-system gnu-build-system)
+    ;; TODO: "make doc" requires Docbook & co.
     (arguments
      `(#:configure-flags
        '("--with-zlib=system"
@@ -65,13 +71,6 @@
          ;; recent binutils:
          ;; https://codereview.qt-project.org/#/c/111787/
          "CXXFLAGS=-std=gnu++11 -fPIC")
-       #:phases
-       (modify-phases %standard-phases
-        (add-before 'configure 'pre-configure
-                    (lambda _
-                      (chdir "gpsbabel"))))
-                    ;; TODO: "make doc" requires Docbook & co.
-
        ;; On i686, 'raymarine.test' fails because of a rounding error:
        ;; <http://hydra.gnu.org/build/133040>.  As a workaround, disable tests
        ;; on these platforms.
@@ -171,3 +170,51 @@ useful in measurements where Global Positioning System (GPS) is not available,
 such as underground.  It features the ability to adjust in local Cartesian
 coordinates as well as partial support for adjustments in global coordinate systems.")
     (license license:gpl3+)))
+
+(define-public gpxsee
+  (package
+    (name "gpxsee")
+    (version "4.19")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/tumic0/GPXSee/archive/"
+                              version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00j0gjldw1kn3i45dppld1pz8r4s1g7lw89k7gfvvqbjjyjih1wg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; Use lrelease to convert TS translation files into QM files.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (for-each (lambda (file)
+                         (system* "lrelease" file))
+                       (find-files "lang" "\\.ts"))
+             (substitute* "src/config.h"
+               (("/usr/share/gpxsee")
+                (string-append
+                 (assoc-ref outputs "out") "/share/gpxsee")))
+             (invoke "qmake"
+                     (string-append "PREFIX="
+                                    (assoc-ref outputs "out")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/gpxsee/")))
+               (install-file "GPXSee" (string-append out "/bin/GPXSee"))
+               (install-file "pkg/maps.txt" share))
+             #t)))))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (home-page "http://www.gpxsee.org")
+    (synopsis "GPX file viewer and analyzer")
+    (description
+     "GPXSee is a Qt-based GPS log file viewer and analyzer that supports GPX,
+TCX, KML, FIT, IGC and NMEA files.")
+    (license license:gpl3)))

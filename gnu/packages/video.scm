@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2015, 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
@@ -1018,6 +1018,9 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
               (sha256
                (base32
                 "1d2p6k3y9lqx8bpdal4grrj8ljy7pvd8qgdq8004fmr38afmbb7f"))
+              (patches (search-patches "mpv-CVE-2018-6360-1.patch"
+                                       "mpv-CVE-2018-6360-2.patch"
+                                       "mpv-CVE-2018-6360-3.patch"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs

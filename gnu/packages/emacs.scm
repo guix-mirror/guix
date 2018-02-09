@@ -3166,6 +3166,128 @@ perspective only its buffers are available by default.")
     ;; the Expat license.
     (license license:gpl3+)))
 
+(define-public emacs-test-simple
+  (package
+    (name "emacs-test-simple")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/test-simple-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1yd61jc9ds95a5n09052kwc5gasy57g4lxr0jsff040brlyi9czz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rocky/emacs-test-simple")
+    (synopsis "Simple unit test framework for Emacs Lisp")
+    (description
+     "Test Simple is a simple unit test framework for Emacs Lisp.  It
+alleviates the need for context macros, enclosing specifications or required
+test tags.  It supports both interactive and non-interactive use.")
+    (license license:gpl3+)))
+
+(define-public emacs-load-relative
+  (package
+    (name "emacs-load-relative")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/load-relative-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1hfxb2436jdsi9wfmsv47lkkpa5galjf5q81bqabbsv79rv59dps"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/rocky/emacs-load-relative")
+    (synopsis "Emacs Lisp relative file loading related functions")
+    (description
+     "Provides functions which facilitate writing multi-file Emacs packages
+and running from the source tree without having to \"install\" code or fiddle
+with @{load-path}.
+
+The main function, @code{load-relative}, loads an Emacs Lisp file relative to
+another (presumably currently running) Emacs Lisp file.")
+    (license license:gpl3+)))
+
+(define-public emacs-loc-changes
+  (package
+    (name "emacs-loc-changes")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/loc-changes-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1x8fn8vqasayf1rb8a6nma9n6nbvkx60krmiahyb05vl5rrsw6r3"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rocky/emacs-loc-changes")
+    (synopsis "Keeps track of positions even after buffer changes")
+    (description
+     "This Emacs package provides a mean to track important buffer positions
+after buffer changes.")
+    (license license:gpl3+)))
+
+(define-public emacs-realgud
+  (package
+    (name "emacs-realgud")
+    (version "1.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/realgud-"
+                           version ".tar"))
+       (sha256
+        (base32
+         "1nc8km339ip90h1j55ahfga03v7x7rh4iycmw6yrxyzir68vwn7c"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-autogen-script
+           (lambda _
+             (substitute* "autogen.sh"
+               (("./configure") "sh configure"))))
+         (add-after 'fix-autogen-script 'autogen
+           (lambda _
+             (setenv "CONFIG_SHELL" "sh")
+             (invoke "sh" "autogen.sh")))
+         (add-after 'fix-autogen-script 'set-home
+           (lambda _
+             (setenv "HOME" (getenv "TMPDIR"))))
+         (add-before 'patch-el-files 'remove-realgud-pkg.el
+           (lambda _
+             ;; XXX: This file is auto-generated at some point and causes
+             ;; substitute* to crash during the `patch-el-files' phase with:
+             ;; ERROR: In procedure stat: No such file or directory:
+             ;; "./realgud-pkg.el"
+             (delete-file "./realgud-pkg.el")
+             ;; FIXME: `patch-el-files' crashes on this file with error:
+             ;; unable to locate "bashdb".
+             (delete-file "./test/test-regexp-bashdb.el"))))
+       #:include (cons* ".*\\.el$" %default-include)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("emacs-test-simple" ,emacs-test-simple)))
+    (propagated-inputs
+     `(("emacs-load-relative" ,emacs-load-relative)
+       ("emacs-loc-changes" ,emacs-loc-changes)))
+    (home-page "https://github.com/realgud/realgud/")
+    (synopsis
+     "Modular front-end for interacting with external debuggers")
+    (description
+     "RealGUD is a modular, extensible GNU Emacs front-end for interacting
+with external debuggers.  It integrates various debuggers such as gdb, pdb,
+ipdb, jdb, lldb, bashdb, zshdb, etc. and allows to visually step code in the
+sources.  Unlike GUD, it also supports running multiple debug sessions in
+parallel.")
+    (license license:gpl3+)))
+
 (define-public emacs-request
   (package
     (name "emacs-request")
@@ -4086,7 +4208,7 @@ for search-based navigation of buffers.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-make
-  (let ((commit "21c1bfa01b16b0d656f2b8a0dbb5bc8d47a7641b")
+  (let ((commit "feae8df22bc4b20705ea08ac9adfc2b43bb348d0")
         (revision "1"))
     (package
       (name "emacs-helm-make")
@@ -4100,7 +4222,7 @@ for search-based navigation of buffers.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "11vzrp63zdc67fg4d0y1alk8z9019sqslh2bd7ispk37s86dlbfw"))))
+           "1y2v77mmd1bfkkz51cnk1l0dg3lvvxc39wlamnm7wjns66dbvlam"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)

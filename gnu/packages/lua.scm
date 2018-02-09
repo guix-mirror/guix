@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -116,21 +117,30 @@ for configuration, scripting, and rapid prototyping.")
 (define-public luajit
   (package
     (name "luajit")
-    (version "2.1.0-beta2")
+    (version "2.1.0-beta3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://luajit.org/download/LuaJIT-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0iyghj1xjlmd9ywa4flf9yszynf3jhbp0yqb9b49k7ab0g528fbi"))
-              (patches (search-patches "luajit-symlinks.patch"
-                                       "luajit-no_ldconfig.patch"))))
+               (base32 "1hyrhpkwjqsv54hnnx4cl8vk44h9d6c9w0fz1jfjz00w255y7lhs"))
+              (patches (search-patches "luajit-no_ldconfig.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ;luajit is distributed without tests
-       #:phases (modify-phases %standard-phases (delete 'configure))
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
-    (home-page "http://www.luajit.org/")
+     `(#:tests? #f                      ; luajit is distributed without tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-after 'install 'create-luajit-symlink
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (with-directory-excursion bin
+                 (symlink ,(string-append name "-" version)
+                          ,name)
+                 #t)))))
+         #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (home-page "https://www.luajit.org/")
     (synopsis "Just in time compiler for Lua programming language version 5.1")
     (description
      "LuaJIT is a Just-In-Time Compiler (JIT) for the Lua
@@ -427,7 +437,7 @@ Grammars (PEGs).")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs `(("lua", lua)))
-    (home-page "http://bitop.luajit.org/index.html")
+    (home-page "https://bitop.luajit.org/index.html")
     (synopsis "Bitwise operations on numbers for Lua")
     (description
      "Lua BitOp is a C extension module for Lua which adds bitwise operations

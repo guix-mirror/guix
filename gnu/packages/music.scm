@@ -1050,7 +1050,7 @@ complete studio.")
          (add-after 'unpack 'fix-configuration
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "default.config"
-               (("/usr/bin/aplay" "aplay"))
+               (("/usr/bin/aplay") "aplay")
                (("/usr/bin/timidity") "timidity")
                (("/usr/bin/mpg123") "mpg123")
                (("/usr/bin/ogg123") "ogg123"))
@@ -2316,6 +2316,33 @@ analogue-like user interface.")
       (description "mod-host is an LV2 plugin host for JACK, controllable via
 socket or command line.")
       (license license:gpl3+))))
+
+(define-public curseradio
+  (let ((commit "1bd4bd0faeec675e0647bac9a100b526cba19f8d")
+        (revision "1"))
+    (package
+      (name "curseradio")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/chronitis/curseradio.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "11bf0jnj8h2fxhpdp498189r4s6b47vy4wripv0z4nx7lxajl88i"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-requests" ,python-requests)
+       ("python-pyxdg" ,python-pyxdg)
+       ("mpv" ,mpv)))
+    (home-page "https://github.com/chronitis/curseradio")
+    (synopsis "Command-line Internet radio player")
+    (description "Curseradio is a Curses-based radio player that uses a
+tune-in sender list from @url{http://opml.radiotime.com}.")
+    (license license:expat))))
 
 (define-public pianobar
   (package

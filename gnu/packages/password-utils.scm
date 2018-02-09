@@ -68,14 +68,14 @@
 (define-public pwgen
   (package
     (name "pwgen")
-    (version "2.07")
+    (version "2.08")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/pwgen/pwgen/" version
                            "/pwgen-" version ".tar.gz"))
        (sha256
-        (base32 "0mhmw700kkh238fzivcwnwi94bj9f3h36yfh3k3j2v19b0zmjx7b"))))
+        (base32 "0yy90pqrr2pszzhb5hxjishq9qc7dqd290amiibqx9fm1b9kvc6s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no test suite
