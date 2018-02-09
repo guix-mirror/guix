@@ -9724,7 +9724,20 @@ man page for more information.
 
 @item @code{tty}
 The name of the console this agetty runs on, as a string---e.g.,
-@code{"ttyS0"}. This argument is mandatory.
+@code{"ttyS0"}. This argument is optional, it will default to
+a reasonable default serial port used by the kernel Linux.
+
+For this, if there is a value for an option @code{agetty.tty} in the kernel
+command line, agetty will extract the device name of the serial port
+from it and use that.
+
+If not and if there is a value for an option @code{console} with a tty in
+the Linux command line, agetty will extract the device name of the
+serial port from it and use that.
+
+In both cases, agetty will leave the other serial device settings
+(baud rate etc.) alone---in the hope that Linux pinned them to the
+correct values.
 
 @item @code{baud-rate} (default: @code{#f})
 A string containing a comma-separated list of one or more baud rates, in

@@ -817,7 +817,7 @@ the message of the day, among other things."
   agetty-configuration?
   (agetty           agetty-configuration-agetty   ;<package>
                     (default util-linux))
-  (tty              agetty-configuration-tty)     ;string
+  (tty              agetty-configuration-tty)     ;string | #f
   (term             agetty-term                   ;string | #f
                     (default #f))
   (baud-rate        agetty-baud-rate              ;string | #f
@@ -890,6 +890,40 @@ the message of the day, among other things."
 ;;;                 (default #f))
   )
 
+(define (default-serial-port)
+  "Return a gexp that determines a reasonable default serial port
+to use as the tty.  This is primarily useful for headless systems."
+  #~(begin
+      ;; console=device,options
+      ;; device: can be tty0, ttyS0, lp0, ttyUSB0 (serial).
+      ;; options: BBBBPNF. P n|o|e, N number of bits,
+      ;; F flow control (r RTS)
+      (let* ((not-comma (char-set-complement (char-set #\,)))
+             (command (linux-command-line))
+             (agetty-specs (find-long-options "agetty.tty" command))
+             (console-specs (filter (lambda (spec)
+                                     (and (string-prefix? "tty" spec)
+                                          (not (or
+                                                (string-prefix? "tty0" spec)
+                                                (string-prefix? "tty1" spec)
+                                                (string-prefix? "tty2" spec)
+                                                (string-prefix? "tty3" spec)
+                                                (string-prefix? "tty4" spec)
+                                                (string-prefix? "tty5" spec)
+                                                (string-prefix? "tty6" spec)
+                                                (string-prefix? "tty7" spec)
+                                                (string-prefix? "tty8" spec)
+                                                (string-prefix? "tty9" spec)))))
+                                    (find-long-options "console" command)))
+             (specs (append agetty-specs console-specs)))
+        (match specs
+         (() #f)
+         ((spec _ ...)
+          ;; Extract device name from first spec.
+          (match (string-tokenize spec not-comma)
+           ((device-name _ ...)
+            device-name)))))))
+
 (define agetty-shepherd-service
   (match-lambda
     (($ <agetty-configuration> agetty tty term baud-rate auto-login
@@ -900,8 +934,9 @@ the message of the day, among other things."
         erase-characters kill-characters chdir delay nice extra-options)
      (list
        (shepherd-service
+         (modules '((ice-9 match) (gnu build linux-boot)))
          (documentation "Run agetty on a tty.")
-         (provision (list (symbol-append 'term- (string->symbol tty))))
+         (provision (list (symbol-append 'term- (string->symbol (or tty "auto")))))
 
          ;; Since the login prompt shows the host name, wait for the 'host-name'
          ;; service to be done.  Also wait for udev essentially so that the tty
@@ -946,6 +981,9 @@ the message of the day, among other things."
                                         ('always "--local-line=always")
                                         ('never "-local-line=never")))
                                  #~())
+                          #$@(if tty
+                                 #~()
+                                 #~("--keep-baud"))
                           #$@(if extract-baud?
                                  #~("--extract-baud")
                                  #~())
@@ -1009,7 +1047,7 @@ the message of the day, among other things."
                           #$@(if login-pause?
                                  #~("--login-pause")
                                  #~())
-                          #$tty
+                          #$(or tty (default-serial-port))
                           #$@(if baud-rate
                                  #~(#$baud-rate)
                                  #~())
@@ -1058,18 +1096,21 @@ the tty to run, among other things."
        ;; text is not lost in the middle of kernel messages (XXX).
        (requirement '(user-processes host-name udev))
 
-       (start  #~(make-forkexec-constructor
-                  (list #$(file-append mingetty "/sbin/mingetty")
-                        "--noclear" #$tty
-                        #$@(if auto-login
-                               #~("--autologin" #$auto-login)
-                               #~())
-                        #$@(if login-program
-                               #~("--loginprog" #$login-program)
-                               #~())
-                        #$@(if login-pause?
-                               #~("--loginpause")
-                               #~()))))
+       (start  #~(let ((tty #$(default-serial-port)))
+                   (if tty
+                       (make-forkexec-constructor
+                        (list #$(file-append mingetty "/sbin/mingetty")
+                              "--noclear" #$tty
+                              #$@(if auto-login
+                                     #~("--autologin" #$auto-login)
+                                     #~())
+                              #$@(if login-program
+                                     #~("--loginprog" #$login-program)
+                                     #~())
+                              #$@(if login-pause?
+                                     #~("--loginpause")
+                                     #~())))
+                       (const #f)))) ; never start.
        (stop   #~(make-kill-destructor)))))))
 
 (define mingetty-service-type
@@ -2011,6 +2052,11 @@ This service is not part of @var{%base-services}."
                  (map (lambda (tty)
                         (cons tty %default-console-font))
                       '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
+
+        (agetty-service (agetty-configuration
+                         (extra-options '("-L")) ; no carrier detect
+                         (term "vt100")
+                         (tty #f))) ; automatic
 
         (mingetty-service (mingetty-configuration
                            (tty "tty1")))
