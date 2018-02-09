@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -292,6 +293,9 @@ the image."
          (option '(#\e "expression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'expression arg result)))
+         (option '(#\m "manifest") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'manifest arg result)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -345,6 +349,9 @@ Create a bundle of PACKAGE.\n"))
   (display (G_ "
   -S, --symlink=SPEC     create symlinks to the profile according to SPEC"))
   (display (G_ "
+  -m, --manifest=FILE    create a new profile generation with the manifest
+                         from FILE"))
+  (display (G_ "
       --localstatedir    include /var/guix in the resulting pack"))
   (newline)
   (display (G_ "
@@ -375,10 +382,21 @@ Create a bundle of PACKAGE.\n"))
        (read/eval-package-expression exp))
       (x #f)))
 
+  (define (manifest-from-args opts)
+    (let ((packages      (filter-map maybe-package-argument opts))
+          (manifest-file (assoc-ref opts 'manifest)))
+      (cond
+       ((and manifest-file (not (null? packages)))
+        (leave (G_ "both a manifest and a package list were given~%")))
+       (manifest-file
+        (let ((user-module (make-user-module '((guix profiles) (gnu)))))
+          (load* manifest-file user-module)))
+       (else (packages->manifest packages)))))
+
   (with-error-handling
     (parameterize ((%graft? (assoc-ref opts 'graft?)))
       (let* ((dry-run?    (assoc-ref opts 'dry-run?))
-             (packages    (filter-map maybe-package-argument opts))
+             (manifest    (manifest-from-args opts))
              (pack-format (assoc-ref opts 'format))
              (name        (string-append (symbol->string pack-format)
                                          "-pack"))
@@ -397,7 +415,7 @@ Create a bundle of PACKAGE.\n"))
 
           (run-with-store store
             (mlet* %store-monad ((profile (profile-derivation
-                                           (packages->manifest packages)
+                                           manifest
                                            #:target target))
                                  (drv (build-image name profile
                                                    #:target

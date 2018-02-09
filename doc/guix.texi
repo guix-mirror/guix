@@ -2841,6 +2841,19 @@ This has the same purpose as the same-named option in @command{guix
 build} (@pxref{Additional Build Options, @code{--expression} in
 @command{guix build}}).
 
+@item --manifest=@var{file}
+@itemx -m @var{file}
+Use the packages contained in the manifest object returned by the Scheme
+code in @var{file}.
+
+This has a similar purpose as the same-named option in @command{guix
+package} (@pxref{profile-manifest, @option{--manifest}}) and uses the
+same manifest files.  It allows you to define a collection of packages
+once and use it both for creating profiles and for creating archives
+for use on machines that do not have Guix installed.  Note that you can
+specify @emph{either} a manifest file @emph{or} a list of packages,
+but not both.
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
