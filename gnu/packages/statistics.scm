@@ -5564,6 +5564,38 @@ inferring an appropriate positioning method.")
 shaped points?  Now you can!")
       (license license:asl2.0))))
 
+(define-public r-colorout
+  (package
+    (name "r-colorout")
+    (version "1.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jalvesaq/colorout/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07vqx5ihgnq4dzn5jnfjfhdm3957v4prvf8vhnb3cwvlly4l7p9v"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/jalvesaq/colorout")
+    (synopsis "Colorize output in the R REPL")
+    (description "@code{colorout} is an R package that colorizes R output when
+running in terminal emulator.
+
+R STDOUT is parsed and numbers, negative numbers, dates in the standard
+format, strings, and R constants are identified and wrapped by special ANSI
+scape codes that are interpreted by terminal emulators as commands to colorize
+the output.  R STDERR is also parsed to identify the expressions warning and
+error and their translations to many languages.  If these expressions are
+found, the output is colorized accordingly; otherwise, it is colorized as
+STDERROR (blue, by default).
+
+You can customize the colors according to your taste, guided by the color
+table made by the command @code{show256Colors()}.  You can also set the colors
+to any arbitrary string.  In this case, it is up to you to set valid values.")
+    (license license:gpl3+)))
+
 (define-public java-jdistlib
   (package
     (name "java-jdistlib")
