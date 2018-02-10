@@ -2674,6 +2674,42 @@ archives (jar).")
     (description "This package is a Maven plugin to generate Plexus descriptors
 from source tags and class annotations.")))
 
+(define-public java-plexus-cipher
+  (package
+    (name "java-plexus-cipher")
+    (version "1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/plexus-cipher"
+                                  "/archive/plexus-cipher-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1j3r8xzlxlk340snkjp6lk2ilkxlkn8qavsfiq01f43xmvv8ymk3"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-cipher.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; FIXME: requires sisu-inject-bean
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             (mkdir-p "build/classes/META-INF/sisu")
+             (with-output-to-file "build/classes/META-INF/sisu/javax.inject.Named"
+               (lambda _
+                 (display "org.sonatype.plexus.components.cipher.DefaultPlexusCipher\n")))
+             #t)))))
+    (inputs
+     `(("java-cdi-api" ,java-cdi-api)
+       ("java-javax-inject" ,java-javax-inject)))
+    (home-page "https://github.com/sonatype/plexus-cipher")
+    (synopsis "Encryption/decryption Component")
+    (description "Plexus-cipher contains a component to deal with encryption
+and decryption.")
+    (license license:asl2.0)))
+
 (define-public java-asm
   (package
     (name "java-asm")
