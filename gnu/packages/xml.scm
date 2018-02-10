@@ -1660,3 +1660,28 @@ with XPath too.")
 that strives for correctness and simplicity.")
     ;; 2.1 only
     (license license:lgpl2.1)))
+
+(define-public java-xsdlib
+  (package
+    (name "java-xsdlib")
+    (version "2013.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/com/sun/msv/"
+                                  "datatype/xsd/xsdlib/" version "/xsdlib-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "185i48p1xp09wbq03i9zgfl701qa262rq46yf4cajzmk3336kqim"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:jar-name "xsdlib.jar"
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("java-xerces" ,java-xerces)))
+    (home-page "http://central.maven.org/maven2/com/sun/msv/datatype/xsd/xsdlib/")
+    (synopsis "Sun Multi-Schema Validator")
+    (description "Xsdlib contains an implementation of sun.com.msv, an XML
+validator.")
+    (license license:bsd-2)))
