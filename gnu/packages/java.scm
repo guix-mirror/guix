@@ -2901,6 +2901,38 @@ XSD and documentation.")
     (synopsis "Modello Java Plugin")
     (description "Modello Java Plugin generates Java objects for the model.")))
 
+(define-public java-modello-plugins-xml
+  (package
+    (inherit java-modello-core)
+    (name "java-modello-plugins-xml")
+    (arguments
+     `(#:jar-name "modello-plugins-xml.jar"
+       #:source-dir "modello-plugins/modello-plugin-xml/src/main/java"
+       #:test-dir "modello-plugins/modello-plugin-xml/src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes")
+             (copy-recursively
+               "modello-plugins/modello-plugin-xml/src/main/resources"
+               "build/classes")
+             #t))
+         (add-before 'check 'fix-paths
+           (lambda _
+             (with-directory-excursion "modello-plugins/modello-plugin-xml/src/test"
+               (substitute*
+                 "java/org/codehaus/modello/plugins/xml/XmlModelloPluginTest.java"
+                 (("src/test") "modello-plugins/modello-plugin-xml/src/test"))))))))
+    (inputs
+     `(("java-modello-core" ,java-modello-core)
+       ("java-modello-plugins-java" ,java-modello-plugins-java)
+       ,@(package-inputs java-modello-core)))
+    (synopsis "Modello XML Plugin")
+    (description "Modello XML Plugin contains shared code for every plugins
+working on XML representation of the model.")))
+
 (define-public java-asm
   (package
     (name "java-asm")
