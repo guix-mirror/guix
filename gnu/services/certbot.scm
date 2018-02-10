@@ -57,41 +57,40 @@
                           (body
                            (list "return 301 https://$host$request_uri;"))))))
 
-(define certbot-renewal-jobs
+(define certbot-command
   (match-lambda
     (($ <certbot-configuration> package webroot domains default-location)
-     (match domains
-       ;; Avoid pinging certbot if we have no domains.
-       (() '())
-       (_
-        (list
-         ;; Attempt to renew the certificates twice per day, at a random
-         ;; minute within the hour.  See
-         ;; https://certbot.eff.org/all-instructions/.
-         #~(job '(next-minute-from (next-hour '(0 12)) (list (random 60)))
-                (string-append #$package "/bin/certbot renew"
-                               (string-concatenate
-                                (map (lambda (domain)
-                                       (string-append " -d " domain))
-                                     '#$domains))))))))))
+     (let* ((certbot (file-append package "/bin/certbot"))
+            (commands
+             (map
+              (lambda (domain)
+                (list certbot "certonly"
+                      "--webroot" "-w" webroot
+                      "-d" domain))
+              domains)))
+       (program-file
+        "certbot-command"
+        #~(let ((code 0))
+            (for-each
+             (lambda (command)
+               (set! code (or (apply system* command) code)))
+             '#$commands) code))))))
 
-(define certbot-activation
-  (match-lambda
+(define (certbot-renewal-jobs config)
+  (list
+   ;; Attempt to renew the certificates twice per day, at a random minute
+   ;; within the hour.  See https://certbot.eff.org/all-instructions/.
+   #~(job '(next-minute-from (next-hour '(0 12)) (list (random 60)))
+          #$(certbot-command config))))
+
+(define (certbot-activation config)
+  (match config
     (($ <certbot-configuration> package webroot domains default-location)
      (with-imported-modules '((guix build utils))
        #~(begin
            (use-modules (guix build utils))
            (mkdir-p #$webroot)
-           (for-each
-            (lambda (domain)
-              (unless (file-exists?
-                       (in-vicinity "/etc/letsencrypt/live" domain))
-                (unless (zero? (system*
-                                (string-append #$certbot "/bin/certbot")
-                                "certonly" "--webroot" "-w" #$webroot
-                                "-d" domain))
-                  (error "failed to acquire cert for domain" domain))))
-            '#$domains))))))
+           (zero? (system* #$(certbot-command config))))))))
 
 (define certbot-nginx-server-configurations
   (match-lambda
