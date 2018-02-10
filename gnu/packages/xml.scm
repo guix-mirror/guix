@@ -1619,6 +1619,15 @@ Java byte code or Java beans as XML, thus enabling you to query these trees
 with XPath too.")
     (license license:bsd-3)))
 
+(define-public java-jaxen
+  (package
+    (inherit java-jaxen-bootstrap)
+    (name "java-jaxen")
+    (inputs
+     `(("java-jdom" ,java-jdom)
+       ("java-xom" ,java-xom)
+       ("java-dom4j" ,java-dom4j)))))
+
 (define-public java-xom
   (package
     (name "java-xom")
