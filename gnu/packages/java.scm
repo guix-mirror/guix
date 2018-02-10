@@ -8025,3 +8025,29 @@ language inspired by ECMAScript and XPath.  This language is used with
 JavaServer Pages (JSP).")
     ;; Either GPL2 only or CDDL.
     (license (list license:gpl2 license:cddl1.1))))
+
+(define-public java-jboss-interceptors-api-spec
+  (package
+    (name "java-jboss-interceptors-api-spec")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jboss/jboss-interceptors-api_spec/"
+                                  "archive/jboss-interceptors-api_" version
+                                  "_spec-1.0.0.Final.tar.gz"))
+              (sha256
+               (base32
+                "0wv8x0jp9a5qxlrgkhb5jdk2gr6vi87b4j4kjb8ryxiy9gn8g51z"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jboss-interceptors-api_spec.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "."
+       #:tests? #f)); no tests
+    (home-page "https://github.com/jboss/jboss-interceptors-api_spec")
+    (synopsis "Interceptors 1.2 API classes from JSR 318")
+    (description "Java-jboss-interceptors-api-spec implements the Interceptors
+API.  Interceptors are used to interpose on business method invocations and
+specific events.")
+    ;; Either GPL2 only or CDDL.
+    (license (list license:gpl2 license:cddl1.1))))
