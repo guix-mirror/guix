@@ -1899,3 +1899,33 @@ with the Mobile Information Device Profile (MIDP).")
 @dfn{Streaming API for XML} (StAX).  It is used for streaming XML data to
 and from a Java application.  It provides a standard pull parser interface.")
     (license license:asl2.0)))
+
+(define-public java-jettison
+  (package
+    (name "java-jettison")
+    (version "1.3.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus/jettison/archive/"
+                                  "jettison-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0rdhfyxywvga5wiwasc04iqnxyixn3rd8wj01c9ymhvwc3h6dpqg"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jettison.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude (list "**/Abstract*.java"
+                            ;; Abstract classes
+                            "**/DOMTest.java"
+                            "**/BadgerFishDOMTest.java"
+                            "**/MappedDOMTest.java")))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/codehaus/jettison")
+    (synopsis "StAX implementation for JSON")
+    (description "Jettison is a Java library for converting XML to JSON and
+vice-versa with the help of the @dfn{Streaming API for XML} (StAX).  It
+implements @code{XMLStreamWriter} and @code{XMLStreamReader} and supports
+@code{Mapped} and @code{BadgerFish} conventions.")
+    (license license:asl2.0)))
