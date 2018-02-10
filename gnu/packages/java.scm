@@ -2759,6 +2759,61 @@ compilers.")
     (description "This package contains the Javac Compiler support for Plexus
 Compiler component.")))
 
+(define-public java-sisu-build-api
+  (package
+    (name "java-sisu-build-api")
+    (version "0.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/sonatype/sisu-build-api/"
+                                  "archive/plexus-build-api-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1c3rrpma3x634xp2rm2p5iskfhzdyc7qfbhjzr70agrl1jwghgy2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "sisu-build-api.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; FIXME: how to run the tests?
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             (substitute* (find-files "build/classes")
+               (("\\$\\{project.version\\}") ,version))
+             #t))
+         (add-before 'build 'generate-plexus-compontent
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             ;; This file is required for plexus to inject this package.
+             ;; FIXME: how is it generated?
+             (with-output-to-file "build/classes/META-INF/plexus/components.xml"
+               (lambda _
+                 (display
+                   "<component-set>\n
+  <components>\n
+    <component>\n
+      <role>org.sonatype.plexus.build.incremental.BuildContext</role>\n
+      <role-hint>default</role-hint>\n
+      <implementation>org.sonatype.plexus.build.incremental.DefaultBuildContext</implementation>\n
+      <description>Filesystem based non-incremental build context implementation\n
+which behaves as if all files were just created.</description>\n
+    </component>\n
+  </components>\n
+</component-set>\n")))
+             #t)))))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-container-default" ,java-plexus-container-default)))
+    (home-page "https://github.com/sonatype/sisu-build-api/")
+    (synopsis "Base build API for maven")
+    (description "This package contains the base build API for maven and
+a default implementation of it.  This API is about scanning files in a
+project and determining what files need to be rebuilt.")
+    (license license:asl2.0)))
+
 (define-public java-asm
   (package
     (name "java-asm")
