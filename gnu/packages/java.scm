@@ -2877,6 +2877,30 @@ XSD and documentation.")
                                 "src/main/java/org/codehaus/modello/plugin/"
                                 "java/javasource/JNaming.java"))))))
 
+(define-public java-modello-plugins-java
+  (package
+    (inherit java-modello-core)
+    (name "java-modello-plugins-java")
+    (arguments
+     `(#:jar-name "modello-plugins-java.jar"
+       #:source-dir "modello-plugins/modello-plugin-java/src/main/java"
+       #:test-dir "modello-plugins/modello-plugin-java/src/test"
+       #:jdk ,icedtea-8
+       #:tests? #f; requires maven-model, which depends on this package
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes")
+             (copy-recursively "modello-plugins/modello-plugin-java/src/main/resources"
+                               "build/classes")
+             #t)))))
+    (inputs
+     `(("java-modello-core" ,java-modello-core)
+       ,@(package-inputs java-modello-core)))
+    (synopsis "Modello Java Plugin")
+    (description "Modello Java Plugin generates Java objects for the model.")))
+
 (define-public java-asm
   (package
     (name "java-asm")
