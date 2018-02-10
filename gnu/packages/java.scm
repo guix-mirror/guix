@@ -2933,6 +2933,25 @@ XSD and documentation.")
     (description "Modello XML Plugin contains shared code for every plugins
 working on XML representation of the model.")))
 
+(define-public java-modello-test
+  (package
+    (inherit java-modello-core)
+    (name "java-modello-test")
+    (arguments
+     `(#:jar-name "modello-test.jar"
+       #:source-dir "modello-test/src/main/java"
+       #:tests? #f; no tests
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-compiler-api" ,java-plexus-compiler-api)
+       ("java-plexus-compiler-javac" ,java-plexus-compiler-javac)
+       ("java-plexus-container-default" ,java-plexus-container-default)))
+    (synopsis "Modello test package")
+    (description "The modello test package contains the basis to create
+Modello generator unit-tests, including sample models and xml files to test
+every feature for every plugin.")))
+
 (define-public java-asm
   (package
     (name "java-asm")
