@@ -8255,3 +8255,34 @@ specification.  It also handles namespaces according to the XML Namespaces 1.1
 Candidate Recommendation, and will correctly serialize XML 1.1 documents if
 the DOM level 3 load/save API's are in use.")
     (license license:asl2.0)))
+
+(define-public java-jline
+  (package
+    (name "java-jline")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jline/jline1/archive/jline-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0bi3p6vrh7a6v0fbpb6rx9plpmx5zk3lr352xzdbz2jcxg499wir"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jline.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://jline.github.io")
+    (synopsis "Console input handling library")
+    (description "JLine is a Java library for handling console input.  It is
+similar in functionality to BSD editline and GNU readline but with additional
+features that bring it on par with the Z shell line editor.")
+    (license license:bsd-3)))
