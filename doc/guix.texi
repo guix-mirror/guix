@@ -15785,6 +15785,9 @@ and several @code{domains}.
 Mandatory email used for registration, recovery contact, and important
 account notifications.
 
+@item @code{rsa-key-size} (default: @code{2048})
+Size of the RSA key.
+
 @item @code{default-location} (default: @i{see below})
 The default @code{nginx-location-configuration}.  Because @code{certbot}
 needs to be able to serve challenges and responses, it needs to be able

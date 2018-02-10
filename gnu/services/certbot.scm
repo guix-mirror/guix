@@ -60,6 +60,8 @@
   (certificates        certbot-configuration-certificates
                        (default '()))
   (email               certbot-configuration-email)
+  (rsa-key-size        certbot-configuration-rsa-key-size
+                       (default #f))
   (default-location    certbot-configuration-default-location
                        (default
                          (nginx-location-configuration
@@ -70,17 +72,20 @@
 (define certbot-command
   (match-lambda
     (($ <certbot-configuration> package webroot certificates email
-                                default-location)
+                                rsa-key-size default-location)
      (let* ((certbot (file-append package "/bin/certbot"))
+            (rsa-key-size (and rsa-key-size (number->string rsa-key-size)))
             (commands
              (map
               (match-lambda
                 (($ <certificate-configuration> name domains)
-                 (list certbot "certonly" "-n" "--agree-tos"
-                       "-m" email
-                       "--webroot" "-w" webroot
-                       "--cert-name" (or name (car domains))
-                       "-d" (string-join domains ","))))
+                 (append
+                  (list certbot "certonly" "-n" "--agree-tos"
+                        "-m" email
+                        "--webroot" "-w" webroot
+                        "--cert-name" (or name (car domains))
+                        "-d" (string-join domains ","))
+                  (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '()))))
               certificates)))
        (program-file
         "certbot-command"
@@ -100,7 +105,7 @@
 (define (certbot-activation config)
   (match config
     (($ <certbot-configuration> package webroot certificates email
-                                default-location)
+                                rsa-key-size default-location)
      (with-imported-modules '((guix build utils))
        #~(begin
            (use-modules (guix build utils))
@@ -110,7 +115,7 @@
 (define certbot-nginx-server-configurations
   (match-lambda
     (($ <certbot-configuration> package webroot certificates email
-                                default-location)
+                                rsa-key-size default-location)
      (list
       (nginx-server-configuration
        (listen '("80" "[::]:80"))
