@@ -1581,3 +1581,40 @@ in a number of formats:
       Technical Committee.
 @end itemize")
     (license license:asl2.0)))
+
+;; Jaxen requires java-dom4j and java-xom that in turn require jaxen.
+;; This package is a bootstrap version without dependencies on dom4j and xom.
+(define java-jaxen-bootstrap
+  (package
+    (name "java-jaxen-bootstrap")
+    (version "1.1.6")
+    (source (origin
+              (method url-fetch)
+              ;; No release on github
+              (uri (string-append "https://repo1.maven.org/maven2/jaxen/jaxen/"
+                                  version "/jaxen-" version "-sources.jar"))
+              (sha256
+               (base32
+                "18pa8mks3gfhazmkyil8wsp6j1g1x7rggqxfv4k2mnixkrj5x1kx"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jaxen.jar"
+       #:source-dir "src"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-dom4j
+           (lambda _
+             (delete-file-recursively "src/org/jaxen/dom4j")
+             (delete-file-recursively "src/org/jaxen/xom")
+             #t)))))
+    (inputs
+     `(("java-jdom" ,java-jdom)))
+    (home-page "https://github.com/jaxen-xpath/jaxen")
+    (synopsis "XPath library")
+    (description "Jaxen is an XPath library written in Java.  It is adaptable
+to many different object models, including DOM, XOM, dom4j, and JDOM.  It is
+also possible to write adapters that treat non-XML trees such as compiled
+Java byte code or Java beans as XML, thus enabling you to query these trees
+with XPath too.")
+    (license license:bsd-3)))
