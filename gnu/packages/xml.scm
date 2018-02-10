@@ -1750,3 +1750,75 @@ parser and should be used when there is a need to process quickly and
 efficiently all input elements (for example in SOAP processors).  This
 package is in maintenance mode.")
     (license (license:non-copyleft "file:///LICENSE.txt"))))
+
+(define-public java-dom4j
+  (package
+    (name "java-dom4j")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dom4j/dom4j/archive/"
+                                  "version-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "101drpnw6agmcvsi1jrfi0kn97r7liazrh5jbrip9vx26axn2fx9"))
+              (modules '((guix build utils)))
+              (snippet
+                '(begin ;; Delete bundled jar archives.
+                   (for-each delete-file (find-files "." ".*\\.jar"))
+                   #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "dom4j.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "src/main/java"
+       ;; FIXME: Requires xalan, but xalan depends on java-cup which has a
+       ;; dependency on itself through jflex.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-jaxen-sources
+           ;; java-jaxen-bootstrap is not enough. These files have a circular
+           ;; dependency and there is no subset of dom4j that would allow
+           ;; breaking the circle.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "jaxen-sources")
+             (with-directory-excursion "jaxen-sources"
+               (system* "jar" "xf" (assoc-ref inputs "java-jaxen-sources")))
+             (mkdir-p "src/main/java/org/jaxen/dom4j")
+             (copy-file "jaxen-sources/org/jaxen/dom4j/DocumentNavigator.java"
+                        "src/main/java/org/jaxen/dom4j/DocumentNavigator.java")
+             (copy-file "jaxen-sources/org/jaxen/dom4j/Dom4jXPath.java"
+                        "src/main/java/org/jaxen/dom4j/Dom4jXPath.java")
+             #t))
+         (add-before 'build 'fix-old-xpp2
+           (lambda _
+             ;; This package normally depends on xpp2 2.0, but version 2.1.10
+             ;; is the only version whose source code is published.
+             (substitute* "src/main/java/org/dom4j/xpp/ProxyXmlStartTag.java"
+               (("public void resetStartTag")
+                "public boolean removeAttributeByRawName(String name) {\n
+  return false;\n
+}\n
+public boolean removeAttributeByName(String name, String name2) {\n
+  return false;\n
+}\n\npublic void resetStartTag")
+               (("Atttribute") "Attribute"))
+             #t)))))
+    (inputs
+     `(("java-jaxen-bootstrap" ,java-jaxen-bootstrap)
+       ("java-jaxen-sources" ,(package-source java-jaxen-bootstrap))
+       ("java-xmlpull2" ,java-xmlpull2)
+       ("java-xpp3" ,java-xpp3)
+       ("java-xsdlib" ,java-xsdlib)))
+    (native-inputs
+     `(("java-testng" ,java-testng)
+       ("java-xerces" ,java-xerces)))
+    (home-page "https://dom4j.github.io/")
+    (synopsis "Flexible XML framework for Java")
+    (description "Dom4j is a flexible XML framework for Java.  DOM4J works
+with DOM, SAX, XPath, and XSLT.  It can parse large XML documents with very
+low memory footprint.")
+    ;; some BSD-like 5-clause license
+    (license (license:non-copyleft "file://LICENSE"))))
