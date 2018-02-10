@@ -2759,6 +2759,94 @@ compilers.")
     (description "This package contains the Javac Compiler support for Plexus
 Compiler component.")))
 
+(define-public java-plexus-sec-dispatcher
+  (package
+    (name "java-plexus-sec-dispatcher")
+    (version "1.4") ;; Newest release listed at the Maven Central Repository.
+    (source (origin
+              ;; This project doesn't tag releases or publish tarballs, so we take
+              ;; the "prepare release plexus-sec-dispatcher-1.4" git commit.
+              (method url-fetch)
+              (uri (string-append "https://github.com/sonatype/plexus-sec-dispatcher/"
+                                  "archive/7db8f88048.tar.gz"))
+              (sha256
+               (base32
+                "1smfrk4n7xbrsxpxcp2j4i0j8q86j73w0w6xg7qz83dp6dagdjgp"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (arguments
+     `(#:jar-name "plexus-sec-dispatcher.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-models
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (modello-single-mode file version mode)
+               (zero? (system* "java"
+                               "org.codehaus.modello.ModelloCli"
+                               file mode "src/main/java" version
+                               "false" "true")))
+             (let ((file "src/main/mdo/settings-security.mdo"))
+               (and
+               (modello-single-mode file "1.0.0" "java")
+               (modello-single-mode file "1.0.0" "xpp3-reader")
+               (modello-single-mode file "1.0.0" "xpp3-writer")))))
+         (add-before 'build 'generate-components.xml
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             (with-output-to-file "build/classes/META-INF/plexus/components.xml"
+               (lambda _
+                 (display
+                   "<component-set>\n
+  <components>\n
+    <component>\n
+      <role>org.sonatype.plexus.components.sec.dispatcher.SecDispatcher</role>\n
+      <role-hint>default</role-hint>\n
+      <implementation>org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher</implementation>\n
+      <description></description>\n
+      <requirements>\n
+        <requirement>\n
+          <role>org.sonatype.plexus.components.cipher.PlexusCipher</role>\n
+          <field-name>_cipher</field-name>\n
+        </requirement>\n
+        <requirement>\n
+          <role>org.sonatype.plexus.components.sec.dispatcher.PasswordDecryptor</role>\n
+          <field-name>_decryptors</field-name>\n
+        </requirement>\n
+      </requirements>\n
+      <configuration>\n
+        <_configuration-file>~/.settings-security.xml</_configuration-file>\n
+      </configuration>\n
+    </component>\n
+  </components>\n
+</component-set>\n")))))
+         (add-before 'check 'fix-paths
+           (lambda _
+             (copy-recursively "src/test/resources" "target"))))))
+    (inputs
+     `(("java-plexus-cipher" ,java-plexus-cipher)))
+    (native-inputs
+     `(("java-modello-core" ,java-modello-core)
+       ;; for modello:
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-guava" ,java-guava)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ("java-sisu-build-api" ,java-sisu-build-api)
+       ;; modello plugins:
+       ("java-modellop-plugins-java" ,java-modello-plugins-java)
+       ("java-modellop-plugins-xml" ,java-modello-plugins-xml)
+       ("java-modellop-plugins-xpp3" ,java-modello-plugins-xpp3)
+       ;; for tests
+       ("java-junit" ,java-junit)))
+    (build-system ant-build-system)
+    (home-page "https://github.com/sonatype/plexus-sec-dispatcher")
+    (synopsis "Plexus Security Dispatcher Component")
+    (description "This package is the Plexus Security Dispatcher Component.
+This component decrypts a string passed to it.")
+    (license license:asl2.0)))
+
 (define-public java-sisu-build-api
   (package
     (name "java-sisu-build-api")
