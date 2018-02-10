@@ -40,6 +40,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
@@ -1505,3 +1506,39 @@ What it doesn't offer: full SAX support (it can export SAX, but only reads
 XML), full XPath support (unless you use @code{XML::Twig::XPath}), nor DOM
 support.")
     (license license:perl-license)))
+
+;; TODO: Debian builds several jars out of this: jaxp-1.4.jar,
+;; xml-apis.jar and xml-apis-1.4.01.jar.
+(define-public java-jaxp
+  (package
+    (name "java-jaxp")
+    (version "1.4.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/xerces/xml-commons/source/"
+                           "xml-commons-external-" version "-src.tar.gz"))
+       (sha256
+        (base32 "0rhq32a7dl9yik7zx9h0naz2iz068qgcdiayak91wp4wr26xhjyk"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jaxp.jar"
+       #:jdk ,icedtea-8
+       #:source-dir ".."
+       #:tests? #f)); no tests
+    (home-page "http://xerces.apache.org/xml-commons/")
+    (synopsis "Java XML parser and transformer APIs (DOM, SAX, JAXP, TrAX)")
+    (description "Jaxp from the Apache XML Commons project is used by
+the Xerces-J XML parser and Xalan-J XSLT processor and specifies these APIs:
+
+@itemize
+@item Document Object Model (DOM)
+@item Simple API for XML (SAX)
+@item Java APIs for XML Processing (JAXP)
+@item Transformation API for XML (TrAX)
+@item Document Object Model (DOM) Load and Save
+@item JSR 206 Java API for XML Processing
+@end itemize")
+    (license (list license:asl2.0
+                   license:w3c ;; Files under org.w3c
+                   license:public-domain)))) ;; org.xml.sax
