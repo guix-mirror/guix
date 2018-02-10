@@ -15746,7 +15746,22 @@ can be found there:
 @url{https://acme-v01.api.letsencrypt.org/directory}.
 
 @defvr {Scheme Variable} certbot-service-type
-A service type for the @code{certbot} Let's Encrypt client.
+A service type for the @code{certbot} Let's Encrypt client.  Its value
+must be a @code{certbot-configuration} record as in this example:
+
+@example
+(service certbot-service-type
+         (certbot-configuration
+          (email "foo@@example.net")
+          (certificates
+           (list
+            (certificate-configuration
+             (domains '("example.net" "www.example.net")))
+            (certificate-configuration
+             (domains '("bar.example.net")))))))
+@end example
+
+See below for details about @code{certbot-configuration}.
 @end defvr
 
 @deftp {Data Type} certbot-configuration
@@ -15761,9 +15776,10 @@ The certbot package to use.
 The directory from which to serve the Let's Encrypt challenge/response
 files.
 
-@item @code{domains} (default: @code{()})
-A list of domains for which to generate certificates and request
-signatures.
+@item @code{certificates} (default: @code{()})
+A list of @code{certificates-configuration}s for which to generate
+certificates and request signatures.  Each certificate has a @code{name}
+and several @code{domains}.
 
 @item @code{email}
 Mandatory email used for registration, recovery contact, and important
@@ -15791,12 +15807,28 @@ Pass @code{#f} to not issue a default location.
 @end table
 @end deftp
 
-The public key and its signatures will be written to
-@code{/etc/letsencrypt/live/@var{domain}/fullchain.pem}, for each
-@var{domain} in the configuration.  The private key is written to
-@code{/etc/letsencrypt/live/@var{domain}/privkey.pem}.
+@deftp {Data Type} certificate-configuration
+Data type representing the configuration of a certificate.
+This type has the following parameters:
 
+@table @asis
+@item @code{name} (default: @i{see below})
+This name is used by Certbot for housekeeping and in file paths; it
+doesn't affect the content of the certificate itself.  To see
+certificate names, run @code{certbot certificates}.
 
+Its default is the first provided domain.
+
+@item @code{domains} (default: @code{()})
+The first domain provided will be the subject CN of the certificate, and
+all domains will be Subject Alternative Names on the certificate.
+
+@end table
+@end deftp
+
+For each @code{certificate-configuration}, the certificate is saved to
+@code{/etc/letsencrypt/live/@var{name}/fullchain.pem} and the key is
+saved to @code{/etc/letsencrypt/live/@var{name}/privkey.pem}.
 @node DNS Services
 @subsubsection DNS Services
 @cindex DNS (domain name system)

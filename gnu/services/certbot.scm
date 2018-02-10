@@ -32,7 +32,8 @@
   #:use-module (ice-9 match)
   #:export (certbot-service-type
             certbot-configuration
-            certbot-configuration?))
+            certbot-configuration?
+            certificate-configuration))
 
 ;;; Commentary:
 ;;;
@@ -41,6 +42,14 @@
 ;;; Code:
 
 
+(define-record-type* <certificate-configuration>
+  certificate-configuration make-certificate-configuration
+  certificate-configuration?
+  (name                certificate-configuration-name
+                       (default #f))
+  (domains             certificate-configuration-domains
+                       (default '())))
+
 (define-record-type* <certbot-configuration>
   certbot-configuration make-certbot-configuration
   certbot-configuration?
@@ -48,7 +57,7 @@
                        (default certbot))
   (webroot             certbot-configuration-webroot
                        (default "/var/www"))
-  (domains             certbot-configuration-domains
+  (certificates        certbot-configuration-certificates
                        (default '()))
   (email               certbot-configuration-email)
   (default-location    certbot-configuration-default-location
@@ -60,17 +69,19 @@
 
 (define certbot-command
   (match-lambda
-    (($ <certbot-configuration> package webroot domains email
+    (($ <certbot-configuration> package webroot certificates email
                                 default-location)
      (let* ((certbot (file-append package "/bin/certbot"))
             (commands
              (map
-              (lambda (domain)
-                (list certbot "certonly" "-n" "--agree-tos"
-                      "-m" email
-                      "--webroot" "-w" webroot
-                      "-d" domain))
-              domains)))
+              (match-lambda
+                (($ <certificate-configuration> name domains)
+                 (list certbot "certonly" "-n" "--agree-tos"
+                       "-m" email
+                       "--webroot" "-w" webroot
+                       "--cert-name" (or name (car domains))
+                       "-d" (string-join domains ","))))
+              certificates)))
        (program-file
         "certbot-command"
         #~(let ((code 0))
@@ -88,7 +99,7 @@
 
 (define (certbot-activation config)
   (match config
-    (($ <certbot-configuration> package webroot domains email
+    (($ <certbot-configuration> package webroot certificates email
                                 default-location)
      (with-imported-modules '((guix build utils))
        #~(begin
@@ -98,23 +109,22 @@
 
 (define certbot-nginx-server-configurations
   (match-lambda
-    (($ <certbot-configuration> package webroot domains email
+    (($ <certbot-configuration> package webroot certificates email
                                 default-location)
-     (map
-      (lambda (domain)
-        (nginx-server-configuration
-         (listen '("80" "[::]:80"))
-         (ssl-certificate #f)
-         (ssl-certificate-key #f)
-         (server-name (list domain))
-         (locations
-          (filter identity
-                  (list
-                   (nginx-location-configuration
-                    (uri "/.well-known")
-                    (body (list (list "root " webroot ";"))))
-                   default-location)))))
-      domains))))
+     (list
+      (nginx-server-configuration
+       (listen '("80" "[::]:80"))
+       (ssl-certificate #f)
+       (ssl-certificate-key #f)
+       (server-name
+        (apply append (map certificate-configuration-domains certificates)))
+       (locations
+        (filter identity
+                (list
+                 (nginx-location-configuration
+                  (uri "/.well-known")
+                  (body (list (list "root " webroot ";"))))
+                 default-location))))))))
 
 (define certbot-service-type
   (service-type (name 'certbot)
@@ -126,12 +136,13 @@
                        (service-extension mcron-service-type
                                           certbot-renewal-jobs)))
                 (compose concatenate)
-                (extend (lambda (config additional-domains)
+                (extend (lambda (config additional-certificates)
                           (certbot-configuration
                            (inherit config)
-                           (domains (append
-                                     (certbot-configuration-domains config)
-                                     additional-domains)))))
+                           (certificates
+                            (append
+                             (certbot-configuration-certificates config)
+                             additional-certificates)))))
                 (description
                  "Automatically renew @url{https://letsencrypt.org, Let's
 Encrypt} HTTPS certificates by adjusting the nginx web server configuration
