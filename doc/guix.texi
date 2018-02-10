@@ -15757,8 +15757,8 @@ The certbot package to use.
 The directory from which to serve the Let's Encrypt challenge/response
 files.
 
-@item @code{hosts} (default: @code{()})
-A list of hosts for which to generate certificates and request
+@item @code{domains} (default: @code{()})
+A list of domains for which to generate certificates and request
 signatures.
 
 @item @code{default-location} (default: @i{see below})
@@ -15766,7 +15766,7 @@ The default @code{nginx-location-configuration}.  Because @code{certbot}
 needs to be able to serve challenges and responses, it needs to be able
 to run a web server.  It does so by extending the @code{nginx} web
 service with an @code{nginx-server-configuration} listening on the
-@var{hosts} on port 80, and which has a
+@var{domains} on port 80, and which has a
 @code{nginx-location-configuration} for the @code{/.well-known/} URI
 path subspace used by Let's Encrypt.  @xref{Web Services}, for more on
 these nginx configuration data types.
@@ -15776,7 +15776,7 @@ Requests to other URL paths will be matched by the
 @code{nginx-server-configuration}s.
 
 By default, the @code{default-location} will issue a redirect from
-@code{http://@var{host}/...} to @code{https://@var{host}/...}, leaving
+@code{http://@var{domain}/...} to @code{https://@var{domain}/...}, leaving
 you to define what to serve on your site via @code{https}.
 
 Pass @code{#f} to not issue a default location.
@@ -15784,9 +15784,9 @@ Pass @code{#f} to not issue a default location.
 @end deftp
 
 The public key and its signatures will be written to
-@code{/etc/letsencrypt/live/@var{host}/fullchain.pem}, for each
-@var{host} in the configuration.  The private key is written to
-@code{/etc/letsencrypt/live/@var{host}/privkey.pem}.
+@code{/etc/letsencrypt/live/@var{domain}/fullchain.pem}, for each
+@var{domain} in the configuration.  The private key is written to
+@code{/etc/letsencrypt/live/@var{domain}/privkey.pem}.
 
 
 @node DNS Services

@@ -48,7 +48,7 @@
                        (default certbot))
   (webroot             certbot-configuration-webroot
                        (default "/var/www"))
-  (hosts               certbot-configuration-hosts
+  (domains             certbot-configuration-domains
                        (default '()))
   (default-location    certbot-configuration-default-location
                        (default
@@ -59,9 +59,9 @@
 
 (define certbot-renewal-jobs
   (match-lambda
-    (($ <certbot-configuration> package webroot hosts default-location)
-     (match hosts
-       ;; Avoid pinging certbot if we have no hosts.
+    (($ <certbot-configuration> package webroot domains default-location)
+     (match domains
+       ;; Avoid pinging certbot if we have no domains.
        (() '())
        (_
         (list
@@ -71,37 +71,38 @@
          #~(job '(next-minute-from (next-hour '(0 12)) (list (random 60)))
                 (string-append #$package "/bin/certbot renew"
                                (string-concatenate
-                                (map (lambda (host)
-                                       (string-append " -d " host))
-                                     '#$hosts))))))))))
+                                (map (lambda (domain)
+                                       (string-append " -d " domain))
+                                     '#$domains))))))))))
 
 (define certbot-activation
   (match-lambda
-    (($ <certbot-configuration> package webroot hosts default-location)
+    (($ <certbot-configuration> package webroot domains default-location)
      (with-imported-modules '((guix build utils))
        #~(begin
            (use-modules (guix build utils))
            (mkdir-p #$webroot)
            (for-each
-            (lambda (host)
-              (unless (file-exists? (in-vicinity "/etc/letsencrypt/live" host))
+            (lambda (domain)
+              (unless (file-exists?
+                       (in-vicinity "/etc/letsencrypt/live" domain))
                 (unless (zero? (system*
                                 (string-append #$certbot "/bin/certbot")
                                 "certonly" "--webroot" "-w" #$webroot
-                                "-d" host))
-                  (error "failed to acquire cert for host" host))))
-            '#$hosts))))))
+                                "-d" domain))
+                  (error "failed to acquire cert for domain" domain))))
+            '#$domains))))))
 
 (define certbot-nginx-server-configurations
   (match-lambda
-    (($ <certbot-configuration> package webroot hosts default-location)
+    (($ <certbot-configuration> package webroot domains default-location)
      (map
-      (lambda (host)
+      (lambda (domain)
         (nginx-server-configuration
          (listen '("80" "[::]:80"))
          (ssl-certificate #f)
          (ssl-certificate-key #f)
-         (server-name (list host))
+         (server-name (list domain))
          (locations
           (filter identity
                   (list
@@ -109,7 +110,7 @@
                     (uri "/.well-known")
                     (body (list (list "root " webroot ";"))))
                    default-location)))))
-      hosts))))
+      domains))))
 
 (define certbot-service-type
   (service-type (name 'certbot)
@@ -121,11 +122,12 @@
                        (service-extension mcron-service-type
                                           certbot-renewal-jobs)))
                 (compose concatenate)
-                (extend (lambda (config additional-hosts)
+                (extend (lambda (config additional-domains)
                           (certbot-configuration
                            (inherit config)
-                           (hosts (append (certbot-configuration-hosts config)
-                                          additional-hosts)))))
+                           (domains (append
+                                     (certbot-configuration-domains config)
+                                     additional-domains)))))
                 (default-value (certbot-configuration))
                 (description
                  "Automatically renew @url{https://letsencrypt.org, Let's
