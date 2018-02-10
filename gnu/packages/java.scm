@@ -2952,6 +2952,38 @@ working on XML representation of the model.")))
 Modello generator unit-tests, including sample models and xml files to test
 every feature for every plugin.")))
 
+(define-public java-modello-plugins-xpp3
+  (package
+    (inherit java-modello-core)
+    (name "java-modello-plugins-xpp3")
+    (arguments
+     `(#:jar-name "modello-plugins-xpp3.jar"
+       #:source-dir "modello-plugins/modello-plugin-xpp3/src/main/java"
+       #:test-dir "modello-plugins/modello-plugin-xpp3/src/test"
+       ;; One of the test dependencies is maven-model which depends on this package.
+       #:tests? #f
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes")
+             (copy-recursively "modello-plugins/modello-plugin-xpp3/src/main/resources"
+                               "build/classes")
+             #t)))))
+    (inputs
+     `(("java-modello-core" ,java-modello-core)
+       ("java-modello-plugins-java" ,java-modello-plugins-java)
+       ("java-modello-plugins-xml" ,java-modello-plugins-xml)
+       ,@(package-inputs java-modello-core)))
+    (native-inputs
+     `(("java-xmlunit" ,java-xmlunit)
+       ("java-modello-test" ,java-modello-test)
+       ,@(package-native-inputs java-modello-core)))
+    (synopsis "Modello XPP3 Plugin")
+    (description "The modello XPP3 plugin generates XML readers and writers based
+on the XPP3 API (XML Pull Parser).")))
+
 (define-public java-asm
   (package
     (name "java-asm")
