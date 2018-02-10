@@ -2814,6 +2814,69 @@ a default implementation of it.  This API is about scanning files in a
 project and determining what files need to be rebuilt.")
     (license license:asl2.0)))
 
+(define-public java-modello-core
+  (package
+    (name "java-modello-core")
+    (version "1.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/modello"
+                                  "/archive/modello-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0l2pvns8pmlrmjm3iknp7gpg3654y1m8qhy55b19sdwdchdcyxfh"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "modello-core.jar"
+       #:source-dir "modello-core/src/main/java"
+       #:test-dir "modello-core/src/test"
+       #:main-class "org.codehaus.modello.ModelloCli"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             (copy-file "modello-core/src/main/resources/META-INF/plexus/components.xml"
+                        "build/classes/META-INF/plexus/components.xml")
+             #t))
+         (add-before 'check 'fix-tests
+           (lambda _
+             (with-directory-excursion "modello-core/src/test/java/org/codehaus"
+               (substitute* '("modello/core/DefaultModelloCoreTest.java"
+                              "modello/core/io/ModelReaderTest.java")
+                 (("src/test") "modello-core/src/test")))
+             #t)))))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-sisu-build-api" ,java-sisu-build-api)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ("java-guava" ,java-guava)))
+    (home-page "http://codehaus-plexus.github.io/modello/")
+    (synopsis "Framework for code generation from a simple model")
+    (description "Modello is a framework for code generation from a simple model.
+
+Modello generates code from a simple model format: based on a plugin
+architecture, various types of code and descriptors can be generated from the
+single model, including Java POJOs, XML/JSON/YAML marshallers/unmarshallers,
+XSD and documentation.")
+    (license (list
+               license:expat
+               ;; Although this package uses only files licensed under expat,
+               ;; other parts of the source are licensed under different
+               ;; licenses.  We include them to be inherited by other packages.
+               license:asl2.0
+               ;; Some files in modello-plugin-java are licensed under a
+               ;; 5-clause BSD license.
+               (license:non-copyleft
+                 (string-append "file:///modello-plugins/modello-plugin-java/"
+                                "src/main/java/org/codehaus/modello/plugin/"
+                                "java/javasource/JNaming.java"))))))
+
 (define-public java-asm
   (package
     (name "java-asm")
