@@ -1050,17 +1050,17 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.90")
+    (version "4.90.1")
     (source
      (origin
        (method url-fetch)
-       (uri (list (string-append "ftp://ftp.exim.org/pub/exim/exim4/exim-"
+       (uri (list (string-append "https://ftp.exim.org/pub/exim/exim4/exim-"
                                  version ".tar.bz2")
-                  (string-append "ftp://ftp.exim.org/pub/exim/exim4/old/exim-"
+                  (string-append "https://ftp.exim.org/pub/exim/exim4/old/exim-"
                                  version ".tar.bz2")))
        (sha256
         (base32
-         "1cmx2648zhpsc4pznky7qsqbjazd3wn4gpslbl30j56cv1m6rb3x"))))
+         "1w6blvvrd87c649j8xpag034md2w1ib0db9c4ijqbzc5dh2i1xfq"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
