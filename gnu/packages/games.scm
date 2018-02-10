@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -529,6 +529,8 @@ shadow mimic them to reach blocks you couldn't reach alone.")
        ("freetype" ,freetype)
        ("fontconfig" ,fontconfig)
        ("curl" ,curl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://www.knightsgame.org.uk/")
     (synopsis "Multiplayer dungeon game involving knights and quests")
     (description "Knights is a multiplayer game involving several knights who
