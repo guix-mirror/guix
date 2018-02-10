@@ -8286,3 +8286,51 @@ the DOM level 3 load/save API's are in use.")
 similar in functionality to BSD editline and GNU readline but with additional
 features that bring it on par with the Z shell line editor.")
     (license license:bsd-3)))
+
+(define-public java-xmlunit
+  (package
+    (name "java-xmlunit")
+    (version "2.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xmlunit/xmlunit/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "035rivlnmwhfqj0fzviciv0bkh1h95ps1iwnh2kjcvdbk5nccm4z"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-xmlunit.jar"
+       #:source-dir "xmlunit-core/src/main/java"
+       #:test-dir "xmlunit-core/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'copy-test-resources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "resources") "../test-resources")
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-mockito-1" ,java-mockito-1)
+       ("java-hamcrest-all" ,java-hamcrest-all)
+       ("java-objenesis" ,java-objenesis)
+       ("java-asm" ,java-asm)
+       ("java-cglib" ,java-cglib)
+       ("resources"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                  (url "https://github.com/xmlunit/test-resources.git")
+                  (commit "a590d2ae865c3e0455691d76ba8eefccc2215aec")))
+           (file-name "java-xmlunit-test-resources")
+           (sha256
+            (base32
+             "0r0glj37pg5l868yjz78gckr91cs8fysxxbp9p328dssssi91agr"))))))
+    (home-page "http://www.xmlunit.org/")
+    (synopsis "XML output testing")
+    (description "XMLUnit provides you with the tools to verify the XML you
+emit is the one you want to create.  It provides helpers to validate against
+an XML Schema, assert the values of XPath queries or compare XML documents
+against expected outcomes.")
+    (license license:asl2.0)))
