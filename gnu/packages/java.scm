@@ -2660,6 +2660,20 @@ archives (jar).")
      `(("archiver" ,java-plexus-archiver)
        ("hamcrest" ,java-hamcrest-core)))))
 
+(define-public java-plexus-component-annotations
+  (package
+    (inherit java-plexus-container-default)
+    (name "java-plexus-component-annotations")
+    (arguments
+     `(#:jar-name "plexus-component-annotations.jar"
+       #:source-dir "plexus-component-annotations/src/main/java"
+       #:tests? #f)); no tests
+    (inputs '())
+    (native-inputs '())
+    (synopsis "Plexus descriptors generator")
+    (description "This package is a Maven plugin to generate Plexus descriptors
+from source tags and class annotations.")))
+
 (define-public java-asm
   (package
     (name "java-asm")
