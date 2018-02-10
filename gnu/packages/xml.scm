@@ -1867,3 +1867,35 @@ low memory footprint.")
 constrained environments such as Applets, Personal Java or devices compliant
 with the Mobile Information Device Profile (MIDP).")
     (license license:expat)))
+
+(define-public java-stax
+  (package
+    (name "java-stax")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/stax/stax/"
+                                  version "/stax-" version "-sources.jar"))
+              (sha256
+               (base32
+                "04ba4qvbrps45j8bldbakxq31k7gjlsay9pppa9yn13fr00q586z"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "stax.jar"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-utf8
+           (lambda _
+             ;; This file is ISO-8859-1 but java expects UTF-8.
+             ;; Remove special characters in comments.
+             (with-fluids ((%default-port-encoding "ISO-8859-1"))
+               (substitute* "src/com/wutka/dtd/Scanner.java"
+                 (("//.*") "\n")))
+             #t)))))
+    (home-page "https://repo1.maven.org/maven2/stax/stax/")
+    (synopsis "Streaming API for XML")
+    (description "This package provides the reference implementation of the
+@dfn{Streaming API for XML} (StAX).  It is used for streaming XML data to
+and from a Java application.  It provides a standard pull parser interface.")
+    (license license:asl2.0)))
