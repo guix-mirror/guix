@@ -1542,3 +1542,42 @@ the Xerces-J XML parser and Xalan-J XSLT processor and specifies these APIs:
     (license (list license:asl2.0
                    license:w3c ;; Files under org.w3c
                    license:public-domain)))) ;; org.xml.sax
+
+(define-public java-apache-xml-commons-resolver
+  (package
+    (name "java-apache-xml-commons-resolver")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/xerces/xml-commons/"
+                           "xml-commons-resolver-" version ".tar.gz"))
+       (sha256
+        (base32 "1zhy4anc3fg9f8y348bj88vmab15aavrg6nf419ifb25asyygnsm"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file (find-files "." ".*\\.(jar|zip)"))
+           #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name (string-append "xml-resolver.jar")
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://xerces.apache.org/xml-commons/")
+    (synopsis "Catalog-based entity and URI resolution")
+    (description "The resolver class implements the full semantics of OASIS Technical
+Resolution 9401:1997 (Amendment 2 to TR 9401) catalogs and the 06 Aug
+2001 Committee Specification of OASIS XML Catalogs.
+
+It also includes a framework of classes designed to read catalog files
+in a number of formats:
+
+@itemize
+@item The plain-text flavor described by TR9401.
+@item The XCatalog XML format defined by John Cowan
+@item The XML Catalog format defined by the OASIS Entity Resolution
+      Technical Committee.
+@end itemize")
+    (license license:asl2.0)))
