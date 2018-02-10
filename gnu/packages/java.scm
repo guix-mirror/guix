@@ -8051,3 +8051,35 @@ API.  Interceptors are used to interpose on business method invocations and
 specific events.")
     ;; Either GPL2 only or CDDL.
     (license (list license:gpl2 license:cddl1.1))))
+
+(define-public java-cdi-api
+  (package
+    (name "java-cdi-api")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cdi-spec/cdi/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1iv8b8bp07c5kmqic14jsr868vycjv4qv02lf3pkgp9z21mnfg5y"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:source-dir "api/src/main/java"
+       #:jar-name "java-cdi-api.jar"
+       #:test-dir "api/src/test"
+       #:jdk ,icedtea-8
+       #:tests? #f)); Tests fail because we don't have a CDI provider yet
+    (inputs
+     `(("java-javax-inject" ,java-javax-inject)
+       ("java-jboss-el-api-spec" ,java-jboss-el-api-spec)
+       ("java-jboss-interceptors-api-spec" ,java-jboss-interceptors-api-spec)))
+    (native-inputs
+     `(("java-testng" ,java-testng)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://cdi-spec.org/")
+    (synopsis "Contexts and Dependency Injection APIs")
+    (description "Java-cdi-api contains the required APIs for Contexts and
+Dependency Injection (CDI).")
+    (license license:asl2.0)))
