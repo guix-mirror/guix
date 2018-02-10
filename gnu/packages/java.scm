@@ -2739,6 +2739,26 @@ compilers.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public java-plexus-compiler-javac
+  (package
+    (inherit java-plexus-compiler-api)
+    (name "java-plexus-compiler-javac")
+    (arguments
+     `(#:jar-name "plexus-compiler-javac.jar"
+       #:source-dir "plexus-compilers/plexus-compiler-javac/src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; depends on compiler-test -> maven-core -> ... -> this package.
+       #:test-dir "plexus-compilers/plexus-compiler-javac/src/test"))
+    (inputs
+     `(("java-plexus-compiler-api" ,java-plexus-compiler-api)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-container-default" ,java-plexus-container-default)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (synopsis "Javac Compiler support for Plexus Compiler component")
+    (description "This package contains the Javac Compiler support for Plexus
+Compiler component.")))
+
 (define-public java-asm
   (package
     (name "java-asm")
