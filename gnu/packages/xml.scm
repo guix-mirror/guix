@@ -1618,3 +1618,45 @@ also possible to write adapters that treat non-XML trees such as compiled
 Java byte code or Java beans as XML, thus enabling you to query these trees
 with XPath too.")
     (license license:bsd-3)))
+
+(define-public java-xom
+  (package
+    (name "java-xom")
+    (version "127")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/elharo/xom/archive/XOM_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "04m69db1irqja12a9rfxrac8cbn9psqa1k136wh4ls4pxfsdr5wg"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file
+                            (find-files "." "\\.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "xom.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-tagsoup-dep
+           (lambda _
+             ;; FIXME: Where is tagsoup source?
+             (delete-file "src/nu/xom/tools/XHTMLJavaDoc.java")
+             #t)))))
+    (inputs
+     `(("java-jdom" ,java-jdom)
+       ("java-junit" ,java-junit)
+       ("java-classpathx-servletapi" ,java-classpathx-servletapi)
+       ("java-jaxen-bootstrap" ,java-jaxen-bootstrap)
+       ("java-xerces" ,java-xerces)))
+    (home-page "https://xom.nu/")
+    (synopsis "XML Object Model")
+    (description "XOM is a new XML Object Model for processing XML with Java 
+that strives for correctness and simplicity.")
+    ;; 2.1 only
+    (license license:lgpl2.1)))
