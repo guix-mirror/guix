@@ -2710,6 +2710,35 @@ from source tags and class annotations.")))
 and decryption.")
     (license license:asl2.0)))
 
+(define-public java-plexus-compiler-api
+  (package
+    (name "java-plexus-compiler-api")
+    (version "2.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/plexus-compiler"
+                                  "/archive/plexus-compiler-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0g3x26pymcdnfnwv2a1i57pd5s26f5zqfi1rdy98z1bn01klx25k"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-compiler-api.jar"
+       #:source-dir "plexus-compiler-api/src/main/java"
+       #:jdk ,icedtea-8
+       #:test-dir "plexus-compiler-api/src/test"))
+    (inputs
+     `(("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-plexus-util" ,java-plexus-utils)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/codehaus-plexus/plexus-compiler")
+    (synopsis "Plexus Compilers component's API to manipulate compilers")
+    (description "This package contains the API used by components to manipulate
+compilers.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public java-asm
   (package
     (name "java-asm")
