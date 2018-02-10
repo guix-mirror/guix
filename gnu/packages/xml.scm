@@ -1685,3 +1685,37 @@ that strives for correctness and simplicity.")
     (description "Xsdlib contains an implementation of sun.com.msv, an XML
 validator.")
     (license license:bsd-2)))
+
+(define-public java-xpp3
+  (package
+    (name "java-xpp3")
+    (version "1.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.extreme.indiana.edu/dist/"
+                                  "java-repository/xpp3/distributions/xpp3-"
+                                  version "_src.tgz"))
+              (sha256
+               (base32
+                "1b99zrhyij5qwyhilyjdl1ykxvhk902vsvflh6gx4fir8hfvdl5p"))
+              (modules '((guix build utils)))
+              (snippet
+                '(begin ;; Delete bundled jar archives.
+                   (for-each delete-file (find-files "." ".*\\.jar"))
+                   #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:build-target "jar"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-jars "build")))))
+    (home-page "http://www.extreme.indiana.edu/xgws/xsoap/xpp/")
+    (synopsis "Streaming pull XML parser")
+    (description "Xml Pull Parser (in short XPP) is a streaming pull XML
+parser and should be used when there is a need to process quickly and
+efficiently all input elements (for example in SOAP processors). This
+package is a stable XmlPull parsing engine that is based on ideas from XPP
+and in particular XPP2 but completely revised and rewritten to take the best
+advantage of JIT JVMs.")
+    (license (license:non-copyleft "file://LICENSE.txt"))))
