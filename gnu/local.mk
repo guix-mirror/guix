@@ -852,6 +852,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtasn1-CVE-2017-10790.patch		\
+  %D%/packages/patches/libtasn1-CVE-2018-6003.patch		\
   %D%/packages/patches/libtheora-config-guess.patch		\
   %D%/packages/patches/libtiff-CVE-2016-10688.patch		\
   %D%/packages/patches/libtiff-CVE-2017-9935.patch		\
