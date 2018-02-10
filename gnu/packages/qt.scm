@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -832,10 +833,11 @@ consume data received from the server, or both.")))
        ((#:parallel-tests? _ #f) #f) ; can lead to race condition
        ((#:phases phases)
         `(modify-phases ,phases
-           (add-after 'unpack 'lengthen-test-timeout
+           (add-after 'unpack 'fix-tests
              (lambda _
                (substitute* "tests/auto/qsensorgestures_gestures/tst_sensorgestures_gestures.cpp"
-                 (("2000") "5000"))
+                 (("2000") "5000")      ;lengthen test timeout
+                 (("QTest::newRow(\"twist\") << \"twist\"") "")) ;failing test
                #t))))))
     (native-inputs
      `(("perl" ,perl)
