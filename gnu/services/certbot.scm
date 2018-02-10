@@ -50,6 +50,7 @@
                        (default "/var/www"))
   (domains             certbot-configuration-domains
                        (default '()))
+  (email               certbot-configuration-email)
   (default-location    certbot-configuration-default-location
                        (default
                          (nginx-location-configuration
@@ -59,12 +60,14 @@
 
 (define certbot-command
   (match-lambda
-    (($ <certbot-configuration> package webroot domains default-location)
+    (($ <certbot-configuration> package webroot domains email
+                                default-location)
      (let* ((certbot (file-append package "/bin/certbot"))
             (commands
              (map
               (lambda (domain)
-                (list certbot "certonly"
+                (list certbot "certonly" "-n" "--agree-tos"
+                      "-m" email
                       "--webroot" "-w" webroot
                       "-d" domain))
               domains)))
@@ -85,7 +88,8 @@
 
 (define (certbot-activation config)
   (match config
-    (($ <certbot-configuration> package webroot domains default-location)
+    (($ <certbot-configuration> package webroot domains email
+                                default-location)
      (with-imported-modules '((guix build utils))
        #~(begin
            (use-modules (guix build utils))
@@ -94,7 +98,8 @@
 
 (define certbot-nginx-server-configurations
   (match-lambda
-    (($ <certbot-configuration> package webroot domains default-location)
+    (($ <certbot-configuration> package webroot domains email
+                                default-location)
      (map
       (lambda (domain)
         (nginx-server-configuration
@@ -127,7 +132,6 @@
                            (domains (append
                                      (certbot-configuration-domains config)
                                      additional-domains)))))
-                (default-value (certbot-configuration))
                 (description
                  "Automatically renew @url{https://letsencrypt.org, Let's
 Encrypt} HTTPS certificates by adjusting the nginx web server configuration

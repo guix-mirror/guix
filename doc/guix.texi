@@ -15741,6 +15741,10 @@ revoked, but running it regularly would give your service a chance of
 staying online in case a Let's Encrypt-initiated revocation happened for
 some reason.
 
+By using this service, you agree to the ACME Subscriber Agreement, which
+can be found there:
+@url{https://acme-v01.api.letsencrypt.org/directory}.
+
 @defvr {Scheme Variable} certbot-service-type
 A service type for the @code{certbot} Let's Encrypt client.
 @end defvr
@@ -15760,6 +15764,10 @@ files.
 @item @code{domains} (default: @code{()})
 A list of domains for which to generate certificates and request
 signatures.
+
+@item @code{email}
+Mandatory email used for registration, recovery contact, and important
+account notifications.
 
 @item @code{default-location} (default: @i{see below})
 The default @code{nginx-location-configuration}.  Because @code{certbot}
