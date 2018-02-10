@@ -1954,3 +1954,43 @@ implements @code{XMLStreamWriter} and @code{XMLStreamReader} and supports
     (description "Jdom is a Java-based solution for accessing, manipulating, and
 outputting XML data from Java code.")
     (license license:bsd-4)))
+
+(define-public java-xstream
+  (package
+    (name "java-xstream")
+    (version "1.4.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "https://github.com/x-stream/xstream/archive/XSTREAM_"
+                     (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
+                     ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "10zbkam05wirxipvgrjimdwsyqrwl4a0n7lhvxbsssqpv727469g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "xstream.jar"
+       ;; FIXME: Tests are not in a java subdirectory as assumed by ant-build-system
+       #:tests? #f
+       #:jdk ,icedtea-8
+       #:source-dir "xstream/src/java"))
+    (inputs
+     `(("java-jdom" ,java-jdom)
+       ("java-jdom2" ,java-jdom2)
+       ("java-cglib" ,java-cglib)
+       ("java-joda-time" ,java-joda-time)
+       ("java-jettison" ,java-jettison)
+       ("java-xom" ,java-xom)
+       ("java-xpp3" ,java-xpp3)
+       ("java-dom4j" ,java-dom4j)
+       ("java-stax2-api" ,java-stax2-api)
+       ("java-woodstox-core" ,java-woodstox-core)
+       ("java-kxml2" ,java-kxml2)
+       ("java-stax" ,java-stax)))
+    (home-page "https://x-stream.github.io")
+    (synopsis "XML serialization library")
+    (description "XStream is a simple library to serialize Java objects to XML
+and back again.")
+    (license license:bsd-3)))
