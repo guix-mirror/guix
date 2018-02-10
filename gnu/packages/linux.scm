@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -4084,7 +4084,8 @@ Light is the successor of lightscript.")
                (setenv "TLP_CONF" "/etc/tlp")
                (setenv "TLP_SHCPL"
                        (string-append out "/share/bash-completion/completions"))
-               (setenv "TLP_MAN" (string-append out "/share/man")))))
+               (setenv "TLP_MAN" (string-append out "/share/man"))
+               (setenv "TLP_META" (string-append out "/share/metainfo")))))
          (delete 'check)                ; no tests
          (add-before 'install 'fix-installation
            (lambda _
@@ -4092,7 +4093,8 @@ Light is the successor of lightscript.")
              (substitute* "Makefile" (("\\[ -f \\$\\(_CONF\\) \\]") "#"))))
          (replace 'install
            (lambda _
-             (zero? (system* "make" "install-tlp" "install-man"))))
+             (invoke "make" "install-tlp" "install-man")
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
