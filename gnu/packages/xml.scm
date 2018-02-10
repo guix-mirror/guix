@@ -1929,3 +1929,28 @@ vice-versa with the help of the @dfn{Streaming API for XML} (StAX).  It
 implements @code{XMLStreamWriter} and @code{XMLStreamReader} and supports
 @code{Mapped} and @code{BadgerFish} conventions.")
     (license license:asl2.0)))
+
+(define-public java-jdom2
+  (package
+    (name "java-jdom")
+    (version "2.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/hunterhacker/jdom/archive/JDOM-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0p8n7inqq2a25wk9ljinl3ixlx1x2la9qaman8ngd75xxjb02yc1"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "package"
+       #:tests? #f; tests are run as part of the build process
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-jars "build")))))
+    (home-page "http://jdom.org/")
+    (synopsis "Access, manipulate, and output XML data")
+    (description "Jdom is a Java-based solution for accessing, manipulating, and
+outputting XML data from Java code.")
+    (license license:bsd-4)))
