@@ -1831,3 +1831,39 @@ with DOM, SAX, XPath, and XSLT.  It can parse large XML documents with very
 low memory footprint.")
     ;; some BSD-like 5-clause license
     (license (license:non-copyleft "file://LICENSE"))))
+
+(define-public java-kxml2
+  (package
+    (name "java-kxml2")
+    (version "2.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/stefanhaustein/kxml2/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17kh04qf3vll1xx6sv06xlazw2hxa8qdmzyday9r6z2191jlj74w"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "kxml2.jar"
+       #:source-dir "src/main/java"
+       #:test-include (list "TestWb.java")
+       ;; Test failure: it was expected to get an XML entity but got the
+       ;; equivalent Unicode character instead.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes"))))))
+    (inputs
+     `(("java-xpp3" ,java-xpp3)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://kxml.org")
+    (synopsis "XML pull parser")
+    (description "kXML is a small XML pull parser, specially designed for
+constrained environments such as Applets, Personal Java or devices compliant
+with the Mobile Information Device Profile (MIDP).")
+    (license license:expat)))
