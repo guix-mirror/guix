@@ -8334,3 +8334,17 @@ emit is the one you want to create.  It provides helpers to validate against
 an XML Schema, assert the values of XPath queries or compare XML documents
 against expected outcomes.")
     (license license:asl2.0)))
+
+(define-public java-xmlunit-legacy
+  (package
+    (inherit java-xmlunit)
+    (name "java-xmlunit-legacy")
+    (arguments
+     `(#:jar-name "java-xmlunit-legacy.jar"
+       #:source-dir "xmlunit-legacy/src/main/java"
+       #:test-dir "xmlunit-legacy/src/test"))
+    (inputs
+     `(("java-xmlunit" ,java-xmlunit)
+       ("java-junit" ,java-junit)))
+    (native-inputs
+     `(("java-mockito-1" ,java-mockito-1)))))
