@@ -15765,7 +15765,7 @@ See below for details about @code{certbot-configuration}.
 @end defvr
 
 @deftp {Data Type} certbot-configuration
-Data type representing the configuration of the @code{certbot} serice.
+Data type representing the configuration of the @code{certbot} service.
 This type has the following parameters:
 
 @table @asis
