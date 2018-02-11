@@ -15733,7 +15733,9 @@ signature.
 The certbot service automates this process: the initial key
 generation, the initial certification request to the Let's Encrypt
 service, the web server challenge/response integration, writing the
-certificate to disk, and the automated periodic renewals.
+certificate to disk, the automated periodic renewals, and the deployment
+tasks associated with the renewal (e.g. reloading services, copying keys
+with different permissions).
 
 Certbot is run twice a day, at a random minute within the hour.  It
 won't do anything until your certificates are due for renewal or
@@ -15750,13 +15752,20 @@ A service type for the @code{certbot} Let's Encrypt client.  Its value
 must be a @code{certbot-configuration} record as in this example:
 
 @example
+(define %nginx-deploy-hook
+  (program-file
+   "nginx-deploy-hook"
+   #~(let ((pid (call-with-input-file "/var/run/nginx/pid" read)))
+       (kill pid SIGHUP))))
+
 (service certbot-service-type
          (certbot-configuration
           (email "foo@@example.net")
           (certificates
            (list
             (certificate-configuration
-             (domains '("example.net" "www.example.net")))
+             (domains '("example.net" "www.example.net"))
+             (deploy-hook %nginx-deploy-hook))
             (certificate-configuration
              (domains '("bar.example.net")))))))
 @end example
@@ -15825,6 +15834,15 @@ Its default is the first provided domain.
 @item @code{domains} (default: @code{()})
 The first domain provided will be the subject CN of the certificate, and
 all domains will be Subject Alternative Names on the certificate.
+
+@item @code{deploy-hook} (default: @code{#f})
+Command to be run in a shell once for each successfully issued
+certificate.  For this command, the shell variable
+@code{$RENEWED_LINEAGE} will point to the config live subdirectory (for
+example, @samp{"/etc/letsencrypt/live/example.com"}) containing the new
+certificates and keys; the shell variable @code{$RENEWED_DOMAINS} will
+contain a space-delimited list of renewed certificate domains (for
+example, @samp{"example.com www.example.com"}.
 
 @end table
 @end deftp

@@ -48,7 +48,9 @@
   (name                certificate-configuration-name
                        (default #f))
   (domains             certificate-configuration-domains
-                       (default '())))
+                       (default '()))
+  (deploy-hook         certificate-configuration-deploy-hook
+                       (default #f)))
 
 (define-record-type* <certbot-configuration>
   certbot-configuration make-certbot-configuration
@@ -78,7 +80,8 @@
             (commands
              (map
               (match-lambda
-                (($ <certificate-configuration> custom-name domains)
+                (($ <certificate-configuration> custom-name domains
+                                                deploy-hook)
                  (let ((name (or custom-name (car domains))))
                    (append
                     (list name certbot "certonly" "-n" "--agree-tos"
@@ -86,7 +89,8 @@
                           "--webroot" "-w" webroot
                           "--cert-name" name
                           "-d" (string-join domains ","))
-                    (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '())))))
+                    (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '())
+                    (if deploy-hook `("--deploy-hook" ,deploy-hook) '())))))
               certificates)))
        (program-file
         "certbot-command"
