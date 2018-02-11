@@ -158,6 +158,24 @@ store in '.el' files."
           (substitute-program-names))))
     #t))
 
+(define* (check #:key tests? (test-command '("make" "check"))
+                (parallel-tests? #t) #:allow-other-keys)
+  "Run the tests by invoking TEST-COMMAND.
+
+When TEST-COMMAND uses make and PARALLEL-TESTS is #t, the tests are run in
+parallel. PARALLEL-TESTS? is ignored when using a non-make TEST-COMMAND."
+  (match-let (((test-program . args) test-command))
+    (let ((using-make? (string=? test-program "make")))
+      (if tests?
+          (apply invoke test-program
+                 `(,@args
+                   ,@(if (and using-make? parallel-tests?)
+                         `("-j" ,(number->string (parallel-job-count)))
+                         '())))
+          (begin
+            (format #t "test suite not run~%")
+            #t)))))
+
 (define* (install #:key outputs
                   (include %default-include)
                   (exclude %default-exclude)
@@ -256,6 +274,7 @@ second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
     ;; Move the build phase after install: the .el files are byte compiled
     ;; directly in the store.
     (delete 'build)
+    (replace 'check check)
     (replace 'install install)
     (add-after 'install 'build build)
     (add-after 'install 'make-autoloads make-autoloads)
