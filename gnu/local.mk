@@ -854,7 +854,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtasn1-CVE-2017-10790.patch		\
   %D%/packages/patches/libtheora-config-guess.patch		\
   %D%/packages/patches/libtiff-CVE-2016-10688.patch		\
+  %D%/packages/patches/libtiff-CVE-2017-9935.patch		\
   %D%/packages/patches/libtiff-CVE-2017-9936.patch		\
+  %D%/packages/patches/libtiff-CVE-2017-11335.patch		\
+  %D%/packages/patches/libtiff-CVE-2017-18013.patch		\
   %D%/packages/patches/libtiff-tiffgetfield-bugs.patch		\
   %D%/packages/patches/libtiff-tiffycbcrtorgb-integer-overflow.patch	\
   %D%/packages/patches/libtiff-tiffycbcrtorgbinit-integer-overflow.patch	\
