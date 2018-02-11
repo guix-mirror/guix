@@ -78,22 +78,28 @@
             (commands
              (map
               (match-lambda
-                (($ <certificate-configuration> name domains)
-                 (append
-                  (list certbot "certonly" "-n" "--agree-tos"
-                        "-m" email
-                        "--webroot" "-w" webroot
-                        "--cert-name" (or name (car domains))
-                        "-d" (string-join domains ","))
-                  (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '()))))
+                (($ <certificate-configuration> custom-name domains)
+                 (let ((name (or custom-name (car domains))))
+                   (append
+                    (list name certbot "certonly" "-n" "--agree-tos"
+                          "-m" email
+                          "--webroot" "-w" webroot
+                          "--cert-name" name
+                          "-d" (string-join domains ","))
+                    (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '())))))
               certificates)))
        (program-file
         "certbot-command"
-        #~(let ((code 0))
-            (for-each
-             (lambda (command)
-               (set! code (or (apply system* command) code)))
-             '#$commands) code))))))
+        #~(begin
+            (use-modules (ice-9 match))
+            (let ((code 0))
+              (for-each
+               (match-lambda
+                 ((name . command)
+                  (begin
+                    (format #t "Acquiring or renewing certificate: ~a~%" name)
+                    (set! code (or (apply system* command) code)))))
+               '#$commands) code)))))))
 
 (define (certbot-renewal-jobs config)
   (list
