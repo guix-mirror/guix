@@ -1,0 +1,19 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3202b8b..473ecb9 100755
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -279,14 +279,6 @@ optional_component(LIBPULSE ON "Pulse audio integration"
+ 
+ optional_component(VISUALISATIONS ON "Visualisations")
+ 
+-if(NOT HAVE_SPOTIFY_BLOB AND NOT CRYPTOPP_FOUND)
+-  message(FATAL_ERROR "Either crypto++ must be available or the non-GPL Spotify "
+-          "code must be compiled in")
+-elseif(CRYPTOPP_FOUND)
+-  set(HAVE_CRYPTOPP ON)
+-  set(HAVE_SPOTIFY_DOWNLOADER ON)
+-endif()
+-
+ # Find DBus if it's enabled
+ if (HAVE_DBUS)
+   find_package(Qt5 COMPONENTS DBus)

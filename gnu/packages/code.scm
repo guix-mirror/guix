@@ -29,6 +29,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
@@ -105,14 +106,14 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 (define-public global                             ; a global variable
   (package
     (name "global")
-    (version "6.6.1")
+    (version "6.6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/global/global-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1r2r6z41lmgbszzwx7h3jqhwnqb9jj32pndzhr3lb0id710c8gcl"))))
+               "0zvi5vxwiq0dy8mq2cgs64m8harxs0fvkmsnvi0ayb0w608lgij3"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("libltdl" ,libltdl)
@@ -440,3 +441,58 @@ symbolnames etc.  There’s also limited support for ObjC/ObjC++.  It allows you
 to find symbols by name (including nested class and namespace scope).  Most
 importantly we give you proper follow-symbol and find-references support.")
     (license license:gpl3+)))
+
+(define-public colormake
+  (package
+    (name "colormake")
+    (version "0.9.20140503")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/pagekite/Colormake/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08ldss9zd8ls6bjahvxhffpsjcysifr720yf3jz9db2mlklzmyd3"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("bash" ,bash)
+       ("gzip" ,gzip)
+       ("perl" ,perl)
+       ("tar" ,tar)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         ;; bootstrap
+         (setenv "PATH" (string-append
+                         (assoc-ref %build-inputs "tar") "/bin" ":"
+                         (assoc-ref %build-inputs "gzip") "/bin"))
+         (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
+         (chdir (string-append (string-capitalize ,name) "-" ,version))
+         (patch-shebang  "colormake.pl"
+                         (list (string-append (assoc-ref %build-inputs "perl")
+                                              "/bin")))
+         (let* ((out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin"))
+                (doc (string-append out "/share/doc"))
+                (install-files (lambda (files directory)
+                                 (for-each (lambda (file)
+                                             (install-file file directory))
+                                           files))))
+           (substitute* "colormake"
+             (("colormake\\.pl") (string-append bin "/colormake.pl"))
+             (("/bin/bash")
+              (string-append (assoc-ref %build-inputs "bash") "/bin/sh")))
+           (install-file "colormake.1" (string-append doc "/man/man1"))
+           (install-files '("AUTHORS" "BUGS" "ChangeLog" "README") doc)
+           (install-files '("colormake" "colormake-short" "clmake"
+                            "clmake-short" "colormake.pl")
+                          bin)))))
+    (home-page "http://bre.klaki.net/programs/colormake/")
+    (synopsis "Wrapper around @command{make} to produce colored output")
+    (description "This package provides a wrapper around @command{make} to
+produce colored output.")
+    (license license:gpl2+)))

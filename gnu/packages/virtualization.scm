@@ -52,6 +52,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages spice)
@@ -99,7 +100,8 @@
        #:configure-flags (list "--enable-usb-redir" "--enable-opengl"
                                (string-append "--smbd="
                                               (assoc-ref %outputs "out")
-                                              "/libexec/samba-wrapper"))
+                                              "/libexec/samba-wrapper")
+                               "--audio-drv-list=alsa,pa,sdl")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -181,6 +183,7 @@ exec smbd $@")))
        ("ncurses" ,ncurses)
        ;; ("pciutils" ,pciutils)
        ("pixman" ,pixman)
+       ("pulseaudio" ,pulseaudio)
        ("sdl" ,sdl)
        ("spice" ,spice)
        ("usbredir" ,usbredir)
@@ -228,7 +231,7 @@ server and embedded PowerPC, and S390 guests.")
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (inputs (fold alist-delete (package-inputs qemu)
                   '("libusb" "mesa" "sdl" "spice" "virglrenderer"
-                    "usbredir" "libdrm" "libepoxy")))))
+                    "usbredir" "libdrm" "libepoxy" "pulseaudio")))))
 
 (define-public libosinfo
   (package

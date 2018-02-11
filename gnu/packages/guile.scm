@@ -706,7 +706,9 @@ format is also supported.")
              (lambda _
                (substitute* "configure.ac"
                  (("PKG_CHECK_MODULES\\(\\[GUILE\\],.*$")
-                  "PKG_CHECK_MODULES([GUILE], [guile-2.2])\n"))
+                  "PKG_CHECK_MODULES([GUILE], [guile-2.2])\n")
+                 (("guile/site/2.0")
+                  "guile/site/2.2"))
                #t))
            (add-after 'use-guile-2.2 'bootstrap
              (lambda _
@@ -1188,8 +1190,8 @@ Guile's foreign function interface.")
   (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
 
 (define-public guile-sqlite3
-  (let ((commit "21f35ca87517194d8fcc7ac166b5e77f5f5348b0")
-        (revision "2"))
+  (let ((commit "1cd1dec96a9999db48c0ff45bab907efc637247f")
+        (revision "3"))
     (package
       (name "guile-sqlite3")
       (version (git-version "0.0" revision commit))
@@ -1205,7 +1207,7 @@ Guile's foreign function interface.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0m33di5gz0a6n6q380v1y8apm5hrynzyl4ri8ar4j202hwjqi1y2"))
+                  "0vvdgwcshrgl6dfz5cxf0l9bl44nkgah0ph3vv464d55nd8qh4b6"))
                 (file-name (string-append name "-" version "-checkout"))
                 (modules '((guix build utils)))
                 (snippet

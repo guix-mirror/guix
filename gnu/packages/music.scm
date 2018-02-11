@@ -226,18 +226,19 @@ score, keyboard, guitar, drum and controller views.")
                        "sha2" ;; Replaced by openssl.
                        "taglib"
                        "tinysvcmdns")))
-                (patches (search-patches "clementine-use-openssl.patch"))))
+                (patches (search-patches "clementine-use-openssl.patch"
+                                         "clementine-remove-crypto++-dependency.patch"))))
       (build-system cmake-build-system)
       (arguments
        '(#:test-target "clementine_test"
          #:configure-flags
-         (let ((crypto (assoc-ref %build-inputs "crypto++")))
-           (list "-DENABLE_VISUALISATIONS=OFF" ; requires unpackaged "projectm"
-                 "-DCRYPTOPP_FOUND=TRUE"
-                 (string-append "-DCRYPTOPP_INCLUDE_DIRS=" crypto "/include")
-                 (string-append "-DCRYPTOPP_LIBRARY_DIRS=" crypto "/lib")
-                 (string-append "-DCRYPTOPP_LIBRARIES=" crypto "/lib/libcryptopp.a")
-                 "-DUSE_SYSTEM_SHA2=TRUE"))
+         (list ;; Requires unpackaged "projectm"
+               "-DENABLE_VISUALISATIONS=OFF"
+               ;; Otherwise it may try to download a non-free library at run-time.
+               ;; TODO In an origin snippet, remove the code that performs the
+               ;; download.
+               "-DHAVE_SPOTIFY_DOWNLOADER=FALSE"
+               "-DUSE_SYSTEM_SHA2=TRUE")
          #:phases
          (modify-phases %standard-phases
            (add-after 'install 'wrap-program
@@ -254,7 +255,6 @@ score, keyboard, guitar, drum and controller views.")
       (inputs
        `(("boost" ,boost)
          ("chromaprint" ,chromaprint)
-         ("crypto++" ,crypto++)
          ("fftw" ,fftw)
          ("glib" ,glib)
          ("glu" ,glu)

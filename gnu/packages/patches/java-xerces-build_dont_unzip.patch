@@ -1,0 +1,44 @@
+Don't unzip the sources which were bundled originally. Guix strips them from
+the source and uses pre-build packages.
+
+Taken from https://anonscm.debian.org/viewvc/pkg-java/trunk/libxerces2-java/debian/patches/02_build_dont_unzip.patch?revision=14507
+
+Index: b/build.xml
+===================================================================
+--- a/build.xml
++++ b/build.xml
+@@ -247,7 +247,7 @@
+     <copy file="${src.dir}/org/apache/xerces/impl/xpath/regex/message.properties"
+       tofile="${build.src}/org/apache/xerces/impl/xpath/regex/message_en.properties"/>
+ 
+-    <!-- now deal with API's:  -->
++    <!-- not needed for Debian
+     <unzip src="${src.apis.zip}" dest="${build.src}">
+         <patternset
+             includes="org/xml/sax/** 
+@@ -270,6 +270,7 @@
+                 org/w3c/dom/xpath/**"
+         />
+     </unzip>
++    -->
+     
+     <!-- substitute tokens as needed -->
+     <replace file="${build.dir}/src/org/apache/xerces/impl/Version.java" 
+@@ -1232,7 +1233,7 @@
+     <replace file="${build.dir}/src/org/apache/xerces/parsers/AbstractSAXParser.java"
+              token="return (fConfiguration instanceof XML11Configurable);" value="return false;"/>
+  
+-    <!-- now deal with API's:  -->
++    <!-- not needed for Debian
+     <unzip src="${src.apis.zip}" dest="${build.src}">
+         <patternset
+             includes="org/xml/sax/** 
+@@ -1255,7 +1256,7 @@
+                 org/w3c/dom/xpath/**"
+         />
+     </unzip>
+-
++    -->
+ 
+     <!-- substitute tokens as needed -->
+     <replace file="${build.dir}/src/org/apache/xerces/impl/Version.java" 

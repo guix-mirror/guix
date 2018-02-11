@@ -108,9 +108,18 @@ Throw an error on failure."
        (use-modules (ice-9 match) (rnrs io ports)
                     (rnrs bytevectors))
 
-       (let ((sock   (socket AF_UNIX SOCK_STREAM 0))
-             (stdin  (current-input-port))
-             (stdout (current-output-port)))
+       (let ((sock    (socket AF_UNIX SOCK_STREAM 0))
+             (stdin   (current-input-port))
+             (stdout  (current-output-port))
+             (select* (lambda (read write except)
+                        ;; This is a workaround for
+                        ;; <https://bugs.gnu.org/30365> in Guile < 2.2.4:
+                        ;; since 'select' sometimes returns non-empty sets for
+                        ;; no good reason, call 'select' a second time with a
+                        ;; zero timeout to filter out incorrect replies.
+                        (match (select read write except)
+                          ((read write except)
+                           (select read write except 0))))))
          (setvbuf stdout _IONBF)
 
          ;; Use buffered ports so that 'get-bytevector-some' returns up to the
@@ -121,7 +130,7 @@ Throw an error on failure."
          (connect sock AF_UNIX ,socket-name)
 
          (let loop ()
-           (match (select (list stdin sock) '() '())
+           (match (select* (list stdin sock) '() '())
              ((reads () ())
               (when (memq stdin reads)
                 (match (get-bytevector-some stdin)

@@ -729,17 +729,18 @@ programming langauage.  It also contains the utility
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")         ; for glib-compile-resources
        ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("gcab" ,gcab) ; for .pc file
+       ("gdk-pixbuf" ,gdk-pixbuf) ; for .pc file
+       ("util-linux" ,util-linux))) ; for .pc file
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("gcab" ,gcab)
-       ("glib" ,glib)
+     `(("glib" ,glib)
        ("gperf" ,gperf)
        ("gtk+" ,gtk+)
        ("json-glib" ,json-glib)
        ("libarchive" ,libarchive)
        ("libsoup" ,libsoup)
-       ("libyaml" ,libyaml)
-       ("util-linux" ,util-linux)))     ; for libuuid
+       ("libyaml" ,libyaml)))
     (arguments
      `(#:configure-flags
        (list "-Ddep11=false"

@@ -7768,3 +7768,590 @@ outputting XML data from Java code.")
     (description "Xbean-reflect provides very flexible ways to create objects
 and graphs of objects for dependency injection frameworks")
     (license license:asl2.0)))
+
+(define-public java-geronimo-xbean-bundleutils
+  (package
+    (inherit java-geronimo-xbean-reflect)
+    (name "java-geronimo-xbean-bundleutils")
+    (arguments
+     `(#:jar-name "geronimo-xbean-bundleutils.jar"
+       #:source-dir "xbean-bundleutils/src/main/java"
+       #:test-dir "xbean-bundleutils/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-java
+           (lambda _
+             ;; We use a more recent version of osgi, so this file requires
+             ;; more interface method implementations.
+             (substitute* "xbean-bundleutils/src/main/java/org/apache/xbean/osgi/bundle/util/DelegatingBundleContext.java"
+               (("import org.osgi.framework.ServiceRegistration;")
+                "import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.ServiceFactory;
+import java.util.Collection;
+import org.osgi.framework.ServiceObjects;")
+               (("public Bundle getBundle\\(\\)")
+                "@Override
+public <S> ServiceObjects<S> getServiceObjects(ServiceReference<S> reference) {
+ throw new UnsupportedOperationException();
+}
+@Override
+public <S> ServiceRegistration<S> registerService(Class<S> clazz,
+        ServiceFactory<S> factory, Dictionary<String, ?> properties) {
+ throw new UnsupportedOperationException();
+}
+public Bundle getBundle()"))
+             #t)))))
+    (inputs
+     `(("java-slf4j" ,java-slf4j-api)
+       ("java-asm" ,java-asm)
+       ("java-osgi-framework" ,java-osgi-framework)
+       ("java-eclipse-osgi" ,java-eclipse-osgi)
+       ("java-osgi-service-packageadmin" ,java-osgi-service-packageadmin)))))
+ 
+(define-public java-geronimo-xbean-asm-util
+  (package
+    (inherit java-geronimo-xbean-reflect)
+    (name "java-geronimo-xbean-asm-util")
+    (arguments
+     `(#:jar-name "geronimo-xbean-asm-util.jar"
+       #:source-dir "xbean-asm-util/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-asm" ,java-asm)))
+    (native-inputs '())))
+ 
+(define-public java-geronimo-xbean-finder
+  (package
+    (inherit java-geronimo-xbean-reflect)
+    (name "java-geronimo-xbean-finder")
+    (arguments
+     `(#:jar-name "geronimo-xbean-finder.jar"
+       #:source-dir "xbean-finder/src/main/java"
+       #:test-dir "xbean-finder/src/test"))
+    (inputs
+     `(("java-slf4j-api" ,java-slf4j-api)
+       ("java-asm" ,java-asm)
+       ("java-geronimo-xbean-bundleutils" ,java-geronimo-xbean-bundleutils)
+       ("java-geronimo-xbean-asm-util" ,java-geronimo-xbean-asm-util)
+       ("java-osgi-service-packageadmin" ,java-osgi-service-packageadmin)
+       ("java-osgi-framework" ,java-osgi-framework)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))))
+
+(define-public java-gson
+  (package
+    (name "java-gson")
+    (version "2.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/gson/archive/"
+                                  "gson-parent-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1j4qnp7v046q0k48c4kyf69sxaasx2h949d3cqwsm3kzxms3x0f9"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "gson.jar"
+       #:source-dir "gson/src/main/java"
+       #:test-dir "gson/src/test"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://github.com/google/gson")
+    (synopsis "Java serialization/deserialization library from/to JSON")
+    (description "Gson is a Java library that can be used to convert Java
+Objects into their JSON representation.  It can also be used to convert a JSON
+string to an equivalent Java object.  Gson can work with arbitrary Java objects
+including pre-existing objects that you do not have source-code of.")
+    (license license:asl2.0)))
+
+(define-public java-hawtjni
+  (package
+    (name "java-hawtjni")
+    (version "1.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/fusesource/hawtjni/archive/"
+                                  "hawtjni-project-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bqfd732rmh6svyx17fpw9175gc9gzkcbyps2yyrf50c3zzjas6g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "hawtjni.jar"
+       #:source-dir "hawtjni-generator/src/main/java:hawtjni-runtime/src/main/java"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-native
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "hawtjni-generator/src/main/resources/"
+               (and
+                 (system* "gcc" "-c" "hawtjni.c" "-o" "hawtjni.o"
+                          "-fPIC" "-O2"
+                          (string-append "-I" (assoc-ref inputs "jdk") "/include/linux"))
+                 (system* "gcc" "-c" "hawtjni-callback.c" "-o" "hawtjni-callback.o"
+                          "-fPIC" "-O2"
+                          (string-append "-I" (assoc-ref inputs "jdk") "/include/linux"))
+                 (system* "gcc" "-o" "libhawtjni.so" "-shared"
+                          "hawtjni.o" "hawtjni-callback.o")))))
+         (add-after 'install 'install-native
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (inc (string-append out "/include")))
+               (mkdir-p lib)
+               (mkdir-p inc)
+               (with-directory-excursion "hawtjni-generator/src/main/resources/"
+                 (copy-file "libhawtjni.so" (string-append lib "/libhawtjni.so"))
+                 (copy-file "hawtjni.h" (string-append inc "/hawtjni.h"))))
+             #t)))))
+    (inputs
+     `(("java-commons-cli" ,java-commons-cli)
+       ("java-asm" ,java-asm)
+       ("java-geronimo-xbean-finder" ,java-geronimo-xbean-finder)))
+    (home-page "https://fusesource.github.io/hawtjni/")
+    (synopsis "JNI code generator")
+    (description "HawtJNI is a code generator that produces the JNI code needed
+to implement Java native methods.  It is based on the jnigen code generator
+that is part of the SWT Tools project.")
+    (license license:asl2.0)))
+
+(define-public java-jansi-native
+  (package
+    (name "java-jansi-native")
+    (version "1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/fusesource/jansi-native/"
+                                  "archive/jansi-native-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0j2ydlgxbzbgshqkwghbxxxnbnx1mmjgd6k5fw6xfvxw1z956yqf"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jansi-native.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-native
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; there are more required files for windows in windows/
+             (with-directory-excursion "src/main/native-package/src"
+               (substitute* "jansi_ttyname.c"
+                 (("#include \"jansi_.*") ""))
+               (and
+                 (system* "gcc" "-c" "jansi_ttyname.c" "-o" "jansi_ttyname.o"
+                          (string-append "-I" (assoc-ref inputs "java-hawtjni")
+                                         "/include")
+                          (string-append "-I" (assoc-ref inputs "jdk")
+                                         "/include/linux")
+                          "-fPIC" "-O2")
+                 (system* "gcc" "-o" "libjansi.so" "-shared" "jansi_ttyname.o")))))
+         (add-before 'build 'install-native
+           (lambda _
+             (let ((dir (string-append "build/classes/META-INF/native/"
+                                       ,(match (%current-system)
+                                          ((or "i686-linux" "armhf-linux")
+                                           "linux32")
+                                          ((or "x86_64-linux" "aarch64-linux")
+                                           "linux64")))))
+               (install-file "src/main/native-package/src/libjansi.so" dir))
+             #t))
+         (add-after 'install 'install-native
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/include"))
+             (install-file "src/main/native-package/src/jansi.h"
+                           (string-append (assoc-ref outputs "out") "/include"))
+             #t)))))
+    (inputs
+     `(("java-hawtjni" ,java-hawtjni)))
+    (home-page "https://fusesource.github.io/jansi/")
+    (synopsis "Native library for jansi")
+    (description "Java-jansi-native contains the native library for the jansi
+frobnication library/framework.")
+    (license license:asl2.0)))
+
+(define-public java-jansi
+  (package
+    (name "java-jansi")
+    (version "1.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/fusesource/jansi/archive/"
+                                  "jansi-project-" version ".tar.gz"))
+              (sha256
+               (base32
+                "11kh3144i3fzp21dpy8zg52mjmsr214k7km9p8ly0rqk2px0qq2z"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jansi.jar"
+       #:source-dir "jansi/src/main/java"
+       #:test-dir "jansi/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'check 'clear-term
+           (lambda _
+             (zero? (system* "echo" "-e" "\\e[0m")))))))
+    (inputs
+     `(("java-jansi-native" ,java-jansi-native)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://fusesource.github.io/jansi/")
+    (synopsis "Portable ANSI escape sequences")
+    (description "Jansi is a Java library that allows you to use ANSI escape
+sequences to format your console output which works on every platform.")
+    (license license:asl2.0)))
+
+(define-public java-jboss-el-api-spec
+  (package
+    (name "java-jboss-el-api-spec")
+    (version "3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jboss/jboss-el-api_spec/"
+                                  "archive/jboss-el-api_" version
+                                  "_spec-1.0.7.Final.tar.gz"))
+              (sha256
+               (base32
+                "1j45ljxalwlibxl7g7iv952sjxkw275m8vyxxij8l6wdd5pf0pdh"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jboss-el-api_spec.jar"
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/jboss/jboss-el-api_spec")
+    (synopsis "JSR-341 expression language 3.0 API")
+    (description "This package contains an implementation of the JSR-341
+specification for the expression language 3.0.  It implements an expression
+language inspired by ECMAScript and XPath.  This language is used with
+JavaServer Pages (JSP).")
+    ;; Either GPL2 only or CDDL.
+    (license (list license:gpl2 license:cddl1.1))))
+
+(define-public java-jboss-interceptors-api-spec
+  (package
+    (name "java-jboss-interceptors-api-spec")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jboss/jboss-interceptors-api_spec/"
+                                  "archive/jboss-interceptors-api_" version
+                                  "_spec-1.0.0.Final.tar.gz"))
+              (sha256
+               (base32
+                "0wv8x0jp9a5qxlrgkhb5jdk2gr6vi87b4j4kjb8ryxiy9gn8g51z"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jboss-interceptors-api_spec.jar"
+       #:jdk ,icedtea-8
+       #:source-dir "."
+       #:tests? #f)); no tests
+    (home-page "https://github.com/jboss/jboss-interceptors-api_spec")
+    (synopsis "Interceptors 1.2 API classes from JSR 318")
+    (description "Java-jboss-interceptors-api-spec implements the Interceptors
+API.  Interceptors are used to interpose on business method invocations and
+specific events.")
+    ;; Either GPL2 only or CDDL.
+    (license (list license:gpl2 license:cddl1.1))))
+
+(define-public java-cdi-api
+  (package
+    (name "java-cdi-api")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cdi-spec/cdi/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1iv8b8bp07c5kmqic14jsr868vycjv4qv02lf3pkgp9z21mnfg5y"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:source-dir "api/src/main/java"
+       #:jar-name "java-cdi-api.jar"
+       #:test-dir "api/src/test"
+       #:jdk ,icedtea-8
+       #:tests? #f)); Tests fail because we don't have a CDI provider yet
+    (inputs
+     `(("java-javax-inject" ,java-javax-inject)
+       ("java-jboss-el-api-spec" ,java-jboss-el-api-spec)
+       ("java-jboss-interceptors-api-spec" ,java-jboss-interceptors-api-spec)))
+    (native-inputs
+     `(("java-testng" ,java-testng)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://cdi-spec.org/")
+    (synopsis "Contexts and Dependency Injection APIs")
+    (description "Java-cdi-api contains the required APIs for Contexts and
+Dependency Injection (CDI).")
+    (license license:asl2.0)))
+
+(define-public java-joda-convert
+  (package
+    (name "java-joda-convert")
+    (version "1.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/JodaOrg/joda-convert/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vp346xz7dh9br4q7xazhc7hvzf76a6hf95fki9bg67q5jr0kjh7"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:source-dir "src/main/java"
+       #:test-include (list "**/Test*.java")
+       ;; Contains only interfaces and base classes (no test)
+       #:test-exclude (list "**/test*/**.java")))
+    (inputs
+     `(("java-guava" ,java-guava)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://www.joda.org/joda-convert/")
+    (synopsis "Conversion between Objects and Strings")
+    (description "Joda-Convert provides a small set of classes to aid
+conversion between Objects and Strings.  It is not intended to tackle the
+wider problem of Object to Object transformation.")
+    (license license:asl2.0)))
+
+(define-public java-joda-time
+  (package
+    (name "java-joda-time")
+    (version "2.9.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/JodaOrg/joda-time/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1i9x91mi7yg2pasl0k3912f1pg46n37sps6rdb0v1gs8hj9ppwc1"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-joda-time.jar"
+       #:source-dir "src/main/java"
+       #:test-include (list "**/Test*.java")
+       ;; There is no runnable test in these files
+       #:test-exclude (list "**/Test*Chronology.java" "**/Test*Field.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-resources
+           (lambda _
+             (mkdir-p "build/classes/org/joda/time/tz/data")
+             (mkdir-p "build/classes/org/joda/time/format")
+             ;; This will produce the following exception:
+             ;; java.io.IOException: Resource not found: "org/joda/time/tz/data/ZoneInfoMap"
+             ;; which is normal, because it doesn't exist yet. It still generates
+             ;; the same file as in the binary one can find on maven.
+             (invoke "java" "-cp"
+                     (string-append "build/classes:" (getenv "CLASSPATH"))
+                     "org.joda.time.tz.ZoneInfoCompiler"
+                     "-src" "src/main/java/org/joda/time/tz/src"
+                     "-dst" "build/classes/org/joda/time/tz/data"
+                     "africa" "antarctica" "asia" "australasia"
+                     "europe" "northamerica" "southamerica"
+                     "pacificnew" "etcetera" "backward" "systemv")
+             (for-each (lambda (f)
+                         (copy-file f (string-append
+                                        "build/classes/org/joda/time/format/"
+                                        (basename f))))
+               (find-files "src/main/java/org/joda/time/format" ".*.properties"))
+             #t))
+         (add-before 'install 'regenerate-jar
+           (lambda _
+             ;; We need to regenerate the jar file to add generated data.
+             (delete-file "build/jar/java-joda-time.jar")
+             (invoke "ant" "jar")))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (mkdir-p "build/test-classes/org/joda/time/tz/data")
+             (copy-file "src/test/resources/tzdata/ZoneInfoMap"
+                        "build/test-classes/org/joda/time/tz/data/ZoneInfoMap")
+             (copy-recursively "src/test/resources" "build/test-classes")
+             #t)))))
+    (inputs
+     `(("java-joda-convert" ,java-joda-convert)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("tzdata" ,tzdata)))
+    (home-page "http://www.joda.org/joda-time/")
+    (synopsis "Replacement for the Java date and time classes")
+    (description "Joda-Time is a replacement for the Java date and time
+classes prior to Java SE 8.")
+    (license license:asl2.0)))
+
+(define-public java-xerces
+  (package
+    (name "java-xerces")
+    (version "2.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/xerces/j/source/"
+                           "Xerces-J-src." version ".tar.gz"))
+       (sha256
+        (base32 "1006igwy2lqrmjvdk64v8dg6qbk9c29pm8xxx7r87n0vnpvmx6pm"))
+       (patches (search-patches
+                 "java-xerces-xjavac_taskdef.patch"
+                 "java-xerces-build_dont_unzip.patch"
+                 "java-xerces-bootclasspath.patch"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f;; Test files are not present
+       #:test-target "test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-build.properties
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((jaxp (assoc-ref inputs "java-jaxp"))
+                  (resolver (assoc-ref inputs "java-apache-xml-commons-resolver")))
+              (with-output-to-file "build.properties"
+                (lambda _
+                  (format #t
+                   "jar.jaxp = ~a/share/java/jaxp.jar~@
+                   jar.apis-ext = ~a/share/java/jaxp.jar~@
+                   jar.resolver = ~a/share/java/xml-resolver.jar~%"
+                   jaxp jaxp resolver)))
+              ;; Make xerces use our version of jaxp in tests
+              (substitute* "build.xml"
+                (("xml-apis.jar")
+                 (string-append jaxp "/share/java/jaxp.jar"))
+                (("\\$\\{tools.dir\\}/\\$\\{jar.apis\\}")
+                 "${jar.apis}")))
+            #t))
+         (replace 'install (install-jars "build")))))
+    (inputs
+     `(("java-apache-xml-commons-resolver" ,java-apache-xml-commons-resolver)
+       ("java-jaxp" ,java-jaxp)))
+    (home-page "https://xerces.apache.org/xerces2-j/")
+    (synopsis "Validating XML parser for Java with DOM level 3 support")
+    (description "The Xerces2 Java parser is the reference implementation of
+XNI, the Xerces Native Interface, and also a fully conforming XML Schema
+processor.
+
+Xerces2-J supports the following standards and APIs:
+
+@itemize
+@item eXtensible Markup Language (XML) 1.0 Second Edition Recommendation
+@item Namespaces in XML Recommendation
+@item Document Object Model (DOM) Level 2 Core, Events, and Traversal and
+      Range Recommendations
+@item Simple API for XML (SAX) 2.0.1 Core and Extension
+@item Java APIs for XML Processing (JAXP) 1.2.01
+@item XML Schema 1.0 Structures and Datatypes Recommendations
+@item Experimental implementation of the Document Object Model (DOM) Level 3
+      Core and Load/Save Working Drafts
+@item Provides a partial implementation of the XML Inclusions (XInclude) W3C
+      Candidate Recommendation
+@end itemize
+
+Xerces is now able to parse documents written according to the XML 1.1
+Candidate Recommendation, except that it does not yet provide an option to
+enable normalization checking as described in section 2.13 of this
+specification.  It also handles namespaces according to the XML Namespaces 1.1
+Candidate Recommendation, and will correctly serialize XML 1.1 documents if
+the DOM level 3 load/save API's are in use.")
+    (license license:asl2.0)))
+
+(define-public java-jline
+  (package
+    (name "java-jline")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jline/jline1/archive/jline-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0bi3p6vrh7a6v0fbpb6rx9plpmx5zk3lr352xzdbz2jcxg499wir"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jline.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://jline.github.io")
+    (synopsis "Console input handling library")
+    (description "JLine is a Java library for handling console input.  It is
+similar in functionality to BSD editline and GNU readline but with additional
+features that bring it on par with the Z shell line editor.")
+    (license license:bsd-3)))
+
+(define-public java-xmlunit
+  (package
+    (name "java-xmlunit")
+    (version "2.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/xmlunit/xmlunit/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "035rivlnmwhfqj0fzviciv0bkh1h95ps1iwnh2kjcvdbk5nccm4z"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-xmlunit.jar"
+       #:source-dir "xmlunit-core/src/main/java"
+       #:test-dir "xmlunit-core/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'copy-test-resources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "resources") "../test-resources")
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-mockito-1" ,java-mockito-1)
+       ("java-hamcrest-all" ,java-hamcrest-all)
+       ("java-objenesis" ,java-objenesis)
+       ("java-asm" ,java-asm)
+       ("java-cglib" ,java-cglib)
+       ("resources"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                  (url "https://github.com/xmlunit/test-resources.git")
+                  (commit "a590d2ae865c3e0455691d76ba8eefccc2215aec")))
+           (file-name "java-xmlunit-test-resources")
+           (sha256
+            (base32
+             "0r0glj37pg5l868yjz78gckr91cs8fysxxbp9p328dssssi91agr"))))))
+    (home-page "http://www.xmlunit.org/")
+    (synopsis "XML output testing")
+    (description "XMLUnit provides you with the tools to verify the XML you
+emit is the one you want to create.  It provides helpers to validate against
+an XML Schema, assert the values of XPath queries or compare XML documents
+against expected outcomes.")
+    (license license:asl2.0)))
+
+(define-public java-xmlunit-legacy
+  (package
+    (inherit java-xmlunit)
+    (name "java-xmlunit-legacy")
+    (arguments
+     `(#:jar-name "java-xmlunit-legacy.jar"
+       #:source-dir "xmlunit-legacy/src/main/java"
+       #:test-dir "xmlunit-legacy/src/test"))
+    (inputs
+     `(("java-xmlunit" ,java-xmlunit)
+       ("java-junit" ,java-junit)))
+    (native-inputs
+     `(("java-mockito-1" ,java-mockito-1)))))

@@ -719,7 +719,7 @@ allows for heavy scripting.")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.14")
+  (version "1.15")
   (source
     (origin
       (method url-fetch)
@@ -729,7 +729,7 @@ allows for heavy scripting.")
              ".tar.gz"))
       (sha256
         (base32
-          "1z4r092qv0ify033dld5jayk8gs0bc7pl130dvb8ab7b9rcqmhw3"))))
+          "1l31kqrgjzq8zgpr86z12x550px5zpn563gmnja6m14b8fk6pm0s"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))

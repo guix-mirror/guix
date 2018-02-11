@@ -1,0 +1,59 @@
+Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+
+This patch adds a support for Git repositories hosted on git.savannah.gnu.org.
+
+Upstream bug URL:
+
+https://github.com/rmuslimov/browse-at-remote/pull/46
+
+From cd2ccdaef8b1d97337d790175f71cc3dbcfcff64 Mon Sep 17 00:00:00 2001
+From: Oleg Pykhalov <go.wigust@gmail.com>
+Date: Fri, 26 Jan 2018 00:05:30 +0300
+Subject: [PATCH] Add support for repositories that are hosted on gnu cgit
+
+---
+ browse-at-remote.el | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/browse-at-remote.el b/browse-at-remote.el
+index 66967b3..e210d18 100644
+--- a/browse-at-remote.el
++++ b/browse-at-remote.el
+@@ -44,7 +44,8 @@
+ (defcustom browse-at-remote-remote-type-domains
+   '(("bitbucket.org" ."bitbucket")
+     ("github.com" . "github")
+-    ("gitlab.com" . "gitlab"))
++    ("gitlab.com" . "gitlab")
++    ("git.savannah.gnu.org" . "gnu"))
+   "Alist of domain patterns to remote types."
+ 
+   :type '(alist :key-type (string :tag "Domain")
+@@ -199,6 +200,24 @@ If HEAD is detached, return nil."
+     (if (fboundp formatter)
+         formatter nil)))
+ 
++(defun browse-at-remote-gnu-format-url (repo-url)
++  "Get a gnu formatted URL."
++  (replace-regexp-in-string
++   (concat "https://" (car (rassoc "gnu" browse-at-remote-remote-type-domains))
++           "/\\(git\\).*\\'")
++   "cgit" repo-url nil nil 1))
++
++(defun browse-at-remote--format-region-url-as-gnu (repo-url location filename &optional linestart lineend)
++  "URL formatter for gnu."
++  (let ((repo-url (browse-at-remote-gnu-format-url repo-url)))
++    (cond
++     (linestart (format "%s.git/tree/%s?h=%s#n%d" repo-url filename location linestart))
++     (t (format "%s.git/tree/%s?h=%s" repo-url filename location)))))
++
++(defun browse-at-remote--format-commit-url-as-gnu (repo-url commithash)
++  "Commit URL formatted for gnu"
++  (format "%s.git/commit/?id=%s" (browse-at-remote-gnu-format-url repo-url) commithash))
++
+ (defun browse-at-remote--format-region-url-as-github (repo-url location filename &optional linestart lineend)
+   "URL formatted for github."
+   (cond
+-- 
+2.15.1
+

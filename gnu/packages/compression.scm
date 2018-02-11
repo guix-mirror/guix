@@ -1781,22 +1781,16 @@ recreates the stored directory structure by default.")
 (define-public zziplib
   (package
     (name "zziplib")
-    (version "0.13.62")
+    (version "0.13.68")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/zziplib/zziplib13/"
                            version "/zziplib-"
                            version ".tar.bz2"))
-       (patches (search-patches "zziplib-CVE-2017-5974.patch"
-                                "zziplib-CVE-2017-5975.patch"
-                                "zziplib-CVE-2017-5976.patch"
-                                "zziplib-CVE-2017-5978.patch"
-                                "zziplib-CVE-2017-5979.patch"
-                                "zziplib-CVE-2017-5981.patch"))
        (sha256
         (base32
-         "0nsjqxw017hiyp524p9316283jlf5piixc1091gkimhz38zh7f51"))))
+         "1s0wz1hf2q4qxcp4lkg4rzpbz2814xagmvlyicqdj0ww0cvxv036"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -1807,7 +1801,10 @@ recreates the stored directory structure by default.")
                      ("python" ,python-2)
                      ("zip" ,zip))) ; to create test files
     (arguments
-     `(#:parallel-tests? #f)) ; since test files are created on the fly
+     ;; XXX: "make check" is broken, and the alternative (test/zziptests.py)
+     ;; requires network access.  See <https://github.com/gdraheim/zziplib/issues/20>
+     ;; and <https://github.com/gdraheim/zziplib/issues/24>.
+     `(#:tests? #f))
     (home-page "http://zziplib.sourceforge.net/")
     (synopsis "Library for accessing zip files")
     (description
