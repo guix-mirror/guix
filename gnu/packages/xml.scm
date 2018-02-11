@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
@@ -41,6 +41,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
@@ -970,6 +971,15 @@ Canonical XML (part of Libxml2) and Exclusive Canonical XML (part of
 Libxml2).")
     (license (license:x11-style "file://COPYING"
                                 "See 'COPYING' in the distribution."))))
+
+(define-public xmlsec-nss
+  (package
+    (inherit xmlsec)
+    (name "xmlsec-nss")
+    (inputs
+     `(("nss" ,nss)
+       ("libltdl" ,libltdl)))
+    (synopsis "XML Security Library (using NSS instead of GnuTLS)")))
 
 (define-public minixml
   (package
