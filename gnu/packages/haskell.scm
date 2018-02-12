@@ -2191,7 +2191,7 @@ for Unix time in Haskell.")
 (define-public ghc-unix-compat
   (package
     (name "ghc-unix-compat")
-    (version "0.4.1.4")
+    (version "0.4.2.0")
     (source
      (origin
        (method url-fetch)
@@ -2201,7 +2201,7 @@ for Unix time in Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "0jxk7j5pz2kgfpqr4hznndjg31pqj5xg2qfc5308fcn9xyg1myps"))))
+         "036nv05w0yjxc3rfpar60ddjrlzc40mdgr5k6ihvwlvqfmq1gw9m"))))
     (build-system haskell-build-system)
     (home-page
      "https://github.com/jystic/unix-compat")
