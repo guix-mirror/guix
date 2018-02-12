@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016 Raoul Bonnal <ilpuccio.febo@gmail.com>
+;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -10537,6 +10537,50 @@ retrieve spike-in information, dimensionality reduction coordinates and size
 factors for each cell, along with the usual metadata for genes and
 libraries.")
     (license license:gpl3)))
+
+(define-public r-scater
+  (package
+    (name "r-scater")
+    (version "1.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "scater" version))
+              (sha256
+               (base32
+                "0fp68n0xnbf90wrprqawsbilg9x7v2scp0dxb3936g20025csrdd"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beachmat" ,r-beachmat)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biomart" ,r-biomart)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-edger" ,r-edger)
+       ("r-ggbeeswarm" ,r-ggbeeswarm)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-limma" ,r-limma)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-plyr" ,r-plyr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-rhdf5lib" ,r-rhdf5lib)
+       ("r-rjson" ,r-rjson)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-shiny" ,r-shiny)
+       ("r-shinydashboard" ,r-shinydashboard)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-tximport" ,r-tximport)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://github.com/davismcc/scater")
+    (synopsis "Single-cell analysis toolkit for gene expression data in R")
+    (description "This package provides a collection of tools for doing
+various analyses of single-cell RNA-seq gene expression data, with a focus on
+quality control.")
+    (license license:gpl2+)))
 
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
