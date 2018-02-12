@@ -1012,6 +1012,32 @@ are supported.  Apart from these standard extensions, it also handles regular
 patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
     (license license:bsd-3)))
 
+(define-public ghc-haskell-src-exts-util
+  (package
+    (name "ghc-haskell-src-exts-util")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "haskell-src-exts-util/haskell-src-exts-util-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "14rhwcrdz3kfb69c64qn8kybl7wnpajrjlfz5p95ca4bva4mwclg"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-data-default" ,ghc-data-default)
+       ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-uniplate" ,ghc-uniplate)))
+    (home-page "https://github.com/pepeiborra/haskell-src-exts-util")
+    (synopsis "Helper functions for working with haskell-src-exts trees")
+    (description
+     "This package provides helper functions for working with
+@code{haskell-src-exts} trees.")
+    (license license:bsd-3)))
+
 (define-public hlint
   (package
     (name "hlint")
