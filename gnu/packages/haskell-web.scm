@@ -424,7 +424,7 @@ communication between web applications and web servers.")
 (define-public ghc-wai-extra
   (package
     (name "ghc-wai-extra")
-    (version "3.0.13.1")
+    (version "3.0.18")
     (source
      (origin
        (method url-fetch)
@@ -434,7 +434,7 @@ communication between web applications and web servers.")
              ".tar.gz"))
        (sha256
         (base32
-         "0mh761a1bayr4ydwqmh3h8ndpi19zqw34mmy49lp2abr70r0nm1p"))))
+         "0r079mqqdv14fp97w0rigdpwk6b88grpjlqsjc5y8bbc0skf5za2"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
