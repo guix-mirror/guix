@@ -977,6 +977,19 @@ complex generic values into an interactive Html page, for easier
 examination.")
     (license license:expat)))
 
+(define-public ghc-pretty-show-for-haskell-src-exts
+  (package (inherit ghc-pretty-show)
+    (name "ghc-pretty-show")
+    (version "1.6.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/pretty-show/"
+                           "pretty-show-" version ".tar.gz"))
+       (sha256
+        (base32
+         "133s4l1gk46saf6ycm785rswycy8g3j0qqrv93b5wp8cp50kd0ww"))))))
+
 (define-public ghc-haskell-src-exts
   (package
     (name "ghc-haskell-src-exts")
