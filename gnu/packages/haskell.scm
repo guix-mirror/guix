@@ -1731,7 +1731,7 @@ access to the full zlib feature set.")
 (define-public ghc-text
   (package
     (name "ghc-text")
-    (version "1.2.1.3")
+    (version "1.2.2.2")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -1742,10 +1742,12 @@ access to the full zlib feature set.")
              ".tar.gz"))
        (sha256
         (base32
-         "0gzqx5cpkdhshbz9xss51mpyq23pnf8dwjz4h3irbv2ryaa4qdlq"))))
+         "1y9d0zjs2ls0c574mr5xw7y3y49s62sd3wcn9lhpwz8a6q352iii"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
+    ;; The test dependencies depend on ghc-text: ghc-test-framework -> ghc-xml -> ghc-text
+    (arguments `(#:tests? #f))
+    (inputs
+     `(("ghc-random" ,ghc-random)))
     (home-page "https://github.com/bos/text")
     (synopsis "Efficient packed Unicode text type library")
     (description
