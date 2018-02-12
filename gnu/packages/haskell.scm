@@ -2577,7 +2577,7 @@ and mIRC chat codes.")
 (define-public ghc-polyparse
   (package
     (name "ghc-polyparse")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
@@ -2587,7 +2587,7 @@ and mIRC chat codes.")
              ".tar.gz"))
        (sha256
         (base32
-         "1z417f80b0jm4dgv25fk408p3d9mmcd1dlbya3ry0zdx4md09vrh"))))
+         "05dya1vdvq29hkhkdlsglzhw7bdn51rvs1javs0q75nf99c66k7m"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-text" ,ghc-text)))
