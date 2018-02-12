@@ -1273,7 +1273,7 @@ computation library for Haskell.")
 (define-public ghc-openglraw
   (package
     (name "ghc-openglraw")
-    (version "2.5.1.0")
+    (version "3.2.7.0")
     (source
      (origin
        (method url-fetch)
@@ -1283,10 +1283,11 @@ computation library for Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "1kfq24mxg922ml3kkmym2qfpc56jbmrfbiix4rc2cxlwv05i191k"))))
+         "024aln102d1mmsdalq9jd5mmwjbnrb8gxcak73lybrc7q87kswk2"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-half" ,ghc-half)
+       ("ghc-fixed" ,ghc-fixed)
        ("glu" ,glu)
        ("ghc-text" ,ghc-text)))
     (home-page "http://www.haskell.org/haskellwiki/Opengl")
