@@ -1384,7 +1384,7 @@ version 1.3).")
 (define-public ghc-streaming-commons
   (package
     (name "ghc-streaming-commons")
-    (version "0.1.14.2")
+    (version "0.1.16")
     (source
      (origin
        (method url-fetch)
@@ -1394,7 +1394,7 @@ version 1.3).")
              ".tar.gz"))
        (sha256
         (base32
-         "12nw9bwvy6zrabkgvbp371klca3ds6qjlfncg1b8pbwx1y7m8c8h"))))
+         "0vhhm0z88b1r6s50bskdfh73acwfypm614nycmi9jwiyh84zbz8p"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
