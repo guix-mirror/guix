@@ -4580,7 +4580,7 @@ functionality on lists which is not going to go into List::Util.")
 (define-public perl-list-moreutils-xs
   (package
     (name "perl-list-moreutils-xs")
-    (version "0.426")
+    (version "0.428")
     (source
      (origin
        (method url-fetch)
@@ -4588,7 +4588,7 @@ functionality on lists which is not going to go into List::Util.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0ss0a0f9yqs7gd9qamhaxq27mvn573ljg28ry1gy2pxbz56byzbc"))))
+         "0bfndmnkqaaf3gffprak143bzplxd69c368jxgr7rzlx88hyd7wx"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-config-autoconf" ,perl-config-autoconf)
