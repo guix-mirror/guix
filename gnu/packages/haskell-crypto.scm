@@ -476,7 +476,7 @@ collections, certificates, revocation lists, and exception lists.")
 (define-public ghc-x509-validation
   (package
     (name "ghc-x509-validation")
-    (version "1.6.3")
+    (version "1.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -484,7 +484,7 @@ collections, certificates, revocation lists, and exception lists.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1qr1v561hdlhjgqjv9pj9mbk0q1xf2mr1j67ghy93nlxxyzd7dw0"))))
+                "190w1sr3w6w49v3yvqz4grb0v09ym4gll3n8bxwijvbvcybk3xyi"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-memory" ,ghc-memory)
