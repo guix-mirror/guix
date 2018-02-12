@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,7 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.64.0")
+    (version "1.66.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -46,7 +47,7 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "0cikd35xfkpg9nnl76yqqnqxnf3hyfjjww8xjd4akflprsm5rk3v"))))
+                "1aaw48cmimsskzgiclwn0iifp62a5iw9cbqrhfari876af1828ap"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)
               ("zlib" ,zlib)))
@@ -73,8 +74,7 @@
                    '()))
        #:phases
        (modify-phases %standard-phases
-         (replace
-             'configure
+         (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (substitute* '("libs/config/configure"
@@ -88,21 +88,22 @@
                (setenv "SHELL" (which "sh"))
                (setenv "CONFIG_SHELL" (which "sh"))
 
-               (zero? (system* "./bootstrap.sh"
-                               (string-append "--prefix=" out)
-                               "--with-toolset=gcc")))))
-         (replace
-             'build
+               (invoke "./bootstrap.sh"
+                       (string-append "--prefix=" out)
+                       "--with-toolset=gcc")
+               #t)))
+         (replace 'build
            (lambda* (#:key outputs make-flags #:allow-other-keys)
-             (zero? (apply system* "./b2"
-                           (format #f "-j~a" (parallel-job-count))
-                           make-flags))))
-         (replace
-             'install
+             (apply invoke "./b2"
+                    (format #f "-j~a" (parallel-job-count))
+                    make-flags)
+             #t))
+         (replace 'install
            (lambda* (#:key outputs make-flags #:allow-other-keys)
-             (zero? (apply system* "./b2" "install" make-flags)))))))
+             (apply invoke "./b2" "install" make-flags)
+             #t)))))
 
-    (home-page "http://boost.org")
+    (home-page "http://www.boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
     (description
      "A collection of libraries intended to be widely useful, and usable
