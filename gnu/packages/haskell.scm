@@ -4427,7 +4427,7 @@ monad transformer (instead of the IO monad).")
 (define-public ghc-fast-logger
   (package
     (name "ghc-fast-logger")
-    (version "2.4.1")
+    (version "2.4.11")
     (source
      (origin
        (method url-fetch)
@@ -4437,12 +4437,13 @@ monad transformer (instead of the IO monad).")
              ".tar.gz"))
        (sha256
         (base32
-         "0kjk1861qcls8m8y7i55msfpprws5wk6c5mxzi35g2qbl2sih4p5"))))
+         "1ad2vq4nifdxshqk9yrmghqizhkgybfz134kpr6padglb2mxxrdv"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-auto-update" ,ghc-auto-update)
-       ("ghc-text" ,ghc-text)))
+     `(("ghc-auto-update" ,ghc-auto-update)
+       ("ghc-easy-file" ,ghc-easy-file)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unix-time" ,ghc-unix-time)))
     (native-inputs
      `(("hspec-discover" ,hspec-discover)
        ("ghc-hspec" ,ghc-hspec)))
