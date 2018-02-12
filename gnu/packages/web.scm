@@ -3,7 +3,8 @@
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -85,6 +86,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
@@ -5417,6 +5419,47 @@ with R.  Automatic \"reactive\" binding between inputs and outputs and
 extensive prebuilt widgets make it possible to build beautiful,
 responsive, and powerful applications with minimal effort.")
     (license l:artistic2.0)))
+
+(define-public r-shinydashboard
+  (package
+    (name "r-shinydashboard")
+    (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "shinydashboard" version))
+              (sha256
+               (base32
+                "14zi7g5wrngy6lwi9xpvaid7727m6rfdijbb89al9likfhjqzqqy"))))
+    (build-system r-build-system)
+    ;; The directory inst/AdminLTE/ contains a minified JavaScript file.
+    ;; Regenerate it from the included sources.
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'generate-minified-javascript
+           (lambda _
+             (with-directory-excursion "inst/AdminLTE"
+               (delete-file "app.min.js")
+               (let ((minified (open-pipe* OPEN_READ "uglify-js" "app.js")))
+                 (call-with-output-file "app.min.js"
+                   (lambda (port)
+                     (dump-port minified port))))))))))
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-shiny" ,r-shiny)))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)))
+    (home-page "http://rstudio.github.io/shinydashboard/")
+    (synopsis "Create dashboards with shiny")
+    (description "This package provides an extension to the Shiny web
+application framework for R, making it easy to create attractive dashboards.")
+    ;; This package includes software that was released under the Expat
+    ;; license, but the whole package is released under GPL version 2 or
+    ;; later.
+    (license l:gpl2+)))
 
 (define-public r-crosstalk
   (package
