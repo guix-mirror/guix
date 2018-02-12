@@ -180,7 +180,7 @@ timer functions of different operating systems via a unified API.")
 (define-public ghc-tasty
   (package
     (name "ghc-tasty")
-    (version "0.11.0.1")
+    (version "0.11.0.4")
     (source
      (origin
        (method url-fetch)
@@ -190,12 +190,13 @@ timer functions of different operating systems via a unified API.")
              ".tar.gz"))
        (sha256
         (base32
-         "1chapivmmwsb1ghwagvdm80bfj3hdk75m94z4p212ng2i4ghpjkx"))))
+         "05pxjzgbgjdn7477xry0ssjrnmnsydqiq6nm6ck8n2da1baliqp0"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stm" ,ghc-stm)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-tagged" ,ghc-tagged)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
        ("ghc-regex-tdfa-rc" ,ghc-regex-tdfa-rc)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-unbounded-delays" ,ghc-unbounded-delays)
