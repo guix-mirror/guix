@@ -1355,6 +1355,8 @@ date and time formats.")
         (base32
          "1h9b26s3kfh2k0ih4383w90ibji6n0iwamxp6rfp2lbq1y5ibjqw"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=base")))
     (inputs
      `(("ghc-old-locale" ,ghc-old-locale)))
     (home-page "https://hackage.haskell.org/package/old-time")
