@@ -7861,7 +7861,7 @@ and escapes.")
 (define-public perl-text-diff
   (package
     (name "perl-text-diff")
-    (version "1.44")
+    (version "1.45")
     (source
      (origin
        (method url-fetch)
@@ -7869,7 +7869,7 @@ and escapes.")
                            "Text-Diff-" version ".tar.gz"))
        (sha256
         (base32
-         "041v92zla2acdc433f47giridf6p820sdczs7x5d71fhsyza1xsp"))))
+         "013g13prdghxvrp5754gyc7rmv1syyxrhs33yc5f0lrz3dxs1fp8"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-algorithm-diff" ,perl-algorithm-diff)))
