@@ -2639,7 +2639,7 @@ exceptions.")
 (define-public ghc-generic-deriving
   (package
     (name "ghc-generic-deriving")
-    (version "1.8.0")
+    (version "1.11.1")
     (source
      (origin
        (method url-fetch)
@@ -2649,8 +2649,11 @@ exceptions.")
              ".tar.gz"))
        (sha256
         (base32
-         "1kc6lhdanls6kgpk8xv5xi14lz1sngcd8xn930hkf7ilq4kxkcr6"))))
+         "1sdh5hpcwvh3b6zvgfk3pr3hla8p88l82njnih880c0gk5zl53dk"))))
     (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://hackage.haskell.org/package/generic-deriving")
     (synopsis "Generalise the deriving mechanism to arbitrary classes")
     (description "This package provides functionality for generalising the
