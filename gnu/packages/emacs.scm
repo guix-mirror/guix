@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
@@ -279,6 +279,7 @@ editor (without an X toolkit)" )
               (uri (git-reference
                     (url "git://git.hcoop.net/git/bpt/emacs.git")
                     (commit "41120e0f595b16387eebfbf731fff70481de1b4b")))
+              (file-name (string-append name "-" version "-checkout"))
               (patches (search-patches "guile-emacs-fix-configure.patch"))
               (sha256
                (base32
