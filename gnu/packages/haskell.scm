@@ -831,7 +831,7 @@ tool lex or flex for C/C++.")
 (define-public ghc-cgi
   (package
     (name "ghc-cgi")
-    (version "3001.3.0.1")
+    (version "3001.3.0.2")
     (source
      (origin
        (method url-fetch)
@@ -841,17 +841,20 @@ tool lex or flex for C/C++.")
              ".tar.gz"))
        (sha256
         (base32
-         "0lj7ri198r6fxz8zyc0vzpm7mx66794zxi9siffhh119qw8931cn"))))
+         "1hbpplss1m4rdpm4ibip6fpimlhssqa14fl338kl2jbc463i64cj"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-parsec" ,ghc-parsec)
-       ("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-old-time" ,ghc-old-time)
        ("ghc-exceptions" ,ghc-exceptions)
        ("ghc-multipart" ,ghc-multipart)
        ("ghc-network-uri" ,ghc-network-uri)
        ("ghc-network" ,ghc-network)
        ("ghc-mtl" ,ghc-mtl)))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page
      "https://github.com/cheecheeo/haskell-cgi")
     (synopsis "Library for writing CGI programs")
