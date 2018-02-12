@@ -5176,17 +5176,18 @@ function which generates instances.")
 (define-public ghc-th-orphans
   (package
     (name "ghc-th-orphans")
-    (version "0.13.0")
+    (version "0.13.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "th-orphans/th-orphans-" version ".tar.gz"))
               (sha256
                (base32
-                "105y03bxh0a2r69l603i7md17gg1vxs1jj1n40pn5q486lmfxbmx"))))
+                "0102vkyzpgnp2fys8pvw4khrhrh2y1b8dp1slgvn020vg4s351mc"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-th-lift" ,ghc-th-lift)
+       ("ghc-th-lift-instances" ,ghc-th-lift-instances)
        ("ghc-th-reify-many" ,ghc-th-reify-many)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-generic-deriving" ,ghc-generic-deriving)))
