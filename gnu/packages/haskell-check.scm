@@ -666,7 +666,7 @@ used to test the in-development version of Hspec.")
 (define-public ghc-hspec
   (package
     (name "ghc-hspec")
-    (version "2.2.0")
+    (version "2.2.4")
     (source
      (origin
        (method url-fetch)
@@ -676,7 +676,7 @@ used to test the in-development version of Hspec.")
              ".tar.gz"))
        (sha256
         (base32
-         "0zqisxznlbszivsgy3irvf566zhcr6ipqqj3x9i7pj5hy913jwqf"))))
+         "1cf90gqvg1iknja6ymxqxyabpahcxni3blqllh81ywbir3whljvj"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hspec-core" ,ghc-hspec-core)
