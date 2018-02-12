@@ -548,7 +548,7 @@ packages.")
 (define-public ghc-data-default-instances-base
   (package
     (name "ghc-data-default-instances-base")
-    (version "0.0.1")
+    (version "0.1.0.1")
     (source
      (origin
        (method url-fetch)
@@ -557,7 +557,7 @@ packages.")
              "data-default-instances-base/"
              "data-default-instances-base-" version ".tar.gz"))
        (sha256
-        (base32 "1832nq6by91f1iw73ycvkbgn8kpra83pvf2q61hy47xffh0zy4pb"))))
+        (base32 "0ym1sw3ssdzzifxxhh76qlv8kkmb2iclc158incv1dklyr9y8kw4"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-data-default-class" ,ghc-data-default-class)))
