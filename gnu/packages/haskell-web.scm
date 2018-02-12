@@ -578,17 +578,16 @@ a WAI handler, via the native Haskell TLS implementation.")
 (define-public ghc-xss-sanitize
   (package
     (name "ghc-xss-sanitize")
-    (version "0.3.5.6")
+    (version "0.3.5.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://hackage.haskell.org/package/xss-sanitize/xss-sanitize-"
-             version
-             ".tar.gz"))
+             version ".tar.gz"))
        (sha256
         (base32
-         "1j2qrn2dbfx01m7zyk9ilgnp9zjwq9mk62b0rdal4zkg4vh212h0"))))
+         "005cmhaw9xbzkcn42jmhvcvk63bzmg4lml368xwmqdvh7r0mcn4m"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tagsoup" ,ghc-tagsoup)
