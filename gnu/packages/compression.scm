@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -1719,6 +1719,7 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
 (define-public unzip
   (package (inherit zip)
     (name "unzip")
+    (replacement unzip/fixed)
     (version "6.0")
     (source
      (origin
@@ -1768,6 +1769,20 @@ subdirectories below it, all files from the specified zipfile.  UnZip
 recreates the stored directory structure by default.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
+
+(define unzip/fixed
+  (package/inherit unzip
+    (arguments
+      (substitute-keyword-arguments (package-arguments unzip)
+        ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'fortify
+               (lambda _
+                 ;; Mitigate CVE-2018-1000035, an exploitable buffer overflow.
+                 ;; This environment variable is recommended in 'unix/Makefile'
+                 ;; for passing flags to the C compiler.
+                 (setenv "LOCAL_UNZIP" "-D_FORTIFY_SOURCE=1")
+                 #t))))))))
 
 (define-public zziplib
   (package
