@@ -1341,7 +1341,7 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
 (define-public perl-config-autoconf
   (package
     (name "perl-config-autoconf")
-    (version "0.309")
+    (version "0.315")
     (source
      (origin
        (method url-fetch)
@@ -1349,7 +1349,7 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
                            "Config-AutoConf-" version ".tar.gz"))
        (sha256
         (base32
-         "1nqc7calfny12dwfhz7ylsvx55nf69kirdc5dbyvh3sjsqj8yvdq"))))
+         "0h39x9rzrhhilpg8yxlzpka269qrzsjg0iy0c1b9xflqlvhx2g2b"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
