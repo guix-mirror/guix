@@ -6556,7 +6556,7 @@ which can't be decoded in the current locale encoding.")
 (define-public ghc-shelly
   (package
     (name "ghc-shelly")
-    (version "1.6.8")
+    (version "1.7.0.1")
     (source
      (origin
        (method url-fetch)
@@ -6565,7 +6565,7 @@ which can't be decoded in the current locale encoding.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0bg1pj5bhswfgwfgz66xr82i8cmjgrnx5ljvjy37052zxb82imnk"))))
+         "0a4ngy8jqcscqhimgiyz7f9kqm23is7x7gyjxr0j6iq1dy57ahq3"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
