@@ -10511,6 +10511,33 @@ variety of commonly used matrix types, including sparse and HDF5-backed
 matrices.")
     (license license:gpl3)))
 
+(define-public r-singlecellexperiment
+  (package
+    (name "r-singlecellexperiment")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "SingleCellExperiment" version))
+       (sha256
+        (base32
+         "1r276i97w64a5vdlg6952gkj7bls909p42zl8fn8yz87cdwyaars"))))
+    (properties
+     `((upstream-name . "SingleCellExperiment")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/SingleCellExperiment")
+    (synopsis "S4 classes for single cell data")
+    (description "This package defines an S4 class for storing data from
+single-cell experiments.  This includes specialized methods to store and
+retrieve spike-in information, dimensionality reduction coordinates and size
+factors for each cell, along with the usual metadata for genes and
+libraries.")
+    (license license:gpl3)))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
