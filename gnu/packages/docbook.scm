@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -176,7 +177,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
 (define-public dblatex
   (package
     (name "dblatex")
-    (version "0.3.9")
+    (version "0.3.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/dblatex/dblatex/"
@@ -184,8 +185,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0pdizc5rjywwzxa1qqhdmba5zr35pbmdwbysalsid7xw87w3kq06"))
-              (patches (search-patches "dblatex-remove-multirow.patch"))))
+                "1yicd861rqz78i2khl35j7nvc0ccv4jx4hzqrbhll17082vrdmkg"))))
     (build-system python-build-system)
     ;; TODO: Add xfig/transfig for fig2dev utility
     (inputs
