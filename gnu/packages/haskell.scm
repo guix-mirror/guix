@@ -1377,7 +1377,7 @@ basis for a nicer interface.")
 (define-public ghc-opengl
   (package
     (name "ghc-opengl")
-    (version "2.12.0.1")
+    (version "3.0.1.0")
     (source
      (origin
        (method url-fetch)
@@ -1387,7 +1387,7 @@ basis for a nicer interface.")
              ".tar.gz"))
        (sha256
         (base32
-         "1mcfb167jl75qc2hgylh83vf2jqizvyvkvhhb72adi2crc3zqz4b"))))
+         "1nm2mzrn1h2nnfs9vl5p088hqpll7rdvcsyqsn8q641im9jhqp7l"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-text" ,ghc-text)
