@@ -3437,7 +3437,7 @@ optimisation framework.")
 (define-public ghc-vector-binary-instances
   (package
     (name "ghc-vector-binary-instances")
-    (version "0.2.1.0")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
@@ -3447,11 +3447,13 @@ optimisation framework.")
              version ".tar.gz"))
        (sha256
         (base32
-         "028rsf2w193rhs1gic5yvvrwidw9sblczcn10aw64npfc6502l4l"))))
+         "1y236jb72iab9ska1mc48z6yb0xgwmj45laaqdyjxksd84z7hbrb"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-cereal" ,ghc-cereal)
-       ("ghc-vector" ,ghc-vector)))
+     `(("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
     (home-page "https://github.com/bos/vector-binary-instances")
     (synopsis "Instances of Data.Binary and Data.Serialize for vector")
     (description "This library provides instances of @code{Binary} for the
