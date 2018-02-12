@@ -2058,3 +2058,30 @@ are supported. Decoding is done with lazy functions, errors may be detected or
 ignored.")
     (license license:expat)))
 
+(define-public ghc-hxt-regex-xmlschema
+  (package
+    (name "ghc-hxt-regex-xmlschema")
+    (version "9.2.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hxt-regex-xmlschema/hxt-regex-xmlschema-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1c4jr0439f5yc05h7iz53fa47g6l2wrvqp6gvwf01mlqajk3nx7l"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-text" ,ghc-text)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://www.haskell.org/haskellwiki/Regular_expressions_for_XML_Schema")
+    (synopsis "Regular expression library for W3C XML Schema regular expressions")
+    (description
+     "This library supports full W3C XML Schema regular expressions inclusive
+all Unicode character sets and blocks.  It is implemented by the technique of
+derivations of regular expressions.")
+    (license license:expat)))
+
