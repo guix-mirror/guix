@@ -547,7 +547,15 @@ archive on a per-file basis.")
                                  "love-" version "-linux-src.tar.gz"))
              (sha256
               (base32
-               "11x346pw0gqad8nmkmywzx4xpcbfc3dslbrdw5x94n1i25mk0sxj"))))
+               "11x346pw0gqad8nmkmywzx4xpcbfc3dslbrdw5x94n1i25mk0sxj"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Build with luajit 2.1.0-beta3.  Fixed in love 0.11.
+                 ;; See <https://bitbucket.org/rude/love/issues/1277>.
+                 (substitute* "src/libraries/luasocket/libluasocket/lua.h"
+                   (("> 501") ">= 501"))
+                 #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
