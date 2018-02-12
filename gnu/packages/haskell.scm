@@ -1192,7 +1192,7 @@ award winning Linux port of \"Civilization: Call To Power.\"")
 (define-public ghc-sdl-mixer
   (package
     (name "ghc-sdl-mixer")
-    (version "0.6.1.1")
+    (version "0.6.2.0")
     (source
      (origin
        (method url-fetch)
@@ -1202,7 +1202,7 @@ award winning Linux port of \"Civilization: Call To Power.\"")
              ".tar.gz"))
        (sha256
         (base32
-         "0md3238hx79mxb9a7l43kg3b3d28x4mqvj0hjsbsh15ajnvy9x2z"))))
+         "1fhray79d80dk2aj9mx3ks05mm48sd832g8zgxli226jx471fs8r"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
