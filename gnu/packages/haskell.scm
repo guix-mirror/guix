@@ -2447,7 +2447,7 @@ complicated text/binary file formats.")
 (define-public ghc-zip-archive
   (package
     (name "ghc-zip-archive")
-    (version "0.2.3.7")
+    (version "0.3.0.5")
     (source
      (origin
        (method url-fetch)
@@ -2457,13 +2457,14 @@ complicated text/binary file formats.")
              ".tar.gz"))
        (sha256
         (base32
-         "169nkxr5zlbymiz1ydlhlqr66vqiycmg85xh559phpkr64w3nqj1"))))
+         "1iwpzjck4jg9bz1yqky051i2wljsqc14q5zbi10dydfp8ip3d0yw"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-old-time" ,ghc-old-time)
        ("ghc-digest" ,ghc-digest)
        ("zip" ,zip)
        ("ghc-mtl" ,ghc-mtl)
+       ("ghc-temporary" ,ghc-temporary)
        ("ghc-text" ,ghc-text)
        ("ghc-zlib" ,ghc-zlib)))
     (native-inputs
