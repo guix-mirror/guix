@@ -2709,7 +2709,7 @@ this package makes them available back to GHC 7.2.")
 (define-public ghc-profunctors
   (package
     (name "ghc-profunctors")
-    (version "5.1.1")
+    (version "5.2.2")
     (source
      (origin
        (method url-fetch)
@@ -2719,11 +2719,15 @@ this package makes them available back to GHC 7.2.")
              ".tar.gz"))
        (sha256
         (base32
-         "0lw2ipacpnp9yqmi8zsp01pzpn5hwj8af3y0f3079mddrmw48gw7"))))
+         "0s1pwjidbn761xk43pmzyvn99hm3psdifjd78ylki7f97aiyd0g9"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-distributive" ,ghc-distributive)
+     `(("ghc-base-orphans" ,ghc-base-orphans)
+       ("ghc-bifunctors" ,ghc-bifunctors)
        ("ghc-comonad" ,ghc-comonad)
+       ("ghc-contravariant" ,ghc-contravariant)
+       ("ghc-distributive" ,ghc-distributive)
+       ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-tagged" ,ghc-tagged)))
     (home-page "https://github.com/ekmett/profunctors/")
     (synopsis "Profunctors for Haskell")
