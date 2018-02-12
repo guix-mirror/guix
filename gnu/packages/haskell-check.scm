@@ -636,7 +636,7 @@ be used to extend Hspec's functionality.")
 (define-public ghc-hspec-meta
   (package
     (name "ghc-hspec-meta")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -646,7 +646,7 @@ be used to extend Hspec's functionality.")
              ".tar.gz"))
        (sha256
         (base32
-         "1fmqmgrzp135cxhmxxbaswkk4bqbpgfml00cmcz0d39n11vzpa5z"))))
+         "1m1pkrxiglxzwv8gdj5jr1bdbhxvvg6sbl9m61w4565d7k1m8yxa"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
