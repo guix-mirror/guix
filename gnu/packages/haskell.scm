@@ -1015,7 +1015,7 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
 (define-public hlint
   (package
     (name "hlint")
-    (version "1.9.21")
+    (version "1.9.37")
     (source
      (origin
        (method url-fetch)
@@ -1024,7 +1024,7 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
              "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "14v3rdjjlml9nimdk7d5dvir2bw78ai49yylvms9lnzmw29s3546"))))
+         "05f4i06fz99bwpm311mkdwqdl67918v4rgabdafian3vhdm4c252"))))
     (build-system haskell-build-system)
     (inputs
      `(("cpphs" ,cpphs)
