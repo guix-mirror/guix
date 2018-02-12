@@ -1621,6 +1621,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
               (uri (string-append
                     "https://github.com/Emacs-D-Mode-Maintainers/Emacs-D-Mode/"
                     "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0knpgi55jm09282aqf8pv55zillpnpzf9f4sgm6gwsmvxf17xaw0"))))
