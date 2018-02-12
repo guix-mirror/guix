@@ -558,7 +558,7 @@ using Template Haskell")
 (define-public ghc-hunit
   (package
     (name "ghc-hunit")
-    (version "1.2.5.2")
+    (version "1.3.1.2")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -569,7 +569,7 @@ using Template Haskell")
              ".tar.gz"))
        (sha256
         (base32
-         "0hcs6qh8bqhip1kkjjnw7ccgcsmawdz5yvffjj5y8zd2vcsavx8a"))))
+         "10akdh4fl615rrshxi3m5gf414il1q42z4zqyb6q4jasmscvzpms"))))
     (build-system haskell-build-system)
     (home-page "http://hunit.sourceforge.net/")
     (synopsis "Unit testing framework for Haskell")
