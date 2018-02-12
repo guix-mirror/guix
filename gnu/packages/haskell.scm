@@ -1479,6 +1479,10 @@ installation of Haskell libraries and programs.")
         (base32
          "1icdbj2rshzn0m1zz5wa7v3xvkf6qw811p4s7jgqwvx1ydwrvrfa"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=transformers")))
+    (inputs
+     `(("ghc-transformers" ,ghc-transformers)))
     (home-page "https://github.com/ekmett/mtl")
     (synopsis
      "Monad classes, using functional dependencies")
