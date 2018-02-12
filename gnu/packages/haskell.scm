@@ -4521,7 +4521,7 @@ Kaseorg.")
 (define-public ghc-word8
   (package
     (name "ghc-word8")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
@@ -4531,7 +4531,7 @@ Kaseorg.")
              ".tar.gz"))
        (sha256
         (base32
-         "1pbn8ra3qhwvw07p375cdmp7jzlg07hgdcr4cpscz3h7b9sy7fiw"))))
+         "12jx7f13d2h1djq4fh4dyrab61sm49mj1w61j3rzp2vjfm696c16"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
