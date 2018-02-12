@@ -4716,6 +4716,29 @@ asynchronous exceptions.")
      "This deprecated library provides an implementation of packed strings.")
     (license license:bsd-3)))
 
+(define-public ghc-th-abstraction
+  (package
+    (name "ghc-th-abstraction")
+    (version "0.2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "th-abstraction/th-abstraction-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0g42h6wnj2awc5ryhbvx009wd8w75pn66bjzsq1z4s3xajd2hbp5"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/glguy/th-abstraction")
+    (synopsis "Nicer interface for reified information about data types")
+    (description
+     "This package normalizes variations in the interface for inspecting
+datatype information via Template Haskell so that packages and support a
+single, easier to use informational datatype while supporting many versions of
+Template Haskell.")
+    (license license:isc)))
+
 (define-public ghc-th-lift
   (package
     (name "ghc-th-lift")
