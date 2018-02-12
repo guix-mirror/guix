@@ -1143,7 +1143,7 @@ code where you can safely allocate resources.")
 (define-public ghc-objectname
   (package
     (name "ghc-objectname")
-    (version "1.1.0.0")
+    (version "1.1.0.1")
     (source
      (origin
        (method url-fetch)
@@ -1153,7 +1153,7 @@ code where you can safely allocate resources.")
              ".tar.gz"))
        (sha256
         (base32
-         "0kh5fb9ykag6rfsm3f0bx3w323s18w2cyry34w5xgli5ncqimadg"))))
+         "046jm94rmm46cicd31pl54vdvfjvhd9ffbfycy2lxzc0fliyznvj"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/ObjectName")
     (synopsis "Helper library for Haskell OpenGL")
