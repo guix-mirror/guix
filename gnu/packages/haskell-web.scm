@@ -701,7 +701,7 @@ Strict, Transitional and Frameset variants.")
 (define-public ghc-blaze-html
   (package
     (name "ghc-blaze-html")
-    (version "0.8.1.1")
+    (version "0.8.1.2")
     (source
      (origin
        (method url-fetch)
@@ -711,7 +711,7 @@ Strict, Transitional and Frameset variants.")
              ".tar.gz"))
        (sha256
         (base32
-         "1dnw50kh0s405cg9i2y4a8awanhj3bqzk21jwgfza65kcjby7lpq"))))
+         "1dzjgsvfgz9d944z8af9lsl8h5as72vsyc0m4nzkks8jh6rr5vpp"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
     (inputs
