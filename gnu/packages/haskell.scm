@@ -1781,7 +1781,7 @@ IO operations.")
 (define-public ghc-hashable
   (package
     (name "ghc-hashable")
-    (version "1.2.3.3")
+    (version "1.2.6.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -1792,17 +1792,21 @@ IO operations.")
              ".tar.gz"))
        (sha256
         (base32
-         "0kp4aj0x1iicz9qirpqxxqd8x5g1njbapxk1d90n406w3xykz4pw"))))
+         "0ymv2mcrrgbdc2w39rib171fwnhg7fgp0sy4h8amrh1vw64qgjll"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
     (inputs
-     `(("ghc-text" ,ghc-text)))
+     `(("ghc-text" ,ghc-text)
+       ("ghc-random" ,ghc-random)))
+    (native-inputs
+     `(("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://github.com/tibbe/hashable")
-    (synopsis
-     "Class for types that can be converted to a hash value")
+    (synopsis "Class for types that can be converted to a hash value")
     (description
-     "This package defines a class, 'Hashable', for types that can be
+     "This package defines a class, @code{Hashable}, for types that can be
 converted to a hash value.  This class exists for the benefit of hashing-based
 data structures.  The package provides instances for basic types and a way to
 combine hash values.")
