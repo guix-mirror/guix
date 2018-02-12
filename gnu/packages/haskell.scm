@@ -3382,7 +3382,7 @@ boxed and storable vectors.")
 (define-public ghc-network-uri
   (package
     (name "ghc-network-uri")
-    (version "2.6.0.3")
+    (version "2.6.1.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3393,7 +3393,7 @@ boxed and storable vectors.")
              ".tar.gz"))
        (sha256
         (base32
-         "1pwbqb2rk4rnvllvdch42p5368xcvpkanp7bxckdhxya8zzwvhhg"))))
+         "1w27zkvn39kjr9lmw9421y8w43h572ycsfafsb7kyvr3a4ihlgj2"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f))  ; FIXME: currently missing libraries used for tests.
