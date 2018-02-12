@@ -7857,6 +7857,8 @@ IPv4, IPv6 and MAC addresses.")
         (base32
          "1zdka5jnm1h6k36w3nr647yf3b5lqb336g3fkprhd6san9x52xlj"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs `(("ghc-hashable" ,ghc-hashable)
               ("ghc-random" ,ghc-random)
               ("ghc-text" ,ghc-text)))
