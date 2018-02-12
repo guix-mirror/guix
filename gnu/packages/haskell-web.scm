@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
@@ -610,7 +610,7 @@ attacks.")
 (define-public ghc-css-text
   (package
     (name "ghc-css-text")
-    (version "0.1.2.1")
+    (version "0.1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -620,7 +620,7 @@ attacks.")
              ".tar.gz"))
        (sha256
         (base32
-         "1xi1n2f0g8y43p95lynhcg50wxbq7hqfzbfzm7fy8mn7gvd920nw"))))
+         "0ynd9f4hn2sfwqzbsa0y7phmxq8za7jiblpjwx0ry8b372zhgxaz"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-text" ,ghc-text)
