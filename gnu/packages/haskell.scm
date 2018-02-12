@@ -2572,7 +2572,7 @@ modifying, and extracting files from zip archives in Haskell.")
 (define-public ghc-distributive
   (package
     (name "ghc-distributive")
-    (version "0.4.4")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
@@ -2582,13 +2582,19 @@ modifying, and extracting files from zip archives in Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "0s2ln9jv7bh4ri2y31178pvjl8x6nik5d0klx7j2b77yjlsgblc2"))))
+         "0y566r97sfyvhsmd4yxiz4ns2mqgwf5bdbp56wgxl6wlkidq0wwi"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: fails with "cannot satisfy -package
-                               ; tagged-0.8.1".  Suspected Cabal issue.
     (inputs
      `(("ghc-tagged" ,ghc-tagged)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+       ("ghc-base-orphans" ,ghc-base-orphans)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-generic-deriving" ,ghc-generic-deriving)))
+    (native-inputs
+     `(("cabal-doctest" ,cabal-doctest)
+       ("ghc-doctest" ,ghc-doctest-0.12)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://github.com/ekmett/distributive/")
     (synopsis "Distributive functors for Haskell")
     (description "This package provides distributive functors for Haskell.
