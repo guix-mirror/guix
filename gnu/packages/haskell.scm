@@ -3626,7 +3626,7 @@ with various performance characteristics.")
 (define-public ghc-mmorph
   (package
     (name "ghc-mmorph")
-    (version "1.0.4")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
@@ -3636,10 +3636,12 @@ with various performance characteristics.")
              ".tar.gz"))
        (sha256
         (base32
-         "0k5zlzmnixfwcjrqvhgi3i6xg532b0gsjvc39v5jigw69idndqr2"))))
+         "1i8dzrc5qi3ryc9vrrmpn3sihmramsbhhd592w4w2k5g26qr3hql"))))
     (build-system haskell-build-system)
-    (home-page
-     "https://hackage.haskell.org/package/mmorph")
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (home-page "https://hackage.haskell.org/package/mmorph")
     (synopsis "Monad morphisms")
     (description
      "This library provides monad morphism utilities, most commonly used for
