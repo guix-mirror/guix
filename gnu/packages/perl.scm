@@ -8647,7 +8647,7 @@ built-in.")
 (define-public perl-variable-magic
   (package
     (name "perl-variable-magic")
-    (version "0.61")
+    (version "0.62")
     (source
      (origin
        (method url-fetch)
@@ -8655,7 +8655,7 @@ built-in.")
                            "Variable-Magic-" version ".tar.gz"))
        (sha256
         (base32
-         "1mx6z36c3wk61x6lag6kyws5g1cba68cw20vrb92wan7ahpfkbxq"))))
+         "0p31dclnj47k4hj35rzay9pzxasl3gq46kzwqalhdw1kgr8ii6iz"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Variable-Magic/")
     (synopsis "Associate user-defined magic to variables from Perl")
