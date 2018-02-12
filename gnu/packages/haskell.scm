@@ -2965,7 +2965,7 @@ for Haskell.")
 (define-public ghc-temporary
   (package
     (name "ghc-temporary")
-    (version "1.2.0.3")
+    (version "1.2.0.4")
     (source
      (origin
        (method url-fetch)
@@ -2975,7 +2975,7 @@ for Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "0is67bmsjmbbw6wymhis8wyq9gax3sszm573p5719fx2c9z9r24a"))))
+         "0qk741yqnpd69sksgks2vb7zi50rglp9m498lzw4sh268a017rsi"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-exceptions" ,ghc-exceptions)))
     (home-page "http://www.github.com/batterseapower/temporary")
