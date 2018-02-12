@@ -1717,7 +1717,7 @@ access to the full zlib feature set.")
 (define-public ghc-stm
   (package
     (name "ghc-stm")
-    (version "2.4.4")
+    (version "2.4.5.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -1728,12 +1728,18 @@ access to the full zlib feature set.")
              ".tar.gz"))
        (sha256
         (base32
-         "0gc8zvdijp3rwmidkpxv76b4i0dc8dw6nbd92rxl4vxl0655iysx"))))
+         "19sr11a0hqikhvf561b38phz6k3zg9s157a0f5ffvghk7wcdpmri"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/stm")
     (synopsis "Software Transactional Memory")
     (description
-     "A modular composable concurrency abstraction.")
+     "Software Transactional Memory, or STM, is an abstraction for concurrent
+communication.  The main benefits of STM are composability and modularity.
+That is, using STM you can write concurrent abstractions that can be easily
+composed with any other abstraction built using STM, without exposing the
+details of how your abstraction ensures safety.  This is typically not the
+case with other forms of concurrent communication, such as locks or
+@code{MVar}s.")
     (license license:bsd-3)))
 
 (define-public ghc-parallel
