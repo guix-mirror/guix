@@ -2863,7 +2863,7 @@ deriving mechanism in Haskell to arbitrary classes.")
 (define-public ghc-pcre-light
   (package
     (name "ghc-pcre-light")
-    (version "0.4.0.3")
+    (version "0.4.0.4")
     (source
      (origin
        (method url-fetch)
@@ -2873,10 +2873,12 @@ deriving mechanism in Haskell to arbitrary classes.")
              ".tar.gz"))
        (sha256
         (base32
-         "0l1df2sk5qwf424bvb8mbdkr2xjg43fi92n5r22yd7vm1zz0jqvf"))))
+         "0xcyi1fivwg7a92mch5bcqzmrfxzqj42rmb3m8kgs61x4qwpxj82"))))
     (build-system haskell-build-system)
     (inputs
      `(("pcre" ,pcre)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/Daniel-Diaz/pcre-light")
     (synopsis "Haskell library for Perl 5 compatible regular expressions")
     (description "This package provides a small, efficient, and portable regex
