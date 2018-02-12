@@ -605,7 +605,7 @@ runs Hspec tests.")
 (define-public ghc-hspec-core
   (package
     (name "ghc-hspec-core")
-    (version "2.2.0")
+    (version "2.2.4")
     (source
      (origin
        (method url-fetch)
@@ -615,7 +615,7 @@ runs Hspec tests.")
              ".tar.gz"))
        (sha256
         (base32
-         "1wgd55k652jaf81nkvciyqi67ycj7zamr4nd9z1cqf8nr9fc3sa4"))))
+         "0x845ngfl6vf65fnpb5mm3wj0ql45pz11bnm0x4gxc4ybd9c52ij"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
     (inputs
