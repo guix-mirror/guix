@@ -136,7 +136,7 @@ top of CLISP.")
 ;;
 ;; - Test posix010 tries to check the existence of a user on the system:
 ;;   getUserEntryForName: does not exist (no such user)
-(define-public ghc
+(define-public ghc-7
   (package
     (name "ghc")
     (version "7.10.2")
@@ -346,7 +346,7 @@ interactive environment for the functional language Haskell.")
        ("python" ,python-2)                ; for tests
        ("ghostscript" ,ghostscript)        ; for tests
        ;; GHC is built with GHC.
-       ("ghc-bootstrap" ,ghc)))
+       ("ghc-bootstrap" ,ghc-7)))
     (arguments
      `(#:test-target "test"
        ;; We get a smaller number of test failures by disabling parallel test
@@ -422,6 +422,8 @@ interactive environment for the functional language Haskell.")
      "The Glasgow Haskell Compiler (GHC) is a state-of-the-art compiler and
 interactive environment for the functional language Haskell.")
     (license license:bsd-3)))
+
+(define-public ghc ghc-8)
 
 (define-public ghc-hostname
   (package
