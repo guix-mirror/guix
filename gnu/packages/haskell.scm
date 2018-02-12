@@ -5215,14 +5215,14 @@ back-ends.")
 (define-public ghc-yaml
   (package
     (name "ghc-yaml")
-    (version "0.8.15.1")
+    (version "0.8.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "yaml/yaml-" version ".tar.gz"))
               (sha256
                (base32
-                "0v6c435xmgm99zxb30pqr7lhkb2a56wxqp70g4hjz8p7rj0vichx"))))
+                "0swgkzkfrwj0ac7lssn8rnrdfmh3lcsdn5fbq2iwv55di6jbc0pp"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
@@ -5233,8 +5233,9 @@ back-ends.")
        ("ghc-text" ,ghc-text)
        ("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-scientific" ,ghc-scientific)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-temporary" ,ghc-temporary)
        ("ghc-enclosed-exceptions" ,ghc-enclosed-exceptions)
-       ("ghc-aeson-qq" ,ghc-aeson-qq)
        ("ghc-base-compat" ,ghc-base-compat)))
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
