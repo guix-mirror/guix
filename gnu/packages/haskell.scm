@@ -3346,7 +3346,7 @@ colored output using the ansi-terminal package.")
 (define-public ghc-split
   (package
     (name "ghc-split")
-    (version "0.2.2")
+    (version "0.2.3.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3357,16 +3357,9 @@ colored output using the ansi-terminal package.")
              ".tar.gz"))
        (sha256
         (base32
-         "0xa3j0gwr6k5vizxybnzk5fgb3pppgspi6mysnp2gwjp2dbrxkzr"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; The Cabal file on Hackage is updated, but the tar.gz does not
-        ;; include it.  See
-        ;; <https://hackage.haskell.org/package/split-0.2.2/revisions/>.
-        '(substitute* "split.cabal"
-           (("base <4.8") "base <4.9")))))
+         "12660m16c6sib3laaxn6w9s453pyx1b49myrmzfij372vq5bc5bn"))))
     (build-system haskell-build-system)
-    (inputs
+    (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://hackage.haskell.org/package/split")
     (synopsis "Combinator library for splitting lists")
