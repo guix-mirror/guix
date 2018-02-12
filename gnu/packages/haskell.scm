@@ -2574,7 +2574,7 @@ Dual to @code{Traversable}.")
 (define-public ghc-cereal
   (package
     (name "ghc-cereal")
-    (version "0.4.1.1")
+    (version "0.5.3.0")
     (source
      (origin
        (method url-fetch)
@@ -2584,8 +2584,13 @@ Dual to @code{Traversable}.")
              ".tar.gz"))
        (sha256
         (base32
-         "15rhfn9hrjm01ksh9xpz9syxsp9vkvpp6b736iqq38wv2wb7416z"))))
+         "1x4aib7nnaf4x2b9zlndq5n5zsqniw78jifkf55nhnbmvryf05n3"))))
     (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-fail" ,ghc-fail)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
     (home-page "https://hackage.haskell.org/package/cereal")
     (synopsis "Binary serialization library")
     (description "This package provides a binary serialization library,
