@@ -2300,6 +2300,27 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
 with slicing and Clang-style colored diagnostics.")
     (license license:bsd-3)))
 
+(define-public ghc-time-locale-compat
+  (package
+    (name "ghc-time-locale-compat")
+    (version "0.1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "time-locale-compat/time-locale-compat-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1vdcfr2hp9qh3ag90x6ikbdf42wiqpdylnplffna54bpnilbyi4i"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-old-locale" ,ghc-old-locale)))
+    (home-page "https://github.com/khibino/haskell-time-locale-compat")
+    (synopsis "Compatibility of TimeLocale between old-locale and time-1.5")
+    (description "This package contains a wrapped name module for
+@code{TimeLocale}.")
+    (license license:bsd-3)))
+
 (define-public ghc-attoparsec
   (package
     (name "ghc-attoparsec")
