@@ -4874,15 +4874,19 @@ providing the PCRE backend to accompany regex-base, with bundled code from
 (define-public ghc-diff
   (package
     (name "ghc-diff")
-    (version "0.3.2")
+    (version "0.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "Diff/Diff-" version ".tar.gz"))
               (sha256
                (base32
-                "13iqqmpadcm7fvqwbfrz94w030rvjh66w2bdls1253128ac2n0vz"))))
+                "0bqcdvhxx8dmqc3793m6axg813wv9ldz2j37f1wygbbrbbndmdvp"))))
     (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
     (home-page "http://hub.darcs.net/sterlingclover/Diff")
     (synopsis "O(ND) diff algorithm in Haskell")
     (description
