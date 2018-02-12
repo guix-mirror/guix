@@ -1806,6 +1806,29 @@ data structures.  The package provides instances for basic types and a way to
 combine hash values.")
     (license license:bsd-3)))
 
+(define-public ghc-hashable-time
+  (package
+    (name "ghc-hashable-time")
+    (version "0.2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hashable-time/hashable-time-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0k932nyd08l3xxbh2g3n76py2f4kd9yw4s5a065vjz0xp6wjnxdm"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-hashable" ,ghc-hashable)))
+    (home-page "http://hackage.haskell.org/package/hashable-time")
+    (synopsis "Hashable instances for Data.Time")
+    (description
+     "This package provides @code{Hashable} instances for types in
+@code{Data.Time}.")
+    (license license:bsd-3)))
+
 (define-public ghc-data-hash
   (package
     (name "ghc-data-hash")
