@@ -529,7 +529,7 @@ packages.")
 (define-public ghc-data-default-class
   (package
     (name "ghc-data-default-class")
-    (version "0.0.1")
+    (version "0.1.2.0")
     (source
      (origin
        (method url-fetch)
@@ -537,7 +537,7 @@ packages.")
              "https://hackage.haskell.org/package/data-default-class/"
              "data-default-class-" version ".tar.gz"))
        (sha256
-        (base32 "0ccgr3jllinchqhw3lsn73ic6axk4196if5274rr1rghls0fxj5d"))))
+        (base32 "0miyjz8d4jyvqf2vp60lyfbnflx6cj2k8apmm9ly1hq0y0iv80ag"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/data-default-class")
     (synopsis "Types with default values")
