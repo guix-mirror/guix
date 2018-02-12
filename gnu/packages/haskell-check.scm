@@ -419,6 +419,20 @@ hold in a large number of randomly generated cases.  Specifications are
 expressed in Haskell, using combinators defined in the QuickCheck library.")
     (license license:bsd-3)))
 
+(define-public ghc-quickcheck-latest
+  (package (inherit ghc-quickcheck)
+    (version "2.11.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/QuickCheck/QuickCheck-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0xhqk35fkzlbjcqbabg6962jkv8d688nzmz7ng4bm84x2d95d328"))))))
+
 (define-public ghc-test-framework
   (package
     (name "ghc-test-framework")
