@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
@@ -390,7 +390,7 @@ use HUnit assertions as QuickCheck properties.")
 (define-public ghc-quickcheck
   (package
     (name "ghc-quickcheck")
-    (version "2.8.2")
+    (version "2.10.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -401,19 +401,22 @@ use HUnit assertions as QuickCheck properties.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ai6k5v0bibaxq8xffcblc6rwmmk6gf8vjyd9p2h3y6vwbhlvilq"))))
+         "1rfmns3lj3hl93k1jws85ajkkw7z9ll8cw292n9m7zald1w5dfqx"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
        #:configure-flags '("-f base4")))
     (inputs
-     `(("ghc-tf-random" ,ghc-tf-random)))
-    (home-page
-     "https://github.com/nick8325/quickcheck")
-    (synopsis
-     "Automatic testing of Haskell programs")
+     `(("ghc-random" ,ghc-random)
+       ("ghc-tf-random" ,ghc-tf-random)))
+    (home-page "https://github.com/nick8325/quickcheck")
+    (synopsis "Automatic testing of Haskell programs")
     (description
-     "QuickCheck is a library for random testing of program properties.")
+     "QuickCheck is a library for random testing of program properties.  The
+programmer provides a specification of the program, in the form of properties
+which functions should satisfy, and QuickCheck then tests that the properties
+hold in a large number of randomly generated cases.  Specifications are
+expressed in Haskell, using combinators defined in the QuickCheck library.")
     (license license:bsd-3)))
 
 (define-public ghc-test-framework
