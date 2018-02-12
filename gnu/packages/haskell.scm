@@ -1075,7 +1075,7 @@ specify refactorings without depending on GHC.")
 (define-public hlint
   (package
     (name "hlint")
-    (version "1.9.37")
+    (version "2.1")
     (source
      (origin
        (method url-fetch)
@@ -1084,15 +1084,23 @@ specify refactorings without depending on GHC.")
              "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "05f4i06fz99bwpm311mkdwqdl67918v4rgabdafian3vhdm4c252"))))
+         "13chm0dhh1fn2iy3flnh7ahc3yzh8q0v10qxwd1739sywhykayg9"))))
     (build-system haskell-build-system)
     (inputs
      `(("cpphs" ,cpphs)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-text" ,ghc-text)
+       ("ghc-data-default" ,ghc-data-default)
        ("ghc-cmdargs" ,ghc-cmdargs)
        ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-haskell-src-exts-util" ,ghc-haskell-src-exts-util)
        ("ghc-uniplate" ,ghc-uniplate)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-extra" ,ghc-extra)
+       ("ghc-refact" ,ghc-refact)
+       ("ghc-aeson" ,ghc-aeson)
        ("hscolour" ,hscolour)))
     (home-page "http://community.haskell.org/~ndm/hlint/")
     (synopsis "Suggest improvements for Haskell source code")
