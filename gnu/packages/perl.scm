@@ -2585,7 +2585,7 @@ based memory management, circular references will cause memory leaks.")
 (define-public perl-devel-globaldestruction
   (package
     (name "perl-devel-globaldestruction")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
@@ -2593,7 +2593,7 @@ based memory management, circular references will cause memory leaks.")
                            "Devel-GlobalDestruction-" version ".tar.gz"))
        (sha256
         (base32
-         "0qn4iszgylnxjdkb6430f6a3ci7bcx9ih1az6bd5cbij1pf2965j"))))
+         "1aslj6myylsvzr0vpqry1cmmvzbmpbdcl4v9zrl18ccik7rabf1l"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-sub-exporter-progressive" ,perl-sub-exporter-progressive)))
