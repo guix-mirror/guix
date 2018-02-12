@@ -4358,6 +4358,38 @@ functions for breaking or splitting on substrings and replacing all
 occurrences of a substring (the first in case of overlaps) with another.")
     (license license:bsd-3)))
 
+(define-public ghc-integer-logarithms
+  (package
+    (name "ghc-integer-logarithms")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "integer-logarithms/integer-logarithms-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0w5mhak181zi6qr5h2zbcs9ymaqacisp9jwk99naz6s8zz5rq1ii"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-smallcheck" ,ghc-smallcheck)))
+    (home-page "https://github.com/phadej/integer-logarithms")
+    (synopsis "Integer logarithms")
+    (description
+     "This package provides the following modules:
+@code{Math.NumberTheory.Logarithms} and
+@code{Math.NumberTheory.Powers.Integer} from the @code{arithmoi} package,
+@code{GHC.Integer.Logarithms.Compat} and
+@code{Math.NumberTheory.Power.Natural}, as well as some additional functions
+in migrated modules.")
+    (license license:expat)))
+
 (define-public ghc-scientific
   (package
     (name "ghc-scientific")
