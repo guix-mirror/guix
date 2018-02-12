@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
@@ -1257,10 +1257,10 @@ version 1.3).")
        ("hspec-discover" ,hspec-discover)))
     (home-page "https://hackage.haskell.org/package/streaming-commons")
     (synopsis "Conduit and pipes needed by some streaming data libraries")
-    (description "Provides low-dependency functionality commonly needed by
-various Haskell streaming data libraries, such as @code{conduit} and
+    (description "This package provides low-dependency functionality commonly
+needed by various Haskell streaming data libraries, such as @code{conduit} and
 @code{pipe}s.")
-    (license license:bsd-3)))
+    (license license:expat)))
 
 (define-public cpphs
   (package
