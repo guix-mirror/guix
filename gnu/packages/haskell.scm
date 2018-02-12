@@ -946,6 +946,34 @@ Happy works in a similar way to the yacc tool for C.")
      "This package provides a fully compliant Haskell 98 lexer.")
     (license license:bsd-3)))
 
+(define-public ghc-pretty-show
+  (package
+    (name "ghc-pretty-show")
+    (version "1.6.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/pretty-show/"
+                           "pretty-show-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fblcxw4z4ry14brin1mvwccs6hqqlhi7xhwv1f23szjq25cjacn"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-haskell-lexer" ,ghc-haskell-lexer)
+       ("ghc-happy" ,ghc-happy)))
+    (home-page "http://wiki.github.com/yav/pretty-show")
+    (synopsis "Tools for working with derived `Show` instances")
+    (description
+     "This package provides a library and an executable for working with
+derived @code{Show} instances.  By using the library, derived @code{Show}
+instances can be parsed into a generic data structure.  The @code{ppsh} tool
+uses the library to produce human-readable versions of @code{Show} instances,
+which can be quite handy for debugging Haskell programs.  We can also render
+complex generic values into an interactive Html page, for easier
+examination.")
+    (license license:expat)))
+
 (define-public ghc-haskell-src-exts
   (package
     (name "ghc-haskell-src-exts")
