@@ -2659,7 +2659,7 @@ parser isolation, and labeled blocks for better error messages.")
 (define-public hscolour
   (package
     (name "hscolour")
-    (version "1.23")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
@@ -2669,7 +2669,7 @@ parser isolation, and labeled blocks for better error messages.")
              ".tar.gz"))
        (sha256
         (base32
-         "1c4i2zpami8g3w9949nm3f92g7xwh5c94vkx658zz7ihrjp7w5lp"))))
+         "1j3rpzjygh3igvnd1n2xn63bq68rs047cjxr2qi6xyfnivgf6vz4"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/hscolour")
     (synopsis "Script to colourise Haskell code")
