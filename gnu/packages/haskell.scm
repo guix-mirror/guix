@@ -1810,7 +1810,7 @@ literals.")
 (define-public ghc-zlib
   (package
     (name "ghc-zlib")
-    (version "0.5.4.2")
+    (version "0.6.1.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -1821,8 +1821,10 @@ literals.")
              ".tar.gz"))
        (sha256
         (base32
-         "15hhsk7z3gvm7sz2ic2z1ca5c6rpsln2rr391mdbm1bxlzc1gmkm"))))
+         "0dd79dxf56d8f6ad9if3j87s9gg7yd17ckypjxwplrbkahlb9xf5"))))
     (build-system haskell-build-system)
+    ;; Tests require older versions of testy.
+    (arguments `(#:tests? #f))
     (inputs `(("zlib" ,zlib)))
     (home-page "https://hackage.haskell.org/package/zlib")
     (synopsis
