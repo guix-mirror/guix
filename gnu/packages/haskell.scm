@@ -669,7 +669,8 @@ the ‘haddock’ package.")
 (define-public ghc-haddock-api
   (package
     (name "ghc-haddock-api")
-    (version "2.16.1")
+    ;; This is the last version to be supported by Cabal < 2.0
+    (version "2.17.4")
     (source
      (origin
        (method url-fetch)
@@ -679,11 +680,15 @@ the ‘haddock’ package.")
              ".tar.gz"))
        (sha256
         (base32
-         "1spd5axg1pdjv4dkdb5gcwjsc8gg37qi4mr2k2db6ayywdkis1p2"))))
+         "00fn6pzgg8xjbaw12d76jdqh2dbc5xy7miyz0x6kidvvar7i35ss"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-paths" ,ghc-paths)
        ("ghc-haddock-library" ,ghc-haddock-library)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "http://www.haskell.org/haddock/")
     (synopsis "API for documentation-generation tool Haddock")
     (description "This package provides an API to Haddock, the
