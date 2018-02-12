@@ -4190,7 +4190,7 @@ indexed variants.")
 (define-public ghc-cheapskate
   (package
     (name "ghc-cheapskate")
-    (version "0.1.0.4")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
@@ -4200,20 +4200,16 @@ indexed variants.")
              ".tar.gz"))
        (sha256
         (base32
-         "0drx1hlqvdcrij4097q6bxhbfcqm73jsqv1wwhd3hsnjdmr46ch2"))))
+         "1hiqi7h76shjzs2zj0j8g6wnq2hbiq1hmfafdazr97fba2zl2432"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-mtl" ,ghc-mtl)
-       ("ghc-syb" ,ghc-syb)
+     `(("ghc-mtl" ,ghc-mtl)
        ("ghc-text" ,ghc-text)
-       ("ghc-uniplate" ,ghc-uniplate)
-       ("ghc-wai-extra" ,ghc-wai-extra)
-       ("ghc-wai" ,ghc-wai)
-       ("ghc-xss-sanitize" ,ghc-xss-sanitize)))
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-xss-sanitize" ,ghc-xss-sanitize)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-uniplate" ,ghc-uniplate)))
     (home-page "https://github.com/jgm/cheapskate")
     (synopsis "Experimental markdown processor")
     (description "Cheapskate is an experimental Markdown processor in pure
