@@ -587,7 +587,7 @@ JUnit tool for Java.")
 (define-public hspec-discover
   (package
     (name "hspec-discover")
-    (version "2.2.0")
+    (version "2.2.4")
     (source
      (origin
        (method url-fetch)
@@ -597,7 +597,7 @@ JUnit tool for Java.")
              ".tar.gz"))
        (sha256
         (base32
-         "0w3awzbljf4hqhxrjrxqa1lfcclg92bhmq641gz2q80vycspapzx"))))
+         "1bz7wb8v0bx1amiz4bpj34xq97d1ia29n3f654wcrh6lacydp3dv"))))
     (build-system haskell-build-system)
     (arguments `(#:haddock? #f)) ; Haddock phase fails because there are no
                                  ; documentation files.
