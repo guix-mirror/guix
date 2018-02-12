@@ -3371,7 +3371,7 @@ mainstream languages.")
 (define-public ghc-parsec
   (package
     (name "ghc-parsec")
-    (version "3.1.9")
+    (version "3.1.11")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3381,7 +3381,7 @@ mainstream languages.")
              version
              ".tar.gz"))
        (sha256
-        (base32 "1ja20cmj6v336jy87c6h3jzjp00sdbakwbdwp11iln499k913xvi"))))
+        (base32 "0vk7q9j2128q191zf1sg0ylj9s9djwayqk9747k0a5fin4f2b1vg"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
