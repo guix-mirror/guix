@@ -831,7 +831,7 @@ tool lex or flex for C/C++.")
 (define-public ghc-cgi
   (package
     (name "ghc-cgi")
-    (version "3001.2.2.2")
+    (version "3001.3.0.1")
     (source
      (origin
        (method url-fetch)
@@ -841,7 +841,7 @@ tool lex or flex for C/C++.")
              ".tar.gz"))
        (sha256
         (base32
-         "0q1pxpa8gi42c0hsidcdkhk5xr5anfrvhqsn3iksr9c0rllhz193"))))
+         "0lj7ri198r6fxz8zyc0vzpm7mx66794zxi9siffhh119qw8931cn"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-parsec" ,ghc-parsec)
