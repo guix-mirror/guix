@@ -8041,7 +8041,7 @@ system.")
 (define-public perl-throwable
   (package
     (name "perl-throwable")
-    (version "0.200012")
+    (version "0.200013")
     (source
      (origin
        (method url-fetch)
@@ -8049,7 +8049,7 @@ system.")
                            "Throwable-" version ".tar.gz"))
        (sha256
         (base32
-         "0cy8kza9pd9y5m7k5385asf4xqm54vdqnqm0am10z6j2mrxwr527"))))
+         "184gdcwxqwnkrx5md968v1ny70pq6blzpkihccm3bpdxnpgd11wr"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-devel-stacktrace" ,perl-devel-stacktrace)))
