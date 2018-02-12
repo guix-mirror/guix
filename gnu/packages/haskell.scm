@@ -926,6 +926,26 @@ specification in BNF, Happy generates Haskell code to parse the grammar.
 Happy works in a similar way to the yacc tool for C.")
     (license license:bsd-3)))
 
+(define-public ghc-haskell-lexer
+  (package
+    (name "ghc-haskell-lexer")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/haskell-lexer/haskell-lexer-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0rj3r1pk88hh3sk3mj61whp8czz5kpxhbc78xlr04bxwqjrjmm6p"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/haskell-lexer")
+    (synopsis "Fully compliant Haskell 98 lexer")
+    (description
+     "This package provides a fully compliant Haskell 98 lexer.")
+    (license license:bsd-3)))
+
 (define-public ghc-haskell-src-exts
   (package
     (name "ghc-haskell-src-exts")
