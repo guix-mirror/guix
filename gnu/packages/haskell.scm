@@ -4700,6 +4700,29 @@ using a simple box model.")
 providing an 'rnf' implementation.")
     (license license:bsd-3)))
 
+(define-public ghc-string-qq
+  (package
+    (name "ghc-string-qq")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/string-qq/string-qq-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0662m3i5xrdrr95w829bszkhp88mj9iy1zya54vk2sl5hz9wlmwp"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/string-qq")
+    (synopsis
+     "QuasiQuoter for non-interpolated strings, texts and bytestrings.")
+    (description
+     "This package provides a quasiquoter for non-interpolated strings, texts
+and bytestrings.")
+    (license license:public-domain)))
+
 (define-public ghc-pandoc-types
   (package
     (name "ghc-pandoc-types")
