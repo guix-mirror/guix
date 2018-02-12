@@ -1662,6 +1662,8 @@ School of Functional Programming', 1995.  See
        (sha256
         (base32 "0h7imvxkahiy8pzr8cpsimifdfvv18lizrb33k6mnq70rcx9w2zv"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=base")))
     (home-page "https://github.com/glguy/utf8-string/")
     (synopsis "Support for reading and writing UTF8 Strings")
     (description
