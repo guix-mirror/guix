@@ -1270,6 +1270,26 @@ PNG, PNM, TGA, TIFF, XCF, XPM, XV.")
 computation library for Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-fixed
+  (package
+    (name "ghc-fixed")
+    (version "0.2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/fixed/fixed-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1qhmwx8iqshns0crmr9d2f8hm65jxbcp3dvv0c39v34ra7if3a94"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/ekmett/fixed")
+    (synopsis "Signed 15.16 precision fixed point arithmetic")
+    (description
+     "This package provides functions for signed 15.16 precision fixed point
+arithmetic.")
+    (license license:bsd-3)))
+
 (define-public ghc-openglraw
   (package
     (name "ghc-openglraw")
