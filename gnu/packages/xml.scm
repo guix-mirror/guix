@@ -2085,3 +2085,31 @@ all Unicode character sets and blocks.  It is implemented by the technique of
 derivations of regular expressions.")
     (license license:expat)))
 
+(define-public ghc-hxt
+  (package
+    (name "ghc-hxt")
+    (version "9.3.1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hxt/hxt-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1qq3ykgn355rx242xjcbqqksgvwr6k2fdj5phw4iv28qqxff6m8d"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-parsec" ,ghc-parsec)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
+       ("ghc-hxt-unicode" ,ghc-hxt-unicode)
+       ("ghc-hxt-regex-xmlschema" ,ghc-hxt-regex-xmlschema)
+       ("ghc-network-uri" ,ghc-network-uri)))
+    (home-page "https://github.com/UweSchmidt/hxt")
+    (synopsis "Collection of tools for processing XML with Haskell")
+    (description
+     "The Haskell XML Toolbox bases on the ideas of HaXml and HXML, but
+introduces a more general approach for processing XML with Haskell.")
+    (license license:expat)))
