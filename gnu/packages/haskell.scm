@@ -4389,7 +4389,7 @@ definition of @code{Monad}.")
 (define-public ghc-adjunctions
   (package
     (name "ghc-adjunctions")
-    (version "4.2.2")
+    (version "4.3")
     (source
      (origin
        (method url-fetch)
@@ -4399,7 +4399,7 @@ definition of @code{Monad}.")
              ".tar.gz"))
        (sha256
         (base32
-         "00p030iypjzjib8pxz1x6mxfi59wvyrwjj11zv9bh766dgkdbwjq"))))
+         "1k1ykisf96i4g2zm47c45md7p42c4vsp9r73392pz1g8mx7s2j5r"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-profunctors" ,ghc-profunctors)
