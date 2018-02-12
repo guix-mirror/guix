@@ -496,7 +496,7 @@ reduce @code{UndecidableInstances}.")
 (define-public ghc-data-default
   (package
     (name "ghc-data-default")
-    (version "0.5.3")
+    (version "0.7.1.1")
     (source
      (origin
        (method url-fetch)
@@ -505,7 +505,7 @@ reduce @code{UndecidableInstances}.")
              version
              ".tar.gz"))
        (sha256
-        (base32 "0d1hm0l9kim3kszshr4msmgzizrzha48gz2kb7b61p7n3gs70m7c"))))
+        (base32 "04d5n8ybmcxba9qb6h389w9zfq1lvj81b82jh6maqp6pkhkmvydh"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-data-default-class"
