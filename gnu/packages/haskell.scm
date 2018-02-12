@@ -719,7 +719,7 @@ documentation-generation tool for Haskell libraries.")
 (define-public ghc-haddock
   (package
     (name "ghc-haddock")
-    (version "2.16.1")
+    (version "2.17.4")
     (source
      (origin
        (method url-fetch)
@@ -729,12 +729,16 @@ documentation-generation tool for Haskell libraries.")
              ".tar.gz"))
        (sha256
         (base32
-         "1mnnvc5jqp6n6rj7xw8wdm0z2xp9fndkz11c8p3vbljsrcqd3v26"))))
+         "1z3h3v7w84dzsm47iavdppc2w899mr4c1agq9fzghgz902i0a655"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: Tests break with GHC 7.10.2, fixed
-                               ; upstream.  See
-                               ; <https://github.com/haskell/haddock/issues/427>
+    ;; FIXME: Tests fail with this error:
+    ;; driver-test/Main.hs:4:1: error:
+    ;; Failed to load interface for ‘ResponseFileSpec’
+    (arguments `(#:tests? #f))
     (inputs `(("ghc-haddock-api" ,ghc-haddock-api)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-haddock-test" ,ghc-haddock-test)))
     (home-page "http://www.haskell.org/haddock/")
     (synopsis
      "Documentation-generation tool for Haskell libraries")
