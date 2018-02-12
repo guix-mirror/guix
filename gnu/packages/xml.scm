@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
@@ -42,6 +42,8 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages java)
   #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
@@ -55,6 +57,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system haskell)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config))
 
@@ -2004,3 +2007,26 @@ outputting XML data from Java code.")
     (description "XStream is a simple library to serialize Java objects to XML
 and back again.")
     (license license:bsd-3)))
+
+(define-public ghc-hxt-charproperties
+  (package
+    (name "ghc-hxt-charproperties")
+    (version "9.2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hxt-charproperties/hxt-charproperties-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1mml8wglvagqq891rchgli6r8rnkwrqhgsxfl6kb5403pzb18rp4"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/UweSchmidt/hxt")
+    (synopsis "Character properties and classes for XML and Unicode")
+    (description
+     "The modules provided by this package contain predicates for Unicode
+blocks and char properties and character predicates defined by XML.  The
+supported Unicode version is 7.0.0")
+    (license license:expat)))
+
