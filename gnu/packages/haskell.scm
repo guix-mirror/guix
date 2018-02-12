@@ -3353,7 +3353,7 @@ boxed and storable vectors.")
 (define-public ghc-network
   (package
     (name "ghc-network")
-    (version "2.6.2.1")
+    (version "2.6.3.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3364,12 +3364,15 @@ boxed and storable vectors.")
              ".tar.gz"))
        (sha256
         (base32
-         "1yhvpd4wigz165jvyvw9zslx7lgqdj63jh3zv5s74b5ykdfa3zd3"))))
+         "1rl2gl37cf4k0ddsq93q15fwdz1l25nhl4w205krbh7d5dg5y12p"))))
     (build-system haskell-build-system)
-    (inputs
-     `(("ghc-hunit" ,ghc-hunit)))
-    (arguments
-     `(#:tests? #f))      ; FIXME: currently missing libraries used for tests.
+    ;; The regression tests depend on an unpublished module.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-doctest" ,ghc-doctest)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
     (home-page "https://github.com/haskell/network")
     (synopsis "Low-level networking interface")
     (description
