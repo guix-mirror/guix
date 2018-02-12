@@ -10484,6 +10484,33 @@ block processing.")
 packages.")
     (license license:artistic2.0)))
 
+(define-public r-beachmat
+  (package
+    (name "r-beachmat")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "beachmat" version))
+       (sha256
+        (base32
+         "0b6dzja5fbx4dawb7ixj67mlhw4fy62pfp20mfp918fy96zmdwqz"))))
+    (build-system r-build-system)
+    (inputs
+     `(("hdf5" ,hdf5)))
+    (propagated-inputs
+     `(("r-delayedarray" ,r-delayedarray)
+       ("r-hdf5array" ,r-hdf5array)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-rhdf5lib" ,r-rhdf5lib)))
+    (home-page "https://bioconductor.org/packages/beachmat")
+    (synopsis "Compiling Bioconductor to handle each matrix type")
+    (description "This package provides a consistent C++ class interface for a
+variety of commonly used matrix types, including sparse and HDF5-backed
+matrices.")
+    (license license:gpl3)))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
