@@ -3546,7 +3546,7 @@ cursor, and changing the title.")
 (define-public ghc-vault
   (package
     (name "ghc-vault")
-    (version "0.3.0.4")
+    (version "0.3.0.6")
     (source
      (origin
        (method url-fetch)
@@ -3556,7 +3556,7 @@ cursor, and changing the title.")
              ".tar.gz"))
        (sha256
         (base32
-         "0ah6qrg71krc87f4vjy4b4shdd0mgyil8fikb3j6fl4kfwlg67jn"))))
+         "0j7gcs440q7qlgzi2hn36crgp2c0w69k40g6vj9hxlm31zk3shqb"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-unordered-containers" ,ghc-unordered-containers)
