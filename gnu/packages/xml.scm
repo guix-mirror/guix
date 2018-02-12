@@ -2030,3 +2030,31 @@ blocks and char properties and character predicates defined by XML.  The
 supported Unicode version is 7.0.0")
     (license license:expat)))
 
+(define-public ghc-hxt-unicode
+  (package
+    (name "ghc-hxt-unicode")
+    (version "9.0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hxt-unicode/hxt-unicode-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0rj48cy8z4fl3zpg5bpa458kqr83adav6jnqv4i71dclpprj6n3v"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hxt-charproperties" ,ghc-hxt-charproperties)))
+    (home-page
+     "http://www.fh-wedel.de/~si/HXmlToolbox/index.html https://github.com/UweSchmidt/hxt")
+    (synopsis
+     "Unicode en-/decoding functions for utf8, iso-latin-* and other encodings")
+    (description
+     "This package provides Unicode encoding and decoding functions for
+encodings used in the Haskell XML Toolbox.  ISO Latin 1-16, utf8, utf16, ASCII
+are supported. Decoding is done with lazy functions, errors may be detected or
+ignored.")
+    (license license:expat)))
+
