@@ -126,7 +126,7 @@ both client and server code).")
 (define-public ghc-http
   (package
     (name "ghc-http")
-    (version "4000.2.20")
+    (version "4000.3.3")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -137,7 +137,7 @@ both client and server code).")
              ".tar.gz"))
        (sha256
         (base32
-         "0nyqdxr5ls2dxkf4a1f3x15xzwdm46ppn99nkcbhswlr6s3cq1s4"))))
+         "1wlvvqcxsnd2is3khsla0vd8i9cy12v1pg6d6i13ihcd131a7bdv"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
