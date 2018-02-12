@@ -2607,7 +2607,7 @@ Strings.")
 (define-public ghc-extra
   (package
     (name "ghc-extra")
-    (version "1.4.2")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
@@ -2617,9 +2617,11 @@ Strings.")
              ".tar.gz"))
        (sha256
         (base32
-         "1h9hxkrqrqscx420yz1lmivbrhi6jc3a5ap61vkxd2mhdgark9hf"))))
+         "06ds0jlx6sljwdf63l154qbzia9mnsri79i9qm3xikky3nj9ia1m"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (inputs
+     `(("ghc-clock" ,ghc-clock)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://github.com/ndmitchell/extra")
     (synopsis "Extra Haskell functions")
     (description "This library provides extra functions for the standard
