@@ -5249,7 +5249,7 @@ info for more informative bug reports.")
 (define-public ghc-haskell-src-meta
   (package
     (name "ghc-haskell-src-meta")
-    (version "0.6.0.12")
+    (version "0.8.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5257,12 +5257,16 @@ info for more informative bug reports.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1mzbfrfvl6pj8068w3m6alzry1403ir1gmz3czg66n5z198l4dql"))))
+                "12rc4v5dbbbcwdp7j8isvnm9vqpazv124j5kdfwlgwgwjhxi8ysb"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
        ("ghc-syb" ,ghc-syb)
        ("ghc-th-orphans" ,ghc-th-orphans)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
     (home-page "https://hackage.haskell.org/package/haskell-src-meta")
     (synopsis "Parse source to template-haskell abstract syntax")
     (description
