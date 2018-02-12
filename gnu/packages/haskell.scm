@@ -3071,7 +3071,7 @@ writing to stdout and other handles.")
 (define-public ghc-case-insensitive
   (package
     (name "ghc-case-insensitive")
-    (version "1.2.0.4")
+    (version "1.2.0.7")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3082,7 +3082,7 @@ writing to stdout and other handles.")
              ".tar.gz"))
        (sha256
         (base32
-         "07nm40r9yw2p9qsfp3pjbsmyn4dabrxw34p48171zmccdd5hv0v3"))))
+         "1j6ahvrz1g5q89y2difyk838yhwjc8z67zr0v2z512qdznc3h38n"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hunit" ,ghc-hunit)))
