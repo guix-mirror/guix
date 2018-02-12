@@ -3707,6 +3707,7 @@ a subset of @code{MonadBase} into which generic control operations such as
        (sha256
         (base32 "18nlj6xvnggy61gwbyrpmvbdkq928wv0wx2zcsljb52kbhddnp3d"))))
     (build-system haskell-build-system)
+    (arguments `(#:haddock? #f)) ; Package contains no documentation.
     (home-page "https://prime.haskell.org/wiki/Libraries/Proposals/MonadFail")
     (synopsis "Forward-compatible MonadFail class")
     (description
