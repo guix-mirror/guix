@@ -3146,7 +3146,7 @@ is also parametric in the input stream type.")
 (define-public ghc-vector
   (package
     (name "ghc-vector")
-    (version "0.11.0.0")
+    (version "0.12.0.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3157,13 +3157,20 @@ is also parametric in the input stream type.")
              ".tar.gz"))
        (sha256
         (base32
-         "1r1jlksy7b0kb0fy00g64isk6nyd9wzzdq31gx5v1wn38knj0lqa"))))
+         "0yrx2ypiaxahvaz84af5bi855hd3107kxkbqc8km29nsp5wyw05i"))))
     (build-system haskell-build-system)
+    ;; FIXME: To simplify upgrading all Haskell packages, we leave the tests
+    ;; disabled for now.
+    (arguments `(#:tests? #f))
     (inputs
      `(("ghc-primitive" ,ghc-primitive)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
-    (arguments
-     `(#:tests? #f))      ; FIXME: currently missing libraries used for tests.
+       ("ghc-random" ,ghc-random)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ;; ("ghc-hunit" ,ghc-hunit)
+       ;; ("ghc-test-framework" ,ghc-test-framework)
+       ;; ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ;; ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ))
     (home-page "https://github.com/haskell/vector")
     (synopsis "Efficient Arrays")
     (description "This library provides an efficient implementation of
