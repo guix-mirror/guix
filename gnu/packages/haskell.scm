@@ -3971,7 +3971,7 @@ periodic, on-demand actions in Haskell.")
 (define-public ghc-tagged
   (package
     (name "ghc-tagged")
-    (version "0.8.1")
+    (version "0.8.5")
     (source
      (origin
        (method url-fetch)
@@ -3981,8 +3981,10 @@ periodic, on-demand actions in Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "1hc2qzhhz5p1xd8k03sklrdnhcflkwhgpl82k6fam8yckww9ipav"))))
+         "16cdzh0bw16nvjnyyy5j9s60malhz4nnazw96vxb0xzdap4m2z74"))))
     (build-system haskell-build-system)
+    (inputs
+     `(("ghc-transformers-compat" ,ghc-transformers-compat)))
     (home-page "https://hackage.haskell.org/package/tagged")
     (synopsis "Haskell phantom types to avoid passing dummy arguments")
     (description "This library provides phantom types for Haskell 98, to avoid
