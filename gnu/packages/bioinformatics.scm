@@ -10428,6 +10428,62 @@ access and manipulation of HDF5 datasets.  It supports delayed operations and
 block processing.")
     (license license:artistic2.0)))
 
+(define-public r-rhdf5lib
+  (package
+    (name "r-rhdf5lib")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rhdf5lib" version))
+       (sha256
+        (base32
+         "0kkc4rprjbqn2wvbx4d49kk9l91vihccxbl4843qr1wqk6v33r1w"))))
+    (properties `((upstream-name . "Rhdf5lib")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-use-bundled-hdf5
+           (lambda* (#:key inputs #:allow-other-keys)
+             (for-each delete-file '("configure" "configure.ac"))
+             ;; Do not make other packages link with the proprietary libsz.
+             (substitute* "R/zzz.R"
+               (("'%s/libhdf5_cpp.a %s/libhdf5.a %s/libsz.a'")
+                "'%s/libhdf5_cpp.a %s/libhdf5.a %s/libhdf5.a'")
+               (("'%s/libhdf5.a %s/libsz.a'")
+                "'%s/libhdf5.a %s/libhdf5.a'"))
+             (with-directory-excursion "src"
+               (invoke "tar" "xvf" (assoc-ref inputs "hdf5-source"))
+               (rename-file (string-append "hdf5-" ,(package-version hdf5))
+                            "hdf5")
+               (rename-file "Makevars.in" "Makevars")
+               (substitute* "Makevars"
+                 (("HDF5_CXX_LIB=.*")
+                  (string-append "HDF5_CXX_LIB="
+                                 (assoc-ref inputs "hdf5") "/lib/libhdf5_cpp.a\n"))
+                 (("HDF5_LIB=.*")
+                  (string-append "HDF5_LIB="
+                                 (assoc-ref inputs "hdf5") "/lib/libhdf5.a\n"))
+                 (("HDF5_CXX_INCLUDE=.*") "HDF5_CXX_INCLUDE=./hdf5/c++/src\n")
+                 (("HDF5_INCLUDE=.*") "HDF5_INCLUDE=./hdf5/src\n")
+                 ;; szip is non-free software
+                 (("cp \\$\\{SZIP_LIB\\}.*") "")
+                 (("PKG_LIBS = \\$\\{HDF5_LIB\\} \\$\\{SZIP_LIB\\}")
+                  "PKG_LIBS = ${HDF5_LIB}\n")))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("hdf5" ,hdf5)))
+    (native-inputs
+     `(("hdf5-source" ,(package-source hdf5))))
+    (home-page "https://bioconductor.org/packages/Rhdf5lib")
+    (synopsis "HDF5 library as an R package")
+    (description "This package provides C and C++ HDF5 libraries for use in R
+packages.")
+    (license license:artistic2.0)))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
