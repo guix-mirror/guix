@@ -7096,3 +7096,53 @@ notably useful when working on code in some language; you may grab code into a
 scratch buffer, and, by virtue of this extension, do so using the Emacs
 formatting rules for that language.")
       (license license:bsd-2))))
+
+(define-public epipe
+  (package
+    (name "epipe")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cute-jumper/epipe/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05a036852g4j63k1mhvyfrcsgkl9lczayi7x61570ysw3cli5wp5"))))
+    (build-system trivial-build-system)
+    (inputs
+     `(("bash" ,bash)
+       ("perl" ,perl)))
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)))
+    (arguments
+     `(#:modules
+       ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         ;; Extract source
+         (setenv "PATH" (string-append
+                         (assoc-ref %build-inputs "tar") "/bin" ":"
+                         (assoc-ref %build-inputs "gzip") "/bin"))
+         (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+         (chdir (string-append ,name "-" ,version))
+         ;; Patch shebangs
+         (substitute* "epipe"
+           (("/usr/bin/env bash")
+            (string-append (assoc-ref %build-inputs "bash") "/bin/bash")))
+         (patch-shebang "epipe.pl"
+                        (list (string-append (assoc-ref %build-inputs "perl")
+                                             "/bin")))
+         ;; Installation
+         (for-each (lambda (file)
+                     (install-file file (string-append %output "/bin")))
+                   '("epipe" "epipe.pl"))
+         #t)))
+    (home-page "https://github.com/cute-jumper/epipe")
+    (synopsis "Pipe to the @code{emacsclient}")
+    (description "@code{epipe} provides an utility to use your editor in
+the pipeline, featuring the support for running @code{emacsclient}.")
+    (license license:gpl3+)))
