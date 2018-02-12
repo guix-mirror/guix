@@ -1867,7 +1867,7 @@ case with other forms of concurrent communication, such as locks or
 (define-public ghc-parallel
   (package
     (name "ghc-parallel")
-    (version "3.2.0.6")
+    (version "3.2.1.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -1878,7 +1878,7 @@ case with other forms of concurrent communication, such as locks or
              ".tar.gz"))
        (sha256
         (base32
-         "0hp6vf4zxsw6vz6lj505xihmnfhgjp39c9q7nyzlgcmps3xx6a5r"))))
+         "09l52k1gsn667lmv0pp052cbwkzkbhfivp51f2xkrlfzf6xwvqsd"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/parallel")
     (synopsis "Parallel programming library")
