@@ -1038,6 +1038,28 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
 @code{haskell-src-exts} trees.")
     (license license:bsd-3)))
 
+(define-public ghc-refact
+  (package
+    (name "ghc-refact")
+    (version "0.3.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "refact/refact-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0v0zxcx29b8jxs2kgy9csykqcp8kzhdvyylw2xfwmj4pfxr2kl0a"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/refact")
+    (synopsis "Specify refactorings to perform with apply-refact")
+    (description
+     "This library provides a datatype which can be interpreted by
+@code{apply-refact}.  It exists as a seperate library so that applications can
+specify refactorings without depending on GHC.")
+    (license license:bsd-3)))
+
 (define-public hlint
   (package
     (name "hlint")
