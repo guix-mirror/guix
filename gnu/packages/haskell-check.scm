@@ -314,7 +314,7 @@ been added since previous test run.")
 (define-public ghc-quickcheck-instances
   (package
     (name "ghc-quickcheck-instances")
-    (version "0.3.12")
+    (version "0.3.16.1")
     (source
      (origin
        (method url-fetch)
@@ -324,18 +324,22 @@ been added since previous test run.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1wwvkzpams7i0j7nk5qj8vvhj8x5zcbgbgrpczszgvshva4bkmfx"))))
+         "01v5bs7r9yvhkvb4yc9bqnacy8r6cy2gr9lnmwx40n5apgi0gcbz"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-old-time" ,ghc-old-time)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-hashable" ,ghc-hashable)
-       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-old-time" ,ghc-old-time)
        ("ghc-scientific" ,ghc-scientific)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-text" ,ghc-text)))
-    (home-page
-     "https://github.com/aslatter/qc-instances")
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-text" ,ghc-text)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-uuid-types" ,ghc-uuid-types)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "https://github.com/aslatter/qc-instances")
     (synopsis "Common quickcheck instances")
     (description "This package provides QuickCheck instances for types
 provided by the Haskell Platform.")
