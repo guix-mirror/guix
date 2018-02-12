@@ -391,7 +391,7 @@ communication between web applications and web servers.")
 (define-public ghc-wai-logger
   (package
     (name "ghc-wai-logger")
-    (version "2.2.4.1")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -401,7 +401,7 @@ communication between web applications and web servers.")
              ".tar.gz"))
        (sha256
         (base32
-         "1s6svvy3ci4j1dj1jaw8hg628miwj8f5gpy9n8d8hpsaxav6nzgk"))))
+         "1w0b0vinsyqr37wciljkz8g5dcmfi2r210lq194a0wkycly9kkch"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Tests cannot find libraries exported
                                ; by propagated-inputs.
