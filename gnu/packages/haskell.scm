@@ -4785,7 +4785,7 @@ and bytestrings.")
 (define-public ghc-pandoc-types
   (package
     (name "ghc-pandoc-types")
-    (version "1.16.1.1")
+    (version "1.17.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -4793,12 +4793,20 @@ and bytestrings.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "094mzgdxva84kcpjf9m8b5n3chm1wm44bzflh5x6xhddz6pb7zpq"))))
+                "0dhp5bcjl6605n2chiab5rp51zir3671gxkmwy34znh0s3vp85jb"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-aeson" ,ghc-aeson)
-       ("ghc-deepseq-generics" ,ghc-deepseq-generics)))
+       ("ghc-string-qq" ,ghc-string-qq)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-hunit" ,ghc-hunit)))
     (home-page "http://johnmacfarlane.net/pandoc")
     (synopsis "Types for representing a structured document")
     (description
