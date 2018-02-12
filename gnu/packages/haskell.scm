@@ -474,7 +474,7 @@ determine the hostname.")
 (define-public ghc-prelude-extras
   (package
     (name "ghc-prelude-extras")
-    (version "0.4.0.2")
+    (version "0.4.0.3")
     (source
      (origin
        (method url-fetch)
@@ -484,7 +484,7 @@ determine the hostname.")
              ".tar.gz"))
        (sha256
         (base32
-         "1q7mj9hysy747vimnlyrwsk1wb2axymxixa76fwcbcnmz3fi4llp"))))
+         "0xzqdf3nl2h0ra4gnslm1m1nsxlsgc0hh6ky3vn578vh11zhifq9"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/ekmett/prelude-extras")
     (synopsis "Higher order versions of Prelude classes")
