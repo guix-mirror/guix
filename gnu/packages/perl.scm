@@ -3913,15 +3913,15 @@ variables.")
 (define-public perl-import-into
   (package
     (name "perl-import-into")
-    (version "1.002004")
+    (version "1.002005")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Import-Into-" version ".tar.gz"))
        (sha256
         (base32
-         "110hifk3cj14lxgjq2vaa2qfja21gll4lpn8vbimy0gzqadjbjyy"))))
+         "0rq5kz7c270q33jq6hnrv3xgkvajsc62ilqq7fs40av6zfipg7mx"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-module-runtime" ,perl-module-runtime)))
