@@ -6557,7 +6557,7 @@ up inheritance from those modules at the same time.")
 (define-public perl-path-class
   (package
     (name "perl-path-class")
-    (version "0.35")
+    (version "0.37")
     (source
      (origin
        (method url-fetch)
@@ -6565,7 +6565,7 @@ up inheritance from those modules at the same time.")
                            "Path-Class-" version ".tar.gz"))
        (sha256
         (base32
-         "1viaj8jyshcj135la0kgfgzalaw06xnbsg9h54jx09v1342v69lj"))))
+         "1kj8q8dmd8jci94w5arav59nkp0pkxrkliz4n8n6yf02hsa82iv5"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Path-Class/")
