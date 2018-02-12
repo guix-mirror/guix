@@ -2412,7 +2412,7 @@ Haskell library @code{regex-base}.")
 (define-public ghc-parsers
   (package
     (name "ghc-parsers")
-    (version "0.12.3")
+    (version "0.12.4")
     (source
      (origin
        (method url-fetch)
@@ -2422,7 +2422,7 @@ Haskell library @code{regex-base}.")
              ".tar.gz"))
        (sha256
         (base32
-         "18wzmp8y3py4qa8hdsxqm0jfzmwy744dw7xa48r5s8ynhpimi462"))))
+         "07najh7f9y3ahh42z96sw4hnd0kc4x3wm0xlf739y0gh81ys5097"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
                                ; -package attoparsec-0.13.0.1"
