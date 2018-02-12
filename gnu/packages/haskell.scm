@@ -1331,6 +1331,8 @@ configurations to coexist without resorting to mutable global variables or
        (sha256
         (base32 "0l3viphiszvz5wqzg7a45zp40grwlab941q5ay29iyw8p3v8pbyv"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=base")))
     (home-page "https://hackage.haskell.org/package/old-locale")
     (synopsis "Adapt to locale conventions")
     (description
