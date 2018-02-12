@@ -993,7 +993,7 @@ examination.")
 (define-public ghc-haskell-src-exts
   (package
     (name "ghc-haskell-src-exts")
-    (version "1.18.2")
+    (version "1.20.1")
     (source
      (origin
        (method url-fetch)
@@ -1003,14 +1003,13 @@ examination.")
              ".tar.gz"))
        (sha256
         (base32
-         "0hq9f6r67gkhad4cc4dhahrwrz9kxfibhk8qrw5j0p7cvh23hn1i"))))
+         "1jsjl9hja2dpcfq4mzlfpwyr6axwnwgacfb7aa070kz4lbygzaa8"))))
     (build-system haskell-build-system)
     (inputs
      `(("cpphs" ,cpphs)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-happy" ,ghc-happy)
-       ("ghc-syb" ,ghc-syb)
-       ("ghc-pretty-show" ,ghc-pretty-show)))
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-pretty-show" ,ghc-pretty-show-for-haskell-src-exts)))
     (native-inputs
      `(("ghc-smallcheck" ,ghc-smallcheck)
        ("ghc-tasty" ,ghc-tasty)
