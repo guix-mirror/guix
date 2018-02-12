@@ -635,7 +635,7 @@ Haskell.")
 (define-public ghc-mime-types
   (package
     (name "ghc-mime-types")
-    (version "0.1.0.6")
+    (version "0.1.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -643,7 +643,7 @@ Haskell.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "090z3dp928243amnc6s8g10rk2h2bprk9y138q6wj3cpflzr72pw"))))
+                "1fg9cqpp5lswk8ajlq4f41n12c2v2naz179l8dsz6zisjqj4l5l3"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-text" ,ghc-text)))
