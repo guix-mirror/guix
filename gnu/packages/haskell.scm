@@ -4268,7 +4268,7 @@ cross-site scripting (@dfn{XSS}) attacks.")
 (define-public ghc-bifunctors
   (package
     (name "ghc-bifunctors")
-    (version "5")
+    (version "5.5.2")
     (source
      (origin
        (method url-fetch)
@@ -4278,11 +4278,19 @@ cross-site scripting (@dfn{XSS}) attacks.")
              ".tar.gz"))
        (sha256
         (base32
-         "13990xdgx0n23qgi18ghhmsywj5zkr0a5bim0g8a4nzi0cx95ps1"))))
+         "04fbsysm6zl8kmvqgffmrqa9bxl9dl2gibrd51asqzg737mb4ark"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tagged" ,ghc-tagged)
+     `(("ghc-base-orphans" ,ghc-base-orphans)
+       ("ghc-comonad" ,ghc-comonad)
+       ("ghc-th-abstraction" ,ghc-th-abstraction)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-tagged" ,ghc-tagged)
        ("ghc-semigroups" ,ghc-semigroups)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://github.com/ekmett/bifunctors/")
     (synopsis "Bifunctors for Haskell")
     (description "This package provides bifunctors for Haskell.")
