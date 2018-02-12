@@ -5936,7 +5936,7 @@ data quickly and efficiently, using the ByteString type.")
 (define-public ghc-binary
   (package
     (name "ghc-binary")
-    (version "0.8.4.1")
+    (version "0.8.5.1")
     (source
      (origin
        (method url-fetch)
@@ -5945,9 +5945,11 @@ data quickly and efficiently, using the ByteString type.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1fp7wxnf57cjzhbb7rgqs6fgws4690zh0dxgl924dj4nzq0cf4wd"))))
+         "15h5zqfw7xmcimvlq6bs8f20vxlfvz7g411fns5z7212crlimffy"))))
     (build-system haskell-build-system)
-    (inputs
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
+    (native-inputs
      `(("ghc-random" ,ghc-random)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
