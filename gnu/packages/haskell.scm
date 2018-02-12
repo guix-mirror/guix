@@ -4957,6 +4957,32 @@ Template Haskell.")
 datatypes.")
     (license license:bsd-3)))
 
+(define-public ghc-th-lift-instances
+  (package
+    (name "ghc-th-lift-instances")
+    (version "0.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "th-lift-instances/th-lift-instances-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1f56cp6ckcalld5jchv0kxpjkwcsixd7smd0g7r8cg67ppx6m90x"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-th-lift" ,ghc-th-lift)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-text" ,ghc-text)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/bennofs/th-lift-instances/")
+    (synopsis "Lift instances for template-haskell for common data types.")
+    (description "Most data types in the Haskell platform do not have Lift
+instances.  This package provides orphan instances for @code{containers},
+@code{text}, @code{bytestring} and @code{vector}.")
+    (license license:bsd-3)))
+
 (define-public ghc-th-expand-syns
   (package
     (name "ghc-th-expand-syns")
