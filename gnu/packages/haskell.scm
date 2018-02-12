@@ -1112,7 +1112,7 @@ unwanted suggestions, and to add your own custom suggestions.")
 (define-public ghc-resourcet
   (package
     (name "ghc-resourcet")
-    (version "1.1.6")
+    (version "1.1.7.5")
     (source
      (origin
        (method url-fetch)
@@ -1122,7 +1122,7 @@ unwanted suggestions, and to add your own custom suggestions.")
              ".tar.gz"))
        (sha256
         (base32
-         "0zhsaaa4n8ry76vjih519a8npm2hrzk10d5asrgllcwpzmifl41y"))))
+         "0nj0gwfd05divpdn7m47gy6bpcrwn3zk81gc303k0smrbqi0xlq5"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-transformers-base" ,ghc-transformers-base)
