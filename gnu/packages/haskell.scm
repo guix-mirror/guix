@@ -637,7 +637,7 @@ nothing.")
 (define-public ghc-haddock-library
   (package
     (name "ghc-haddock-library")
-    (version "1.2.1")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
@@ -647,17 +647,16 @@ nothing.")
              ".tar.gz"))
        (sha256
         (base32
-         "0mhh2ppfhrvvi9485ipwbkv2fbgj35jvz3la02y3jlvg5ffs1c8g"))))
+         "0ns4bpf6whmcfl0cm2gx2c73if416x4q3ac4l4qm8w84h0zpcr7p"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
+     `(("ghc-base-compat" ,ghc-base-compat)))
+    (native-inputs
+     `(("hspec-discover" ,hspec-discover)
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-quickcheck" ,ghc-quickcheck)))
-    (native-inputs
-     `(("hspec-discover" ,hspec-discover)))
     (home-page "http://www.haskell.org/haddock/")
-    (synopsis
-     "Library exposing some functionality of Haddock")
+    (synopsis "Library exposing some functionality of Haddock")
     (description
      "Haddock is a documentation-generation tool for Haskell libraries.  These
 modules expose some functionality of it without pulling in the GHC dependency.
