@@ -5352,14 +5352,14 @@ is supported.")
 (define-public r-lubridate
   (package
     (name "r-lubridate")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lubridate" version))
        (sha256
         (base32
-         "0pzvazzybzvln3y676yims7whsc74g8i7kgf2nsfbxdq5943z349"))))
+         "0k417a1xp5gxf77ycbnx5apzpc5d25sjm83ss7wmqpbnhnr5dcav"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
