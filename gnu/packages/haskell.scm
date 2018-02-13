@@ -6617,7 +6617,7 @@ files and directories in a portable way.")
 (define-public ghc-process
   (package
     (name "ghc-process")
-    (version "1.4.2.0")
+    (version "1.6.3.0")
     (source
      (origin
        (method url-fetch)
@@ -6626,7 +6626,7 @@ files and directories in a portable way.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1v1bav5isqxq9fc4lw714x94qbfsjbm2nn12kjp69r1ql8jaaaqw"))))
+         "0lxkl0gmyy2sn3r9c7dyz8vz1cm6nvygmgrizilliir5bp42m8cc"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
