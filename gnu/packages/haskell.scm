@@ -2467,7 +2467,7 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
 (define-public ghc-trifecta
   (package
     (name "ghc-trifecta")
-    (version "1.6")
+    (version "1.7.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2475,10 +2475,11 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
                     "trifecta-" version ".tar.gz"))
               (sha256
                (base32
-                "0rbhv9m17k7l1zr70i0yw5da0qjgxmfh1da8brj0zdzwjn9ac0mk"))))
+                "13n6a3fdxngnzsjnhfrzigv1c2g0xm6lqkjcnirpc37sd0rpby31"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-reducers" ,ghc-reducers)
+     `(("ghc-doctest" ,ghc-doctest-0.13)
+       ("ghc-reducers" ,ghc-reducers)
        ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
@@ -2497,6 +2498,8 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-utf8-string" ,ghc-utf8-string)))
+    (native-inputs
+     `(("cabal-doctest" ,cabal-doctest)))
     (home-page "https://github.com/ekmett/trifecta/")
     (synopsis "Parser combinator library with convenient diagnostics")
     (description "Trifecta is a modern parser combinator library for Haskell,
