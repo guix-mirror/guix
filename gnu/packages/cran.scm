@@ -95,13 +95,13 @@ error stream.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.14")
+    (version "0.12.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "0qvyxggddyg87lza45hjl0a2prabdyshkqzkz418vi777zygqa6s"))))
+        (base32 "1pnv6sl4vdn69ygmgrb1b3gsigfdcfb56wnzikic93l8gkvdsvxv"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
