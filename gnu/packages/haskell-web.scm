@@ -36,7 +36,7 @@
 (define-public ghc-tagsoup
   (package
     (name "ghc-tagsoup")
-    (version "0.14")
+    (version "0.14.3")
     (source
      (origin
        (method url-fetch)
@@ -46,11 +46,12 @@
              ".tar.gz"))
        (sha256
         (base32
-         "07pax7i0bl79dmqqz58zy09yrgpnyyr2ya0z183hv96kp65jv0lh"))))
+         "00j2rm2sx0syn16kg2402fz4k8yqfl9knmi367jsiycds1q9zzf9"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-text" ,ghc-text)))
-    (home-page
-     "http://community.haskell.org/~ndm/tagsoup/")
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "http://community.haskell.org/~ndm/tagsoup/")
     (synopsis
      "Parsing and extracting information from (possibly malformed) HTML/XML
 documents")
