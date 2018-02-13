@@ -1364,7 +1364,7 @@ players, like VLC or MPlayer.")
 (define-public libdvdread
   (package
     (name "libdvdread")
-    (version "5.0.3")
+    (version "6.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
@@ -1372,7 +1372,7 @@ players, like VLC or MPlayer.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ayqiq0psq18rcp6f5pz82sxsq66v0kwv0y55dbrcg68plnxy71j"))))
+                "0dgr23fzcjhb7ck54xkr9zmf4jcq3ph0dz3fbyvla1c6ni9ijfxk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-libdvdcss=yes")))
