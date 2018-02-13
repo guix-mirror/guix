@@ -5673,6 +5673,37 @@ needs.  It provides a very simple API to create sockets to a destination with
 the choice of SSL/TLS, and SOCKS.")
     (license license:bsd-3)))
 
+(define-public ghc-doctemplates
+  (package
+    (name "ghc-doctemplates")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "doctemplates/doctemplates-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1bfs2kl5j5al2w2y4qpbn68p0xsnb65r7h51l356kpkzc326646p"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-text" ,ghc-text)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-scientific" ,ghc-scientific)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://github.com/jgm/doctemplates#readme")
+    (synopsis "Pandoc-style document templates")
+    (description
+     "This package provides a simple text templating system used by pandoc.")
+    (license license:bsd-3)))
+
 (define-public ghc-pandoc
   (package
     (name "ghc-pandoc")
