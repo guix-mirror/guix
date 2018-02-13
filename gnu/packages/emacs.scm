@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
@@ -280,6 +280,7 @@ editor (without an X toolkit)" )
               (uri (git-reference
                     (url "git://git.hcoop.net/git/bpt/emacs.git")
                     (commit "41120e0f595b16387eebfbf731fff70481de1b4b")))
+              (file-name (string-append name "-" version "-checkout"))
               (patches (search-patches "guile-emacs-fix-configure.patch"))
               (sha256
                (base32
@@ -957,7 +958,7 @@ light user interface.")
 (define-public emacs-emms-player-mpv
   (package
     (name "emacs-emms-player-mpv")
-    (version "0.0.10")
+    (version "0.0.13")
     (source
      (origin
        (method url-fetch)
@@ -966,7 +967,7 @@ light user interface.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1q81fpmwr8hpdgq71vbdai2nml4yyqbmk4ffdyl4irlwph8gfjyq"))))
+         "01i0bz7wdqzcnv5r63m9xgl07yf1nmn86dwy00rcfsn5za46y3r3"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emms" ,emms)))
@@ -1621,6 +1622,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
               (uri (string-append
                     "https://github.com/Emacs-D-Mode-Maintainers/Emacs-D-Mode/"
                     "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0knpgi55jm09282aqf8pv55zillpnpzf9f4sgm6gwsmvxf17xaw0"))))
@@ -2385,6 +2387,7 @@ the speedbar window.")
               (uri (git-reference
                     (commit "880706469338ab59b5bb7dbe8460016f89755364")
                     (url "https://github.com/gregsexton/ob-ipython.git")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1scf25snbds9ymagpny30ijbsg479r3nm0ih01dy4m9d0g7qryb7"))))

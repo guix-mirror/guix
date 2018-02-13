@@ -144,6 +144,23 @@ unit testing.  Test output is in XML for automatic testing and GUI based for
 supervised tests.")
     (license license:lgpl2.1))) ; no copyright notices. LGPL2.1 is in the tarball
 
+;; Some packages require this newer version of cppunit.  However, it needs
+;; C++11 support, which is not enabled by default in our current GCC, and
+;; updating in-place would require adding CXXFLAGS to many dependent packages.
+;; Thus, keep as a separate variable for now.
+;; TODO: Remove this when our default GCC is updated to 6 or higher.
+(define-public cppunit-1.14
+  (package
+    (inherit cppunit)
+    (version "1.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://dev-www.libreoffice.org/src/"
+                                  "cppunit-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1027cyfx5gsjkdkaf6c2wnjh68882grw8n672018cj3vs9lrhmix"))))))
+
 (define-public catch-framework
   (package
     (name "catch")

@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -698,7 +698,9 @@ incompatible with HDF5.")
        #:configure-flags '("--enable-cxx"
                            "--enable-fortran"
                            "--enable-fortran2003")
-
+       ;; Use -fPIC to allow the R bindings to link with the static libraries
+       #:make-flags (list "CFLAGS=-fPIC"
+                          "CXXFLAGS=-fPIC")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-configure
@@ -1893,12 +1895,12 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.1.1")
+    (version "2.1.4")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "1mylrrkyycaw9m01mmg6xkn5wgdlabs5l0qyws60r0n2ycblp897"))))
+        (base32 "1ygm81i7mqvh229dp9935djjyb120p3bqvaf4k572sa4q63fzjhc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -30,7 +30,7 @@
 (define-public ccache
   (package
     (name "ccache")
-    (version "3.3.5")
+    (version "3.4")
     (source
      (origin
       (method url-fetch)
@@ -38,7 +38,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1iih5d171rq29366c1z90dri2h8173yyc8rm2740wxiqx6k7c18r"))))
+        "0sfisvjs2iham29flxgmnfg7kzqz66bhk6q0qcwbdv1n569say5j"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)     ;for test.sh
                      ("which" ,(@ (gnu packages base) which))))
@@ -47,14 +47,14 @@
      '(#:phases (modify-phases %standard-phases
                  (add-before 'check 'setup-tests
                    (lambda _
-                     (substitute* '("test/test_hashutil.c" "test.sh")
+                     (substitute* '("unittest/test_hashutil.c" "test/suites/base.bash")
                        (("#!/bin/sh") (string-append "#!" (which "sh"))))
                      #t))
                  (add-before 'check 'munge-failing-test
                    (lambda _
                      ;; XXX The new ‘Multiple -fdebug-prefix-map’ test added in
                      ;; 3.3.5 fails (why?).  Force it to report success instead.
-                     (substitute* "test.sh"
+                     (substitute* "test/suites/debug_prefix_map.bash"
                        (("grep \"name\"") "true"))
                      #t)))))
     (home-page "https://ccache.samba.org/")

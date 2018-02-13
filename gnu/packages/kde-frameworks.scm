@@ -766,6 +766,57 @@ but also for getting notified upon idle time events, such as custom timeouts,
 or user activity.")
     (license (list license:gpl2+ license:lgpl2.1+))))
 
+(define-public kirigami
+  ;; Kirigami is listed as tier 1 framework, but optionally includes
+  ;; plasma-framework which is tier 3.
+  (package
+    (name "kirigami")
+    (version "5.39.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    "kirigami2-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0spgylk4yjy74rs5d5b28qv72qz5ra9j3wfmk6vx2b6cvf1fw517"))))
+    (properties `((upstream-name . "kirigami2")))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ;; TODO: Find a way to activate this optional include without
+       ;; introducing a recursive dependency.
+       ;;("plasma-frameworks" ,plasma-framework) ;; Tier 3!
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtsvg" ,qtsvg)
+       ;; Run-time dependency
+       ("qtgraphicaleffects" ,qtgraphicaleffects)))
+    (arguments
+     `(#:tests? #f ;; FIXME: Test suite is broken,
+       ;; see https://bugs.kde.org/show_bug.cgi?id=386456
+       ;; Note for when enabling the tests: The test-suite is meant to be run
+       ;; without prior installation, see
+       ;; https://cgit.kde.org/kirigami.git/commit/?id=24ad2c9
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; make Qt render "offscreen", required for tests
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "QtQuick components for mobile user interfaces")
+    (description "Kirigami is a set of high level QtQuick components looking
+and feeling well on both mobile and desktop devices.  They ease the creation
+of applications that follow the Kirigami Human Interface Guidelines.")
+    (license license:lgpl2.1+)))
+
 (define-public kitemmodels
   (package
     (name "kitemmodels")

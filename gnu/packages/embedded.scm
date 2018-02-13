@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -525,6 +525,9 @@ with a layered architecture of JTAG interface and TAP support.")
           `(modify-phases ,phases
              (add-after 'unpack 'chdir
                (lambda _ (chdir "gcc") #t))))))
+      (native-inputs
+       `(("gcc-4" ,gcc-4.9)
+         ,@(package-native-inputs propeller-gcc-6)))
       (home-page "https://github.com/parallaxinc/propgcc")
       (supported-systems (delete "aarch64-linux" %supported-systems)))))
 

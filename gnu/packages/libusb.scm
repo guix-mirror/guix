@@ -287,14 +287,14 @@ proposed for standardization.")
 (define-public gmtp
   (package
     (name "gmtp")
-    (version "1.3.10")
+    (version "1.3.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gmtp/gMTP-" version
                                   "/gmtp-" version ".tar.gz"))
               (sha256
                (base32
-                "0fyi3pdl2g57vr0p46ip2wwzyap3l0by7iqaqygv0yxfcs79l6xj"))))
+                "04q6byyq002fhzkc2rkkahwh5b6272xakaj4m3vwm8la8jf0r0ss"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags

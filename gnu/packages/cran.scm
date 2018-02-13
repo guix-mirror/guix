@@ -95,13 +95,13 @@ error stream.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.14")
+    (version "0.12.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "0qvyxggddyg87lza45hjl0a2prabdyshkqzkz418vi777zygqa6s"))))
+        (base32 "1pnv6sl4vdn69ygmgrb1b3gsigfdcfb56wnzikic93l8gkvdsvxv"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
@@ -206,14 +206,14 @@ on (non-orthogonal) variable vectors in scatterplots and biplots.")
 (define-public r-shape
   (package
     (name "r-shape")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shape" version))
        (sha256
         (base32
-         "1v9xp60p813rnx41vchkh32qmcb4z2zp9l7r1a8a6f8aqylnq3vj"))))
+         "0hadk3mapkhbh8xjkiz52vxdagmmgvm15xwpzb90ikw4giyipjzl"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/shape")
     (synopsis "Functions for plotting graphical shapes")
@@ -321,14 +321,14 @@ rows, dropping names) to see if the modified versions are identical.")
 (define-public r-dendextend
   (package
     (name "r-dendextend")
-    (version "1.6.0")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dendextend" version))
        (sha256
         (base32
-         "0pichh08zi12lpxzc061dmv4smj6lizygd1xymln8wfz18sf7923"))))
+         "1krvqadnnh53xx5ql7bwzxaif6a317jzbs1m00gnc6jnj03rfl5d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fpc" ,r-fpc)
@@ -542,14 +542,14 @@ plot networks.")
 (define-public r-proxy
   (package
     (name "r-proxy")
-    (version "0.4-20")
+    (version "0.4-21")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "proxy" version))
        (sha256
         (base32
-         "15g6dacdmlbkcnimblscghl23aj732cn6qwbs583r4im9v5nvbla"))))
+         "1vih8gsfzv97h5c8ixd1qjnn02i7fzla2p9fdj2wpisqhx0p0xv0"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/proxy")
     (synopsis "Distance and similarity measures")
@@ -562,14 +562,14 @@ most popular ones.")
 (define-public r-sp
   (package
     (name "r-sp")
-    (version "1.2-5")
+    (version "1.2-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sp" version))
        (sha256
         (base32
-         "09yydnacp33yx0kn537k96fjlbf75fjafqfknpa5gvci4l888bqd"))))
+         "0q04yfgyjannsrzl0ppwcv0simrxrrbx2iz5mzaafc5x38zf0q3d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -989,20 +989,44 @@ testing framework of Wald are generic and can therefore also be used in other
 contexts.")
     (license license:gpl2+)))
 
+(define-public r-squarem
+  (package
+    (name "r-squarem")
+    (version "2017.10-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SQUAREM" version))
+       (sha256
+        (base32
+         "10xj26x7qjyvzndnbjl5krr9wabnb9cbrnp3m7xg673g8ddr12cv"))))
+    (properties `((upstream-name . "SQUAREM")))
+    (build-system r-build-system)
+    (home-page "http://www.jhsph.edu/agingandhealth/People/Faculty_personal_pages/Varadhan.html")
+    (synopsis "Squared Extrapolation Methods for Accelerating EM-Like Monotone Algorithms")
+    (description
+     "This package provides algorithms for accelerating the convergence of
+slow, monotone sequences from smooth, contraction mapping such as the EM
+algorithm.  It can be used to accelerate any smooth, linearly convergent
+acceleration scheme.  A tutorial style introduction to this package is
+available in a vignette.")
+    (license license:gpl2+)))
+
 (define-public r-lava
   (package
     (name "r-lava")
-    (version "1.5.1")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lava" version))
        (sha256
         (base32
-         "1vcm04h9i39gmf2prl5d4j4il4gs6skzr6y2fvl1vn4hklna87f4"))))
+         "02xf5d968raz9gnq5ywy04wz29xpdyca1hm79vbbg1mcxvzdl1dz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-numderiv" ,r-numderiv)
+       ("r-squarem" ,r-squarem)
        ("r-survival" ,r-survival)))
     (home-page "https://github.com/kkholst/lava")
     (synopsis "Latent variable models")
@@ -1014,14 +1038,14 @@ variable models.")
 (define-public r-drr
   (package
     (name "r-drr")
-    (version "0.0.2")
+    (version "0.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "DRR" version))
        (sha256
         (base32
-         "1scfwp6ry6apxzqjclsmn2frxp9qfw6zxsxn5w0j0q3sz42hz1h2"))))
+         "1yd1fvllfkcrwg9v322n4wkk4q4q84nvy58y4vac9pdr3yf3i4vl"))))
     (properties `((upstream-name . "DRR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1106,14 +1130,14 @@ calendar objects.")
 (define-public r-ddalpha
   (package
     (name "r-ddalpha")
-    (version "1.3.1")
+    (version "1.3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ddalpha" version))
        (sha256
         (base32
-         "0pczw9543y7f92m7gyk7rxcjn8vsjaldc5vl0r56ywip9i374zbh"))))
+         "13w8ir5rd80rka4mq343zd4wn93vfw870lzfqrd3cxgwb1bwcw7y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -1279,14 +1303,14 @@ provides a one-row summary of model-level statistics.")
 (define-public r-recipes
   (package
     (name "r-recipes")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "recipes" version))
        (sha256
         (base32
-         "0id46c7iaf49miw4kxpidsbg3hdywav43n1lh2zd1vg5946bzg04"))))
+         "1car3a3mqn87pz049cbgkaayz86970mvkapk6al2k7jjw76306l9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -2072,3 +2096,86 @@ around the relevant area.  This work is based on the @code{ggplot2} and
 dendrogram panes, and the placing of factor variables in the sides of the
 heatmap.")
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-xfun
+  (package
+    (name "r-xfun")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xfun" version))
+       (sha256
+        (base32
+         "1sm51gmwgw876d6d1q8smxmfgfh6zsnykfx8qp8z6jmh0fvd89pj"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/yihui/xfun")
+    (synopsis "Miscellaneous functions")
+    (description
+     "This package provides miscellaneous functions commonly used in other
+packages maintained by Yihui Xie.")
+    (license license:expat)))
+
+(define-public r-utf8
+  (package
+    (name "r-utf8")
+    (version "1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "utf8" version))
+       (sha256
+        (base32
+         "03s4j6059q0nly68vpk6wy3p3f5ypakw93fj35kzd82b4z1r9cs3"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/patperry/r-utf8")
+    (synopsis "Unicode text processing")
+    (description
+     "This package provides tools to process and print UTF-8 encoded
+international text (Unicode).  Input, validate, normalize, encode, format, and
+display.")
+    (license license:asl2.0)))
+
+(define-public r-pillar
+  (package
+    (name "r-pillar")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pillar" version))
+       (sha256
+        (base32
+         "1gh3j2pbbf5y4d5nyqnlr0x27jjyvjjspcccmw61airs1n6rx8jq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cli" ,r-cli)
+       ("r-crayon" ,r-crayon)
+       ("r-rlang" ,r-rlang)
+       ("r-utf8" ,r-utf8)))
+    (home-page "https://github.com/r-lib/pillar")
+    (synopsis "Coloured formatting for columns")
+    (description
+     "This package provides a @code{pillar} generic designed for formatting
+columns of data using the full range of colours provided by modern
+terminals.")
+    (license license:gpl3)))
+
+(define-public r-uuid
+  (package
+    (name "r-uuid")
+    (version "0.1-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "uuid" version))
+       (sha256
+        (base32
+         "1gmisd630fc8ybg845hbg13wmm3pk3npaamrh5wqbc1nqd6p0wfx"))))
+    (build-system r-build-system)
+    (home-page "http://www.rforge.net/uuid")
+    (synopsis "Tools for generating and handling of UUIDs")
+    (description
+     "This package provides tools for generating and handling of
+@dfn{Universally Unique Identifiers} (UUIDs).")
+    (license license:expat)))

@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;;
@@ -382,8 +382,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.15.2")
-(define %linux-libre-hash "0rzncbk513a8q60z9psb9yz7liadsb7nghj12s1kmwn441z1zv93")
+(define %linux-libre-version "4.15.3")
+(define %linux-libre-hash "1svn7v0gdqh7mi1f139g3nhf18g4vr9958x1zh24zww0lyic8l27")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -391,8 +391,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.18")
-(define %linux-libre-4.14-hash "1kl6zc9dzi02hzxwmzskxb4cqh5lph4afy94677bj5ribanmizn5")
+(define %linux-libre-4.14-version "4.14.19")
+(define %linux-libre-4.14-hash "1zns8nxx1j1fxpgqgsm9z0kffn0ji1pcsav1r77gxqllsn49wa8m")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -401,8 +401,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.80"
-                    "094c66sh4h1n46as20n0ip2clp89khsn91ngxwg5p85gf3jqk1h9"
+  (make-linux-libre "4.9.81"
+                    "1x89llah2hklh36rgx7cywacdmvbs9334101qhpycicdi5sv7mnn"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -3065,7 +3065,7 @@ is flexible, efficient and uses a modular implementation.")
 (define-public fuse-exfat
   (package
     (name "fuse-exfat")
-    (version "1.2.7")
+    (version "1.2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3073,7 +3073,7 @@ is flexible, efficient and uses a modular implementation.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0df0ccnd0dgwc6rvk9qmrz0nfb8whc5s3wg9qnw1mzbrh4rcvhw2"))))
+                "1jwnxw0bg9v5ij8xvbg4xpjr50nykq8a1lmc2xkblz204rq7wd8z"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
