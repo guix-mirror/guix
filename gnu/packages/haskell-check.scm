@@ -311,6 +311,32 @@ only those tests that failed in the last run, or to only run the tests that have
 been added since previous test run.")
   (license license:bsd-3)))
 
+(define-public ghc-tasty-expected-failure
+  (package
+    (name "ghc-tasty-expected-failure")
+    (version "0.11.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "tasty-expected-failure/tasty-expected-failure-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0r555f18d2gj96pjyc13chn1nxaxl81am4xgip3mvvjhw8s5mva1"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-tagged" ,ghc-tagged)
+       ("ghc-tasty" ,ghc-tasty)))
+    (home-page "http://github.com/nomeata/tasty-expected-failure")
+    (synopsis "Mark tasty tests as failure expected")
+    (description
+     "With the function @code{Test.Tasty.ExpectedFailure.expectFail} in the
+provided module @code{Test.Tasty.ExpectedFailure}, you can mark that you
+expect test cases to fail, and not to pass. This can be used for test-driven
+development.")
+    (license license:expat)))
+
 (define-public ghc-quickcheck-instances
   (package
     (name "ghc-quickcheck-instances")
