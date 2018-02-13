@@ -3446,17 +3446,18 @@ persistent (on the file system).")
 (define-public r-r-rsp
   (package
     (name "r-r-rsp")
-    (version "0.41.0")
+    (version "0.42.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.rsp" version))
               (sha256
                (base32
-                "01l430avj5ggmdsla2kiriix72g0dlzx9klniq321bs0za808v3c"))))
+                "1zcq0hzi0j7fvj2rs796a1i120wbr0387vck17rrd644awwbsbm0"))))
     (properties `((upstream-name . "R.rsp")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-r-cache" ,r-r-cache)
+     `(("r-digest" ,r-digest)
+       ("r-r-cache" ,r-r-cache)
        ("r-r-methodss3" ,r-r-methodss3)
        ("r-r-oo" ,r-r-oo)
        ("r-r-utils" ,r-r-utils)))
