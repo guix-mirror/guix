@@ -6673,19 +6673,21 @@ also known as views, in a controlled vocabulary.")
 (define-public r-bookdown
   (package
   (name "r-bookdown")
-  (version "0.5")
+  (version "0.6")
   (source (origin
             (method url-fetch)
             (uri (cran-uri "bookdown" version))
             (sha256
              (base32
-              "0zm63kr4f4kja4qpwkzl119zzyciqj7ihajfqgfjpgb4dzaiycxp"))))
+              "1pxxln42kvzl38fjprg6hcnyh1kij75fpj70vwp5hp5il813aszc"))))
   (build-system r-build-system)
   (propagated-inputs
    `(("r-htmltools" ,r-htmltools)
      ("r-knitr" ,r-knitr)
      ("r-rmarkdown" ,r-rmarkdown)
-     ("r-yaml" ,r-yaml)))
+     ("r-yaml" ,r-yaml)
+     ("r-xfun" ,r-xfun)
+     ("ghc-pandoc" ,ghc-pandoc)))
   (home-page "https://github.com/rstudio/bookdown")
   (synopsis "Authoring books and technical documents with R markdown")
   (description "This package provides output formats and utilities for
