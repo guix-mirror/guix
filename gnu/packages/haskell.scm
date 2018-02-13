@@ -3169,6 +3169,8 @@ variety of traversals.")
         (base32
          "0fbyb6jxy9whgrv6dgnkzz70cmy98arx3q2gnkhgl4a3d7idh36p"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-hspec" ,ghc-hspec)
