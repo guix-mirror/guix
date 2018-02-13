@@ -4617,6 +4617,19 @@ It is modeled after doctest for Python, see
      `(("ghc-code-page" ,ghc-code-page)
        ,@(package-inputs ghc-doctest)))))
 
+(define-public ghc-doctest-0.13
+  (package (inherit ghc-doctest-0.12)
+    (name "ghc-doctest")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "doctest/doctest-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08g3nmpqbnbkxc95d65hkhfabwax10qrq51vlynr342npn40mn2b"))))))
+
 (define-public ghc-lifted-base
   (package
     (name "ghc-lifted-base")
