@@ -1567,18 +1567,20 @@ like tidy evaluation.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "1.3.4")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "02vn6yqzcvmazy5jaqar3wwbrmh83a1bfgsqgk0hgz38i80zgvm7"))))
+         "05svbjkm1xqv56ybjgsqqg2pp8nn6hams1yxcr8aanbhzx9h6rqi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rlang" ,r-rlang)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-cli" ,r-cli)
+       ("r-crayon" ,r-crayon)
+       ("r-pillar" ,r-pillar)))
     (home-page "https://github.com/hadley/tibble")
     (synopsis "Simple data frames")
     (description
