@@ -6594,6 +6594,7 @@ Colours can be blended and composed.  Various colour spaces are
 supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
   (license license:expat)))
 
+;; Do not use this as an input.  It is part of GHC.
 (define-public ghc-directory
   (package
     (name "ghc-directory")
