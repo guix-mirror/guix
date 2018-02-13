@@ -4500,6 +4500,34 @@ provide the historic behavior of @code{flet}, as well as
 @code{declare-function} stub for older Emacs.")
     (license license:gpl2+)))
 
+(define-public emacs-mocker
+  (package
+    (name "emacs-mocker")
+    (version "0.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sigma/mocker.el.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1lav7am41v63xgavq8pr88y828jmd1cxd4prjq7jlbxm6nvrwxh2"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
+    (native-inputs
+     `(("ert-runner" ,ert-runner)))
+    (propagated-inputs
+     `(("emacs-el-x" ,emacs-el-x)))
+    (home-page "https://github.com/sigma/mocker.el")
+    (synopsis "Mocking framework for Emacs Lisp")
+    (description "Mocker.el is a framework for writing tests in Emacs Lisp.
+It uses regular Lisp rather than a domain specific language (DSL), which
+maximizes flexibility (at the expense of conciseness).")
+    (license license:gpl2+)))
+
 (define-public emacs-rainbow-delimiters
   (package
     (name "emacs-rainbow-delimiters")
