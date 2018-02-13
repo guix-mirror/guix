@@ -1038,14 +1038,14 @@ variable models.")
 (define-public r-drr
   (package
     (name "r-drr")
-    (version "0.0.2")
+    (version "0.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "DRR" version))
        (sha256
         (base32
-         "1scfwp6ry6apxzqjclsmn2frxp9qfw6zxsxn5w0j0q3sz42hz1h2"))))
+         "1yd1fvllfkcrwg9v322n4wkk4q4q84nvy58y4vac9pdr3yf3i4vl"))))
     (properties `((upstream-name . "DRR")))
     (build-system r-build-system)
     (propagated-inputs
