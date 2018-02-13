@@ -4161,7 +4161,7 @@ given term should not exist.")
 (define-public ghc-kan-extensions
   (package
     (name "ghc-kan-extensions")
-    (version "4.2.3")
+    (version "5.0.1")
     (source
      (origin
        (method url-fetch)
@@ -4171,7 +4171,7 @@ given term should not exist.")
              ".tar.gz"))
        (sha256
         (base32
-         "0iywbadpy8s3isfzlx9dlz3apaywhqq4gdbxkwygksq8pzdhwkrk"))))
+         "1qm0kf4krmyjbjynn96ab0h3q117vwcia5nin7n2b8b4f3jrzph1"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-adjunctions" ,ghc-adjunctions)
