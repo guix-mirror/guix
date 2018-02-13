@@ -1449,31 +1449,6 @@ DVD virtual machine and internal playback states are completely
 encapsulated.")
     (license license:gpl2+)))
 
-(define-public libdvdnav-4
-  (package
-    (inherit libdvdnav)
-    (version "4.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "https://download.videolan.org/videolan/libdvdnav/libdvdnav-"
-                version ".tar.xz"))
-              (sha256
-               (base32
-                "0wi3gy408c8xj0ism0hckv5jbfh3lg4pmgxv87gbch9jrhp2gjkz"))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))))
-
 (define-public libdvdcss
   (package
     (name "libdvdcss")
