@@ -1923,20 +1923,22 @@ and environmental data in the framework of Euclidean exploratory methods.")
 (define-public r-xml2
   (package
     (name "r-xml2")
-    (version "1.1.1")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xml2" version))
        (sha256
         (base32
-         "05iifrcgzx53w5ciw8bbm4vdwc3giv4xsvazv8chqxkndfvf7wq0"))))
+         "154lmksfiwkhnlmryas25mjhfg6k4mmnnk7bbb29mnn5x5pr2yha"))))
     (build-system r-build-system)
     (inputs
-     `(("libxml2" ,libxml2)))
+     `(("libxml2" ,libxml2)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)
-       ("r-bh" ,r-bh)))
+     `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/hadley/xml2")
     (synopsis "Parse XML with R")
     (description
