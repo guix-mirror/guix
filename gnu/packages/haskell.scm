@@ -2788,7 +2788,7 @@ this package makes them available back to GHC 7.2.")
 (define-public ghc-reducers
   (package
     (name "ghc-reducers")
-    (version "3.12.1")
+    (version "3.12.2")
     (source
      (origin
        (method url-fetch)
@@ -2798,7 +2798,7 @@ this package makes them available back to GHC 7.2.")
              ".tar.gz"))
        (sha256
         (base32
-         "0pkddg0s3cn759miq0nfrq7lnp3imk5sx784ihsilsbjh9kvffz4"))))
+         "1gbaa5x4zbvnbklcb0d4q4m8hk6w0gz4s0c4m288czi1nw43dl65"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-fingertree" ,ghc-fingertree)
