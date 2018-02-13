@@ -2072,3 +2072,22 @@ around the relevant area.  This work is based on the @code{ggplot2} and
 dendrogram panes, and the placing of factor variables in the sides of the
 heatmap.")
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-xfun
+  (package
+    (name "r-xfun")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xfun" version))
+       (sha256
+        (base32
+         "1sm51gmwgw876d6d1q8smxmfgfh6zsnykfx8qp8z6jmh0fvd89pj"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/yihui/xfun")
+    (synopsis "Miscellaneous functions")
+    (description
+     "This package provides miscellaneous functions commonly used in other
+packages maintained by Yihui Xie.")
+    (license license:expat)))
