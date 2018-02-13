@@ -1627,14 +1627,14 @@ database.")
 (define-public r-dbplyr
   (package
     (name "r-dbplyr")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dbplyr" version))
        (sha256
         (base32
-         "17gn8vr4a6m9ynarjbm9xsrhcvgn5lnxhb2qhiiglmhh5mm4a7kv"))))
+         "17br61mhssi2pm6v8604f89ykglng3qp9ymfzmhw10cary6zm982"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -1644,7 +1644,8 @@ database.")
        ("r-purrr" ,r-purrr)
        ("r-r6" ,r-r6)
        ("r-rlang" ,r-rlang)
-       ("r-tibble" ,r-tibble)))
+       ("r-tibble" ,r-tibble)
+       ("r-tidyselect" ,r-tidyselect)))
     (home-page "https://github.com/tidyverse/dbplyr")
     (synopsis "Dplyr back end for databases")
     (description
