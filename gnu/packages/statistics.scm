@@ -3521,13 +3521,13 @@ memory usage.")
 (define-public r-viridis
   (package
     (name "r-viridis")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "viridis" version))
               (sha256
                (base32
-                "03mha2935k1mw7mjjkq7mrx185hl0m3vq3967iiwbknpivbdxllk"))))
+                "1ka6amybgzqkg3cbwfxwwqzzzpfn6q5jcia5am0bw48y5hbpg97y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
