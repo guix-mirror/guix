@@ -3420,13 +3420,13 @@ developing R packages.")
 (define-public r-r-cache
   (package
     (name "r-r-cache")
-    (version "0.12.0")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.cache" version))
               (sha256
                (base32
-                "006x52w9r8phw5hgqmyp0bz8z42vn8p5yibibnzi1sfa1xlw8iyx"))))
+                "1hf5cb7xvnca5zlh9245b5g62sgsaxwdhiv7x59yld37cydakm6k"))))
     (properties `((upstream-name . "R.cache")))
     (build-system r-build-system)
     (propagated-inputs
