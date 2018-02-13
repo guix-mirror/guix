@@ -376,7 +376,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "2.4")
+    (version "2.6")
     (source
       (origin
         (method url-fetch)
@@ -384,7 +384,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "0afp0xlk0fb4q6j4sh3hyvjnjccdp61sn21zg3fyqvwgswcafalw"))
+          "1gyd94jkwdii9308m07nymsbxrmrcl81c0j8i10zhslr2mj07w0v"))
         (modules '((guix build utils)))
         (snippet
          '(delete-file-recursively "source/compat/getopt"))))
