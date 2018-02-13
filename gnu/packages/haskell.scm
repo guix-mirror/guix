@@ -5968,7 +5968,7 @@ documents.")
 (define-public ghc-xml-conduit
   (package
     (name "ghc-xml-conduit")
-    (version "1.3.5")
+    (version "1.7.1.2")
     (source
      (origin
        (method url-fetch)
@@ -5976,7 +5976,7 @@ documents.")
                            "xml-conduit-" version ".tar.gz"))
        (sha256
         (base32
-         "10yw8jiksw21jgwqjjd1ixflavcblisgkp9qq3ba05vadc35lqr5"))))
+         "0n4k0rq9j5cc9kdvj9xbx8gmiqlyk5x6pw8yxzw5wfsw7qkych2s"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
@@ -5985,10 +5985,9 @@ documents.")
        ("ghc-text" ,ghc-text)
        ("ghc-xml-types" ,ghc-xml-types)
        ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-blaze-markup" ,ghc-blaze-markup)
        ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-data-default" ,ghc-data-default)
        ("ghc-monad-control" ,ghc-monad-control)
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-hunit" ,ghc-hunit)))
