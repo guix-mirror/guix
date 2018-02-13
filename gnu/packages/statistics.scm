@@ -5048,14 +5048,14 @@ algorithms.")
 (define-public r-lme4
   (package
     (name "r-lme4")
-    (version "1.1-14")
+    (version "1.1-15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lme4" version))
        (sha256
         (base32
-         "1vars93604q7kyz6y1f8f886l05jkgj8bs78033l2czypvzki5la"))))
+         "0sc6rvhiizxxpkdc3wps200wg3pqc0d89crn29lzm75fk8qdd7vx"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
