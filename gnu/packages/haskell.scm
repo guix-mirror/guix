@@ -6211,7 +6211,7 @@ been observed, so this library should be suitable for high performance scenarios
 (define-public ghc-haskeline
   (package
     (name "ghc-haskeline")
-    (version "0.7.2.3")
+    (version "0.7.4.2")
     (source
      (origin
        (method url-fetch)
@@ -6220,12 +6220,13 @@ been observed, so this library should be suitable for high performance scenarios
              version ".tar.gz"))
        (sha256
         (base32
-         "09wd6sxgn65xxpk7dhy1cg3ywlbk0ccqq7xylycwk4zazy3gjgkd"))))
+         "1sxhdhy9asinxn0gvd4zandbk6xkb04vy1y7lmh66f9jv66fqhsm"))))
     (build-system haskell-build-system)
-    (inputs
-     `(("ncurses" ,ncurses)))
     (arguments
      `(#:configure-flags (list "-fterminfo")))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("ghc-stm" ,ghc-stm)))
     (home-page "https://github.com/judah/haskeline")
     (synopsis "Command-line interface for user input")
     (description
