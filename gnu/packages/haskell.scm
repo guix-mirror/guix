@@ -5493,25 +5493,28 @@ TIFF and GIF formats.")
 (define-public ghc-hslua
   (package
     (name "ghc-hslua")
-    (version "0.4.1")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "hslua/hslua-" version ".tar.gz"))
               (sha256
                (base32
-                "0gqp6qhp4v24kzv2j49kgk7bxqzw0w10x0zr0r2j9wkfavqb9wid"))))
+                "1j2zk7f7nyywg2b0n6kb2yf6ljc7cn2sk9jz0h76g3ag2b70l12n"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags '("-fsystem-lua")))
     (inputs
-     `(("lua" ,lua-5.1)
+     `(("lua" ,lua)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-fail" ,ghc-fail)
+       ("ghc-mtl" ,ghc-mtl)
        ("ghc-text" ,ghc-text)))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-hspec-contrib" ,ghc-hspec-contrib)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-hunit" ,ghc-hunit)
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-expected-failure" ,ghc-tasty-expected-failure)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
     (home-page "https://hackage.haskell.org/package/hslua")
