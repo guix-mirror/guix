@@ -4528,6 +4528,39 @@ It uses regular Lisp rather than a domain specific language (DSL), which
 maximizes flexibility (at the expense of conciseness).")
     (license license:gpl2+)))
 
+(define-public emacs-find-file-in-project
+  (package
+    (name "emacs-find-file-in-project")
+    (version "5.4.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/technomancy/find-file-in-project.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1sdnyqv69mipbgs9yax88m9b6crsa59rjhwrih197pifl4089awr"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-shell
+           ;; Otherwise Emacs shell-file-name is set to "/bin/sh", which doesn't
+           ;; work.
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             #t)))
+       #:tests? #t
+       #:test-command '("./tests/test.sh")))
+    (home-page "https://github.com/technomancy/find-file-in-project")
+    (synopsis "File/directory finder for Emacs")
+    (description "@code{find-file-in-project} allows to find files or
+directories quickly in the current project.  The project root is detected
+automatically when Git, Subversion or Mercurial are used.  It also provides
+functions to assist in reviewing changes on files.")
+    (license license:gpl3+)))
+
 (define-public emacs-rainbow-delimiters
   (package
     (name "emacs-rainbow-delimiters")
