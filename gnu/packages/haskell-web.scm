@@ -702,23 +702,29 @@ Strict, Transitional and Frameset variants.")
 (define-public ghc-blaze-html
   (package
     (name "ghc-blaze-html")
-    (version "0.8.1.2")
+    (version "0.9.0.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/blaze-html/blaze-html-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "blaze-html/blaze-html-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "1dzjgsvfgz9d944z8af9lsl8h5as72vsyc0m4nzkks8jh6rr5vpp"))))
+         "0r0acv47nh75bmf7kjyfvhcwz8f02rn9x0a1l80pzgyczfrsmkmf"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-text" ,ghc-text)
        ("ghc-blaze-markup" ,ghc-blaze-markup)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
     (home-page "http://jaspervdj.be/blaze")
     (synopsis "Fast HTML combinator library")
     (description "This library provides HTML combinators for Haskell.")
