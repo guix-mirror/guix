@@ -3262,19 +3262,20 @@ bigmemory and synchronicity packages.")
 (define-public r-synchronicity
   (package
     (name "r-synchronicity")
-    (version "1.1.9.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "synchronicity" version))
        (sha256
         (base32
-         "0d9skpwmsnkn4xb3f2kgyyv8bhdi0r9p1kj3cvi0s92fjjnpi00c"))))
+         "1idrjzl7nkamf1ip55s6qcf64s63xs9j8z9jv3r89p6r5lw7k5mv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-bigmemory-sri" ,r-bigmemory-sri)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-rcpp" ,r-rcpp)
+       ("r-uuid" ,r-uuid)))
     (home-page "http://www.bigmemory.org")
     (synopsis "Boost mutex functionality in R")
     (description "This package provides support for synchronization
