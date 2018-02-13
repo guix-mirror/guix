@@ -6995,13 +6995,13 @@ CAGE.")
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
-    (version "1.24.2")
+    (version "1.24.5")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "VariantAnnotation" version))
               (sha256
                (base32
-                "19wgb2kcqy97pm3xgqc781id9fbmzp1hdwzkkhdzpvyf29w4n29j"))))
+                "07ywn3c4w83l3sr76d0z3b1nv9icgdh3phsjlc6cfx7i6nfmvxw2"))))
     (properties
      `((upstream-name . "VariantAnnotation")))
     (inputs
