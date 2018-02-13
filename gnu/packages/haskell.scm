@@ -1963,6 +1963,29 @@ capabilities that are optimized for performance critical use, both
 in terms of large data quantities and high speed.")
     (license license:bsd-3)))
 
+(define-public ghc-text-binary
+  (package
+    (name "ghc-text-binary")
+    (version "0.2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "text-binary/text-binary-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "18gl10pwg3qwsk0za3c70j4n6a9129wwf1b7d3a461h816yv55xn"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-text" ,ghc-text)))
+    (home-page "https://github.com/kawu/text-binary")
+    (synopsis "Binary instances for text types")
+    (description
+     "This package provides a compatibility layer providing @code{Binary}
+instances for strict and lazy text types for versions older than 1.2.1 of the
+text package.")
+    (license license:bsd-2)))
+
 (define-public ghc-strict
   (package
     (name "ghc-strict")
