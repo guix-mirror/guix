@@ -4188,6 +4188,27 @@ given term should not exist.")
 forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-call-stack
+  (package
+    (name "ghc-call-stack")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "call-stack/call-stack-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1qmihf5jafmc79sk52l6gpx75f5bnla2lp62kh3p34x3j84mwpzj"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-nanospec" ,ghc-nanospec)))
+    (home-page "https://github.com/sol/call-stack#readme")
+    (synopsis "Use GHC call-stacks in a backward compatible way")
+    (description "This package provides a compatibility layer for using GHC
+call stacks with different versions of the compiler.")
+    (license license:expat)))
+
 (define-public ghc-statevar
   (package
     (name "ghc-statevar")
