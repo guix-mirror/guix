@@ -4977,6 +4977,34 @@ CommonMark, a fully specified variant of Markdown.  It includes bundled libcmark
 sources, and does not require prior installation of the C library.")
     (license license:bsd-3)))
 
+(define-public ghc-cmark-gfm
+  (package
+    (name "ghc-cmark-gfm")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "cmark-gfm/cmark-gfm-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1fkisbrydmdx5h8yad09fzk8h1b1j53r02g7vb81izgdwj9b673k"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/kivikakk/cmark-gfm-hs")
+    (synopsis
+     "Fast, accurate GitHub Flavored Markdown parser and renderer")
+    (description
+     "This package provides Haskell bindings for libcmark-gfm, the reference
+parser for GitHub Flavored Markdown, a fully specified variant of Markdown.
+It includes sources for libcmark-gfm and does not require prior installation
+of the C library.")
+    (license license:bsd-3)))
+
 (define-public ghc-executable-path
   (package
     (name "ghc-executable-path")
