@@ -35,6 +35,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libftdi)
@@ -362,4 +363,42 @@ referred to as the \"Odin 3 protocol\".")
     (synopsis "Intel Firmware Descriptor dumper")
     (description "This package provides @ifdtool}, a program to
 dump Intel Firmware Descriptor data of an image file.")
+    (license license:gpl2)))
+
+(define-public intelmetool
+  (package
+    (name "intelmetool")
+    (version "4.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://review.coreboot.org/p/coreboot")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nw555i0fm5kljha9h47bk70ykbwv8ddfk6qhz6kfqb79vzhy4h2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("pciutils" ,pciutils)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             "INSTALL=install"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+        (add-after 'unpack 'chdir
+          (lambda _
+            (chdir "util/intelmetool")
+            #t))
+        (delete 'configure)
+        (delete 'check))))
+    (home-page "https://github.com/zamaudio/intelmetool")
+    (synopsis "Intel ME tools")
+    (description "This package provides tools for working with Intel
+Management Engine (ME).  You need to @code{sudo rmmod mei_me} and
+@code{sudo rmmod mei} before using this tool.  Also pass
+@code{iomem=relaxed} to the Linux kernel command line.")
     (license license:gpl2)))
