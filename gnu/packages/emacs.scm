@@ -4561,6 +4561,37 @@ automatically when Git, Subversion or Mercurial are used.  It also provides
 functions to assist in reviewing changes on files.")
     (license license:gpl3+)))
 
+(define-public emacs-pyvenv
+  (package
+    (name "emacs-pyvenv")
+    (version "1.11")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jorgenschaefer/pyvenv.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1a346qdimr1dvj53q033aqnahwd2dhyn9jadrs019nm0bzgw7g63"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This phase incorrectly attempts to substitute "activate" and fails
+         ;; doing so.
+         (delete 'patch-el-files))
+       #:tests? #t
+       #:test-command '("ert-runner")))
+    (native-inputs
+     `(("ert-runner" ,ert-runner)
+       ("emacs-mocker" ,emacs-mocker)))
+    (home-page "https://github.com/jorgenschaefer/pyvenv")
+    (synopsis "Virtualenv minor mode for Emacs")
+    (description "pyvenv.el is a minor mode to support using Python virtual
+environments (virtualenv) inside Emacs.")
+    (license license:gpl3+)))
+
 (define-public emacs-rainbow-delimiters
   (package
     (name "emacs-rainbow-delimiters")
