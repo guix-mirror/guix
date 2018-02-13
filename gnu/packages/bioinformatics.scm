@@ -7033,13 +7033,13 @@ coding changes and predict coding outcomes.")
 (define-public r-limma
   (package
     (name "r-limma")
-    (version "3.34.4")
+    (version "3.34.8")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "limma" version))
               (sha256
                (base32
-                "1vcxf9jg8xngxg5kb9bp8rw5sghpnkpj320iq309m2fp41ahsk3f"))))
+                "0bmxsgz2yll83sd3wbxsrsfd35468igb0d8lldym0d0lqfz906bw"))))
     (build-system r-build-system)
     (home-page "http://bioinf.wehi.edu.au/limma")
     (synopsis "Package for linear models for microarray and RNA-seq data")
