@@ -47,6 +47,7 @@
 /doc/os-config-desktop.texi
 /doc/stamp-vti
 /doc/version.texi
+/etc/guix-daemon.cil
 /etc/guix-daemon.conf
 /etc/guix-daemon.service
 /etc/guix-publish.conf
