@@ -1397,16 +1397,14 @@ from knitr Rmarkdown.")
 (define-public r-microbenchmark
   (package
     (name "r-microbenchmark")
-    (version "1.4-2.1")
+    (version "1.4-4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "microbenchmark" version))
               (sha256
                (base32
-                "0qn5r1a6qidghcisc2hpbdmj62pnixc3zz6p4ipk8mvakf0hdsvg"))))
+                "0fv2w2vsiz18imf4115nd9chhmf275w2mb49pn7pkxi6z3bamc9c"))))
     (build-system r-build-system)
-    (propagated-inputs
-     `(("r-ggplot2" ,r-ggplot2)))
     (home-page "https://cran.r-project.org/web/packages/microbenchmark/")
     (synopsis "Accurate timing functions for R")
     (description
