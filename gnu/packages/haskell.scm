@@ -4214,7 +4214,7 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
 (define-public ghc-lens
   (package
     (name "ghc-lens")
-    (version "4.13")
+    (version "4.14")
     (source
      (origin
        (method url-fetch)
@@ -4224,7 +4224,7 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
              ".tar.gz"))
        (sha256
         (base32
-         "0g4g0xksrb2m8wgsmraaq8qnk1sssb42kr65fc7clgyid6zyfmim"))))
+         "0jszxq3jk7yywy0dmkkdnl20fcmri2cl9b3cinw50a9mxwccv8vh"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: doctest packagedb propagation problem.
     (inputs
