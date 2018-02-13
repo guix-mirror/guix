@@ -3469,6 +3469,39 @@ is also parametric in the input stream type.")
 combinators.")
     (license license:bsd-3)))
 
+(define-public ghc-megaparsec
+  (package
+    (name "ghc-megaparsec")
+    (version "6.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "megaparsec/megaparsec-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0h9azhs0dfrc359vrbd1jljrg3yfdbwd4p62cxqkn7mnh8913jpd"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-parser-combinators" ,ghc-parser-combinators)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hspec-expectations" ,ghc-hspec-expectations)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/mrkkrp/megaparsec")
+    (synopsis "Monadic parser combinators")
+    (description
+     "This is an industrial-strength monadic parser combinator library.
+Megaparsec is a feature-rich package that strikes a nice balance between
+speed, flexibility, and quality of parse errors.")
+    (license license:bsd-2)))
+
 (define-public ghc-vector
   (package
     (name "ghc-vector")
