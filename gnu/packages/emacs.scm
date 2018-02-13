@@ -4616,6 +4616,78 @@ indentation (space indentation only).
 @end enumerate")
     (license license:gpl2+)))
 
+(define-public emacs-elpy
+  (package
+    (name "emacs-elpy")
+    (version "1.24.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jorgenschaefer/elpy.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0rsg8a9nwqfkv0xcs11jzfp10ij7jm0v2ikx19zv2v7awqy0q5wf"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
+       #:phases
+       ;; TODO: Make `elpy-config' display Guix commands :)
+       (modify-phases %standard-phases
+         ;; One elpy test depends on being run inside a Python virtual
+         ;; environment to pass. We have nothing to gain from doing so here,
+         ;; so we just trick Elpy into thinking we are (see:
+         ;; https://github.com/jorgenschaefer/elpy/pull/1293).
+         (add-before 'check 'fake-virtualenv
+           (lambda _
+             (setenv "VIRTUAL_ENV" "/tmp")
+             #t))
+         (add-before 'check 'build-doc
+           (lambda _
+             (with-directory-excursion "docs"
+               (invoke "make" "info" "man"))
+             ;; Move .info file at the root so that it can installed by the
+             ;; 'move-doc phase.
+             (rename-file "docs/_build/texinfo/Elpy.info" "Elpy.info")
+              #t))
+         (add-after 'build-doc 'install-manpage
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (man1 (string-append out "/share/man/man1")))
+               (mkdir-p man1)
+               (copy-file "docs/_build/man/elpy.1"
+                          (string-append man1 "/elpy.1")))
+             #t)))
+       #:tests? #t
+       #:test-command '("ert-runner")))
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-find-file-in-project" ,emacs-find-file-in-project)
+       ("emacs-highlight-indentation" ,emacs-highlight-indentation)
+       ("emacs-yasnippet" ,emacs-yasnippet)
+       ("pyvenv" ,emacs-pyvenv)
+       ("s" ,emacs-s)))
+    (native-inputs
+     `(("ert-runner" ,ert-runner)
+       ("emacs-f" ,emacs-f)
+       ("python" ,python-wrapper)
+       ("python-autopep8" ,python-autopep8)
+       ("python-black" ,python-black)
+       ("python-flake8" ,python-flake8)
+       ("python-jedi" ,python-jedi)
+       ("python-yapf" ,python-yapf)
+       ;; For documentation.
+       ("python-sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)))
+    (home-page "https://github.com/jorgenschaefer/elpy")
+    (synopsis "Python development environment for Emacs")
+    (description "Elpy brings powerful Python editing to Emacs.  It combines
+and configures a number of other packages written in Emacs Lisp as well as
+Python, together offering features such as navigation, documentation,
+completion, interactive development and more.")
+    (license license:gpl3+)))
+
 (define-public emacs-rainbow-delimiters
   (package
     (name "emacs-rainbow-delimiters")
