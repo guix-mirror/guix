@@ -2134,3 +2134,28 @@ packages maintained by Yihui Xie.")
 international text (Unicode).  Input, validate, normalize, encode, format, and
 display.")
     (license license:asl2.0)))
+
+(define-public r-pillar
+  (package
+    (name "r-pillar")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pillar" version))
+       (sha256
+        (base32
+         "1gh3j2pbbf5y4d5nyqnlr0x27jjyvjjspcccmw61airs1n6rx8jq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cli" ,r-cli)
+       ("r-crayon" ,r-crayon)
+       ("r-rlang" ,r-rlang)
+       ("r-utf8" ,r-utf8)))
+    (home-page "https://github.com/r-lib/pillar")
+    (synopsis "Coloured formatting for columns")
+    (description
+     "This package provides a @code{pillar} generic designed for formatting
+columns of data using the full range of colours provided by modern
+terminals.")
+    (license license:gpl3)))
