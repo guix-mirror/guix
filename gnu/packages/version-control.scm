@@ -1604,7 +1604,7 @@ be served with a HTTP file server of your choice.")
 (define-public darcs
   (package
     (name "darcs")
-    (version "2.12.4")
+    (version "2.12.5")
     (source
      (origin
        (method url-fetch)
@@ -1612,7 +1612,7 @@ be served with a HTTP file server of your choice.")
                            "darcs-" version ".tar.gz"))
        (sha256
         (base32
-         "0jfwiwl5k8wspciq1kpmvh5yap4japrf97s9pvhcybxxhaj3ds28"))
+         "0lrm0sal5pl453mkqn8b9fc9l7lwinc140iqihya9g17bk408nrm"))
        (modules '((guix build utils)))
        ;; Remove time-dependent code for reproducibility.
        (snippet
@@ -1627,8 +1627,10 @@ be served with a HTTP file server of your choice.")
     (arguments
      `(#:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
                            "-fnetwork-uri" "-fhttp" "--flag=executable"
-                           "--flag=library")
-       #:tests? #f)) ; 20 failing shell tests out of over 400
+                           "--flag=library"
+                           "--allow-newer=shelly")
+       ;; FIXME: darcs is not compatible with the latest QuickCheck
+       #:tests? #f))
     (inputs
      `(("ghc-cmdargs" ,ghc-cmdargs)
        ("ghc-split" ,ghc-split)
