@@ -3928,7 +3928,7 @@ simple general-purpose data structure\".")
 (define-public ghc-optparse-applicative
   (package
     (name "ghc-optparse-applicative")
-    (version "0.11.0.2")
+    (version "0.13.0.0")
     (source
      (origin
        (method url-fetch)
@@ -3937,11 +3937,20 @@ simple general-purpose data structure\".")
              "/optparse-applicative-" version ".tar.gz"))
        (sha256
         (base32
-         "0ni52ii9555jngljvzxn1ngicr6i2w647ww3rzhdrmng04y95iii"))))
+         "1b0c5fdq8bd070g24vrjrwlq979r8dk8mys6aji9hy1l9pcv3inf"))))
     (build-system haskell-build-system)
+    ;; These tests fail because the package doesn't come with all needed test
+    ;; files:
+    ;; - prop_drops_back_contexts
+    ;; - prop_context_carry
+    ;; - prop_help_on_empty
+    ;; - prop_help_on_empty_sub
+    (arguments `(#:tests? #f))
     (inputs
      `(("ghc-transformers-compat" ,ghc-transformers-compat)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://github.com/pcapriotti/optparse-applicative")
     (synopsis "Utilities and combinators for parsing command line options")
     (description "This package provides utilities and combinators for parsing
