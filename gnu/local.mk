@@ -919,9 +919,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
-  %D%/packages/patches/mpv-CVE-2018-6360-1.patch		\
-  %D%/packages/patches/mpv-CVE-2018-6360-2.patch		\
-  %D%/packages/patches/mpv-CVE-2018-6360-3.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/mongodb-support-unknown-linux-distributions.patch	\
   %D%/packages/patches/mozjs17-aarch64-support.patch		\
