@@ -330,3 +330,36 @@ USB and interacts with low-level software running on the device, known as Loke.
 Loke and Heimdall communicate via the custom Samsung-developed protocol typically
 referred to as the \"Odin 3 protocol\".")
     (license license:expat)))
+
+(define-public ifdtool
+  (package
+    (name "ifdtool")
+    (version "4.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://review.coreboot.org/p/coreboot")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nw555i0fm5kljha9h47bk70ykbwv8ddfk6qhz6kfqb79vzhy4h2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             "INSTALL=install"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+        (add-after 'unpack 'chdir
+          (lambda _
+            (chdir "util/ifdtool")
+            #t))
+        (delete 'configure)
+        (delete 'check))))
+    (home-page "https://github.com/corna/me_cleaner/")
+    (synopsis "Intel Firmware Descriptor dumper")
+    (description "This package provides @ifdtool}, a program to
+dump Intel Firmware Descriptor data of an image file.")
+    (license license:gpl2)))
