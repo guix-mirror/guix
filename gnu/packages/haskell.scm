@@ -5385,7 +5385,7 @@ space as enumerator/iteratee and pipes.")
 (define-public ghc-logging-facade
   (package
     (name "ghc-logging-facade")
-    (version "0.1.0")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5393,7 +5393,7 @@ space as enumerator/iteratee and pipes.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0zhdbjyj0j9by19rma9alxysrxnnl3s4kks4zk4bx0dg5xa0264y"))))
+                "18ldv6rsff480rqpbs3iabjpvn1fhw0i2a0g80jnhxg9ajfz5yb0"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
