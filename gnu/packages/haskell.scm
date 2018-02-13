@@ -3448,6 +3448,27 @@ defined as a monad transformer that can be stacked on arbitrary monads, and it
 is also parametric in the input stream type.")
     (license license:bsd-3)))
 
+(define-public ghc-parser-combinators
+  (package
+    (name "ghc-parser-combinators")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "parser-combinators/parser-combinators-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1azkz0a6ikym02s8wydjcklp7rz8k512bs4s9lp9g1g03m0yj95i"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/mrkkrp/parser-combinators")
+    (synopsis "Commonly useful parser combinators")
+    (description
+     "This is a lightweight package providing commonly useful parser
+combinators.")
+    (license license:bsd-3)))
+
 (define-public ghc-vector
   (package
     (name "ghc-vector")
