@@ -2114,3 +2114,23 @@ heatmap.")
      "This package provides miscellaneous functions commonly used in other
 packages maintained by Yihui Xie.")
     (license license:expat)))
+
+(define-public r-utf8
+  (package
+    (name "r-utf8")
+    (version "1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "utf8" version))
+       (sha256
+        (base32
+         "03s4j6059q0nly68vpk6wy3p3f5ypakw93fj35kzd82b4z1r9cs3"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/patperry/r-utf8")
+    (synopsis "Unicode text processing")
+    (description
+     "This package provides tools to process and print UTF-8 encoded
+international text (Unicode).  Input, validate, normalize, encode, format, and
+display.")
+    (license license:asl2.0)))
