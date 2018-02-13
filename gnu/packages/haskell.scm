@@ -4235,22 +4235,20 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
 (define-public ghc-lens
   (package
     (name "ghc-lens")
-    (version "4.14")
+    (version "4.15.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/lens/lens-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/lens/lens-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "0jszxq3jk7yywy0dmkkdnl20fcmri2cl9b3cinw50a9mxwccv8vh"))))
+         "1lkwlnhgpgnsz046mw4qs0fa7h4l012gilrr3nf3spllsy3pnbkl"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: doctest packagedb propagation problem.
     (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
        ("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-doctest" ,ghc-doctest-0.13)
        ("ghc-distributive" ,ghc-distributive)
        ("ghc-exceptions" ,ghc-exceptions)
        ("ghc-free" ,ghc-free)
@@ -4259,6 +4257,7 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
        ("ghc-reflection" ,ghc-reflection)
        ("ghc-semigroupoids" ,ghc-semigroupoids)
        ("ghc-vector" ,ghc-vector)
+       ("ghc-call-stack" ,ghc-call-stack)
        ("ghc-comonad" ,ghc-comonad)
        ("ghc-contravariant" ,ghc-contravariant)
        ("ghc-hashable" ,ghc-hashable)
@@ -4274,6 +4273,14 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
        ("ghc-nats" ,ghc-nats)
        ("ghc-simple-reflect" ,ghc-simple-reflect)
        ("hlint" ,hlint)))
+    (native-inputs
+     `(("cabal-doctest" ,cabal-doctest)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-th" ,ghc-test-framework-th)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://github.com/ekmett/lens/")
     (synopsis "Lenses, Folds and Traversals")
     (description "This library provides @code{Control.Lens}.  The combinators
