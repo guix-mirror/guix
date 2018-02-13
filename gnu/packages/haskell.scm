@@ -5913,7 +5913,7 @@ provided for those who need a drop-in replacement for Markdown.pl.")
 (define-public ghc-hs-bibutils
   (package
     (name "ghc-hs-bibutils")
-    (version "5.5")
+    (version "6.2.0.1")
     (source
      (origin
        (method url-fetch)
@@ -5922,7 +5922,7 @@ provided for those who need a drop-in replacement for Markdown.pl.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0pf5lh179rw9jkmw16ss3kiwydlj6zgfk868mjl5s57kx55z7ycm"))))
+         "0c56sjgg82kjcg5rrplnyn7vf02ccsj3kkcbgc87zxlv0j880rjb"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-syb" ,ghc-syb)))
     (home-page "https://hackage.haskell.org/package/hs-bibutils")
