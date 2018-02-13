@@ -4467,6 +4467,39 @@ If you want to mark a folder manually as a project just create an empty
 and RSS, with a user interface inspired by notmuch.")
     (license license:gpl3+)))
 
+(define-public emacs-el-x
+  (package
+    (name "emacs-el-x")
+    (version "0.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sigma/el-x.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1i6j44ssxm1xdg0mf91nh1lnprwsaxsx8vsrf720nan7mfr283h5"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Move the source files to the top level, which is included in
+         ;; the EMACSLOADPATH.
+         (add-after 'unpack 'move-source-files
+           (lambda _
+             (let ((el-files (find-files "./lisp" ".*\\.el$")))
+               (for-each (lambda (f)
+                           (rename-file f (basename f)))
+                         el-files))
+             #t)))))
+    (home-page "https://github.com/sigma/el-x")
+    (synopsis "Emacs Lisp extensions")
+    (description "command@{emacs-el-x} defines the @code{dflet} macro to
+provide the historic behavior of @code{flet}, as well as
+@code{declare-function} stub for older Emacs.")
+    (license license:gpl2+)))
+
 (define-public emacs-rainbow-delimiters
   (package
     (name "emacs-rainbow-delimiters")
