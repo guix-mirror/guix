@@ -1615,6 +1615,28 @@ Haskell software by automating the fetching, configuration, compilation and
 installation of Haskell libraries and programs.")
    (license license:bsd-3)))
 
+(define-public cabal-doctest
+  (package
+    (name "cabal-doctest")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "cabal-doctest/cabal-doctest-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0bgd4jdmzxq5y465r4sf4jv2ix73yvblnr4c9wyazazafddamjny"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/phadej/cabal-doctest")
+    (synopsis "Setup.hs helper for running doctests")
+    (description
+     "To properly work, the @code{doctest} package needs plenty of
+configuration.  This library provides the common bits for writing custom
+@file{Setup.hs} files.")
+    (license license:bsd-3)))
+
 (define-public ghc-mtl
   (package
     (name "ghc-mtl")
