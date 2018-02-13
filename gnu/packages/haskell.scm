@@ -5408,18 +5408,19 @@ back-ends.")
 (define-public ghc-mockery
   (package
     (name "ghc-mockery")
-    (version "0.3.2")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "mockery/mockery-" version ".tar.gz"))
               (sha256
                (base32
-                "0m0lp2z63sgkylz5318j53r5hnrkp705qh7nqbb149ir4gy7g1bg"))))
+                "1m7sq2vclgir3qbpngzl3g87ks4034blwwf7p3h02c0jlcwpl5b1"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-temporary" ,ghc-temporary)
-       ("ghc-logging-facade" ,ghc-logging-facade)))
+       ("ghc-logging-facade" ,ghc-logging-facade)
+       ("ghc-base-compat" ,ghc-base-compat)))
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("hspec-discover" ,hspec-discover)))
