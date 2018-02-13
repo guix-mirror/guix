@@ -1129,14 +1129,14 @@ calendar objects.")
 (define-public r-ddalpha
   (package
     (name "r-ddalpha")
-    (version "1.3.1")
+    (version "1.3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ddalpha" version))
        (sha256
         (base32
-         "0pczw9543y7f92m7gyk7rxcjn8vsjaldc5vl0r56ywip9i374zbh"))))
+         "13w8ir5rd80rka4mq343zd4wn93vfw870lzfqrd3cxgwb1bwcw7y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
