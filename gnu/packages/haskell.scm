@@ -3672,7 +3672,7 @@ manipulating monad transformer stacks.")
 (define-public ghc-monad-control
   (package
     (name "ghc-monad-control")
-    (version "1.0.0.4")
+    (version "1.0.1.0")
     (source
      (origin
        (method url-fetch)
@@ -3681,7 +3681,7 @@ manipulating monad transformer stacks.")
              "/monad-control-" version ".tar.gz"))
        (sha256
         (base32
-         "07pn1p4m80wdd7gw62s4yny8rbvm60ka1q8qx5y1plznd8sbg179"))))
+         "1x018gi5irznx5rgzmkr2nrgh26r8cvqwkcfc6n6y05pdjf21c6l"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stm" ,ghc-stm)
