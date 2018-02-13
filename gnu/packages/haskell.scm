@@ -5201,7 +5201,7 @@ instances.  This package provides orphan instances for @code{containers},
 (define-public ghc-th-expand-syns
   (package
     (name "ghc-th-expand-syns")
-    (version "0.3.0.6")
+    (version "0.4.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5209,7 +5209,7 @@ instances.  This package provides orphan instances for @code{containers},
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03qv93pyqk8all39knsf0mzmbfdck5x61kqnyn8rbisw5c1ymx6j"))))
+                "1sjy7a17zwyvlbkc8gklii67sy78wpnw35fyb00lsbnpk4cryd2r"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-syb" ,ghc-syb)))
