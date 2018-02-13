@@ -31,6 +31,7 @@
   #:use-module (gnu packages)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
@@ -402,3 +403,34 @@ Management Engine (ME).  You need to @code{sudo rmmod mei_me} and
 @code{sudo rmmod mei} before using this tool.  Also pass
 @code{iomem=relaxed} to the Linux kernel command line.")
     (license license:gpl2)))
+
+(define-public me-cleaner
+  (package
+    (name "me-cleaner")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/corna/me_cleaner/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pgwdqy0jly80nhxmlmyibs343497yjzs6dwfbkcw0l1gjm8i5hw"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+ (add-after 'unpack 'create-setup.py
+           (lambda _
+             (call-with-output-file "setup.py"
+               (lambda (port)
+                 (format port "\
+from setuptools import setup
+setup(name='me_cleaner', version='~a', scripts=['me_cleaner.py'])
+" ,version)))
+             #t)))))
+    (home-page "https://github.com/corna/me_cleaner")
+    (synopsis "Intel ME cleaner")
+    (description "This package provides tools for disabling Intel
+ME as far as possible (it only edits ME firmware image files).")
+    (license license:gpl3+)))
