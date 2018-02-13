@@ -4191,7 +4191,7 @@ forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
 (define-public ghc-statevar
   (package
     (name "ghc-statevar")
-    (version "1.1.0.1")
+    (version "1.1.0.4")
     (source
      (origin
        (method url-fetch)
@@ -4201,7 +4201,7 @@ forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ap51cvwq61xckx5hw44l82ihbxvsq3263xr5hqg42c5qp67kbhf"))))
+         "1dzz9l0haswgag9x56q7n57kw18v7nhmzkjyr61nz9y9npn8vmks"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stm" ,ghc-stm)))
