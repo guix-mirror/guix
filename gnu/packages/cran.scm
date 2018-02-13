@@ -2159,3 +2159,22 @@ display.")
 columns of data using the full range of colours provided by modern
 terminals.")
     (license license:gpl3)))
+
+(define-public r-uuid
+  (package
+    (name "r-uuid")
+    (version "0.1-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "uuid" version))
+       (sha256
+        (base32
+         "1gmisd630fc8ybg845hbg13wmm3pk3npaamrh5wqbc1nqd6p0wfx"))))
+    (build-system r-build-system)
+    (home-page "http://www.rforge.net/uuid")
+    (synopsis "Tools for generating and handling of UUIDs")
+    (description
+     "This package provides tools for generating and handling of
+@dfn{Universally Unique Identifiers} (UUIDs).")
+    (license license:expat)))
