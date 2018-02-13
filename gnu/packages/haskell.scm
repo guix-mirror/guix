@@ -4355,7 +4355,7 @@ cross-site scripting (@dfn{XSS}) attacks.")
 (define-public ghc-semigroupoids
   (package
     (name "ghc-semigroupoids")
-    (version "5.0.0.4")
+    (version "5.1")
     (source
      (origin
        (method url-fetch)
@@ -4365,7 +4365,7 @@ cross-site scripting (@dfn{XSS}) attacks.")
              ".tar.gz"))
        (sha256
         (base32
-         "1jf7jnfhdvl6p18wdr21yi2fim1xb8alcn6szhrdswj0dkilgq6d"))))
+         "0dgqc59p4xx5cl8qkpm6sn4wd3n59rq7l6din76hf10bnklqrb0n"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: doctest packagedb propagation problem.
     (inputs
