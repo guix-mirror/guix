@@ -3821,22 +3821,26 @@ interoperate with code that uses the new implementation.")
 (define-public ghc-blaze-markup
   (package
     (name "ghc-blaze-markup")
-    (version "0.7.0.3")
+    (version "0.8.2.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/blaze-markup/blaze-markup-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "blaze-markup/blaze-markup-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "080vlhd8dwjxrma4bb524lh8gxs5lm3xh122icy6lnnyipla0s9y"))))
+         "0m3h3ryxj5r74mv5g5dnfq5jbbwmvkl7ray18vi20d5vd93sydj4"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
     (home-page "http://jaspervdj.be/blaze")
     (synopsis "Fast markup combinator library for Haskell")
     (description "This library provides core modules of a markup combinator
