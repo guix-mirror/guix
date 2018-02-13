@@ -2551,14 +2551,14 @@ encoder/decoder, round-off-error-free sum and cumsum, etc.")
 (define-public r-rprojroot
   (package
     (name "r-rprojroot")
-    (version "1.3-1")
+    (version "1.3-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rprojroot" version))
        (sha256
         (base32
-         "1jigr2jh3hzy35h94im52yq81lyikw7nfvmbxij84a1b9c32r332"))))
+         "12r3fdxmi2pmwn6ic3rhg0b20ll5z420m0d8fziv1n21961namnz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)))
