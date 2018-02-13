@@ -5524,6 +5524,34 @@ TIFF and GIF formats.")
 described in @url{http://www.lua.org/}.")
     (license license:expat)))
 
+(define-public ghc-hslua-module-text
+  (package
+    (name "ghc-hslua-module-text")
+    (version "0.1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hslua-module-text/hslua-module-text-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0bcfpb1dhnxp0gr376ai4w7vczr9zrjl1r3r6w7kcxivfkwq9cxf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hslua" ,ghc-hslua)
+       ("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/hslua/hslua-module-text")
+    (synopsis "Lua module for text")
+    (description
+     "This package provides a UTF-8 aware subset of Lua's @code{string} module
+for Haskell.  The functions provided by this module are @code{upper},
+@code{lower}, @code{len}, @code{reverse}, and @code{sub}.")
+    (license license:expat)))
+
 (define-public ghc-byteable
   (package
     (name "ghc-byteable")
