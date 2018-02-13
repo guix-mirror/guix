@@ -6707,6 +6707,8 @@ for generating graph-like data structures.")
                (base32
                 "1z453is01v0rnxlv6xx4iyaqv5vrp3bpz829mpv1a341sck2135h"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-colour" ,ghc-colour)
