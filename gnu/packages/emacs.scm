@@ -1515,11 +1515,8 @@ and stored in memory.")
                 "1pjlkrzr8n45bnp3xs3dybvy0nz3gwamrfc7vsi1nhpkkw99ihhb"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-                     (lambda _
-                       (zero? (system* "./run-tests.sh")))))))
+     `(#:tests? #t
+       #:test-command '("./run-tests.sh")))
     (home-page "https://github.com/magnars/dash.el")
     (synopsis "Modern list library for Emacs")
     (description "This package provides a modern list API library for Emacs.")
@@ -1712,11 +1709,8 @@ allows easily move between them.")
                 "0xbl75863pcm806zg0x1lw7qznzjq2c8320k8js7apyag8q4srvh"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-                     (lambda _
-                       (zero? (system* "./run-tests.sh")))))))
+     `(#:tests? #t
+       #:test-command '("./run-tests.sh")))
     (home-page "https://github.com/magnars/s.el")
     (synopsis "Emacs string manipulation library")
     (description "This package provides an Emacs library for manipulating
@@ -2228,11 +2222,8 @@ in Lisp modes.")
     (native-inputs
      `(("ert-runner" ,ert-runner)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "ert-runner")))))))
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
     (home-page "https://github.com/akicho8/string-inflection")
     (synopsis "Convert symbol names between different naming conventions")
     (description
@@ -2548,7 +2539,7 @@ build jobs.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'install 'check
+         (add-before 'check 'fix-bin-dir
            (lambda _
              ;; The company-files-candidates-normal-root test looks
              ;; for the /bin directory, but the build environment has
@@ -2556,7 +2547,9 @@ build jobs.")
              ;; /tmp directory.
              (substitute* "test/files-tests.el"
                (("/bin/") "/tmp/"))
-             (zero? (system* "make" "test-batch")))))))
+             #t)))
+       #:tests? #t
+       #:test-command '("make" "test-batch")))
     (home-page "http://company-mode.github.io/")
     (synopsis "Modular text completion framework")
     (description
@@ -3643,11 +3636,8 @@ state and will work even without lispy being enabled.")
        ("emacs-s" ,emacs-s)
        ("ert-runner" ,ert-runner)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'check
-           (lambda _
-             (zero? (system* "ert-runner")))))))
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
     (home-page "https://github.com/clojure-emacs/clojure-mode")
     (synopsis "Major mode for Clojure code")
     (description
@@ -3826,14 +3816,10 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
            "1is4dcv6blslpzbjcg8l2jpxi8xj96q4cm0nxjxsyswpm8bw8ki0"))))
       (build-system emacs-build-system)
       (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'check
-             (lambda _
-               (zero? (system* "emacs" "-batch"
-                               "-l" "julia-mode.el"
-                               "-l" "julia-mode-tests.el"
-                               "-f" "ert-run-tests-batch-and-exit")))))))
+       `(#:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-l" "julia-mode-tests.el"
+                          "-f" "ert-run-tests-batch-and-exit")))
       (home-page "https://github.com/JuliaEditorSupport/julia-emacs")
       (synopsis "Major mode for Julia")
       (description "This Emacs package provides a mode for the Julia
@@ -4024,11 +4010,8 @@ If you want to mark a folder manually as a project just create an empty
                 "1fd1mx0q1qb9vgdzls5ppxfriyid48blg8smgjspiazp7kxakzxv"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "make" "test")))))))
+     `(#:tests? #t
+       #:test-command '("make" "test")))
     (home-page "https://github.com/skeeto/elfeed")
     (synopsis "Atom/RSS feed reader for Emacs")
     (description
@@ -5201,13 +5184,11 @@ Yasnippet.")
        "0fjwlrdm270qcrqffvarw5yhijk656q4lam79ybhaznzj0dq3xpw"))))
    (build-system emacs-build-system)
    (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (add-before 'install 'check
-                    (lambda _
-                      (zero? (system* "emacs" "-batch" "-l" "memoize.el"
-                                      "-l" "memoize-test.el"
-                                      "-f" "ert-run-tests-batch-and-exit")))))))
+    `(#:tests? #t
+      #:test-command '("emacs" "-batch"
+                       "-l" "memoize.el"
+                       "-l" "memoize-test.el"
+                       "-f" "ert-run-tests-batch-and-exit")))
    (home-page "https://github.com/skeeto/emacs-memoize")
    (synopsis "Emacs lisp memoization library")
    (description "@code{emacs-memoize} is an Emacs library for
@@ -5490,16 +5471,12 @@ abbreviation of the mode line displays (lighters) of minor modes.")
     (propagated-inputs
      `(("emacs-diminish" ,emacs-diminish)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-l" "use-package-tests.el"
-                             "-f" "ert-run-tests-batch-and-exit"))
-             ;; Tests fail in this release, but have been fixed in
-             ;; upstream commit 7956d40eed57d6c06bef36ebc174cf57d934e30d
-             #t)))))
+     ;; Tests fail in this release, but have been fixed in
+     ;; upstream commit 7956d40eed57d6c06bef36ebc174cf57d934e30d
+     `(#:tests? #f
+       #:test-command '("emacs" "--batch"
+                        "-l" "use-package-tests.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/jwiegley/use-package")
     (synopsis "Declaration for simplifying your .emacs")
     (description "The use-package macro allows you to isolate package
@@ -5594,13 +5571,10 @@ fonts is supported.")
          "0zay490vjby3f7455r0vydmjg7q1gwc78hilpfb0rg4gwz224z8r"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-l" "xmlgen-test.el"
-                             "-f" "ert-run-tests-batch-and-exit")))))))
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "xmlgen-test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/philjackson/xmlgen")
     (synopsis "S-expression to XML domain specific language (DSL) in
 Emacs Lisp")
@@ -6299,32 +6273,15 @@ running a customisable handler command (@code{ignore} by default). ")
          "11fbq4scrgr7m0iwnzcrn2g7xvqwm2gf82sa7zy1l0nil7265p28"))
        (patches (search-patches "emacs-json-reformat-fix-tests.patch"))))
     (build-system emacs-build-system)
-    (propagated-inputs `(("emacs-undercover" ,emacs-undercover)))
-    (inputs
-     `(("emacs-dash" ,emacs-dash)         ; for tests
-       ("emacs-shut-up" ,emacs-shut-up))) ; for tests
+    (propagated-inputs
+     `(("emacs-undercover" ,emacs-undercover)))
+    (native-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-shut-up" ,emacs-shut-up)
+       ("ert-runner" ,ert-runner)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-L" (string-append
-                                   (assoc-ref inputs "emacs-undercover")
-                                   "/share/emacs/site-lisp/guix.d/undercover-"
-                                   ,(package-version emacs-undercover))
-                             "-L" (string-append
-                                   (assoc-ref inputs "emacs-dash")
-                                   "/share/emacs/site-lisp/guix.d/dash-"
-                                   ,(package-version emacs-dash))
-                             "-L" (string-append
-                                   (assoc-ref inputs "emacs-shut-up")
-                                   "/share/emacs/site-lisp/guix.d/shut-up-"
-                                   ,(package-version emacs-shut-up))
-                             "-l" "test/test-helper.el"
-                             "-l" "test/json-reformat-test.el"
-                             "-f" "ert-run-tests-batch-and-exit"))
-             #t)))))
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
     (home-page "https://github.com/gongo/json-reformat")
     (synopsis "Reformatting tool for JSON")
     (description "@code{json-reformat} provides a reformatting tool for
@@ -6500,13 +6457,10 @@ the actual transformations.")
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-l" "which-key-tests.el"
-                             "-f" "ert-run-tests-batch-and-exit")))))))
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "which-key-tests.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/justbur/emacs-which-key")
     (synopsis "Display available key bindings in popup")
     (description
@@ -6535,11 +6489,8 @@ settings).")
     (native-inputs
      `(("ert-runner" ,ert-runner)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "ert-runner" "tests")))))))
+     `(#:tests? #t
+       #:test-command '("ert-runner" "tests")))
     (home-page "https://github.com/lewang/ws-butler")
     (synopsis "Trim spaces from end of lines")
     (description
@@ -6636,17 +6587,9 @@ editing RPM spec files.")
     (propagated-inputs
      `(("emacs-popup" ,emacs-popup)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-L" (string-append
-                                   (assoc-ref inputs "emacs-popup")
-                                   "/share/emacs/site-lisp/guix.d/popup-"
-                                   ,(package-version emacs-popup))
-                             "-l" "test/test.el"
-                             "-f" "ert-run-tests-batch-and-exit")))))))
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch" "-l" "test/test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/syohex/emacs-git-messenger")
     (synopsis "Popup commit message at current line")
     (description "@code{emacs-git-messenger} provides
@@ -6806,11 +6749,8 @@ Idris.")
       (native-inputs
        `(("ert-runner" ,ert-runner)))
       (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'check
-             (lambda _
-               (zero? (system* "ert-runner")))))))
+       `(#:tests? #t
+         #:test-command '("ert-runner")))
       (home-page "https://github.com/rmuslimov/browse-at-remote")
       (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
       (description
@@ -7239,16 +7179,10 @@ emulates Vim features and provides Vim-like key bindings.")
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (invoke "emacs" "--batch" "-L"
-                     (string-append (assoc-ref inputs "emacs-evil")
-                                    "/share/emacs/site-lisp/guix.d/evil-"
-                                    ,(package-version emacs-evil))
-                     "-l" "evil-quickscope-tests.el"
-                     "-f" "ert-run-tests-batch-and-exit"))))))
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "evil-quickscope-tests.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/blorbx/evil-quickscope")
     (synopsis "Target highlighting for emacs evil-mode f,F,t and T commands")
     (description "@code{emacs-evil-quickscope} highlights targets for Evil
