@@ -4592,6 +4592,30 @@ functions to assist in reviewing changes on files.")
 environments (virtualenv) inside Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-highlight-indentation
+  (package
+    (name "emacs-highlight-indentation")
+    (version "0.7.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/antonj/Highlight-Indentation-for-Emacs.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "00l54k75qk24a0znzl4ij3s3nrnr2wy9ha3za8apphzlm98m907k"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/antonj/Highlight-Indentation-for-Emacs/")
+    (synopsis "Highlighting indentation for Emacs")
+    (description "Provides two minor modes to highlight indentation guides in Emacs:
+@enumerate
+@item @code{highlight-indentation-mode}, which displays guidelines
+indentation (space indentation only).
+@item @code{highlight-indentation-current-column-mode}, which displays guidelines for the current-point indentation (space indentation only).
+@end enumerate")
+    (license license:gpl2+)))
+
 (define-public emacs-rainbow-delimiters
   (package
     (name "emacs-rainbow-delimiters")
