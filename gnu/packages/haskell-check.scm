@@ -769,3 +769,27 @@ Haskell, inspired by the Ruby library RSpec.")
     (description "This library provides catchy combinators for HUnit, see
 @uref{https://github.com/sol/hspec-expectations#readme, the README}.")
     (license license:expat)))
+
+(define-public ghc-nanospec
+  (package
+    (name "ghc-nanospec")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "nanospec/nanospec-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1rcmhl9bhyfvanalnf1r86wkx6rq6wdvagnw1h011jcnnb1cq56g"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-silently" ,ghc-silently)))
+    (home-page "https://github.com/hspec/nanospec#readme")
+    (synopsis "Lightweight implementation of a subset of Hspec's API")
+    (description
+     "Nanospec is a lightweight implementation of a subset of Hspec's API with
+minimal dependencies.")
+    (license license:expat)))
