@@ -10626,6 +10626,38 @@ cell-specific biases, assignment of cell cycle phase, and detection of highly
 variable and significantly correlated genes.")
     (license license:gpl3)))
 
+(define-public r-delayedmatrixstats
+  (package
+    (name "r-delayedmatrixstats")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DelayedMatrixStats" version))
+       (sha256
+        (base32
+         "1nfdan0k2z4mynxyblsil0cjclsy63b0w9r1hczfk27i8hmxx13h"))))
+    (properties
+     `((upstream-name . "DelayedMatrixStats")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-delayedarray" ,r-delayedarray)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://github.com/PeteHaitch/DelayedMatrixStats")
+    (synopsis "Functions that apply to rows and columns of DelayedMatrix objects")
+    (description
+     "This package provides a port of the @code{matrixStats} API for use with
+@code{DelayedMatrix} objects from the @code{DelayedArray} package.  It
+contains high-performing functions operating on rows and columns of
+@code{DelayedMatrix} objects, e.g. @code{colMedians}, @code{rowMedians},
+@code{colRanks}, @code{rowRanks}, @code{colSds}, and @code{rowSds}.  Functions
+are optimized per data type and for subsetted calculations such that both
+memory usage and processing time is minimized.")
+    (license license:expat)))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
