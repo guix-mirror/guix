@@ -1130,8 +1130,8 @@ Guile's foreign function interface.")
   (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
 
 (define-public guile-sqlite3
-  (let ((commit "1cd1dec96a9999db48c0ff45bab907efc637247f")
-        (revision "3"))
+  (let ((commit "10c13a7e02ab1655c8a758e560cafc9d6eff26f4")
+        (revision "4"))
     (package
       (name "guile-sqlite3")
       (version (git-version "0.0" revision commit))
@@ -1147,7 +1147,7 @@ Guile's foreign function interface.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0vvdgwcshrgl6dfz5cxf0l9bl44nkgah0ph3vv464d55nd8qh4b6"))
+                  "0nhhswpd7nb2f0gfr55fzcc2xm3l2xx4rbljsd1clrm8fj2d7q9d"))
                 (file-name (string-append name "-" version "-checkout"))
                 (modules '((guix build utils)))
                 (snippet
