@@ -10658,6 +10658,35 @@ are optimized per data type and for subsetted calculations such that both
 memory usage and processing time is minimized.")
     (license license:expat)))
 
+(define-public r-dropbead
+  (let ((commit "cf0be5ae5302684bd03e78ab65b142900bbbb840")
+        (revision "1"))
+    (package
+      (name "r-dropbead")
+      (version (string-append "0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rajewsky-lab/dropbead.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "1b2lphsc236s1rdzlijxg8yl1jnqpwcvj4x938r89rqpj93jb780"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-ggplot2" ,r-ggplot2)
+         ("r-rcolorbrewer" ,r-rcolorbrewer)
+         ("r-gridextra" ,r-gridextra)
+         ("r-gplots" ,r-gplots)
+         ("r-plyr" ,r-plyr)))
+      (home-page "https://github.com/rajewsky-lab/dropbead")
+      (synopsis "Basic exploration and analysis of Drop-seq data")
+      (description "This package offers a quick and straight-forward way to
+explore and perform basic analysis of single cell sequencing data coming from
+droplet sequencing.  It has been particularly tailored for Drop-seq.")
+      (license license:gpl3))))
+
 (define htslib-for-sambamba
   (let ((commit "2f3c3ea7b301f9b45737a793c0b2dcf0240e5ee5"))
     (package
