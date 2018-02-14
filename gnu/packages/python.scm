@@ -12663,3 +12663,24 @@ Week instances stringify to this form.")
 
 (define-public python2-isoweek
   (package-with-python2 python-isoweek))
+
+(define-public python-tokenize-rt
+  (package
+    (name "python-tokenize-rt")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tokenize-rt" version))
+       (sha256
+        (base32
+         "1yjvbz7rvrz31zjyax1cgy3xhf4wb3j18jwnj4bnl77ca4gliyiw"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/asottile/tokenize-rt")
+    (synopsis "Wrapper around the stdlib tokenize which roundtrips.")
+    (description
+     "This Python library is a wrapper around @code{tokenize} from the Python
+standard library.  It provides two additional tokens @code{ESCAPED_NL} and
+@code{UNIMPORTANT_WS}, and a @code{Token} data type.  Use @code{src_to_tokens}
+and @code{tokens_to_src} to roundtrip.")
+    (license license:expat)))
