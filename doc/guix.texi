@@ -12297,8 +12297,10 @@ The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
 called Wayland, you need to use the @code{sddm-service} instead of the
 @code{slim-service} for the graphical login manager.  You should then
-select the ``GNOME (Wayland)'' session in SDDM.  Currently only GNOME
-has support for Wayland.
+select the ``GNOME (Wayland)'' session in SDDM.  Alternatively you can
+also try starting GNOME on Wayland manually from a TTY with the
+command ``XDG_SESSION_TYPE=wayland exec dbus-run-session
+gnome-session``.  Currently only GNOME has support for Wayland.
 
 @deffn {Scheme Procedure} gnome-desktop-service
 Return a service that adds the @code{gnome} package to the system
