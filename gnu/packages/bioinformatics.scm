@@ -11857,3 +11857,31 @@ use of lightweight alignments (accurate but fast-to-compute proxies for
 traditional read alignments) and massively-parallel stochastic collapsed
 variational inference.")
     (license license:gpl3+)))
+
+(define-public python-loompy
+  (package
+    (name "python-loompy")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "loompy" version))
+       (sha256
+        (base32
+         "1drgv8j1hxqzzpnfg272x9djb6j8qr798w1pc2x8ikmfgyd9gh51"))))
+    (build-system python-build-system)
+    ;; There are no tests
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-h5py" ,python-h5py)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-typing" ,python-typing)))
+    (home-page "https://github.com/linnarsson-lab/loompy")
+    (synopsis "Work with .loom files for single-cell RNA-seq data")
+    (description "The loom file format is an efficient format for very large
+omics datasets, consisting of a main matrix, optional additional layers, a
+variable number of row and column annotations.  Loom also supports sparse
+graphs.  This library makes it easy to work with @file{.loom} files for
+single-cell RNA-seq data.")
+    (license license:bsd-3)))
