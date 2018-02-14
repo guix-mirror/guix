@@ -2483,7 +2483,7 @@ mechanism of Java.  It is especially useful for dynamic loading of application
 components.")
     (license license:asl2.0)))
 
-(define-public java-plexus-container-default-bootstrap
+(define java-plexus-container-default-bootstrap
   (package
     (name "java-plexus-container-default-bootstrap")
     (version "1.7.1")
