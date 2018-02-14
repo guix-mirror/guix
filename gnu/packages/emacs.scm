@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -449,13 +449,7 @@ on stdout instead of using a socket as the Emacsclient does.")
        ;; XXX Add 'magit-popup' dependency for the next release (after 2.11.0).
        ("with-editor" ,emacs-with-editor)))
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build emacs-utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-utils))
-
-       #:test-target "test"
+     `(#:test-target "test"
        #:tests? #f               ; tests are not included in the release
 
        #:make-flags
@@ -477,10 +471,7 @@ on stdout instead of using a socket as the Emacsclient does.")
          (add-before
           'build 'patch-exec-paths
           (lambda* (#:key inputs #:allow-other-keys)
-            (let ((git  (assoc-ref inputs "git"))
-                  (perl (assoc-ref inputs "perl")))
-              (emacs-substitute-variables "lisp/magit-git.el"
-                ("magit-git-executable" (string-append git "/bin/git")))
+            (let ((perl (assoc-ref inputs "perl")))
               (substitute* "lisp/magit-sequence.el"
                 (("perl") (string-append perl "/bin/perl")))
               #t))))))
