@@ -409,6 +409,7 @@ also initializes the boards (RAM etc).")
                                     (find-files "." ".*\\.(bin|efi|img|spl)$")
                                     (find-files "." "^MLO$"))))
                  (mkdir-p libexec)
+                 (install-file ".config" libexec)
                  (for-each
                   (lambda (file)
                     (let ((target-file (string-append libexec "/" file)))

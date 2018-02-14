@@ -531,7 +531,12 @@ security standards.")
         (mozilla-patch "icecat-CVE-2018-5089-pt18.patch" "fe271a2b9503" "11wr8mdxw01dlmzkq55hf0qd52cwmx4vk96cff66d4kkl1dbj6qn")
         (mozilla-patch "icecat-CVE-2018-5089-pt19.patch" "410da936a1e8" "14dvaysz0svlh50kdabjhd2s5avz6p93sbyqhwik5rlvcg5ax5zp")
         (mozilla-patch "icecat-CVE-2018-5089-pt20.patch" "8368a9a379e3" "0fqq01ms7m4kb9b10n8gy5n9n4x43crz2gn1r6c4ny52wzgm3j6f")
-        (mozilla-patch "icecat-CVE-2018-5089-pt21.patch" "a7c8e85285e2" "1caa2w5r8rqb1qrk4mgf2vw1k592idvqmgs8qfz2dp2744kk6z98")))
+        (mozilla-patch "icecat-CVE-2018-5089-pt21.patch" "a7c8e85285e2" "1caa2w5r8rqb1qrk4mgf2vw1k592idvqmgs8qfz2dp2744kk6z98")
+        (mozilla-patch "icecat-bug-1375217.patch"        "00fc630c9a46" "17pcprp452nslk6sac6sili0p74zh8w3g0v1wsdn0ikm9xmnphhv")
+        (mozilla-patch "icecat-bug-1261175.patch"        "f0ec180993d2" "0jiazxcwki83wr00fyh2g518ynsd33p7nk65zk4d1682gn22lc8v")
+        (mozilla-patch "icecat-bug-1433005.patch"        "a6a9e26688c1" "0cvizvilb4k422j2gzqcbakznvsffmk6n6xn1ayj5rgxfaizkkqk")
+        (mozilla-patch "icecat-bug-1434580.patch"        "198ad052621e" "1721zx8hifdlflrhvw6hmkdgjbvsmxl9n84iji5qywhlp2krdk9r")
+        (mozilla-patch "icecat-bug-1426087.patch"        "391ea77ebfdb" "1fhkvd0z6mvdkj7m0d3jlj42rsdw5r4x122c1wb1i428228ifw6n")))
       (modules '((guix build utils)))
       (snippet
        '(begin
