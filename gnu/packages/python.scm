@@ -12707,3 +12707,28 @@ and @code{tokens_to_src} to roundtrip.")
 source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
 @code{f} strings.")
     (license license:expat)))
+
+(define-public python-typing
+  (package
+    (name "python-typing")
+    (version "3.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "typing" version))
+       (sha256
+        (base32
+         "1wmk9nkh30n37cbrqwkbggmj2390lhrlagjkd0ikm02l88saj06l"))))
+    (build-system python-build-system)
+    (home-page "https://docs.python.org/3/library/typing.html")
+    (synopsis "Type hints for Python")
+    (description "This is a backport of the standard library @code{typing}
+module to Python versions older than 3.5.  Typing defines a standard notation
+for Python function and variable type annotations.  The notation can be used
+for documenting code in a concise, standard format, and it has been designed
+to also be used by static and runtime type checkers, static analyzers, IDEs
+and other tools.")
+    (license license:psfl)))
+
+(define-public python2-typing
+  (package-with-python2 python-typing))
