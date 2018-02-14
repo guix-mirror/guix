@@ -336,7 +336,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                    (begin
                      (copy-file config ".config")
                      (chmod ".config" #o666))
-                   (system* "make" ,defconfig))
+                   (invoke "make" ,defconfig))
 
                ;; Appending works even when the option wasn't in the
                ;; file.  The last one prevails if duplicated.
@@ -345,7 +345,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                  (display extra-configuration port)
                  (close-port port))
 
-               (zero? (system* "make" "oldconfig")))))
+               (invoke "make" "oldconfig"))))
          (replace 'install
            (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
@@ -360,13 +360,13 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                          (find-files "." "\\.dtb$"))
                ;; Install kernel modules
                (mkdir-p moddir)
-               (zero? (system* "make"
-                               (string-append "DEPMOD=" kmod "/bin/depmod")
-                               (string-append "MODULE_DIR=" moddir)
-                               (string-append "INSTALL_PATH=" out)
-                               (string-append "INSTALL_MOD_PATH=" out)
-                               "INSTALL_MOD_STRIP=1"
-                               "modules_install"))))))
+               (invoke "make"
+                       (string-append "DEPMOD=" kmod "/bin/depmod")
+                       (string-append "MODULE_DIR=" moddir)
+                       (string-append "INSTALL_PATH=" out)
+                       (string-append "INSTALL_MOD_PATH=" out)
+                       "INSTALL_MOD_STRIP=1"
+                       "modules_install")))))
        #:tests? #f))
     (home-page "https://www.gnu.org/software/linux-libre/")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
