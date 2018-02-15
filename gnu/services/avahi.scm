@@ -131,10 +131,8 @@ service switch (NSS) with support for @code{.local} host name resolution.")
                                             (const %avahi-accounts))
                          (service-extension activation-service-type
                                             (const %avahi-activation))
-
-                         ;; Use 0.10 due to <https://bugs.gnu.org/30396>.
                          (service-extension nscd-service-type
-                                            (const (list nss-mdns-0.10)))
+                                            (const (list nss-mdns)))
 
                          ;; Provide 'avahi-browse', 'avahi-resolve', etc. in
                          ;; the system profile.

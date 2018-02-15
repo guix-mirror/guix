@@ -77,22 +77,32 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
 (define-public nss-mdns
   (package
     (name "nss-mdns")
-    (version "0.11")
+    (version "0.12")
+    (home-page "https://github.com/lathiat/nss-mdns")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/lathiat/nss-mdns"
-                                  "/releases/download/v" version "/"
+              (uri (string-append home-page "/releases/download/v" version "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "14jwy6mklzgjz3mfmw67mxhszrw9d3d3yjjhg87j4crci6m19i39"))))
+                "1p2vj9fz4kzrjrj81ipf4qwgnr2n7a8cbzw4bpk18xyqhdx8h775"))
+              (patches
+               (list (origin
+                       ;; See
+                       ;; <https://github.com/lathiat/nss-mdns/issues/26#issuecomment-364781799>.
+                       (uri (string-append
+                             home-page
+                             "/commit/31ccbec3b4f054e590c7c880d8a8a50cfc97127d.patch"))
+                       (sha256
+                        (base32
+                         "0b1jmhnkpsczbph4ala7x3rafwxdg93277s30iaxh37jnvgjnhsd"))
+                       (method url-fetch))))))
     (build-system gnu-build-system)
     (arguments
      ;; The Avahi daemon socket is expected by src/Makefile.am to be at
      ;; "$(localstatedir)/run/avahi-daemon/socket", so set $(localstatedir)
      ;; appropriately.
      '(#:configure-flags '("--localstatedir=/var")))
-    (home-page "https://github.com/lathiat/nss-mdns")
     (synopsis "Multicast DNS Name Service Switch (@dfn{NSS}) plug-in")
     (description
      "Nss-mdns is a plug-in for the GNU C Library's Name Service Switch
@@ -100,28 +110,3 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
 most often used in home and other small networks without a local name server,
 to resolve host names in the @samp{.local} top-level domain.")
     (license lgpl2.1+)))
-
-(define-public nss-mdns-0.10
-  ;; Kept here to work around in bug in 0.11: <https://bugs.gnu.org/30396> and
-  ;; <https://github.com/lathiat/nss-mdns/issues/26>.
-  (package
-    (inherit nss-mdns)
-    (version "0.10")
-    (source (origin
-              (method url-fetch)
-              (uri (list
-                    (string-append
-                     "mirror://debian/pool/main/n/nss-mdns/nss-mdns_"
-                     version ".orig.tar.gz")
-                    "http://pkgs.fedoraproject.org/repo/pkgs/nss-mdns/nss-mdns-0.10.tar.gz/03938f17646efbb50aa70ba5f99f51d7/nss-mdns-0.10.tar.gz"
-
-                    ;; This used to be the canonical URL but it vanished.
-                    ;; See <http://bugs.gnu.org/18704>.
-                    ;; (string-append
-                    ;;  "http://0pointer.de/lennart/projects/nss-mdns/nss-mdns-"
-                    ;;  version ".tar.gz")
-                    ))
-              (sha256
-               (base32
-                "0vgs6j0qsl0mwzh5a0m0bykr7x6bx79vnbyn0r3q289rghp3qs0y"))
-              (file-name (string-append "nss-mdns-" version ".tar.gz"))))))
