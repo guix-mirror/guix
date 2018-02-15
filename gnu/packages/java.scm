@@ -6309,7 +6309,7 @@ configuration.")
 (define-public java-fasterxml-jackson-modules-base-jaxb
   (package
     (name "java-fasterxml-jackson-modules-base-jaxb")
-    (version "2.9.2")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6317,7 +6317,7 @@ configuration.")
                                   "jackson-modules-base-" version ".tar.gz"))
               (sha256
                (base32
-                "0kc19n5a188g4vpyay44xfb7qcabcbfnwzhx1g84lg0sac8lf0ng"))))
+                "1wws95xi8sppp6b0k2vvjdjyynl20r1a4dwrhai08lzlria6blp5"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-modules-base-jaxb.jar"
