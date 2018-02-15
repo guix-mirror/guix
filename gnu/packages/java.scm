@@ -6266,7 +6266,7 @@ not included are ones that require dependency to the Databind package.")
 (define-public java-fasterxml-jackson-databind
   (package
     (name "java-fasterxml-jackson-databind")
-    (version "2.9.2")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6274,7 +6274,7 @@ not included are ones that require dependency to the Databind package.")
                                   "jackson-databind-" version ".tar.gz"))
               (sha256
                (base32
-                "1d5ns8ypqhdy8d94i8q560ip9kka6q8lhnk6q7nfh2g9mr22cc4w"))))
+                "1zd2cw4z6kdkbx8za96xh9pyicv2a2l7y0rkcx2fqd8hv6d47s08"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-databind.jar"
