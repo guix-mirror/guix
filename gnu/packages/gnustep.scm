@@ -219,7 +219,7 @@ other compatible window managers.")
 (define-public wmcpuload
   (package
     (name "wmcpuload")
-    (version "1.0.1")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -227,7 +227,7 @@ other compatible window managers.")
                     name "_" version ".orig.tar.gz"))
               (sha256
                (base32
-                "0irlns4cvxy2mnicx75bya166hdxq7h8bphds3ligijcl9fzgs6n"))))
+                "1334y0axnxydwv05d172f405iljrfakg4kcyg9kmn46v6ywv424g"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
