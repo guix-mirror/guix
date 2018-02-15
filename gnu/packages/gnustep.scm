@@ -185,7 +185,7 @@ interface.  It is fast, feature rich, easy to configure, and easy to use.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://windowmaker.org/dockapps/?name=wmbattery")
+    (home-page "http://www.dockapps.net/wmbattery")
     (synopsis "Display laptop battery info")
     (description
      "Wmbattery displays the status of your laptop's battery in a small icon.
@@ -239,7 +239,7 @@ other compatible window managers.")
        ("libxpm" ,libxpm)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://windowmaker.org/dockapps/?name=wmcpuload")
+    (home-page "http://www.dockapps.net/wmcpuload")
     (synopsis "Monitor CPU usage")
     (description
      "Wmcpuload displays the current CPU usage, expressed as a percentile and a
@@ -278,7 +278,7 @@ on.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://windowmaker.org/dockapps/?name=wmclock")
+    (home-page "http://www.dockapps.net/wmclock")
     (synopsis "Display the date and time")
     (description
      "wmclock is an applet for Window Maker which displays the date and time in
