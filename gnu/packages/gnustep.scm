@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -154,7 +155,7 @@ interface.  It is fast, feature rich, easy to configure, and easy to use.")
 (define-public wmbattery
   (package
     (name "wmbattery")
-    (version "2.50")
+    (version "2.51")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -162,15 +163,7 @@ interface.  It is fast, feature rich, easy to configure, and easy to use.")
                     version ".orig.tar.gz"))
               (sha256
                (base32
-                "0hi6bivv3xd2k68w08krndfl68wdx7nmc2wjzsmcd4q3qgwgyk44"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Fix memory leak:
-               ;; <https://lists.gnu.org/archive/html/guix-devel/2016-05/msg00466.html>.
-               '(substitute* "upower.c"
-                  (("up = up_client_new\\(\\);")
-                   (string-append "if (!up)\n"
-                                  "                up = up_client_new();"))))))
+                "084a3irxbmgms4bqaga80mlx9wgvlkx6d2w0ns939yrpfzg87laj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f              ; no "check" target
