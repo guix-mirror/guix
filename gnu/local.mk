@@ -683,6 +683,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/gemma-intel-compat.patch			\
   %D%/packages/patches/geoclue-config.patch			\
+  %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch \
   %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\

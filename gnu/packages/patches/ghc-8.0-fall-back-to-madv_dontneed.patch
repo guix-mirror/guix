@@ -1,0 +1,61 @@
+ghc runtime by default (otherwise depending on a "configure" option)
+does memory allocation on their own by first mmapping a 1 TB range of
+memory into the process and then parceling out chunks from it.
+
+If one of the chunks is not needed, the kernel needs to be informed -
+otherwise the system would quickly run out of available RAM.
+
+ghc does that via madvise(2).
+
+There are two options when doing this informing:
+
+MADV_FREE - Means "I don't need this range or the data in it any more". 
+Kernel promises to fail later accesses to it.
+
+MADV_DONTNEED - Means "I don't need this range right now - and I don't
+need the data in it anymore". Kernel promises to make later accesses to
+it succeed (if necessary by providing a new page initialized with zeroes).
+
+MADV_FREE was introduced in Linux 4.5.
+glibc 2.25 and later always define MADV_FREE.
+
+Unpatched ghc 8.0.2 will use either MADV_FREE or MADV_DONTNEED, determined
+at ghc compile time.  Which of them will actually succeed is determined
+by the Linux kernel at run time.
+
+This patch makes ghc try MADV_FREE.  If it doesn't work, it falls back to
+MADV_DONTNEED.
+
+The end result is that ghc programs free their memory with Linux < 4.5 again.
+
+See https://git.haskell.org/ghc.git/commitdiff/6576bf83cdf4eac05eb88a24aa934a736c91e3da for more information.
+--- a/rts/posix/OSMem.c
++++ b/rts/posix/OSMem.c
+@@ -541,11 +541,24 @@ void osDecommitMemory(void *at, W_ size)
+ 
+ #ifdef MADV_FREE
+     // Try MADV_FREE first, FreeBSD has both and MADV_DONTNEED
+-    // just swaps memory out
++    // just swaps memory out. Linux >= 4.5 has both DONTNEED and FREE; either
++    // will work as they both allow the system to free anonymous pages.
++    // It is important that we try both methods as the kernel which we were
++    // built on may differ from the kernel we are now running on.
+     r = madvise(at, size, MADV_FREE);
+-#else
+-    r = madvise(at, size, MADV_DONTNEED);
++    if(r < 0) {
++        if (errno == EINVAL) {
++            // Perhaps the system doesn't support MADV_FREE; fall-through and
++            // try MADV_DONTNEED.
++        } else {
++            sysErrorBelch("unable to decommit memory");
++        }
++    } else {
++        return;
++    }
+ #endif
++
++    r = madvise(at, size, MADV_DONTNEED);
+     if(r < 0)
+         sysErrorBelch("unable to decommit memory");
+ }

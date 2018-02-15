@@ -328,7 +328,8 @@ interactive environment for the functional language Haskell.")
        (base32 "1c8qc4fhkycynk4g1f9hvk53dj6a1vvqi6bklqznns6hw59m8qhi"))
       (patches
        (search-patches
-        "ghc-dont-pass-linker-flags-via-response-files.patch"))))
+        "ghc-dont-pass-linker-flags-via-response-files.patch"
+        "ghc-8.0-fall-back-to-madv_dontneed.patch"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (outputs '("out" "doc"))
