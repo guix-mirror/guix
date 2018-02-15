@@ -102,7 +102,8 @@ to easily create cross-compiled binaries.")
                ;; The path to wmsetbg in Guix requires 67 extra characters.
                (substitute* "src/defaults.c"
                  (("len = strlen\\(text\\) \\+ 40;")
-                  (string-append "len = strlen(text) + 107;"))))))
+                  (string-append "len = strlen(text) + 107;")))
+               #t)))
          (add-after 'install 'install-xsession
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -120,7 +121,7 @@ to easily create cross-compiled binaries.")
                           (string-map (match-lambda
                                         (#\newline #\space)
                                         (chr chr))
-                                      ,synopsis) %output))))
+                                      ,synopsis) out))))
              #t))
          (add-after 'install-xsession 'wrap
             (lambda* (#:key outputs #:allow-other-keys)
@@ -129,7 +130,8 @@ to easily create cross-compiled binaries.")
                 ;; In turn, 'wmaker.inst' wants to invoke 'wmmenugen'
                 ;; etc., so make sure everything is in $PATH.
                 (wrap-program (string-append bin "/wmaker.inst")
-                  `("PATH" ":" prefix (,bin)))))))))
+                  `("PATH" ":" prefix (,bin)))
+                #t))))))
     (inputs
      `(("libxmu" ,libxmu)
        ("libxft" ,libxft)
@@ -170,7 +172,9 @@ interface.  It is fast, feature rich, easy to configure, and easy to use.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'autoconf
-           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+           (lambda _
+             (invoke "autoreconf" "-vfi")
+             #t)))))
     (inputs
      `(("glib" ,glib)
        ("libx11" ,libx11)
@@ -262,7 +266,9 @@ on.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'autoconf
-           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+           (lambda _
+             (invoke "autoreconf" "-vfi")
+             #t)))))
     ;; wmclock requires autoreconf to generate its configure script.
     (inputs
      `(("libx11" ,libx11)
