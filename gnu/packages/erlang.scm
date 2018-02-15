@@ -173,7 +173,7 @@
                  ;; Delete superfluous file.
                  (delete-file "PR.template"))
                #t))))))
-    (home-page "http://erlang.org/")
+    (home-page "https://www.erlang.org/")
     (synopsis "The Erlang programming language")
     (description
      "Erlang is a programming language used to build massively
