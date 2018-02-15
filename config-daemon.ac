@@ -132,11 +132,6 @@ if test "x$guix_build_daemon" = "xyes"; then
   AC_DEFINE_UNQUOTED([GUIX_SUBSTITUTE_URLS], ["$guix_substitute_urls"],
     [Default list of substitute URLs used by 'guix-daemon'.])
 
-  dnl Check whether the 'offload' build hook can be built (uses
-  dnl 'restore-file-set', which requires unbuffered custom binary input
-  dnl ports from Guile >= 2.0.10.)
-  GUIX_CHECK_UNBUFFERED_CBIP
-
   dnl Check for Guile-SSH, which is required by 'guix offload'.
   GUIX_CHECK_GUILE_SSH
 

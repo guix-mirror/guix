@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -350,39 +350,6 @@ expansion-time error is raised if FIELD does not exist in TYPE."
 ;;; FFI.
 ;;;
 
-(define %libc-errno-pointer
-  ;; Glibc's 'errno' pointer, for use with Guile < 2.0.12.
-  (let ((errno-loc (false-if-exception
-                    (dynamic-func "__errno_location" (dynamic-link)))))
-    (and errno-loc
-         (let ((proc (pointer->procedure '* errno-loc '())))
-           (proc)))))
-
-(define errno                                     ;for Guile < 2.0.12
-  (if %libc-errno-pointer
-      (let ((bv (pointer->bytevector %libc-errno-pointer (sizeof int))))
-        (lambda ()
-          "Return the current errno."
-          ;; XXX: We assume that nothing changes 'errno' while we're doing all this.
-          ;; In particular, that means that no async must be running here.
-
-          ;; Use one of the fixed-size native-ref procedures because they are
-          ;; optimized down to a single VM instruction, which reduces the risk
-          ;; that we fiddle with 'errno' (needed on Guile 2.0.5, libc 2.11.)
-          (let-syntax ((ref (lambda (s)
-                              (syntax-case s ()
-                                ((_ bv)
-                                 (case (sizeof int)
-                                   ((4)
-                                    #'(bytevector-s32-native-ref bv 0))
-                                   ((8)
-                                    #'(bytevector-s64-native-ref bv 0))
-                                   (else
-                                    (error "unsupported 'int' size"
-                                           (sizeof int)))))))))
-            (ref bv))))
-      (lambda () 0)))
-
 (define (call-with-restart-on-EINTR thunk)
   (let loop ()
     (catch 'system-error
@@ -406,17 +373,8 @@ the returned procedure is called."
     (lambda ()
       (let ((ptr (dynamic-func name (dynamic-link))))
         ;; The #:return-errno? facility was introduced in Guile 2.0.12.
-        ;; Support older versions of Guile by catching 'wrong-number-of-args'.
-        (catch 'wrong-number-of-args
-          (lambda ()
-            (pointer->procedure return-type ptr argument-types
-                                #:return-errno? #t))
-          (lambda (key . rest)
-            (let ((proc (pointer->procedure return-type ptr argument-types)))
-              (lambda args
-                (let ((result (apply proc args))
-                      (err    (errno)))
-                  (values result err))))))))
+        (pointer->procedure return-type ptr argument-types
+                            #:return-errno? #t)))
     (lambda args
       (lambda _
         (error (format #f "~a: syscall->procedure failed: ~s"
