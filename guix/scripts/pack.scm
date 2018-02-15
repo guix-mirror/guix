@@ -349,8 +349,7 @@ Create a bundle of PACKAGE.\n"))
   (display (G_ "
   -S, --symlink=SPEC     create symlinks to the profile according to SPEC"))
   (display (G_ "
-  -m, --manifest=FILE    create a new profile generation with the manifest
-                         from FILE"))
+  -m, --manifest=FILE    create a pack with the manifest from FILE"))
   (display (G_ "
       --localstatedir    include /var/guix in the resulting pack"))
   (newline)
