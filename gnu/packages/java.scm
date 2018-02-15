@@ -6183,7 +6183,7 @@ the system under test at the same time.")
 (define-public java-fasterxml-jackson-annotations
   (package
     (name "java-fasterxml-jackson-annotations")
-    (version "2.9.2")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6191,7 +6191,7 @@ the system under test at the same time.")
                                   "jackson-annotations-" version ".tar.gz"))
               (sha256
                (base32
-                "0b4wdxjxfbl3gkilylfdbl7fzimfpyih676jiwdf19i4056j8lqw"))))
+                "0mr95xd0da6a4g95zvrl1ryk5n5zv2rc696w3xnsr5hxk2gicfc4"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-annotations.jar"
