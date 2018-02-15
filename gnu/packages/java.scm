@@ -6379,7 +6379,7 @@ configuration.")
 (define-public java-fasterxml-jackson-dataformat-yaml
   (package
     (name "java-fasterxml-jackson-dataformat-yaml")
-    (version "2.9.2")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6387,7 +6387,7 @@ configuration.")
                                   "jackson-dataformats-text-" version ".tar.gz"))
               (sha256
                (base32
-                "1x7c7v201jpb8ynjsmmq7jj7hyqzzp39jvpr053ggdndm022yzc7"))))
+                "1hikl06khaxbg439avf442qifcadap8w0lx13f0nnhp2vh3dkbz7"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-dataformat-yaml.jar"
