@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,16 +24,22 @@
 (define-module (gnu packages geo)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system scons)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml))
 
@@ -242,3 +249,59 @@ projections.")
                    (license:non-copyleft "http://www.epsg.org/TermsOfUse")
                    ;; cmake/*
                    license:boost1.0))))
+
+(define-public mapnik
+  (package
+    (name "mapnik")
+    (version "3.0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mapnik/mapnik/releases/download/v"
+                           version "/mapnik-v" version ".tar.bz2"))
+       (sha256
+        (base32
+         "06frcikaj2mgz3abfk5h0z4j3hbksi0zikwjngbjv4p5f3pwxf8q"))))
+    (build-system scons-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("cairo" ,cairo)
+       ("freetype" ,freetype)
+       ("harfbuzz" ,harfbuzz)
+       ("icu4c" ,icu4c)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("libxml2" ,libxml2)
+       ("proj.4" ,proj.4)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:scons ,scons-python2
+       #:scons-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" %output)
+             (string-append "CUSTOM_LDFLAGS=-Wl,-rpath=" %output "/lib"))))
+    (home-page "http://mapnik.org/")
+    (synopsis "Toolkit for developing mapping applications")
+    (description "Mapnik is a toolkit for developing mapping applications.  It
+is basically a collection of geographic objects like maps, layers,
+datasources, features, and geometries.  At its core is a C++ shared library
+providing algorithms and patterns for spatial data access and visualization.
+The library does not rely on any specific windowing system and can be deployed
+to any server environment.  It is intended to play fair in a multi-threaded
+environment and is aimed primarily, but not exclusively, at web-based
+development.")
+    (license (list license:lgpl2.1+
+                   ;; demo/viewer, demo/python/rundemo.py
+                   license:gpl2+
+                   ;; deps/boost, deps/mapbox, deps/agg/include/agg_conv_offset.h
+                   license:boost1.0
+                   ;; deps/mapnik/sparsehash
+                   license:bsd-3
+                   ;; deps/agg
+                   (license:non-copyleft "file://deps/agg/copying")))))
+
