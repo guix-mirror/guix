@@ -397,7 +397,7 @@ dump Intel Firmware Descriptor data of an image file.")
         (delete 'configure)
         (delete 'check))))
     (home-page "https://github.com/zamaudio/intelmetool")
-    (synopsis "Intel ME tools")
+    (synopsis "Intel Management Engine tools")
     (description "This package provides tools for working with Intel
 Management Engine (ME).  You need to @code{sudo rmmod mei_me} and
 @code{sudo rmmod mei} before using this tool.  Also pass
