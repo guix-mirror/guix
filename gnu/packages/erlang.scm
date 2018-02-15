@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,7 @@
 (define-public erlang
   (package
     (name "erlang")
-    (version "20.1.7")
+    (version "20.2.3")
     (source (origin
               (method url-fetch)
               ;; The tarball from http://erlang.org/download contains many
@@ -47,7 +48,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00pmngdyh1h088anmx6fbk085i93ajgk92rz7qsyhfc0lx0sm0a9"))
+                "0s9g4ijdbqq21k4cqggz074d3fiimah942qisv2kgizhlivpw2nm"))
               (patches (search-patches "erlang-man-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -63,7 +64,7 @@
                                (version-major+minor version) ".tar.gz"))
            (sha256
             (base32
-             "0ikvdpn4z7az6szg176l1r2yxhgs3msa3wgb3gmy45jkz0pzik05"))))))
+             "1pyb8wbk7znsyni8d1k4dj1m01lr191dcrrzisli1z27ks7hh3lm"))))))
     (inputs
      `(("ncurses" ,ncurses)
        ("openssl" ,openssl)
