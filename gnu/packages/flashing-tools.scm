@@ -362,7 +362,7 @@ referred to as the \"Odin 3 protocol\".")
         (delete 'check))))
     (home-page "https://github.com/corna/me_cleaner/")
     (synopsis "Intel Firmware Descriptor dumper")
-    (description "This package provides @ifdtool}, a program to
+    (description "This package provides @command{ifdtool}, a program to
 dump Intel Firmware Descriptor data of an image file.")
     (license license:gpl2)))
 
