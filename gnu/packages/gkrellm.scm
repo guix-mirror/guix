@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
 (define-public gkrellm
   (package
     (name "gkrellm")
-    (version "2.3.5")
+    (version "2.3.10")
     (source
      (origin
       (method url-fetch)
@@ -38,7 +39,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "12rc6zaa7kb60b9744lbrlfkxxfniprm6x0mispv63h4kh75navh"))))
+        "0rnpzjr0ys0ypm078y63q4aplcgdr5nshjzhmz330n6dmnxci7lb"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)
@@ -48,13 +49,14 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:tests? #f ; there is no check target
-       #:phases (modify-phases %standard-phases (delete 'configure))
+     `(#:tests? #f                      ; there is no check target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))           ; no configure script
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list (string-append "INSTALLROOT=" out)
-               "CC=gcc"
-               "X11_LIBS = -lX11 -lSM -lICE -lgmodule-2.0"))))
+               "CC=gcc"))))
     (home-page "http://gkrellm.srcbox.net/")
     (synopsis "System monitors")
     (description
