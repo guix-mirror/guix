@@ -24,12 +24,14 @@
 (define-module (gnu packages geo)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
@@ -305,3 +307,74 @@ development.")
                    ;; deps/agg
                    (license:non-copyleft "file://deps/agg/copying")))))
 
+(define-public python2-mapnik
+  (package
+    (name "python2-mapnik")
+    (version "3.0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mapnik/python-mapnik/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w7wg72gnwmbjani9sqk42p2jwqkrl9hsdkawahni5m05xsifcb4"))))
+    (build-system python-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("harfbuzz" ,harfbuzz)
+       ("icu4c" ,icu4c)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("mapnik" ,mapnik)
+       ("proj.4" ,proj.4)
+       ("python2-pycairo" ,python2-pycairo)))
+    (native-inputs
+     (let ((test-data-input
+            (lambda (repository version hash)
+              (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/mapnik/" repository
+                                    "/archive/v" version ".tar.gz"))
+                (file-name (string-append "python-mapnik-" repository
+                                          "-" version ".tar.gz"))
+                (sha256 (base32 hash))))))
+       `(("python2-nose" ,python2-nose)
+         ;; Test data is released as separate tarballs
+         ("test-data"
+          ,(test-data-input "test-data" "3.0.18"
+                            "10cvgn5gxn8ldrszj24zr1vzm5w76kqk4s7bl2zzp5yvkhh8lj1n"))
+         ("test-data-visual"
+          ,(test-data-input "test-data-visual" "3.0.18"
+                            "1cb9ghy8sis0w5fkp0dvwxdqqx44rhs9a9w8g9r9i7md1c40r80i")))))
+    (arguments
+     `(#:python ,python-2 ; Python 3 support is incomplete, and the build fails
+       #:phases
+       (modify-phases %standard-phases
+         ;; Unpack test data into the source tree
+         (add-after 'unpack 'unpack-submodules
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((unpack (lambda (source target)
+                             (with-directory-excursion target
+                               (invoke "tar" "xvf" (assoc-ref inputs source)
+                                       "--strip-components=1")))))
+               (unpack "test-data" "test/data")
+               (unpack "test-data-visual" "test/data-visual"))))
+         ;; Skip failing tests
+         (add-after 'unpack 'skip-tests
+           (lambda _
+             (let ((skipped-tests (list "test_vrt_referring_to_missing_files"
+                                        "test_unicode_regex_replace"
+                                        "test_proj_antimeridian_bbox"
+                                        "test_render_with_scale_factor")))
+               (substitute* "setup.cfg"
+                 (("\\[nosetests\\]" all)
+                  (string-append all "\nexclude=^("
+                                 (string-join skipped-tests "|") ")$")))))))))
+    (home-page "https://github.com/mapnik/python-mapnik")
+    (synopsis "Python bindings for Mapnik")
+    (description "This package provides Python bindings for Mapnik.")
+    (license license:lgpl2.1+)))
