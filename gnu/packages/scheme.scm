@@ -207,7 +207,7 @@ features an integrated Emacs-like editor and a large runtime library.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1xpzxjlq5g8j3jrb908kfaaa0pkynk4rd083hzvb08amhy68sx07"))
+               "1x7xdgsls277zlf6gcaxs2cj62xj6yvb0qxh0ddmxfamvxba0cf4"))
              ;; Remove bundled libraries.
              (modules '((guix build utils)))
              (snippet
