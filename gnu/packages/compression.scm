@@ -1986,14 +1986,14 @@ Lunzip is intended to be fully compatible with the regular lzip package.")
 (define-public clzip
   (package
     (name "clzip")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/lzip/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "1brvsnpihzj81cf4wk2x5bnr2qldlq0wncpdbzxmzvxapm1cq2yc"))))
+        (base32 "03xcmhl3dya4jrwmsqh09ikimpb36fr3vkh2bwfzz1sbcns0cdg3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
