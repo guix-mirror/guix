@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2014, 2015, 2018 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -142,6 +142,8 @@ COMMAND or an interactive shell in that environment.\n"))
   -l, --load=FILE        create environment for the package that the code within
                          FILE evaluates to"))
   (display (G_ "
+  -m, --manifest=FILE    create environment with the manifest from FILE"))
+  (display (G_ "
       --ad-hoc           include all specified packages in the environment instead
                          of only their inputs"))
   (display (G_ "
@@ -220,6 +222,11 @@ COMMAND or an interactive shell in that environment.\n"))
                    (alist-cons 'expression
                                (tag-package-arg result arg)
                                result)))
+         (option '(#\m "manifest") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'manifest
+                               arg
+                               result)))
          (option '("ad-hoc") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'ad-hoc? #t result)))
@@ -286,6 +293,16 @@ packages."
       (((? package-or-package+output?) ...) ; many packages
        (map (cut package->output <> mode) packages))))
 
+  (define (manifest->outputs manifest)
+    (map (lambda (entry)
+           (cons 'ad-hoc-package ; manifests are implicitly ad-hoc
+                 (if (package? (manifest-entry-item entry))
+                     (list (manifest-entry-item entry)
+                           (manifest-entry-output entry))
+                     ;; Direct store paths have no output.
+                     (list (manifest-entry-item entry)))))
+         (manifest-entries manifest)))
+
   (compact
    (append-map (match-lambda
                  (('package mode (? string? spec))
@@ -299,6 +316,9 @@ packages."
                   ;; Add all the outputs of the package defined in FILE.
                   (let ((module (make-user-module '())))
                     (packages->outputs (load* file module) mode)))
+                 (('manifest . file)
+                  (let ((module (make-user-module '())))
+                    (manifest->outputs (load* file module))))
                  (_ '(#f)))
                opts)))
 

@@ -7231,6 +7231,15 @@ As an example, @var{file} might contain a definition like this
 @verbatiminclude environment-gdb.scm
 @end example
 
+@item --manifest=@var{file}
+@itemx -m @var{file}
+Create an environment for the packages contained in the manifest object
+returned by the Scheme code in @var{file}.
+
+This is similar to the same-named option in @command{guix package}
+(@pxref{profile-manifest, @option{--manifest}}) and uses the same
+manifest files.
+
 @item --ad-hoc
 Include all specified packages in the resulting environment, as if an
 @i{ad hoc} package were defined with them as inputs.  This option is
