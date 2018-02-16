@@ -335,7 +335,6 @@ reading and editing of existing PDF files.")
                (base32
                 "0r4viisycj39kaz4281cmkr7n9w5q96dmlf7nf45n8zq8qy2npw3"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (propagated-inputs `(("girara" ,girara)))
     (inputs `(("libarchive" ,libarchive)
               ("zathura" ,zathura)))
     (build-system gnu-build-system)
@@ -365,7 +364,6 @@ using libarchive.")
                (base32
                 "1x4knqja8pw2a5cb3y2209nr3iddj1z8nwasy48v5nprj61fdxqj"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (propagated-inputs `(("girara" ,girara)))
     (inputs `(("libspectre" ,libspectre)
               ("zathura" ,zathura)))
     (build-system gnu-build-system)
@@ -395,7 +393,6 @@ using libspectre.")
                (base32
                 "1sbfdsyp50qc85xc4458sn4w1rv1qbygdwmcr5kjlfpsmdq98vhd"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (propagated-inputs `(("girara" ,girara)))
     (inputs
      `(("djvulibre" ,djvulibre)
        ("zathura" ,zathura)))
@@ -426,7 +423,6 @@ using the DjVuLibre library.")
                (base32
                 "0xkajc3is7ncmb2fmymbzfgrran2bz12i7zsm1vvxhxds728h7ck"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (propagated-inputs `(("girara" ,girara)))
     (inputs
      `(("jbig2dec" ,jbig2dec)
        ("libjpeg" ,libjpeg)
@@ -460,7 +456,6 @@ by using the @code{mupdf} rendering library.")
                (base32
                 "1m55m7s7f8ng8a7lmcw9z4n5zv7xk4vp9n6fp9j84z6rk2imf7a2"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (propagated-inputs `(("girara" ,girara)))
     (inputs
      `(("poppler" ,poppler)
        ("zathura" ,zathura)))
