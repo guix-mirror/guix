@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
@@ -178,7 +178,11 @@ and provides a \"top-like\" mode (monitoring).")
        ("guile" ,guile-2.2)))
     (inputs
      ;; ... and this is the one that appears in shebangs when cross-compiling.
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-2.2)
+
+       ;; The 'shepherd' command uses Readline when used interactively.  It's
+       ;; an unusual use case though, so we don't propagate it.
+       ("guile-readline" ,guile-readline)))
     (synopsis "System service manager")
     (description
      "The GNU Shepherd is a daemon-managing daemon, meaning that it supervises
