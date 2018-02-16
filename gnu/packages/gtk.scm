@@ -1251,7 +1251,7 @@ write GNOME applications.")
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
-                     ("xorg-server" ,xorg-server)))
+                     ("xorg-server" ,xorg-server-1.19.3)))
     ;; Listed in 'Requires.private' of 'girara.pc'.
     (propagated-inputs `(("gtk+" ,gtk+)))
     (arguments
@@ -1259,6 +1259,7 @@ write GNOME applications.")
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
          "COLOR=0" "CC=gcc")
        #:test-target "test"
+       #:disallowed-references (,xorg-server-1.19.3)
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (add-before 'check 'start-xserver

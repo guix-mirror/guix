@@ -498,7 +498,7 @@ by using the poppler rendering engine.")
 
                      ;; For tests.
                      ("check" ,check)
-                     ("xorg-server" ,xorg-server)))
+                     ("xorg-server" ,xorg-server-1.19.3)))
     (inputs `(("sqlite" ,sqlite)))
     ;; Listed in 'Requires.private' of 'zathura.pc'.
     (propagated-inputs `(("cairo" ,cairo)
@@ -513,6 +513,7 @@ by using the poppler rendering engine.")
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
          "CC=gcc" "COLOR=0")
        #:test-target "test"
+       #:disallowed-references (,xorg-server-1.19.3)
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (add-before 'check 'start-xserver
