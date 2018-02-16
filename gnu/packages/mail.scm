@@ -2142,14 +2142,14 @@ installation on systems where resources are limited.  Its features include:
 (define-public python2-django-mailman3
   (package
     (name "python2-django-mailman3")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-mailman3" version))
        (sha256
         (base32
-         "1adxyh8knw9knjlh73xq0jpn5adml0ck4alsv0swakm95wfyx46z"))))
+         "1xjdkgfjwhgyrp5nxw65dcpcsr98ygj6856sp0bwkrmyxpd1xxk2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
