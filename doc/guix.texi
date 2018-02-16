@@ -15938,6 +15938,10 @@ use the size of the processors cache line.
 @item @code{server-names-hash-bucket-max-size} (default: @code{#f})
 Maximum bucket size for the server names hash tables.
 
+@item @code{extra-content} (default: @code{""})
+Extra content for the @code{http} block.  Should be string or a string
+valued G-expression.
+
 @end table
 @end deffn
 
