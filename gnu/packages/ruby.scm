@@ -3418,6 +3418,13 @@ neither too verbose nor too minimal.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'check 'adjust-failing-test
+           (lambda _
+             ;; XXX: This test fails with SQLite versions >= 3.21.
+             ;; See <https://github.com/sparklemotion/sqlite3-ruby/issues/226>.
+             (substitute* "test/test_integration_resultset.rb"
+               (("\"integer\", \"text\"") "\"INTEGER\", \"text\""))
+             #t))
          (add-before 'check 'add-gemtest-file
            ;; This file exists in the repository but is not distributed.
            (lambda _ (zero? (system* "touch" ".gemtest")))))))
