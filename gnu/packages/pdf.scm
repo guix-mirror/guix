@@ -521,6 +521,11 @@ by using the poppler rendering engine.")
                       (let ((xorg-server (assoc-ref inputs "xorg-server"))
                             (display ":1"))
                         (setenv "DISPLAY" display)
+
+                        ;; On busy machines, tests may take longer than
+                        ;; the default of four seconds.
+                        (setenv "CK_DEFAULT_TIMEOUT" "20")
+
                         ;; Don't fail due to missing '/etc/machine-id'.
                         (setenv "DBUS_FATAL_WARNINGS" "0")
                         (zero? (system (string-append xorg-server "/bin/Xvfb "
