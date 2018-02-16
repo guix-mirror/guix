@@ -334,7 +334,7 @@ editor (without an X toolkit)" )
              #t)))))
     (inputs `(("guile" ,guile-2.0)))
     (native-inputs `(("emacs" ,emacs-minimal)))
-    (home-page "http://nongnu.org/geiser/")
+    (home-page "https://nongnu.org/geiser/")
     (synopsis "Collection of Emacs modes for Guile and Racket hacking")
     (description
      "Geiser is a collection of Emacs major and minor modes that conspire with
@@ -1026,7 +1026,7 @@ within a specified width.  It is useful for displaying long track titles.")
                  (symlink "bbdb-loaddefs.el" "bbdb-autoloads.el")))
              #t)))))
     (native-inputs `(("emacs" ,emacs-minimal)))
-    (home-page "http://savannah.nongnu.org/projects/bbdb/")
+    (home-page "https://savannah.nongnu.org/projects/bbdb/")
     (synopsis "Contact management utility for Emacs")
     (description
      "BBDB is the Insidious Big Brother Database for GNU Emacs.  It provides
@@ -4632,7 +4632,7 @@ extensibility.")
     ;; With `guix lint' the home-page URI returns a small page saying
     ;; that your browser does not handle frames. This triggers the "URI
     ;; returns suspiciously small file" warning.
-    (home-page "http://www.nongnu.org/m17n/")
+    (home-page "https://www.nongnu.org/m17n/")
     (synopsis "Multilingual text processing library (database)")
     (description "The m17n library realizes multilingualization of
 many aspects of applications.  The m17n library represents
@@ -4668,7 +4668,7 @@ This package contains the library database.")
     ;; With `guix lint' the home-page URI returns a small page saying
     ;; that your browser does not handle frames. This triggers the "URI
     ;; returns suspiciously small file" warning.
-    (home-page "http://www.nongnu.org/m17n/")
+    (home-page "https://www.nongnu.org/m17n/")
     (synopsis "Multilingual text processing library (runtime)")
     (description "The m17n library realizes multilingualization of
 many aspects of applications.  The m17n library represents

@@ -162,7 +162,7 @@ multiplayer games.")
    (license license:gpl2+)
    ;; (plus OpenSSL linking exception)
    ;; http://git.savannah.gnu.org/cgit/exosip.git/plain/LICENSE.OpenSSL
-    (home-page "http://savannah.nongnu.org/projects/exosip")))
+    (home-page "https://savannah.nongnu.org/projects/exosip")))
 
 (define-public sipwitch
   (package

@@ -444,7 +444,7 @@ resolution.")
     (build-system gnu-build-system)
     (propagated-inputs
      `(("freetype" ,freetype)))
-    (home-page "http://www.nongnu.org/m17n/")
+    (home-page "https://www.nongnu.org/m17n/")
     (synopsis "Library for handling OpenType Font")
     (description "This library can read Open Type Layout Tables from an OTF
 file.  Currently these tables are supported; head, name, cmap, GDEF, GSUB, and

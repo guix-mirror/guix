@@ -240,7 +240,7 @@ PCM data.")
               ("ncurses" ,ncurses)
               ("sdl" ,sdl)
               ("zlib" ,zlib)))
-    (home-page "http://www.nongnu.org/gzochi/")
+    (home-page "https://www.nongnu.org/gzochi/")
     (synopsis "Scalable middleware for multiplayer games")
     (description
      "gzochi is a framework for developing massively multiplayer online games.

@@ -61,7 +61,7 @@
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)))
-    (home-page "http://savannah.nongnu.org/projects/acl")
+    (home-page "https://savannah.nongnu.org/projects/acl")
     (synopsis
      "Library and tools for manipulating access control lists")
     (description

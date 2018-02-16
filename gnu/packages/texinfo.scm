@@ -165,7 +165,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
      ;; texi2html.pl to avoid the warnings seems non-trivial, so we simply
      ;; disable the tests.
      '(#:tests? #f))
-    (home-page "http://www.nongnu.org/texi2html/")
+    (home-page "https://www.nongnu.org/texi2html/")
     (synopsis "Convert Texinfo to HTML")
     (description
      "Texi2HTML is a Perl script which converts Texinfo source files to HTML

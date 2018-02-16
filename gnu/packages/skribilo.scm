@@ -77,7 +77,7 @@
     (propagated-inputs `(("guile-reader" ,guile2.0-reader)
                          ("guile-lib" ,guile2.0-lib)))
 
-    (home-page "http://www.nongnu.org/skribilo/")
+    (home-page "https://www.nongnu.org/skribilo/")
     (synopsis "Document production tool written in Guile Scheme")
     (description
      "Skribilo is a free document production tool that takes a structured

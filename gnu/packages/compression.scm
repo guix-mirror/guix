@@ -153,7 +153,7 @@ the @code{zlib} source.")
                "0iginbz2m15hcsa3x4y7v3mhk54gr1r7m3ghx0pg4n46vv2snmpi"))))
    (build-system gnu-build-system)
    (inputs `(("zlib" ,zlib)))
-   (home-page "http://savannah.nongnu.org/projects/fastjar")
+   (home-page "https://savannah.nongnu.org/projects/fastjar")
    (synopsis "Replacement for Sun's 'jar' utility")
    (description
     "FastJar is an attempt to create a much faster replacement for Sun's 'jar'
@@ -475,7 +475,7 @@ some compression ratio).")
               (base32
                "1p8lvc22sv3damld9ng8y6i8z2dvvpsbi9v7yhr5bc2a20m8iya7"))))
     (build-system gnu-build-system)
-    (home-page "http://www.nongnu.org/lzip/lzip.html")
+    (home-page "https://www.nongnu.org/lzip/lzip.html")
     (synopsis "Lossless data compressor based on the LZMA algorithm")
     (description
      "Lzip is a lossless data compressor with a user interface similar to the
@@ -496,7 +496,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
                (base32
                 "0fpnmdxayvd1ff0rk9606dvr431ji6b1v71km4ww244rih1rmmzz"))))
     (build-system gnu-build-system)
-    (home-page "http://www.nongnu.org/lzip/lziprecover.html")
+    (home-page "https://www.nongnu.org/lzip/lziprecover.html")
     (synopsis "Recover and decompress data from damaged lzip files")
     (description
      "Lziprecover is a data recovery tool and decompressor for files in the lzip
@@ -1890,7 +1890,7 @@ archive can be reverted.")
     (inputs
      `(("perl" ,perl)
        ("file" ,file)))
-    (home-page "http://www.nongnu.org/atool/")
+    (home-page "https://www.nongnu.org/atool/")
     (synopsis  "Universal tool to manage file archives of various types")
     (description "The main command is @command{aunpack} which extracts files
 from an archive.  The other commands provided are @command{apack} (to create
@@ -1971,7 +1971,7 @@ algorithms in Java.")
     (arguments
      `(#:configure-flags
        (list "CC=gcc")))
-    (home-page "http://www.nongnu.org/lzip/lunzip.html")
+    (home-page "https://www.nongnu.org/lzip/lunzip.html")
     (synopsis "Small, stand-alone lzip decompressor")
     (description
      "Lunzip is a decompressor for files in the lzip compression format (.lz),
@@ -1998,7 +1998,7 @@ Lunzip is intended to be fully compatible with the regular lzip package.")
     (arguments
      `(#:configure-flags
        (list "CC=gcc")))
-    (home-page "http://www.nongnu.org/lzip/clzip.html")
+    (home-page "https://www.nongnu.org/lzip/clzip.html")
     (synopsis "Small, stand-alone lzip compressor and decompressor")
     (description
      "Clzip is a compressor and decompressor for files in the lzip compression
@@ -2027,7 +2027,7 @@ Clzip is intended to be fully compatible with the regular lzip package.")
      `(#:configure-flags
        (list "CC=gcc"
              "--enable-shared")))       ; only static (.a) is built by default
-    (home-page "http://www.nongnu.org/lzip/lzlib.html")
+    (home-page "https://www.nongnu.org/lzip/lzlib.html")
     (synopsis "Lzip data compression C library")
     (description
      "Lzlib is a C library for in-memory LZMA compression and decompression in
@@ -2051,7 +2051,7 @@ corrupted input.")
     (build-system gnu-build-system)
     (inputs
      `(("lzlib" ,lzlib)))
-    (home-page "http://www.nongnu.org/lzip/plzip.html")
+    (home-page "https://www.nongnu.org/lzip/plzip.html")
     (synopsis "Parallel lossless data compressor for the lzip format")
     (description
      "Plzip is a massively parallel (multi-threaded) lossless data compressor

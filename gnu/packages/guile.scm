@@ -528,7 +528,7 @@ document syntax.
 Guile-Reader’s approach is similar to Common Lisp’s “read table”, but
 hopefully more powerful and flexible (for instance, one may instantiate as
 many readers as needed).")
-    (home-page "http://www.nongnu.org/guile-reader/")
+    (home-page "https://www.nongnu.org/guile-reader/")
     (license license:gpl3+)))
 
 (define-public guile2.0-reader
@@ -739,7 +739,7 @@ $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
              #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.2)))
-    (home-page "http://www.nongnu.org/guile-lib/")
+    (home-page "https://www.nongnu.org/guile-lib/")
     (synopsis "Collection of useful Guile Scheme modules")
     (description
      "Guile-Lib is intended as an accumulation place for pure-scheme Guile
@@ -782,7 +782,7 @@ for Guile\".")
                      (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
     (build-system gnu-build-system)
     (native-inputs `(("guile" ,guile-2.2)))
-    (home-page "http://savannah.nongnu.org/projects/guile-json/")
+    (home-page "https://savannah.nongnu.org/projects/guile-json/")
     (synopsis "JSON module for Guile")
     (description
      "Guile-JSON supports parsing and building JSON documents according to the
@@ -1290,7 +1290,7 @@ above command-line parameters.")
     (build-system gnu-build-system)
     (native-inputs
      `(("guile" ,guile-2.0)))
-    (home-page "http://savannah.nongnu.org/projects/guile-redis/")
+    (home-page "https://savannah.nongnu.org/projects/guile-redis/")
     (synopsis "Redis client library for Guile")
     (description "Guile-redis provides a Scheme interface to the Redis
 key-value cache and store.")
@@ -1460,7 +1460,7 @@ wrappers for inter-language calls.  It currently only supports generating Guile
 wrappers for C functions.  Given a definition of the types and prototypes for
 a given C interface, G-Wrap will automatically generate the C code that
 provides access to that interface and its types from the Scheme level.")
-    (home-page "http://www.nongnu.org/g-wrap/index.html")
+    (home-page "https://www.nongnu.org/g-wrap/index.html")
     (license license:lgpl2.1+)))
 
 (define-public guile-dbi

@@ -803,7 +803,7 @@ application suites.")
      `(("cairo" ,cairo)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.nongnu.org/guile-cairo/")
+    (home-page "https://www.nongnu.org/guile-cairo/")
     (synopsis "Cairo bindings for GNU Guile")
     (description
      "Guile-Cairo wraps the Cairo graphics library for Guile Scheme.

@@ -1427,7 +1427,7 @@ acts as an abstraction layer to the underlying Unix kernel and presents the
 Zserv API over a Unix or TCP stream to Quagga clients.  It is these Zserv
 clients which typically implement a routing protocol and communicate routing
 updates to the zebra daemon.")
-    (home-page "http://www.nongnu.org/quagga/")
+    (home-page "https://www.nongnu.org/quagga/")
     (license license:gpl2+)))
 
 (define-public thc-ipv6

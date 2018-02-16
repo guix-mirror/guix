@@ -71,7 +71,7 @@
     (native-inputs
      `(("gettext" ,gettext-minimal)))
 
-    (home-page "http://savannah.nongnu.org/projects/attr/")
+    (home-page "https://savannah.nongnu.org/projects/attr/")
     (synopsis "Library and tools for manipulating extended attributes")
     (description
      "Portable library and tools for manipulating extended attributes.")

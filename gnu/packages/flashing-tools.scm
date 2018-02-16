@@ -140,7 +140,7 @@ brick your device.")
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)))
-    (home-page "http://www.nongnu.org/avrdude/")
+    (home-page "https://www.nongnu.org/avrdude/")
     (synopsis "AVR downloader and uploader")
     (description
      "AVRDUDE is a utility to download/upload/manipulate the ROM and

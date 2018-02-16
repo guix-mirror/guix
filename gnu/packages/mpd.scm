@@ -332,5 +332,5 @@ interface for the Music Player Daemon.")
     (description "Sonata is an elegant graphical client for the Music Player
 Daemon (MPD).  It supports playlists, multiple profiles (connecting to different
 MPD servers, search and multimedia key support.")
-    (home-page "http://www.nongnu.org/sonata/")
+    (home-page "https://www.nongnu.org/sonata/")
     (license license:gpl3+)))
