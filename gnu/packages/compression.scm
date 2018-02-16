@@ -443,7 +443,7 @@ Python strings.")
 (define-public lzop
   (package
     (name "lzop")
-    (version "1.03")
+    (version "1.04")
     (source
      (origin
        (method url-fetch)
@@ -451,7 +451,7 @@ Python strings.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1jdjvc4yjndf7ihmlcsyln2rbnbaxa86q4jskmkmm7ylfy65nhn1"))))
+         "0h9gb8q7y54m9mvy3jvsmxf21yx8fc3ylzh418hgbbv0i8mbcwky"))))
     (build-system gnu-build-system)
     (inputs `(("lzo" ,lzo)))
     (home-page "http://www.lzop.org/")
