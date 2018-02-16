@@ -153,7 +153,7 @@ the @code{zlib} source.")
                "0iginbz2m15hcsa3x4y7v3mhk54gr1r7m3ghx0pg4n46vv2snmpi"))))
    (build-system gnu-build-system)
    (inputs `(("zlib" ,zlib)))
-   (home-page "http://savannah.nongnu.org/projects/fastjar")
+   (home-page "https://savannah.nongnu.org/projects/fastjar")
    (synopsis "Replacement for Sun's 'jar' utility")
    (description
     "FastJar is an attempt to create a much faster replacement for Sun's 'jar'
@@ -330,7 +330,7 @@ compatible with bzip2 – both at file format and command line level.")
 (define-public pbzip2
   (package
     (name "pbzip2")
-    (version "1.1.12")
+    (version "1.1.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://launchpad.net/pbzip2/"
@@ -338,14 +338,14 @@ compatible with bzip2 – both at file format and command line level.")
                                  "/+download/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1vk6065dv3a47p86vmp8hv3n1ygd9hraz0gq89gvzlx7lmcb6fsp"))))
+               "1rnvgcdixjzbrmcr1nv9b6ccrjfrhryaj7jwz28yxxv6lam3xlcg"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,bzip2)))
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))
+                  (delete 'configure))  ; no configure script
        #:make-flags (list (string-append "PREFIX=" %output))))
     (home-page "http://compression.ca/pbzip2/")
     (synopsis "Parallel bzip2 implementation")
@@ -452,7 +452,7 @@ Python strings.")
 (define-public lzop
   (package
     (name "lzop")
-    (version "1.03")
+    (version "1.04")
     (source
      (origin
        (method url-fetch)
@@ -460,10 +460,10 @@ Python strings.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1jdjvc4yjndf7ihmlcsyln2rbnbaxa86q4jskmkmm7ylfy65nhn1"))))
+         "0h9gb8q7y54m9mvy3jvsmxf21yx8fc3ylzh418hgbbv0i8mbcwky"))))
     (build-system gnu-build-system)
     (inputs `(("lzo" ,lzo)))
-    (home-page "http://www.lzop.org/")
+    (home-page "https://www.lzop.org/")
     (synopsis "Compress or expand files")
     (description
      "Lzop is a file compressor which is very similar to gzip.  Lzop uses the
@@ -484,7 +484,7 @@ some compression ratio).")
               (base32
                "1abbch762gv8rjr579q3qyyk6c80plklbv2mw4x0vg71dgsw9bgz"))))
     (build-system gnu-build-system)
-    (home-page "http://www.nongnu.org/lzip/lzip.html")
+    (home-page "https://www.nongnu.org/lzip/lzip.html")
     (synopsis "Lossless data compressor based on the LZMA algorithm")
     (description
      "Lzip is a lossless data compressor with a user interface similar to the
@@ -496,16 +496,16 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
 (define-public lziprecover
   (package
     (name "lziprecover")
-    (version "1.19")
+    (version "1.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/lzip/" name "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0z5fbkm0qprypjf7kxkqganniibj0zml13zvfkrchnjafcmmzyld"))))
+                "0fpnmdxayvd1ff0rk9606dvr431ji6b1v71km4ww244rih1rmmzz"))))
     (build-system gnu-build-system)
-    (home-page "http://www.nongnu.org/lzip/lziprecover.html")
+    (home-page "https://www.nongnu.org/lzip/lziprecover.html")
     (synopsis "Recover and decompress data from damaged lzip files")
     (description
      "Lziprecover is a data recovery tool and decompressor for files in the lzip
@@ -1899,7 +1899,7 @@ archive can be reverted.")
     (inputs
      `(("perl" ,perl)
        ("file" ,file)))
-    (home-page "http://www.nongnu.org/atool/")
+    (home-page "https://www.nongnu.org/atool/")
     (synopsis  "Universal tool to manage file archives of various types")
     (description "The main command is @command{aunpack} which extracts files
 from an archive.  The other commands provided are @command{apack} (to create
@@ -1980,7 +1980,7 @@ algorithms in Java.")
     (arguments
      `(#:configure-flags
        (list "CC=gcc")))
-    (home-page "http://www.nongnu.org/lzip/lunzip.html")
+    (home-page "https://www.nongnu.org/lzip/lunzip.html")
     (synopsis "Small, stand-alone lzip decompressor")
     (description
      "Lunzip is a decompressor for files in the lzip compression format (.lz),
@@ -1995,19 +1995,19 @@ Lunzip is intended to be fully compatible with the regular lzip package.")
 (define-public clzip
   (package
     (name "clzip")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/lzip/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "1brvsnpihzj81cf4wk2x5bnr2qldlq0wncpdbzxmzvxapm1cq2yc"))))
+        (base32 "03xcmhl3dya4jrwmsqh09ikimpb36fr3vkh2bwfzz1sbcns0cdg3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "CC=gcc")))
-    (home-page "http://www.nongnu.org/lzip/clzip.html")
+    (home-page "https://www.nongnu.org/lzip/clzip.html")
     (synopsis "Small, stand-alone lzip compressor and decompressor")
     (description
      "Clzip is a compressor and decompressor for files in the lzip compression
@@ -2021,14 +2021,14 @@ Clzip is intended to be fully compatible with the regular lzip package.")
 (define-public lzlib
   (package
     (name "lzlib")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/lzip/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "13mssf3hrcnmd4ijbqnxfk0zgj1q5lvpxxkm1hmrbl1h73czhwi4"))))
+        (base32 "0hqhnj2lzqacdbmmnpy91lsm1rd9zlngs1q6s9pyahsv1a0bfshx"))))
     (build-system gnu-build-system)
     ;; The included minilzip binary is only ~16 smaller than the ‘real’ lzip.
     ;; It's used during the test suite, but don't be tempted to install it.
@@ -2036,7 +2036,7 @@ Clzip is intended to be fully compatible with the regular lzip package.")
      `(#:configure-flags
        (list "CC=gcc"
              "--enable-shared")))       ; only static (.a) is built by default
-    (home-page "http://www.nongnu.org/lzip/lzlib.html")
+    (home-page "https://www.nongnu.org/lzip/lzlib.html")
     (synopsis "Lzip data compression C library")
     (description
      "Lzlib is a C library for in-memory LZMA compression and decompression in
@@ -2049,18 +2049,18 @@ corrupted input.")
 (define-public plzip
   (package
     (name "plzip")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/lzip/"
                            name "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "0z2cs6vn4xl65wakd013xl3sdfpg8dr0cvcjwc2slh8y9bz7j7ax"))))
+        (base32 "1dzjp9r7krwpsn224bhcqbzd5aj5b4556sdi9yzl2bzbk3fjrqlm"))))
     (build-system gnu-build-system)
     (inputs
      `(("lzlib" ,lzlib)))
-    (home-page "http://www.nongnu.org/lzip/plzip.html")
+    (home-page "https://www.nongnu.org/lzip/plzip.html")
     (synopsis "Parallel lossless data compressor for the lzip format")
     (description
      "Plzip is a massively parallel (multi-threaded) lossless data compressor

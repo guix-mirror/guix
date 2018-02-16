@@ -6190,7 +6190,7 @@ the system under test at the same time.")
 (define-public java-fasterxml-jackson-annotations
   (package
     (name "java-fasterxml-jackson-annotations")
-    (version "2.9.2")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6198,7 +6198,7 @@ the system under test at the same time.")
                                   "jackson-annotations-" version ".tar.gz"))
               (sha256
                (base32
-                "0b4wdxjxfbl3gkilylfdbl7fzimfpyih676jiwdf19i4056j8lqw"))))
+                "0mr95xd0da6a4g95zvrl1ryk5n5zv2rc696w3xnsr5hxk2gicfc4"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-annotations.jar"
@@ -6216,7 +6216,7 @@ not included are ones that require dependency to the Databind package.")
 (define-public java-fasterxml-jackson-core
   (package
     (name "java-fasterxml-jackson-core")
-    (version "2.9.2")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6224,7 +6224,7 @@ not included are ones that require dependency to the Databind package.")
                                   "jackson-core-" version ".tar.gz"))
               (sha256
                (base32
-                "0q2d6qnylyxj5jh0sam1b095b5486f7ipzhxgwcgbm254ls7fqc1"))))
+                "159hsnk17jr1gyzkf01cxvsn45srnk37g949r7364qlsr527gjgd"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-core.jar"
@@ -6273,7 +6273,7 @@ not included are ones that require dependency to the Databind package.")
 (define-public java-fasterxml-jackson-databind
   (package
     (name "java-fasterxml-jackson-databind")
-    (version "2.9.2")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6281,7 +6281,7 @@ not included are ones that require dependency to the Databind package.")
                                   "jackson-databind-" version ".tar.gz"))
               (sha256
                (base32
-                "1d5ns8ypqhdy8d94i8q560ip9kka6q8lhnk6q7nfh2g9mr22cc4w"))))
+                "1zd2cw4z6kdkbx8za96xh9pyicv2a2l7y0rkcx2fqd8hv6d47s08"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-databind.jar"
@@ -6316,7 +6316,7 @@ configuration.")
 (define-public java-fasterxml-jackson-modules-base-jaxb
   (package
     (name "java-fasterxml-jackson-modules-base-jaxb")
-    (version "2.9.2")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6324,7 +6324,7 @@ configuration.")
                                   "jackson-modules-base-" version ".tar.gz"))
               (sha256
                (base32
-                "0kc19n5a188g4vpyay44xfb7qcabcbfnwzhx1g84lg0sac8lf0ng"))))
+                "1wws95xi8sppp6b0k2vvjdjyynl20r1a4dwrhai08lzlria6blp5"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-modules-base-jaxb.jar"
@@ -6386,7 +6386,7 @@ configuration.")
 (define-public java-fasterxml-jackson-dataformat-yaml
   (package
     (name "java-fasterxml-jackson-dataformat-yaml")
-    (version "2.9.2")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6394,7 +6394,7 @@ configuration.")
                                   "jackson-dataformats-text-" version ".tar.gz"))
               (sha256
                (base32
-                "1x7c7v201jpb8ynjsmmq7jj7hyqzzp39jvpr053ggdndm022yzc7"))))
+                "1hikl06khaxbg439avf442qifcadap8w0lx13f0nnhp2vh3dkbz7"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-dataformat-yaml.jar"
@@ -6495,7 +6495,7 @@ interface and high-performance Typed Access API.")
 (define-public java-fasterxml-jackson-dataformat-xml
   (package
     (name "java-fasterxml-jackson-dataformat-xml")
-    (version "2.9.2")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/FasterXML/"
@@ -6503,7 +6503,7 @@ interface and high-performance Typed Access API.")
                                   "jackson-dataformat-xml-" version ".tar.gz"))
               (sha256
                (base32
-                "1j1qanvcdh6afagr67zqrlypjkf0n6wr1qzpbvkw79lii72j6pbr"))))
+                "111fkkl90w31jbf30kgj82qdcxlw4sxppki7i198liw0ck1jcavq"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jackson-dataformat-xml.jar"

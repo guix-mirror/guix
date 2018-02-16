@@ -79,4 +79,23 @@
          (equal? (origin-sha256 (package-source pkg))
                  (base32 "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i")))))
 
+(test-equal "alist->package with false license"  ;<https://bugs.gnu.org/30470>
+  'license-is-false
+  (let* ((meta '(("name" . "hello")
+                 ("version" . "2.10")
+                 ("source" . (("method" . "url-fetch")
+                              ("uri"    . "mirror://gnu/hello/hello-2.10.tar.gz")
+                              ("sha256" .
+                               (("base32" .
+                                 "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i")))))
+                 ("build-system" . "gnu")
+                 ("home-page" . "https://gnu.org")
+                 ("synopsis" . "Say hi")
+                 ("description" . "This package says hi.")
+                 ("license" . #f))))
+    ;; Note: Use 'or' because comparing with #f otherwise succeeds when
+    ;; there's an exception instead of an actual #f.
+    (or (package-license (alist->package meta))
+        'license-is-false)))
+
 (test-end "import-utils")

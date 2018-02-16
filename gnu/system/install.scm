@@ -381,14 +381,6 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                      nvi                          ;:wq!
                      %base-packages))))
 
-(define* (agetty-default-service #:optional (tty "ttyS0"))
-  "Return an agetty-service on the given TTY"
-  (agetty-service (agetty-configuration
-                   (extra-options '("-L"))
-                   (baud-rate "115200")
-                   (term "vt100")
-                   (tty tty))))
-
 (define* (embedded-installation-os bootloader bootloader-target tty
                                    #:key (extra-modules '()))
   "Return an installation os for embedded systems.
@@ -401,12 +393,13 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
                  (bootloader bootloader)
                  (target bootloader-target)))
     (kernel linux-libre)
+    (kernel-arguments
+     (cons (string-append "console=" tty)
+           (operating-system-user-kernel-arguments installation-os)))
     (initrd (lambda (fs . rest)
               (apply base-initrd fs
                      #:extra-modules extra-modules
-                     rest)))
-    (services (cons* (agetty-default-service tty)
-                     (operating-system-user-services installation-os)))))
+                     rest)))))
 
 (define beaglebone-black-installation-os
   (embedded-installation-os u-boot-beaglebone-black-bootloader

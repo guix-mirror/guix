@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
-;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -153,7 +153,9 @@
             php-fpm-on-demand-process-manager-configuration-process-idle-timeout
 
             php-fpm-service-type
-            nginx-php-location))
+            nginx-php-location
+
+            cat-avatar-generator-service))
 
 ;;; Commentary:
 ;;;
@@ -870,3 +872,24 @@ a webserver.")
           (string-append "fastcgi_pass unix:" socket ";")
           "fastcgi_index index.php;"
           (list "include " nginx-package "/share/nginx/conf/fastcgi.conf;")))))
+
+(define* (cat-avatar-generator-service
+          #:key
+          (cache-dir "/var/cache/cat-avatar-generator")
+          (package cat-avatar-generator)
+          (configuration (nginx-server-configuration)))
+  (simple-service
+    'cat-http-server nginx-service-type
+    (list (nginx-server-configuration
+            (inherit configuration)
+            (locations
+              (cons
+                (let ((base (nginx-php-location)))
+                  (nginx-location-configuration
+                    (inherit base)
+                    (body (list (string-append "fastcgi_param CACHE_DIR \""
+                                               cache-dir "\";")
+                                (nginx-location-configuration-body base)))))
+                (nginx-server-configuration-locations configuration)))
+            (root #~(string-append #$package
+                                   "/share/web/cat-avatar-generator"))))))

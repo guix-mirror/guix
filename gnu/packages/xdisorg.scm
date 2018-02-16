@@ -722,7 +722,7 @@ transparent text on your screen.")
     (inputs
      `(("libx11" ,libx11)
        ("guile" ,guile-2.0)))
-    (home-page "http://www.nongnu.org/xbindkeys/")
+    (home-page "https://www.nongnu.org/xbindkeys/")
     (synopsis "Associate a combination of keys with a shell command")
     (description
      "XBindKeys is a program that allows you to launch shell commands with

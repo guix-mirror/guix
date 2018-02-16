@@ -187,8 +187,8 @@ their dependencies.")
       (license l:gpl3+))))
 
 (define-public cuirass
-  (let ((commit "9cfea9fe2e3ca6a3d1b832a6ec217426ec973c93")
-        (revision "10"))
+  (let ((commit "4ab2f2c3f084ffd9d0f77134cc1af0f8cf0e13be")
+        (revision "12"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -200,7 +200,7 @@ their dependencies.")
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "177klidmsw12kjk9dzawc0bqcwqlplgx45m87qpgjfx3cnk28i2b"))))
+                  "1r97z5lkzg6vx014rfmv1pp3x3bl1shb6wkcgnlncwqf56a9bzi1"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -231,6 +231,7 @@ their dependencies.")
                       (sqlite (assoc-ref inputs "guile-sqlite3"))
                       (git    (assoc-ref inputs "guile-git"))
                       (bytes  (assoc-ref inputs "guile-bytestructures"))
+                      (fibers (assoc-ref inputs "guile-fibers"))
                       (guix   (assoc-ref inputs "guix"))
                       (guile  (assoc-ref %build-inputs "guile"))
                       (effective (read-line
@@ -245,6 +246,8 @@ their dependencies.")
                                              effective ":"
                                              sqlite "/share/guile/site/"
                                              effective ":"
+                                             fibers "/share/guile/site/"
+                                             effective ":"
                                              guix "/share/guile/site/"
                                              effective)))
                  ;; Make sure 'cuirass' can find the 'evaluate' command, as
@@ -256,6 +259,7 @@ their dependencies.")
                  #t))))))
       (inputs
        `(("guile" ,guile-2.2)
+         ("guile-fibers" ,guile-fibers)
          ("guile-json" ,guile-json)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-git" ,guile-git)

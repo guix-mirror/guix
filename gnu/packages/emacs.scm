@@ -335,7 +335,7 @@ editor (without an X toolkit)" )
              #t)))))
     (inputs `(("guile" ,guile-2.0)))
     (native-inputs `(("emacs" ,emacs-minimal)))
-    (home-page "http://nongnu.org/geiser/")
+    (home-page "https://nongnu.org/geiser/")
     (synopsis "Collection of Emacs modes for Guile and Racket hacking")
     (description
      "Geiser is a collection of Emacs major and minor modes that conspire with
@@ -1027,7 +1027,7 @@ within a specified width.  It is useful for displaying long track titles.")
                  (symlink "bbdb-loaddefs.el" "bbdb-autoloads.el")))
              #t)))))
     (native-inputs `(("emacs" ,emacs-minimal)))
-    (home-page "http://savannah.nongnu.org/projects/bbdb/")
+    (home-page "https://savannah.nongnu.org/projects/bbdb/")
     (synopsis "Contact management utility for Emacs")
     (description
      "BBDB is the Insidious Big Brother Database for GNU Emacs.  It provides
@@ -4633,7 +4633,7 @@ extensibility.")
     ;; With `guix lint' the home-page URI returns a small page saying
     ;; that your browser does not handle frames. This triggers the "URI
     ;; returns suspiciously small file" warning.
-    (home-page "http://www.nongnu.org/m17n/")
+    (home-page "https://www.nongnu.org/m17n/")
     (synopsis "Multilingual text processing library (database)")
     (description "The m17n library realizes multilingualization of
 many aspects of applications.  The m17n library represents
@@ -4669,7 +4669,7 @@ This package contains the library database.")
     ;; With `guix lint' the home-page URI returns a small page saying
     ;; that your browser does not handle frames. This triggers the "URI
     ;; returns suspiciously small file" warning.
-    (home-page "http://www.nongnu.org/m17n/")
+    (home-page "https://www.nongnu.org/m17n/")
     (synopsis "Multilingual text processing library (runtime)")
     (description "The m17n library realizes multilingualization of
 many aspects of applications.  The m17n library represents
@@ -7059,3 +7059,91 @@ navigation with the grails mode.")
 @code{org-tree-slide-mode} to enter the slideshow mode, and then @kbd{C->} and
 @kbd{C-<} to jump to the next and previous slide.")
       (license license:gpl3+))))
+
+(define-public emacs-scratch-el
+  (let ((commit "2cdf2b841ce7a0987093f65b0cc431947549f897")
+        (revision "1"))
+    (package
+      (name "emacs-scratch-el")
+      (version (git-version "1.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ieure/scratch-el.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0wscsndynjmnliajqaz28r1ww81j8wh84zwaaswx51abhwgl0idf"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("texinfo" ,texinfo)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (unless (invoke "makeinfo" "scratch.texi")
+                 (error "makeinfo failed"))
+               (install-file "scratch.info"
+                             (string-append (assoc-ref outputs "out")
+                                            "/share/info"))
+               #t)))))
+      (home-page "https://github.com/ieure/scratch-el/")
+      (synopsis "Create scratch buffers with the same mode as current buffer")
+      (description "Scratch is an extension to Emacs that enables one to create
+scratch buffers that are in the same mode as the current buffer.  This is
+notably useful when working on code in some language; you may grab code into a
+scratch buffer, and, by virtue of this extension, do so using the Emacs
+formatting rules for that language.")
+      (license license:bsd-2))))
+
+(define-public epipe
+  (package
+    (name "epipe")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cute-jumper/epipe/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05a036852g4j63k1mhvyfrcsgkl9lczayi7x61570ysw3cli5wp5"))))
+    (build-system trivial-build-system)
+    (inputs
+     `(("bash" ,bash)
+       ("perl" ,perl)))
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)))
+    (arguments
+     `(#:modules
+       ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         ;; Extract source
+         (setenv "PATH" (string-append
+                         (assoc-ref %build-inputs "tar") "/bin" ":"
+                         (assoc-ref %build-inputs "gzip") "/bin"))
+         (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+         (chdir (string-append ,name "-" ,version))
+         ;; Patch shebangs
+         (substitute* "epipe"
+           (("/usr/bin/env bash")
+            (string-append (assoc-ref %build-inputs "bash") "/bin/bash")))
+         (patch-shebang "epipe.pl"
+                        (list (string-append (assoc-ref %build-inputs "perl")
+                                             "/bin")))
+         ;; Installation
+         (for-each (lambda (file)
+                     (install-file file (string-append %output "/bin")))
+                   '("epipe" "epipe.pl"))
+         #t)))
+    (home-page "https://github.com/cute-jumper/epipe")
+    (synopsis "Pipe to the @code{emacsclient}")
+    (description "@code{epipe} provides an utility to use your editor in
+the pipeline, featuring the support for running @code{emacsclient}.")
+    (license license:gpl3+)))

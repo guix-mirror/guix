@@ -165,6 +165,12 @@ and freshness without requiring additional information from the user.")
              (sha256
               (base32
                "196mkfax5y3yqm3gz7jhqhnkjwrvr2m4a8nc9k41l0511ldzsk9x"))))))
+
+      (properties
+       ;; Some of the tests take a very long time on ARMv7.  See
+       ;; <https://lists.gnu.org/archive/html/guix-devel/2018-02/msg00312.html>.
+       `((max-silent-time . ,(* 3600 3))))
+
       (home-page "http://wiki.dlang.org/LDC")
       (synopsis "LLVM compiler for the D programming language")
       (description

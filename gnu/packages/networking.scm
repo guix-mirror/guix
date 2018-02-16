@@ -1403,14 +1403,14 @@ does not use SSH and requires a pre-shared symmetric key.")
 (define-public quagga
   (package
     (name "quagga")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/quagga/quagga-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0c99rjjc62xl5kwvx2pwyvs0709vbwax1qydqbqf6r7fpvr24bjj"))
+                "0cddxip9gd579parx64n6d7iq937ikrb8qxgvjxjm406l43hjb7f"))
               (patches
                (search-patches "quagga-reproducible-build.patch"))))
     (build-system gnu-build-system)
@@ -1428,7 +1428,7 @@ acts as an abstraction layer to the underlying Unix kernel and presents the
 Zserv API over a Unix or TCP stream to Quagga clients.  It is these Zserv
 clients which typically implement a routing protocol and communicate routing
 updates to the zebra daemon.")
-    (home-page "http://www.nongnu.org/quagga/")
+    (home-page "https://www.nongnu.org/quagga/")
     (license license:gpl2+)))
 
 (define-public thc-ipv6

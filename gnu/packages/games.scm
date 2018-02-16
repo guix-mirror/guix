@@ -4726,7 +4726,7 @@ The Flag.  You can even design your own maps!")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("imagemagick" ,imagemagick)))
-    (home-page "http://www.nongnu.org/enigma")
+    (home-page "https://www.nongnu.org/enigma")
     (synopsis "Puzzle game with a dexterity component")
     (description "Enigma is a puzzle game with 550 unique levels.  The object
 of the game is to find and uncover pairs of identically colored ‘Oxyd’ stones.

@@ -240,7 +240,7 @@ PCM data.")
               ("ncurses" ,ncurses)
               ("sdl" ,sdl)
               ("zlib" ,zlib)))
-    (home-page "http://www.nongnu.org/gzochi/")
+    (home-page "https://www.nongnu.org/gzochi/")
     (synopsis "Scalable middleware for multiplayer games")
     (description
      "gzochi is a framework for developing massively multiplayer online games.
@@ -386,7 +386,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -394,7 +394,7 @@ support.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "102vw13iw1kbjj6h2sm8gl1jfvmqgq0zddd6hdmqagza5b6w32k3"))))
+                "0l4wc10d10fi0a5spbi318kjfzlizmycpr4wwlq04sk3b5kra0w0"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)

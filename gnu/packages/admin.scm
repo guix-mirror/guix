@@ -1184,7 +1184,7 @@ network, which causes enabled computers to power on.")
        #:tests? #f                                ; no 'check' target
        #:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out")))))
-    (home-page "http://www.nongnu.org/dmidecode/")
+    (home-page "https://www.nongnu.org/dmidecode/")
     (synopsis "Read hardware information from the BIOS")
     (description
      "Dmidecode reports information about your system's hardware as described

@@ -817,7 +817,7 @@ the message of the day, among other things."
   agetty-configuration?
   (agetty           agetty-configuration-agetty   ;<package>
                     (default util-linux))
-  (tty              agetty-configuration-tty)     ;string
+  (tty              agetty-configuration-tty)     ;string | #f
   (term             agetty-term                   ;string | #f
                     (default #f))
   (baud-rate        agetty-baud-rate              ;string | #f
@@ -890,6 +890,40 @@ the message of the day, among other things."
 ;;;                 (default #f))
   )
 
+(define (default-serial-port)
+  "Return a gexp that determines a reasonable default serial port
+to use as the tty.  This is primarily useful for headless systems."
+  #~(begin
+      ;; console=device,options
+      ;; device: can be tty0, ttyS0, lp0, ttyUSB0 (serial).
+      ;; options: BBBBPNF. P n|o|e, N number of bits,
+      ;; F flow control (r RTS)
+      (let* ((not-comma (char-set-complement (char-set #\,)))
+             (command (linux-command-line))
+             (agetty-specs (find-long-options "agetty.tty" command))
+             (console-specs (filter (lambda (spec)
+                                     (and (string-prefix? "tty" spec)
+                                          (not (or
+                                                (string-prefix? "tty0" spec)
+                                                (string-prefix? "tty1" spec)
+                                                (string-prefix? "tty2" spec)
+                                                (string-prefix? "tty3" spec)
+                                                (string-prefix? "tty4" spec)
+                                                (string-prefix? "tty5" spec)
+                                                (string-prefix? "tty6" spec)
+                                                (string-prefix? "tty7" spec)
+                                                (string-prefix? "tty8" spec)
+                                                (string-prefix? "tty9" spec)))))
+                                    (find-long-options "console" command)))
+             (specs (append agetty-specs console-specs)))
+        (match specs
+         (() #f)
+         ((spec _ ...)
+          ;; Extract device name from first spec.
+          (match (string-tokenize spec not-comma)
+           ((device-name _ ...)
+            device-name)))))))
+
 (define agetty-shepherd-service
   (match-lambda
     (($ <agetty-configuration> agetty tty term baud-rate auto-login
@@ -900,8 +934,9 @@ the message of the day, among other things."
         erase-characters kill-characters chdir delay nice extra-options)
      (list
        (shepherd-service
+         (modules '((ice-9 match) (gnu build linux-boot)))
          (documentation "Run agetty on a tty.")
-         (provision (list (symbol-append 'term- (string->symbol tty))))
+         (provision (list (symbol-append 'term- (string->symbol (or tty "auto")))))
 
          ;; Since the login prompt shows the host name, wait for the 'host-name'
          ;; service to be done.  Also wait for udev essentially so that the tty
@@ -909,113 +944,119 @@ the message of the day, among other things."
          ;; mingetty-shepherd-service).
          (requirement '(user-processes host-name udev))
 
-         (start #~(make-forkexec-constructor
-                    (list #$(file-append util-linux "/sbin/agetty")
-                          #$@extra-options
-                          #$@(if eight-bits?
-                                 #~("--8bits")
-                                 #~())
-                          #$@(if no-reset?
-                                 #~("--noreset")
-                                 #~())
-                          #$@(if remote?
-                                 #~("--remote")
-                                 #~())
-                          #$@(if flow-control?
-                                 #~("--flow-control")
-                                 #~())
-                          #$@(if host
-                                 #~("--host" #$host)
-                                 #~())
-                          #$@(if no-issue?
-                                 #~("--noissue")
-                                 #~())
-                          #$@(if init-string
-                                 #~("--init-string" #$init-string)
-                                 #~())
-                          #$@(if no-clear?
-                                 #~("--noclear")
-                                 #~())
+         (start #~(let ((tty #$(default-serial-port)))
+                    (if tty
+                        (make-forkexec-constructor
+                         (list #$(file-append util-linux "/sbin/agetty")
+                               #$@extra-options
+                               #$@(if eight-bits?
+                                      #~("--8bits")
+                                      #~())
+                               #$@(if no-reset?
+                                      #~("--noreset")
+                                      #~())
+                               #$@(if remote?
+                                      #~("--remote")
+                                      #~())
+                               #$@(if flow-control?
+                                      #~("--flow-control")
+                                      #~())
+                               #$@(if host
+                                      #~("--host" #$host)
+                                      #~())
+                               #$@(if no-issue?
+                                      #~("--noissue")
+                                      #~())
+                               #$@(if init-string
+                                      #~("--init-string" #$init-string)
+                                      #~())
+                               #$@(if no-clear?
+                                      #~("--noclear")
+                                      #~())
 ;;; FIXME This doesn't work as expected. According to agetty(8), if this option
 ;;; is not passed, then the default is 'auto'. However, in my tests, when that
 ;;; option is selected, agetty never presents the login prompt, and the
 ;;; term-ttyS0 service respawns every few seconds.
-                          #$@(if local-line
-                                 #~(#$(match local-line
-                                        ('auto "--local-line=auto")
-                                        ('always "--local-line=always")
-                                        ('never "-local-line=never")))
-                                 #~())
-                          #$@(if extract-baud?
-                                 #~("--extract-baud")
-                                 #~())
-                          #$@(if skip-login?
-                                 #~("--skip-login")
-                                 #~())
-                          #$@(if no-newline?
-                                 #~("--nonewline")
-                                 #~())
-                          #$@(if login-options
-                                 #~("--login-options" #$login-options)
-                                 #~())
-                          #$@(if chroot
-                                 #~("--chroot" #$chroot)
-                                 #~())
-                          #$@(if hangup?
-                                 #~("--hangup")
-                                 #~())
-                          #$@(if keep-baud?
-                                 #~("--keep-baud")
-                                 #~())
-                          #$@(if timeout
-                                 #~("--timeout" #$(number->string timeout))
-                                 #~())
-                          #$@(if detect-case?
-                                 #~("--detect-case")
-                                 #~())
-                          #$@(if wait-cr?
-                                 #~("--wait-cr")
-                                 #~())
-                          #$@(if no-hints?
-                                 #~("--nohints?")
-                                 #~())
-                          #$@(if no-hostname?
-                                 #~("--nohostname")
-                                 #~())
-                          #$@(if long-hostname?
-                                 #~("--long-hostname")
-                                 #~())
-                          #$@(if erase-characters
-                                 #~("--erase-chars" #$erase-characters)
-                                 #~())
-                          #$@(if kill-characters
-                                 #~("--kill-chars" #$kill-characters)
-                                 #~())
-                          #$@(if chdir
-                                 #~("--chdir" #$chdir)
-                                 #~())
-                          #$@(if delay
-                                 #~("--delay" #$(number->string delay))
-                                 #~())
-                          #$@(if nice
-                                 #~("--nice" #$(number->string nice))
-                                 #~())
-                          #$@(if auto-login
-                                 (list "--autologin" auto-login)
-                                 '())
-                          #$@(if login-program
-                                 #~("--login-program" #$login-program)
-                                 #~())
-                          #$@(if login-pause?
-                                 #~("--login-pause")
-                                 #~())
-                          #$tty
-                          #$@(if baud-rate
-                                 #~(#$baud-rate)
-                                 #~())
-                          #$@(if term
-                                 #~(#$term)
-                                 #~()))))
+                               #$@(if local-line
+                                      #~(#$(match local-line
+                                             ('auto "--local-line=auto")
+                                             ('always "--local-line=always")
+                                             ('never "-local-line=never")))
+                                      #~())
+                               #$@(if tty
+                                      #~()
+                                      #~("--keep-baud"))
+                               #$@(if extract-baud?
+                                      #~("--extract-baud")
+                                      #~())
+                               #$@(if skip-login?
+                                      #~("--skip-login")
+                                      #~())
+                               #$@(if no-newline?
+                                      #~("--nonewline")
+                                      #~())
+                               #$@(if login-options
+                                      #~("--login-options" #$login-options)
+                                      #~())
+                               #$@(if chroot
+                                      #~("--chroot" #$chroot)
+                                      #~())
+                               #$@(if hangup?
+                                      #~("--hangup")
+                                      #~())
+                               #$@(if keep-baud?
+                                      #~("--keep-baud")
+                                      #~())
+                               #$@(if timeout
+                                      #~("--timeout" #$(number->string timeout))
+                                      #~())
+                               #$@(if detect-case?
+                                      #~("--detect-case")
+                                      #~())
+                               #$@(if wait-cr?
+                                      #~("--wait-cr")
+                                      #~())
+                               #$@(if no-hints?
+                                      #~("--nohints?")
+                                      #~())
+                               #$@(if no-hostname?
+                                      #~("--nohostname")
+                                      #~())
+                               #$@(if long-hostname?
+                                      #~("--long-hostname")
+                                      #~())
+                               #$@(if erase-characters
+                                      #~("--erase-chars" #$erase-characters)
+                                      #~())
+                               #$@(if kill-characters
+                                      #~("--kill-chars" #$kill-characters)
+                                      #~())
+                               #$@(if chdir
+                                      #~("--chdir" #$chdir)
+                                      #~())
+                               #$@(if delay
+                                      #~("--delay" #$(number->string delay))
+                                      #~())
+                               #$@(if nice
+                                      #~("--nice" #$(number->string nice))
+                                      #~())
+                               #$@(if auto-login
+                                      (list "--autologin" auto-login)
+                                      '())
+                               #$@(if login-program
+                                      #~("--login-program" #$login-program)
+                                      #~())
+                               #$@(if login-pause?
+                                      #~("--login-pause")
+                                      #~())
+                               #$(or tty (default-serial-port))
+                               #$@(if baud-rate
+                                      #~(#$baud-rate)
+                                      #~())
+                               #$@(if term
+                                      #~(#$term)
+                                      #~()))))
+                        (const #f))) ; never start.
          (stop #~(make-kill-destructor)))))))
 
 (define agetty-service-type
@@ -2011,6 +2052,11 @@ This service is not part of @var{%base-services}."
                  (map (lambda (tty)
                         (cons tty %default-console-font))
                       '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
+
+        (agetty-service (agetty-configuration
+                         (extra-options '("-L")) ; no carrier detect
+                         (term "vt100")
+                         (tty #f))) ; automatic
 
         (mingetty-service (mingetty-configuration
                            (tty "tty1")))

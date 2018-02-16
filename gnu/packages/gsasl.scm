@@ -46,7 +46,7 @@
     (description
      "Libntlm is a library that implements NTLM authentication.")
     (license license:lgpl2.1+)
-    (home-page "http://www.nongnu.org/libntlm/")))
+    (home-page "https://www.nongnu.org/libntlm/")))
 
 (define-public gss
   (package

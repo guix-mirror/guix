@@ -583,7 +583,7 @@ data on your platform, so the seed itself will be as random as possible.
 (define-public crypto++
   (package
     (name "crypto++")
-    (version "5.6.5")
+    (version "6.0.0")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://cryptopp.com/cryptopp"
@@ -591,9 +591,7 @@ data on your platform, so the seed itself will be as random as possible.
                                   ".zip"))
               (sha256
                (base32
-                "0d1cqdz369ivi082k59025wvxzywvkizw7i0pf5h0a1izs3g8pm7"))
-              (patches
-               (search-patches "crypto++-fix-dos-in-asn.1-decoders.patch"))))
+                "1nidm6xbdza5cbgf5md2zznmaq692rfyjasycwipl6rzdfwjvb34"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

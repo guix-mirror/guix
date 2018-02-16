@@ -358,7 +358,7 @@ errors.")
     (arguments
      `(#:python ,python-2
        #:tests? #f))
-    (home-page "http://www.nongnu.org/rdiff-backup/")
+    (home-page "https://www.nongnu.org/rdiff-backup/")
     (synopsis "Local/remote mirroring+incremental backup")
     (description
      "Rdiff-backup backs up one directory to another, possibly over a network.
@@ -438,7 +438,7 @@ rsnapshot uses hard links to deduplicate identical files.")
        ("lzo" ,lzo)
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)))
-    (home-page "http://nongnu.org/libchop/")
+    (home-page "https://nongnu.org/libchop/")
     (synopsis "Tools & library for data backup and distributed storage")
     (description
      "Libchop is a set of utilities and library for data backup and

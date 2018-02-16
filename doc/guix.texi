@@ -2841,6 +2841,19 @@ This has the same purpose as the same-named option in @command{guix
 build} (@pxref{Additional Build Options, @code{--expression} in
 @command{guix build}}).
 
+@item --manifest=@var{file}
+@itemx -m @var{file}
+Use the packages contained in the manifest object returned by the Scheme
+code in @var{file}.
+
+This has a similar purpose as the same-named option in @command{guix
+package} (@pxref{profile-manifest, @option{--manifest}}) and uses the
+same manifest files.  It allows you to define a collection of packages
+once and use it both for creating profiles and for creating archives
+for use on machines that do not have Guix installed.  Note that you can
+specify @emph{either} a manifest file @emph{or} a list of packages,
+but not both.
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
@@ -9724,7 +9737,20 @@ man page for more information.
 
 @item @code{tty}
 The name of the console this agetty runs on, as a string---e.g.,
-@code{"ttyS0"}. This argument is mandatory.
+@code{"ttyS0"}. This argument is optional, it will default to
+a reasonable default serial port used by the kernel Linux.
+
+For this, if there is a value for an option @code{agetty.tty} in the kernel
+command line, agetty will extract the device name of the serial port
+from it and use that.
+
+If not and if there is a value for an option @code{console} with a tty in
+the Linux command line, agetty will extract the device name of the
+serial port from it and use that.
+
+In both cases, agetty will leave the other serial device settings
+(baud rate etc.) alone---in the hope that Linux pinned them to the
+correct values.
 
 @item @code{baud-rate} (default: @code{#f})
 A string containing a comma-separated list of one or more baud rates, in
@@ -15638,6 +15664,31 @@ A simple services setup for nginx with php can look like this:
                            (https-port #f)
                            (ssl-certificate #f)
                            (ssl-certificate-key #f)))
+                 %base-services))
+@end example
+
+@cindex cat-avatar-generator
+The cat avatar generator is a simple service to demonstrate the use of php-fpm
+in @code{Nginx}.  It is used to generate cat avatar from a seed, for instance
+the hash of a user's email address.
+
+@deffn {Scheme Procedure} cat-avatar-generator-serice @
+       [#:cache-dir "/var/cache/cat-avatar-generator"] @
+       [#:package cat-avatar-generator] @
+       [#:configuration (nginx-server-configuration)]
+Returns an nginx-server-configuration that inherits @code{configuration}.  It
+extends the nginx configuration to add a server block that serves @code{package},
+a version of cat-avatar-generator.  During execution, cat-avatar-generator will
+be able to use @code{cache-dir} as its cache directory.
+@end deffn
+
+A simple setup for cat-avatar-generator can look like this:
+@example
+(services (cons* (cat-avatar-generator-service
+                  #:configuration
+                  (nginx-server-configuration
+                    (server-name '("example.com"))))
+                 ...
                  %base-services))
 @end example
 

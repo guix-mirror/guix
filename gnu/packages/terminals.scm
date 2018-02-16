@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -667,3 +669,111 @@ with terminals in Go.")
 terminal or piped input.")
       (home-page "https://github.com/howeyc/gopass")
       (license license:isc))))
+
+(define-public python-pyte
+  (package
+    (name "python-pyte")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyte" version))
+       (sha256
+        (base32
+         "1an54hvyjm8gncx8cgabz9mkpgjkdb0bkyjlkh7g7f94nr3wnfl7"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-failing-test
+           ;; TODO: Reenable when the `captured` files required by this test
+           ;; are included in the archive.
+           (lambda _
+             (delete-file "tests/test_input_output.py")
+             #t)))))
+    (propagated-inputs
+     `(("python-wcwidth", python-wcwidth)))
+    (native-inputs
+     `(("python-pytest-runner" ,python-pytest-runner)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://pyte.readthedocs.io/")
+    (synopsis "Simple VTXXX-compatible terminal emulator")
+    (description "@code{pyte} is an in-memory VTxxx-compatible terminal
+emulator.  @var{VTxxx} stands for a series of video terminals, developed by
+DEC between 1970 and 1995.  The first and probably most famous one was the
+VT100 terminal, which is now a de-facto standard for all virtual terminal
+emulators.
+
+pyte is a fork of vt102, which was an incomplete pure Python implementation
+of VT100 terminal.")
+    (license license:lgpl3+)))
+
+(define-public python2-pyte
+  (package-with-python2 python-pyte))
+
+(define-public python-blessings
+  (package
+    (name "python-blessings")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "blessings" version))
+       (sha256
+        (base32
+         "1smngy65p8mi62lgm04icasx22v976szhs2aq95y2ljmi1srb4bl"))))
+    (build-system python-build-system)
+    (arguments
+     ;; TODO: For py3, 2to2 is used to convert the code, but test-suite fails
+     `(#:tests? #f))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/erikrose/blessings")
+    (synopsis "Python module to manage terminal color, styling, and
+positioning")
+    (description "Blessings is a pythonic API to manipulate terminal color,
+styling, and positioning.  It provides similar features to curses but avoids
+some of curses’s limitations: it does not require clearing the whole screen
+for little changes, provides a scroll-back buffer after the program exits, and
+avoids styling altogether when the output is redirected to something other
+than a terminal.")
+    (license license:expat)))
+
+(define-public python2-blessings
+  (package-with-python2 python-blessings))
+
+(define-public python-curtsies
+  (package
+    (name "python-curtsies")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "curtsies" version))
+       (sha256
+        (base32
+         "1vljmw3sy6lrqahhpyg4gk13mzcx3mwhvg8s41698ms3cpgkjipc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "nosetests" "-v"))))))
+    (propagated-inputs
+     `(("python-blessings" ,python-blessings)
+       ("python-wcwidth", python-wcwidth)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pyte" ,python-pyte)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/thomasballinger/curtsies")
+    (synopsis "Library for curses-like terminal interaction with colored
+strings")
+    (description "Curtsies is a Python library for interacting with the
+terminal.  It features string-like objects which carry formatting information,
+per-line fullscreen terminal rendering, and keyboard input event reporting.")
+    (license license:expat)))
+
+(define-public python2-curtsies
+  (package-with-python2 python-curtsies))

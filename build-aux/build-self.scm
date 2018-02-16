@@ -44,6 +44,9 @@
 ;; could be renamed or shuffled around in modules over time.  Conversely,
 ;; 'find-best-packages-by-name' is expected to always have the same semantics.
 
+(define guix
+  (first (find-best-packages-by-name "guix" #f)))
+
 (define libgcrypt
   (first (find-best-packages-by-name "libgcrypt" #f)))
 
@@ -165,8 +168,6 @@ files."
     (if (defined? '%localstatedir) %localstatedir (dirname %state-directory)))
   (define sysconfdir
     (if (defined? '%sysconfdir) %sysconfdir (dirname %config-directory)))
-  (define sbindir
-    (if (defined? '%sbindir) %sbindir (dirname %guix-register-program)))
 
   (define builder
     #~(begin
@@ -222,7 +223,7 @@ files."
                     #:storedir #$storedir
                     #:localstatedir #$localstatedir
                     #:sysconfdir #$sysconfdir
-                    #:sbindir #$sbindir
+                    #:sbindir (string-append #$guix "/sbin")
 
                     #:package-name #$%guix-package-name
                     #:package-version #$version

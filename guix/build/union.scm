@@ -93,7 +93,7 @@ make sure the caller can modify them later."
     (cond ((null? dirs)
            ;; The inputs are all files.
            (format (current-error-port)
-                   "warning: collision encountered: ~{~a ~}~%"
+                   "~%warning: collision encountered:~%~{~a~%~}"
                    files)
 
            (let ((file (first files)))

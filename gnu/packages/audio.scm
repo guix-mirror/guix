@@ -1591,7 +1591,7 @@ to be plugged into a wide range of audio synthesis and recording packages.")
        ("libxml2" ,libxml2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.nongnu.org/lash/")
+    (home-page "https://www.nongnu.org/lash/")
     (synopsis "Audio application session manager")
     (description
      "LASH is a session management system for audio applications.  It allows
