@@ -475,14 +475,14 @@ some compression ratio).")
 (define-public lzip
   (package
     (name "lzip")
-    (version "1.19")
+    (version "1.20")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/lzip/lzip-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1abbch762gv8rjr579q3qyyk6c80plklbv2mw4x0vg71dgsw9bgz"))))
+               "0319q59kb8g324wnj7xzbr7vvlx5bcs13lr34j0zb3kqlyjq2fy9"))))
     (build-system gnu-build-system)
     (home-page "https://www.nongnu.org/lzip/lzip.html")
     (synopsis "Lossless data compressor based on the LZMA algorithm")
