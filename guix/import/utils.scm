@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -330,10 +330,12 @@ the expected fields of an <origin> object."
     (description
      (assoc-ref meta "description"))
     (license
-     (let ((l (assoc-ref meta "license")))
-       (or (module-ref (resolve-interface '(guix licenses) #:prefix 'license:)
-                       (spdx-string->license l))
-           (license:fsdg-compatible l))))))
+     (match (assoc-ref meta "license")
+       (#f #f)
+       (l
+        (or (module-ref (resolve-interface '(guix licenses) #:prefix 'license:)
+                        (spdx-string->license l))
+            (license:fsdg-compatible l)))))))
 
 (define* (read-lines #:optional (port (current-input-port)))
   "Read lines from PORT and return them as a list."
