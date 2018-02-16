@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -4768,6 +4768,27 @@ but are depended upon by many other X Window System packages to provide
 common definitions and porting layer.")
     (license license:x11)))
 
+(define-public xorgproto
+  (package
+    (name "xorgproto")
+    (version "2018.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/proto/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0r3fk48vp24hk4viw4fjpyh0y7rdg13p5faxc0vicdyqcn5w02cp"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     ;; To get util-macros in (almost?) all package inputs.
+     `(("util-macros" ,util-macros)))
+    (home-page "https://cgit.freedesktop.org/xorg/proto/xorgproto")
+    (synopsis "Xorg protocol headers")
+    (description
+     "This package provides the headers and specification documents defining
+the core protocol and (many) extensions for the X Window System.")
+    (license license:x11)))
 
 
 ;; packages of height 2 in the propagated-inputs tree
