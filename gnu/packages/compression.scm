@@ -454,7 +454,7 @@ Python strings.")
          "0h9gb8q7y54m9mvy3jvsmxf21yx8fc3ylzh418hgbbv0i8mbcwky"))))
     (build-system gnu-build-system)
     (inputs `(("lzo" ,lzo)))
-    (home-page "http://www.lzop.org/")
+    (home-page "https://www.lzop.org/")
     (synopsis "Compress or expand files")
     (description
      "Lzop is a file compressor which is very similar to gzip.  Lzop uses the
