@@ -321,7 +321,7 @@ compatible with bzip2 – both at file format and command line level.")
 (define-public pbzip2
   (package
     (name "pbzip2")
-    (version "1.1.12")
+    (version "1.1.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://launchpad.net/pbzip2/"
@@ -329,14 +329,14 @@ compatible with bzip2 – both at file format and command line level.")
                                  "/+download/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1vk6065dv3a47p86vmp8hv3n1ygd9hraz0gq89gvzlx7lmcb6fsp"))))
+               "1rnvgcdixjzbrmcr1nv9b6ccrjfrhryaj7jwz28yxxv6lam3xlcg"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,bzip2)))
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))
+                  (delete 'configure))  ; no configure script
        #:make-flags (list (string-append "PREFIX=" %output))))
     (home-page "http://compression.ca/pbzip2/")
     (synopsis "Parallel bzip2 implementation")
