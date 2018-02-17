@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -392,7 +392,8 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
-              (patches (search-patches "gcc-arm-bug-71399.patch"
+              (patches (search-patches "gcc-4.9-libsanitizer-fix.patch"
+                                       "gcc-arm-bug-71399.patch"
                                        "gcc-asan-missing-include.patch"
                                        "gcc-libvtv-runpath.patch"
                                        "gcc-fix-texi2pod.patch"))
