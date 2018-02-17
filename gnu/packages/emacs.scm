@@ -7097,6 +7097,29 @@ scratch buffer, and, by virtue of this extension, do so using the Emacs
 formatting rules for that language.")
       (license license:bsd-2))))
 
+(define-public emacs-esxml
+  (package
+    (name "emacs-esxml")
+    (version "0.3.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tali713/esxml.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00vv8a75wdklygdyr4km9mc2ismxak69c45jmcny41xl44rp9x8m"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tali713/esxml/")
+    (synopsis "SXML for EmacsLisp")
+    (description "This is XML/XHTML done with S-Expressions in EmacsLisp.
+Simply, this is the easiest way to write HTML or XML in Lisp.  This library
+uses the native form of XML representation as used by many libraries already
+included within Emacs.  See @code{esxml-to-xml} for a concise description of
+the format.")
+    (license license:gpl3+)))
+
 (define-public epipe
   (package
     (name "epipe")
