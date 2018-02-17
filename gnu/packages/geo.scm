@@ -37,6 +37,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages cran)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -555,3 +556,23 @@ interface to query the Google server for static maps, and (ii) Use the map as a
 background image to overlay plots within R.  This requires proper coordinate
 scaling.")
    (license license:gpl2+)))
+
+(define-public r-geosphere
+  (package
+   (name "r-geosphere")
+   (version "1.5-7")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "geosphere" version))
+       (sha256
+        (base32
+         "186qdm5niq7v3d4w4rngx71znsgi44hnam7698bsx9ar5mg5b6wx"))))
+   (build-system r-build-system)
+   (propagated-inputs `(("r-sp" ,r-sp)))
+   (home-page "https://cran.r-project.org/web/packages/geosphere")
+   (synopsis "Spherical trigonometry")
+   (description "This package computes spherical trigonometry for geographic
+applications.  That is, compute distances and related measures for angular
+(longitude/latitude) locations.")
+   (license license:gpl3+)))
