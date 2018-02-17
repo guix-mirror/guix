@@ -511,3 +511,25 @@ development.")
 Projection code and larger maps are in separate packages ('mapproj' and
 'mapdata').")
    (license license:gpl2)))
+
+(define-public r-mapproj
+  (package
+   (name "r-mapproj")
+   (version "1.2-5")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mapproj" version))
+       (sha256
+        (base32
+         "0rjz37r4rizk2c6jaf54f0kfb60dqv6b262cnhiwjl55d4x6l0pk"))))
+   (build-system r-build-system)
+   (propagated-inputs `(("r-maps" ,r-maps)))
+   (home-page "https://cran.r-project.org/web/packages/mapproj")
+   (synopsis "Map projection in R")
+   (description "This package converts latitude/longitude into projected
+coordinates.")
+   (license (list license:gpl2 ; The R interface
+                  (license:non-copyleft ; The C code
+                    "https://www.gnu.org/licenses/license-list.en.html#lucent102"
+                    "Lucent Public License Version 1.02")))))
