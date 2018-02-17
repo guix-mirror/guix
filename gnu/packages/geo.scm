@@ -45,6 +45,8 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages statistics)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml))
@@ -576,3 +578,36 @@ scaling.")
 applications.  That is, compute distances and related measures for angular
 (longitude/latitude) locations.")
    (license license:gpl3+)))
+
+(define-public r-ggmap
+  (package
+   (name "r-ggmap")
+   (version "2.6.1")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggmap" version))
+       (sha256
+        (base32
+         "0mssb09w818jv58h7mly9y181pzv22sgcd4a079cfpq04bs0wigw"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-digest" ,r-digest)
+      ("r-geosphere" ,r-geosphere)
+      ("r-ggplot2" ,r-ggplot2)
+      ("r-jpeg" ,r-jpeg)
+      ("r-mapproj" ,r-mapproj)
+      ("r-plyr" ,r-plyr)
+      ("r-png" ,r-png)
+      ("r-proto" ,r-proto)
+      ("r-reshape2" ,r-reshape2)
+      ("r-rgooglemaps" ,r-rgooglemaps)
+      ("r-rjson" ,r-rjson)
+      ("r-scales" ,r-scales)))
+   (home-page "https://github.com/dkahle/ggmap")
+   (synopsis "Spatial visualization with ggplot2")
+   (description "This package provides a collection of functions to visualize
+spatial data and models on top of static maps from various online sources (e.g
+Google Maps and Stamen Maps).  It includes tools common to those tasks,
+including functions for geolocation and routing.")
+   (license license:gpl2)))
