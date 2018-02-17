@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1293,3 +1294,23 @@ Features:
 @item Upload to Imgur.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public r-jpeg
+  (package
+   (name "r-jpeg")
+   (version "0.1-8")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "jpeg" version))
+       (sha256
+        (base32
+         "05hawv5qcb82ljc1l2nchx1wah8mq2k2kfkhpzyww554ngzbwcnh"))))
+   (build-system r-build-system)
+   (inputs `(("libjpeg" ,libjpeg)))
+   (home-page "http://www.rforge.net/jpeg/")
+   (synopsis "Read and write JPEG images with R")
+   (description "This package provides a way to read, write and display bitmap
+images stored in the JPEG format with R.  It can read and write both files and
+in-memory raw vectors.")
+   (license license:gpl2+)))
