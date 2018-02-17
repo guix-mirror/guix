@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -410,4 +411,29 @@ Representation (@dfn{CBOR}).  CBOR is comparable to JSON, has a superset of
 JSON's ability, but serializes to a binary format which is smaller and faster
 to generate and parse.  The two primary functions are @code{cbor.loads} and
 @code{cbor.dumps}.")
+    (license license:asl2.0)))
+
+(define-public flatbuffers
+  (package
+    (name "flatbuffers")
+    (version "1.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/google/flatbuffers/archive/v"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "0blc978wc5h91662vai24xj92c3bx56y6hzid90qva7il302jl64"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            (assoc-ref %outputs "out") "/lib")
+             "-DCMAKE_BUILD_TYPE=Release")))
+    (home-page "https://google.github.io/flatbuffers/")
+    (synopsis "Memory-efficient serialization library")
+    (description "FlatBuffers is a cross platform serialization library for C++,
+C#, C, Go, Java, JavaScript, PHP, and Python.  It was originally created for
+game development and other performance-critical applications.")
     (license license:asl2.0)))
