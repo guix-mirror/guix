@@ -1678,10 +1678,11 @@ configuration.  This library provides the common bits for writing custom
         (base32
          "1icdbj2rshzn0m1zz5wa7v3xvkf6qw811p4s7jgqwvx1ydwrvrfa"))))
     (build-system haskell-build-system)
+    ;; This is an official revision, relaxing the requirement transformers ==
+    ;; 0.4 to transformers >= 0.4 && < 0.6; see
+    ;; https://hackage.haskell.org/package/mtl-2.2.1/revision/1.cabal
     (arguments
      `(#:configure-flags (list "--allow-newer=transformers")))
-    (inputs
-     `(("ghc-transformers" ,ghc-transformers)))
     (home-page "https://github.com/ekmett/mtl")
     (synopsis
      "Monad classes, using functional dependencies")
