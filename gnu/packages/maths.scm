@@ -23,6 +23,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3754,3 +3755,25 @@ specifications.  Also, state spaces can be manipulated, visualised and
 analysed.")
     (home-page "http://mcrl2.org")
     (license license:boost1.0)))
+
+(define-public r-subplex
+  (package
+    (name "r-subplex")
+    (version "1.5-2")
+    (source
+    (origin
+      (method url-fetch)
+      (uri (cran-uri "subplex" version))
+      (sha256
+       (base32
+        "1v9xrnkapnq7v1jbhlg32ignklzf2vn8rqpayc8pzk8wvz53r33g"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/subplex")
+    (synopsis "Unconstrained optimization using the subplex algorithm")
+    (description "This package implements the Subplex optimization algorithm.
+It solves unconstrained optimization problems using a simplex method on
+subspaces.  The method is well suited for optimizing objective functions that
+are noisy or are discontinuous at the solution.")
+    (license license:gpl3+)))
