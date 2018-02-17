@@ -11263,6 +11263,9 @@ The XAuth package to use.
 The Shepherd package used when invoking @command{halt} and
 @command{reboot}.
 
+@item @code{sessreg} (default: @code{sessreg})
+The sessreg package used in order to register the session.
+
 @item @code{slim} (default: @code{slim})
 The SLiM package to use.
 @end table
