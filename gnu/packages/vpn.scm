@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -52,7 +52,17 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1v61mj25iyd91z0ir7cmradkkcm1ffbk52c96v293ibsvjs2s2hf"))))
+                "1v61mj25iyd91z0ir7cmradkkcm1ffbk52c96v293ibsvjs2s2hf"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove the outdated bundled copy of glibc's getopt, which
+                  ;; provides a 'getopt' declaration that conflicts with that
+                  ;; of glibc 2.26.
+                  (substitute* "lib/Makefile.in"
+                    (("getopt1?\\.(c|h|\\$\\(OBJEXT\\))") ""))
+                  (for-each delete-file
+                            '("lib/getopt.h" "lib/getopt.c"))))))
     (build-system gnu-build-system)
     (home-page "http://software.schmorp.de/pkg/gvpe.html")
     (inputs `(("openssl" ,openssl)
