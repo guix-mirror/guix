@@ -533,3 +533,25 @@ coordinates.")
                   (license:non-copyleft ; The C code
                     "https://www.gnu.org/licenses/license-list.en.html#lucent102"
                     "Lucent Public License Version 1.02")))))
+
+(define-public r-rgooglemaps
+  (package
+   (name "r-rgooglemaps")
+   (version "1.4.1")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RgoogleMaps" version))
+       (sha256
+        (base32
+         "0fsmlnhl4kw2j4972kfanzw9njhnzk695gsyw8g6yppsmz2clcaq"))))
+   (properties `((upstream-name . "RgoogleMaps")))
+   (build-system r-build-system)
+   (propagated-inputs `(("r-png" ,r-png)))
+   (home-page "https://cran.r-project.org/web/packages/RgoogleMaps")
+   (synopsis "Use Google Maps in R")
+   (description "This package serves two purposes: (i) Provide a comfortable R
+interface to query the Google server for static maps, and (ii) Use the map as a
+background image to overlay plots within R.  This requires proper coordinate
+scaling.")
+   (license license:gpl2+)))
