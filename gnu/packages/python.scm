@@ -7550,14 +7550,15 @@ templates into Python modules.")
 (define-public python-waitress
   (package
     (name "python-waitress")
-    (version "0.8.10")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "waitress" version))
+       (patches (search-patches "python-waitress-fix-tests.patch"))
        (sha256
         (base32
-         "017n9ra6vvmq9d5sfhdzyzr1mg15x2hj2dhm4pdlw98c1ypw2h3w"))))
+         "1a85gyji0kajc3p0s1pwwfm06w4wfxjkvvl4rnrz3h164kbd6g6k"))))
     (build-system python-build-system)
     (home-page "https://github.com/Pylons/waitress")
     (synopsis "Waitress WSGI server")

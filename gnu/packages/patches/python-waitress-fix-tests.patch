@@ -1,0 +1,29 @@
+Skip test that requires getaddrinfo(), which is not available in the build
+environment.  This package uses a regexp for finding tests (see runner.py),
+so using @unittest.skip does not work.
+
+--- a/waitress/tests/test_adjustments.py
++++ b/waitress/tests/test_adjustments.py
+@@ -185,22 +185,6 @@
+     def test_bad_port(self):
+         self.assertRaises(ValueError, self._makeOne, listen='127.0.0.1:test')
+ 
+-    def test_service_port(self):
+-        if WIN and PY2: # pragma: no cover
+-            # On Windows and Python 2 this is broken, so we raise a ValueError
+-            self.assertRaises(
+-                ValueError,
+-                self._makeOne,
+-                listen='127.0.0.1:http',
+-            )
+-            return
+-
+-        inst = self._makeOne(listen='127.0.0.1:http 0.0.0.0:https')
+-
+-        bind_pairs = [sockaddr[:2] for (_, _, _, sockaddr) in inst.listen]
+-
+-        self.assertEqual(bind_pairs, [('127.0.0.1', 80), ('0.0.0.0', 443)])
+-
+     def test_dont_mix_host_port_listen(self):
+         self.assertRaises(
+             ValueError,
