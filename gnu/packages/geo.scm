@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
+  #:use-module (guix build-system r)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -490,3 +492,22 @@ development.")
  construct common SQL queries, or craft your own SQL queries.")
     (home-page "https://www.gaia-gis.it/fossil/spatialite_gui/index")
     (license license:gpl3+)))
+
+(define-public r-maps
+  (package
+   (name "r-maps")
+   (version "3.2.0")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "maps" version))
+       (sha256
+        (base32
+         "0577f3b5d3a7djl7r0miy9mzr6xq6jb32p8nyrma7m2azasbwyj3"))))
+   (build-system r-build-system)
+   (home-page "https://cran.r-project.org/web/packages/maps")
+   (synopsis "Draw geographical maps")
+   (description "This package provies an R module for display of maps.
+Projection code and larger maps are in separate packages ('mapproj' and
+'mapdata').")
+   (license license:gpl2)))
