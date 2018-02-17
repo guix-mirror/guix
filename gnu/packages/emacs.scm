@@ -7120,6 +7120,55 @@ included within Emacs.  See @code{esxml-to-xml} for a concise description of
 the format.")
     (license license:gpl3+)))
 
+(define-public emacs-nov-el
+  (package
+    (name "emacs-nov-el")
+    (version "0.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wasamasa/nov.el.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "03s0qjvwk1f7y3i4wh2p5y3z4hdv00adgz8za3vphzc0q8i1kjzb"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'embed-path-to-unzip
+           (lambda _
+             (substitute* "nov.el"
+               (("\\(executable-find \"unzip\"\\)")
+                (string-append "\"" (which "unzip") "\"")))
+             #t)))))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-esxml" ,emacs-esxml)))
+    (inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://github.com/wasamasa/nov.el/")
+    (synopsis "Major mode for reading EPUBs in Emacs")
+    (description "@code{nov.el} provides a major mode for reading EPUB
+documents.
+
+Features:
+
+@itemize
+@item Basic navigation (jump to TOC, previous/next chapter)
+@item Remembering and restoring the last read position
+@item Jump to next chapter when scrolling beyond end
+@item Renders EPUB2 (@code{.ncx}) and EPUB3 (@code{<nav>}) TOCs
+@item Hyperlinks to internal and external targets
+@item Supports textual and image documents
+@item View source of document files
+@item Metadata display
+@item Image rescaling
+@end itemize
+")
+    (license license:gpl3+)))
+
 (define-public epipe
   (package
     (name "epipe")
