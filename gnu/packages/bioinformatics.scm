@@ -9,6 +9,7 @@
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12855,3 +12856,34 @@ data of bisulfite experiments; it produces reports on aggregate methylation
 and coverage and can be used to produce information on differential
 methylation and segmentation.")
     (license license:gpl3+)))
+
+(define-public r-diversitree
+  (package
+    (name "r-diversitree")
+    (version "0.9-10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "diversitree" version))
+        (sha256
+         (base32
+          "0gh4rcrp0an3jh8915i1fsxlgyfk7njywgbd5ln5r2jhr085kpz7"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (inputs `(("fftw" ,fftw) ("gsl" ,gsl)))
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-desolve" ,r-desolve)
+       ("r-rcpp" ,r-rcpp)
+       ("r-suplex" ,r-subplex)))
+    (home-page "https://www.zoology.ubc.ca/prog/diversitree")
+    (synopsis "Comparative 'phylogenetic' analyses of diversification")
+    (description "This package contains a number of comparative \"phylogenetic\"
+methods, mostly focusing on analysing diversification and character evolution.
+Contains implementations of \"BiSSE\" (Binary State Speciation and Extinction)
+and its unresolved tree extensions, \"MuSSE\" (Multiple State Speciation and
+Extinction), \"QuaSSE\", \"GeoSSE\", and \"BiSSE-ness\" Other included methods
+include Markov models of discrete and continuous trait evolution and constant
+rate speciation and extinction.")
+    (license license:gpl2+)))
