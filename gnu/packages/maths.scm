@@ -3777,3 +3777,32 @@ It solves unconstrained optimization problems using a simplex method on
 subspaces.  The method is well suited for optimizing objective functions that
 are noisy or are discontinuous at the solution.")
     (license license:gpl3+)))
+
+(define-public r-desolve
+  (package
+    (name "r-desolve")
+    (version "1.20")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "deSolve" version))
+        (sha256
+         (base32
+          "18nx3maww979a8p8ly4hv63y65mnjx8vbj2fpipd6rhcbf1lbsan"))))
+    (properties `((upstream-name . "deSolve")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://desolve.r-forge.r-project.org/")
+    (synopsis "Solvers for initial value problems of differential equations")
+    (description "This package provides functions that solve initial
+value problems of a system of first-order ordinary differential equations (ODE),
+of partial differential equations (PDE), of differential algebraic equations
+(DAE), and of delay differential equations.  The functions provide an interface
+to the FORTRAN functions lsoda, lsodar, lsode, lsodes of the ODEPACK collection,
+to the FORTRAN functions dvode and daspk and a C-implementation of solvers of
+the Runge-Kutta family with fixed or variable time steps.  The package contains
+routines designed for solving ODEs resulting from 1-D, 2-D and 3-D partial
+differential equations (PDE) that have been converted to ODEs by numerical
+differencing.")
+    (license license:gpl2+)))
