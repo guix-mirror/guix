@@ -32,7 +32,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5598,3 +5598,83 @@ hacking the gamification of contribution graphs on platforms such as
 Github or Gitlab.")
     (home-page "https://github.com/umayr/badass")
     (license license:expat))))
+
+(define-public colobot
+  (package
+    (name "colobot")
+    (version "0.1.11-alpha")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/colobot/colobot/archive/"
+                           "colobot-gold-" version ".tar.gz"))
+       (sha256
+        (base32
+         "160rq9fp5vd0qaqr3jvzvzrcxk9cac532y8vx4cvq0a8hgylrbad"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-data
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((data (assoc-ref inputs "colobot-data")))
+               (invoke "tar" "-xvf" data "-Cdata" "--strip-components=1")
+               #t)))
+         (add-after 'unpack-data 'install-music
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Installation process tries to download music files using
+             ;; "wget" if not already present.  Since we are going to install
+             ;; them, skip "wget" command check.
+             (substitute* "data/music/CMakeLists.txt"
+               (("find_program\\(WGET wget\\)") ""))
+             ;; Effectively install music.
+             (let ((data (assoc-ref inputs "colobot-music")))
+               (invoke "tar" "-xvf" data "-Cdata/music")
+               #t)))
+         (add-after 'install 'fix-install-directory
+           ;; Move binary from "games/" to "bin/".
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (rename-file (string-append out "/games")
+                            (string-append out "/bin"))
+               #t))))))
+    (native-inputs
+     `(("colobot-data"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/colobot/colobot-data/archive/"
+                 "colobot-gold-" version ".tar.gz"))
+           (sha256
+            (base32
+             "1pdpsyr41g7xmk03k2g76l214f53ahk04qnkzmsv1fdbbaq7p109"))))
+       ("colobot-music"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://colobot.info/files/music/"
+                               "colobot-music_ogg_" version ".tar.gz"))
+           (sha256
+            (base32
+             "1s86cd36rwkff329mb1ay1wi5qqyi35564ppgr3f4qqz9wj9vs2m"))))
+       ("gettext" ,gettext-minimal)
+       ("librsvg" ,librsvg)
+       ("po4a" ,po4a)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("boost" ,boost)
+       ("glew" ,glew)
+       ("libogg" ,libogg)
+       ("libpng" ,libpng)
+       ("libsndfile" ,libsndfile)
+       ("libvorbis" ,libvorbis)
+       ("openal" ,openal)
+       ("physfs" ,physfs)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-image sdl2-ttf)))))
+    (synopsis "Educational programming strategy game")
+    (description "Colobot: Gold Edition is a real-time strategy game, where
+you can program your units (bots) in a language called CBOT, which is similar
+to C++ and Java.  Your mission is to find a new planet to live and survive.
+You can save humanity and get programming skills!")
+    (home-page "https://colobot.info")
+    (license license:gpl3+)))

@@ -62,6 +62,7 @@
        (sha256
         (base32
          "0l9bv67dgsphk42lmiskhrnh47hbyj6rfg2rcjx22xivpx07srr3"))
+       (patches (search-patches "ruby-rubygems-276-for-ruby24.patch"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi

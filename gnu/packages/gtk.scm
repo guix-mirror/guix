@@ -1254,7 +1254,7 @@ write GNOME applications.")
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
-                     ("xorg-server" ,xorg-server)))
+                     ("xorg-server" ,xorg-server-1.19.3)))
     ;; Listed in 'Requires.private' of 'girara.pc'.
     (propagated-inputs `(("gtk+" ,gtk+)))
     (arguments
@@ -1262,6 +1262,7 @@ write GNOME applications.")
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
          "COLOR=0" "CC=gcc")
        #:test-target "test"
+       #:disallowed-references (,xorg-server-1.19.3)
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (add-before 'check 'start-xserver
@@ -1270,6 +1271,11 @@ write GNOME applications.")
                       (let ((xorg-server (assoc-ref inputs "xorg-server"))
                             (display ":1"))
                         (setenv "DISPLAY" display)
+
+                        ;; On busy machines, tests may take longer than
+                        ;; the default of four seconds.
+                        (setenv "CK_DEFAULT_TIMEOUT" "20")
+
                         ;; Don't fail due to missing '/etc/machine-id'.
                         (setenv "DBUS_FATAL_WARNINGS" "0")
                         (zero? (system (string-append xorg-server "/bin/Xvfb "

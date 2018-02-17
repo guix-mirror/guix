@@ -318,6 +318,7 @@ desktop session from the system or user profile will be used."
         (use-modules (ice-9 match)
                      (ice-9 regex)
                      (ice-9 ftw)
+                     (ice-9 rdelim)
                      (srfi srfi-1)
                      (srfi srfi-26))
 

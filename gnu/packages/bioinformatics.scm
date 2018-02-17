@@ -6370,7 +6370,7 @@ SELECT or UPDATE queries to an end-point.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.7.0")
+    (version "2.7.1")
     (source
      (origin
        (method url-fetch)
@@ -6380,7 +6380,7 @@ SELECT or UPDATE queries to an end-point.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0523b8xq5fw60ayl0k5m1fm6yrh1932ljrsz1ys67xnki7p7f1d5"))
+         "0jlzfgh79fzmb4g7sngzdjjsjyc37icvs1k7vmc2ksxglj6x5i7f"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
