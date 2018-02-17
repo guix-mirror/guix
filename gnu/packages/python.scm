@@ -5468,6 +5468,32 @@ complexity of Python source code.")
          ("python2-enum" ,python2-enum)
           ,@(package-propagated-inputs base))))))
 
+;; python-hacking requires flake8 <2.6.0.
+(define-public python-flake8-2.5
+  (package
+    (inherit python-flake8)
+    (version "2.5.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "flake8" version))
+              (sha256
+               (base32
+                "1snylqwbmrylbx3r1wpz8ggk98f6bcag4441ag8mm2l7wyn58sij"))))
+    (propagated-inputs
+     `(("python-pep8" ,python-pep8)
+       ,@(package-propagated-inputs python-flake8)))
+    (properties `((python2-variant . ,(delay python2-flake8-2.5))))))
+
+(define-public python2-flake8-2.5
+  (package
+    (inherit python2-flake8)
+    (version (package-version python-flake8-2.5))
+    (source (origin
+              (inherit (package-source python-flake8-2.5))))
+    (propagated-inputs
+     `(("python2-pep8" ,python2-pep8)
+       ,@(package-propagated-inputs python2-flake8)))))
+
 (define-public python-flake8-polyfill
   (package
     (name "python-flake8-polyfill")

@@ -118,17 +118,17 @@ manner.")
 (define-public python-hacking
   (package
     (name "python-hacking")
-    (version "0.13.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hacking" version))
        (sha256
         (base32
-         "1s1wq2sds6fjp8rwz31vkp33kjl9nyk5y2g2pri8shic75dr00h4"))))
+         "0s9l99s64jsyvm28fa4hzllbdi21sb7jn4gzdf1pd5ckvy7p4b0k"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-flake8" ,python-flake8)
+     `(("python-flake8" ,python-flake8-2.5)
        ("python-mccabe-0.2.1" ,python-mccabe-0.2.1)
        ("python-pbr" ,python-pbr)
        ("python-pep8-1.5.7" ,python-pep8-1.5.7)
