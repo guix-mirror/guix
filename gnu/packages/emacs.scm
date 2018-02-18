@@ -6719,8 +6719,8 @@ want to use it.")
     (license license:gpl3+)))
 
 (define-public emacs-slack
-  (let ((commit "58b1309255563819ee8f83f625af49ac0353bed1")
-        (revision "1"))
+  (let ((commit "02ee1d7339e48c64946041f6f4e09447c3f53e82")
+        (revision "2"))
     (package
       (name "emacs-slack")
       (version (string-append "0-" revision "." (string-take commit 7)))
@@ -6732,7 +6732,7 @@ want to use it.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1bj43ircd9djk4i58qwxvmcbhzybxb954k52l80pk441ffk8v4vx"))))
+                  "0grx95xxf314m2k35m1kf20l2pwc6j11ibvrngx4pis7wqwjas3h"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-alert" ,emacs-alert)
