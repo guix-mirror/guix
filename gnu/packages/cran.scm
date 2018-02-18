@@ -2201,3 +2201,27 @@ easy-to-maintain version of TeX Live.  This package also contains helper
 functions to compile LaTeX documents, and install missing LaTeX packages
 automatically.")
     (license license:expat)))
+
+(define-public r-metap
+  (package
+    (name "r-metap")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "metap" version))
+       (sha256
+        (base32
+         "06ny9zkilawdy0s8yiwhnygs3yppw89bbyf76zgdavykbzscz5lh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "http://www.dewey.myzen.co.uk/meta/meta.html")
+    (synopsis "Meta-analysis of significance values")
+    (description
+     "The canonical way to perform meta-analysis involves using effect sizes.
+When they are not available this package provides a number of methods for
+meta-analysis of significance values including the methods of Edgington,
+Fisher, Stouffer, Tippett, and Wilkinson; a number of data-sets to replicate
+published results; and a routine for graphical display.")
+    (license license:gpl2)))
