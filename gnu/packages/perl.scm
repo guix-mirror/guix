@@ -6269,7 +6269,7 @@ function call parameters to an arbitrary level of specificity.")
 (define-public perl-params-validationcompiler
   (package
     (name "perl-params-validationcompiler")
-    (version "0.24")
+    (version "0.27")
     (source
       (origin
         (method url-fetch)
@@ -6277,12 +6277,14 @@ function call parameters to an arbitrary level of specificity.")
                             "Params-ValidationCompiler-" version ".tar.gz"))
         (sha256
          (base32
-          "11s29wd7gci4c7gcksxw7pzxfzganvr8x4f1dsww4676p93kg5m8"))))
+          "1cpr188c2xm0kkmdir6slcsgv7v6ibqff4lax8s0whwx6ml9kaah"))))
     (build-system perl-build-system)
     (native-inputs
+     ;; For tests.
      `(("perl-test-without-module" ,perl-test-without-module)
        ("perl-test2-bundle-extended" ,perl-test2-bundle-extended)
-       ("perl-test2-plugin-nowarnings" ,perl-test2-plugin-nowarnings)))
+       ("perl-test2-plugin-nowarnings" ,perl-test2-plugin-nowarnings)
+       ("perl-type-tiny" ,perl-type-tiny)))
     (propagated-inputs
      `(("perl-eval-closure" ,perl-eval-closure)
        ("perl-exception-class" ,perl-exception-class)
