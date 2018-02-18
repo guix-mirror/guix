@@ -94,7 +94,7 @@
   ;; Activation gexp.
   #~(begin
       (use-modules (guix build utils))
-      (mkdir-p "/var/run/avahi-daemon")))
+      (mkdir-p "/run/avahi-daemon")))
 
 (define (avahi-shepherd-service config)
   "Return a list of <shepherd-service> for CONFIG."
@@ -111,7 +111,7 @@
                            "--daemonize"
                            #$@(if debug? #~("--debug") #~())
                            "-f" #$config)
-                     #:pid-file "/var/run/avahi-daemon/pid"))
+                     #:pid-file "/run/avahi-daemon/pid"))
            (stop #~(make-kill-destructor))))))
 
 (define avahi-service-type
