@@ -2179,3 +2179,25 @@ terminals.")
      "This package provides tools for generating and handling of
 @dfn{Universally Unique Identifiers} (UUIDs).")
     (license license:expat)))
+
+(define-public r-tinytex
+  (package
+    (name "r-tinytex")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tinytex" version))
+       (sha256
+        (base32
+         "0mhxlr4709mca9jshnah5i7yjyy6k12s933619p7p9c8nbqj39cn"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/yihui/tinytex")
+    (synopsis "Helper functions for TeX Live and compiling LaTeX documents")
+    (description
+     "This package provides helper functions to install and maintain the LaTeX
+distribution named TinyTeX, a lightweight, cross-platform, portable, and
+easy-to-maintain version of TeX Live.  This package also contains helper
+functions to compile LaTeX documents, and install missing LaTeX packages
+automatically.")
+    (license license:expat)))
