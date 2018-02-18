@@ -386,7 +386,7 @@ submenu \"GNU system, old configurations...\" {~%")
         ;; root partition.
         (setenv "GRUB_ENABLE_CRYPTODISK" "y")
 
-        (unless (zero? (system* grub "--no-floppy"
+        (unless (zero? (system* grub "--no-floppy" "--target=i386-pc"
                                 "--boot-directory" install-dir
                                 device))
           (error "failed to install GRUB (BIOS)")))))
