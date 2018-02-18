@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -2252,7 +2252,7 @@ on the fly.  Both programs are written in C and are very fast.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://jetmore.org/john/code/swaks/files/swaks-"
+             "https://jetmore.org/john/code/swaks/files/swaks-"
              version ".tar.gz"))
        (sha256
         (base32
@@ -2268,7 +2268,7 @@ on the fly.  Both programs are written in C and are very fast.")
          (delete 'configure)
          (replace 'build
            (lambda _
-             (zero? (system* "pod2man" "doc/ref.pod" "swaks.1"))))
+             (invoke "pod2man" "doc/ref.pod" "swaks.1")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -2281,7 +2281,7 @@ on the fly.  Both programs are written in C and are very fast.")
                                           "/bin/swaks")
                `("PERL5LIB" ":" = (,(getenv "PERL5LIB"))))
              #t)))))
-    (home-page "http://jetmore.org/john/code/swaks/")
+    (home-page "https://jetmore.org/john/code/swaks/")
     (synopsis "Featureful SMTP test tool")
     (description "Swaks is a flexible, scriptable, transaction-oriented SMTP
 test tool.  It handles SMTP features and extensions such as TLS,
