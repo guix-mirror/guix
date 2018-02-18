@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
@@ -92,8 +92,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.14.0")
-        (commit "bc880f9d668448b95ae1c1d3761e61c4c514955b")
-        (revision 8))
+        (commit "bdf0c644dafbce2a532161f04e9bf88c9310e081")
+        (revision 9))
     (package
       (name "guix")
 
@@ -109,7 +109,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0v4jr22cwajyndknfj0dy9brfvs6sgv0ansr76n4giybmsay28w4"))
+                  "1lmkgg4c38jkd1dk9cbh3zamyrh5vml8w8445hn8wq5c3mjj2n01"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -156,31 +156,27 @@
                             (display ,version port)))
 
                         (zero? (system* "sh" "bootstrap"))))
-                    (add-before
-                        'configure 'copy-bootstrap-guile
+                    (add-before 'check 'copy-bootstrap-guile
                       (lambda* (#:key system inputs #:allow-other-keys)
-                        (define (boot-guile-version arch)
-                          (cond ((string=? "armhf" arch)   "2.0.11")
-                                ((string=? "aarch64" arch) "2.0.14")
-                                (else "2.0.9")))
+                        ;; Copy the bootstrap guile tarball in the store used
+                        ;; by the test suite.
+                        (define (intern tarball)
+                          (let ((base (strip-store-file-name tarball)))
+                            (copy-file tarball base)
+                            (invoke "./test-env" "guix" "download"
+                                    (string-append "file://" (getcwd)
+                                                   "/" base))
+                            (delete-file base)))
 
-                        (define (copy arch)
-                          (let ((guile  (assoc-ref inputs
-                                                   (string-append "boot-guile/"
-                                                                  arch)))
-                                (target (string-append "gnu/packages/bootstrap/"
-                                                       arch "-linux/"
-                                                       "/guile-"
-                                                       (boot-guile-version arch)
-                                                       ".tar.xz")))
-                            (mkdir-p (dirname target)) ;XXX: eventually unneeded
-                            (copy-file guile target)))
 
-                        (copy "i686")
-                        (copy "x86_64")
-                        (copy "mips64el")
-                        (copy "armhf")
-                        (copy "aarch64")
+                        (intern (assoc-ref inputs "boot-guile"))
+
+                        ;; On x86_64 some tests need the i686 Guile.
+                        ,@(if (and (not (%current-target-system))
+                                   (string=? (%current-system)
+                                             "x86_64-linux"))
+                              '((intern (assoc-ref inputs "boot-guile/i686")))
+                              '())
                         #t))
                     (add-after 'unpack 'disable-failing-tests
                       ;; XXX FIXME: These tests fail within the build container.
@@ -258,11 +254,13 @@
          ("libgcrypt" ,libgcrypt)
          ("guile" ,guile-2.2)
 
-         ("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux"))
-         ("boot-guile/x86_64" ,(bootstrap-guile-origin "x86_64-linux"))
-         ("boot-guile/mips64el" ,(bootstrap-guile-origin "mips64el-linux"))
-         ("boot-guile/armhf" ,(bootstrap-guile-origin "armhf-linux"))
-         ("boot-guile/aarch64" ,(bootstrap-guile-origin "aarch64-linux"))))
+         ;; Many tests rely on the 'guile-bootstrap' package, which is why we
+         ;; have it here.
+         ("boot-guile" ,(bootstrap-guile-origin (%current-system)))
+         ,@(if (and (not (%current-target-system))
+                    (string=? (%current-system) "x86_64-linux"))
+               `(("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux")))
+               '())))
       (propagated-inputs
        `(("gnutls" ,gnutls)
          ("guile-json" ,guile-json)
