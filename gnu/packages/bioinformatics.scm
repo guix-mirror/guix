@@ -9979,14 +9979,14 @@ interval to data view, mismatch pileup, and several splicing summaries.")
 (define-public r-gprofiler
   (package
     (name "r-gprofiler")
-    (version "0.6.3")
+    (version "0.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gProfileR" version))
        (sha256
         (base32
-         "08dsnja3g8qvqlgwhx9c9f8p8psn3qr5ddn84dhizkgglj30v2wj"))))
+         "1cka02zbz1rbppm782qpxk1xn9qxbrv2gp5rgf970j906hxm2y0b"))))
     (properties `((upstream-name . "gProfileR")))
     (build-system r-build-system)
     (propagated-inputs
