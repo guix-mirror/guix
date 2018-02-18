@@ -6672,27 +6672,28 @@ also known as views, in a controlled vocabulary.")
 
 (define-public r-bookdown
   (package
-  (name "r-bookdown")
-  (version "0.6")
-  (source (origin
-            (method url-fetch)
-            (uri (cran-uri "bookdown" version))
-            (sha256
-             (base32
-              "1pxxln42kvzl38fjprg6hcnyh1kij75fpj70vwp5hp5il813aszc"))))
-  (build-system r-build-system)
-  (propagated-inputs
-   `(("r-htmltools" ,r-htmltools)
-     ("r-knitr" ,r-knitr)
-     ("r-rmarkdown" ,r-rmarkdown)
-     ("r-yaml" ,r-yaml)
-     ("r-xfun" ,r-xfun)
-     ("ghc-pandoc" ,ghc-pandoc)))
-  (home-page "https://github.com/rstudio/bookdown")
-  (synopsis "Authoring books and technical documents with R markdown")
-  (description "This package provides output formats and utilities for
+    (name "r-bookdown")
+    (version "0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "bookdown" version))
+              (sha256
+               (base32
+                "1b3fw1f41zph5yw3kynb47aijq53vhaa6mnnvxly72zamyzdf95q"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-tinytex" ,r-tinytex)
+       ("r-yaml" ,r-yaml)
+       ("r-xfun" ,r-xfun)
+       ("ghc-pandoc" ,ghc-pandoc)))
+    (home-page "https://github.com/rstudio/bookdown")
+    (synopsis "Authoring books and technical documents with R markdown")
+    (description "This package provides output formats and utilities for
 authoring books and technical documents with R Markdown.")
-  (license license:gpl3)))
+    (license license:gpl3)))
 
 (define-public r-biocstyle
   (package
