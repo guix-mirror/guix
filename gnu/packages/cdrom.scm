@@ -349,7 +349,7 @@ capacity is user-selectable.")
 (define-public dvdstyler
   (package
     (name "dvdstyler")
-    (version "3.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
@@ -357,7 +357,7 @@ capacity is user-selectable.")
                             version "/DVDStyler-" version ".tar.bz2"))
        (sha256
         (base32
-         "1j432kszmwmsd3nz398h5514dbm5vsrn4rr3iil72ckjj1h3i00q"))))
+         "0lwc0hn94m9r8fi07sjqz3fr618l6lnw3zsakxw7nlgnxbjsk7pi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "XMLTO="
