@@ -36,7 +36,6 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
-  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
