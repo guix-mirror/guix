@@ -69,7 +69,8 @@
           (lambda _
             (setenv "LSOF_CC" "gcc")
             (setenv "LSOF_MAKE" "make")
-            (zero? (system* "./Configure" "linux"))))
+            (invoke "./Configure" "linux")
+            #t))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
