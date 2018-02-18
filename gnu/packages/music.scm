@@ -2609,7 +2609,9 @@ of tools for manipulating and accessing your music.")
                     (("add_subdirectory\\(resources/music\\)") ""))))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f)) ; no check target
+     '(#:tests? #f ; no check target
+       ;; This flag ensures that MilkyTracker links with the JACK library.
+       #:configure-flags '("-DCMAKE_CXX_FLAGS=-ljack")))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
