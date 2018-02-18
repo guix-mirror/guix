@@ -504,7 +504,7 @@ that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
 (define-public perl-xml-sax
   (package
     (name "perl-xml-sax")
-    (version "0.99")
+    (version "1.00")
     (source
      (origin
        (method url-fetch)
@@ -512,7 +512,7 @@ that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
                            "XML-SAX-" version ".tar.gz"))
        (sha256
         (base32
-         "115dypb50w1l94y3iwihv5nkixbsv1cxiqkd93y4rk5n6s74pc1j"))))
+         "1qra9k3wszjxvsgbragl55z3qba4nri0ipmjaxfib4l6xxj6bsj5"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
