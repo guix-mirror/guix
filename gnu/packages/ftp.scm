@@ -91,14 +91,14 @@ reliability in mind.")
 (define-public ncftp
   (package
     (name "ncftp")
-    (version "3.2.5")
+    (version "3.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.ncftp.com/ncftp/ncftp-"
-                                  version "-src.tar.bz2"))
+                                  version "-src.tar.xz"))
               (sha256
                (base32
-                "0hlx12i0lwi99qsrx7nccf4nvwjj2gych4yks5y179b1ax0y5sxl"))
+                "1389657cwgw5a3kljnqmhvfh4vr2gcr71dwz1mlhf22xq23hc82z"))
               (modules '((guix build utils)))
               (snippet
                '(begin
