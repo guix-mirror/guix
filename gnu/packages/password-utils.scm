@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -410,7 +411,7 @@ through the pass command.")
 (define-public argon2
   (package
     (name "argon2")
-    (version "20161029")
+    (version "20171227")
     (source
      (origin
        (method url-fetch)
@@ -420,27 +421,28 @@ through the pass command.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1rymikbysasdadm325jx69i0q19d9srqkny69jwmhswlidr4j07y"))))
+         "1n6w5y3va7lrcym7cxr0nikapldqm80wxjdns584bvplq5r03spa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:make-flags '("CC=gcc")
+       #:make-flags '("CC=gcc"
+                      "OPTTEST=1")     ;disable CPU optimization
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'install
-           (lambda _
-             (let ((out (assoc-ref %outputs "out")))
-               (install-file "argon2" (string-append out "/bin"))
-               (install-file "libargon2.a" (string-append out "/lib"))
-               (install-file "libargon2.so" (string-append out "/lib"))
-               (copy-recursively "include"
-                                 (string-append out "/include"))))))))
+         (add-after 'unpack 'patch-Makefile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("PREFIX = /usr") (string-append "PREFIX = " out)))
+               #t)))
+         (delete 'configure))))
     (home-page "https://www.argon2.com/")
     (synopsis "Password hashing library")
     (description "Argon2 provides a key derivation function that was declared
 winner of the 2015 Password Hashing Competition.")
-    (license license:cc0)))
+    ;; Argon2 is dual licensed under CC0 and ASL 2.0.  Some of the source
+    ;; files are CC0 only; see README.md and LICENSE for details.
+    (license (list license:cc0 license:asl2.0))))
 
 (define-public python-bcrypt
   (package
