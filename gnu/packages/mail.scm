@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@crash.cx>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -103,6 +103,7 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages w3m)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages docbook)
@@ -295,7 +296,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20171208")
+    (version "20171215")
     (source
      (origin
        (method url-fetch)
@@ -303,7 +304,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0dfp7m794ws6vg029zx7wrrjrscrnmi8cvbzqzgxafl97bbjipwz"))))
+         "1df1c2ynvivna42ifj1lxmgb0bbfih0ggn1afyniadzjm6cnxdvz"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -318,46 +319,84 @@ operating systems.")
        ("libidn" ,libidn)
        ("libxml2" ,libxml2)
        ("lmdb" ,lmdb)
-       ("docbook-xsl" ,docbook-xsl)
        ("notmuch" ,notmuch)))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
+     `(("automake" ,automake)
        ("gettext-minimal" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml)
+       ("w3m" ,w3m)
+       ("tcl" ,tcl)))
     (arguments
-     `(#:configure-flags
-       (list "--enable-gpgme"
+     `(#:tests? #f
+       #:configure-flags
+       (list "--gpgme"
 
              ;; database, implies header caching
-             "--without-tokyocabinet"
-             "--without-qdbm"
-             "--without-bdb"
-             "--with-lmdb"
-             (string-append "--with-kyotocabinet="
-                            (assoc-ref %build-inputs "kyotocabinet"))
-             "--with-gdbm"
+             "--disable-tokyocabinet"
+             "--disable-qdbm"
+             "--disable-bdb"
+             "--lmdb"
+             "--kyotocabinet"
 
-             "--with-gnutls"
-             "--without-ssl"
-             "--with-sasl"
+             "--gdbm"
 
-             "--enable-smime"
-             "--enable-notmuch"
-             "--with-idn"
+             "--gnutls"
+             "--disable-ssl"
+             "--sasl"
+             (string-append "--with-sasl="
+                            (assoc-ref %build-inputs "cyrus-sasl"))
+
+
+             "--smime"
+             "--notmuch"
+             "--idn"
 
              ;; If we do not set this, neomutt wants to check
              ;; whether the path exists, which it does not
              ;; in the chroot. The workaround is this.
              "--with-mailpath=/var/mail"
 
-             (string-append "--with-curses="
-                            (assoc-ref %build-inputs "ncurses")))
+             "--with-ui=ncurses"
+             (string-append "--with-ncurses="
+                            (assoc-ref %build-inputs "ncurses"))
+             (string-append "--prefix="
+                            (assoc-ref %outputs "out"))
+             "--debug")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
+         ;; TODO: autosetup is meant to be included in the source,
+         ;; but we should package autosetup and use our own version of it.
+         (add-before 'configure 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("doc/chunk.xsl" "doc/manual.xml.tail"
+                            "doc/html.xsl" "doc/manual.xml.head")
+               (("http://docbook.sourceforge.net/release/xsl/current/")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl) "/"))
+               (("http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd")
+                (string-append (assoc-ref inputs "docbook-xml")
+                               "/xml/dtd/docbook/docbookx.dtd")))
+             #t))
+         (add-before 'configure 'fix-sasl-test
            (lambda _
-             (zero? (system* "sh" "autoreconf" "-vfi")))))))
+             ;; Upstream suggestion to fix the failing sasl autosetup test.
+             (substitute* "auto.def"
+               (("cc-with \\[list -cflags -I\\$prefix/include -libs")
+                "cc-with [list -includes stddef.h -cflags -I$prefix/include -libs"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs inputs configure-flags #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (flags `(,@configure-flags))
+                    (bash (which "bash")))
+               (setenv "SHELL" bash)
+               (setenv "CONFIG_SHELL" bash)
+               (apply invoke bash
+                      (string-append (getcwd) "/configure")
+                      flags)))))))
     (home-page "https://www.neomutt.org/")
     (synopsis "Command-line mail reader based on Mutt")
     (description
