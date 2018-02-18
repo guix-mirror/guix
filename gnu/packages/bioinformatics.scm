@@ -6769,14 +6769,14 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-getopt
   (package
     (name "r-getopt")
-    (version "1.20.1")
+    (version "1.20.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "getopt" version))
        (sha256
         (base32
-         "0m463mcvixh54i3ng42n0vxmdlf97dgbfs2sf9wnjm782ddw68hm"))))
+         "13p35lbpy7i578752fa71sbfvcsqw5qfa9p6kf8b5m3c5p9i4v1x"))))
     (build-system r-build-system)
     (home-page "https://github.com/trevorld/getopt")
     (synopsis "Command-line option processor for R")
