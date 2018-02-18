@@ -25,48 +25,35 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages perl))
 
-(define %ftp-base
-  "ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/")
-
 (define-public lsof
   (package
    (name "lsof")
    (version "4.89")
-   (source (origin
-            (method url-fetch)
-            (uri (list (string-append %ftp-base "lsof_"
-                                      version ".tar.bz2")
-                       (string-append %ftp-base "OLD/lsof_"
-                                      version ".tar.bz2")
+   (source
+    (origin
+      (method url-fetch)
+      (uri
+       (apply append
+              (map
+               (lambda (mirror-uri)
+                 (let ((tarball (string-append name "_" version ".tar.bz2")))
+                   (list
+                    (string-append mirror-uri "/" tarball)
+                    ;; Upon every new release, the previous one is moved here:
+                    (string-append mirror-uri "/OLD/" tarball))))
+               (list
+                "ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/"
 
-                       ;; Add mirrors because the FTP server at purdue.edu
-                       ;; bails out when it cannot do a reverse DNS lookup, as
-                       ;; noted at <http://people.freebsd.org/~abe/>.
-                       (string-append
-                        "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/lsof_"
-                        version ".tar.bz2")
-                       (string-append
-                        "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/OLD/lsof_"
-                        version ".tar.bz2")
-                       (string-append
-                        "http://www.mirrorservice.org/sites/"
-                        "lsof.itap.purdue.edu/pub/tools/unix/lsof/lsof_"
-                        version ".tar.bz2")
-                       (string-append
-                        "http://www.mirrorservice.org/sites/"
-                        "lsof.itap.purdue.edu/pub/tools/unix/lsof/OLD/lsof_"
-                        version ".tar.bz2")
-                       (string-append
-                        "ftp://ftp.mirrorservice.org/sites/"
-                        "lsof.itap.purdue.edu/pub/tools/unix/lsof/lsof_"
-                        version ".tar.bz2")
-                       (string-append
-                        "ftp://ftp.mirrorservice.org/sites/"
-                        "lsof.itap.purdue.edu/pub/tools/unix/lsof/OLD/lsof_"
-                        version ".tar.bz2")))
-            (sha256
-             (base32
-              "061p18v0mhzq517791xkjs8a5dfynq1418a1mwxpji69zp2jzb41"))))
+                ;; Add mirrors because the canonical FTP server at purdue.edu
+                ;; bails out when it cannot do a reverse DNS lookup, as noted
+                ;; at <http://people.freebsd.org/~abe/>.
+                "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/"
+                (string-append "http://www.mirrorservice.org/sites/"
+                               "lsof.itap.purdue.edu/pub/tools/unix/lsof")
+                (string-append "ftp://ftp.mirrorservice.org/sites/"
+                               "lsof.itap.purdue.edu/pub/tools/unix/lsof")))))
+      (sha256
+       (base32 "061p18v0mhzq517791xkjs8a5dfynq1418a1mwxpji69zp2jzb41"))))
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)))
    (arguments
