@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,7 +49,20 @@
                         "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/OLD/lsof_"
                         version ".tar.bz2")
                        (string-append
-                        "ftp://sunsite.ualberta.ca/pub/Mirror/lsof/lsof_"
+                        "http://www.mirrorservice.org/sites/"
+                        "lsof.itap.purdue.edu/pub/tools/unix/lsof/lsof_"
+                        version ".tar.bz2")
+                       (string-append
+                        "http://www.mirrorservice.org/sites/"
+                        "lsof.itap.purdue.edu/pub/tools/unix/lsof/OLD/lsof_"
+                        version ".tar.bz2")
+                       (string-append
+                        "ftp://ftp.mirrorservice.org/sites/"
+                        "lsof.itap.purdue.edu/pub/tools/unix/lsof/lsof_"
+                        version ".tar.bz2")
+                       (string-append
+                        "ftp://ftp.mirrorservice.org/sites/"
+                        "lsof.itap.purdue.edu/pub/tools/unix/lsof/OLD/lsof_"
                         version ".tar.bz2")))
             (sha256
              (base32
