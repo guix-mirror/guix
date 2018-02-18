@@ -47,6 +47,12 @@
                      (default #f))
   (host-name         avahi-configuration-host-name) ;string
   (publish?          avahi-configuration-publish?)  ;Boolean
+
+  ;; The default for this was #t in Avahi 0.6.31 and became #f in 0.7.  For
+  ;; now we stick to the old default.
+  (publish-workstation? avahi-configuration-publish-workstation? ;Boolean
+                        (default #t))
+
   (ipv4?             avahi-configuration-ipv4?)     ;Boolean
   (ipv6?             avahi-configuration-ipv6?)     ;Boolean
   (wide-area?        avahi-configuration-wide-area?) ;Boolean
@@ -77,7 +83,9 @@
                "enable-wide-area=" (bool (avahi-configuration-wide-area? config))
                "[publish]\n"
                "disable-publishing="
-               (bool (not (avahi-configuration-publish? config))))))
+               (bool (not (avahi-configuration-publish? config)))
+               "publish-workstation="
+               (bool (avahi-configuration-publish-workstation? config)))))
 
 (define %avahi-accounts
   ;; Account and group for the Avahi daemon.
