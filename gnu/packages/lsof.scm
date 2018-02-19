@@ -57,8 +57,7 @@
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments
-    `(#:tests? #f ; no test target
-      #:phases
+    `(#:phases
       (modify-phases %standard-phases
         (replace 'unpack
           (lambda* (#:key source #:allow-other-keys)
@@ -75,6 +74,23 @@
           (lambda _
             (substitute* "Makefile"
               (("`date`") "`date --date=@1`"))))
+        (add-before 'check 'disable-failing-tests
+          (lambda _
+            (substitute* "tests/Makefile"
+              ;; Fails with ‘ERROR!!! client gethostbyaddr() failure’.
+              (("(STDTST=.*) LTsock" _ prefix) prefix)
+              ;; Fails without access to a remote NFS server.
+              (("(OPTTST=.*) LTnfs"  _ prefix) prefix))))
+        (replace 'check
+          (lambda _
+            (with-directory-excursion "tests"
+              ;; Tests refuse to run on ‘unvalidated’ platforms.
+              (make-file-writable "TestDB")
+              (invoke "./Add2TestDB")
+
+              ;; The ‘standard’ tests suggest running ‘optional’ ones as well.
+              (invoke "make" "standard" "optional")
+              #t)))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
