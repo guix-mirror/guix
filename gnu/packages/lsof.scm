@@ -55,7 +55,7 @@
       (sha256
        (base32 "061p18v0mhzq517791xkjs8a5dfynq1418a1mwxpji69zp2jzb41"))))
    (build-system gnu-build-system)
-   (inputs `(("perl" ,perl)))
+   (native-inputs `(("perl" ,perl)))
    (arguments
     `(#:tests? #f ; no test target
       #:phases
