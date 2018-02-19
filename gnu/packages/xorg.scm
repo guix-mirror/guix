@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -6018,12 +6018,14 @@ basic eye-candy effects.")
              (substitute* "setup.py"
                (("/usr/lib/")
                 (string-append (assoc-ref outputs "out") "/lib/")))
+             ;; Use Xvfb with '-nolisten local' to disable abstract X11 sockets.
              (substitute* "./xpra/scripts/config.py"
                ((":.*join.*xvfb.*")
                 (string-append ": \"" (assoc-ref inputs "xorg-server")
                                "/bin/Xvfb +extension Composite"
                                " -screen 0 5760x2560x24+32 -dpi 96 -nolisten"
-                               " tcp -noreset -auth $XAUTHORITY\",\n")))
+                               " tcp -nolisten local -noreset -auth"
+                               " $XAUTHORITY\",\n")))
              (substitute* "./xpra/scripts/config.py"
                (("socket-dir.*: \"\",")
                 "socket-dir\"        : \"~/.xpra\","))
