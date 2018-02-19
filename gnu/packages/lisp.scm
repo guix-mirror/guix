@@ -273,7 +273,6 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
      '(#:configure-flags '("--enable-portability"
                            "--with-dynamic-ffi"
                            "--with-dynamic-modules"
-                           "--with-module=bindings/glibc"
                            "--with-module=rawsock")
        #:build #f
        #:phases
