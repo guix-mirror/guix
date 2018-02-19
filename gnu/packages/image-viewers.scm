@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -416,6 +417,7 @@ imaging.  It supports several HDR and LDR image formats, and it can:
     (arguments
      ;; Python 2.5 or newer (Python 3 and up is not supported)
      `(#:python ,python-2
+       #:tests? #f ; there are no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'configure
