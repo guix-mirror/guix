@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
+;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3571,6 +3572,31 @@ types defined in the @code{vector} package, making it easy to serialize
 vectors to and from disk.  We use the generic interface to vectors, so all
 vector types are supported.  Specific instances are provided for unboxed,
 boxed and storable vectors.")
+    (license license:bsd-3)))
+
+(define-public ghc-bloomfilter
+  (package
+    (name "ghc-bloomfilter")
+    (version "2.0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "bloomfilter/bloomfilter-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03vrmncg1c10a2wcg5skq30m1yiknn7nwxz2gblyyfaxglshspkc"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-random" ,ghc-random)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/bos/bloomfilter")
+    (synopsis "Pure and impure Bloom filter implementations")
+    (description "This package provides both mutable and immutable Bloom
+filter data types, along with a family of hash functions and an easy-to-use
+interface.")
     (license license:bsd-3)))
 
 (define-public ghc-network
