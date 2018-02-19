@@ -71,6 +71,10 @@
             (setenv "LSOF_MAKE" "make")
             (invoke "./Configure" "linux")
             #t))
+        (add-after 'configure 'patch-timestamps
+          (lambda _
+            (substitute* "Makefile"
+              (("`date`") "`date --date=@1`"))))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
