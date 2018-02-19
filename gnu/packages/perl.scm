@@ -3792,7 +3792,7 @@ that may contain multiple values per key, inspired by MultiDict of WebOb.")
 (define-public perl-importer
   (package
     (name "perl-importer")
-    (version "0.024")
+    (version "0.025")
     (source
       (origin
         (method url-fetch)
@@ -3800,7 +3800,7 @@ that may contain multiple values per key, inspired by MultiDict of WebOb.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "0mx50xds7iphxykbr9b0w2qki92l3gpagsdchm4ncsrnxc67c68x"))))
+          "0iirw6csfbycr6z5s6lgd1zdqdjhb436zcxy1hyh6x3x92616i87"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Importer//")
     (synopsis "Alternative but compatible interface to modules that export symbols")
