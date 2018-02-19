@@ -1950,19 +1950,20 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
      `(("xz" ,xz)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f ; FIXME: Investigate test failures
+     `(#:tests? #f                      ; FIXME: Investigate test failures
        #:configure-flags '("--with-xz" "--with-zlib")
-       #:phases (alist-cons-after
-                 'install 'install-modprobe&co
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out (assoc-ref outputs "out"))
-                          (bin (string-append out "/bin")))
-                     (for-each (lambda (tool)
-                                 (symlink "kmod"
-                                          (string-append bin "/" tool)))
-                               '("insmod" "rmmod" "lsmod" "modprobe"
-                                 "modinfo" "depmod"))))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-modprobe&co
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (for-each (lambda (tool)
+                           (symlink "kmod"
+                                    (string-append bin "/" tool)))
+                         '("insmod" "rmmod" "lsmod" "modprobe"
+                           "modinfo" "depmod"))
+               #t))))))
     (home-page "https://www.kernel.org/")
     (synopsis "Kernel module tools")
     (description "Kmod is a set of tools to handle common tasks with Linux
