@@ -679,9 +679,6 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
                      (logior (input-flags IUTF8)
                              (termios-input-flags termios))))
 
-        ;; See console_codes(4).
-        (display "\x1b%G" (fdes->outport fd))
-
         (tcsetattr fd (tcsetattr-action TCSAFLUSH)
                    (set-utf8-input termios))
 
