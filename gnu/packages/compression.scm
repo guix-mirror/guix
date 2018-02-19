@@ -272,11 +272,9 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
              (let* ((out    (assoc-ref outputs "out"))
                     (libdir (string-append out "/lib")))
                (for-each (lambda (file)
-                           (let ((base (basename file)))
-                             (format #t "installing `~a' to `~a'~%"
-                                     base libdir)
-                             (copy-file file
-                                        (string-append libdir "/" base))))
+                           (format #t "installing `~a' to `~a'~%"
+                                   (basename file) libdir)
+                           (install-file file libdir))
                          (find-files "." "^libbz2\\.so")))
              #t))
          (add-after 'install-shared-lib 'patch-scripts
