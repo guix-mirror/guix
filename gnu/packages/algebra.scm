@@ -530,16 +530,17 @@ a C program.")
     (arguments
      '(#:configure-flags
        '("--enable-shared" "--enable-openmp" "--enable-threads")
-       #:phases (alist-cons-before
-                 'build 'no-native
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'no-native
                  (lambda _
                    ;; By default '-mtune=native' is used.  However, that may
                    ;; cause the use of ISA extensions (SSE2, etc.) that are
                    ;; not necessarily available on the user's machine when
                    ;; that package is built on a different machine.
                    (substitute* (find-files "." "Makefile$")
-                     (("-mtune=native") "")))
-                 %standard-phases)))
+                     (("-mtune=native") ""))
+                   #t)))))
     (native-inputs `(("perl" ,perl)))
     (home-page "http://fftw.org")
     (synopsis "Computing the discrete Fourier transform")
