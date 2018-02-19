@@ -53,6 +53,7 @@
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -211,7 +212,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.40.14")
+   (version "1.41.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -219,13 +220,14 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1qqpd8x1pl483ynj3mc5q4n8y2pxqhg2bv19vd94r7mzlzm1pbwh"))))
+              "1hxbwb9aak6m85i4kimsgq46nd3b68r6432xjna94a97ab7s8lqk"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("cairo" ,cairo)
       ("harfbuzz" ,harfbuzz)))
    (inputs
-    `(("zlib" ,zlib)
+    `(("fribidi" ,fribidi)
+      ("zlib" ,zlib)
 
       ;; Some packages, such as Openbox, expect Pango to be built with the
       ;; optional libxft support.
