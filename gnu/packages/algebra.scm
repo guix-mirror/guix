@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -516,17 +516,16 @@ a C program.")
     (license license:bsd-3)))
 
 (define-public fftw
-  ;; TODO: Make this 3.3.7 (see below) on the next upgrade cycle.
   (package
     (name "fftw")
-    (version "3.3.5")
+    (version "3.3.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.fftw.org/pub/fftw/fftw-"
                                  version".tar.gz"))
              (sha256
               (base32
-               "1kwbx92ps0r7s2mqy7lxbxanslxdzj7dp7r7gmdkzv1j8yqf3kwf"))))
+               "0wsms8narnbhfsa8chdflv2j9hzspvflblnqdn7hw8x5xdzrnq1v"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -576,25 +575,12 @@ cosine/ sine transforms or DCT/DST).")
      (string-append (package-description fftw)
                     "  With OpenMPI parallelism support."))))
 
-(define-public fftw-3.3.7
-  ;; TODO: Make this the default 'fftw' on the next upgrade cycle.
-  (package
-    (inherit fftw)
-    (version "3.3.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "ftp://ftp.fftw.org/pub/fftw/fftw-"
-                                  version".tar.gz"))
-              (sha256
-               (base32
-                "0wsms8narnbhfsa8chdflv2j9hzspvflblnqdn7hw8x5xdzrnq1v"))))))
-
 (define-public fftw-avx
   (package
-    (inherit fftw-3.3.7)
+    (inherit fftw)
     (name "fftw-avx")
     (arguments
-     (substitute-keyword-arguments (package-arguments fftw-3.3.7)
+     (substitute-keyword-arguments (package-arguments fftw)
        ((#:configure-flags flags ''())
         ;; Enable AVX & co.  See details at:
         ;; <http://fftw.org/fftw3_doc/Installation-on-Unix.html>.
