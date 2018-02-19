@@ -1933,7 +1933,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
 (define-public kmod
   (package
     (name "kmod")
-    (version "24")
+    (version "25")
     (source (origin
               (method url-fetch)
               (uri
@@ -1941,7 +1941,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                               "kmod-" version ".tar.xz"))
               (sha256
                (base32
-                "15xkkkzvca9flvkm48gkh8y8f13vlm3sl7nz9ydc7b3jy4fqs2v1"))
+                "1kgixs4m3jvwk7fb3d18n6j77qhgi9qfv4csj35rs5ancr4ycrbi"))
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
