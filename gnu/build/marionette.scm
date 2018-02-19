@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,8 +97,11 @@ QEMU monitor and to the guest's backdoor REPL."
           "-monitor" (string-append "unix:" socket-directory "/monitor")
           "-chardev" (string-append "socket,id=repl,path=" socket-directory
                                     "/repl")
+
+          ;; See
+          ;; <http://www.linux-kvm.org/page/VMchannel_Requirements#Invocation>.
           "-device" "virtio-serial"
-          "-device" "virtconsole,chardev=repl"))
+          "-device" "virtserialport,chardev=repl,name=org.gnu.guix.port.0"))
 
   (define (accept* port)
     (match (select (list port) '() (list port) timeout)
