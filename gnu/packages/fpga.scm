@@ -105,7 +105,7 @@ It operates as a compiler, compiling source code written in Verilog
 (IEEE-1364) into some target format.
 For batch simulation, the compiler can generate an intermediate form
 called vvp assembly.
-This intermediate form is executed by the ``vvp'' command.
+This intermediate form is executed by @command{vvp}.
 For synthesis, the compiler generates netlists in the desired format.")
     ;; GPL2 only because of:
     ;; - ./driver/iverilog.man.in
