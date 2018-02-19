@@ -139,7 +139,7 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
 (define-public socat
   (package
     (name "socat")
-    (version "1.7.3.1")
+    (version "1.7.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -147,7 +147,7 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1apvi7sahcl44arnq1ad2y6lbfqnmvx7nhz9i3rkk0f382anbnnj"))))
+                "0lcj6zpra33xhgvhmz9l3cqz10v8ybafb8dd1yqkwf1rhy01ymp3"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))                    ;no 'check' phase
     (inputs `(("openssl" ,openssl)))
