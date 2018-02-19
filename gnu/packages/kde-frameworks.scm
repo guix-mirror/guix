@@ -1316,7 +1316,8 @@ provides uniform access to generation of barcodes with data.")
        ("kiconthemes" ,kiconthemes) ; optional
        ("kirigami" ,kirigami)
        ("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtquickcontrols2" ,qtquickcontrols2)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "QtQuickControls2 style that integrates with the desktop")
     (description "This is a style for QtQuickControls2 which is using
