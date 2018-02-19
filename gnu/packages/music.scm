@@ -3726,6 +3726,34 @@ notation and includes basic support for digital audio.")
     (home-page "http://www.rosegardenmusic.com/")
     (license license:gpl2)))
 
+(define-public patchmatrix
+  (package
+    (name "patchmatrix")
+    (version "0.12.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OpenMusicKontrollers/patchmatrix.git")
+                    (commit version)))
+              (file-name (string-append "patchmatrix-" version "-checkout"))
+              (sha256
+               (base32
+                "19ivp7h5vq6r1qhmycjxzvrgg7fc4a3v5vb3n4c7afs4z3pj53zi"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))          ; no test target
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("mesa" ,mesa)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/OpenMusicKontrollers/patchmatrix")
+    (synopsis "Simple JACK patch bay")
+    (description "PatchMatrix is a patch bay for the JACK audio connection
+kit.  It provides a patch bay in flow matrix style for audio, MIDI, CV, and
+OSC connections.")
+    (license license:artistic2.0)))
+
 (define-public sorcer
   (package
     (name "sorcer")
