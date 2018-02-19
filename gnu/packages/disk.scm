@@ -178,7 +178,7 @@ scheme.")
 (define-public ddrescue
   (package
     (name "ddrescue")
-    (version "1.22")
+    (version "1.23")
     (source
      (origin
       (method url-fetch)
@@ -186,7 +186,7 @@ scheme.")
                           version ".tar.lz"))
       (sha256
        (base32
-        "19qhx9ggkkjl0g3a88g501wmybkj1y4n5lm5kp0km0blh0p7p189"))))
+        "13cd6c0x91zq10vdlyl6r5rib47bmsn5sshmkin3igwj8pa2vbm9"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/ddrescue/ddrescue.html")
     (synopsis "Data recovery utility")
