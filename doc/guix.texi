@@ -20385,12 +20385,18 @@ containing at least the kernel, initrd, and bootloader data files must
 be created.  The @code{--image-size} option can be used to specify the
 size of the image.
 
+@cindex System images, creation in various formats
+@cindex Creating system images in various formats
 @item vm-image
 @itemx disk-image
-Return a virtual machine or disk image of the operating system declared
-in @var{file} that stands alone.  By default, @command{guix system}
-estimates the size of the image needed to store the system, but you can
-use the @option{--image-size} option to specify a value.
+@itemx docker-image
+Return a virtual machine, disk image, or Docker image of the operating
+system declared in @var{file} that stands alone.  By default,
+@command{guix system} estimates the size of the image needed to store
+the system, but you can use the @option{--image-size} option to specify
+a value.  Docker images are built to contain exactly what they need, so
+the @option{--image-size} option is ignored in the case of
+@code{docker-image}.
 
 You can specify the root file system type by using the
 @option{--file-system-type} option.  It defaults to @code{ext4}.
@@ -20407,6 +20413,28 @@ using the following command:
 @example
 # dd if=$(guix system disk-image my-os.scm) of=/dev/sdc
 @end example
+
+When using @code{docker-image}, a Docker image is produced.  Guix builds
+the image from scratch, not from a pre-existing Docker base image.  As a
+result, it contains @emph{exactly} what you define in the operating
+system configuration file.  You can then load the image and launch a
+Docker container using commands like the following:
+
+@example
+image_id="$(docker load < guixsd-docker-image.tar.gz)"
+docker run -e GUIX_NEW_SYSTEM=/var/guix/profiles/system \\
+    --entrypoint /var/guix/profiles/system/profile/bin/guile \\
+    $image_id /var/guix/profiles/system/boot
+@end example
+
+This command starts a new Docker container from the specified image.  It
+will boot the GuixSD system in the usual manner, which means it will
+start any services you have defined in the operating system
+configuration.  Depending on what you run in the Docker container, it
+may be necessary to give the container additional permissions.  For
+example, if you intend to build software using Guix inside of the Docker
+container, you may need to pass the @option{--privileged} option to
+@code{docker run}.
 
 @item container
 Return a script to run the operating system declared in @var{file}
