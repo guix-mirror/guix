@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -200,131 +201,131 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          #:tests? #f
 
          #:phases
-         (alist-cons-before
-          'configure 'pre-configure
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((libdir ,(libdir))
-                  (libc   (assoc-ref inputs "libc")))
-              (when libc
-                ;; The following is not performed for `--without-headers'
-                ;; cross-compiler builds.
+         (modify-phases %standard-phases
+           (add-before 'configure 'pre-configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((libdir ,(libdir))
+                     (libc   (assoc-ref inputs "libc")))
+                 (when libc
+                       ;; The following is not performed for `--without-headers'
+                       ;; cross-compiler builds.
 
-                ;; Join multi-line definitions of GLIBC_DYNAMIC_LINKER* into a
-                ;; single line, to allow the next step to work properly.
-                (for-each
-                 (lambda (x)
-                   (substitute* (find-files "gcc/config"
-                                            "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
-                     (("(#define (GLIBC|GNU_USER)_DYNAMIC_LINKER.*)\\\\\n$" _ line)
-                      line)))
-                 '(1 2 3))
+                       ;; Join multi-line definitions of GLIBC_DYNAMIC_LINKER* into a
+                       ;; single line, to allow the next step to work properly.
+                       (for-each
+                        (lambda (x)
+                          (substitute* (find-files "gcc/config"
+                                                   "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
+                            (("(#define (GLIBC|GNU_USER)_DYNAMIC_LINKER.*)\\\\\n$" _ line)
+                             line)))
+                        '(1 2 3))
 
-                ;; Fix the dynamic linker's file name.
-                (substitute* (find-files "gcc/config"
-                                         "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
-                  (("#define (GLIBC|GNU_USER)_DYNAMIC_LINKER([^ \t]*).*$"
-                    _ gnu-user suffix)
-                   (format #f "#define ~a_DYNAMIC_LINKER~a \"~a\"~%"
-                           gnu-user suffix
-                           (string-append libc ,(glibc-dynamic-linker)))))
+                       ;; Fix the dynamic linker's file name.
+                       (substitute* (find-files "gcc/config"
+                                                "^(linux|gnu|sysv4)(64|-elf|-eabi)?\\.h$")
+                         (("#define (GLIBC|GNU_USER)_DYNAMIC_LINKER([^ \t]*).*$"
+                           _ gnu-user suffix)
+                          (format #f "#define ~a_DYNAMIC_LINKER~a \"~a\"~%"
+                                  gnu-user suffix
+                                  (string-append libc ,(glibc-dynamic-linker)))))
 
-                ;; Tell where to find libstdc++, libc, and `?crt*.o', except
-                ;; `crt{begin,end}.o', which come with GCC.
-                (substitute* (find-files "gcc/config"
-                                         "^gnu-user.*\\.h$")
-                  (("#define GNU_USER_TARGET_LIB_SPEC (.*)$" _ suffix)
-                   ;; Help libgcc_s.so be found (see also below.)  Always use
-                   ;; '-lgcc_s' so that libgcc_s.so is always found by those
-                   ;; programs that use 'pthread_cancel' (glibc dlopens
-                   ;; libgcc_s.so when pthread_cancel support is needed, but
-                   ;; having it in the application's RUNPATH isn't enough; see
-                   ;; <http://sourceware.org/ml/libc-help/2013-11/msg00023.html>.)
-                   ;;
-                   ;; NOTE: The '-lgcc_s' added below needs to be removed in a
-                   ;; later phase of %gcc-static.  If you change the string
-                   ;; below, make sure to update the relevant code in
-                   ;; %gcc-static package as needed.
-                   (format #f "#define GNU_USER_TARGET_LIB_SPEC \
+                       ;; Tell where to find libstdc++, libc, and `?crt*.o', except
+                       ;; `crt{begin,end}.o', which come with GCC.
+                       (substitute* (find-files "gcc/config"
+                                                "^gnu-user.*\\.h$")
+                         (("#define GNU_USER_TARGET_LIB_SPEC (.*)$" _ suffix)
+                          ;; Help libgcc_s.so be found (see also below.)  Always use
+                          ;; '-lgcc_s' so that libgcc_s.so is always found by those
+                          ;; programs that use 'pthread_cancel' (glibc dlopens
+                          ;; libgcc_s.so when pthread_cancel support is needed, but
+                          ;; having it in the application's RUNPATH isn't enough; see
+                          ;; <http://sourceware.org/ml/libc-help/2013-11/msg00023.html>.)
+                          ;;
+                          ;; NOTE: The '-lgcc_s' added below needs to be removed in a
+                          ;; later phase of %gcc-static.  If you change the string
+                          ;; below, make sure to update the relevant code in
+                          ;; %gcc-static package as needed.
+                          (format #f "#define GNU_USER_TARGET_LIB_SPEC \
 \"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib -lgcc_s}} \" ~a"
-                           libc libc libdir suffix))
-                  (("#define GNU_USER_TARGET_STARTFILE_SPEC.*$" line)
-                   (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
+                                  libc libc libdir suffix))
+                         (("#define GNU_USER_TARGET_STARTFILE_SPEC.*$" line)
+                          (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
 #define STANDARD_STARTFILE_PREFIX_2 \"\"
 ~a"
-                           libc line)))
+                                  libc line)))
 
-              ;; The rs6000 (a.k.a. powerpc) config in GCC does not use
-              ;; GNU_USER_* defines.  Do the above for this case.
-              (substitute*
-                  "gcc/config/rs6000/sysv4.h"
-                (("#define LIB_LINUX_SPEC (.*)$" _ suffix)
-                 (format #f "#define LIB_LINUX_SPEC \
+                       ;; The rs6000 (a.k.a. powerpc) config in GCC does not use
+                       ;; GNU_USER_* defines.  Do the above for this case.
+                       (substitute*
+                           "gcc/config/rs6000/sysv4.h"
+                         (("#define LIB_LINUX_SPEC (.*)$" _ suffix)
+                          (format #f "#define LIB_LINUX_SPEC \
 \"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib -lgcc_s}} \" ~a"
-                         libc libc libdir suffix))
-                (("#define	STARTFILE_LINUX_SPEC.*$" line)
-                 (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
+                                  libc libc libdir suffix))
+                         (("#define	STARTFILE_LINUX_SPEC.*$" line)
+                          (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
 #define STANDARD_STARTFILE_PREFIX_2 \"\"
 ~a"
-                         libc line))))
+                                  libc line))))
 
-              ;; Don't retain a dependency on the build-time sed.
-              (substitute* "fixincludes/fixincl.x"
-                (("static char const sed_cmd_z\\[\\] =.*;")
-                 "static char const sed_cmd_z[] = \"sed\";"))
+                 ;; Don't retain a dependency on the build-time sed.
+                 (substitute* "fixincludes/fixincl.x"
+                   (("static char const sed_cmd_z\\[\\] =.*;")
+                    "static char const sed_cmd_z[] = \"sed\";"))
 
-              ;; Aarch64 support didn't land in GCC until the 4.8 series.
-              (when (file-exists? "gcc/config/aarch64")
-                ;; Force Aarch64 libdir to be /lib and not /lib64
-                (substitute* "gcc/config/aarch64/t-aarch64-linux"
-                  (("lib64") "lib")))
+                 ;; Aarch64 support didn't land in GCC until the 4.8 series.
+                 (when (file-exists? "gcc/config/aarch64")
+                       ;; Force Aarch64 libdir to be /lib and not /lib64
+                       (substitute* "gcc/config/aarch64/t-aarch64-linux"
+                         (("lib64") "lib")))
 
-              (when (file-exists? "libbacktrace")
-                ;; GCC 4.8+ comes with libbacktrace.  By default it builds
-                ;; with -Werror, which fails with a -Wcast-qual error in glibc
-                ;; 2.21's stdlib-bsearch.h.  Remove -Werror.
-                (substitute* "libbacktrace/configure"
-                  (("WARN_FLAGS=(.*)-Werror" _ flags)
-                   (string-append "WARN_FLAGS=" flags)))
+                 (when (file-exists? "libbacktrace")
+                       ;; GCC 4.8+ comes with libbacktrace.  By default it builds
+                       ;; with -Werror, which fails with a -Wcast-qual error in glibc
+                       ;; 2.21's stdlib-bsearch.h.  Remove -Werror.
+                       (substitute* "libbacktrace/configure"
+                         (("WARN_FLAGS=(.*)-Werror" _ flags)
+                          (string-append "WARN_FLAGS=" flags)))
 
-                (when (file-exists? "libsanitizer/libbacktrace")
-                  ;; Same in libsanitizer's bundled copy (!) found in 4.9+.
-                  (substitute* "libsanitizer/libbacktrace/Makefile.in"
-                    (("-Werror")
-                     ""))))
+                       (when (file-exists? "libsanitizer/libbacktrace")
+                             ;; Same in libsanitizer's bundled copy (!) found in 4.9+.
+                             (substitute* "libsanitizer/libbacktrace/Makefile.in"
+                               (("-Werror")
+                                ""))))
 
-              ;; Add a RUNPATH to libstdc++.so so that it finds libgcc_s.
-              ;; See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=32354>
-              ;; and <http://bugs.gnu.org/20358>.
-              (substitute* "libstdc++-v3/src/Makefile.in"
-                (("^OPT_LDFLAGS = ")
-                 "OPT_LDFLAGS = -Wl,-rpath=$(libdir) "))
+                 ;; Add a RUNPATH to libstdc++.so so that it finds libgcc_s.
+                 ;; See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=32354>
+                 ;; and <http://bugs.gnu.org/20358>.
+                 (substitute* "libstdc++-v3/src/Makefile.in"
+                   (("^OPT_LDFLAGS = ")
+                    "OPT_LDFLAGS = -Wl,-rpath=$(libdir) "))
 
-              ;; Move libstdc++*-gdb.py to the "lib" output to avoid a
-              ;; circularity between "out" and "lib".  (Note:
-              ;; --with-python-dir is useless because it imposes $(prefix) as
-              ;; the parent directory.)
-              (substitute* "libstdc++-v3/python/Makefile.in"
-                (("pythondir = .*$")
-                 (string-append "pythondir = " libdir "/share"
-                                "/gcc-$(gcc_version)/python\n")))
+                 ;; Move libstdc++*-gdb.py to the "lib" output to avoid a
+                 ;; circularity between "out" and "lib".  (Note:
+                 ;; --with-python-dir is useless because it imposes $(prefix) as
+                 ;; the parent directory.)
+                 (substitute* "libstdc++-v3/python/Makefile.in"
+                   (("pythondir = .*$")
+                    (string-append "pythondir = " libdir "/share"
+                                   "/gcc-$(gcc_version)/python\n")))
 
-              ;; Avoid another circularity between the outputs: this #define
-              ;; ends up in auto-host.h in the "lib" output, referring to
-              ;; "out".  (This variable is used to augment cpp's search path,
-              ;; but there's nothing useful to look for here.)
-              (substitute* "gcc/config.in"
-                (("PREFIX_INCLUDE_DIR")
-                 "PREFIX_INCLUDE_DIR_isnt_necessary_here"))))
+                 ;; Avoid another circularity between the outputs: this #define
+                 ;; ends up in auto-host.h in the "lib" output, referring to
+                 ;; "out".  (This variable is used to augment cpp's search path,
+                 ;; but there's nothing useful to look for here.)
+                 (substitute* "gcc/config.in"
+                   (("PREFIX_INCLUDE_DIR")
+                    "PREFIX_INCLUDE_DIR_isnt_necessary_here"))
+                 #t)))
 
-          (alist-cons-after
-           'configure 'post-configure
-           (lambda _
-             ;; Don't store configure flags, to avoid retaining references to
-             ;; build-time dependencies---e.g., `--with-ppl=/gnu/store/xxx'.
-             (substitute* "Makefile"
-               (("^TOPLEVEL_CONFIGURE_ARGUMENTS=(.*)$" _ rest)
-                "TOPLEVEL_CONFIGURE_ARGUMENTS=\n")))
-           %standard-phases))))
+           (add-after 'configure 'post-configure
+             (lambda _
+               ;; Don't store configure flags, to avoid retaining references to
+               ;; build-time dependencies---e.g., `--with-ppl=/gnu/store/xxx'.
+               (substitute* "Makefile"
+                 (("^TOPLEVEL_CONFIGURE_ARGUMENTS=(.*)$" _ rest)
+                  "TOPLEVEL_CONFIGURE_ARGUMENTS=\n"))
+               #t)))))
 
       (native-search-paths
        ;; Use the language-specific variables rather than 'CPATH' because they
