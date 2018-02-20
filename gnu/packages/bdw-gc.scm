@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,14 +30,14 @@
 (define-public libgc
   (package
    (name "libgc")
-   (version "7.6.0")
+   (version "7.6.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.hboehm.info/gc/gc_source/gc-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "143x7g0d0k6250ai6m2x3l4y352mzizi4wbgrmahxscv2aqjhjm1"))))
+              "076dzsqqyxd3nlzs0z277vvhqjp8nv5dqi763s0m90zr6ljiyk5r"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
