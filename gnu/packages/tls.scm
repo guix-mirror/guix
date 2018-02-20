@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -65,8 +65,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.12")
-    (replacement libtasn1/fixed)
+    (version "4.13")
     (source
      (origin
       (method url-fetch)
@@ -74,8 +73,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0ls7jdq3y5fnrwg0pzhq11m21r8pshac2705bczz6mqjc8pdllv7"))
-      (patches (search-patches "libtasn1-CVE-2017-10790.patch"))))
+        "1jlc1iahj8k3haz28j55nzg7sgni5h41vqy461i1bpbx6668wlky"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/libtasn1/")
@@ -86,14 +84,6 @@ for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
     (license license:lgpl2.0+)))
-
-(define libtasn1/fixed
-  (package
-    (inherit libtasn1)
-    (source (origin
-              (inherit (package-source libtasn1))
-              (patches (search-patches "libtasn1-CVE-2017-10790.patch"
-                                       "libtasn1-CVE-2018-6003.patch"))))))
 
 (define-public asn1c
   (package
