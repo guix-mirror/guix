@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -314,14 +315,14 @@ target that libc."
        `(#:modules ((guix build gnu-build-system)
                     (guix build utils)
                     (srfi srfi-26))
-         #:phases (alist-cons-before
-                   'configure 'set-cross-headers-path
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let* ((mach (assoc-ref inputs "cross-gnumach-headers"))
-                            (cpath (string-append mach "/include")))
-                       (for-each (cut setenv <> cpath)
-                                 ',%gcc-cross-include-paths)))
-                   %standard-phases)
+         #:phases (modify-phases %standard-phases
+                    (add-before 'configure 'set-cross-headers-path
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (let* ((mach (assoc-ref inputs "cross-gnumach-headers"))
+                               (cpath (string-append mach "/include")))
+                          (for-each (cut setenv <> cpath)
+                                    ',%gcc-cross-include-paths)
+                          #t))))
          #:configure-flags (list ,(string-append "--target=" target))
          ,@(package-arguments mig)))
 
@@ -352,16 +353,16 @@ target that libc."
                         (srfi srfi-26))
              ,@(package-arguments glibc/hurd-headers))
          ((#:phases phases)
-          `(alist-cons-before
-            'pre-configure 'set-cross-headers-path
-            (lambda* (#:key inputs #:allow-other-keys)
-              (let* ((mach (assoc-ref inputs "gnumach-headers"))
-                     (hurd (assoc-ref inputs "hurd-headers"))
-                     (cpath (string-append mach "/include:"
-                                           hurd "/include")))
-                (for-each (cut setenv <> cpath)
-                          ',%gcc-cross-include-paths)))
-            ,phases))))
+          `(modify-phases ,phases
+             (add-before 'pre-configure 'set-cross-headers-path
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let* ((mach (assoc-ref inputs "gnumach-headers"))
+                        (hurd (assoc-ref inputs "hurd-headers"))
+                        (cpath (string-append mach "/include:"
+                                              hurd "/include")))
+                   (for-each (cut setenv <> cpath)
+                             ',%gcc-cross-include-paths)
+                   #t)))))))
 
       (propagated-inputs `(("gnumach-headers" ,xgnumach-headers)
                            ("hurd-headers" ,xhurd-headers)))
@@ -382,14 +383,14 @@ target that libc."
                       (srfi srfi-26))
            ,@(package-arguments hurd-minimal))
          ((#:phases phases)
-          `(alist-cons-before
-            'configure 'set-cross-headers-path
-            (lambda* (#:key inputs #:allow-other-keys)
-              (let* ((glibc-headers (assoc-ref inputs "cross-glibc-hurd-headers"))
-                    (cpath (string-append glibc-headers "/include")))
-                (for-each (cut setenv <> cpath)
-                          ',%gcc-cross-include-paths)))
-            ,phases))))
+          `(modify-phases ,phases
+             (add-before 'configure 'set-cross-headers-path
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let* ((glibc-headers (assoc-ref inputs "cross-glibc-hurd-headers"))
+                        (cpath (string-append glibc-headers "/include")))
+                   (for-each (cut setenv <> cpath)
+                             ',%gcc-cross-include-paths)
+                   #t)))))))
 
       (inputs `(("cross-glibc-hurd-headers" ,xglibc/hurd-headers)))
 
@@ -456,17 +457,16 @@ XBINUTILS and the cross tool chain."
               `(cons ,(string-append "--host=" target)
                    ,flags))
              ((#:phases phases)
-              `(alist-cons-before
-                'configure 'set-cross-kernel-headers-path
-                (lambda* (#:key inputs #:allow-other-keys)
-                  (let* ((kernel (assoc-ref inputs "kernel-headers"))
-                         (cpath (string-append kernel "/include")))
-                    (for-each (cut setenv <> cpath)
-                              ',%gcc-cross-include-paths)
-                    (setenv "CROSS_LIBRARY_PATH"
-                            (string-append kernel "/lib")) ;for Hurd's libihash
-                    #t))
-                ,phases))))
+              `(modify-phases ,phases
+                 (add-before 'configure 'set-cross-kernel-headers-path
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let* ((kernel (assoc-ref inputs "kernel-headers"))
+                            (cpath (string-append kernel "/include")))
+                       (for-each (cut setenv <> cpath)
+                                 ',%gcc-cross-include-paths)
+                       (setenv "CROSS_LIBRARY_PATH"
+                               (string-append kernel "/lib")) ; for Hurd's libihash
+                       #t)))))))
 
           ;; Shadow the native "kernel-headers" because glibc's recipe expects the
           ;; "kernel-headers" input to point to the right thing.
