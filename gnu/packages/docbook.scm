@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -236,19 +237,19 @@ by no means limited to these applications.)  This package provides XML DTDs.")
        #:use-setuptools? #f
        #:tests? #f                      ;no 'test' command
        #:phases
-       (alist-cons-after
-        'wrap 'set-path
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            ;; dblatex executes helper programs at runtime.
-            (wrap-program (string-append out "/bin/dblatex")
-                          `("PATH" ":" prefix
-                            ,(map (lambda (input)
-                                    (string-append (assoc-ref inputs input)
-                                                   "/bin"))
-                                  '("libxslt" "texlive"
-                                    "imagemagick" "inkscape"))))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'wrap 'set-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; dblatex executes helper programs at runtime.
+               (wrap-program (string-append out "/bin/dblatex")
+                 `("PATH" ":" prefix
+                   ,(map (lambda (input)
+                           (string-append (assoc-ref inputs input)
+                                          "/bin"))
+                         '("libxslt" "texlive"
+                           "imagemagick" "inkscape"))))
+               #t))))))
     (home-page "http://dblatex.sourceforge.net")
     (synopsis "DocBook to LaTeX Publishing")
     (description
