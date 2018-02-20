@@ -56,7 +56,8 @@
      (let ((patch-makefile-phase
             '(lambda _
                (for-each patch-makefile-SHELL
-                         (find-files "." "Makefile.in"))))
+                         (find-files "." "Makefile.in"))
+               #t))
            (configure-phase
             ;; The 'configure' script does not understand '--docdir', so we must
             ;; override that and use '--mandir' instead.
@@ -64,21 +65,23 @@
                        #:allow-other-keys)
                (let ((out (assoc-ref outputs "out"))
                      (doc (assoc-ref outputs "doc")))
-                 (zero? (apply system* "./configure"
-                               (string-append "SHELL=" (which "sh"))
-                               (string-append "--build=" build)
-                               (string-append "--prefix=" out)
-                               (string-append "--mandir=" doc "/share/man")
-                               (if target
-                                   (cons (string-append "--host=" target)
-                                         configure-flags)
-                                   configure-flags))))))
+                 (apply invoke "./configure"
+                        (string-append "SHELL=" (which "sh"))
+                        (string-append "--build=" build)
+                        (string-append "--prefix=" out)
+                        (string-append "--mandir=" doc "/share/man")
+                        (if target
+                            (cons (string-append "--host=" target)
+                                  configure-flags)
+                            configure-flags))
+                 #t)))
            (apply-rollup-patch-phase
             '(lambda* (#:key inputs native-inputs #:allow-other-keys)
                (copy-file (assoc-ref (or native-inputs inputs) "rollup-patch")
                           (string-append (getcwd) "/rollup-patch.sh.bz2"))
-               (and (zero? (system* "bzip2" "-d" "rollup-patch.sh.bz2"))
-                    (zero? (system* "sh" "rollup-patch.sh")))))
+               (invoke "bzip2" "-d" "rollup-patch.sh.bz2")
+               (invoke "sh" "rollup-patch.sh")
+               #t))
            (remove-shebang-phase
             '(lambda _
                ;; To avoid retaining a reference to the bootstrap Bash via the
@@ -149,7 +152,8 @@
                                            (when (file-exists? packagew.pc)
                                              (symlink packagew.pc package.pc))))
                                        '())))
-                             '("curses" "ncurses" "form" "panel" "menu")))))))
+                             '("curses" "ncurses" "form" "panel" "menu")))
+                 #t))))
        `(#:configure-flags
          ,(cons*
            'quasiquote
