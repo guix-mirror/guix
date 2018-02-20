@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -250,7 +250,7 @@ in C/C++.")
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.17")
+    (version "4.18")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -258,7 +258,7 @@ in C/C++.")
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "158hdn285dsb5rys8wl1wi32dd1axwhqq0r8fwny4aj157m0l2jr"))))
+               "0d7vr3wrgp73qbywrvdkikk8vq1s1n9vhf62db80g1zqkg05g5mq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
