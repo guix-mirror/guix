@@ -1640,34 +1640,6 @@ over UDP packets.")
     (home-page "https://github.com/templexxx/xor")
     (license expat)))
 
-(define-public go-github-com-xtaci-smux
-  (let ((commit "c3e18246ff2252a6e9d6b529fcbf22ae5c74c007")
-        (revision "0"))
-    (package
-      (name "go-github-com-xtaci-smux")
-      (version (git-version "1.0.6" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/xtaci/smux.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "1dfmxd9g31idldhq6n7r998gi4jw51ji3xvkjrzypsw2ypbjx1dz"))))
-      (build-system go-build-system)
-      (propagated-inputs
-       `(("go-github-com-pkg-errors" ,go-github-com-pkg-errors)))
-      (arguments
-       '(#:import-path "github.com/xtaci/smux"))
-      (synopsis "Network multiplexing in Go")
-      (description "Smux ( Simple MUltipleXing) is a multiplexing library for
-Golang.  It relies on an underlying connection to provide reliability and
-ordering, such as TCP or KCP, and provides stream-oriented multiplexing.")
-      (home-page "https://github.com/xtaci/smux")
-      (license expat))))
-
 (define-public go-github-com-pkg-errors
   (let ((commit "e881fd58d78e04cf6d0de1217f8707c8cc2249bc")
         (revision "1"))
