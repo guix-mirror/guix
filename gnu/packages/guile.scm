@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -183,23 +183,24 @@ without requiring the source code to be rewritten.")
    (outputs '("out" "debug"))
 
    (arguments
-    `(#:configure-flags '("--disable-static")     ;saves 3MiB
-      #:phases (alist-cons-before
-                'configure 'pre-configure
-                (lambda* (#:key inputs #:allow-other-keys)
-                  ;; Tell (ice-9 popen) the file name of Bash.
-                  (let ((bash (assoc-ref inputs "bash")))
-                    (substitute* "module/ice-9/popen.scm"
-                      ;; If bash is #f allow fallback for user to provide
-                      ;; "bash" in PATH.  This happens when cross-building to
-                      ;; MinGW for which we do not have Bash yet.
-                      (("/bin/sh")
-                       ,@(if (target-mingw?)
-                             '((if bash
-                                   (string-append bash "/bin/bash")
-                                   "bash"))
-                             '((string-append bash "/bin/bash")))))))
-                %standard-phases)))
+    `(#:configure-flags '("--disable-static") ; saves 3 MiB
+      #:phases
+      (modify-phases %standard-phases
+        (add-before 'configure 'pre-configure
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; Tell (ice-9 popen) the file name of Bash.
+            (let ((bash (assoc-ref inputs "bash")))
+              (substitute* "module/ice-9/popen.scm"
+                ;; If bash is #f allow fallback for user to provide
+                ;; "bash" in PATH.  This happens when cross-building to
+                ;; MinGW for which we do not have Bash yet.
+                (("/bin/sh")
+                 ,@(if (target-mingw?)
+                       '((if bash
+                             (string-append bash "/bin/bash")
+                             "bash"))
+                       '((string-append bash "/bin/bash")))))
+              #t))))))
 
    (native-search-paths
     (list (search-path-specification
