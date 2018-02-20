@@ -2989,6 +2989,35 @@ online}.")
     (description "This package provides a simple XML library for Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-feed
+  (package
+    (name "ghc-feed")
+    (version "0.3.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "feed/feed-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hkrsinspg70bbm3hwqdrvivws6zya1hyk0a3awpaz82j4xnlbfc"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-time-locale-compat" ,ghc-time-locale-compat)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-xml" ,ghc-xml)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (home-page "https://github.com/bergmark/feed")
+    (synopsis "Haskell package for handling various syndication formats")
+    (description "This Haskell package includes tools for generating and
+consuming feeds in both RSS (Really Simple Syndication) and Atom format.")
+    (license license:bsd-3)))
+
 (define-public ghc-exceptions
   (package
     (name "ghc-exceptions")
