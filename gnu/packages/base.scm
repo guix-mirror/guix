@@ -1164,6 +1164,45 @@ and daylight-saving rules.")
         (sha256
          (base32
           "02yrrfj0p7ar885ja41ylijzbr8wc6kz6kzlw8c670i9m693ym6n"))))
+    (arguments
+     '(#:tests? #f
+       #:make-flags (let ((out (assoc-ref %outputs "out"))
+                          (tmp (getenv "TMPDIR")))
+                      (list (string-append "TOPDIR=" out)
+                            (string-append "TZDIR=" out "/share/zoneinfo")
+
+                            ;; Discard zic, dump, and tzselect, already
+                            ;; provided by glibc.
+                            (string-append "ETCDIR=" tmp "/etc")
+
+                            ;; Likewise for the C library routines.
+                            (string-append "LIBDIR=" tmp "/lib")
+                            (string-append "MANDIR=" tmp "/man")
+
+                            "AWK=awk"
+                            "CC=gcc"))
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source inputs #:allow-other-keys)
+             (and (zero? (system* "tar" "xvf" source))
+                  (zero? (system* "tar" "xvf" (assoc-ref inputs "tzcode"))))))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move data in the right place.
+             (let ((out (assoc-ref outputs "out")))
+               (symlink (string-append out "/share/zoneinfo")
+                        (string-append out "/share/zoneinfo/posix"))
+               (delete-file-recursively
+                (string-append out "/share/zoneinfo-posix"))
+               (copy-recursively (string-append out "/share/zoneinfo-leaps")
+                                 (string-append out "/share/zoneinfo/right"))
+               (delete-file-recursively
+                (string-append out "/share/zoneinfo-leaps")))))
+         (delete 'configure))))
     (inputs `(("tzcode" ,(origin
                           (method url-fetch)
                           (uri (string-append
@@ -1172,7 +1211,6 @@ and daylight-saving rules.")
                           (sha256
                            (base32
                             "1dvrq0b2hz7cjqdyd7x21wpy4qcng3rvysr61ij0c2g64fyb9s41")))))))))
-
 
 (define-public libiconv
   (package
