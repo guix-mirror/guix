@@ -121,14 +121,14 @@ limited support for fork events.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.18.0")
+    (version "1.19.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dist.libuv.org/dist/v" version
                                   "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "125bzmzc32m52hd9iv8jvjlc7r3gadxgvp31a2fz2wlil16p7r2l"))))
+                "0y78029vhfhjwpbwg9c0p8ih8489azpfa9sjnzj2bksf6r29kv9j"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -136,7 +136,7 @@ limited support for fork events.")
                     (lambda _
                       ;; Fashionable people don't run 'make dist' these days, so
                       ;; we need to do that ourselves.
-                      (zero? (system* "sh" "autogen.sh")))))
+                      (invoke "sh" "autogen.sh"))))
 
        ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
        #:tests? #f))
