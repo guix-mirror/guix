@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
