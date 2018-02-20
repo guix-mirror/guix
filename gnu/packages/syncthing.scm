@@ -1552,30 +1552,6 @@ rolling hash.")
       (home-page "https://github.com/chmduquesne/rollinghash")
       (license expat))))
 
-(define-public go-github-com-templexxx-xor
-  (package
-    (name "go-github-com-templexxx-xor")
-    (version "0.1.2")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/templexxx/xor.git")
-               (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "0v1maiii0sggmxk9bgpy6pypb40j3hy2328pc4kd5bldkpdb67d5"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/templexxx/xor"))
-    (propagated-inputs
-     `(("go-github-com-templexxx-cpufeat" ,go-github-com-templexxx-cpufeat)))
-    (synopsis "XOR in Go")
-    (description "This packages provides a Go implementation of XOR.")
-    (home-page "https://github.com/templexxx/xor")
-    (license expat)))
-
 (define-public go-github-com-pkg-errors
   (let ((commit "e881fd58d78e04cf6d0de1217f8707c8cc2249bc")
         (revision "1"))
