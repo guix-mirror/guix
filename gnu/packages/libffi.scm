@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,29 +36,28 @@
   #:use-module (guix build-system ruby))
 
 (define-public libffi
-  (let ((post-install-phase
-         ;; Keep headers where libffi.pc expects them, but also make them
-         ;; available in $includedir where some users expect them.
-         '(lambda* (#:key outputs #:allow-other-keys)
-            (define out (assoc-ref outputs "out"))
-            (symlink (string-append out "/lib/libffi-3.2.1/include")
-                     (string-append out "/include")))))
-   (package
+  (package
     (name "libffi")
     (version "3.2.1")
     (source (origin
-             (method url-fetch)
-             (uri
-              (string-append "ftp://sourceware.org/pub/libffi/"
-                             name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "0dya49bnhianl0r65m65xndz6ls2jn1xngyn72gd28ls3n7bnvnh"))
-             (patches (search-patches "libffi-3.2.1-complex-alpha.patch"))))
+              (method url-fetch)
+              (uri
+               (string-append "ftp://sourceware.org/pub/libffi/"
+                              name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dya49bnhianl0r65m65xndz6ls2jn1xngyn72gd28ls3n7bnvnh"))
+              (patches (search-patches "libffi-3.2.1-complex-alpha.patch"))))
     (build-system gnu-build-system)
-    (arguments `(#:phases (alist-cons-after 'install 'post-install
-                                            ,post-install-phase
-                                            %standard-phases)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define out (assoc-ref outputs "out"))
+             (symlink (string-append out "/lib/libffi-3.2.1/include")
+                      (string-append out "/include"))
+             #t)))))
     (outputs '("out" "debug"))
     (synopsis "Foreign function call interface library")
     (description
@@ -74,7 +74,7 @@ conversions for values passed between the two languages.")
     (home-page "http://sources.redhat.com/libffi/")
 
     ;; See <https://github.com/atgreen/libffi/blob/master/LICENSE>.
-    (license expat))))
+    (license expat)))
 
 (define-public python-cffi
   (package
