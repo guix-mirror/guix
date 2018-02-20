@@ -1939,6 +1939,30 @@ case with other forms of concurrent communication, such as locks or
      "This package provides a library for parallel programming.")
     (license license:bsd-3)))
 
+(define-public ghc-safesemaphore
+  (package
+    (name "ghc-safesemaphore")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "SafeSemaphore/SafeSemaphore-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rpg9j6fy70i0b9dkrip9d6wim0nac0snp7qzbhykjkqlcvvgr91"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-stm" ,ghc-stm)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/ChrisKuklewicz/SafeSemaphore")
+    (synopsis "Exception safe semaphores")
+    (description "This library provides exception safe semaphores that can be
+used in place of @code{QSem}, @code{QSemN}, and @code{SampleVar}, all of which
+are not exception safe and can be broken by @code{killThread}.")
+    (license license:bsd-3)))
+
 (define-public ghc-text
   (package
     (name "ghc-text")
