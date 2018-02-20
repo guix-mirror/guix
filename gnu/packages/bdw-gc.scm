@@ -91,7 +91,7 @@ C or C++ programs, though that is not its primary goal.")
 (define-public libatomic-ops
   (package
     (name "libatomic-ops")
-    (version "7.4.8")
+    (version "7.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -99,13 +99,13 @@ C or C++ programs, though that is not its primary goal.")
                     version "/libatomic_ops-" version ".tar.gz"))
               (sha256
                (base32
-                "0sj3plzpbqgxrqpjq3w2zi3zxxqqps71ncdwk5s1k30i9d9da1f4"))))
+                "1rif2hjscq5mh639nsnjhb90c01gnmy1sbmj6x6hsn1xmpnj95r1"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (synopsis "Accessing hardware atomic memory update operations")
     (description
      "This C library provides semi-portable access to hardware-provided atomic
-memory update operations on a number architectures.  These might allow you to
+memory update operations on a number of architectures.  These might allow you to
 write code that does more interesting things in signal handlers, write
 lock-free code, experiment with thread programming paradigms, etc.")
     (home-page "https://github.com/ivmai/libatomic_ops/")
