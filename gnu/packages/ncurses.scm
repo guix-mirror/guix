@@ -40,7 +40,7 @@
 (define-public ncurses
   (package
     (name "ncurses")
-    (version "6.0-20170930")
+    (version "6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/ncurses/ncurses-"
@@ -48,7 +48,7 @@
                                   ".tar.gz"))
               (sha256
                (base32
-                "0q3jck7lna77z5r42f13c4xglc7azd19pxfrjrpgp2yf615w4lgm"))))
+                "05qdmbmrrn88ii9f66rkcmcyzp1kb1ymkx7g040lfkd1nkp7w1da"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                ;1 MiB of man pages
@@ -76,6 +76,10 @@
                             configure-flags))
                  #t)))
            (apply-rollup-patch-phase
+            ;; Ncurses distributes "stable" patchsets to be applied on top
+            ;; of the release tarball.  These are only available as shell
+            ;; scripts(!) so we decompress and apply them in a phase.
+            ;; See <https://invisible-mirror.net/archives/ncurses/6.1/README>.
             '(lambda* (#:key inputs native-inputs #:allow-other-keys)
                (copy-file (assoc-ref (or native-inputs inputs) "rollup-patch")
                           (string-append (getcwd) "/rollup-patch.sh.bz2"))
@@ -178,8 +182,6 @@
               ,@(if (target-mingw?) '("--enable-term-driver") '()))))
          #:tests? #f                  ; no "check" target
          #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'apply-rollup-patch
-                      ,apply-rollup-patch-phase)
                     (replace 'configure ,configure-phase)
                     (add-after 'install 'post-install
                       ,post-install-phase)
@@ -189,22 +191,7 @@
                       ,remove-shebang-phase)))))
     (self-native-input? #t)           ; for `tic'
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-
-       ;; Ncurses distributes "stable" patchsets to be applied on top
-       ;; of the release tarball.  These are only available as shell
-       ;; scripts(!) so we decompress and apply them in a phase.
-       ;; See <https://invisible-mirror.net/archives/ncurses/6.0/README>.
-       ("rollup-patch"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://invisible-mirror.net/archives/ncurses/"
-                 (car (string-split version #\-))
-                 "/ncurses-" version "-patch.sh.bz2"))
-           (sha256
-            (base32
-             "08a1pp8wnj1fwpa1pz3fgrmd6xwp21idniswqz8lx3w3z2nb4ydi"))))))
+     `(("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification
             (variable "TERMINFO_DIRS")
