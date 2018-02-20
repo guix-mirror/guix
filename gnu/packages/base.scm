@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1052,30 +1053,25 @@ command.")
                "--host=i586-pc-gnu"
                "--enable-obsolete-rpc"))
        ((#:phases _)
-        '(alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (and (zero? (system* "make" "install-headers"))
+        '(modify-phases %standard-phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "make" "install-headers")
 
-                 ;; Make an empty stubs.h to work around not being able to
-                 ;; produce a valid stubs.h and causing the build to fail. See
-                 ;; <http://lists.gnu.org/archive/html/guix-devel/2014-04/msg00233.html>.
-                 (let ((out (assoc-ref outputs "out")))
-                   (close-port
-                    (open-output-file
-                     (string-append out "/include/gnu/stubs.h"))))))
-
-          ;; Nothing to build.
-          (alist-delete
-           'build
-
-           (alist-cons-before
-            'configure 'pre-configure
-            (lambda _
-              ;; Use the right 'pwd'.
-              (substitute* "configure"
-                (("/bin/pwd") "pwd")))
-            %standard-phases))))))))
+               ;; Make an empty stubs.h to work around not being able to
+               ;; produce a valid stubs.h and causing the build to fail. See
+               ;; <http://lists.gnu.org/archive/html/guix-devel/2014-04/msg00233.html>.
+               (let ((out (assoc-ref outputs "out")))
+                 (close-port
+                  (open-output-file
+                   (string-append out "/include/gnu/stubs.h"))))))
+           (delete 'build)              ; nothing to build
+           (add-before 'configure 'patch-configure-script
+             (lambda _
+               ;; Use the right 'pwd'.
+               (substitute* "configure"
+                 (("/bin/pwd") "pwd"))
+               #t))))))))
 
 (define-public tzdata
   (package
