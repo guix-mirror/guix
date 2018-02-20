@@ -159,14 +159,14 @@ either single machines or networked clusters.")
 (define-public gdbm
   (package
     (name "gdbm")
-    (version "1.13")
+    (version "1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdbm/gdbm-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0lx201q20dvc70f8a3c9s7s18z15inlxvbffph97ngvrgnyjq9cx"))))
+                "02dakgrq93xwgln8qfv3vs5jyz5yvds5nyzkx6rhg9v585x478dd"))))
     (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org.ua/software/gdbm")
