@@ -1097,10 +1097,8 @@ command.")
                           (tmp (getenv "TMPDIR")))
                       (list (string-append "TOPDIR=" out)
                             (string-append "TZDIR=" out "/share/zoneinfo")
-
-                            ;; Discard zic, dump, and tzselect, already
-                            ;; provided by glibc.
-                            (string-append "ETCDIR=" tmp "/etc")
+                            (string-append "TZDEFAULT=" out
+                                           "/share/zoneinfo/localtime")
 
                             ;; Likewise for the C library routines.
                             (string-append "LIBDIR=" tmp "/lib")
@@ -1121,6 +1119,9 @@ command.")
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Move data in the right place.
              (let ((out (assoc-ref outputs "out")))
+               ;; Discard zic, dump, and tzselect, already
+               ;; provided by glibc.
+               (delete-file-recursively (string-append out "/usr"))
                (symlink (string-append out "/share/zoneinfo")
                         (string-append out "/share/zoneinfo/posix"))
                (delete-file-recursively
