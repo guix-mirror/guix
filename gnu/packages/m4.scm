@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,18 +41,19 @@
       ;; proceeds and fails, unsurprisingly.
       #:tests? ,(not (%current-target-system))
 
-      #:phases (alist-cons-before
-                'check 'pre-check
-                (lambda* (#:key inputs #:allow-other-keys)
-                  ;; Fix references to /bin/sh.
-                  (let ((bash (assoc-ref inputs "bash")))
-                    (for-each patch-shebang
-                              (find-files "tests" "\\.sh$"))
-                    (substitute* (find-files "tests"
-                                             "posix_spawn")
-                      (("/bin/sh")
-                       (format #f "~a/bin/sh" bash)))))
-                %standard-phases)))
+      #:phases
+      (modify-phases %standard-phases
+        (add-before 'check 'pre-check
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; Fix references to /bin/sh.
+            (let ((bash (assoc-ref inputs "bash")))
+              (for-each patch-shebang
+                        (find-files "tests" "\\.sh$"))
+              (substitute* (find-files "tests"
+                                       "posix_spawn")
+                (("/bin/sh")
+                 (format #f "~a/bin/sh" bash)))
+              #t))))))
    (synopsis "Macro processor")
    (description
     "GNU M4 is an implementation of the M4 macro language, which features
