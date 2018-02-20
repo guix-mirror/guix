@@ -7812,6 +7812,44 @@ converting between Haskell values and JSON.
 JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
     (license license:bsd-3)))
 
+(define-public ghc-esqueleto
+  (package
+    (name "ghc-esqueleto")
+    (version "2.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "esqueleto/esqueleto-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10n49rzqmblky7pwjnysalyy6nacmxfms8dqbsdv6hlyzr8pb69x"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-monad-logger" ,ghc-monad-logger)
+       ("ghc-persistent" ,ghc-persistent)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-persistent-sqlite" ,ghc-persistent-sqlite)
+       ("ghc-persistent-template" ,ghc-persistent-template)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/bitemyapp/esqueleto")
+    (synopsis "Type-safe embedded domain specific language for SQL queries")
+    (description "This library provides a type-safe embedded domain specific
+language (EDSL) for SQL queries that works with SQL backends as provided by
+@code{ghc-persistent}.  Its language closely resembles SQL, so you don't have
+to learn new concepts, just new syntax, and it's fairly easy to predict the
+generated SQL and optimize it for your backend.")
+    (license license:bsd-3)))
+
 (define-public shellcheck
   (package
     (name "shellcheck")
