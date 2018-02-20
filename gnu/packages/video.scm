@@ -1737,7 +1737,12 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "10m3ry0b2pvqx3bk34qh5dq337nn8pkc2gzfyhsj4nv9abskln47"))))
+                "10m3ry0b2pvqx3bk34qh5dq337nn8pkc2gzfyhsj4nv9abskln47"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; As of glibc 2.26, <xlocale.h> no longer is.
+               '(substitute* "src/framework/mlt_property.h"
+                  (("xlocale\\.h") "locale.h")))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
