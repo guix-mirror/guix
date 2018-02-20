@@ -1776,33 +1776,6 @@ notification library in Go.")
       (home-page "https://github.com/zillode/notify")
       (license expat))))
 
-(define-public go-github-com-klauspost-reedsolomon
-  (let ((commit "0b30fa71cc8e4e9010c9aba6d0320e2e5b163b29")
-        (revision "0"))
-  (package
-    (name "go-github-com-klauspost-reedsolomon")
-    (version (git-version "1.6" revision commit))
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/klauspost/reedsolomon.git")
-                     (commit commit)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "04jvf65ybsa7w4d7s2n0s174p0q2fl0dqd5hhn2krw66z9i3rc6d"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/klauspost/reedsolomon"))
-    (propagated-inputs
-     `(("go-github-com-klauspost-cpuid"
-        ,go-github-com-klauspost-cpuid)))
-    (synopsis "Reed-Solomon Erasure Coding in Go")
-    (description "This package provides and implemenation of Reed-Solomon
-Erasure Coding in Go.")
-    (home-page "https://github.com/klauspost/reedsolomon")
-    (license expat))))
-
 (define-public go-github-com-beorn7-perks-quantile
   (let ((commit "4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9")
         (revision "0"))
