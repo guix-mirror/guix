@@ -1863,21 +1863,22 @@ management to participate in an X11R6 session.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'fix-makefile-in
-                 (lambda _
-                   (substitute* "Makefile.in"
-                     ;; Install xorg-macros.pc in PREFIX/lib/pkgconfig,
-                     ;; not PREFIX/share/pkgconfig.
-                     (("\\$\\(datadir\\)/pkgconfig") "$(libdir)/pkgconfig")))
-                 (alist-cons-after
-                  'install 'post-install-cleanup
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (with-directory-excursion out
-                        (delete-file "share/util-macros/INSTALL")
-                        (rmdir "share/util-macros"))))
-                  %standard-phases))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-makefile-in
+           (lambda _
+             (substitute* "Makefile.in"
+               ;; Install xorg-macros.pc in PREFIX/lib/pkgconfig,
+               ;; not PREFIX/share/pkgconfig.
+               (("\\$\\(datadir\\)/pkgconfig") "$(libdir)/pkgconfig"))
+             #t))
+         (add-after 'install 'post-install-cleanup
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion out
+                 (delete-file "share/util-macros/INSTALL")
+                 (rmdir "share/util-macros"))
+               #t))))))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg autoconf macros")
     (description
