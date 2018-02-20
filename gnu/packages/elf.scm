@@ -127,14 +127,14 @@ Executable and Linkable Format (@dfn{ELF}).  This includes @command{ld},
          '()))
     (arguments
      (if (string-prefix? "arm" (or (%current-target-system) (%current-system)))
-         `(#:phases (alist-cons-after
-                     'unpack 'patch/rework-for-arm
-                     (lambda* (#:key inputs #:allow-other-keys)
-                       (let ((patch-file
-                              (assoc-ref inputs "patch/rework-for-arm")))
-                         (zero? (system* "patch" "--force" "-p1"
-                                         "--input" patch-file))))
-                     %standard-phases))
+         `(#:phases (modify-phases %standard-phases
+                      (add-after 'unpack 'patch/rework-for-arm
+                        (lambda* (#:key inputs #:allow-other-keys)
+                          (let ((patch-file
+                                 (assoc-ref inputs "patch/rework-for-arm")))
+                            (invoke "patch" "--force" "-p1"
+                                    "--input" patch-file)
+                            #t)))))
          '()))
 
     (home-page "http://nixos.org/patchelf.html")
