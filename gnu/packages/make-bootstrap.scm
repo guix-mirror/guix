@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,24 +144,24 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                  (arguments
                   (substitute-keyword-arguments (package-arguments bzip2)
                     ((#:phases phases)
-                     `(alist-cons-before
-                       'build 'dash-static
-                       (lambda _
-                         (substitute* "Makefile"
-                           (("^LDFLAGS[[:blank:]]*=.*$")
-                            "LDFLAGS = -static")))
-                       ,phases))))))
+                     `(modify-phases ,phases
+                        (add-before 'build 'dash-static
+                          (lambda _
+                            (substitute* "Makefile"
+                              (("^LDFLAGS[[:blank:]]*=.*$")
+                               "LDFLAGS = -static"))
+                            #t))))))))
         (xz (package (inherit xz)
               (arguments
                `(#:strip-flags '("--strip-all")
-                 #:phases (alist-cons-before
-                           'configure 'static-executable
-                           (lambda _
-                             ;; Ask Libtool for a static executable.
-                             (substitute* "src/xz/Makefile.in"
-                               (("^xz_LDADD =")
-                                "xz_LDADD = -all-static")))
-                           %standard-phases)))))
+                 #:phases (modify-phases %standard-phases
+                            (add-before 'configure 'static-executable
+                              (lambda _
+                                ;; Ask Libtool for a static executable.
+                                (substitute* "src/xz/Makefile.in"
+                                  (("^xz_LDADD =")
+                                   "xz_LDADD = -all-static"))
+                                #t)))))))
         (gawk (package (inherit gawk)
                 (source (origin (inherit (package-source gawk))
                           (patches (cons (search-patch "gawk-shell.patch")
@@ -175,14 +176,14 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
                    ,@(substitute-keyword-arguments (package-arguments gawk)
                        ((#:phases phases)
-                        `(alist-cons-before
-                          'configure 'no-export-dynamic
-                          (lambda _
-                            ;; Since we use `-static', remove
-                            ;; `-export-dynamic'.
-                            (substitute* "configure"
-                              (("-Wl,-export-dynamic") "")))
-                          ,phases)))))
+                        `(modify-phases ,phases
+                           (add-before 'configure 'no-export-dynamic
+                             (lambda _
+                               ;; Since we use `-static', remove
+                               ;; `-export-dynamic'.
+                               (substitute* "configure"
+                                 (("-Wl,-export-dynamic") ""))
+                               #t)))))))
                 (inputs (if (%current-target-system)
                             `(("bash" ,static-bash))
                             '()))))
@@ -304,19 +305,19 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                   ((#:configure-flags flags _ ...)
                                    flags)))
        #:strip-flags '("--strip-all")
-       #:phases (alist-cons-before
-                 'configure 'all-static
-                 (lambda _
-                   ;; The `-all-static' libtool flag can only be passed
-                   ;; after `configure', since configure tests don't use
-                   ;; libtool, and only for executables built with libtool.
-                   (substitute* '("binutils/Makefile.in"
-                                  "gas/Makefile.in"
-                                  "ld/Makefile.in")
-                     (("^LDFLAGS =(.*)$" line)
-                      (string-append line
-                                     "\nAM_LDFLAGS = -static -all-static\n"))))
-                 %standard-phases)))))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'all-static
+                    (lambda _
+                      ;; The `-all-static' libtool flag can only be passed
+                      ;; after `configure', since configure tests don't use
+                      ;; libtool, and only for executables built with libtool.
+                      (substitute* '("binutils/Makefile.in"
+                                     "gas/Makefile.in"
+                                     "ld/Makefile.in")
+                        (("^LDFLAGS =(.*)$" line)
+                         (string-append line
+                                        "\nAM_LDFLAGS = -static -all-static\n")))
+                      #t)))))))
 
 (define %binutils-static-stripped
   ;; The subset of Binutils that we need.
@@ -422,18 +423,18 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                       (remove (cut string-match "--(.*plugin|enable-languages)" <>)
                               ,flags)))
             ((#:phases phases)
-             `(alist-cons-after
-               'pre-configure 'remove-lgcc_s
-               (lambda _
-                 ;; Remove the '-lgcc_s' added to GNU_USER_TARGET_LIB_SPEC in
-                 ;; the 'pre-configure phase of our main gcc package, because
-                 ;; that shared library is not present in this static gcc.  See
-                 ;; <https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00008.html>.
-                 (substitute* (cons "gcc/config/rs6000/sysv4.h"
-                                    (find-files "gcc/config"
-                                                "^gnu-user.*\\.h$"))
-                   ((" -lgcc_s}}") "}}")))
-               ,phases)))))
+             `(modify-phases ,phases
+                (add-after 'pre-configure 'remove-lgcc_s
+                  (lambda _
+                    ;; Remove the '-lgcc_s' added to GNU_USER_TARGET_LIB_SPEC in
+                    ;; the 'pre-configure phase of our main gcc package, because
+                    ;; that shared library is not present in this static gcc.  See
+                    ;; <https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00008.html>.
+                    (substitute* (cons "gcc/config/rs6000/sysv4.h"
+                                       (find-files "gcc/config"
+                                                   "^gnu-user.*\\.h$"))
+                      ((" -lgcc_s}}") "}}"))
+                    #t)))))))
      (native-inputs
       (if (%current-target-system)
           `(;; When doing a Canadian cross, we need GMP/MPFR/MPC both
