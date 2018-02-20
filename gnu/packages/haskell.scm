@@ -3813,6 +3813,27 @@ with various performance characteristics.")
 manipulating monad transformer stacks.")
     (license license:bsd-3)))
 
+(define-public ghc-ifelse
+  (package
+    (name "ghc-ifelse")
+    (version "0.85")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "IfElse/IfElse-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kfx1bwfjczj93a8yqz1n8snqiq5655qgzwv1lrycry8wb1vzlwa"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-mtl" ,ghc-mtl)))
+    (home-page "http://hackage.haskell.org/package/IfElse")
+    (synopsis "Monadic control flow with anaphoric variants")
+    (description "This library provides functions for control flow inside of
+monads with anaphoric variants on @code{if} and @code{when} and a C-like
+@code{switch} function.")
+    (license license:bsd-3)))
+
 (define-public ghc-monad-control
   (package
     (name "ghc-monad-control")
