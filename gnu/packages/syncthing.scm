@@ -1700,30 +1700,6 @@ using sh's word-splitting rules.")
       (home-page "https://github.com/kballard/go-shellquote")
       (license expat))))
 
-(define-public go-github-com-templexxx-cpufeat
-  (let ((commit "3794dfbfb04749f896b521032f69383f24c3687e")
-        (revision "0"))
-    (package
-      (name "go-github-com-templexxx-cpufeat")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/templexxx/cpufeat.git")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0b9f5p6nsiv907rz5d66qzgxnsz4k68r2f45vxi2hwdbnkjfxz8j"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/templexxx/cpufeat"))
-      (synopsis "CPU feature identification for Go")
-      (description "This package provides @code{cpu}, which implements
-processor feature detection used by the Go standard libary.")
-      (home-page "https://github.com/templexxx/cpufeat")
-      (license bsd-3))))
-
 (define-public go-github-com-zillode-notify
   (let ((commit "a8abcfb1ce88ee8d79a300ed65d94b8fb616ddb3")
         (revision "2"))
