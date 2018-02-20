@@ -28,7 +28,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.44")
+    (version "0.14.45")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -36,7 +36,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0fxq52w1b05928xp0a333rg23fabj0nykgg7v4gz01f3vrxyydi1"))
+                "0nv5g9ymykl4316l2g3mnac77y2rx9ps4j2kg3pymxlq6qms2dij"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet
@@ -110,8 +110,6 @@
     (inputs
      `(("go-github-com-audriusbutkevicius-cli"
         ,go-github-com-audriusbutkevicius-cli)
-       ("go-github-com-xtaci-kcp-go"
-        ,go-github-com-xtaci-kcp-go)
        ("go-github-com-audriusbutkevicius-go-nat-pmp"
         ,go-github-com-audriusbutkevicius-go-nat-pmp)
        ("go-github-com-audriusbutkevicius-pfilter"
@@ -119,8 +117,6 @@
        ("go-github-com-bkaradzic-go-lz4" ,go-github-com-bkaradzic-go-lz4)
        ("go-github-com-calmh-du" ,go-github-com-calmh-du)
        ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
-       ("go-github-com-ccding-go-stun"
-        ,go-github-com-ccding-go-stun)
        ("go-github-com-prometheus-union" ,(go-github-com-prometheus-union))
        ("go-github-com-chmduquesne-rollinghash-adler32"
         ,go-github-com-chmduquesne-rollinghash-adler32)
@@ -137,12 +133,12 @@
        ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
        ("go-github-com-oschwald-geoip2-golang"
         ,go-github-com-oschwald-geoip2-golang)
+       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
        ("go-github-com-rcrowley-go-metrics" ,go-github-com-rcrowley-go-metrics)
        ("go-github-com-sasha-s-go-deadlock" ,go-github-com-sasha-s-go-deadlock)
        ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
        ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
        ("go-github-com-vitrun-qart" ,(go-github-com-vitrun-qart-union))
-       ("go-github-com-xtaci-smux" ,go-github-com-xtaci-smux)
        ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
        ("go-golang-org-x-net-union" ,(go-golang-org-x-net-union))
        ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
