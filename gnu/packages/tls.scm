@@ -155,7 +155,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.5.13")
+    (version "3.5.18")
     (source (origin
              (method url-fetch)
              (uri
@@ -169,7 +169,7 @@ living in the same process.")
                               "gnutls-skip-pkgconfig-test.patch"))
              (sha256
               (base32
-               "15ihq6p0hnnhs8cnjrkj40dmlcaa1jjg8xg0g2ydbnlqs454ixbr"))))
+               "0d02x28fwkkx7xzn7807nww6idchizzq3plx8sfcyiw7wzclh8mf"))))
     (build-system gnu-build-system)
     (arguments
      `(; Ensure we don't keep a reference to this buggy software.
