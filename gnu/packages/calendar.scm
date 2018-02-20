@@ -35,16 +35,19 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dav)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages xml)
   #:use-module (srfi srfi-26))
 
 (define-public libical
   (package
     (name "libical")
-    (version "2.0.0")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -52,15 +55,18 @@
                     version "/libical-" version ".tar.gz"))
               (sha256
                (base32
-                "1njn2kr0rrjqv5g3hdhpdzrhankyj4fl1bgn76z3g4n1b7vi2k35"))))
+                "03k45dg79bf8lgymn94z2in1c3926v93h76xsap1svln63b3zg0c"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; test suite appears broken
+       #:configure-flags '("-DSHARED_ONLY=true")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths
-           (lambda _
-             (let ((tzdata (assoc-ref %build-inputs "tzdata")))
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; FIXME: This should be patched to use TZDIR so we can drop
+             ;; the tzdata dependency.
+             (let ((tzdata (assoc-ref inputs "tzdata")))
                (substitute* "src/libical/icaltz-util.c"
                  (("\\\"/usr/share/zoneinfo\\\",")
                   (string-append "\"" tzdata "/share/zoneinfo\""))
@@ -69,16 +75,22 @@
                  (("\\\"/usr/share/lib/zoneinfo\\\"") "")))
              #t)))))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("icu4c" ,icu4c)
+     `(("glib" ,glib)
+       ("libxml2" ,libxml2)
        ("tzdata" ,tzdata)))
+    (propagated-inputs
+     ;; In Requires.private of libical.pc.
+     `(("icu4c" ,icu4c)))
     (home-page "https://libical.github.io/libical/")
     (synopsis "iCalendar protocols and data formats implementation")
     (description
      "Libical is an implementation of the iCalendar protocols and protocol
 data units.")
-    (license license:lgpl2.1)))
+    ;; Can be used with either license.  See COPYING.
+    (license (list license:lgpl2.1 license:mpl2.0))))
 
 (define-public khal
   (package
