@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,39 +77,36 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
 (define-public nss-mdns
   (package
     (name "nss-mdns")
-    (version "0.10")
+    (version "0.12")
+    (home-page "https://github.com/lathiat/nss-mdns")
     (source (origin
               (method url-fetch)
-              (uri (list
-                    (string-append
-                     "mirror://debian/pool/main/n/nss-mdns/nss-mdns_"
-                     version ".orig.tar.gz")
-                    "http://pkgs.fedoraproject.org/repo/pkgs/nss-mdns/nss-mdns-0.10.tar.gz/03938f17646efbb50aa70ba5f99f51d7/nss-mdns-0.10.tar.gz"
-
-                    ;; This used to be the canonical URL but it vanished.
-                    ;; See <http://bugs.gnu.org/18704>.
-                    ;; (string-append
-                    ;;  "http://0pointer.de/lennart/projects/nss-mdns/nss-mdns-"
-                    ;;  version ".tar.gz")
-                    ))
+              (uri (string-append home-page "/releases/download/v" version "/"
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0vgs6j0qsl0mwzh5a0m0bykr7x6bx79vnbyn0r3q289rghp3qs0y"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1p2vj9fz4kzrjrj81ipf4qwgnr2n7a8cbzw4bpk18xyqhdx8h775"))
+              (patches
+               (list (origin
+                       ;; See
+                       ;; <https://github.com/lathiat/nss-mdns/issues/26#issuecomment-364781799>.
+                       (uri (string-append
+                             home-page
+                             "/commit/31ccbec3b4f054e590c7c880d8a8a50cfc97127d.patch"))
+                       (sha256
+                        (base32
+                         "0b1jmhnkpsczbph4ala7x3rafwxdg93277s30iaxh37jnvgjnhsd"))
+                       (method url-fetch))))))
     (build-system gnu-build-system)
     (arguments
      ;; The Avahi daemon socket is expected by src/Makefile.am to be at
      ;; "$(localstatedir)/run/avahi-daemon/socket", so set $(localstatedir)
      ;; appropriately.
      '(#:configure-flags '("--localstatedir=/var")))
-
-    ;; XXX: Stale URL, missing replacement.  See <http://bugs.gnu.org/18704>.
-    (home-page "http://0pointer.de/lennart/projects/nss-mdns/")
-
-    (synopsis "The mDNS Name Service Switch (NSS) plug-in")
+    (synopsis "Multicast DNS Name Service Switch (@dfn{NSS}) plug-in")
     (description
-     "Nss-mdns is a plug-in for the Name Service Switch (NSS) functionality
-of the GNU C Library, providing host name resolution via Multicast DNS (mDNS).
-It allows for name resolution by programs in the ad-hoc mDNS domain
-'.local'.")
+     "Nss-mdns is a plug-in for the GNU C Library's Name Service Switch
+(@dfn{NSS}) that resolves host names via multicast DNS (@dfn{mDNS}).  It is
+most often used in home and other small networks without a local name server,
+to resolve host names in the @samp{.local} top-level domain.")
     (license lgpl2.1+)))

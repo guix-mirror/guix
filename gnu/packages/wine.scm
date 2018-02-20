@@ -54,6 +54,7 @@
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match))
@@ -61,14 +62,15 @@
 (define-public wine
   (package
     (name "wine")
-    (version "2.0.4")
+    (version "3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://dl.winehq.org/wine/source/2.0"
+              (uri (string-append "https://dl.winehq.org/wine/source/"
+                                  (version-major+minor version)
                                   "/wine-" version ".tar.xz"))
               (sha256
                (base32
-                "0nlq6apyq7hq36l3g6gw76lhi8ijz11v3v8m4vxy8d6x1qsppq5m"))))
+                "1v7vq9iinkscbq6wg85fb0d2137660fg2nk5iabxkl2wr850asil"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -210,20 +212,6 @@ integrate Windows applications into your desktop.")
     (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
 
-;; TODO: This is wine development version, provided for historical reasons.
-;; We can remove it as soon as a new stable release is out.
-(define-public wine-next
-  (package (inherit wine)
-    (name "wine-next")
-    (version "2.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://dl.winehq.org/wine/source/2.x"
-                                  "/wine-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0g6cwjyqwc660w33453aklh3hpc0b8rrb88dryn23ah6wannvagg"))))))
-
 (define-public wine-staging
   (package
     (inherit wine)
@@ -240,7 +228,32 @@ integrate Windows applications into your desktop.")
                 "1pjaxj7h3q6y356np908fvsx0bf7yx5crqvgl4hza6gfssdmsr5r"))))
     (inputs `(("gtk+", gtk+)
               ("libva", libva)
+              ("vulkan-icd-loader" ,vulkan-icd-loader)
               ,@(package-inputs wine)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'hardcode-libvulkan-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((libvulkan (string-append (assoc-ref %build-inputs
+                               "vulkan-icd-loader") "/lib/libvulkan.so")))
+               ;; Hard-code the path to libvulkan.so.
+               (substitute* "dlls/vulkan/vulkan_thunks.c" (("libvulkan.so")
+                            libvulkan))
+               #t)))
+         (add-after 'configure 'patch-dlopen-paths
+           ;; Hardcode dlopened sonames to absolute paths.
+           (lambda _
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-so (lambda (soname)
+                               (search-path library-path soname))))
+               (substitute* "include/config.h"
+                 (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
+                  (format #f "~a\"~a\"" defso (find-so soname))))
+               #t))))
+       ,@(strip-keyword-arguments '(#:phases)
+                                  (package-arguments wine))))
     (synopsis "Implementation of the Windows API (staging branch, 32-bit only)")
     (description "Wine-Staging is the testing area of Wine.  It
 contains bug fixes and features, which have not been integrated into
@@ -268,6 +281,14 @@ integrated into the main branch.")
              (string-append "libdir=" %output "/lib/wine64"))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'hardcore-libvulkan-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((libvulkan (string-append (assoc-ref %build-inputs
+                               "vulkan-icd-loader") "/lib/libvulkan.so")))
+               ;; Hard-code the path to libvulkan.so.
+               (substitute* "dlls/vulkan/vulkan_thunks.c" (("libvulkan.so")
+                            libvulkan))
+               #t)))
          (add-after 'install 'copy-wine32-binaries
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((wine32 (assoc-ref %build-inputs "wine-staging"))

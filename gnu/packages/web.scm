@@ -3,7 +3,8 @@
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -23,6 +24,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,6 +87,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
@@ -177,19 +180,19 @@ Interface} specification.")
 (define-public nginx
   (package
     (name "nginx")
-    ;; Consider updating the nginx-docs package if the nginx package is
+    ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
-    (version "1.12.2")
+    (version "1.13.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "05h4rwja7170z0l979yjghy9i9ichllwhicylzpmmyyml6fkfprh"))))
+                "1ib4hkngj9z7pl73lnn96d85m7v2wwb56nkypwx7d6pm3z1vc444"))))
     (build-system gnu-build-system)
-    (inputs `(("pcre" ,pcre)
-              ("openssl" ,openssl)
+    (inputs `(("openssl" ,openssl)
+              ("pcre" ,pcre)
               ("zlib" ,zlib)))
     (arguments
      `(#:tests? #f                      ; no test target
@@ -230,7 +233,8 @@ Interface} specification.")
                (setenv "CC" "gcc")
                (format #t "environment variable `CC' set to `gcc'~%")
                (format #t "configure flags: ~s~%" flags)
-               (zero? (apply system* "./configure" flags)))))
+               (apply invoke "./configure" flags)
+               #t)))
          (add-after 'install 'install-man-page
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -251,12 +255,13 @@ Interface} specification.")
                (rename-file (string-append out "/conf")
                             (string-append share "/conf"))
                (rename-file (string-append out "/html")
-                            (string-append share "/html"))))))))
+                            (string-append share "/html"))
+               #t))))))
     (home-page "https://nginx.org")
     (synopsis "HTTP and reverse proxy server")
     (description
      "Nginx (\"engine X\") is a high-performance web and reverse proxy server
-created by Igor Sysoev.  It can be used both as a standalone web server
+created by Igor Sysoev.  It can be used both as a stand-alone web server
 and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;; Almost all of nginx is distributed under the bsd-2 license.
     ;; The exceptions are:
@@ -308,13 +313,13 @@ documentation.")
       (license l:bsd-2))))
 
 (define-public nginx-documentation
-  ;; This documentation should be relevant for nginx-1.12.0
-  (let ((revision 1961)
-        (changeset "dd4b6c564e10"))
+  ;; This documentation should be relevant for nginx@1.13.8.
+  (let ((revision 2100)
+        (changeset "cfb7bd672d77"))
     (package
       (name "nginx-documentation")
       (version
-       (simple-format #f "2017-04-12-~A-~A" revision changeset))
+       (simple-format #f "2018-01-22-~A-~A" revision changeset))
       (source
        (origin (method hg-fetch)
                (uri (hg-reference
@@ -323,13 +328,13 @@ documentation.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "0rycfnnm2xkm777769h1zib428q45j64mx8nzzfzs4v07jbfc8m5"))))
+                 "096fcsc0wnfr847m7dwp17rivd3alxq7v9hq9s5lkfbhylmh18vm"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:tests? #f  ; No test suite
+       '(#:tests? #f                    ; no test suite
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)
+           (delete 'configure)          ; no configure script
            (replace 'build
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((output (assoc-ref outputs "out")))
@@ -343,7 +348,8 @@ documentation.")
                    (("#banner           \\{ background:     black;")
                     "#banner           { background:     black;
                             display:     none;"))
-                 (zero? (system* "make")))))
+                 (invoke "make")
+                 #t)))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((output (assoc-ref outputs "out")))
@@ -494,7 +500,7 @@ libraries for working with JNLP applets.")
 (define-public jansson
   (package
     (name "jansson")
-    (version "2.9")
+    (version "2.10")
     (source (origin
              (method url-fetch)
              (uri
@@ -502,7 +508,7 @@ libraries for working with JNLP applets.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "19fjgfwjfj99rqa3kf96x5rssj88siazggksgrikd6h4r9sd1l0a"))))
+               "0iv4rxsnamqm3ldpg7dyhjq0x9cp023nc7ac820jdd3pwb8ml8bq"))))
     (build-system gnu-build-system)
     (home-page "http://www.digip.org/jansson/")
     (synopsis "JSON C library")
@@ -3881,13 +3887,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "0.9")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "0plqkfqys1ca3ki7sb7yc6gwjpi7yy4g3mzh7hfy8s6qri0vam0i"))))
+                "09lkmzh35l1420sg0dyh4vgyishqx3g8xmgs2y9z7lbi09xgwwwr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -3904,26 +3910,24 @@ applications.")
 (define-public r-htmltable
   (package
     (name "r-htmltable")
-    (version "1.11.0")
+    (version "1.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "htmlTable" version))
        (sha256
         (base32
-         "0x0qrzx6igg5z8jh901d2a8g2idpm5f4frwp1m02910scifcrxwf"))))
+         "1lbpi0kkk8b41w10scmlf27dg5azcv51a4q3p5bpqyphrnqp78k4"))))
     (properties `((upstream-name . "htmlTable")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-checkmate" ,r-checkmate)
-       ("r-dplyr" ,r-dplyr)
        ("r-htmltools" ,r-htmltools)
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-knitr" ,r-knitr)
        ("r-magrittr" ,r-magrittr)
        ("r-rstudioapi" ,r-rstudioapi)
-       ("r-stringr" ,r-stringr)
-       ("r-tidyr" ,r-tidyr)))
+       ("r-stringr" ,r-stringr)))
     (home-page "http://gforge.se/packages/")
     (synopsis "Advanced tables for Markdown/HTML")
     (description
@@ -4047,14 +4051,14 @@ a pure C99 library.")
 (define-public uwsgi
   (package
     (name "uwsgi")
-    (version "2.0.12")
+    (version "2.0.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://projects.unbit.it/downloads/uwsgi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02g46dnw5j1iw8fsq392bxbk8d21b9pdgb3ypcinv3b4jzdm2srh"))))
+                "1zvj28wp3c1hacpd4c6ra5ilwvvfq3l8y6gn8i7mnncpddlzjbjp"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (arguments
@@ -4155,7 +4159,7 @@ you'd expect.")
 (define-public uhttpmock
   (package
     (name "uhttpmock")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -4163,7 +4167,7 @@ you'd expect.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0vniyx341pnnmvxmqacc49k0g7h9a9nhknfslidrqmxj5lm1ini6"))))
+         "163py4klka423x7li2b685gmg3a6hjf074mlff2ajhmi3l0lm8x6"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -4899,7 +4903,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.39")
+  (version "5.44")
   (source
     (origin
       (method url-fetch)
@@ -4907,7 +4911,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1vjdn32iw11zqsygwxbjmqgs4644dk3ql1h8ap890ls6a1x0i318"))))
+        "1692y69wl7j6yjgnrrzclgzb34bxsaxjzl1dfy47vms7pdfk42lr"))))
   (build-system gnu-build-system)
   (inputs `(("openssl" ,openssl)))
   (arguments
@@ -4929,15 +4933,18 @@ deployments.")
     (source
      (origin
        (method url-fetch)
-       (uri "https://github.com/xinetd-org/xinetd/archive/xinetd-2-3-15.tar.gz")
-       (patches (search-patches "xinetd-CVE-2013-4342.patch" "xinetd-fix-fd-leak.patch"))
+       (uri
+        (string-append "https://github.com/xinetd-org/xinetd/archive/xinetd-"
+                       (string-join (string-split version #\.) "-") ".tar.gz"))
+       (patches (search-patches "xinetd-CVE-2013-4342.patch"
+                                "xinetd-fix-fd-leak.patch"))
        (sha256
         (base32
          "0k59x52cbzp5fw0n8zn0y54j1ps0x9b72y8k5grzswjdmgs2a2v2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-loadavg")
-       #:tests? #f )) ; no tests
+       #:tests? #f))                    ; no tests
     (home-page "https://github.com/xinetd-org/xinetd")
     (synopsis "Internet services daemon")
     (description "@code{xinetd}, a more secure replacement for @code{inetd},
@@ -4998,7 +5005,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.4")
+    (version "10.7")
     (source
      (origin
        (method url-fetch)
@@ -5010,7 +5017,7 @@ functions of Tidy.")
         '(delete-file-recursively "mbedtls"))
        (sha256
         (base32
-         "0m2llzm72s29c32abnj03532m85fawvi8ybjpx6s3mgvx2yvq3p4"))))
+         "0x2zfc8kc6c7rl4gwymwmg13w1c60biv6c6c9fvzpnl59bc9jgin"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; No tests included
@@ -5417,6 +5424,47 @@ with R.  Automatic \"reactive\" binding between inputs and outputs and
 extensive prebuilt widgets make it possible to build beautiful,
 responsive, and powerful applications with minimal effort.")
     (license l:artistic2.0)))
+
+(define-public r-shinydashboard
+  (package
+    (name "r-shinydashboard")
+    (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "shinydashboard" version))
+              (sha256
+               (base32
+                "14zi7g5wrngy6lwi9xpvaid7727m6rfdijbb89al9likfhjqzqqy"))))
+    (build-system r-build-system)
+    ;; The directory inst/AdminLTE/ contains a minified JavaScript file.
+    ;; Regenerate it from the included sources.
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'generate-minified-javascript
+           (lambda _
+             (with-directory-excursion "inst/AdminLTE"
+               (delete-file "app.min.js")
+               (let ((minified (open-pipe* OPEN_READ "uglify-js" "app.js")))
+                 (call-with-output-file "app.min.js"
+                   (lambda (port)
+                     (dump-port minified port))))))))))
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-shiny" ,r-shiny)))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)))
+    (home-page "http://rstudio.github.io/shinydashboard/")
+    (synopsis "Create dashboards with shiny")
+    (description "This package provides an extension to the Shiny web
+application framework for R, making it easy to create attractive dashboards.")
+    ;; This package includes software that was released under the Expat
+    ;; license, but the whole package is released under GPL version 2 or
+    ;; later.
+    (license l:gpl2+)))
 
 (define-public r-crosstalk
   (package
@@ -6119,6 +6167,44 @@ container.")))
        ("server" ,java-eclipse-jetty-server-9.2)
        ,@(package-inputs java-eclipse-jetty-util-9.2)))))
 
+(define-public java-jsoup
+  (package
+    (name "java-jsoup")
+    (version "1.10.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jhy/jsoup/archive/jsoup-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0xbzw7rjv7s4nz1xk9b2cnin6zkpaldmc3svk71waa7hhjgp0a20"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jsoup.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (let ((classes-dir (string-append (getcwd) "/build/classes")))
+               (with-directory-excursion "src/main/java"
+                 (for-each (lambda (file)
+                             (let ((dist (string-append classes-dir "/" file)))
+                               (mkdir-p (dirname dist))
+                               (copy-file file dist)))
+                   (find-files "." ".*.properties"))))
+             #t)))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-gson" ,java-gson)))
+    (home-page "https://jsoup.org")
+    (synopsis "HTML parser")
+    (description "Jsoup is a Java library for working with real-world HTML.  It
+provides a very convenient API for extracting and manipulating data, using the
+best of DOM, CSS, and jQuery-like methods.")
+    (license l:expat)))
+
 (define-public tidyp
   (package
     (name "tidyp")
@@ -6217,3 +6303,46 @@ features include:
 @item logging with multiple log levels.
 @end enumerate\n")
     (license l:expat)))
+
+(define-public cat-avatar-generator
+  (package
+    (name "cat-avatar-generator")
+    (version "1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://framagit.org/Deevad/cat-avatar-generator.git")
+                     (commit "71c0c662742cafe8afd2d2d50ec84243113e35ad")))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "0s7b5whqsmfa57prbgl66ym551kg6ly0z14h5dgrlx4lqm70y2yw"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (srfi srfi-1)
+                      (srfi srfi-26))
+         (let ((source (assoc-ref %build-inputs "source"))
+               (php-dir (string-append %output "/share/web/" ,name "/")))
+           ;; The cache directory must not be in the store, but in a writable
+           ;; location.  The webserver will give us this location.
+           (copy-recursively source php-dir)
+           (substitute* (string-append php-dir "/cat-avatar-generator.php")
+             (("\\$cachepath = .*")
+              "if(isset($_SERVER['CACHE_DIR']))
+$cachepath = $_SERVER['CACHE_DIR'];
+else
+die('You need to set the CACHE_DIR variable first.');"))))))
+    (home-page "https://framagit.org/Deevad/cat-avatar-generator")
+    (synopsis "Random avatar generator")
+    (description "Cat avatar generator is a generator of cat pictures optimised
+to generate random avatars, or defined avatar from a \"seed\".  This is a
+derivation by David Revoy from the original MonsterID by Andreas Gohr.")
+    ;; expat for the code, CC-BY 4.0 for the artwork
+    (license (list l:expat
+                   l:cc-by4.0))))

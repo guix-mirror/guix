@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -134,7 +134,7 @@ solve the shortest vector problem.")
 (define-public pari-gp
   (package
    (name "pari-gp")
-   (version "2.9.3")
+   (version "2.9.4")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -142,7 +142,7 @@ solve the shortest vector problem.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "0qqal1lpggd6dvs19svnz0dil86xk0xkcj5s3b7104ibkmvjfsp7"))))
+                "0ir6m3a8r46md5x6zk4xf159qra7aqparby9zk03k81hjrrxr72g"))))
    (build-system gnu-build-system)
    (native-inputs `(("texlive" ,texlive-tiny)))
    (inputs `(("gmp" ,gmp)
@@ -208,7 +208,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.4.9-43")
+    (version "1.4.9-45")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -220,7 +220,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "1zhbyw4mrgf78fz55cf65650zqld156qa40s4ps69bas8jh61hci"))))
+                "11za5rznr2dgy6598y4iwrcyi86w7f601ci9i794kl8k22pqhcd8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -310,7 +310,7 @@ fast arithmetic.")
 (define-public arb
   (package
    (name "arb")
-   (version "2.10.0")
+   (version "2.12.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -319,7 +319,7 @@ fast arithmetic.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
               (base32
-                "0jwcv9ssvi8axb1y7m2h4ykgyl015cl6g28gfl92l4dgnag585ak"))))
+                "0j37xkxbqpra4sf0a96x4sqbl5fkal8d7c94bi9wdsqqj6kgcsil"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("flint" ,flint))) ; flint.h is included by arf.h
@@ -516,6 +516,7 @@ a C program.")
     (license license:bsd-3)))
 
 (define-public fftw
+  ;; TODO: Make this 3.3.7 (see below) on the next upgrade cycle.
   (package
     (name "fftw")
     (version "3.3.5")
@@ -574,6 +575,42 @@ cosine/ sine transforms or DCT/DST).")
     (description
      (string-append (package-description fftw)
                     "  With OpenMPI parallelism support."))))
+
+(define-public fftw-3.3.7
+  ;; TODO: Make this the default 'fftw' on the next upgrade cycle.
+  (package
+    (inherit fftw)
+    (version "3.3.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://ftp.fftw.org/pub/fftw/fftw-"
+                                  version".tar.gz"))
+              (sha256
+               (base32
+                "0wsms8narnbhfsa8chdflv2j9hzspvflblnqdn7hw8x5xdzrnq1v"))))))
+
+(define-public fftw-avx
+  (package
+    (inherit fftw-3.3.7)
+    (name "fftw-avx")
+    (arguments
+     (substitute-keyword-arguments (package-arguments fftw-3.3.7)
+       ((#:configure-flags flags ''())
+        ;; Enable AVX & co.  See details at:
+        ;; <http://fftw.org/fftw3_doc/Installation-on-Unix.html>.
+        `(append '("--enable-avx" "--enable-avx2" "--enable-avx512"
+                   "--enable-avx-128-fma")
+                 ,flags))
+       ((#:substitutable? _ #f)
+        ;; To run the tests, we must have a CPU that supports all these
+        ;; extensions.  Since we cannot be sure that machines in the build
+        ;; farm support them, disable substitutes altogether.
+        #f)
+       ((#:phases _)
+        ;; Since we're not providing binaries, let '-mtune=native' through.
+        '%standard-phases)))
+    (synopsis "Computing the discrete Fourier transform (AVX2-optimized)")
+    (supported-systems '("x86_64-linux"))))
 
 (define-public eigen
   (package

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -331,7 +331,9 @@ bring the system down."
             (let ((to-load-names  (map shepherd-service-canonical-name to-load))
                   (to-start       (filter shepherd-service-auto-start? to-load)))
               (info (G_ "loading new services:~{ ~a~}...~%") to-load-names)
-              (mlet %store-monad ((files (mapm %store-monad shepherd-service-file
+              (mlet %store-monad ((files (mapm %store-monad
+                                               (compose lower-object
+                                                        shepherd-service-file)
                                                to-load)))
                 ;; Here we assume that FILES are exactly those that were computed
                 ;; as part of the derivation that built OS, which is normally the
@@ -709,8 +711,8 @@ and TARGET arguments."
   "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
 bootloader; BOOTLOADER-TAGET is the target for the bootloader; TARGET is the
 target root directory; IMAGE-SIZE is the size of the image to be built, for
-the 'vm-image' and 'disk-image' actions.  The root filesystem is created as a
-FILE-SYSTEM-TYPE filesystem.  FULL-BOOT? is used for the 'vm' action; it
+the 'vm-image' and 'disk-image' actions.  The root file system is created as a
+FILE-SYSTEM-TYPE file system.  FULL-BOOT? is used for the 'vm' action; it
 determines whether to boot directly to the kernel or to the bootloader.
 
 When DERIVATIONS-ONLY? is true, print the derivation file name(s) without

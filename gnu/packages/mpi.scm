@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
@@ -39,9 +39,12 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages valgrind)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
 (define-public hwloc
+  ;; Note: For now we keep 1.x as the default because many packages have yet
+  ;; to migrate to 2.0.
   (package
     (name "hwloc")
     (version "1.11.8")
@@ -109,6 +112,24 @@ hwloc may display the topology in multiple convenient formats.  It also offers
 a powerful programming interface to gather information about the hardware,
 bind processes, and much more.")
     (license bsd-3)))
+
+(define-public hwloc-2.0
+  ;; Note: 2.0 isn't the default yet, see above.
+  (package
+    (inherit hwloc)
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
+                                  (version-major+minor version)
+                                  "/downloads/hwloc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "021765f9y6pxcxrvfpzzwaig16ypfbph5xjpkd29qkhzs9r6zrcr"))
+              (patches (search-patches "hwloc-tests-without-sysfs.patch"))))
+
+    ;; libnuma is no longer needed.
+    (inputs (alist-delete "numactl" (package-inputs hwloc)))))
 
 (define-public openmpi
   (package

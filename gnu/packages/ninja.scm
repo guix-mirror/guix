@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
 (define-public ninja
   (package
     (name "ninja")
-    (version "1.7.2")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martine/ninja/"
@@ -37,38 +38,33 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1n8n3g26ppwh7zwrc37n3alkbpbj0wki34ih53s3rkhs8ajs1p9f"))
-              (patches (search-patches "ninja-zero-mtime.patch"))))
+                "1x66q6494ml1p1f74mxzik1giakl4zj7rxig9jsc50087l671f46"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python-2)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (replace
-          'configure
-          (lambda _
-            (substitute* "src/subprocess-posix.cc"
-              (("/bin/sh") (which "sh")))
-            #t))
-         (replace
-          'build
-          (lambda _
-            (zero? (system* "./configure.py" "--bootstrap"))))
-         (replace
-          'check
-          (lambda _
-            (and (zero? (system* "./configure.py"))
-                 (zero? (system* "./ninja" "ninja_test"))
-                 (zero? (system* "./ninja_test")))))
-         (replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (bin (string-append out "/bin"))
-                   (doc (string-append out "/share/doc/ninja")))
-              (install-file "ninja" bin)
-              (install-file "doc/manual.asciidoc" doc)
-              #t))))))
+         (replace 'configure
+           (lambda _
+             (substitute* "src/subprocess-posix.cc"
+               (("/bin/sh") (which "sh")))
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "./configure.py" "--bootstrap")))
+         (replace 'check
+           (lambda _
+             (invoke "./configure.py")
+             (invoke "./ninja" "ninja_test")
+             (invoke "./ninja_test")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/ninja")))
+               (install-file "ninja" bin)
+               (install-file "doc/manual.asciidoc" doc)
+               #t))))))
     (home-page "https://ninja-build.org/")
     (synopsis "Small build system")
     (description

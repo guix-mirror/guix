@@ -1,0 +1,79 @@
+From cc9564586729a5bb90dd5d2722b543fdde9ab821 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ludovic=20Court=C3=A8s?= <ludo@gnu.org>
+Date: Sun, 4 Feb 2018 21:56:36 +0100
+Subject: [PATCH] herd: 'herd status' now sorts the result.
+
+Partly fixes <https://bugs.gnu.org/30299>.
+Reported by Mark H Weaver <mhw@netris.org>.
+
+Previously 'tests/basic.sh' could occasionally fail on:
+
+  test "`$herd status`" == "$pristine_status"
+
+because the order of stopped services were not always the same.  Indeed,
+those services come from 'service-list' on the shepherd side, which uses
+'hash-fold' to traverse the service hash table, and the traversal order
+of 'hash-fold' is undefined.
+
+* modules/shepherd/scripts/herd.scm (display-status-summary)[service<?]:
+New procedure.
+[display-services]: Call 'sort' and use the above.
+---
+ modules/shepherd/scripts/herd.scm | 8 ++++++--
+ modules/shepherd/service.scm      | 5 +++--
+ 2 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/modules/shepherd/scripts/herd.scm b/modules/shepherd/scripts/herd.scm
+index ebcd1e1..697446c 100644
+--- a/modules/shepherd/scripts/herd.scm
++++ b/modules/shepherd/scripts/herd.scm
+@@ -1,5 +1,5 @@
+ ;; herd.scm -- The program to herd the Shepherd.
+-;; Copyright (C) 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
++;; Copyright (C) 2013, 2014, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+ ;; Copyright (C) 2002, 2003 Wolfgang Jährling <wolfgang@pro-linux.de>
+ ;;
+ ;; This file is part of the GNU Shepherd.
+@@ -46,13 +46,17 @@ of pairs."
+ 
+ (define (display-status-summary services)
+   "Display a summary of the status of all of SERVICES."
++  (define (service<? service1 service2)
++    (string<? (symbol->string (service-canonical-name service1))
++              (symbol->string (service-canonical-name service2))))
++
+   (define (display-services header bullet services)
+     (unless (null? services)
+       (display header)
+       (for-each (lambda (service)
+                   (format #t " ~a ~a~%" bullet
+                           (service-canonical-name service)))
+-                services)))
++                (sort services service<?))))      ;get deterministic output
+   (call-with-values
+       (lambda ()
+         (partition (match-lambda
+diff --git a/modules/shepherd/service.scm b/modules/shepherd/service.scm
+index 0ad28a0..83600e4 100644
+--- a/modules/shepherd/service.scm
++++ b/modules/shepherd/service.scm
+@@ -1,5 +1,5 @@
+ ;; service.scm -- Representation of services.
+-;; Copyright (C) 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
++;; Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+ ;; Copyright (C) 2002, 2003 Wolfgang Järling <wolfgang@pro-linux.de>
+ ;; Copyright (C) 2014 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
+ ;; Copyright (C) 2016 Alex Kost <alezost@gmail.com>
+@@ -949,7 +949,8 @@ Return #f if service is not found."
+                  %services))
+ 
+ (define (service-list)
+-  "Return the list of services currently defined."
++  "Return the list of services currently defined.  Note: The order of the list
++returned in unspecified."
+   (hash-fold (lambda (name services result)
+                (let ((service (lookup-canonical-service name services)))
+                  (if service
+-- 
+2.16.1
+

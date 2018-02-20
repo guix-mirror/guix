@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,7 +49,7 @@ FAT-specific file attributes.")
 (define-public exfat-utils
   (package
     (name "exfat-utils")
-    (version "1.2.7")
+    (version "1.2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -56,7 +57,7 @@ FAT-specific file attributes.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1r7z3n1zxkvlqf1wv7pg0jwlr1144wznd0slfckpsb5rap8k4q9q"))))
+                "09yf41mgwp8wg0psq347d5razllilx1sd4ij9173nri47p9465jw"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/relan/exfat")
     (synopsis "Utilities to manipulate exFAT file systems")

@@ -1,0 +1,45 @@
+This patch eliminates the need for providing "xjavac", which saves building a
+package for the unmaintained "xerces-tools".
+
+Taken from https://anonscm.debian.org/viewvc/pkg-java/trunk/libxerces2-java/debian/patches/01_xjavac_taskdef.patch?revision=14507
+
+Index: b/build.xml
+===================================================================
+--- a/build.xml
++++ b/build.xml
+@@ -39,7 +39,7 @@
+   <property name="tools.dir" value="./tools"/>
+ 
+   <!-- enable compilation under JDK 1.4 and above -->
+-  <taskdef name="xjavac" classname="org.apache.xerces.util.XJavac">
++  <taskdef name="xjavac" classname="org.apache.tools.ant.taskdefs.Javac">
+     <classpath>
+       <pathelement location="${tools.dir}/bin/xjavac.jar"/>
+     </classpath>
+@@ -291,7 +291,7 @@
+            source="${javac.source}"
+            target="${javac.target}"
+            classpath="${build.dir}/classes:${tools.dir}/${jar.apis}:${tools.dir}/${jar.resolver}:${tools.dir}/${jar.serializer}"
+-           debug="${debug}"
++           debug="${debug}" nowarn="true"
+            debuglevel="${debuglevel}"
+            deprecation="${deprecation}"
+            optimize="${optimize}"
+@@ -359,7 +359,7 @@
+            source="${javac.source}"
+            target="${javac.target}"
+            classpath="${build.dir}/classes:${tools.dir}/${jar.apis}"
+-           debug="${debug}"
++           debug="${debug}" nowarn="true"
+            debuglevel="${debuglevel}"
+            includeAntRuntime="false"
+            includeJavaRuntime="true"/>
+@@ -379,7 +379,7 @@
+            source="${javac.source}"
+            target="${javac.target}"
+            classpath="${tools.dir}/${jar.apis}:${build.dir}/classes:./tools/junit.jar"
+-           debug="${debug}"
++           debug="${debug}" nowarn="true"
+            debuglevel="${debuglevel}"
+            includeAntRuntime="false"
+            includeJavaRuntime="true"/>

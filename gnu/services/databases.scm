@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -147,26 +148,33 @@ host	all	all	::1/128 	trust"))
 (define postgresql-shepherd-service
   (match-lambda
     (($ <postgresql-configuration> postgresql port locale config-file data-directory)
-     (let ((start-script
-            ;; Wrapper script that switches to the 'postgres' user before
-            ;; launching daemon.
-            (program-file "start-postgres"
-                          #~(let ((user (getpwnam "postgres"))
-                                  (postgres (string-append #$postgresql
-                                                           "/bin/postgres")))
-                              (setgid (passwd:gid user))
-                              (setuid (passwd:uid user))
-                              (system* postgres
-                                       (string-append "--config-file="
-                                                      #$config-file)
-                                       "-p" (number->string #$port)
-                                       "-D" #$data-directory)))))
+     (let* ((pg_ctl-wrapper
+             ;; Wrapper script that switches to the 'postgres' user before
+             ;; launching daemon.
+             (program-file
+              "pg_ctl-wrapper"
+              #~(begin
+                  (use-modules (ice-9 match)
+                               (ice-9 format))
+                  (match (command-line)
+                    ((_ mode)
+                     (let ((user (getpwnam "postgres"))
+                           (pg_ctl #$(file-append postgresql "/bin/pg_ctl"))
+                           (options (format #f "--config-file=~a -p ~d"
+                                            #$config-file #$port)))
+                       (setgid (passwd:gid user))
+                       (setuid (passwd:uid user))
+                       (execl pg_ctl pg_ctl "-D" #$data-directory "-o" options
+                              mode)))))))
+            (action (lambda args
+                      #~(lambda _
+                          (invoke #$pg_ctl-wrapper #$@args)))))
        (list (shepherd-service
               (provision '(postgres))
               (documentation "Run the PostgreSQL daemon.")
               (requirement '(user-processes loopback syslogd))
-              (start #~(make-forkexec-constructor #$start-script))
-              (stop #~(make-kill-destructor))))))))
+              (start (action "start"))
+              (stop (action "stop"))))))))
 
 (define postgresql-service-type
   (service-type (name 'postgresql)

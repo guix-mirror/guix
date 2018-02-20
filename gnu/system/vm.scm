@@ -346,7 +346,7 @@ the image."
                                (label "GNU-ESP")             ;cosmetic only
                                ;; Use "vfat" here since this property is used
                                ;; when mounting. The actual FAT-ness is based
-                               ;; on filesystem size (16 in this case).
+                               ;; on file system size (16 in this case).
                                (file-system "vfat")
                                (flags '(esp))))))))
              (initialize-hard-disk "/dev/vda"

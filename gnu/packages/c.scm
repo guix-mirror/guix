@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,14 +35,14 @@
 (define-public tcc
   (package
     (name "tcc")                                  ;aka. "tinycc"
-    (version "0.9.26")
+    (version "0.9.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/tinycc/tcc-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0wbdbdq6090ayw8bxnbikiv989kykff3m5rzbia05hrnwhd707jj"))))
+                "177bdhwzrnqgyrdv1dwvpd04fcxj68s5pm1dzwny6359ziway8yy"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("texinfo" ,texinfo)))
@@ -71,6 +72,8 @@
 written in C.  It supports ANSI C with GNU and extensions and most of the C99
 standard.")
     (home-page "http://www.tinycc.org/")
+    ;; An attempt to re-licence tcc under the Expat licence is underway but not
+    ;; (if ever) complete.  See the RELICENSING file for more information.
     (license license:lgpl2.1+)))
 
 (define-public tcc-wrapper

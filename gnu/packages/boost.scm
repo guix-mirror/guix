@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,14 +113,14 @@ across a broad spectrum of applications.")
 (define-public mdds
   (package
     (name "mdds")
-    (version "1.2.2")
+    (version "1.3.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "http://kohei.us/files/mdds/src/mdds-" version ".tar.bz2"))
              (sha256
               (base32
-               "17fcjhsq3bzqm7ba9sgp6my3y4226jnwai6q5jq3810i745p67hl"))))
+               "18g511z1lgfxrga2ld9yr95phmyfbd3ymbv4q5g5lyjn4ljcvf6w"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("boost" ,boost))) ; inclusion of header files

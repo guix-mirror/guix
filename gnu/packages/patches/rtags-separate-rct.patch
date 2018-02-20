@@ -1,0 +1,72 @@
+Unbundle RCT and use our own copy.
+
+--- rtags-2.16/src/CMakeLists.txt	2018-01-23 10:36:17.645855140 +0100
++++ rtags-2.16/src/CMakeLists.txt	2018-01-23 10:38:14.605234740 +0100
+@@ -105,12 +105,6 @@ if (LUA_ENABLED)
+         CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=0 -DCMAKE_GENERATOR=${CMAKE_GENERATOR})
+ endif ()
+ 
+-set(RCT_RTTI_ENABLED 1)
+-set(RCT_NO_INSTALL 1)
+-set(RCT_NO_LIBRARY 1)
+-# Everyting which as been set either in rct/rct.cmake or rct/compiler.cmake
+-# doesn't need to be set in this file again.
+-include(rct/rct.cmake)
+ 
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wstrict-aliasing=2 -Wcast-qual -fPIC")
+ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wstrict-aliasing=2 -Wcast-qual -fPIC")
+@@ -128,8 +122,7 @@ add_definitions(
+     "-DRTAGS_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
+     "-DCLANG_LIBDIR=${LIBCLANG_LIBDIR}"
+     "-DCLANG_VERSION=${LIBCLANG_VERSION_STRING}"
+-    "-DOS_${CMAKE_SYSTEM_NAME}"
+-    ${RCT_DEFINITIONS})
++    "-DOS_${CMAKE_SYSTEM_NAME}")
+ 
+ if (CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+     add_definitions(-D__LONG_LONG_SUPPORTED)
+@@ -172,8 +165,7 @@ set(RTAGS_SOURCES
+     Symbol.cpp
+     SymbolInfoJob.cpp
+     Token.cpp
+-    TokensJob.cpp
+-    ${RCT_SOURCES})
++    TokensJob.cpp)
+ 
+ if (LUA_ENABLED)
+     list(APPEND RTAGS_SOURCES AST.cpp)
+@@ -195,10 +187,10 @@ endif ()
+ 
+ include_directories(
+     ${CMAKE_CURRENT_LIST_DIR}
+-    ${RCT_INCLUDE_DIRS}
+     ${CMAKE_CURRENT_LIST_DIR}/selene/include
+     ${CMAKE_CURRENT_BINARY_DIR}/lua-prefix/src/lua-build
+-    ${CMAKE_CURRENT_LIST_DIR}/lua/src)
++    ${CMAKE_CURRENT_LIST_DIR}/lua/src
++    ${CMAKE_CURRENT_BINARY_DIR}/include)
+ 
+ if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+     set(START_GROUP "")
+@@ -223,17 +215,17 @@ else ()
+ endif()
+ 
+ # RCT_LIBRARIES and stdc++ library must be at the end
+-set(RTAGS_LIBRARIES ${RTAGS_LIBRARIES} -lstdc++ ${RCT_LIBRARIES})
++set(RTAGS_LIBRARIES ${RTAGS_LIBRARIES} -lstdc++)
+ add_executable(rc rc.cpp)
+-target_link_libraries(rc ${RTAGS_LIBRARIES})
++target_link_libraries(rc ${RTAGS_LIBRARIES} rct)
+ 
+ add_executable(rdm rdm.cpp)
+-target_link_libraries(rdm ${RTAGS_LIBRARIES})
++target_link_libraries(rdm ${RTAGS_LIBRARIES} rct)
+ 
+ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+ 
+ add_executable(rp rp.cpp)
+-target_link_libraries(rp ${RTAGS_LIBRARIES})
++target_link_libraries(rp ${RTAGS_LIBRARIES} rct)
+ 
+ if (CYGWIN)
+     EnsureLibraries(rdm rct)

@@ -70,7 +70,12 @@
                            "v" version ".tar.gz"))
        (sha256
         (base32 "135991hspq0grf26pvl2lkwhp92yz204h6rgiwyym0x6v0xzknd1"))
-       (file-name (string-append "chez-scheme-" version ".tar.gz"))))
+       (file-name (string-append "chez-scheme-" version ".tar.gz"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Fix compilation with glibc >= 2.26, which removed xlocale.h.
+        '(substitute* "c/expeditor.c"
+           (("xlocale\\.h") "locale.h")))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)

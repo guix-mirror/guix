@@ -28,7 +28,12 @@
   #:use-module (guix records)
   #:use-module (guix utils)
   #:export (u-boot-bootloader
-            u-boot-beaglebone-black-bootloader))
+            u-boot-a20-olinuxino-lime-bootloader
+            u-boot-a20-olinuxino-lime2-bootloader
+            u-boot-a20-olinuxino-micro-bootloader
+            u-boot-banana-pi-m2-ultra-bootloader
+            u-boot-beaglebone-black-bootloader
+            u-boot-nintendo-nes-classic-edition-bootloader))
 
 (define install-u-boot
   #~(lambda (bootloader device mount-point)
@@ -50,6 +55,13 @@
         (write-file-on-device u-boot (* 1024 512)
                               device (* 768 512)))))
 
+(define install-allwinner-u-boot
+  #~(lambda (bootloader device mount-point)
+      (let ((u-boot (string-append bootloader
+                                   "/libexec/u-boot-sunxi-with-spl.bin")))
+        (write-file-on-device u-boot (stat:size (stat u-boot))
+                              device (* 8 1024)))))
+
 
 
 ;;;
@@ -68,3 +80,33 @@
    (inherit u-boot-bootloader)
    (package u-boot-beagle-bone-black)
    (installer install-beaglebone-black-u-boot)))
+
+(define u-boot-allwinner-bootloader
+  (bootloader
+   (inherit u-boot-bootloader)
+   (installer install-allwinner-u-boot)))
+
+(define u-boot-nintendo-nes-classic-edition-bootloader
+  (bootloader
+    (inherit u-boot-allwinner-bootloader)
+    (package u-boot-nintendo-nes-classic-edition)))
+
+(define u-boot-a20-olinuxino-lime-bootloader
+  (bootloader
+   (inherit u-boot-allwinner-bootloader)
+   (package u-boot-a20-olinuxino-lime)))
+
+(define u-boot-a20-olinuxino-lime2-bootloader
+  (bootloader
+   (inherit u-boot-allwinner-bootloader)
+   (package u-boot-a20-olinuxino-lime2)))
+
+(define u-boot-a20-olinuxino-micro-bootloader
+  (bootloader
+   (inherit u-boot-allwinner-bootloader)
+   (package u-boot-a20-olinuxino-micro)))
+
+(define u-boot-banana-pi-m2-ultra-bootloader
+  (bootloader
+   (inherit u-boot-allwinner-bootloader)
+   (package u-boot-banana-pi-m2-ultra)))

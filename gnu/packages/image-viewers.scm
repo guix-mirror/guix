@@ -7,6 +7,8 @@
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +38,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -56,7 +59,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "2.23")
+    (version "2.23.2")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -64,7 +67,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "18922zv8ckm82r1ap1yn7plbk6djpj02za2ahng58sjj2fw3rpqn"))))
+                "1hw9xhhmm404ircmd7aw9n51n23wzjxzmav272ldk1pxb2jk3hcn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -172,7 +175,7 @@ It is the default image viewer on LXDE desktop environment.")
 (define-public sxiv
   (package
     (name "sxiv")
-    (version "1.3.2")
+    (version "24")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -181,19 +184,29 @@ It is the default image viewer on LXDE desktop environment.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lxnd33gaw4drhdwbkk94wzrjyhh64d57jq2ps7ffmqgizg6hlwz"))))
+                "044i077li6m4zsz2fswlcdi2m0sbr9mwws1h3k1zjaln29fw87ai"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no check target
-       #:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc")
-       ;; no configure phase
-       #:phases (modify-phases %standard-phases (delete 'configure))))
+     `(#:tests? #f                      ; no check target
+       #:make-flags
+       (list (string-append "PREFIX=" %output)
+             "CC=gcc"
+             ;; Xft.h #includes <ft2build.h> (without ‘freetype2/’).  The sxiv
+             ;; Makefile works around this by hard-coding /usr/include instead.
+             (string-append "DEF_CPPFLAGS=-I"
+                            (assoc-ref %build-inputs "freetype")
+                            "/include/freetype2")
+             "V=1")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
     (inputs
-     `(("libx11" ,libx11)
-       ("imlib2" ,imlib2)
+     `(("freetype" ,freetype)
        ("giflib" ,giflib)
-       ("libexif" ,libexif)))
+       ("imlib2" ,imlib2)
+       ("libexif" ,libexif)
+       ("libx11" ,libx11)
+       ("libxft" ,libxft)))
     (home-page "https://github.com/muennich/sxiv")
     (synopsis "Simple X Image Viewer")
     (description
@@ -404,6 +417,7 @@ imaging.  It supports several HDR and LDR image formats, and it can:
     (arguments
      ;; Python 2.5 or newer (Python 3 and up is not supported)
      `(#:python ,python-2
+       #:tests? #f ; there are no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'configure

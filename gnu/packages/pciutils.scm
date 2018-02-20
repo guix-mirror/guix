@@ -86,7 +86,7 @@
     (inputs
      `(("kmod" ,kmod)
        ("zlib" ,zlib)))
-    (home-page "http://mj.ucw.cz/sw/pciutils/")
+    (home-page "https://mj.ucw.cz/sw/pciutils/")
     (synopsis "Programs for inspecting and manipulating PCI devices")
     (description
      "The PCI Utilities are a collection of programs for inspecting and

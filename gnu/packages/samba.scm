@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,7 +93,7 @@ the Linux kernel CIFS client.")
 (define-public iniparser
   (package
     (name "iniparser")
-    (version "4.0")
+    (version "4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/ndevilla/iniparser/archive/v"
@@ -100,47 +101,43 @@ the Linux kernel CIFS client.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1flj7srvh2hp9ls96qz922bklyhw7f27mmn23b16839zpdjddfz0"))))
+               "1bpk8dj9d5cl64lg6jsk0qlzrpg848nymwxc3fx707fk1n0al3cn"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:make-flags
+       (list "CC=gcc")
+       #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* '("Makefile" "test/Makefile")
                (("/usr/lib")
-                (string-append (assoc-ref outputs "out") "/lib"))
-               (("\\?= gcc") "= gcc"))))
+                (string-append (assoc-ref outputs "out") "/lib")))))
          (replace 'build
-           (lambda _
-             (and (zero? (system* "make" "libiniparser.so"))
-                         (symlink "libiniparser.so.0" "libiniparser.so"))))
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "libiniparser.so.1"
+                    make-flags)))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
                     (lib  (string-append out "/lib"))
                     (inc  (string-append out "/include"))
-                    (doc  (string-append out "/share/doc"))
+                    (doc  (string-append out "/share/doc/" ,name))
                     (html (string-append doc "/html")))
-               (define (copy dir)
+               (define (install dir)
                  (lambda (file)
-                   (copy-file file
-                              (string-append dir "/"
-                                             (basename file)))))
-               (mkdir-p lib)
-               (for-each (copy lib)
-                         (find-files "." "^lib.*\\.(so\\.|a)"))
+                   (install-file file dir)))
+               (for-each (install lib)
+                         (find-files "." "^lib.*\\.so"))
                (with-directory-excursion lib
-                 (symlink "libiniparser.so.0" "libiniparser.so"))
-               (mkdir-p inc)
-               (for-each (copy inc)
+                 (symlink "libiniparser.so.1" "libiniparser.so"))
+               (for-each (install inc)
                          (find-files "src" "\\.h$"))
-               (mkdir-p html)
-               (for-each (copy html)
+               (for-each (install html)
                          (find-files "html" ".*"))
-               (for-each (copy doc)
+               (for-each (install doc)
                          '("AUTHORS" "INSTALL" "LICENSE" "README.md"))))))))
-    (home-page "http://ndevilla.free.fr/iniparser")
+    (home-page "https://github.com/ndevilla/iniparser")
     (synopsis "Standalone ini file parsing library")
     (description
      "iniparser is a free stand-alone `ini' file parsing library (Windows
@@ -151,14 +148,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.7.4")
+    (version "4.7.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "0iw290n0q4l5s92d0f9yz27yp3rdfr6bvsmvg1xvd19g8p2d04pv"))))
+               "13gyr0sk9vx6mccr2h35ca3g92kp50cqxrlzfgrddfmskzx08v9i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -236,31 +233,26 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.1.10")
+    (version "2.1.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "06gn45if56g81vbj3841fzdjsahrrczwqpfrydm2zv6nxd5yk1f9"))))
+                "1lzfxv2zjxap5snf9ydl1bqgjpz0kgkq7n644f8rkbx0arav77k3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; test_magic_differs.sh has syntax error, and is not in the right
-             ;; place where wscript expected.
-             ;; Skip the test.
-             (substitute* "wscript"
-               (("magic_ret = .*") "magic_ret = 0\n"))
-             ;; talloc uses a custom configuration script that runs a
-             ;; python script called 'waf'.
+             ;; talloc uses a custom configuration script that runs a Python
+             ;; script called 'waf', and doesn't tolerate unknown options.
              (setenv "CONFIG_SHELL" (which "sh"))
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (inputs
      `(("python" ,python-2)))
     (home-page "https://talloc.samba.org")
@@ -311,14 +303,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.9.34")
+    (version "0.9.35")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "12kvfjs0dwi4iqbz740a37z0c7kmg8bhl53mwdj02jkznbw3w8bk"))))
+                "1s8nbkmqz8dzdlsd6qynhvyl05pw93r151f3i2kgjfpbck9ak8r5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -346,14 +338,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03arsnsbkxb2d811pbarb7d12yg8g05f1q576z48sp647dd3xda4"))))
+                "1lnbcazm1kqqcc7syy0xbq9srhbylkqhpsmsbsm4c3xfangjr7xi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

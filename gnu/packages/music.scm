@@ -10,11 +10,12 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
+;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -134,11 +135,13 @@
               (sha256
                (base32
                 "1cs3z6frx2ch7rm5ammx9p0rxcjrbj1vq14hvcbimpaw39rdsn3d"))))
-    (build-system gnu-build-system)
+    (build-system scons-build-system)
     (arguments
      `(#:tests? #f  ;no tests
+       #:scons-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:scons ,scons-python2
        #:phases
-       ;; TODO: Add scons-build-system and use it here.
        (modify-phases %standard-phases
          (delete 'configure)
          (add-after 'unpack 'scons-propagate-environment
@@ -161,26 +164,18 @@
                                " or \"score/\" in file"
                                " or \"Documentation/\" in file")))
              #t))
-         (replace 'build (lambda _ (zero? (system* "scons"))))
-         (replace 'install
+         (add-after 'install 'fix-directory-permissions
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (and
-                (zero? (system* "scons"
-                                (string-append "prefix=" out)
-                                "install"))
-                ;; Fix directory permissions
-                (begin
-                  (chmod (string-append out "/share/Aria/Documentation") #o555)
-                  (chmod (string-append out "/share/Aria/score") #o555)
-                  #t))))))))
+               (chmod (string-append out "/share/Aria/Documentation") #o555)
+               (chmod (string-append out "/share/Aria/score") #o555)
+               #t))))))
     (inputs
      `(("wxwidgets" ,wxwidgets)
        ("glib" ,glib)
        ("alsa-lib" ,alsa-lib)))
     (native-inputs
-     `(("scons" ,scons)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://ariamaestosa.sourceforge.net/")
     (synopsis "MIDI sequencer and editor")
     (description
@@ -231,18 +226,19 @@ score, keyboard, guitar, drum and controller views.")
                        "sha2" ;; Replaced by openssl.
                        "taglib"
                        "tinysvcmdns")))
-                (patches (search-patches "clementine-use-openssl.patch"))))
+                (patches (search-patches "clementine-use-openssl.patch"
+                                         "clementine-remove-crypto++-dependency.patch"))))
       (build-system cmake-build-system)
       (arguments
        '(#:test-target "clementine_test"
          #:configure-flags
-         (let ((crypto (assoc-ref %build-inputs "crypto++")))
-           (list "-DENABLE_VISUALISATIONS=OFF" ; requires unpackaged "projectm"
-                 "-DCRYPTOPP_FOUND=TRUE"
-                 (string-append "-DCRYPTOPP_INCLUDE_DIRS=" crypto "/include")
-                 (string-append "-DCRYPTOPP_LIBRARY_DIRS=" crypto "/lib")
-                 (string-append "-DCRYPTOPP_LIBRARIES=" crypto "/lib/libcryptopp.a")
-                 "-DUSE_SYSTEM_SHA2=TRUE"))
+         (list ;; Requires unpackaged "projectm"
+               "-DENABLE_VISUALISATIONS=OFF"
+               ;; Otherwise it may try to download a non-free library at run-time.
+               ;; TODO In an origin snippet, remove the code that performs the
+               ;; download.
+               "-DHAVE_SPOTIFY_DOWNLOADER=FALSE"
+               "-DUSE_SYSTEM_SHA2=TRUE")
          #:phases
          (modify-phases %standard-phases
            (add-after 'install 'wrap-program
@@ -259,7 +255,6 @@ score, keyboard, guitar, drum and controller views.")
       (inputs
        `(("boost" ,boost)
          ("chromaprint" ,chromaprint)
-         ("crypto++" ,crypto++)
          ("fftw" ,fftw)
          ("glib" ,glib)
          ("glu" ,glu)
@@ -1055,22 +1050,10 @@ complete studio.")
          (add-after 'unpack 'fix-configuration
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "default.config"
-               (("csound=csound")
-                (string-append "csound="
-                               (assoc-ref inputs "csound")
-                               "/bin/csound"))
-               (("/usr/bin/aplay")
-                (string-append (assoc-ref inputs "aplay")
-                               "/bin/aplay"))
-               (("/usr/bin/timidity")
-                (string-append (assoc-ref inputs "timidity")
-                               "/bin/timidity"))
-               (("/usr/bin/mpg123")
-                (string-append (assoc-ref inputs "mpg123")
-                               "/bin/mpg123"))
-               (("/usr/bin/ogg123")
-                (string-append (assoc-ref inputs "ogg123")
-                               "/bin/ogg123")))
+               (("/usr/bin/aplay") "aplay")
+               (("/usr/bin/timidity") "timidity")
+               (("/usr/bin/mpg123") "mpg123")
+               (("/usr/bin/ogg123") "ogg123"))
              #t))
          (add-before 'build 'patch-python-shebangs
            (lambda _
@@ -1110,13 +1093,7 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
        ("pygtk" ,python2-pygtk)
        ("gettext" ,gettext-minimal)
        ("gtk" ,gtk+)
-       ("lilypond" ,lilypond)
-       ;; players needed at runtime
-       ("aplay" ,alsa-utils)
-       ("csound" ,csound) ; optional, needed for some exercises
-       ("mpg123" ,mpg123)
-       ("ogg123" ,vorbis-tools)
-       ("timidity" ,timidity++)))
+       ("lilypond" ,lilypond)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("txt2man" ,txt2man)
@@ -1187,6 +1164,14 @@ add_library( rapidjson INTERFACE IMPORTED )"))
                              "exclude:Score/ViewFilter/ViewFilter"
                              "exclude:Formats/PowerTabOldImport/Directions"
                              ))))
+         ;; FIXME: This bug has been fixed upstream, but no release has been
+         ;; made yet.  See https://github.com/powertab/powertabeditor/issues/257
+         (add-after 'unpack 'fix-boost-bug
+           (lambda _
+             (substitute* "source/score/voiceutils.cpp"
+               (("boost::rational<int> duration\\(4, pos.getDurationType\\(\\)\\);")
+                "boost::rational<int> duration(4, static_cast<int>(pos.getDurationType()));"))
+             #t))
          (add-before 'configure 'remove-third-party-libs
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Link with required static libraries, because we're not
@@ -1453,7 +1438,7 @@ reverb effects.")
 (define-public setbfree
   (package
     (name "setbfree")
-    (version "0.8.4")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -1462,7 +1447,7 @@ reverb effects.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1g4s1920kb2q5gpp82l2vxia29qa8g8zvdjgrca8ypynvxpzn65f"))))
+                "0qfccny0hh9lq54272mzmxvfz2jmzcgigjkjwn6v9h6n00gi5bw4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -2168,14 +2153,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.8.5")
+    (version "0.8.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "0anhsd3gg8cxbf31mn2mimf19ycbbxqvd7ldizk93yq2zfbzzqqa"))))
+                "0qf75bccsyplx6fcaz48k6027yp06zhl8ixhhjdbr30xgpslnjm3"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; no "check" target
     (inputs
@@ -2332,6 +2317,33 @@ analogue-like user interface.")
 socket or command line.")
       (license license:gpl3+))))
 
+(define-public curseradio
+  (let ((commit "1bd4bd0faeec675e0647bac9a100b526cba19f8d")
+        (revision "1"))
+    (package
+      (name "curseradio")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/chronitis/curseradio.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "11bf0jnj8h2fxhpdp498189r4s6b47vy4wripv0z4nx7lxajl88i"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-requests" ,python-requests)
+       ("python-pyxdg" ,python-pyxdg)
+       ("mpv" ,mpv)))
+    (home-page "https://github.com/chronitis/curseradio")
+    (synopsis "Command-line Internet radio player")
+    (description "Curseradio is a Curses-based radio player that uses a
+tune-in sender list from @url{http://opml.radiotime.com}.")
+    (license license:expat))))
+
 (define-public pianobar
   (package
     (name "pianobar")
@@ -2486,6 +2498,48 @@ websites such as Libre.fm.")
 
 (define-public python2-pylast
   (package-with-python2 python-pylast))
+
+(define-public instantmusic
+  (let ((commit "300891d09c703525215fa5a116b9294af1c923c8")
+        (revision "1"))
+    (package
+      (name "instantmusic")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/yask123/Instant-Music-Downloader.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0j7qivaa04bpdz3anmgci5833dgiyfqqwq9fdrpl9m68b34gl773"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("eyed3", eyed3)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("youtube-dl" ,youtube-dl)))
+    (arguments
+     '(#:modules ((guix build python-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'change-directory
+                    (lambda _
+                      (chdir "instantmusic-0.1") #t))
+                  (add-before 'check 'fix-file-permissions
+                    (lambda _
+                      ;; Fix some read-only files that would cause a build failure
+                      (for-each (cut chmod <> #o644)
+                                (find-files "instantmusic.egg-info"
+                                            "PKG-INFO|.*\\.txt"))
+                      #t)))))
+    (home-page "http://iyask.me/Instant-Music-Downloader/")
+    (synopsis "Command-line program to download a song from YouTube")
+    (description "InstantMusic downloads a song from YouTube in MP3 format.
+Songs can be searched by artist, name or even by a part of the song text.")
+    (license license:expat))))
 
 (define-public beets
   (package
@@ -3873,7 +3927,7 @@ ISRCs and the MCN (=UPC/EAN) from disc.")
              version "/libmusicbrainz-" version ".tar.gz"))
        (sha256
         (base32
-         "0ikb9igyyk28jm34raxfzkw2qyn4nzzwsymdyprp7cmvi6g2ajb7"))     ))
+         "0ikb9igyyk28jm34raxfzkw2qyn4nzzwsymdyprp7cmvi6g2ajb7"))))
     (build-system cmake-build-system)
     (arguments `(#:phases
                  (modify-phases %standard-phases

@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,17 +118,17 @@ manner.")
 (define-public python-hacking
   (package
     (name "python-hacking")
-    (version "0.13.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hacking" version))
        (sha256
         (base32
-         "1s1wq2sds6fjp8rwz31vkp33kjl9nyk5y2g2pri8shic75dr00h4"))))
+         "0s9l99s64jsyvm28fa4hzllbdi21sb7jn4gzdf1pd5ckvy7p4b0k"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-flake8" ,python-flake8)
+     `(("python-flake8" ,python-flake8-2.5)
        ("python-mccabe-0.2.1" ,python-mccabe-0.2.1)
        ("python-pbr" ,python-pbr)
        ("python-pep8-1.5.7" ,python-pep8-1.5.7)
@@ -175,10 +176,10 @@ guidelines}.")
     (home-page "https://www.openstack.org/")
     (synopsis "Mock object framework for Python")
     (description
-      "Mox3 is an unofficial port of the Google mox framework
-(http://code.google.com/p/pymox/) to Python 3.  It was meant to be as compatible
+      "Mox3 is an unofficial port of the @uref{https://code.google.com/p/pymox/,
+Google mox framework} to Python 3.  It was meant to be as compatible
 with mox as possible, but small enhancements have been made.  The library was
-tested on Python version 3.2, 2.7 and 2.6.")
+tested on Python versions 3.2, 2.7, and 2.6.")
     (license asl2.0)))
 
 (define-public python2-mox3

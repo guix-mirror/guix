@@ -2,6 +2,9 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,23 +24,31 @@
 (define-module (gnu packages geo)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system scons)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml))
 
 (define-public geos
   (package
     (name "geos")
-    (version "3.6.1")
+    (version "3.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.osgeo.org/geos/geos-"
@@ -45,7 +56,7 @@
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1icz31kd5sml2kdxhjznvmv33zfr6nig9l0i6bdcz9q9g8x4wbja"))))
+                "0ak5szby29l9l0vy43dm5z2g92xzdky20q1gc1kah1fnhkgi6nh4"))))
     (build-system gnu-build-system)
     (arguments `(#:phases
                  (modify-phases %standard-phases
@@ -71,9 +82,6 @@ topology functions.")
                    license:zlib              ; tests/xmltester/tinyxml/*
                    license:public-domain)))) ; include/geos/timeval.h
 
-;;; FIXME GNOME Maps only runs within GNOME. On i3, it fails with this error:
-;;; (org.gnome.Maps:8568): GLib-GIO-ERROR **: Settings schema
-;;; 'org.gnome.desktop.interface' is not installed
 (define-public gnome-maps
   (package
     (name "gnome-maps")
@@ -121,13 +129,19 @@ topology functions.")
      `(("folks" ,folks)
        ("libchamplain" ,libchamplain)
        ("libgee" ,libgee)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("libgweather" ,libgweather)
        ("libxml2" ,libxml2)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib-networking" ,glib-networking)
        ("geoclue" ,geoclue)
        ("geocode-glib" ,geocode-glib)
        ("gfbgraph" ,gfbgraph)
        ("gjs" ,gjs)
        ("glib" ,glib)
        ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("rest" ,rest)
        ("webkitgtk" ,webkitgtk)))
     (propagated-inputs
@@ -237,3 +251,130 @@ projections.")
                    (license:non-copyleft "http://www.epsg.org/TermsOfUse")
                    ;; cmake/*
                    license:boost1.0))))
+
+(define-public mapnik
+  (package
+    (name "mapnik")
+    (version "3.0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mapnik/mapnik/releases/download/v"
+                           version "/mapnik-v" version ".tar.bz2"))
+       (sha256
+        (base32
+         "06frcikaj2mgz3abfk5h0z4j3hbksi0zikwjngbjv4p5f3pwxf8q"))))
+    (build-system scons-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("cairo" ,cairo)
+       ("freetype" ,freetype)
+       ("harfbuzz" ,harfbuzz)
+       ("icu4c" ,icu4c)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("libxml2" ,libxml2)
+       ("proj.4" ,proj.4)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:scons ,scons-python2
+       #:scons-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" %output)
+             (string-append "CUSTOM_LDFLAGS=-Wl,-rpath=" %output "/lib"))))
+    (home-page "http://mapnik.org/")
+    (synopsis "Toolkit for developing mapping applications")
+    (description "Mapnik is a toolkit for developing mapping applications.  It
+is basically a collection of geographic objects like maps, layers,
+datasources, features, and geometries.  At its core is a C++ shared library
+providing algorithms and patterns for spatial data access and visualization.
+The library does not rely on any specific windowing system and can be deployed
+to any server environment.  It is intended to play fair in a multi-threaded
+environment and is aimed primarily, but not exclusively, at web-based
+development.")
+    (license (list license:lgpl2.1+
+                   ;; demo/viewer, demo/python/rundemo.py
+                   license:gpl2+
+                   ;; deps/boost, deps/mapbox, deps/agg/include/agg_conv_offset.h
+                   license:boost1.0
+                   ;; deps/mapnik/sparsehash
+                   license:bsd-3
+                   ;; deps/agg
+                   (license:non-copyleft "file://deps/agg/copying")))))
+
+(define-public python2-mapnik
+  (package
+    (name "python2-mapnik")
+    (version "3.0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mapnik/python-mapnik/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w7wg72gnwmbjani9sqk42p2jwqkrl9hsdkawahni5m05xsifcb4"))))
+    (build-system python-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("harfbuzz" ,harfbuzz)
+       ("icu4c" ,icu4c)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("mapnik" ,mapnik)
+       ("proj.4" ,proj.4)
+       ("python2-pycairo" ,python2-pycairo)))
+    (native-inputs
+     (let ((test-data-input
+            (lambda (repository version hash)
+              (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/mapnik/" repository
+                                    "/archive/v" version ".tar.gz"))
+                (file-name (string-append "python-mapnik-" repository
+                                          "-" version ".tar.gz"))
+                (sha256 (base32 hash))))))
+       `(("python2-nose" ,python2-nose)
+         ;; Test data is released as separate tarballs
+         ("test-data"
+          ,(test-data-input "test-data" "3.0.18"
+                            "10cvgn5gxn8ldrszj24zr1vzm5w76kqk4s7bl2zzp5yvkhh8lj1n"))
+         ("test-data-visual"
+          ,(test-data-input "test-data-visual" "3.0.18"
+                            "1cb9ghy8sis0w5fkp0dvwxdqqx44rhs9a9w8g9r9i7md1c40r80i")))))
+    (arguments
+     `(#:python ,python-2 ; Python 3 support is incomplete, and the build fails
+       #:phases
+       (modify-phases %standard-phases
+         ;; Unpack test data into the source tree
+         (add-after 'unpack 'unpack-submodules
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((unpack (lambda (source target)
+                             (with-directory-excursion target
+                               (invoke "tar" "xvf" (assoc-ref inputs source)
+                                       "--strip-components=1")))))
+               (unpack "test-data" "test/data")
+               (unpack "test-data-visual" "test/data-visual"))))
+         ;; Skip failing tests
+         (add-after 'unpack 'skip-tests
+           (lambda _
+             (let ((skipped-tests (list "test_vrt_referring_to_missing_files"
+                                        "test_unicode_regex_replace"
+                                        "test_proj_antimeridian_bbox"
+                                        "test_render_with_scale_factor")))
+               (substitute* "setup.cfg"
+                 (("\\[nosetests\\]" all)
+                  (string-append all "\nexclude=^("
+                                 (string-join skipped-tests "|") ")$")))))))))
+    (home-page "https://github.com/mapnik/python-mapnik")
+    (synopsis "Python bindings for Mapnik")
+    (description "This package provides Python bindings for Mapnik.")
+    (license license:lgpl2.1+)))

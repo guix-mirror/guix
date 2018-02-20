@@ -7,14 +7,14 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -803,7 +803,7 @@ glyph designs, not just an added slant.")
 (define-public font-hack
   (package
     (name "font-hack")
-    (version "3.000")
+    (version "3.002")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
@@ -811,7 +811,7 @@ glyph designs, not just an added slant.")
                     version "/Hack-v" version "-ttf.zip"))
               (sha256
                (base32
-                "0h6slqg25a6cq57k6rh5hmnk8dxbprmf8shs4iyj1pc83sw6b1r3"))))
+                "18fpaczj2rxfwgnrqpkxq0qn01parhmngglc4i1n3gchyzdsrh0x"))))
     (build-system font-build-system)
     (home-page "https://sourcefoundry.org/hack/")
     (synopsis "Typeface designed for source code")
@@ -865,7 +865,7 @@ designed to work well in user interface environments.")
                (base32
                 "1z65x0dw5dq6rs6p9wyfrir50rlh95vgzsxr8jcd40nqazw4jhpi"))))
     (build-system font-build-system)
-    (home-page "http://mozilla.github.io/Fira/")
+    (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Mozilla's monospace font")
     (description "This is the typeface used by Mozilla in Firefox OS.")
     (license license:silofl1.1)))
@@ -883,9 +883,32 @@ designed to work well in user interface environments.")
                (base32
                 "1r6zdnqqp4bgq5nmgqbj0vvj7x1h9w912851ggbl9wc7fdjnjqnq"))))
     (build-system font-build-system)
-    (home-page "http://mozilla.github.io/Fira/")
+    (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Mozilla's Fira Sans Font")
     (description "This is the typeface used by Mozilla in Firefox OS.")
+    (license license:silofl1.1)))
+
+(define-public font-fira-code
+  (package
+    (name "font-fira-code")
+    (version "1.204")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append "https://github.com/tonsky/FiraCode/releases/"
+                                  "download/" version
+                                  "/FiraCode_" version ".zip"))
+              (sha256
+               (base32
+                "17wky221b3igrqhmxgmqiyv1xdfn0nw471vzhpkrvv1w2w1w1k18"))))
+    (build-system font-build-system)
+    (home-page "https://mozilla.github.io/Fira/")
+    (synopsis "Monospaced font with programming ligatures")
+    (description
+     "Fira Code is an extension of the Fira Mono font containing a set of ligatures
+for common programming multi-character combinations.  This is just a font rendering
+feature: underlying code remains ASCII-compatible.  This helps to read and understand
+code faster.  For some frequent sequences like .. or //, ligatures allow us to
+correct spacing.")
     (license license:silofl1.1)))
 
 (define-public font-awesome
@@ -1176,3 +1199,71 @@ that's clean and modern, and can express a wide range of voices & feelings.
 It comes in 7 incremental weights:
 ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
     (license license:silofl1.1)))
+
+(define-public culmus
+  (package
+    (name "culmus")
+    (version "0.132")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://sourceforge.net/projects/"
+                            "culmus/files/culmus/" version "/culmus-src-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "1djxalm26r7bcq33ckmfa15xfs6pmqzvcl64d5lqa1dl01bl4j4z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (let ((compile
+                    (lambda (name ext)
+                      (zero? (system*
+                              "fontforge" "-lang=ff"
+                              "-c" (string-append "Open('" name "');"
+                                                  "Generate('"
+                                                  (basename name "sfd") ext
+                                                  "')"))))))
+               ;; This part based on the fonts shipped in the non-source package.
+               (every (lambda (name)
+                        (compile name "ttf"))
+                      (find-files "." "^[^Nachlieli].*\\.sfd$"))
+               (every (lambda (name)
+                        (compile name "otf"))
+                      (find-files "." "^Nachlieli.*\\.sfd$"))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref %outputs "out"))
+                    (ttf     (string-append out "/share/fonts/truetype"))
+                    (otf     (string-append out "/share/fonts/opentype"))
+                    (license (string-append out "/share/doc/" ,name)))
+               (for-each (lambda (file)
+                           (install-file file ttf))
+                         (find-files "." "\\.ttf$"))
+               (for-each (lambda (file)
+                           (install-file file otf))
+                         (find-files "." "\\.otf$"))
+               (for-each (lambda (file)
+                           (install-file file license))
+                         '("GNU-GPL" "LICENSE" "LICENSE-BITSTREAM"))
+               #t))))))
+    (native-inputs
+     `(("fontforge" ,fontforge)))
+    (home-page "http://culmus.sourceforge.net/")
+    (synopsis "TrueType Hebrew Fonts for X11")
+    (description "14 Hebrew trivial families.  Contain ASCII glyphs from various
+sources.  Those families provide a basic set of a serif (Frank Ruehl), sans
+serif (Nachlieli) and monospaced (Miriam Mono) trivials.  Also included Miriam,
+Drugulin, Aharoni, David, Hadasim etc.  Cantillation marks support is
+available in Keter YG.")
+    (license license:gpl2))) ; consult the LICENSE file included

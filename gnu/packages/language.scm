@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -201,7 +202,7 @@ both ordinal and cardinal numbers, negative numbers, and very large numbers.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/X/XE/XERN/"
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                            "Lingua-PT-Stemmer-" version ".tar.gz"))
        (sha256
         (base32

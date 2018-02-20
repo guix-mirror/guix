@@ -340,7 +340,7 @@
     (description
      "Ceph is a distributed storage system designed for reliability and
 performance.  It provides network-based block devices (RBD), a POSIX
-compliant filesystem (CephFS), and offers compatibility with various
+compliant file system (CephFS), and offers compatibility with various
 storage protocols (S3, NFS, and others) through the RADOS gateway.")
     ;; The Ceph libraries are LGPL2.1 and most of the utilities fall under
     ;; GPL2. The installed erasure code plugins are BSD-3 licensed and do

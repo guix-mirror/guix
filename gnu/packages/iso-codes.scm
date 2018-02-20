@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
@@ -64,3 +65,45 @@ infrastructure.  Moreover, the programmer does not need to follow
 changes in the ISO standard and will not work with outdated
 information.")
     (license license:gpl2+)))           ; some bits use the lgpl2
+
+(define-public python-iso639
+  (package
+    (name "python-iso639")
+    (version "0.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "iso-639" version))
+       (sha256
+        (base32
+         "0jffmh4m20q8j27xb2fqbnlghjj0cx8pgsbzqisdg65qh2wd976w"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/noumar/iso639")
+    (synopsis "Python library for ISO 639 standard")
+    (description "This package provides a Python library for ISO 639 standard
+that is concerned with representation of names for languages and language
+groups.")
+    (license license:agpl3+)))
+
+(define-public python2-iso639
+  (package-with-python2 python-iso639))
+
+(define-public python-iso3166
+  (package
+    (name "python-iso3166")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "iso3166" version))
+       (sha256
+        (base32
+         "0cs9w507dj93jj9z9di93lx2fplf8pma4jkrsvvb258dv6z1gszv"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/deactivated/python-iso3166")
+    (synopsis "Self-contained ISO 3166-1 country definitions")
+    (description "This package provides the ISO 3166-1 country definitions.")
+    (license license:expat)))
+
+(define-public python2-iso3166
+  (package-with-python2 python-iso3166))

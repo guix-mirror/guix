@@ -281,14 +281,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.0.3")
+    (version "2.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1qa117fs1yd50zn2cfxh7d9l999ds0z4h83m9m7j4fk6ffm33f5y"))))
+         "1jm5c33qaz297sf99kz9kw8xi792ap9m6bwf0dfylls8z3rv9i3q"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -303,14 +303,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.0.3")
+    (version "2.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "0fnck37zyvbzmccbp7w3jy27jgmij1992j5wyy3gxhw6a11b4jyh"))))
+         "14aj5ipbj1w5kba2hv6323954pachhflfrjhhmkjwssv3hvngng4"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -352,14 +352,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "17.3.0")
+    (version "17.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "0xkc1wfnpg6abzllivg3ylhc63npjdy1v81f4kc08bm8cj80nqr9"))))
+         "0wv78mwsdqbxqwdwllf4maqybhbj3vb8328ia04hnb558sxcy41c"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -450,7 +450,7 @@ python-axolotl.")
 (define-public python-axolotl
   (package
     (name "python-axolotl")
-    (version "0.1.35")
+    (version "0.1.39")
     (source
      (origin
        (method url-fetch)
@@ -458,8 +458,9 @@ python-axolotl.")
              "https://github.com/tgalal/python-axolotl/archive/"
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
+       (patches (search-patches "python-axolotl-AES-fix.patch"))
        (sha256
-        (base32 "1z8d89p7v40p4bwywjm9h4z28fdvra79ddw06azlkrfjbl7dxmz8"))))
+        (base32 "0badsgkgz0ir3hqynxzsfjgacppi874syvvmgccc6j164053x6zm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -678,3 +679,83 @@ Python.")
 
 (define-public python2-ecpy
   (package-with-python2 python-ecpy))
+
+(define-public python-josepy
+  (package
+    (name "python-josepy")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "josepy" version))
+              (sha256
+               (base32
+                "1k0ahzzaq2rrjiifwbhbp7vm8z4zk0ipgiqwicil80kzlf6bhj4z"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The tests require pytest >= 3.2, which is not yet packaged.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-six" ,python-six)))
+;; TODO Enable when we have pytest >= 3.2.
+;    (native-inputs
+;     `(("python-coverage" ,python-coverage)
+;       ("python-flake8" ,python-flake8)
+;       ("python-isort" ,python-isort)
+;       ("python-mock" ,python-mock)
+;       ("python-pytest" ,python-pytest-3.0)
+;       ("python-pytest-cov" ,python-pytest-cov)
+;       ("python-pytest-cache" ,python-pytest-cache)
+;       ("python-pytest-flake8" ,python-pytest-flake8)))
+    (home-page "https://github.com/certbot/josepy")
+    (synopsis "JOSE protocol implementation in Python")
+    (description "This package provides a Python implementation of the JOSE
+protocol (Javascript Object Signing and Encryption).")
+    (license license:asl2.0)))
+
+(define-public python2-josepy
+  (package-with-python2 python-josepy))
+
+(define-public python-pycryptodome
+  (package
+    (name "python-pycryptodome")
+    (version "3.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pycryptodome" version))
+       (sha256
+        (base32
+         "1xrsd6ql4w0ypkxnsg3fivs3r3z6dd93x44lhvam7jzh3gixzn0q"))))
+    (build-system python-build-system)
+    (home-page "https://www.pycryptodome.org")
+    (synopsis "Cryptographic library for Python")
+    (description "This package provides a cryptographic library for Python.
+
+It brings the following enhancements with respect to the last official version
+of PyCrypto:
+
+@itemize
+@item Authenticated encryption modes (GCM, CCM, EAX, SIV, OCB)
+@item Accelerated AES on Intel platforms via AES-NI
+@item First class support for PyPy
+@item Elliptic curves cryptography (NIST P-256 curve only)
+@item Better and more compact API (nonce and iv attributes for ciphers,
+automatic generation of random nonces and IVs, simplified CTR cipher mode, and
+more)
+@item SHA-3 (including SHAKE XOFs) and BLAKE2 hash algorithms
+@item Salsa20 and ChaCha20 stream ciphers
+@item scrypt and HKDF
+@item Deterministic (EC)DSA
+@item Password-protected PKCS#8 key containers
+@item Shamir’s Secret Sharing scheme
+@item Random numbers get sourced directly from the OS (and not from a CSPRNG
+in userspace)
+@item Cleaner RSA and DSA key generation (largely based on FIPS 186-4)
+@item Major clean ups and simplification of the code base
+@end itemize\n")
+    (license license:bsd-2)))
+
+(define-public python2-pycryptodome
+  (package-with-python2 python-pycryptodome))

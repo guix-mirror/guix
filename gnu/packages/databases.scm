@@ -3,14 +3,14 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
@@ -49,6 +49,7 @@
 
 (define-module (gnu packages databases)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
@@ -67,6 +68,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages language)
   #:use-module (gnu packages libevent)
@@ -86,6 +88,8 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages terminals)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml)
@@ -94,6 +98,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
@@ -112,7 +117,7 @@
     (version "1.1.6")
     (source (origin
       (method url-fetch)
-      (uri (string-append "https://github.com/garlik/4store/archive/v"
+      (uri (string-append "https://github.com/4store/4store/archive/v"
                           version ".tar.gz"))
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
@@ -145,7 +150,7 @@
            (lambda _
              (zero? (system* "sh" "autogen.sh")))))))
     ;; http://www.4store.org has been down for a while now.
-    (home-page "https://github.com/garlik/4store")
+    (home-page "https://github.com/4store/4store")
     (synopsis "Clustered RDF storage and query engine")
     (description "4store is a RDF/SPARQL store written in C, supporting
 either single machines or networked clusters.")
@@ -172,6 +177,50 @@ either single machines or networked clusters.")
 store key/value pairs in a file in a manner similar to the Unix dbm library
 and provides interfaces to the traditional file format.")
     (license license:gpl3+)))
+
+(define-public go-gopkg.in-mgo.v2
+  (package
+    (name "go-gopkg.in-mgo.v2")
+    (version "2016.08.01")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/go-mgo/mgo")
+                    (commit (string-append "r" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rwbi1z63w43b0z9srm8m7iz1fdwx7bq7n2mz862d6liiaqa59jd"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "gopkg.in/mgo.v2"
+       ;; TODO: The tests fail as MongoDB fails to start
+       ;; Error parsing command line: unrecognised option '--chunkSize'
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'reset-gzip-timestamps)
+         (add-before 'check 'start-mongodb
+           (lambda* (#:key tests? #:allow-other-keys)
+             (or (not tests?)
+                 (with-directory-excursion "src/gopkg.in/mgo.v2"
+                   (invoke "make" "startdb")))))
+         (add-after 'check 'stop'mongodb
+           (lambda* (#:key tests? #:allow-other-keys)
+             (or (not tests?)
+                 (with-directory-excursion "src/gopkg.in/mgo.v2"
+                   (invoke "make" "stopdb"))))))))
+    (native-inputs
+     `(("go-gopkg.in-check.v1" ,go-gopkg.in-check.v1)
+       ("mongodb" ,mongodb)
+       ("daemontools" ,daemontools)))
+    (synopsis "@code{mgo} offers a rich MongoDB driver for Go.")
+    (description
+     "@code{mgo} (pronounced as mango) is a MongoDB driver for the Go language.
+It implements a rich selection of features under a simple API following
+standard Go idioms.")
+    (home-page "http://labix.org/mgo")
+    (license license:bsd-2)))
 
 (define-public bdb
   (package
@@ -291,18 +340,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
          "020yk7f1hw48clmf5501z3xv9shsdchyymcv0y2cci2c1xvr1mim"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f ;; No testsuite.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-bin-es_dump_restore
-           (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/es_dump_restore")
-               `("GEM_PATH" ":" prefix (,(string-append
-                                          (getenv "GEM_PATH")
-                                          ":"
-                                          (getenv "GEM_HOME")))))
-             #t)))))
+     '(#:tests? #f)) ;; No testsuite.
     (propagated-inputs
      `(("ruby-httpclient" ,ruby-httpclient)
        ("ruby-multi-json" ,ruby-multi-json)
@@ -475,8 +513,8 @@ applications.")
                    ;; individual executable files, with some being hundreds of
                    ;; megabytes in size.
                    (begin
-		     (apply
-                      invoke `("scons" ,@common-options "dbtest" "unittests"))
+                     (apply
+                       invoke `("scons" ,@common-options "dbtest" "unittests"))
                      (substitute* "build/unittests.txt"
                        ;; TODO: Don't run the async_stream_test, as it hangs
                        (("^build\\/opt\\/mongo\\/executor\\/async\\_stream\\_test\n$")
@@ -485,8 +523,8 @@ applications.")
                        ;; Expected 0UL != disks.size() (0 != 0) @src/mongo/util/procparser_test.cpp:476
                        (("^build\\/opt\\/mongo\\/util\\/procparser\\_test\n$")
                         ""))
-		     (invoke "python" "buildscripts/resmoke.py"
-			     "--suites=dbtest,unittests"
+                     (invoke "python" "buildscripts/resmoke.py"
+                             "--suites=dbtest,unittests"
                              (format #f  "--jobs=~a" (parallel-job-count)))))))
            (replace 'install
              (lambda _
@@ -509,7 +547,7 @@ RDBMS systems (which are deep in functionality).")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.20")
+    (version "5.7.21")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -521,7 +559,7 @@ RDBMS systems (which are deep in functionality).")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "11v4g3igigv3zvknv67qml8in6fjrbs2vnr3q6bg6f62nydm95sk"))))
+               "1dq9bgnajf7cq3mrjkwv6w5nwslhs26lkrw56i7w4fbsq9wm087s"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -661,14 +699,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.1")
+    (version "10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "04z7lm4h94625vbncwv98svycqr942n3q47ailqaczkszqjlxjrw"))))
+                "1bav2iyi93h866skrrlqlvsp4sfv1sfww1s305zpzffxcadh0cpy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-uuid=e2fs")
@@ -990,6 +1028,15 @@ widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
 
+;; This is used by Tracker.
+(define-public sqlite-with-fts5
+  (package (inherit sqlite)
+    (name "sqlite-with-fts5")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sqlite)
+       ((#:configure-flags flags)
+        `(cons "--enable-fts5" ,flags))))))
+
 ;; This is used by Clementine.
 (define-public sqlite-with-fts3
   (package (inherit sqlite)
@@ -1226,7 +1273,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-pg
   (package
     (name "perl-dbd-pg")
-    (version "3.7.0")
+    (version "3.7.4")
     (source
      (origin
        (method url-fetch)
@@ -1234,7 +1281,7 @@ columns, primary keys, unique constraints and relationships.")
                            "DBD-Pg-" version ".tar.gz"))
        (sha256
         (base32
-         "0nb4wmkhq1q9f4g42sxy1m3d0xjqd3plqkxpmzni43ygr5ch8vp3"))))
+         "0gkqlvbmzbdm0g4k328nlkjdg3wrjm5i2n9jxj1i8sqxkm79rylz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-dbi" ,perl-dbi)))
@@ -2567,3 +2614,106 @@ transforms idiomatic python function calls to well-formed SQL queries.")
 
 (define-public python2-sql
   (package-with-python2 python-sql))
+
+(define-public mongo-tools
+  (package
+    (name "mongo-tools")
+    (version "3.4.0")
+    (source
+     (origin (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/mongodb/mongo-tools")
+                   (commit (string-append "r" version))))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "1bcsz5cvj39a7nsxsfqmz9igrw33j6yli9kffigqyscs52amw7x1"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/mongodb/mongo-tools"
+       #:modules ((srfi srfi-1)
+                  (guix build go-build-system)
+                  (guix build utils))
+       #:phases
+       (let ((all-tools
+              '("bsondump" "mongodump" "mongoexport" "mongofiles"
+                "mongoimport" "mongooplog" "mongorestore"
+                "mongostat" "mongotop")))
+         (modify-phases %standard-phases
+           (add-after 'unpack 'delete-bundled-source-code
+             (lambda _
+               (delete-file-recursively
+                "src/github.com/mongodb/mongo-tools/vendor")
+               #t))
+           ;; We don't need to install the source code for end-user applications
+           (delete 'install-source)
+           (replace 'build
+             (lambda _
+               (every (lambda (tool)
+                        (let ((command
+                               `("go" "build"
+                                 ;; This is where the tests expect to find the
+                                 ;; executables
+                                 "-o" ,(string-append
+                                        "src/github.com/mongodb/mongo-tools/bin/"
+                                        tool)
+                                 "-v"
+                                 "-tags=\"ssl sasl\""
+                                 "-ldflags"
+                                 "-extldflags=-Wl,-z,now,-z,relro"
+                                 ,(string-append
+                                   "src/github.com/mongodb/mongo-tools/"
+                                   tool "/main/" tool ".go"))))
+                          (simple-format #t "build: running ~A\n"
+                                         (string-join command))
+                          (apply invoke command)))
+                      all-tools)))
+           (replace 'check
+             (lambda _
+               (with-directory-excursion "src"
+                 (every (lambda (tool)
+                          (invoke
+                           "go" "test" "-v"
+                           (string-append "github.com/mongodb/mongo-tools/" tool)))
+                        all-tools))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (for-each (lambda (tool)
+                           (install-file
+                            (string-append "src/github.com/mongodb/mongo-tools/bin/" tool)
+                            (string-append (assoc-ref outputs "out")
+                                           "/bin")))
+                         all-tools)))))))
+    (native-inputs
+     `(("go-github.com-howeyc-gopass" ,go-github.com-howeyc-gopass)
+       ("go-github.com-jessevdk-go-flags" ,go-github.com-jessevdk-go-flags)
+       ("go-golang.org-x-crypto-ssh-terminal" ,go-golang.org-x-crypto-ssh-terminal)
+       ("go-gopkg.in-mgo.v2" ,go-gopkg.in-mgo.v2)
+       ("go-gopkg.in-tomb.v2" ,go-gopkg.in-tomb.v2)
+       ("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)
+       ("go-github.com-smartystreets-goconvey" ,go-github.com-smartystreets-goconvey)))
+    (home-page "https://github.com/mongodb/mongo-tools")
+    (synopsis "Various tools for interacting with MongoDB and BSON")
+    (description
+     "This package includes a collection of tools related to MongoDB.
+@table @code
+@item bsondump
+Display BSON files in a human-readable format
+@item mongoimport
+Convert data from JSON, TSV or CSV and insert them into a collection
+@item mongoexport
+Write an existing collection to CSV or JSON format
+@item mongodump/mongorestore
+Dump MongoDB backups to disk in the BSON format
+@item mongorestore
+Read MongoDB backups in the BSON format, and restore them to a live database
+@item mongostat
+Monitor live MongoDB servers, replica sets, or sharded clusters
+@item mongofiles
+Read, write, delete, or update files in GridFS
+@item mongooplog
+Replay oplog entries between MongoDB servers
+@item mongotop
+Monitor read/write activity on a mongo server
+@end table")
+    (license license:asl2.0)))

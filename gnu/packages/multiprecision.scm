@@ -4,6 +4,8 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +26,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages gcc)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -59,13 +62,14 @@
                           (else '())))))
    (synopsis "Multiple-precision arithmetic library")
    (description
-    "GMP is a library for arbitrary precision arithmetic, operating on
-signed integers, rational numbers and floating point numbers.  The precision
-is only limited by the available memory.  The library is highly optimized,
-with a design focus on execution speed.  It is aimed at use in, for example,
-cryptography and computational algebra.")
+    "@dfn{GMP} (the GNU Multiple Precision Arithmetic Library) is a library for
+arbitrary-precision arithmetic, operating on signed integers, rational numbers
+and floating point numbers.  The precision is only limited by the available
+memory.  The library is highly optimized, with a design focus on execution
+speed.  It is aimed at use in, for example, cryptography and computational
+algebra.")
    (license lgpl3+)
-   (home-page "http://gmplib.org/")))
+   (home-page "https://gmplib.org/")))
 
 (define-public gmp-6.0
   ;; We keep this one around to bootstrap GCC, to work around a compilation
@@ -97,10 +101,11 @@ cryptography and computational algebra.")
    (build-system gnu-build-system)
    (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
-   (synopsis "C library for arbitrary precision floating-point arithmetic")
+   (synopsis "C library for arbitrary-precision floating-point arithmetic")
    (description
-    "GNU MPFR is a C library for performing multiple-precision,
-floating-point computations with correct rounding.")
+    "GNU@tie{}@dfn{MPFR} (Multiple Precision Floating-Point Reliably) is a C
+library for performing multiple-precision, floating-point computations with
+correct rounding.")
    (license lgpl3+)
    (home-page "http://www.mpfr.org/")))
 
@@ -119,34 +124,76 @@ floating-point computations with correct rounding.")
    (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)              ; <mpc.h> refers to both
                         ("mpfr" ,mpfr)))
-   (synopsis "C library for arbitrary precision complex arithmetic")
+   (synopsis "C library for arbitrary-precision complex arithmetic")
    (description
-    "GNU MPC is a C library for performing arithmetic on complex numbers.
-It supports arbitrarily high precision and it correctly rounds the results.")
+    "GNU@tie{}@dfn{MPC} (Multiple Precision Complex library) is a C library for
+performing arithmetic on complex numbers.  It supports arbitrarily high
+precision and correctly rounds the results.")
    (license lgpl3+)
-   (home-page "http://mpc.multiprecision.org/")))
+   (home-page "http://multiprecision.org/mpc/")))
 
 (define-public mpfi
   (package
     (name "mpfi")
-    (version "1.5.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/30130/mpfi-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1g2q6i7dqx40p4gw11da6jgfcbzmm26wxc69fwv8zpcdyg32a9za"))))
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gforge.inria.fr/frs/download.php"
+                           "/latestfile/181/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "0bqr8yibl7jbrp0bw7xk1lm7nis7rv26jsz6y8ycvih8n9bx90r3"))))
     (build-system gnu-build-system)
     (propagated-inputs `(("gmp" ,gmp)   ; <mpfi.h> refers to both
                          ("mpfr" ,mpfr)))
-    (synopsis "C library for arbitrary precision interval arithmetic")
-    (description "MPFI is intended to be a portable library written in C for
-arbitrary precision interval arithmetic with intervals represented using MPFR
-reliable floating-point numbers.  It is based on the GNU MP library and on the
-MPFR library.  The purpose of an arbitrary precision interval arithmetic is on
-the one hand to get guaranteed results, thanks to interval computation, and on
-the other hand to obtain accurate results, thanks to multiple precision
-arithmetic.")
+    (synopsis "C library for arbitrary-precision interval arithmetic")
+    (description
+     "@dfn{MPFI} (Multiple Precision Floating-point Interval) is a portable C
+library for arbitrary-precision interval arithmetic, with intervals represented
+using MPFR reliable floating-point numbers.  It's based on the @dfn{GMP} (GNU
+Multiple Precision Arithmetic) and GNU@tie{}@dfn{MPFR} (Multiple Precision
+Floating-Point Reliably) libraries.
+
+The purpose of arbitrary-precision interval arithmetic is to get results that
+are both guaranteed, thanks to interval computation, and accurate, thanks to
+multiple-precision arithmetic.")
     (license lgpl2.1+)
     (home-page "https://perso.ens-lyon.fr/nathalie.revol/software.html")))
+
+(define-public qd
+  (package
+    (name "qd")
+    (version "2.3.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://crd.lbl.gov/~dhbailey/mpdist/qd-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0vkihcj9fyv2cycq8515713gbs3yskhmivy8bznvx72i6ddnn2c1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (arguments
+     `(#:configure-flags `("--disable-enable_fma" ;weird :/
+                           "--enable-shared"
+                           ,,@(if (string-prefix? "aarch64"
+                                                  (or (%current-target-system)
+                                                      (%current-system)))
+                                  ;; XXX: The qd_test test fails numerical
+                                  ;; accuracy checks for 'dd_real::exp()' on
+                                  ;; aarch64 with GCC 5.4 at -O2.  Disabling
+                                  ;; expensive optimizations lets it pass.
+                                  '("CXXFLAGS=-O3 -fno-expensive-optimizations")
+                                  '("CXXFLAGS=-O3")))))
+    (home-page "http://crd-legacy.lbl.gov/~dhbailey/mpdist/")
+    (synopsis "Double-double and quad-double library")
+    (description "This package supports both a double-double
+datatype (approx. 32 decimal digits) and a quad-double datatype (approx. 64
+decimal digits).  The computational library is written in C++.  Both C++ and
+Fortran-90 high-level language interfaces are provided to permit one to
+convert an existing C++ or Fortran-90 program to use the library with only
+minor changes to the source code.  In most cases only a few type statements
+and (for Fortran-90 programs) read/write statements need to be changed.  PSLQ
+and numerical quadrature programs are included.")
+    (license bsd-3)))

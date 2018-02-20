@@ -87,16 +87,18 @@ communication, encryption, decryption, signatures, etc.")
 (define-public libmd
   (package
     (name "libmd")
-    (version "0.0.0")
+    (version "1.0.0")
     (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "https://archive.hadrons.org/software/libmd/libmd-"
-                  version
-                  ".tar.xz"))
+            (uri
+             (list
+              (string-append "https://archive.hadrons.org/software/libmd/libmd-"
+                             version ".tar.xz")
+              (string-append "https://libbsd.freedesktop.org/releases/libmd-"
+                             version ".tar.xz")))
             (sha256
              (base32
-              "121s73pgbqsnmy6xblbrkj9y44c5zzzpf2hcmh6zvcvg4dk26gzx"))))
+              "1iv45npzv0gncjgcpx5m081861zdqxw667ysghqb8721yrlyl6pj"))))
     (build-system gnu-build-system)
     (synopsis "Message Digest functions from BSD systems")
     (description
@@ -581,7 +583,7 @@ data on your platform, so the seed itself will be as random as possible.
 (define-public crypto++
   (package
     (name "crypto++")
-    (version "5.6.5")
+    (version "6.0.0")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://cryptopp.com/cryptopp"
@@ -589,9 +591,7 @@ data on your platform, so the seed itself will be as random as possible.
                                   ".zip"))
               (sha256
                (base32
-                "0d1cqdz369ivi082k59025wvxzywvkizw7i0pf5h0a1izs3g8pm7"))
-              (patches
-               (search-patches "crypto++-fix-dos-in-asn.1-decoders.patch"))))
+                "1nidm6xbdza5cbgf5md2zznmaq692rfyjasycwipl6rzdfwjvb34"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

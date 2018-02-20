@@ -10,7 +10,7 @@
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
@@ -483,7 +483,7 @@ compromised.")
        ("zlib" ,zlib)
        ("icu4c" ,icu4c)
        ("cyrus-sasl" ,cyrus-sasl)))
-    (home-page "http://znc.in")
+    (home-page "https://znc.in")
     (synopsis "IRC network bouncer")
     (description "ZNC is an IRC network bouncer or BNC.  It can detach the
 client from the actual IRC server, and also from selected channels.  Multiple
@@ -773,7 +773,7 @@ protocols.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.1.10")
+    (version "0.1.11")
     (source
      (origin
        (method url-fetch)
@@ -782,7 +782,7 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1lbvq9pp1ganjk5lql5lzcn8bcmgfi8y026pb2j2nq8yldqrrjby"))))
+         "040vwihl1r5159vzimmnff75iqfg53vhnfi5wcb3cd0c2r51idl5"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

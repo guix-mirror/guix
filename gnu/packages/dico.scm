@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,14 +37,14 @@
 (define-public dico
   (package
     (name "dico")
-    (version "2.4")
+    (version "2.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/dico/dico-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "13m7vahfbdj7hb38bjgd4cmfswavvxrcpppj9n4m4rar3wyzg52g"))))
+               "0szm3z4xvq0pjj8kxl4paq63byamf281kzn1la0cdm5ngavypxxq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-guile-site-dir=" %output
@@ -67,7 +67,7 @@
        ("groff" ,groff)
        ("readline" ,readline)
        ("zlib" ,zlib)
-       ;; ("wordnet" ,wordnet) ;FIXME: link failure
+       ("wordnet" ,wordnet)
        ("libltdl" ,libltdl)))
     (home-page "https://www.gnu.org/software/dico/")
     (synopsis "Implementation of DICT server (RFC 2229)")

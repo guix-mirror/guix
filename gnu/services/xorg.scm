@@ -318,6 +318,7 @@ desktop session from the system or user profile will be used."
         (use-modules (ice-9 match)
                      (ice-9 regex)
                      (ice-9 ftw)
+                     (ice-9 rdelim)
                      (srfi srfi-1)
                      (srfi srfi-26))
 
@@ -590,7 +591,7 @@ theme."
                                 #:optional
                                 (program (package-name package))
                                 #:key allow-empty-passwords?)
-  "Add @var{package}, a package for a screen-locker or screen-saver whose
+  "Add @var{package}, a package for a screen locker or screen saver whose
 command is @var{program}, to the set of setuid programs and add a PAM entry
 for it.  For example:
 

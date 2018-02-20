@@ -87,6 +87,7 @@
             tcl/tk
             unlicense
             vim
+            w3c
             x11 x11-style
             zpl2.1
             zlib
@@ -577,6 +578,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "Unlicense"
            "https://unlicense.org/"
            "https://www.gnu.org/licenses/license-list.html#Unlicense"))
+
+(define w3c
+  (license "W3C Software Notice and License"
+           "https://directory.fsf.org/wiki/License:W3C_31Dec2002"
+           "https://www.gnu.org/licenses/license-list.en.html#W3C"))
 
 (define wtfpl2
   (license "WTFPL 2"

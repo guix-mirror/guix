@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,8 @@
       (patches (search-patches "fltk-shared-lib-defines.patch"
                                "fltk-xfont-on-demand.patch"))))
    (build-system gnu-build-system)
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
    (inputs
     `(("libjpeg" ,libjpeg-8)     ;jpeg_read_header argument error in libjpeg-9
       ("libpng" ,libpng)

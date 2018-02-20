@@ -3792,7 +3792,7 @@ that may contain multiple values per key, inspired by MultiDict of WebOb.")
 (define-public perl-importer
   (package
     (name "perl-importer")
-    (version "0.024")
+    (version "0.025")
     (source
       (origin
         (method url-fetch)
@@ -3800,7 +3800,7 @@ that may contain multiple values per key, inspired by MultiDict of WebOb.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "0mx50xds7iphxykbr9b0w2qki92l3gpagsdchm4ncsrnxc67c68x"))))
+          "0iirw6csfbycr6z5s6lgd1zdqdjhb436zcxy1hyh6x3x92616i87"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Importer//")
     (synopsis "Alternative but compatible interface to modules that export symbols")
@@ -4610,7 +4610,7 @@ messages.")
 (define-public perl-mime-types
   (package
     (name "perl-mime-types")
-    (version "2.14")
+    (version "2.16")
     (source
      (origin
        (method url-fetch)
@@ -4618,7 +4618,7 @@ messages.")
                            "MIME-Types-" version ".tar.gz"))
        (sha256
         (base32
-         "0w00fdci07cc6k1v4zaib4icggqjmg8hggpx4lzqj1ajq07wyja0"))))
+         "0nkv99yd8bxa6h8c52nd07142f0mdzjnhcdw66s3wljmzsi9z8hk"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/MIME-Types/")
     (synopsis "Definition of MIME types")
@@ -5091,7 +5091,7 @@ private methods are not.")
 (define-public perl-moosex-getopt
   (package
     (name "perl-moosex-getopt")
-    (version "0.65")
+    (version "0.71")
     (source
      (origin
        (method url-fetch)
@@ -5099,7 +5099,7 @@ private methods are not.")
                            "MooseX-Getopt-" version ".tar.gz"))
        (sha256
         (base32
-         "1nkzvbsiwldmpn6207ns7rinh860djnw098h6cnvywf429rjnz60"))))
+         "0nf2094qgir0irxjycwqavy53ygm530g9f7cxfywnl2n1bmgh66y"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -6269,7 +6269,7 @@ function call parameters to an arbitrary level of specificity.")
 (define-public perl-params-validationcompiler
   (package
     (name "perl-params-validationcompiler")
-    (version "0.24")
+    (version "0.27")
     (source
       (origin
         (method url-fetch)
@@ -6277,12 +6277,14 @@ function call parameters to an arbitrary level of specificity.")
                             "Params-ValidationCompiler-" version ".tar.gz"))
         (sha256
          (base32
-          "11s29wd7gci4c7gcksxw7pzxfzganvr8x4f1dsww4676p93kg5m8"))))
+          "1cpr188c2xm0kkmdir6slcsgv7v6ibqff4lax8s0whwx6ml9kaah"))))
     (build-system perl-build-system)
     (native-inputs
+     ;; For tests.
      `(("perl-test-without-module" ,perl-test-without-module)
        ("perl-test2-bundle-extended" ,perl-test2-bundle-extended)
-       ("perl-test2-plugin-nowarnings" ,perl-test2-plugin-nowarnings)))
+       ("perl-test2-plugin-nowarnings" ,perl-test2-plugin-nowarnings)
+       ("perl-type-tiny" ,perl-type-tiny)))
     (propagated-inputs
      `(("perl-eval-closure" ,perl-eval-closure)
        ("perl-exception-class" ,perl-exception-class)

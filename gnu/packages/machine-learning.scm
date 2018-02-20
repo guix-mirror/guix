@@ -4,6 +4,8 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
+;;; Copyright © 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +33,7 @@
   #:use-module (guix build-system ocaml)
   #:use-module (guix build-system python)
   #:use-module (guix build-system r)
+  #:use-module (guix git-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
@@ -49,6 +52,38 @@
   #:use-module (gnu packages swig)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
+
+(define-public fann
+  ;; The last release is >100 commits behind, so we package from git.
+  (let ((commit "d71d54788bee56ba4cf7522801270152da5209d7"))
+    (package
+      (name "fann")
+      (version (string-append "2.2.0-1." (string-take commit 8)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/libfann/fann.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0ibwpfrjs6q2lijs8slxjgzb2llcl6rk3v2ski4r6215g5jjhg3x"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (with-directory-excursion (string-append (getcwd) "/tests")
+                   (invoke "./fann_tests"))))))))
+      (home-page "http://leenissen.dk/fann/wp/")
+      (synopsis "Fast Artificial Neural Network")
+      (description
+       "FANN is a free open source neural network library, which implements
+multilayer artificial neural networks in C with support for both fully
+connected and sparsely connected networks.")
+      (license license:lgpl2.1))))
 
 (define-public libsvm
   (package

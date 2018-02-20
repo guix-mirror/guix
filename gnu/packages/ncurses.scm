@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -230,7 +231,7 @@ ncursesw library provides wide character support.")
 (define-public dialog
   (package
     (name "dialog")
-    (version "1.3-20170509")
+    (version "1.3-20171209")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -238,7 +239,7 @@ ncursesw library provides wide character support.")
                     version ".tgz"))
               (sha256
                (base32
-                "0mj7rl5psilaj3bxxvjfd44qjknxjli98b0d1lxd3f9jqrsbmw9g"))))
+                "1rk72as52f5br3wcr74d00wib41w65g8wvi36mfgybly251984r0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no test suite
@@ -247,7 +248,7 @@ ncursesw library provides wide character support.")
     (synopsis "Curses widgets")
     (description "Dialog is a script-interpreter which provides a set of
 curses widgets, such as dialog boxes.")
-    (home-page "http://invisible-island.net/dialog/dialog.html")
+    (home-page "https://invisible-island.net/dialog/dialog.html")
     ;; Includes the gpl3 file "config.sub" from Automake.
     (license (list lgpl2.1 gpl3))))
 

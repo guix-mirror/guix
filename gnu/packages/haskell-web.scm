@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
@@ -36,7 +36,7 @@
 (define-public ghc-tagsoup
   (package
     (name "ghc-tagsoup")
-    (version "0.14")
+    (version "0.14.3")
     (source
      (origin
        (method url-fetch)
@@ -46,11 +46,12 @@
              ".tar.gz"))
        (sha256
         (base32
-         "07pax7i0bl79dmqqz58zy09yrgpnyyr2ya0z183hv96kp65jv0lh"))))
+         "00j2rm2sx0syn16kg2402fz4k8yqfl9knmi367jsiycds1q9zzf9"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-text" ,ghc-text)))
-    (home-page
-     "http://community.haskell.org/~ndm/tagsoup/")
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "http://community.haskell.org/~ndm/tagsoup/")
     (synopsis
      "Parsing and extracting information from (possibly malformed) HTML/XML
 documents")
@@ -126,7 +127,7 @@ both client and server code).")
 (define-public ghc-http
   (package
     (name "ghc-http")
-    (version "4000.2.20")
+    (version "4000.3.3")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -137,7 +138,7 @@ both client and server code).")
              ".tar.gz"))
        (sha256
         (base32
-         "0nyqdxr5ls2dxkf4a1f3x15xzwdm46ppn99nkcbhswlr6s3cq1s4"))))
+         "1wlvvqcxsnd2is3khsla0vd8i9cy12v1pg6d6i13ihcd131a7bdv"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
@@ -391,7 +392,7 @@ communication between web applications and web servers.")
 (define-public ghc-wai-logger
   (package
     (name "ghc-wai-logger")
-    (version "2.2.4.1")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -401,7 +402,7 @@ communication between web applications and web servers.")
              ".tar.gz"))
        (sha256
         (base32
-         "1s6svvy3ci4j1dj1jaw8hg628miwj8f5gpy9n8d8hpsaxav6nzgk"))))
+         "1w0b0vinsyqr37wciljkz8g5dcmfi2r210lq194a0wkycly9kkch"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Tests cannot find libraries exported
                                ; by propagated-inputs.
@@ -424,7 +425,7 @@ communication between web applications and web servers.")
 (define-public ghc-wai-extra
   (package
     (name "ghc-wai-extra")
-    (version "3.0.13.1")
+    (version "3.0.18")
     (source
      (origin
        (method url-fetch)
@@ -434,7 +435,7 @@ communication between web applications and web servers.")
              ".tar.gz"))
        (sha256
         (base32
-         "0mh761a1bayr4ydwqmh3h8ndpi19zqw34mmy49lp2abr70r0nm1p"))))
+         "0r079mqqdv14fp97w0rigdpwk6b88grpjlqsjc5y8bbc0skf5za2"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
@@ -578,17 +579,16 @@ a WAI handler, via the native Haskell TLS implementation.")
 (define-public ghc-xss-sanitize
   (package
     (name "ghc-xss-sanitize")
-    (version "0.3.5.6")
+    (version "0.3.5.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://hackage.haskell.org/package/xss-sanitize/xss-sanitize-"
-             version
-             ".tar.gz"))
+             version ".tar.gz"))
        (sha256
         (base32
-         "1j2qrn2dbfx01m7zyk9ilgnp9zjwq9mk62b0rdal4zkg4vh212h0"))))
+         "005cmhaw9xbzkcn42jmhvcvk63bzmg4lml368xwmqdvh7r0mcn4m"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tagsoup" ,ghc-tagsoup)
@@ -610,7 +610,7 @@ attacks.")
 (define-public ghc-css-text
   (package
     (name "ghc-css-text")
-    (version "0.1.2.1")
+    (version "0.1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -620,7 +620,7 @@ attacks.")
              ".tar.gz"))
        (sha256
         (base32
-         "1xi1n2f0g8y43p95lynhcg50wxbq7hqfzbfzm7fy8mn7gvd920nw"))))
+         "0ynd9f4hn2sfwqzbsa0y7phmxq8za7jiblpjwx0ry8b372zhgxaz"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-text" ,ghc-text)
@@ -636,7 +636,7 @@ Haskell.")
 (define-public ghc-mime-types
   (package
     (name "ghc-mime-types")
-    (version "0.1.0.6")
+    (version "0.1.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -644,7 +644,7 @@ Haskell.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "090z3dp928243amnc6s8g10rk2h2bprk9y138q6wj3cpflzr72pw"))))
+                "1fg9cqpp5lswk8ajlq4f41n12c2v2naz179l8dsz6zisjqj4l5l3"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-text" ,ghc-text)))
@@ -702,23 +702,29 @@ Strict, Transitional and Frameset variants.")
 (define-public ghc-blaze-html
   (package
     (name "ghc-blaze-html")
-    (version "0.8.1.1")
+    (version "0.9.0.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/blaze-html/blaze-html-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "blaze-html/blaze-html-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "1dnw50kh0s405cg9i2y4a8awanhj3bqzk21jwgfza65kcjby7lpq"))))
+         "0r0acv47nh75bmf7kjyfvhcwz8f02rn9x0a1l80pzgyczfrsmkmf"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-text" ,ghc-text)
        ("ghc-blaze-markup" ,ghc-blaze-markup)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
     (home-page "http://jaspervdj.be/blaze")
     (synopsis "Fast HTML combinator library")
     (description "This library provides HTML combinators for Haskell.")
@@ -727,7 +733,7 @@ Strict, Transitional and Frameset variants.")
 (define-public ghc-aeson
   (package
     (name "ghc-aeson")
-    (version "0.10.0.0")
+    (version "1.2.4.0")
     (source
      (origin
        (method url-fetch)
@@ -737,21 +743,33 @@ Strict, Transitional and Frameset variants.")
              ".tar.gz"))
        (sha256
         (base32
-         "19kp33rfivr4d3myyr8xn803wd7p8x5nc4wb3qvlgjwgyqjaxvrz"))))
+         "16zwpd07cmhs58wwsqbhxy3b58gqw8w5nr7nf6lwi4nvznjdn09l"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
     (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base-compat" ,ghc-base-compat)
        ("ghc-dlist" ,ghc-dlist)
-       ("ghc-mtl" ,ghc-mtl)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-syb" ,ghc-syb)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)
        ("ghc-hashable" ,ghc-hashable)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-tagged" ,ghc-tagged)
        ("ghc-text" ,ghc-text)
+       ("ghc-th-abstraction" ,ghc-th-abstraction)
+       ("ghc-time-locale-compat" ,ghc-time-locale-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-uuid-types" ,ghc-uuid-types)
+       ("ghc-vector" ,ghc-vector)
        ("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-integer-logarithms" ,ghc-integer-logarithms)
+       ("ghc-base-orphans" ,ghc-base-orphans)
+       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-generic-deriving" ,ghc-generic-deriving)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-hashable-time" ,ghc-hashable-time)))
     (home-page "https://github.com/bos/aeson")
     (synopsis "Fast JSON parsing and encoding")
     (description "This package provides a JSON parsing and encoding library
@@ -762,7 +780,7 @@ naming: in Greek mythology, Aeson was the father of Jason.)")
 (define-public ghc-aeson-pretty
   (package
     (name "ghc-aeson-pretty")
-    (version "0.7.2")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -770,14 +788,15 @@ naming: in Greek mythology, Aeson was the father of Jason.)")
                     version ".tar.gz"))
               (sha256
                (base32
-                "03ap81853qi8yd9kdgczllrrni23a6glsfxrwj8zab6ipjrbh234"))))
+                "1yd98972srlbkn0f2jhrb3f443j9wnq2fnw5gbxjxzmkcinfh5yx"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-scientific" ,ghc-scientific)
        ("ghc-vector" ,ghc-vector)
        ("ghc-text" ,ghc-text)
-       ("ghc-unordered-containers"
-        ,ghc-unordered-containers)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-cmdargs" ,ghc-cmdargs)))
     (home-page "https://github.com/informatikr/aeson-pretty")

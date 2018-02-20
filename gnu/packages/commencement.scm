@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +47,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix memoization)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -173,12 +174,28 @@
                     ,cf)))))
      (inputs %boot0-inputs))))
 
+;; gcc-4.9 was fixed late in the core-update cycle and so this GCC is only
+;; needed to prevent a full world rebuild, and can be replaced with gcc-4.9.
+(define gcc-for-libstdc++
+  (package (inherit gcc-4.9)
+    (version "4.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
+              (patches (search-patches "gcc-arm-bug-71399.patch"
+                                       "gcc-libvtv-runpath.patch"
+                                       "gcc-fix-texi2pod.patch"))))))
+
 (define libstdc++-boot0
   ;; GCC's libcc1 is always built as a shared library (the top-level
   ;; 'Makefile.def' forcefully adds --enable-shared) and thus needs to refer
   ;; to libstdc++.so.  We cannot build libstdc++-5.3 because it relies on
-  ;; C++14 features missing in our bootstrap compiler.
-  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc-4.9))))
+  ;; C++14 features missing in some of our bootstrap compilers.
+  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc-for-libstdc++))))
     (package
       (inherit lib)
       (name "libstdc++-boot0")
@@ -355,18 +372,21 @@
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
-(define (linux-libre-headers-boot0)
-  "Return Linux-Libre header files for the bootstrap environment."
-  ;; Note: this is wrapped in a thunk to nicely handle circular dependencies
-  ;; between (gnu packages linux) and this module.
-  (package-with-bootstrap-guile
-   (package (inherit linux-libre-headers)
-     (arguments `(#:guile ,%bootstrap-guile
-                  #:implicit-inputs? #f
-                  ,@(package-arguments linux-libre-headers)))
-     (native-inputs
-      `(("perl" ,perl-boot0)
-        ,@%boot0-inputs)))))
+(define linux-libre-headers-boot0
+  (mlambda ()
+    "Return Linux-Libre header files for the bootstrap environment."
+    ;; Note: this is wrapped in a thunk to nicely handle circular dependencies
+    ;; between (gnu packages linux) and this module.  Additionally, memoize
+    ;; the result to play well with further memoization and code that relies
+    ;; on pointer identity; see <https://bugs.gnu.org/30155>.
+    (package-with-bootstrap-guile
+     (package (inherit linux-libre-headers)
+              (arguments `(#:guile ,%bootstrap-guile
+                           #:implicit-inputs? #f
+                           ,@(package-arguments linux-libre-headers)))
+              (native-inputs
+               `(("perl" ,perl-boot0)
+                 ,@%boot0-inputs))))))
 
 (define gnumach-headers-boot0
   (package-with-bootstrap-guile
@@ -407,18 +427,19 @@
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
-(define (hurd-core-headers-boot0)
-  "Return the Hurd and Mach headers as well as initial Hurd libraries for
+(define hurd-core-headers-boot0
+  (mlambda ()
+    "Return the Hurd and Mach headers as well as initial Hurd libraries for
 the bootstrap environment."
-  (package-with-bootstrap-guile
-   (package (inherit hurd-core-headers)
-            (arguments `(#:guile ,%bootstrap-guile
-                                 ,@(package-arguments hurd-core-headers)))
-            (inputs
-             `(("gnumach-headers" ,gnumach-headers-boot0)
-               ("hurd-headers" ,hurd-headers-boot0)
-               ("hurd-minimal" ,hurd-minimal-boot0)
-               ,@%boot0-inputs)))))
+    (package-with-bootstrap-guile
+     (package (inherit hurd-core-headers)
+              (arguments `(#:guile ,%bootstrap-guile
+                           ,@(package-arguments hurd-core-headers)))
+              (inputs
+               `(("gnumach-headers" ,gnumach-headers-boot0)
+                 ("hurd-headers" ,hurd-headers-boot0)
+                 ("hurd-minimal" ,hurd-minimal-boot0)
+                 ,@%boot0-inputs))))))
 
 (define* (kernel-headers-boot0 #:optional (system (%current-system)))
   (match system

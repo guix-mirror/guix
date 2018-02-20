@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -91,14 +91,14 @@ acronyms distributed as an info document.")
 (define-public gcide
   (package
     (name "gcide")
-    (version "0.51")
+    (version "0.52")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://gnu/gcide/gcide-" version ".tar.xz"))
               (sha256
                (base32
-                "1wm0s51ygc6480dq8gwahzr35ls8jgpf34yiwl5yqcaa0i19fdv7"))))
+                "1n3bp91sik66z3ca7mjqbr9nck3hg5ck0c8g84xc0qnfpx5vznh2"))))
     (build-system trivial-build-system)
     (arguments
      '(#:builder (begin

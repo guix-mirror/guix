@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,7 @@
 (define-public erlang
   (package
     (name "erlang")
-    (version "20.1.7")
+    (version "20.2.3")
     (source (origin
               (method url-fetch)
               ;; The tarball from http://erlang.org/download contains many
@@ -47,7 +48,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00pmngdyh1h088anmx6fbk085i93ajgk92rz7qsyhfc0lx0sm0a9"))
+                "0s9g4ijdbqq21k4cqggz074d3fiimah942qisv2kgizhlivpw2nm"))
               (patches (search-patches "erlang-man-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -63,7 +64,7 @@
                                (version-major+minor version) ".tar.gz"))
            (sha256
             (base32
-             "0ikvdpn4z7az6szg176l1r2yxhgs3msa3wgb3gmy45jkz0pzik05"))))))
+             "1pyb8wbk7znsyni8d1k4dj1m01lr191dcrrzisli1z27ks7hh3lm"))))))
     (inputs
      `(("ncurses" ,ncurses)
        ("openssl" ,openssl)
@@ -94,9 +95,9 @@
          (add-after 'unpack 'remove-timestamps
            (lambda _
              (let ((source-date-epoch
-                     (time-utc->date
-                       (make-time time-utc 0 (string->number
-                                               (getenv "SOURCE_DATE_EPOCH"))))))
+                    (time-utc->date
+                     (make-time time-utc 0 (string->number
+                                            (getenv "SOURCE_DATE_EPOCH"))))))
                (substitute* "lib/reltool/src/reltool_target.erl"
                  (("Date = date\\(\\),")
                   (string-append "Date = "
@@ -115,8 +116,8 @@
                (substitute* "lib/dialyzer/test/small_SUITE_data/src/gs_make.erl"
                  (("tuple_to_list\\(date\\(\\)\\),tuple_to_list\\(time\\(\\)\\)")
                   (date->string
-                    source-date-epoch
-                    "tuple_to_list({~Y,~m,~d}), tuple_to_list({~H,~M,~S})")))
+                   source-date-epoch
+                   "tuple_to_list({~Y,~m,~d}), tuple_to_list({~H,~M,~S})")))
                (substitute* "lib/snmp/src/compile/snmpc_mib_to_hrl.erl"
                  (("\\{Y,Mo,D\\} = date\\(\\),")
                   (date->string source-date-epoch
@@ -124,7 +125,8 @@
                (substitute* "lib/snmp/src/compile/snmpc_mib_to_hrl.erl"
                  (("\\{H,Mi,S\\} = time\\(\\),")
                   (date->string source-date-epoch
-                                "{H,Mi,S} = {~H,~M,~S},"))))))
+                                "{H,Mi,S} = {~H,~M,~S},")))
+               #t)))
          (add-after 'patch-source-shebangs 'patch-source-env
            (lambda _
              (let ((escripts
@@ -140,32 +142,38 @@
                        "make/verify_runtime_dependencies"
                        "make/emd2exml.in"))))
                (substitute* escripts
-                 (("/usr/bin/env") (which "env"))))))
+                 (("/usr/bin/env") (which "env")))
+               #t)))
          (add-before 'configure 'set-erl-top
            (lambda _
-             (setenv "ERL_TOP" (getcwd))))
+             (setenv "ERL_TOP" (getcwd))
+             #t))
          (add-after 'patch-source-env 'autoconf
-           (lambda _ (zero? (system* "./otp_build" "autoconf"))))
+           (lambda _
+             (invoke "./otp_build" "autoconf")
+             #t))
          (add-after 'install 'patch-erl
            ;; This only works after install.
-           (lambda _
-             (substitute* (string-append (assoc-ref %outputs "out") "/bin/erl")
-               (("sed") (which "sed")))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (substitute* (string-append out "/bin/erl")
+                 (("sed") (which "sed")))
+               #t)))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (manpages (assoc-ref inputs "erlang-manpages"))
                     (share (string-append out "/share/")))
-             (mkdir-p share)
-             (mkdir-p (string-append share "/misc/erlang"))
-             (with-directory-excursion share
-               (and
-                 (zero? (system* "tar" "xvf" manpages))
+               (mkdir-p share)
+               (mkdir-p (string-append share "/misc/erlang"))
+               (with-directory-excursion share
+                 (invoke "tar" "xvf" manpages)
                  (rename-file "COPYRIGHT"
                               (string-append share "/misc/erlang/COPYRIGHT"))
                  ;; Delete superfluous file.
-                 (delete-file "PR.template")))))))))
-    (home-page "http://erlang.org/")
+                 (delete-file "PR.template"))
+               #t))))))
+    (home-page "https://www.erlang.org/")
     (synopsis "The Erlang programming language")
     (description
      "Erlang is a programming language used to build massively

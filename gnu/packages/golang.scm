@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -196,10 +197,10 @@
     (home-page "https://golang.org/")
     (synopsis "Compiler and libraries for Go, a statically-typed language")
     (description "Go, also commonly referred to as golang, is an imperative
-programming language.  Designed primarily for systems programming, it is a
-compiled, statically typed language in the tradition of C and C++, with
-garbage collection, various safety features and in the style of communicating
-sequential processes (CSP) concurrent programming features added.")
+programming language designed primarily for systems programming.  Go is a
+compiled, statically typed language in the tradition of C and C++, but adds
+garbage collection, various safety features, and concurrent programming features
+in the style of communicating sequential processes (@dfn{CSP}).")
     (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
     (license license:bsd-3)))
 
@@ -207,7 +208,7 @@ sequential processes (CSP) concurrent programming features added.")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.9.2")
+    (version "1.9.4")
     (source
      (origin
        (method url-fetch)
@@ -215,7 +216,7 @@ sequential processes (CSP) concurrent programming features added.")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "1p23n4xzbknl3bbhlckbvxbhpxknd5rn0i2szmn9i2dcz15ihpv6"))))
+         "01nw8rfvf10naja0wq0kabsm012sbqq76hd4b8c7g28n6ggshwq5"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -299,13 +300,6 @@ sequential processes (CSP) concurrent programming features added.")
                  ;; note the target script is generated at build time.
                  (substitute* "../misc/cgo/testcarchive/carchive_test.go"
                    (("#!/usr/bin/env") (string-append "#!" (which "env"))))
-
-                 ;; Escape braces in test data to workaround test failure. For
-                 ;; more information:
-                 ;; https://github.com/golang/go/issues/20007
-                 ;; FIXME: remove this once we upgrade to 1.9
-                 (substitute* "cmd/vet/testdata/copylock_func.go"
-                   (("struct\\{lock sync.Mutex\\}") "struct\\{lock sync.Mutex\\}"))
 
                  (substitute* "net/lookup_unix.go"
                    (("/etc/protocols") (string-append net-base "/etc/protocols")))
@@ -452,3 +446,76 @@ interfaces in Go.  The goal is to enable developers to write fast and
 distributable command line applications in an expressive way.")
       (home-page "https://github.com/davidjpeacock/cli")
       (license license:expat))))
+
+(define-public go-github.com-jessevdk-go-flags
+  (package
+    (name "go-github.com-jessevdk-go-flags")
+    (version "1.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jessevdk/go-flags")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1jk2k2l10lwrn1r3nxdvbs0yz656830j4khzirw8p4ahs7c5zz36"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/jessevdk/go-flags"))
+    (synopsis "Go library for parsing command line arguments")
+    (description
+     "The @code{flags} package provides a command line option parser.  The
+functionality is similar to the go builtin @code{flag} package, but
+@code{flags} provides more options and uses reflection to provide a succinct
+way of specifying command line options.")
+    (home-page "https://github.com/jessevdk/go-flags")
+    (license license:bsd-3)))
+
+(define-public go-gopkg.in-tomb.v2
+  (let ((commit "d5d1b5820637886def9eef33e03a27a9f166942c")
+        (revision "0"))
+    (package
+      (name "go-gopkg.in-tomb.v2")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/go-tomb/tomb.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1sv15sri99szkdz1bkh0ir46w9n8prrwx5hfai13nrhkawfyfy10"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "gopkg.in/tomb.v2"))
+      (synopsis "@code{tomb} handles clean goroutine tracking and termination")
+      (description
+       "The @code{tomb} package handles clean goroutine tracking and
+termination.")
+      (home-page "https://gopkg.in/tomb.v2")
+      (license license:bsd-3))))
+
+(define-public go-github.com-jtolds-gls
+  (package
+    (name "go-github.com-jtolds-gls")
+    (version "4.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jtolds/gls")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vm37pvn0k4r6d3m620swwgama63laz8hhj3pyisdhxwam4m2g1h"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/jtolds/gls"))
+    (synopsis "@code{gls} provides Goroutine local storage")
+    (description
+     "The @code{gls} package provides a way to store a retrieve values
+per-goroutine.")
+    (home-page "https://github.com/jtolds/gls")
+    (license license:expat)))

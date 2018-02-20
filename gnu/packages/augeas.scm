@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -32,14 +32,14 @@
 (define-public augeas
   (package
     (name "augeas")
-    (version "1.8.1")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.augeas.net/augeas-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1yf93fqwav1zsl8dpyfkf0g11w05mmfckqy6qsjy5zkklnspbkv5"))
+                "0k9nssn7lk58cl5zv3c8kv2zx9cm2yks3sj7q4fd6qdjz9m2bnsj"))
               (modules '((guix build utils)))
               (snippet
                '(begin

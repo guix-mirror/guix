@@ -137,7 +137,7 @@ successful, or false to signal an error."
     (license gpl3+)))
 
 (define package-with-bootstrap-guile
-  (mlambda (p)
+  (mlambdaq (p)
     "Return a variant of P such that all its origins are fetched with
 %BOOTSTRAP-GUILE."
     (define rewritten-input
@@ -177,6 +177,7 @@ successful, or false to signal an error."
         ((string=? system "powerpc-linux") "/lib/ld.so.1")
         ((string=? system "powerpc64le-linux") "/lib/ld64.so.2")
         ((string=? system "alpha-linux") "/lib/ld-linux.so.2")
+        ((string=? system "s390x-linux") "/lib/ld64.so.1")
 
         ;; XXX: This one is used bare-bones, without a libc, so add a case
         ;; here just so we can keep going.

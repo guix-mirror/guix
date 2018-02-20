@@ -99,7 +99,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.11.2")
+    (version "9.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -107,7 +107,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0yn7wgi2y8mpmvbjbkl4va7p0xsnn48m4yjx6ynb1hzp423asikz"))))
+                "10iwkghl5g50b7wc17bsb9wa0dh2gd57bjlk6ynixhywz6dhx1r9"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -284,7 +284,7 @@ asynchronous fashion.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.6.7")
+    (version "1.6.8")
     (source
      (origin
        (method url-fetch)
@@ -292,7 +292,7 @@ asynchronous fashion.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "17qwfmlls0w9kpkya3dlpn44b3kr87wsswzg3gawc13hh8yx8ysf"))))
+         "0jfxhh4gc5amhndikskz1s7da27ycn442j3l20bm992n7zijid73"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
@@ -443,16 +443,16 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.3.7")
+    (version "2.3.8")
     (source
-     (let ((build "7543"))
+     (let ((build "7713"))
        (origin
          (method url-fetch)
          (uri
           (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
                          name "-" version "-" build ".tar.gz"))
          (sha256
-          (base32 "0j4zj7h72ni3bbqbm1632z0vx8b9fjdrn4n1yx4yyzkpchsipwff")))))
+          (base32 "15xhzg4crjcxascwpz6y8qpqcgypzv2p9bspdskp4nx1x1y4316c")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -490,14 +490,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.6.4")
+    (version "2.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0siqfm6iibx5yfshw40wa2dvmh99bibda6bmj96mbkby0jskf38x"))
+                "0ilxwhy7a7jdzynq586pwlgcvqd1j6ycqy9qrwvypfp20rkngk9k"))
               (modules '((guix build utils)))
               (snippet
                '(begin

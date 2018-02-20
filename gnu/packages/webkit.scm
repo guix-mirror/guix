@@ -54,15 +54,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.18.4")
+    (version "2.18.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1f1j0r996l20cgkvbwpizn7d4yp58cy334b1pvn4kfb5c2dbpdl7"))
-              (patches (search-patches "webkitgtk-mitigate-spectre.patch"))))
+                "0g5cpdijjv5hlrbi4i4dh97yrh5apnyvm90wpr9f84hgyk12r4ck"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests

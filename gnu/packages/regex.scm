@@ -29,7 +29,7 @@
 (define-public re2
    (package
      (name "re2")
-     (version "2018-01-01")
+     (version "2018-02-01")
      (source (origin
                (method url-fetch)
                (uri
@@ -39,7 +39,7 @@
                (file-name (string-append name "-" version ".tar.gz"))
                (sha256
                 (base32
-                 "1hhp8gi0lzw1mvnksb112rc9kcz4j9kjic7v6gbgzyfgk43996mr"))))
+                 "1131hwgid76la15hh2g15gj20fzz8iq3krniwks6wxn9h4q87ay8"))))
      (build-system gnu-build-system)
      (arguments
       `(#:modules ((guix build gnu-build-system)

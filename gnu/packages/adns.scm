@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,7 +59,7 @@ scripts.")
 (define-public c-ares
   (package
     (name "c-ares")
-    (version "1.13.0")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -67,7 +67,7 @@ scripts.")
                     ".tar.gz"))
               (sha256
                (base32
-                "19qxhv9aiw903fr808y77r6l9js0fq9m3gcaqckan9jan7qhixq3"))))
+                "0vnwmbvymw677k780kpb6sb8i3szdp89rzy8mz1fwg1657yw3ls5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -79,4 +79,4 @@ asynchronously.  It is intended for applications which need to perform DNS
 queries without blocking, or need to perform multiple DNS queries in parallel.
 The primary examples of such applications are servers which communicate with
 multiple clients and programs with graphical user interfaces.")
-    (license (x11-style "http://c-ares.haxx.se/license.html"))))
+    (license (x11-style "https://c-ares.haxx.se/license.html"))))

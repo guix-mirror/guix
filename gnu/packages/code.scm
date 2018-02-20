@@ -3,8 +3,8 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
@@ -26,12 +26,14 @@
 (define-module (gnu packages code)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system trivial)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
@@ -43,6 +45,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages bash))
 
 ;;; Tools to deal with source code: metrics, cross-references, etc.
@@ -103,14 +106,14 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 (define-public global                             ; a global variable
   (package
     (name "global")
-    (version "6.6.1")
+    (version "6.6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/global/global-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1r2r6z41lmgbszzwx7h3jqhwnqb9jj32pndzhr3lb0id710c8gcl"))))
+               "0zvi5vxwiq0dy8mq2cgs64m8harxs0fvkmsnvi0ayb0w608lgij3"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("libltdl" ,libltdl)
@@ -255,7 +258,7 @@ cloc can handle a greater variety of programming languages.")
 (define-public the-silver-searcher
   (package
     (name "the-silver-searcher")
-    (version "2.0.0")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -263,7 +266,7 @@ cloc can handle a greater variety of programming languages.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "04wm3r5p2mgv8mdkvysak0d5199h5y0yzl032624brfxpzmqfcq0"))))
+                "1m0mih1x4jpswc8ganhqh0gmwbmd2hzmz7402mxfh19s3kcjnrfl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -359,23 +362,23 @@ stack traces.")
 (define-public lcov
   (package
     (name "lcov")
-    (version "1.12")
+    (version "1.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/ltp/Coverage%20Analysis"
                                   "/LCOV-" version "/lcov-" version ".tar.gz"))
               (sha256
                (base32
-                "19wfifdpxxivhq9adbphanjfga9bg9spms9v7c3589wndjff8x5l"))))
+                "08wabnb0gcjqk0qc65a6cgbbmz6b8lvam3p7byh0dk42hj3jr5s4"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list (string-append "PREFIX=" out)
-                            (string-append "BIN_DIR=" out "/bin")
-                            (string-append "MAN_DIR=" out "/share/man")))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))
-       #:tests? #f))                              ;no 'check' target
+     '(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))           ; no configure script
+       #:tests? #f))                    ; no 'check' target
     (inputs `(("perl" ,perl)))
     (home-page "http://ltp.sourceforge.net/coverage/lcov.php")
     (synopsis "Code coverage tool that enhances GNU gcov")
@@ -391,30 +394,45 @@ functionality such as HTML output.")
 (define-public rtags
   (package
     (name "rtags")
-    (version "2.16")
+    (version "2.18")
     (home-page "https://github.com/Andersbakken/rtags")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit "8ef7554852541eced514c56d5e39d6073f7a2ef9")
-
-                    ;; FIXME: This fetches bundled copies of Lua, RCT, and
-                    ;; Selene.
-                    (recursive? #t)))
-              (sha256
-               (base32
-                "12r7lsqdmcbs9864a6dpblvifqvmfxhvxippyhfnnm2ai5ra80nc"))
-              (file-name (git-file-name name version))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append home-page "/archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (patches (search-patches "rtags-separate-rct.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Part of spliting rct with rtags.
+        ;; Substitute #include "rct/header.h" with #include <rct/header.h>.
+        '(with-directory-excursion "src"
+           (delete-file-recursively "rct")        ;remove bundled copy
+           (let ((files (find-files "." ".*\\.cpp|.*\\.h")))
+             (substitute* files
+               (("#include ?\"rct/(.*.h)\"" all header)
+                (string-append "#include <rct/" header ">"))))))
+       (sha256
+        (base32
+         "0scjbp1z201q8njvrxqz7lk2m9b6k2rxd5q1shrng6532r7ndif2"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("-DBUILD_TESTING=FALSE"
-                           "-DRTAGS_NO_ELISP_FILES=1")
+     '(#:configure-flags
+       '("-DRTAGS_NO_ELISP_FILES=1"
+         "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+         "-DCMAKE_CXX_FLAGS=-std=c++11"
+         "-DBUILD_TESTING=FALSE")
        #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("clang" ,clang)
+     `(("bash-completion" ,bash-completion)
+       ("clang" ,clang)
        ("llvm" ,llvm)
-       ("bash-completion" ,bash-completion)))
+       ("lua" ,lua)
+       ("rct" ,rct)
+       ("selene" ,selene)))
     (synopsis "Indexer for the C language family with Emacs integration")
     (description
      "RTags is a client/server application that indexes C/C++ code and keeps a
@@ -423,3 +441,58 @@ symbolnames etc.  There’s also limited support for ObjC/ObjC++.  It allows you
 to find symbols by name (including nested class and namespace scope).  Most
 importantly we give you proper follow-symbol and find-references support.")
     (license license:gpl3+)))
+
+(define-public colormake
+  (package
+    (name "colormake")
+    (version "0.9.20140503")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/pagekite/Colormake/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08ldss9zd8ls6bjahvxhffpsjcysifr720yf3jz9db2mlklzmyd3"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("bash" ,bash)
+       ("gzip" ,gzip)
+       ("perl" ,perl)
+       ("tar" ,tar)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         ;; bootstrap
+         (setenv "PATH" (string-append
+                         (assoc-ref %build-inputs "tar") "/bin" ":"
+                         (assoc-ref %build-inputs "gzip") "/bin"))
+         (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
+         (chdir (string-append (string-capitalize ,name) "-" ,version))
+         (patch-shebang  "colormake.pl"
+                         (list (string-append (assoc-ref %build-inputs "perl")
+                                              "/bin")))
+         (let* ((out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin"))
+                (doc (string-append out "/share/doc"))
+                (install-files (lambda (files directory)
+                                 (for-each (lambda (file)
+                                             (install-file file directory))
+                                           files))))
+           (substitute* "colormake"
+             (("colormake\\.pl") (string-append bin "/colormake.pl"))
+             (("/bin/bash")
+              (string-append (assoc-ref %build-inputs "bash") "/bin/sh")))
+           (install-file "colormake.1" (string-append doc "/man/man1"))
+           (install-files '("AUTHORS" "BUGS" "ChangeLog" "README") doc)
+           (install-files '("colormake" "colormake-short" "clmake"
+                            "clmake-short" "colormake.pl")
+                          bin)))))
+    (home-page "http://bre.klaki.net/programs/colormake/")
+    (synopsis "Wrapper around @command{make} to produce colored output")
+    (description "This package provides a wrapper around @command{make} to
+produce colored output.")
+    (license license:gpl2+)))

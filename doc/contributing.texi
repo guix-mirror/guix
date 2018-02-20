@@ -110,10 +110,13 @@ actually installing them.  So that you can distinguish between your
 To that end, all the command-line tools can be used even if you have not
 run @code{make install}.  To do that, prefix each command with
 @command{./pre-inst-env} (the @file{pre-inst-env} script lives in the
-top build tree of Guix), as in:
+top build tree of Guix), as in@footnote{The @option{-E} flag to
+@command{sudo} guarantees that @code{GUILE_LOAD_PATH} is correctly set
+such that @command{guix-daemon} and the tools it uses can find the Guile
+modules they need.}:
 
 @example
-$ sudo ./pre-inst-env guix-daemon --build-users-group=guixbuild
+$ sudo -E ./pre-inst-env guix-daemon --build-users-group=guixbuild
 $ ./pre-inst-env guix build hello
 @end example
 

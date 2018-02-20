@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -24,6 +24,7 @@
   #:use-module (guix records)
   #:use-module (guix profiles)
   #:use-module (guix discovery)
+  #:use-module (guix combinators)
   #:use-module (guix sets)
   #:use-module (guix ui)
   #:use-module ((guix utils) #:select (source-properties->location))
@@ -66,6 +67,7 @@
             simple-service
             modify-services
             service-back-edges
+            instantiate-missing-services
             fold-services
 
             service-error?
@@ -630,6 +632,18 @@ kernel."
   (service      ambiguous-target-service-error-service)
   (target-type  ambiguous-target-service-error-target-type))
 
+(define (missing-target-error service target-type)
+  (raise
+   (condition (&missing-target-service-error
+               (service service)
+               (target-type target-type))
+              (&message
+               (message
+                (format #f (G_ "no target of type '~a' for service '~a'")
+                        (service-type-name target-type)
+                        (service-type-name
+                         (service-kind service))))))))
+
 (define (service-back-edges services)
   "Return a procedure that, when passed a <service>, returns the list of
 <service> objects that depend on it."
@@ -642,16 +656,7 @@ kernel."
           ((target)
            (vhash-consq target service edges))
           (()
-           (raise
-            (condition (&missing-target-service-error
-                        (service service)
-                        (target-type target-type))
-                       (&message
-                        (message
-                         (format #f (G_ "no target of type '~a' for service '~a'")
-                                 (service-type-name target-type)
-                                 (service-type-name
-                                  (service-kind service))))))))
+           (missing-target-error service target-type))
           (x
            (raise
             (condition (&ambiguous-target-service-error
@@ -668,6 +673,38 @@ kernel."
   (let ((edges (fold add-edges vlist-null services)))
     (lambda (node)
       (reverse (vhash-foldq* cons '() node edges)))))
+
+(define (instantiate-missing-services services)
+  "Return SERVICES, a list, augmented with any services targeted by extensions
+and missing from SERVICES.  Only service types with a default value can be
+instantiated; other missing services lead to a
+'&missing-target-service-error'."
+  (define (adjust-service-list svc result instances)
+    (fold2 (lambda (extension result instances)
+             (define target-type
+               (service-extension-target extension))
+
+             (match (vhash-assq target-type instances)
+               (#f
+                (let ((default (service-type-default-value target-type)))
+                  (if (eq? &no-default-value default)
+                      (missing-target-error svc target-type)
+                      (let ((new (service target-type)))
+                        (values (cons new result)
+                                (vhash-consq target-type new instances))))))
+               (_
+                (values result instances))))
+           result
+           instances
+           (service-type-extensions (service-kind svc))))
+
+  (let ((instances (fold (lambda (service result)
+                           (vhash-consq (service-kind service) service
+                                        result))
+                         vlist-null services)))
+    (fold2 adjust-service-list
+           services instances
+           services)))
 
 (define* (fold-services services
                         #:key (target-type system-service-type))

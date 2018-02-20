@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +47,12 @@
                      (default #f))
   (host-name         avahi-configuration-host-name) ;string
   (publish?          avahi-configuration-publish?)  ;Boolean
+
+  ;; The default for this was #t in Avahi 0.6.31 and became #f in 0.7.  For
+  ;; now we stick to the old default.
+  (publish-workstation? avahi-configuration-publish-workstation? ;Boolean
+                        (default #t))
+
   (ipv4?             avahi-configuration-ipv4?)     ;Boolean
   (ipv6?             avahi-configuration-ipv6?)     ;Boolean
   (wide-area?        avahi-configuration-wide-area?) ;Boolean
@@ -77,7 +83,9 @@
                "enable-wide-area=" (bool (avahi-configuration-wide-area? config))
                "[publish]\n"
                "disable-publishing="
-               (bool (not (avahi-configuration-publish? config))))))
+               (bool (not (avahi-configuration-publish? config)))
+               "publish-workstation="
+               (bool (avahi-configuration-publish-workstation? config)))))
 
 (define %avahi-accounts
   ;; Account and group for the Avahi daemon.
@@ -94,7 +102,7 @@
   ;; Activation gexp.
   #~(begin
       (use-modules (guix build utils))
-      (mkdir-p "/var/run/avahi-daemon")))
+      (mkdir-p "/run/avahi-daemon")))
 
 (define (avahi-shepherd-service config)
   "Return a list of <shepherd-service> for CONFIG."
@@ -111,7 +119,7 @@
                            "--daemonize"
                            #$@(if debug? #~("--debug") #~())
                            "-f" #$config)
-                     #:pid-file "/var/run/avahi-daemon/pid"))
+                     #:pid-file "/run/avahi-daemon/pid"))
            (stop #~(make-kill-destructor))))))
 
 (define avahi-service-type

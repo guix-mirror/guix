@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -69,7 +69,7 @@
   marionette-configuration make-marionette-configuration
   marionette-configuration?
   (device           marionette-configuration-device ;string
-                    (default "/dev/hvc0"))
+                    (default "/dev/virtio-ports/org.gnu.guix.port.0"))
   (imported-modules marionette-configuration-imported-modules
                     (default '()))
   (requirements     marionette-configuration-requirements ;list of symbols
@@ -87,17 +87,10 @@
 
             (modules '((ice-9 match)
                        (srfi srfi-9 gnu)
-                       (guix build syscalls)
                        (rnrs bytevectors)))
             (start
-             (with-imported-modules `((guix build syscalls)
-                                      ,@imported-modules)
+             (with-imported-modules imported-modules
                #~(lambda ()
-                   (define (clear-echo termios)
-                     (set-field termios (termios-local-flags)
-                                (logand (lognot (local-flags ECHO))
-                                        (termios-local-flags termios))))
-
                    (define (self-quoting? x)
                      (letrec-syntax ((one-of (syntax-rules ()
                                                ((_) #f)
@@ -112,13 +105,8 @@
                       (dynamic-wind
                         (const #t)
                         (lambda ()
-                          (let* ((repl    (open-file #$device "r+0"))
-                                 (termios (tcgetattr (fileno repl)))
-                                 (console (open-file "/dev/console" "r+0")))
-                            ;; Don't echo input back.
-                            (tcsetattr (fileno repl) (tcsetattr-action TCSANOW)
-                                       (clear-echo termios))
-
+                          (let ((repl    (open-file #$device "r+0"))
+                                (console (open-file "/dev/console" "r+0")))
                             ;; Redirect output to the console.
                             (close-fdes 1)
                             (close-fdes 2)

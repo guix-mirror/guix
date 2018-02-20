@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix store)
   #:use-module (guix records)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (srfi srfi-26)
@@ -90,9 +92,9 @@ or #f on failure."
                       "--no-archive" "--prefix" #$output
                       "-i" #$(locale-definition-source locale)
                       "-f" #$(locale-definition-charset locale)
-                      (string-append #$output "/"
-                                     #$(package-version libc) "/"
-                                     #$(locale-definition-name locale))))))
+                      (string-append #$output "/" #$(version-major+minor
+                                                     (package-version libc))
+                                     "/" #$(locale-definition-name locale))))))
 
 (define* (single-locale-directory locales
                                   #:key (libc (canonical-package glibc)))
@@ -102,7 +104,7 @@ Because locale data formats are incompatible when switching from one libc to
 another, locale data is put in a sub-directory named after the 'version' field
 of LIBC."
   (define version
-    (package-version libc))
+    (version-major+minor (package-version libc)))
 
   (define build
     #~(begin

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,40 +25,39 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages perl))
 
-(define %ftp-base
-  "ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/")
-
 (define-public lsof
   (package
    (name "lsof")
    (version "4.89")
-   (source (origin
-            (method url-fetch)
-            (uri (list (string-append %ftp-base "lsof_"
-                                      version ".tar.bz2")
-                       (string-append %ftp-base "OLD/lsof_"
-                                      version ".tar.bz2")
+   (source
+    (origin
+      (method url-fetch)
+      (uri
+       (apply append
+              (map
+               (lambda (mirror-uri)
+                 (let ((tarball (string-append name "_" version ".tar.bz2")))
+                   (list
+                    (string-append mirror-uri "/" tarball)
+                    ;; Upon every new release, the previous one is moved here:
+                    (string-append mirror-uri "/OLD/" tarball))))
+               (list
+                "ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/"
 
-                       ;; Add mirrors because the FTP server at purdue.edu
-                       ;; bails out when it cannot do a reverse DNS lookup, as
-                       ;; noted at <http://people.freebsd.org/~abe/>.
-                       (string-append
-                        "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/lsof_"
-                        version ".tar.bz2")
-                       (string-append
-                        "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/OLD/lsof_"
-                        version ".tar.bz2")
-                       (string-append
-                        "ftp://sunsite.ualberta.ca/pub/Mirror/lsof/lsof_"
-                        version ".tar.bz2")))
-            (sha256
-             (base32
-              "061p18v0mhzq517791xkjs8a5dfynq1418a1mwxpji69zp2jzb41"))))
+                ;; Add mirrors because the canonical FTP server at purdue.edu
+                ;; bails out when it cannot do a reverse DNS lookup, as noted
+                ;; at <http://people.freebsd.org/~abe/>.
+                "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/"
+                (string-append "http://www.mirrorservice.org/sites/"
+                               "lsof.itap.purdue.edu/pub/tools/unix/lsof")
+                (string-append "ftp://ftp.mirrorservice.org/sites/"
+                               "lsof.itap.purdue.edu/pub/tools/unix/lsof")))))
+      (sha256
+       (base32 "061p18v0mhzq517791xkjs8a5dfynq1418a1mwxpji69zp2jzb41"))))
    (build-system gnu-build-system)
-   (inputs `(("perl" ,perl)))
+   (native-inputs `(("perl" ,perl)))
    (arguments
-    `(#:tests? #f ; no test target
-      #:phases
+    `(#:phases
       (modify-phases %standard-phases
         (replace 'unpack
           (lambda* (#:key source #:allow-other-keys)
@@ -68,7 +68,29 @@
           (lambda _
             (setenv "LSOF_CC" "gcc")
             (setenv "LSOF_MAKE" "make")
-            (zero? (system* "./Configure" "linux"))))
+            (invoke "./Configure" "linux")
+            #t))
+        (add-after 'configure 'patch-timestamps
+          (lambda _
+            (substitute* "Makefile"
+              (("`date`") "`date --date=@1`"))))
+        (add-before 'check 'disable-failing-tests
+          (lambda _
+            (substitute* "tests/Makefile"
+              ;; Fails with ‘ERROR!!! client gethostbyaddr() failure’.
+              (("(STDTST=.*) LTsock" _ prefix) prefix)
+              ;; Fails without access to a remote NFS server.
+              (("(OPTTST=.*) LTnfs"  _ prefix) prefix))))
+        (replace 'check
+          (lambda _
+            (with-directory-excursion "tests"
+              ;; Tests refuse to run on ‘unvalidated’ platforms.
+              (make-file-writable "TestDB")
+              (invoke "./Add2TestDB")
+
+              ;; The ‘standard’ tests suggest running ‘optional’ ones as well.
+              (invoke "make" "standard" "optional")
+              #t)))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))

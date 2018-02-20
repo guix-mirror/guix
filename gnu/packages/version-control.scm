@@ -6,12 +6,12 @@
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 André <eu@euandre.org>
@@ -138,14 +138,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
    ;; to be updated as well.
-   (version "2.15.1")
+   (version "2.16.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0p04linqdywdf7m1hqa904fzqvgzplsxlzdqrn96j1j5gpyr174r"))))
+              "05y7480f2p7fkncbhf08zz56jbykcp0ia5gl6y3djs0lsa5mfq2m"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -158,7 +158,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0mi609plzqqwx271hr9m5j4syggqx255bbzml6ca9j5fadywysvc"))))))
+            "01fbmfsqcv7jmyh80yg3fv5jwv78zvxys9b0fd6bdcy89h9ybvj2"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -582,10 +582,10 @@ collaboration using typical untrusted file hosts or services.")
        ("git:src"
         ,(origin
            (method url-fetch)
-           (uri "mirror://kernel.org/software/scm/git/git-2.10.4.tar.xz")
+           (uri "mirror://kernel.org/software/scm/git/git-2.10.5.tar.xz")
            (sha256
             (base32
-             "1pni4mgih5w42813dxljl61s7xmcpdnar34d9m4548hzpljjyd4l"))))
+             "1r2aa19gnrvm2y4fqcvpw1g9l72n48axqmpgv18s6d0y2p72vhzj"))))
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
@@ -1183,7 +1183,7 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
                (base32
                 "1vjmda2zfjxg0qkaj8hfqa8g6bfwnn1ja8696rxrjgqq4w69wd95"))))
     (build-system gnu-build-system)
-    (home-page "http://invisible-island.net/diffstat/")
+    (home-page "https://invisible-island.net/diffstat/")
     (synopsis "Make histograms from the output of @command{diff}")
     (description
      "Diffstat reads the output of @command{diff} and displays a histogram of
@@ -1318,22 +1318,33 @@ any project with more than one developer, is one of Aegis's major functions.")
 (define-public reposurgeon
   (package
     (name "reposurgeon")
-    (version "3.37")
+    (version "3.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/" name "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "14asjg4xy3mhh5z0r3k7c1wv9y803j2zfq32g5q5m95sf7yzygan"))))
+                "1af0z14wcm4bk5a9ysinbwq2fp3lf5f7i8mvwh7286hr3fnagcaz"))
+              (patches (search-patches
+                        "reposurgeon-add-missing-docbook-files.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ;no test suite distributed
-       #:make-flags
-       (list (string-append "target=" (assoc-ref %outputs "out")))
+     `(#:make-flags
+       (list "ECHO=echo"
+             (string-append "target=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (add-after 'unpack 'patch-inputs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((tzdata (assoc-ref inputs "tzdata")))
+               (substitute* "reposurgeon"
+                 (("/usr/share/zoneinfo")
+                  (string-append tzdata "/share/zoneinfo")))
+               (substitute* "test/svn-to-svn"
+                 (("/bin/echo") "echo"))
+               #t)))
+         (delete 'configure)            ; no configure script
          (add-before 'build 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* (find-files "." "\\.xml$")
@@ -1341,19 +1352,32 @@ any project with more than one developer, is one of Aegis's major functions.")
                 (string-append (assoc-ref inputs "docbook-xml")
                                "/xml/dtd/docbook/docbookx.dtd")))
              #t))
+         (add-before 'check 'set-up-test-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((tzdata (assoc-ref inputs "tzdata")))
+               (setenv "TZDIR" (string-append tzdata "/share/zoneinfo"))
+               #t)))
          (add-after 'install 'install-emacs-data
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "reposurgeon-mode.el"
                            (string-append (assoc-ref outputs "out")
                                           "/share/emacs/site-lisp")))))))
     (inputs
-     `(("python" ,python-wrapper)))
+     `(("python" ,python-wrapper)
+       ("tzdata" ,tzdata)))
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("docbook-xml" ,docbook-xml-4.1.2)
+     `( ;; For building documentation.
+       ("asciidoc" ,asciidoc)
+       ("docbook-xml" ,docbook-xml)
        ("docbook-xsl" ,docbook-xsl)
        ("libxml2" ,libxml2)
-       ("xmlto" ,xmlto)))
+       ("xmlto" ,xmlto)
+
+       ;; For tests.
+       ("cvs" ,cvs)
+       ("git" ,git)
+       ("mercurial" ,mercurial)
+       ("subversion" ,subversion)))
     (home-page "http://www.catb.org/~esr/reposurgeon/")
     (synopsis "Edit version-control repository history")
     (description "Reposurgeon enables risky operations that version-control
@@ -1432,7 +1456,7 @@ modification time.")
 (define-public myrepos
   (package
     (name "myrepos")
-    (version "1.20170129")
+    (version "1.20171231")
     (source
      (origin
        (method git-fetch)
@@ -1441,7 +1465,7 @@ modification time.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "15i9bs2i25l7ibv530ghy8280kklcgm5kr6j86s7iwcqqckd0czp"))))
+        (base32 "10q7lpx152xnkk701fscn4dq99q9znnmv3bc2482khhjg7z8rps0"))))
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl)))
@@ -1578,7 +1602,7 @@ be served with a HTTP file server of your choice.")
 (define-public darcs
   (package
     (name "darcs")
-    (version "2.12.4")
+    (version "2.12.5")
     (source
      (origin
        (method url-fetch)
@@ -1586,7 +1610,7 @@ be served with a HTTP file server of your choice.")
                            "darcs-" version ".tar.gz"))
        (sha256
         (base32
-         "0jfwiwl5k8wspciq1kpmvh5yap4japrf97s9pvhcybxxhaj3ds28"))
+         "0lrm0sal5pl453mkqn8b9fc9l7lwinc140iqihya9g17bk408nrm"))
        (modules '((guix build utils)))
        ;; Remove time-dependent code for reproducibility.
        (snippet
@@ -1601,8 +1625,10 @@ be served with a HTTP file server of your choice.")
     (arguments
      `(#:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
                            "-fnetwork-uri" "-fhttp" "--flag=executable"
-                           "--flag=library")
-       #:tests? #f)) ; 20 failing shell tests out of over 400
+                           "--flag=library"
+                           "--allow-newer=shelly")
+       ;; FIXME: darcs is not compatible with the latest QuickCheck
+       #:tests? #f))
     (inputs
      `(("ghc-cmdargs" ,ghc-cmdargs)
        ("ghc-split" ,ghc-split)
@@ -1620,7 +1646,6 @@ be served with a HTTP file server of your choice.")
        ("ghc-bytestring-builder" ,ghc-bytestring-builder)
        ("ghc-cryptohash" ,ghc-cryptohash)
        ("ghc-data-ordlist" ,ghc-data-ordlist)
-       ("ghc-directory" ,ghc-directory)
        ("ghc-fgl" ,ghc-fgl)
        ("ghc-system-filepath" ,ghc-system-filepath)
        ("ghc-graphviz" ,ghc-graphviz)
@@ -1631,7 +1656,6 @@ be served with a HTTP file server of your choice.")
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-old-time" ,ghc-old-time)
        ("ghc-parsec" ,ghc-parsec)
-       ("ghc-process" ,ghc-process)
        ("ghc-random" ,ghc-random)
        ("ghc-regex-applicative" ,ghc-regex-applicative)
        ("ghc-regex-compat-tdfa" ,ghc-regex-compat-tdfa)
@@ -1753,8 +1777,8 @@ network protocols, and core version control algorithms.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/acaudwell/Gource/archive/"
-                    "gource-" version ".tar.gz"))
+                    "https://github.com/acaudwell/Gource/releases/download"
+                    "/gource-" version "/gource-" version ".tar.gz"))
               (sha256
                (base32
                 "1llqwdnfa1pff8bxk27qsqff1fcg0a9kfdib0rn7p28vl21n1cgj"))))

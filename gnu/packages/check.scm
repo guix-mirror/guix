@@ -25,7 +25,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
@@ -49,6 +49,8 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages time)
@@ -59,6 +61,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial))
 
@@ -140,6 +143,23 @@ with a flexible variety of user interfaces.")
 unit testing.  Test output is in XML for automatic testing and GUI based for
 supervised tests.")
     (license license:lgpl2.1))) ; no copyright notices. LGPL2.1 is in the tarball
+
+;; Some packages require this newer version of cppunit.  However, it needs
+;; C++11 support, which is not enabled by default in our current GCC, and
+;; updating in-place would require adding CXXFLAGS to many dependent packages.
+;; Thus, keep as a separate variable for now.
+;; TODO: Remove this when our default GCC is updated to 6 or higher.
+(define-public cppunit-1.14
+  (package
+    (inherit cppunit)
+    (version "1.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://dev-www.libreoffice.org/src/"
+                                  "cppunit-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1027cyfx5gsjkdkaf6c2wnjh68882grw8n672018cj3vs9lrhmix"))))))
 
 (define-public catch-framework
   (package
@@ -268,6 +288,111 @@ in the code.  Cppcheck primarily detects the types of bugs that the compilers
 normally do not detect.  The goal is to detect only real errors in the code
 (i.e. have zero false positives).")
     (license license:gpl3+)))
+
+(define-public go-gopkg.in-check.v1
+  (let ((commit "20d25e2804050c1cd24a7eea1e7a6447dd0e74ec")
+        (revision "0"))
+    (package
+      (name "go-gopkg.in-check.v1")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/go-check/check.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0k1m83ji9l1a7ng8a7v40psbymxasmssbrrhpdv2wl4rhs0nc3np"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "gopkg.in/check.v1"))
+      (synopsis "Rich testing extension for Go's testing package")
+      (description
+       "@code{check} is a rich testing extension for Go's testing package.")
+      (home-page "https://github.com/go-check/check")
+      (license license:bsd-2))))
+
+(define-public go-github.com-smartystreets-gunit
+  (package
+    (name "go-github.com-smartystreets-gunit")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/smartystreets/gunit")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00m4zg0kdj49mnpmf9klb44ba71p966xsk6zknrzqgfc8119f35z"))))
+    (build-system go-build-system)
+    (arguments
+     '(;; TODO: This package depends on go-github.com-smartystreets-assertions
+       ;; for running the tests, but go-github.com-smartystreets-assertions
+       ;; depends on this package, so break this loop by not running the tests
+       ;; for this package.
+       #:tests? #f
+       #:import-path "github.com/smartystreets/gunit"))
+    (synopsis "Testing tool for Go, in the style of xUnit")
+    (description
+     "@code{gunit} allows the test author to use a struct as the scope for a
+group of related test cases, in the style of xUnit fixtures.  This makes
+extraction of setup/teardown behavior (as well as invoking the system under
+test) much simpler.")
+    (home-page "https://github.com/smartystreets/gunit")
+    (license license:expat)))
+
+(define-public go-github.com-smartystreets-assertions
+  (package
+    (name "go-github.com-smartystreets-assertions")
+    (version "1.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/smartystreets/assertions")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1j0adgbykl55rf2945g0n5bmqdsnjcqlx5dcmpfh4chki43hiwg9"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/smartystreets/assertions"))
+    (native-inputs
+     `(("go-github.com-smartystreets-gunit" ,go-github.com-smartystreets-gunit)))
+    (synopsis "Assertions for testing with Go")
+    (description
+     "The @code{assertions} package provides convinient assertion functions
+for writing tests in Go.")
+    (home-page "https://github.com/smartystreets/assertions")
+    (license license:expat)))
+
+(define-public go-github.com-smartystreets-goconvey
+  (package
+    (name "go-github.com-smartystreets-goconvey")
+    (version "1.6.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/smartystreets/goconvey")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ph18rkl3ns3fgin5i4j54w5a69grrmf3apcsmnpdn1wlrbs3dxh"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/smartystreets/goconvey"))
+    (propagated-inputs
+     `(("go-github.com-jtolds-gls" ,go-github.com-jtolds-gls)
+       ("go-github.com-smartystreets-assertions" ,go-github.com-smartystreets-assertions)))
+    (synopsis "Go testing tool with both a web and terminal user interface")
+    (description
+     "GoConvey is a testing tool for Go. It integrates with go test, can show
+test coverage and has a web user interface that will refresh automatically.")
+    (home-page "https://github.com/smartystreets/goconvey")
+    (license license:expat)))
 
 (define-public googletest
   (package
@@ -599,17 +724,17 @@ supports coverage of subprocesses.")
 (define-public python-pytest-mock
   (package
     (name "python-pytest-mock")
-    (version "1.2")
+    (version "1.6.3")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "pytest-mock" version ".zip"))
+        (uri (pypi-uri "pytest-mock" version))
         (sha256
          (base32
-          "03zxar5drzm7ksqyrwypjaza3cri6wqvpr6iam92djvg6znp32gp"))))
+          "075v7b2wm5f839r1a30n21wfk5rfqp3d05q7zb9jlb2wmxki23cj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pytest-dev/pytest-mock/")
@@ -998,7 +1123,7 @@ testing frameworks.")
     (synopsis "Test utilities for code working with files and commands")
     (description
      "Testpath is a collection of utilities for Python code working with files
-and commands.  It contains functions to check things on the filesystem, and
+and commands.  It contains functions to check things on the file system, and
 tools for mocking system commands and recording calls to those.")
     (license license:expat)))
 
@@ -1177,9 +1302,9 @@ seamlessly into your existing Python unit testing work flow.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (invoke "py.test"))))))
+             (invoke "python" "lit.py" "tests"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("llvm" ,llvm)))
     (home-page "https://llvm.org/")
     (synopsis "LLVM Software Testing Tool")
     (description "@code{lit} is a portable tool for executing LLVM and Clang
@@ -1390,10 +1515,15 @@ recognize TestCases.")
     (description
      "Python-pytest-warnings is a pytest plugin to list Python warnings in
 pytest report.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest-warnings))
+                  ;; This package is part of pytest as of version 3.1.0.
+                  (superseded . ,python-pytest)))))
 
 (define-public python2-pytest-warnings
-  (package-with-python2 python-pytest-warnings))
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-pytest-warnings)))
+           (properties `((superseded . ,python2-pytest)))))
 
 (define-public python-pytest-capturelog
   (package
@@ -1571,6 +1701,15 @@ JSON APIs with Behave.")
           (base32
             "11x5nx5b4wdq04s7vj1gcdl07jvvkfb37p0r5lg773gr5rr8mj6h"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-setup.py
+                    (lambda _
+                      ;; Six is only required for tests and later versions
+                      ;; work fine.
+                      (substitute* "setup.py"
+                        (("six==1.10.0") "six"))
+                      #t)))))
     (propagated-inputs
      `(("python-colorama" ,python-colorama)
        ("python-termstyle" ,python-termstyle)))

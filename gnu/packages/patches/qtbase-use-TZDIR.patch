@@ -1,0 +1,39 @@
+Use $TZDIR to search for time-zone data. Thus avoid depending on package
+"tzdata", which often introduces changes with near-immediate effects, so it's
+important to be able to update it fast.
+
+Based on a patch fron NixOS.
+===================================================================
+--- qtbase-opensource-src-5.9.4.orig/src/corelib/tools/qtimezoneprivate_tz.cpp
++++ qtbase-opensource-src-5.9.4/src/corelib/tools/qtimezoneprivate_tz.cpp
+@@ -70,7 +70,11 @@
+ // Parse zone.tab table, assume lists all installed zones, if not will need to read directories
+ static QTzTimeZoneHash loadTzTimeZones()
+ {
+-    QString path = QStringLiteral("/usr/share/zoneinfo/zone.tab");
++    // Try TZDIR first, in case we're running on GuixSD.
++    QString path = QFile::decodeName(qgetenv("TZDIR")) + QStringLiteral("/zone.tab");
++    // Fallback to traditional paths in case we are not on GuixSD.
++    if (!QFile::exists(path))
++        path = QStringLiteral("/usr/share/zoneinfo/zone.tab");
+     if (!QFile::exists(path))
+         path = QStringLiteral("/usr/lib/zoneinfo/zone.tab");
+ 
+@@ -645,6 +649,9 @@
+         if (!tzif.open(QIODevice::ReadOnly))
+             return;
+     } else {
++      // Try TZDIR first, in case we're running on GuixSD.
++      tzif.setFileName(QFile::decodeName(qgetenv("TZDIR")) + QStringLiteral("/") + QString::fromLocal8Bit(ianaId));
++      if (!tzif.open(QIODevice::ReadOnly)) {
+         // Open named tz, try modern path first, if fails try legacy path
+         tzif.setFileName(QLatin1String("/usr/share/zoneinfo/") + QString::fromLocal8Bit(ianaId));
+         if (!tzif.open(QIODevice::ReadOnly)) {
+@@ -652,6 +659,7 @@
+             if (!tzif.open(QIODevice::ReadOnly))
+                 return;
+         }
++      }
+     }
+ 
+     QDataStream ds(&tzif);

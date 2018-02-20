@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -153,7 +154,7 @@ from Mint-X-F and Faenza-Fresh icon packs.")
 (define-public mate-themes
   (package
     (name "mate-themes")
-    (version "3.22.13")
+    (version "3.22.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pub.mate-desktop.org/releases/themes/"
@@ -161,7 +162,7 @@ from Mint-X-F and Faenza-Fresh icon packs.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1p7w63an8qs15hkj79nppy7471glv0rm1b0himn3c4w69q8qdc9i"))))
+                "09fqvlnmrvc73arl7jv9ygkxi46lw7c1q8qra6w3ap7x83f9zdak"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -842,7 +843,7 @@ infamous 'Wanda the Fish'.")
      "Caja is the official file manager for the MATE desktop.
 It allows for browsing directories, as well as previewing files and launching
 applications associated with them.  Caja is also responsible for handling the
-icons on the MATE desktop.  It works on local and remote filesystems.")
+icons on the MATE desktop.  It works on local and remote file systems.")
     ;; There is a note about a TRADEMARKS_NOTICE file in COPYING which
     ;; does not exist. It is safe to assume that this is of no concern
     ;; for us.
@@ -900,7 +901,7 @@ icons on the MATE desktop.  It works on local and remote filesystems.")
      "Caja is the official file manager for the MATE desktop.
 It allows for browsing directories, as well as previewing files and launching
 applications associated with them.  Caja is also responsible for handling the
-icons on the MATE desktop.  It works on local and remote filesystems.")
+icons on the MATE desktop.  It works on local and remote file systems.")
     (license license:gpl2+)))
 
 (define-public mate-control-center

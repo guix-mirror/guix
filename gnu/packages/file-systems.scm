@@ -32,11 +32,13 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -130,10 +132,10 @@ single file can be mounted.")
        ;; FIXME: Tests require 'run-parts' which is not in Guix yet.
        #:tests? #f))
     (home-page "https://github.com/ReproducibleBuilds/disorderfs")
-    (synopsis "FUSE filesystem that introduces non-determinism")
+    (synopsis "FUSE file system that introduces non-determinism")
     (description
-     "An overlay FUSE filesystem that introduces non-determinism
-into filesystem metadata.  For example, it can randomize the order
+     "An overlay FUSE file system that introduces non-determinism
+into file system metadata.  For example, it can randomize the order
 in which directory entries are read.  This is useful for detecting
 non-determinism in the build process.")
     (license license:gpl3+)))
@@ -199,10 +201,45 @@ non-determinism in the build process.")
        ("zlib" ,zlib)))
     (home-page "https://www.gluster.org")
     (synopsis "Distributed file system")
-    (description "GlusterFS is a distributed scalable network filesystem
+    (description "GlusterFS is a distributed scalable network file system
 suitable for data-intensive tasks such as cloud storage and media streaming.
 It allows rapid provisioning of additional storage based on your storage
 consumption needs.  It incorporates automatic failover as a primary feature.
 All of this is accomplished without a centralized metadata server.")
     ;; The user may choose either LGPLv3+ or GPLv2 only.
     (license (list license:lgpl3+ license:gpl2+))))
+
+(define-public curlftpfs
+  (package
+    (name "curlftpfs")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/curlftpfs/curlftpfs/" version
+                           "/curlftpfs-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0n397hmv21jsr1j7zx3m21i7ryscdhkdsyqpvvns12q7qwwlgd2f"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test
+           (lambda _
+             ;; One of the 512-Byte block counts is definitely wrong.
+             ;; See <https://sourceforge.net/p/curlftpfs/bugs/73/>.
+             (substitute* "tests/ftpfs-ls_unittest.c"
+              (("4426192") "12814800"))
+             #t)))))
+    (inputs
+     `(("curl" ,curl)
+       ("glib" ,glib)
+       ("fuse", fuse)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://curlftpfs.sourceforge.net/")
+    (synopsis "Mount remote file systems over FTP")
+    (description
+     "This is a file system client based on the FTP File Transfer Protocol.")
+    (license license:gpl2+)))

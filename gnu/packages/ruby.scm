@@ -62,6 +62,7 @@
        (sha256
         (base32
          "0l9bv67dgsphk42lmiskhrnh47hbyj6rfg2rcjx22xivpx07srr3"))
+       (patches (search-patches "ruby-rubygems-276-for-ruby24.patch"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -96,9 +97,7 @@
     (native-search-paths
      (list (search-path-specification
             (variable "GEM_PATH")
-            (files (list (string-append "lib/ruby/gems/"
-                                        (version-major+minor version)
-                                        ".0"))))))
+            (files (list (string-append "lib/ruby/vendor_ruby"))))))
     (synopsis "Programming language interpreter")
     (description "Ruby is a dynamic object-oriented programming language with
 a focus on simplicity and productivity.")
@@ -162,13 +161,7 @@ a focus on simplicity and productivity.")
                             "lib/mkmf.rb"
                             "process.c")
                (("/bin/sh") (which "sh")))
-             #t)))))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "GEM_PATH")
-            (files (list (string-append "lib/ruby/gems/"
-                                        (version-major+minor version)
-                                        ".0"))))))))
+             #t)))))))
 
 (define-public ruby-1.8
   (package (inherit ruby)
@@ -197,11 +190,6 @@ a focus on simplicity and productivity.")
                             "process.c")
                (("/bin/sh") (which "sh")))
              #t)))))))
-
-(define (gem-directory ruby-version)
-  "Return the relative gem install directory for RUBY-VERSION."
-  (string-append "/lib/ruby/gems/" (version-major+minor ruby-version)
-                 ".0/gems"))
 
 (define-public ruby-highline
   (package
@@ -1302,13 +1290,11 @@ It allows writing tests, checking results and automated testing in Ruby.")
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
-                    (test-unit-home (gem-home test-unit
-                                              ,(package-version ruby))))
+             (let* ((test-unit (assoc-ref inputs "ruby-test-unit")))
                (substitute* "Rakefile"
                  (("t\\.libs << \"test\"" line)
                   (string-append line "; t.libs << \""
-                                 test-unit-home
+                                 test-unit "/lib/ruby/vendor_ruby"
                                  "/gems/test-unit-"
                                  ,(package-version ruby-test-unit)
                                  "/lib\""))))
@@ -1367,13 +1353,11 @@ as a base class when writing classes that depend upon
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
-                    (test-unit-home (gem-home test-unit ,(package-version
-                                                          ruby))))
+             (let* ((test-unit (assoc-ref inputs "ruby-test-unit")))
                (substitute* "Rakefile"
                  (("t\\.libs << \"test\"" line)
                   (string-append line "; t.libs << \""
-                                 test-unit-home
+                                 test-unit "/lib/ruby/vendor_ruby"
                                  "/gems/test-unit-"
                                  ,(package-version ruby-test-unit)
                                  "/lib\""))))
@@ -1406,13 +1390,11 @@ knowing anything about the constructor.")
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
           (lambda* (#:key inputs #:allow-other-keys)
-            (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
-                   (test-unit-home (gem-home test-unit ,(package-version
-                                                         ruby))))
+            (let* ((test-unit (assoc-ref inputs "ruby-test-unit")))
               (substitute* "Rakefile"
                 (("t\\.libs << \"test\"" line)
                  (string-append line "; t.libs << \""
-                                test-unit-home
+                                test-unit "/lib/ruby/vendor_ruby"
                                 "/gems/test-unit-"
                                 ,(package-version ruby-test-unit)
                                 "/lib\""))))
@@ -1479,13 +1461,11 @@ conversion to (X)HTML.")
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
           (lambda* (#:key inputs #:allow-other-keys)
-            (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
-                   (test-unit-home (gem-home test-unit
-                                             ,(package-version ruby))))
+            (let* ((test-unit (assoc-ref inputs "ruby-test-unit")))
               (substitute* "Rakefile"
                 (("t\\.libs << 'test'" line)
                  (string-append line "; t.libs << \""
-                                test-unit-home
+                                test-unit "/lib/ruby/vendor_ruby"
                                 "/gems/test-unit-"
                                 ,(package-version ruby-test-unit)
                                 "/lib\""))))
@@ -1850,9 +1830,10 @@ run as a daemon and to be controlled by simple start/stop/restart commands.")
                       ;; store.
                       (let ((git    (string-append (assoc-ref inputs "git")
                                                    "/bin/git"))
-                            (config (string-append (getenv "GEM_HOME")
-                                                   "/gems/git-" ,version
-                                                   "/lib/git/config.rb")))
+                            (config (string-append
+                                     (assoc-ref outputs "out")
+                                     "/lib/ruby/vendor_ruby/gems/git-"
+                                     ,version "/lib/git/config.rb")))
                         (substitute* (list config)
                           (("'git'")
                            (string-append "'" git "'")))
@@ -2037,13 +2018,11 @@ to reproduce user environments.")
            ;; 'pkg-config' is not included in the GEM_PATH during
            ;; installation, so we add it directly to the load path.
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((pkg-config (assoc-ref inputs "ruby-pkg-config"))
-                    (pkg-config-home (gem-home pkg-config
-                                               ,(package-version ruby))))
+             (let* ((pkg-config (assoc-ref inputs "ruby-pkg-config")))
                (substitute* "ext/nokogiri/extconf.rb"
                  (("gem 'pkg-config'.*")
                   (string-append "$:.unshift '"
-                                 pkg-config-home
+                                 pkg-config "/lib/ruby/vendor_ruby"
                                  "/gems/pkg-config-"
                                  ,(package-version ruby-pkg-config)
                                  "/lib'\n"))))
@@ -2450,13 +2429,11 @@ development of Ruby gems.")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-test-include-path
           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((minitest (assoc-ref inputs "ruby-minitest-4"))
-                    (minitest-home (gem-home minitest
-                                             ,(package-version ruby))))
+             (let* ((minitest (assoc-ref inputs "ruby-minitest-4")))
                (substitute* "Rakefile"
                  (("Hoe\\.add_include_dirs .*")
                   (string-append "Hoe.add_include_dirs \""
-                                 minitest-home
+                                 minitest "/lib/ruby/vendor_ruby"
                                  "/gems/minitest-"
                                  ,(package-version ruby-minitest-4)
                                  "/lib" "\""))))
@@ -2856,15 +2833,7 @@ alternative to Marshal for Object serialization. ")
          ;; existing gemspec.
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "redcloth.gemspec"))))
-         ;; Make sure that the "redcloth" executable finds required Ruby
-         ;; libraries.
-         (add-after 'install 'wrap-bin-redcloth
-          (lambda* (#:key outputs #:allow-other-keys)
-            (wrap-program (string-append (assoc-ref outputs "out")
-                                         "/bin/redcloth")
-              `("GEM_HOME" ":" prefix (,(getenv "GEM_HOME"))))
-            #t)))))
+            (zero? (system* "gem" "build" "redcloth.gemspec")))))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-diff-lcs" ,ruby-diff-lcs)
@@ -2894,7 +2863,7 @@ alternative to Marshal for Object serialization. ")
        ("ruby-hoe" ,ruby-hoe)
        ("ruby-rspec" ,ruby-rspec)))
     (inputs
-     `(("postgresql" ,postgresql)))
+     `(("postgresql" ,postgresql-9.6)))
     (synopsis "Ruby interface to PostgreSQL")
     (description "Pg is the Ruby interface to the PostgreSQL RDBMS.  It works
 with PostgreSQL 8.4 and later.")
@@ -3450,6 +3419,13 @@ neither too verbose nor too minimal.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'check 'adjust-failing-test
+           (lambda _
+             ;; XXX: This test fails with SQLite versions >= 3.21.
+             ;; See <https://github.com/sparklemotion/sqlite3-ruby/issues/226>.
+             (substitute* "test/test_integration_resultset.rb"
+               (("\"integer\", \"text\"") "\"INTEGER\", \"text\""))
+             #t))
          (add-before 'check 'add-gemtest-file
            ;; This file exists in the repository but is not distributed.
            (lambda _ (zero? (system* "touch" ".gemtest")))))))
@@ -3712,13 +3688,7 @@ It has built-in support for the legacy @code{cookies.txt} and
                   (system* "ruby"
                            "-Ilib"
                            "test/runner.rb"))
-                 #t)))
-         (add-after 'install 'wrap-bin-httpclient
-           (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/httpclient")
-               `("GEM_HOME" ":" prefix (,(getenv "GEM_HOME"))))
-             #t)))))
+                 #t))))))
     (native-inputs
      `(("ruby-rack" ,ruby-rack)))
     (synopsis
@@ -3760,9 +3730,9 @@ requests either using arguments or with an interactive prompt.")
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (file (string-append out
-                                         ,(gem-directory (package-version ruby))
-                                         "/ansi-" ,version "/lib/ansi.yml")))
+                    (file (string-append
+                           out "/lib/ruby/vendor_ruby/gems/ansi-"
+                           ,version "/lib/ansi.yml")))
                ;; XXX: This symlink is broken since ruby 2.4.
                ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
                (delete-file file)
@@ -3960,9 +3930,9 @@ requirement specifications systems like Cucumber.")
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (file (string-append out
-                                         ,(gem-directory (package-version ruby))
-                                         "/ae-" ,version "/lib/ae.yml")))
+                    (file (string-append
+                           out "/lib/ruby/vendor_ruby/gems/ae-"
+                           ,version "/lib/ae.yml")))
                ;; XXX: This symlink is broken since ruby 2.4.
                ;; https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00034.html
                (delete-file file)

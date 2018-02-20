@@ -100,7 +100,7 @@
              #t)))))
     (native-inputs `(("avr-binutils" ,avr-binutils)
                      ("avr-gcc" ,avr-gcc)))
-    (home-page "http://www.nongnu.org/avr-libc/")
+    (home-page "https://www.nongnu.org/avr-libc/")
     (synopsis "The AVR C Library")
     (description
      "AVR Libc is a project whose goal is to provide a high quality C library

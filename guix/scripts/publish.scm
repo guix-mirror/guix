@@ -672,10 +672,10 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
       exp ...)
     (const #f)))
 
-(define (nar-response-port response)
+(define (nar-response-port response compression)
   "Return a port on which to write the body of RESPONSE, the response of a
 /nar request, according to COMPRESSION."
-  (match (assoc-ref (response-headers response) 'x-nar-compression)
+  (match compression
     (($ <compression> 'gzip level)
      ;; Note: We cannot used chunked encoding here because
      ;; 'make-gzip-output-port' wants a file port.
@@ -697,11 +697,13 @@ blocking."
      (call-with-new-thread
       (lambda ()
         (set-thread-name "publish nar")
-        (let* ((response (write-response (sans-content-length response)
-                                         client))
-               (port     (begin
-                           (force-output client)
-                           (nar-response-port response))))
+        (let* ((compression (assoc-ref (response-headers response)
+                                       'x-nar-compression))
+               (response    (write-response (sans-content-length response)
+                                            client))
+               (port        (begin
+                              (force-output client)
+                              (nar-response-port response compression))))
           ;; XXX: Given our ugly workaround for <http://bugs.gnu.org/21093> in
           ;; 'render-nar', BODY here is just the file name of the store item.
           ;; We call 'write-file' from here because we know that's the only

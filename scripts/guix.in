@@ -1,8 +1,9 @@
-#!@GUILE@ --no-auto-compile
--*- scheme -*-
+#!@GUILE@ \
+--no-auto-compile -e main -s
 !#
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,56 +23,40 @@
 ;; IMPORTANT: We must avoid loading any modules from Guix here,
 ;; because we need to adjust the guile load paths first.
 ;; It's okay to import modules from core Guile though.
-(use-modules (ice-9 regex)
-             (srfi srfi-26))
+(use-modules (srfi srfi-26))
 
-(let ()
-  (define-syntax-rule (push! elt v) (set! v (cons elt v)))
+(define-syntax-rule (push! elt v) (set! v (cons elt v)))
 
-  (define config-lookup
-    (let ((config '(("prefix"         . "@prefix@")
-                    ("exec_prefix"    . "@exec_prefix@")
-                    ("datarootdir"    . "@datarootdir@")
-                    ("guilemoduledir" . "@guilemoduledir@")
-                    ("guileobjectdir" . "@guileobjectdir@")
-                    ("localedir"      . "@localedir@")))
-          (var-ref-regexp (make-regexp "\\$\\{([a-z_]+)\\}")))
-      (define (expand-var-ref match)
-        (lookup (match:substring match 1)))
-      (define (expand str)
-        (regexp-substitute/global #f var-ref-regexp str
-                                  'pre expand-var-ref 'post))
-      (define (lookup name)
-        (expand (assoc-ref config name)))
-      lookup))
+(define (augment-load-paths!)
+  ;; Add installed modules to load-path.
+  (push! "@guilemoduledir@" %load-path)
+  (push! "@guileobjectdir@" %load-compiled-path)
 
-  (define (maybe-augment-load-paths!)
-    (unless (getenv "GUIX_UNINSTALLED")
-      (let ((module-dir (config-lookup "guilemoduledir"))
-            (object-dir (config-lookup "guileobjectdir")))
-        (push! module-dir %load-path)
-        (push! object-dir %load-compiled-path))
-      (let ((updates-dir (and=> (or (getenv "XDG_CONFIG_HOME")
-                                    (and=> (getenv "HOME")
-                                           (cut string-append <> "/.config")))
-                                (cut string-append <> "/guix/latest"))))
-        (when (and updates-dir (file-exists? updates-dir))
-          ;; XXX: Currently 'guix pull' puts both .scm and .go files in
-          ;; UPDATES-DIR.
-          (push! updates-dir %load-path)
-          (push! updates-dir %load-compiled-path)))))
+  ;; Add modules fetched by 'guix pull' to load-path.
+  (let ((updates-dir (and=> (or (getenv "XDG_CONFIG_HOME")
+                                (and=> (getenv "HOME")
+                                       (cut string-append <> "/.config")))
+                            (cut string-append <> "/guix/latest"))))
+    (when (and=> updates-dir file-exists?)
+      ;; XXX: Currently 'guix pull' puts both .scm and .go files in
+      ;; UPDATES-DIR.
+      (push! updates-dir %load-path)
+      (push! updates-dir %load-compiled-path))))
 
-  (define (run-guix-main)
-    (let ((guix-main (module-ref (resolve-interface '(guix ui))
-                                 'guix-main)))
-      (bindtextdomain "guix" (config-lookup "localedir"))
-      (bindtextdomain "guix-packages" (config-lookup "localedir"))
-      (apply guix-main (command-line))))
+(define* (main #:optional (args (command-line)))
+  (unless (getenv "GUIX_UNINSTALLED")
+    (augment-load-paths!))
 
-  (maybe-augment-load-paths!)
+  (let ((guix-main (module-ref (resolve-interface '(guix ui))
+                               'guix-main)))
+    (bindtextdomain "guix" "@localedir@")
+    (bindtextdomain "guix-packages" "@localedir@")
+    ;; XXX: It would be more convenient to change it to:
+    ;;   (exit (apply guix-main (command-line)))
+    ;; but since the 'guix' command is not updated by 'guix pull', we cannot
+    ;; really do it now.
+    (apply guix-main args)))
 
-  ;; XXX: It would be more convenient to change it to:
-  ;;   (exit (run-guix-main))
-  ;; but since the 'guix' command is not updated by 'guix pull', we cannot
-  ;; really do it now.
-  (run-guix-main))
+;;; Local Variables:
+;;; mode: scheme
+;;; End:

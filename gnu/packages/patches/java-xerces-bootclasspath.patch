@@ -1,0 +1,38 @@
+Based on https://anonscm.debian.org/viewvc/pkg-java/trunk/libxerces2-java/debian/patches/03_bootclasspath.patch?revision=14509, adopted for guix
+
+--- xerces-2_11_0/build.xml.orig	2010-11-26 21:42:11.000000000 +0100
++++ xerces-2_11_0/build.xml	2017-03-28 14:04:41.946606996 +0200
+@@ -290,13 +290,14 @@
+            destdir="${build.dest}"
+            source="${javac.source}"
+            target="${javac.target}"
+-           classpath="${build.dir}/classes:${tools.dir}/${jar.apis}:${tools.dir}/${jar.resolver}:${tools.dir}/${jar.serializer}"
++           classpath="${build.dir}/classes:${jar.jaxp}:${jar.apis-ext}:${jar.resolver}"
+            debug="${debug}" nowarn="true"
+            debuglevel="${debuglevel}"
+            deprecation="${deprecation}"
+            optimize="${optimize}"
+            includeAntRuntime="false"
+-           includeJavaRuntime="false"
++           includeJavaRuntime="true"
++           bootclasspath="${jar.jaxp}:${jar.apis-ext}:${jar.resolver}"
+            excludes="org/xml/sax/** 
+                 javax/xml/**
+                 org/w3c/dom/*
+@@ -1451,13 +1452,14 @@
+                destdir="${build.dest}"
+                source="${javac.source}"
+                target="${javac.target}"
+-               classpath="${build.dir}/classes:${tools.dir}/${jar.apis}:${tools.dir}/${jar.resolver}:${tools.dir}/${jar.serializer}"
++               classpath="${build.dir}/classes:${jar.jaxp}:${jar.apis-ext}:${jar.resolver}"
+                debug="${debug}"
+                debuglevel="${debuglevel}"
+                deprecation="${deprecation}"
+                optimize="${optimize}"
+                includeAntRuntime="false"
+-               includeJavaRuntime="false"
++               includeJavaRuntime="true"
++               bootclasspath="${jar.jaxp}:${jar.apis-ext}:${jar.resolver}"
+                excludes="org/xml/sax/** 
+                     javax/xml/**
+                     org/w3c/dom/*

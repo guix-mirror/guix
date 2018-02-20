@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,14 +38,14 @@
 (define-public librep
   (package
     (name "librep")
-    (version "0.92.6")
+    (version "0.92.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.tuxfamily.org/" name "/"
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1k6c0hmyzxh8459r790slh9vv9vwy9d7w3nlmrqypbx9mk855hgy"))))
+                "1bmcjl1x1rdh514q9z3hzyjmjmwwwkziipjpjsl301bwmiwrd8a8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

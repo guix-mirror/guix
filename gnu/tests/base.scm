@@ -323,11 +323,6 @@ info --version")
             'success!
             (marionette-eval '(begin
                                 ;; Make sure the (guix …) modules are found.
-                                ;;
-                                ;; XXX: Currently shepherd and marionette run
-                                ;; on Guile 2.0 whereas Guix is on 2.2.  Yet
-                                ;; we should be able to load the 2.0 Scheme
-                                ;; files since it's pure Scheme.
                                 (add-to-load-path
                                  #+(file-append guix "/share/guile/site/2.2"))
 

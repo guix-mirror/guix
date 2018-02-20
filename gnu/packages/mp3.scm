@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -300,7 +301,7 @@ This package contains the binary.")
 (define-public mpg123
   (package
     (name "mpg123")
-    (version "1.25.7")
+    (version "1.25.8")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "mirror://sourceforge/mpg123/mpg123/"
@@ -310,13 +311,13 @@ This package contains the binary.")
                           version ".tar.bz2")))
               (sha256
                (base32
-                "1ws40fglyyk51jvmz8gfapjkw1g51pkch1rffdsbh4b1yay5xc9i"))))
+                "16s9z1xc5kv1p90g42vsr9m4gq3dwjsmrj873x4i8601mvpm3nkr"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-default-audio=pulse")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("pulseaudio" ,pulseaudio)
               ("alsa-lib" ,alsa-lib)))
-    (home-page "http://www.mpg123.org/")
+    (home-page "https://www.mpg123.org/")
     (synopsis "Console MP3 player and decoder library")
     (description
      "Mpg123 is a real time MPEG 1.0/2.0/2.5 audio player/decoder for layers
@@ -494,15 +495,15 @@ command-line tool.")
 (define-public chromaprint
   (package
     (name "chromaprint")
-    (version "1.4.2")
+    (version "1.4.3")
     (source (origin
       (method url-fetch)
       (uri (string-append
-            "https://bitbucket.org/acoustid/chromaprint/downloads/"
-            "chromaprint-" version ".tar.gz"))
+            "https://github.com/acoustid/chromaprint/releases/download/v"
+            version "/chromaprint-" version ".tar.gz"))
       (sha256
        (base32
-        "1m5l4rfkwz6m77m3qjs41n7rmscw0hfvv4z79srpbpa1x2khk5lq"))))
+        "10kz8lncal4s2rp2rqpgc6xyjp0jzcrihgkx7chf127vfs5n067a"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests require googletest *sources*

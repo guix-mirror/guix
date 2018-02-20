@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
 (define-public libedit
   (package
     (name "libedit")
-    (version "20150325-3.1")
+    (version "20170329-3.1")
     (source
      (origin
       (method url-fetch)
@@ -35,12 +36,11 @@
                           "/" name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1if8zi9h52m80ck796an28rrqfljk2n8cn25m3fl0prwz155x2n8"))))
+        "1gnlgl0x8g9ky59s70nriy5gv47676d1s4ypvbv8y11apl7xkwli"))))
     (build-system gnu-build-system)
-    (arguments `(#:configure-flags (list "--enable-widec")))
     (inputs
      `(("ncurses" ,ncurses)))
-    (home-page "http://thrysoee.dk/editline/")
+    (home-page "https://thrysoee.dk/editline/")
     (synopsis "NetBSD Editline library")
     (description
      "This is an autotool- and libtoolized port of the NetBSD Editline
@@ -48,5 +48,3 @@ library (libedit).  This Berkeley-style licensed command line editor library
 provides generic line editing, history, and tokenization functions, similar to
 those found in GNU Readline.")
     (license bsd-3)))
-
-;;; libedit.scm ends here

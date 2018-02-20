@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -165,7 +166,8 @@ and provides a \"top-like\" mode (monitoring).")
               (sha256
                (base32
                 "174q1qg7yg6w1hfvlfv720hr6hid4h5xzw15y3ycfpspllzldhcb"))
-              (patches (search-patches "shepherd-close-fds.patch"))))
+              (patches (search-patches "shepherd-close-fds.patch"
+                                       "shepherd-herd-status-sorted.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -176,7 +178,11 @@ and provides a \"top-like\" mode (monitoring).")
        ("guile" ,guile-2.2)))
     (inputs
      ;; ... and this is the one that appears in shebangs when cross-compiling.
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-2.2)
+
+       ;; The 'shepherd' command uses Readline when used interactively.  It's
+       ;; an unusual use case though, so we don't propagate it.
+       ("guile-readline" ,guile-readline)))
     (synopsis "System service manager")
     (description
      "The GNU Shepherd is a daemon-managing daemon, meaning that it supervises
@@ -186,6 +192,49 @@ interface and is based on GNU Guile.")
     (license license:gpl3+)
     (home-page "https://www.gnu.org/software/shepherd/")
     (properties '((ftp-server . "alpha.gnu.org")))))
+
+(define-public daemontools
+  (package
+    (name "daemontools")
+    (version "0.76")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://cr.yp.to/" name "/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07scvw88faxkscxi91031pjkpccql6wspk4yrlnsbrrb5c0kamd5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;; No tests as far as I can tell.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir ,(string-append  name "-" version))))
+         (delete 'configure)
+         (add-before 'build 'patch
+           (lambda _
+             (substitute* "src/error.h"
+               (("extern int errno;")
+                "#include <errno.h>"))))
+         (replace 'build
+           (lambda _
+             (invoke "package/compile")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "command"))))))))
+    (synopsis "Tools for managing UNIX style services")
+    (description
+     "@code{daemontools} is a collection of tools for managing UNIX
+services.")
+    (license license:public-domain)
+    (home-page "https://cr.yp.to/daemontools.html")))
 
 (define-public dfc
   (package
@@ -213,18 +262,20 @@ graphs and can export its output to different formats.")
 (define-public htop
   (package
    (name "htop")
-   (version "2.0.2")
+   (version "2.1.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://hisham.hm/htop/releases/"
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
-              "11zlwadm6dpkrlfvf3z3xll26yyffa7qrxd1w72y1kl0rgffk6qp"))))
+              "0j07z0xm2gj1vzvbgh4323k4db9mr7drd7gw95mmpqi61ncvwq1j"))))
    (build-system gnu-build-system)
    (inputs
     `(("ncurses" ,ncurses)))
-   (home-page "http://htop.sourceforge.net/")
+   (native-inputs
+    `(("python" ,python-minimal-wrapper))) ; for scripts/MakeHeader.py
+   (home-page "https://hisham.hm/htop/")
    (synopsis "Interactive process viewer")
    (description
     "This is htop, an interactive process viewer.  It is a text-mode
@@ -477,6 +528,50 @@ and exploration tool, since it can create almost any kind of connection you
 would need and has several interesting built-in capabilities.")
     (license license:gpl2+)))
 
+(define-public sipcalc
+  (package
+    (name "sipcalc")
+    (version "1.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.routemeister.net/projects"
+                           "/sipcalc/files/sipcalc" "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mv3wndj4z2bsshh2k8d5sy3j8wxzgf8mzmmkvj1k8gpcz37dm6g"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.routemeister.net/projects/sipcalc/")
+    (synopsis "Command-line IP subnet calculator")
+    (description
+     "Sipcalc is an advanced command-line IP subnet calculator.  It can take
+multiple forms of input (IPv4/IPv6/interface/hostname) and output a multitude
+of information about a given subnet.
+
+Features include:
+
+@itemize @bullet
+@item IPv4
+@itemize
+@item Retrieving of address information from interfaces.
+@item Classfull and CIDR output.
+@item Multiple address and netmask input and output formats (dotted quad, hex,
+number of bits).
+@item Output of broadcast address, network class, Cisco wildcard,
+hosts/range, network range.
+@item The ability to split a network based on a smaller netmask, now also with
+recursive runs on the generated subnets.  (also IPv6)
+@end itemize
+@item IPv6
+@itemize
+@item Compressed and expanded input and output addresses.
+@item Standard IPv6 network output.
+@item v4 in v6 output.
+@item Reverse DNS address generation.
+@end itemize
+@end itemize\n")
+    (license license:bsd-3)))
+
 (define-public alive
   (package
     (name "alive")
@@ -502,9 +597,9 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "9")
-         (bind-patch-version "10")
+         (bind-patch-version "11")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "3")      ; for patch release, e.g. "6"
+         (bind-release-version "1")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -514,14 +609,14 @@ connection alive.")
                                       bind-release-version)))
     (package
       (name "isc-dhcp")
-      (version "4.3.5")
+      (version "4.3.6")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "http://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "0m7rwxvpb7xrmfl9ynpckhl0hi0xgm9bq1fmbp2r68sxy5mr75gb"))))
+                  "06vgxhm6agzkp6r1jy10467vrfw2rzcp2mnkcph7ydziciisy7m4"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
@@ -620,7 +715,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "00yh1d5shrq7y0kfwacax4f8dc0akaa2fha430j92n7mshms65m1"))))
+                      "1a4g6nzzrbmhngdgvgv1jjq4fm06m8fwc2a0gskkchplxl7dva20"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -853,7 +948,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.21p2")
+    (version "1.8.22")
     (source (origin
               (method url-fetch)
               (uri
@@ -863,7 +958,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0s33szq6q59v5s377l4v6ybsdy7pfq6sz7y364j4x09ssdn79ibl"))
+                "00pxp74xkwdcmrjwy55j0k8p684jk1zx3nzdc11v30q8q8kwnmkj"))
               (modules '((guix build utils)))
               (snippet
                '(delete-file-recursively "lib/zlib"))))
@@ -1078,7 +1173,7 @@ network, which causes enabled computers to power on.")
 (define-public dmidecode
   (package
     (name "dmidecode")
-    (version "3.0")
+    (version "3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1086,14 +1181,14 @@ network, which causes enabled computers to power on.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0iby0xfk5x3cdr0x0gxj5888jjyjhafvaq0l79civ73jjfqmphvy"))))
+                "1h0sg0lxa15nzf8s7884p6q7p6md9idm0c79wyqmk32l4ndwwrnp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f                                ; no 'check' target
        #:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out")))))
-    (home-page "http://www.nongnu.org/dmidecode/")
+    (home-page "https://www.nongnu.org/dmidecode/")
     (synopsis "Read hardware information from the BIOS")
     (description
      "Dmidecode reports information about your system's hardware as described
@@ -1108,7 +1203,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20171110")
+    (version "20180209")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1116,7 +1211,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "08g83qvhfx04vzb3f3pfpkp0w601v6csjzdv7z1vjzz1k71h7yml"))))
+                "04hyc5s9iiyiznvspx7q73r6ns98d51wrv8zfvqbqv52gqq8hzdh"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1142,16 +1237,16 @@ development, not the kernel implementation of ACPI.")
 (define-public stress
   (package
     (name "stress")
-    (version "1.0.1")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://debian/pool/main/s/stress/stress_"
                                   version ".orig.tar.gz"))
               (sha256
                (base32
-                "1v9vnzlihqfjsxa93hdbrq72pqqk00dkylmlg8jpxhm7s1w9qfl1"))))
+                "0nw210jajk38m3y7h8s130ps2qsbz7j75wab07hi2r3hlz14yzh5"))))
     (build-system gnu-build-system)
-    (home-page "http://packages.debian.org/wheezy/stress")
+    (home-page "https://packages.debian.org/sid/stress")
     (synopsis "Impose load on and stress test a computer system")
     (description
      "Stress is a tool that imposes a configurable amount of CPU, memory, I/O,
@@ -1216,7 +1311,7 @@ characters can be replaced as well, as can UTF-8 characters.")
        ("e2fsprogs" ,e2fsprogs)
        ("libjpeg" ,libjpeg)
        ("ncurses" ,ncurses)))
-    (home-page "http://www.cgsecurity.org/wiki/TestDisk")
+    (home-page "https://www.cgsecurity.org/wiki/TestDisk")
     (synopsis "Data recovery tool")
     (description
      "TestDisk is a program for data recovery, primarily designed to help
@@ -1297,7 +1392,7 @@ track changes in important system configuration files.")
 (define-public libcap-ng
   (package
     (name "libcap-ng")
-    (version "0.7.4")
+    (version "0.7.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1305,10 +1400,12 @@ track changes in important system configuration files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0ssvnh4cvhya0c1j6k6192zvqcq7nc0x01fb5nwhr0prfqr0i8j8"))))
+                "0a0k484kwv0zilry2mbl9k56cnpdhsjxdxin17jas6kkyfy345aa"))))
     (build-system gnu-build-system)
-    (inputs `(("python" ,python)))
-    (home-page "http://people.redhat.com/sgrubb/libcap-ng/")
+    (arguments
+     `(#:configure-flags
+       (list "--without-python")))
+    (home-page "https://people.redhat.com/sgrubb/libcap-ng/")
     (synopsis "Library for more easily working with POSIX capabilities")
     (description
      "The libcap-ng library is intended to make programming with POSIX
@@ -2095,7 +2192,7 @@ buffers.")
 (define-public intel-gpu-tools
   (package
     (name "intel-gpu-tools")
-    (version "1.18")
+    (version "1.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
@@ -2103,7 +2200,7 @@ buffers.")
                                   "intel-gpu-tools-" version ".tar.gz"))
               (sha256
                (base32
-                "0w7djk0y5w76hzn1b3cm39zd5c6w9za1wfn80wd857h0v313rzq3"))))
+                "1xfy4cgimyyn5qixlrfkadgnl9qwbk30vw8k80g8vjnrcc4hx986"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; many of the tests try to load kernel modules
@@ -2111,9 +2208,9 @@ buffers.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             ;; Don't run configure in this phase
+             ;; Don't run configure in this phase.
              (setenv "NOCONFIGURE" "1")
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (inputs
      `(("util-macros" ,util-macros)
        ("libdrm" ,libdrm)

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +37,7 @@
 (define-public ola
   (package
     (name "ola")
-    (version "0.10.5")
+    (version "0.10.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -46,7 +46,7 @@
               (patches (search-patches "ola-readdir-r.patch"))
               (sha256
                (base32
-                "10q25mln4m628f1b2jgsdcw2398hsrhydnxjzi60w9yds3sdrpz9"))))
+                "1w1s4bz0va0ay46qjqd7rlkp3ksx2kqbzsjr3ra71hrla4mk1a16"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)

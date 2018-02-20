@@ -37,6 +37,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -660,3 +661,26 @@ source code.")
        "This library simply implements Levenshtein distance algorithm with C++
 and Cython.")
       (license license:expat))))
+
+(define-public go-github.com-mattn-go-runewidth
+  (package
+    (name "go-github.com-mattn-go-runewidth")
+    (version "0.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mattn/go-runewidth")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0vkrfrz3fzn5n6ix4k8s0cg0b448459sldq8bp4riavsxm932jzb"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/mattn/go-runewidth"))
+    (synopsis "@code{runewidth} provides Go functions to work with string widths")
+    (description
+     "The @code{runewidth} library provides Go functions for padding,
+measuring and checking the width of strings, with support east asian text.")
+    (home-page "https://github.com/jessevdk/go-flags")
+    (license license:expat)))

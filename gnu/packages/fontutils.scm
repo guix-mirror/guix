@@ -54,6 +54,7 @@
   (package
    (name "freetype")
    (version "2.8.1")
+   (replacement freetype/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
@@ -77,6 +78,13 @@ Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
    (home-page "https://www.freetype.org/")))
+
+(define freetype/fixed
+  (package/inherit freetype
+                   (source
+                    (origin
+                      (inherit (package-source freetype))
+                      (patches (search-patches "freetype-CVE-2018-6942.patch"))))))
 
 (define-public ttfautohint
   (package
@@ -441,7 +449,7 @@ resolution.")
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("freetype" ,freetype)))
-    (home-page "http://www.nongnu.org/m17n/")
+    (home-page "https://www.nongnu.org/m17n/")
     (synopsis "Library for handling OpenType Font")
     (description "This library can read Open Type Layout Tables from an OTF
 file.  Currently these tables are supported; head, name, cmap, GDEF, GSUB, and
@@ -553,7 +561,11 @@ definitions.")
                           "libxml2" "zlib" "libspiro" "freetype"
                           "pango" "cairo" "fontconfig")))
                 ;; Checks for potrace program at runtime
-                `("PATH" ":" prefix (,potrace)))))))))
+                `("PATH" ":" prefix (,potrace)))))))
+
+      ;; Skip test 40 "FontForge .sfd file open check" to work around
+      ;; <https://github.com/fontforge/fontforge/issues/3246>.
+      #:make-flags '("TESTSUITEFLAGS=-k '!\\.sfd'")))
    (synopsis "Outline font editor")
    (description
     "FontForge allows you to create and modify postscript, truetype and

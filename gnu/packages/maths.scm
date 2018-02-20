@@ -2,10 +2,10 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -20,8 +20,9 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
+;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,6 +94,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages scheme)
@@ -101,6 +103,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
@@ -336,7 +339,7 @@ the OCaml language.")
 (define-public glpk
   (package
     (name "glpk")
-    (version "4.64")
+    (version "4.65")
     (source
      (origin
       (method url-fetch)
@@ -344,7 +347,7 @@ the OCaml language.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "096cqgjc7vkq6wd8znhcxjbs1s2rym3qf753fqxrrq531vs6g4jk"))))
+        "040sfaa9jclg2nqdh83w71sv9rc1sznpnfiripjdyr48cady50a2"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
@@ -695,7 +698,9 @@ incompatible with HDF5.")
        #:configure-flags '("--enable-cxx"
                            "--enable-fortran"
                            "--enable-fortran2003")
-
+       ;; Use -fPIC to allow the R bindings to link with the static libraries
+       #:make-flags (list "CFLAGS=-fPIC"
+                          "CXXFLAGS=-fPIC")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-configure
@@ -1355,6 +1360,7 @@ script files.")
                "https://github.com/tpaviot/oce/archive/OCE-"
                version
                ".tar.gz"))
+        (patches (search-patches "opencascade-oce-glibc-2.26.patch"))
         (sha256
           (base32
             "0vpmnb0k5y2f7lpmwx9pg9yfq24zjvnsak5alzacncfm1hv9b6cd"))))
@@ -1604,7 +1610,7 @@ scientific applications modeled by partial differential equations.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.8.0")
+    (version "3.8.2")
     (source
      (origin
        (method url-fetch)
@@ -1612,7 +1618,7 @@ scientific applications modeled by partial differential equations.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0qyrsdndfdw2g0jmj9iskxj3j20zlkplhv26288s079dhm7cr365"))))
+         "04zd48p43rnvg68p6cp28zll0px5whglc5v0sc3s6vdj1v920z8y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1641,7 +1647,7 @@ scientific applications modeled by partial differential equations.")
               (format #t "configure flags: ~s~%" flags)
               (setenv "SLEPC_DIR" (getcwd))
               (setenv "PETSC_DIR" (assoc-ref inputs "petsc"))
-              (zero? (apply system* "./configure" flags)))))
+              (apply invoke "./configure" flags))))
          (add-after 'install 'delete-doc
           ;; TODO: SLEPc installs HTML documentation alongside headers in
           ;; $out/include.  We'd like to move them to share/doc, but delete
@@ -1670,7 +1676,7 @@ as well as other related problems such as the singular value decomposition.
 The emphasis of the software is on methods and techniques appropriate for
 problems in which the associated matrices are sparse, for example, those
 arising after the discretization of partial differential equations.")
-    (license license:lgpl3)))
+    (license license:bsd-2)))
 
 (define-public slepc-complex
   (package (inherit slepc)
@@ -1889,12 +1895,12 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.1.1")
+    (version "2.1.4")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "1mylrrkyycaw9m01mmg6xkn5wgdlabs5l0qyws60r0n2ycblp897"))))
+        (base32 "1ygm81i7mqvh229dp9935djjyb120p3bqvaf4k572sa4q63fzjhc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)))
@@ -2805,7 +2811,7 @@ environments.")
 (define-public openspecfun
   (package
     (name "openspecfun")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
@@ -2814,14 +2820,15 @@ environments.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1y5b2h6f2k72536kym3vzy3li3bhpd23x463g7hdmjdi3cncavz1"))))
+         "1rs1bv8jq751fv9vq79890wqf9xlbjc7lvz3ighzyfczbyjcf18m"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f  ;no "check" target
+     '(#:tests? #f                      ; no "check" target
        #:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       ;; no configure script
-       #:phases (modify-phases %standard-phases (delete 'configure))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
     (inputs
      `(("fortran" ,gfortran)))
     (home-page "https://github.com/JuliaLang/openspecfun")
@@ -3640,3 +3647,87 @@ parametrized transition systems with states represented as arrays indexed by
 an arbitrary number of processes.  Cache coherence protocols and mutual
 exclusion algorithms are typical examples of such systems.")
     (license license:asl2.0)))
+
+(define-public elemental
+  (package
+    (name "elemental")
+    (version "0.87.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/elemental/Elemental/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nfp82w22pi8x8fg9sc37z8kf84dqi1dhxp8bbk7571y4aygvv3v"))))
+    (build-system cmake-build-system)
+    (home-page "http://libelemental.org")
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (inputs
+     `(("blas" ,openblas)
+       ("gfortran:lib" ,gfortran "lib")
+       ("gmp" ,gmp)
+       ("lapack" ,lapack)
+       ("metis" ,metis)
+       ("mpc" ,mpc)
+       ("mpfr" ,mpfr)
+       ("mpi" ,openmpi)
+       ("qd" ,qd)))
+    (arguments
+     `(#:build-type "Release"           ;default RelWithDebInfo not supported
+       #:configure-flags `("-DEL_DISABLE_PARMETIS:BOOL=YES"
+                           "-DEL_AVOID_COMPLEX_MPI:BOOL=NO"
+                           "-DEL_CACHE_WARNINGS:BOOL=YES"
+                           "-DEL_TESTS:BOOL=YES"
+                           "-DCMAKE_INSTALL_LIBDIR=lib"
+                           "-DGFORTRAN_LIB=gfortran")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'setup-tests
+                    (lambda _
+                      ;; Parallelism is done at the MPI layer.
+                      (setenv "OMP_NUM_THREADS" "1")
+                      #t))
+                  (add-after 'install 'remove-tests
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Tests are installed, with no easy configuration
+                      ;; switch to prevent this, so delete them.
+                      (delete-file-recursively
+                       (string-append (assoc-ref outputs "out") "/bin"))
+                      #t)))))
+    (synopsis "Dense and sparse-direct linear algebra and optimization")
+    (description "Elemental is a modern C++ library for distributed-memory
+dense and sparse-direct linear algebra, conic optimization, and lattice
+reduction.")
+    (license license:bsd-2)))
+
+(define-public mcrl2
+  (package
+    (name "mcrl2")
+    (version "201707.1.15162")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.mcrl2.org/download/devel/mcrl2-"
+                                  version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "1ziww2fchsklm25hl9p2mngssxfh9w07nc114cncqaxfibqp2p8f"))))
+    (native-inputs
+     `(("subversion" ,subversion)))
+    (inputs
+     `(("boost" ,boost)
+       ("glu" ,glu)
+       ("mesa" ,mesa)
+       ("qt" ,qt)))
+    (build-system cmake-build-system)
+    (synopsis "Toolset for the mCRL2 formal specification language")
+    (description
+     "@dfn{mCRL2} (micro Common Representation Language 2) is a formal
+specification language for describing concurrent discrete event systems.  Its
+toolset supports analysis and automatic verification, linearisation, simulation,
+state-space exploration and generation, and tools to optimise and analyse
+specifications.  Also, state spaces can be manipulated, visualised and
+analysed.")
+    (home-page "http://mcrl2.org")
+    (license license:boost1.0)))

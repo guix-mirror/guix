@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
-;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +28,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.43")
+    (version "0.14.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -36,7 +36,11 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "175xkc4i00axxljc5kgkr30lm1s9hfmz0hrzrsl91rpwpbh500mv"))))
+                "0fxq52w1b05928xp0a333rg23fabj0nykgg7v4gz01f3vrxyydi1"))
+              (modules '((guix build utils)))
+              ;; Delete bundled ("vendored") free software source code.
+              (snippet
+                '(delete-file-recursively "vendor"))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
@@ -49,18 +53,6 @@
        #:install-source? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-bundled-source-code
-           (lambda _
-             ;; Keep the bundled cznic libraries. There are some "internal"
-             ;; cznic libraries that complicate the use of non-bundled copies.
-             (rename-file "src/github.com/syncthing/syncthing/vendor/github.com/cznic"
-                          "cznic")
-             (delete-file-recursively "src/github.com/syncthing/syncthing/vendor")
-             (mkdir-p "src/github.com/syncthing/syncthing/vendor/github.com/")
-             (rename-file "cznic"
-                          "src/github.com/syncthing/syncthing/vendor/github.com/cznic")
-             #t))
-
          (add-before 'build 'increase-test-timeout
            (lambda _
              (substitute* "src/github.com/syncthing/syncthing/build.go"
@@ -129,11 +121,9 @@
        ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
        ("go-github-com-ccding-go-stun"
         ,go-github-com-ccding-go-stun)
+       ("go-github-com-prometheus-union" ,(go-github-com-prometheus-union))
        ("go-github-com-chmduquesne-rollinghash-adler32"
         ,go-github-com-chmduquesne-rollinghash-adler32)
-;       ("go-github-com-cznic-ql" ,go-github-com-cznic-ql) ; bundled
-       ; Used by bundled ql
-       ("go-github-com-edsrzf-mmap-go" ,go-github-com-edsrzf-mmap-go)
        ("go-github-com-gobwas-glob" ,go-github-com-gobwas-glob)
        ("go-github-com-gogo-protobuf-union"
         ,(go-github-com-gogo-protobuf-union))
@@ -160,7 +150,7 @@
        ("go-github-com-zillode-notify" ,go-github-com-zillode-notify)
        ;; For tests
        ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
-    (synopsis "Decentralized continuous filesystem synchronization")
+    (synopsis "Decentralized continuous file system synchronization")
     (description "Syncthing is a peer-to-peer file synchronization tool that
 supports a wide variety of computing platforms.  It uses the Block Exchange
 Protocol.")
@@ -358,8 +348,8 @@ structs in the Go programming language.")
     (license (package-license go-github-com-gogo-protobuf))))
 
 (define-public go-github-com-gogo-protobuf
-  (let ((commit "35b81a066e522fb86ece043a8ef1dbfa10b4fed1")
-        (revision "1"))
+  (let ((commit "160de10b2537169b5ae3e7e221d28269ef40d311")
+        (revision "2"))
     (package
       (name "go-github-com-gogo-protobuf")
       (version (git-version "0.5" revision commit))
@@ -371,7 +361,7 @@ structs in the Go programming language.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "194k6cls2g654df54x5rzrn5nqrfk8yz1jymm667ajjvzcplidja"))))
+                  "0hxq28sgxym04rv0q40gpwkh4ni359q21hq3g78wwxwx4qfd4zwm"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/gogo/protobuf/proto"
@@ -1853,8 +1843,8 @@ Authentication and Privacy Infrastructure).")
       (license asl2.0))))
 
 (define-public go-github-com-zillode-notify
-  (let ((commit "8fff849a2026ce7a59f67ed9747dd9c7adc8bd0b")
-        (revision "1"))
+  (let ((commit "a8abcfb1ce88ee8d79a300ed65d94b8fb616ddb3")
+        (revision "2"))
     (package
       (name "go-github-com-zillode-notify")
       (version (git-version "0.0.0" revision commit))
@@ -1866,14 +1856,14 @@ Authentication and Privacy Infrastructure).")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1aazci21y85k1c02dlvdfx926vxb3j4i96fn27s7zxmqjlk7l3ga"))))
+                  "031pmbvm0xj4f4fak7im0ywmyn3hns538zlbdj4f23jj69zqdy7k"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/zillode/notify"))
       (propagated-inputs
        `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
       (synopsis "Filesystem event notification library")
-      (description "This package provides @code{notify}, a filesystem event
+      (description "This package provides @code{notify}, a file system event
 notification library in Go.")
       (home-page "https://github.com/zillode/notify")
       (license expat))))
@@ -1927,3 +1917,281 @@ notification library in Go.")
 Erasure Coding in Go.")
     (home-page "https://github.com/klauspost/reedsolomon")
     (license expat))))
+
+(define-public go-github-com-beorn7-perks-quantile
+  (let ((commit "4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9")
+        (revision "0"))
+    (package
+      (name "go-github-com-beorn7-perks-quantile")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/beorn7/perks.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1hrybsql68xw57brzj805xx2mghydpdiysv3gbhr7f5wlxj2514y"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/beorn7/perks/quantile"
+         #:unpack-path "github.com/beorn7/perks"))
+      (synopsis "Compute approximate quantiles over an unbounded data stream")
+      (description "Perks contains the Go package @code{quantile} that computes
+approximate quantiles over an unbounded data stream within low memory and CPU
+bounds.")
+      (home-page "https://github.com/beorn7/perks")
+      (license expat))))
+
+(define-public go-github-com-golang-protobuf-proto
+  (let ((commit "1e59b77b52bf8e4b449a57e6f79f21226d571845")
+        (revision "0"))
+    (package
+      (name "go-github-com-golang-protobuf-proto")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/golang/protobuf.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "19bkh81wnp6njg3931wky6hsnnl2d1ig20vfjxpv450sd3k6yys8"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/golang/protobuf/proto"
+         #:unpack-path "github.com/golang/protobuf"
+         #:tests? #f ; requires unpackaged golang.org/x/sync/errgroup
+         ))
+      (synopsis "Go support for Protocol Buffers")
+      (description "This package provides Go support for the Protocol Buffers
+data serialization format.")
+      (home-page "https://github.com/golang/protobuf")
+      (license bsd-3))))
+
+(define-public go-github-com-prometheus-client-model-go
+  (let ((commit "99fa1f4be8e564e8a6b613da7fa6f46c9edafc6c")
+        (revision "0"))
+    (package
+      (name "go-github-com-prometheus-client-model-go")
+      (version (git-version "0.0.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/prometheus/client_model.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "19y4ywsivhpxj7ikf2j0gm9k3cmyw37qcbfi78n526jxcc7kw998"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/prometheus/client_model/go"
+         #:unpack-path "github.com/prometheus/client_model"))
+      (propagated-inputs
+       `(("go-github-com-golang-protobuf-proto"
+          ,go-github-com-golang-protobuf-proto)))
+      (synopsis "Data model artifacts for Prometheus")
+      (description "This package provides data model artifacts for Prometheus.")
+      (home-page "https://github.com/prometheus/client_model")
+      (license asl2.0))))
+
+(define-public go-github-com-matttproud-golang-protobuf-extensions-pbutil
+  (let ((commit "c12348ce28de40eed0136aa2b644d0ee0650e56c")
+        (revision "0"))
+    (package
+      (name "go-github-com-matttproud-golang-protobuf-extensions-pbutil")
+      (version (git-version "1.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri
+            (git-reference
+              (url "https://github.com/matttproud/golang_protobuf_extensions.git")
+              (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1d0c1isd2lk9pnfq2nk0aih356j30k3h1gi2w0ixsivi5csl7jya"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/matttproud/golang_protobuf_extensions/pbutil"
+         #:unpack-path "github.com/matttproud/golang_protobuf_extensions"))
+      (propagated-inputs
+       `(("go-github-com-golang-protobuf-proto"
+          ,go-github-com-golang-protobuf-proto)))
+      (synopsis "Streaming Protocol Buffers in Go")
+      (description "This package provides various Protocol Buffer
+extensions for the Go language, namely support for record length-delimited
+message streaming.")
+      (home-page "https://github.com/matttproud/golang_protobuf_extensions")
+      (license asl2.0))))
+
+(define-public go-github-com-prometheus-common-expfmt
+  (let ((commit "2e54d0b93cba2fd133edc32211dcc32c06ef72ca")
+        (revision "0"))
+    (package
+      (name "go-github-com-prometheus-common-expfmt")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/prometheus/common.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "14kn5w7imcxxlfdqxl21fsnlf1ms7200g3ldy29hwamldv8qlm7j"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/prometheus/common/expfmt"
+         #:unpack-path "github.com/prometheus/common"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map (lambda (file)
+                      (make-file-writable file))
+                    (find-files
+                      (string-append (assoc-ref outputs "out")
+                                     "/src/github.com/prometheus/common/expfmt/testdata/")
+                      ".*\\.gz$"))
+               #t)))))
+      (propagated-inputs
+       `(("go-github-com-golang-protobuf-proto"
+          ,go-github-com-golang-protobuf-proto)
+         ("go-github-com-matttproud-golang-protobuf-extensions-pbutil"
+          ,go-github-com-matttproud-golang-protobuf-extensions-pbutil)
+         ("go-github-com-prometheus-client-model-go"
+          ,go-github-com-prometheus-client-model-go)))
+      (synopsis "Prometheus metrics")
+      (description "This package provides tools for reading and writing
+Prometheus metrics.")
+      (home-page "https://github.com/prometheus/common")
+      (license asl2.0))))
+
+(define-public go-github-com-prometheus-procfs
+  (let ((commit "b15cd069a83443be3154b719d0cc9fe8117f09fb")
+        (revision "0"))
+    (package
+      (name "go-github-com-prometheus-procfs")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/prometheus/procfs.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1cr45wg2m40bj2za8f32mq09rjlcnk5kfam0h0hr8wcb015k4wxj"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/prometheus/procfs"))
+      (synopsis "Go library for reading @file{/proc}")
+      (description "This Go package @code{procfs} provides functions to retrieve
+system, kernel and process metrics from the pseudo-filesystem @file{/proc}.")
+      (home-page "https://github.com/prometheus/procfs")
+      (license asl2.0))))
+
+(define-public go-github-com-client-golang-prometheus-promhttp
+  (let ((commit "180b8fdc22b4ea7750bcb43c925277654a1ea2f3")
+        (revision "0"))
+    (package
+      (name "go-github-com-client-golang-prometheus-promhttp")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/prometheus/client_golang.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1kkfx1j9ka18ydsmdi2cdy3hs39c22b39mbc4laykmj2x93lmbdp"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:tests? #f ; The tests require internet access
+         #:import-path "github.com/prometheus/client_golang/prometheus/promhttp"
+         #:unpack-path "github.com/prometheus/client_golang"))
+      (propagated-inputs
+       `(("go-github-com-beorn7-perks-quantile"
+          ,go-github-com-beorn7-perks-quantile)
+         ("go-github-com-golang-protobuf-proto"
+          ,go-github-com-golang-protobuf-proto)
+         ("go-github-com-prometheus-client-model-go"
+          ,go-github-com-prometheus-client-model-go)
+         ("go-github-com-prometheus-common-expfmt"
+          ,go-github-com-prometheus-common-expfmt)
+         ("go-github-com-prometheus-procfs" ,go-github-com-prometheus-procfs)))
+      (synopsis "HTTP server and client tools for Prometheus")
+      (description "This package @code{promhttp} provides HTTP client and
+server tools for Prometheus metrics.")
+      (home-page "https://github.com/prometheus/client_golang")
+      (license asl2.0))))
+
+(define-public go-github-com-client-golang-prometheus
+  (let ((commit "180b8fdc22b4ea7750bcb43c925277654a1ea2f3")
+        (revision "0"))
+    (package
+      (name "go-github-com-prometheus-client-golang-prometheus")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/prometheus/client_golang.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1kkfx1j9ka18ydsmdi2cdy3hs39c22b39mbc4laykmj2x93lmbdp"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/prometheus/client_golang/prometheus"
+         #:unpack-path "github.com/prometheus/client_golang"))
+      (propagated-inputs
+       `(("go-github-com-beorn7-perks-quantile"
+          ,go-github-com-beorn7-perks-quantile)
+         ("go-github-com-golang-protobuf-proto"
+          ,go-github-com-golang-protobuf-proto)
+         ("go-github-com-prometheus-client-model-go"
+          ,go-github-com-prometheus-client-model-go)
+         ("go-github-com-prometheus-common-expfmt"
+          ,go-github-com-prometheus-common-expfmt)
+         ("go-github-com-prometheus-procfs" ,go-github-com-prometheus-procfs)
+         ("go-github-com-client-golang-prometheus-promhttp"
+          ,go-github-com-client-golang-prometheus-promhttp)))
+      (synopsis "Prometheus instrumentation library for Go applications")
+      (description "This package provides the Go client library for the
+Prometheus monitoring and alerting system.  It has two separate parts, one for
+instrumenting application code, and one for creating clients that talk to the
+Prometheus HTTP API.")
+      (home-page "https://github.com/prometheus/client_golang")
+      (license asl2.0))))
+
+(define* (go-github-com-prometheus-union
+           #:optional (packages (list go-github-com-client-golang-prometheus
+                                      go-github-com-client-golang-prometheus-promhttp)))
+  (package
+    (name "go-github-com-prometheus-union")
+    (version (package-version go-github-com-client-golang-prometheus))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories))))))
+    (inputs (map (lambda (package)
+                   (list (package-name package) package))
+                 packages))
+    (synopsis "Union of Go Prometheus libraries")
+    (description "This is a union of Go Prometheus libraries")
+    (home-page (package-home-page go-github-com-client-golang-prometheus))
+    (license (package-license go-github-com-client-golang-prometheus))))

@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
@@ -686,7 +686,15 @@ GNOME Desktop.")
                               "/manpages/docbook.xsl")))
             (setenv "XML_CATALOG_FILES"
                     (string-append (assoc-ref inputs "docbook-xml")
-                                   "/xml/dtd/docbook/catalog.xml")))))))
+                                   "/xml/dtd/docbook/catalog.xml"))
+
+            ;; Rerun the whole thing to avoid version mismatch ("This is
+            ;; Automake 1.15.1, but the definition used by this
+            ;; AM_INIT_AUTOMAKE comes from Automake 1.15.").  Note: we don't
+            ;; use 'autoreconf' because it insists on running 'libtoolize'.
+            (invoke "autoconf")
+            (invoke "aclocal")
+            (invoke "automake" "-ac"))))))
     (inputs
      `(("libgcrypt" ,libgcrypt)
        ("linux-pam" ,linux-pam)
@@ -1601,6 +1609,7 @@ creating interactive structured graphics.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.bz2"))
+              (patches (search-patches "libgnomeui-utf8.patch"))
               (sha256
                (base32
                 "03rwbli76crkjl6gp422wrc9lqpl174k56cp9i96b7l8jlj2yddf"))))
@@ -4413,7 +4422,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.27.1")
+    (version "0.27.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4421,7 +4430,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1jav7qv0s1v6wvd7x2ri85hjqnbswq883pnd228qhd6bhjbryp89"))))
+                "0g2vphhpxrljpy9sryfsgaayix807i1i9plj9bay72dk0zphqab2"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))
@@ -4882,6 +4891,9 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
              "-DENABLE_GOOGLE=OFF"          ;disable Google Contacts support
              "-DENABLE_GOOGLE_AUTH=OFF"     ;disable Google authentication
              "-DENABLE_VALA_BINDINGS=ON"
+             ;; FIXME: Building against ICU 60 requires C++11 or higher.  Remove
+             ;; this when our default compiler is >= GCC6.
+             "-DCMAKE_CXX_FLAGS=-std=gnu++11"
              "-DENABLE_INTROSPECTION=ON")   ;required for Vala bindings
        #:phases
        (modify-phases %standard-phases
@@ -5676,7 +5688,7 @@ easy, safe, and automatic.")
        ("dbus" ,dbus)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("sqlite" ,sqlite)
+       ("sqlite" ,sqlite-with-fts5)
        ("nettle" ,nettle)  ; XXX why is this needed?
        ("poppler" ,poppler)
        ("libgsf" ,libgsf)

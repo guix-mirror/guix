@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -95,13 +95,13 @@ error stream.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.14")
+    (version "0.12.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "0qvyxggddyg87lza45hjl0a2prabdyshkqzkz418vi777zygqa6s"))))
+        (base32 "1pnv6sl4vdn69ygmgrb1b3gsigfdcfb56wnzikic93l8gkvdsvxv"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
@@ -206,14 +206,14 @@ on (non-orthogonal) variable vectors in scatterplots and biplots.")
 (define-public r-shape
   (package
     (name "r-shape")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shape" version))
        (sha256
         (base32
-         "1v9xp60p813rnx41vchkh32qmcb4z2zp9l7r1a8a6f8aqylnq3vj"))))
+         "0hadk3mapkhbh8xjkiz52vxdagmmgvm15xwpzb90ikw4giyipjzl"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/shape")
     (synopsis "Functions for plotting graphical shapes")
@@ -321,14 +321,14 @@ rows, dropping names) to see if the modified versions are identical.")
 (define-public r-dendextend
   (package
     (name "r-dendextend")
-    (version "1.6.0")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dendextend" version))
        (sha256
         (base32
-         "0pichh08zi12lpxzc061dmv4smj6lizygd1xymln8wfz18sf7923"))))
+         "1krvqadnnh53xx5ql7bwzxaif6a317jzbs1m00gnc6jnj03rfl5d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fpc" ,r-fpc)
@@ -542,14 +542,14 @@ plot networks.")
 (define-public r-proxy
   (package
     (name "r-proxy")
-    (version "0.4-20")
+    (version "0.4-21")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "proxy" version))
        (sha256
         (base32
-         "15g6dacdmlbkcnimblscghl23aj732cn6qwbs583r4im9v5nvbla"))))
+         "1vih8gsfzv97h5c8ixd1qjnn02i7fzla2p9fdj2wpisqhx0p0xv0"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/proxy")
     (synopsis "Distance and similarity measures")
@@ -562,14 +562,14 @@ most popular ones.")
 (define-public r-sp
   (package
     (name "r-sp")
-    (version "1.2-5")
+    (version "1.2-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sp" version))
        (sha256
         (base32
-         "09yydnacp33yx0kn537k96fjlbf75fjafqfknpa5gvci4l888bqd"))))
+         "0q04yfgyjannsrzl0ppwcv0simrxrrbx2iz5mzaafc5x38zf0q3d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -989,20 +989,44 @@ testing framework of Wald are generic and can therefore also be used in other
 contexts.")
     (license license:gpl2+)))
 
+(define-public r-squarem
+  (package
+    (name "r-squarem")
+    (version "2017.10-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SQUAREM" version))
+       (sha256
+        (base32
+         "10xj26x7qjyvzndnbjl5krr9wabnb9cbrnp3m7xg673g8ddr12cv"))))
+    (properties `((upstream-name . "SQUAREM")))
+    (build-system r-build-system)
+    (home-page "http://www.jhsph.edu/agingandhealth/People/Faculty_personal_pages/Varadhan.html")
+    (synopsis "Squared Extrapolation Methods for Accelerating EM-Like Monotone Algorithms")
+    (description
+     "This package provides algorithms for accelerating the convergence of
+slow, monotone sequences from smooth, contraction mapping such as the EM
+algorithm.  It can be used to accelerate any smooth, linearly convergent
+acceleration scheme.  A tutorial style introduction to this package is
+available in a vignette.")
+    (license license:gpl2+)))
+
 (define-public r-lava
   (package
     (name "r-lava")
-    (version "1.5.1")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lava" version))
        (sha256
         (base32
-         "1vcm04h9i39gmf2prl5d4j4il4gs6skzr6y2fvl1vn4hklna87f4"))))
+         "02xf5d968raz9gnq5ywy04wz29xpdyca1hm79vbbg1mcxvzdl1dz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-numderiv" ,r-numderiv)
+       ("r-squarem" ,r-squarem)
        ("r-survival" ,r-survival)))
     (home-page "https://github.com/kkholst/lava")
     (synopsis "Latent variable models")
@@ -1014,14 +1038,14 @@ variable models.")
 (define-public r-drr
   (package
     (name "r-drr")
-    (version "0.0.2")
+    (version "0.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "DRR" version))
        (sha256
         (base32
-         "1scfwp6ry6apxzqjclsmn2frxp9qfw6zxsxn5w0j0q3sz42hz1h2"))))
+         "1yd1fvllfkcrwg9v322n4wkk4q4q84nvy58y4vac9pdr3yf3i4vl"))))
     (properties `((upstream-name . "DRR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1106,14 +1130,14 @@ calendar objects.")
 (define-public r-ddalpha
   (package
     (name "r-ddalpha")
-    (version "1.3.1")
+    (version "1.3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ddalpha" version))
        (sha256
         (base32
-         "0pczw9543y7f92m7gyk7rxcjn8vsjaldc5vl0r56ywip9i374zbh"))))
+         "13w8ir5rd80rka4mq343zd4wn93vfw870lzfqrd3cxgwb1bwcw7y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -1279,14 +1303,14 @@ provides a one-row summary of model-level statistics.")
 (define-public r-recipes
   (package
     (name "r-recipes")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "recipes" version))
        (sha256
         (base32
-         "0id46c7iaf49miw4kxpidsbg3hdywav43n1lh2zd1vg5946bzg04"))))
+         "1car3a3mqn87pz049cbgkaayz86970mvkapk6al2k7jjw76306l9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -1840,3 +1864,364 @@ plots in @code{ggplot2}.")
 attractive command line interfaces (CLIs).  It includes tools for drawing
 rules, boxes, trees, and Unicode symbols with ASCII alternatives.")
     (license license:expat)))
+
+(define-public r-argparser
+  (package
+    (name "r-argparser")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "argparser" version))
+       (sha256
+        (base32
+         "0s1wxshx4jk69wfxhycx973q6y8cmqrfymyjklhq1i8xrj0kmmx9"))))
+    (build-system r-build-system)
+    (home-page "https://bitbucket.org/djhshih/argparser")
+    (synopsis "Command-line argument parser")
+    (description
+     "This package provides a cross-platform command-line argument parser
+written purely in R with no external dependencies.  It is useful with the
+Rscript front-end and facilitates turning an R script into an executable
+script.")
+    (license license:gpl3+)))
+
+(define-public r-debugme
+  (package
+    (name "r-debugme")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "debugme" version))
+       (sha256
+        (base32
+         "1c9sg55zvf10h8198jdnpamm6f66lzw3c3jnmdp9ls6na0j0xbjd"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-crayon" ,r-crayon)))
+    (home-page "https://github.com/r-lib/debugme#readme")
+    (synopsis "Debug R packages")
+    (description
+     "This package allows the user to specify debug messages as special string
+constants, and control debugging of packages via environment variables.")
+    (license license:expat)))
+
+(define-public r-processx
+  (package
+    (name "r-processx")
+    (version "2.0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "processx" version))
+       (sha256
+        (base32
+         "0yw23lp9xjvbpswzghkmjiayw7p19hbvmgv58k3i6b8g5nav4qcg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-crayon" ,r-crayon)
+       ("r-debugme" ,r-debugme)
+       ("r-r6" ,r-r6)))
+    (home-page "https://github.com/r-lib/processx3")
+    (synopsis "Execute and control system processes")
+    (description
+     "This package provides portable tools to run system processes in the
+background.  It can check if a background process is running; wait on a
+background process to finish; get the exit status of finished processes; kill
+background processes and their children; restart processes.  It can read the
+standard output and error of the processes, using non-blocking connections.
+@code{processx} can poll a process for standard output or error, with a
+timeout.  It can also poll several processes at once.")
+    (license license:expat)))
+
+(define-public r-tsp
+  (package
+    (name "r-tsp")
+    (version "1.1-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TSP" version))
+       (sha256
+        (base32
+         "03xxfr5kk4zhzpb1q1pwncdp0dhchm9b48wzhvvxn2dxf3mnby2w"))))
+    (properties `((upstream-name . "TSP")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-foreach" ,r-foreach)))
+    (home-page "https://cran.r-project.org/web/packages/TSP/")
+    (synopsis "Traveling salesperson problem (TSP)")
+    (description "This package provides basic infrastructure and some
+algorithms for the @dfn{traveling salesperson problem}(TSP) (also known as the
+traveling salesman problem).")
+    (license license:gpl3)))
+
+(define-public r-qap
+  (package
+    (name "r-qap")
+    (version "0.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qap" version))
+       (sha256
+        (base32
+         "0d2d1ni1camixyi45lfy00f4pn3p063k7bsi8gj5scp6n15mdgb0"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/qap/")
+    (synopsis "Heuristics for the quadratic assignment problem (QAP)")
+    (description "This package implements heuristics for the @dfn{quadratic
+assignment problem} (QAP).  Currently only a simulated annealing heuristic is
+available.")
+    (license license:gpl3)))
+
+(define-public r-gclus
+  (package
+    (name "r-gclus")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gclus" version))
+       (sha256
+        (base32
+         "02ba6zj9bjwrzykamjp40ajynx9xjx9h2i85n0ym0r5lcki4x6fn"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-cluster" ,r-cluster)))
+    (home-page "http://cran.r-project.org/web/packages/gclus/")
+    (synopsis "Clustering graphics")
+    (description "This package orders panels in scatterplot matrices and
+parallel coordinate displays by some merit index.  It contains various indices
+of merit, ordering functions, and enhanced versions of @code{pairs} and
+@code{parcoord} which color panels according to their merit level.")
+    (license license:gpl2+)))
+
+(define-public r-webshot
+  (package
+    (name "r-webshot")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "webshot" version))
+       (sha256
+        (base32
+         "07r71zzmggp4jf92x4ws4wg6v1x98vaj01lsar85bnb30n5vx8gh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-processx" ,r-processx)
+       ("r-withr" ,r-withr)))
+    (home-page "https://github.com/wch/webshot/")
+    (synopsis "Take screenshots of web pages")
+    (description
+     "Webshot makes it easy to take screenshots of web pages from within R.
+It can also run Shiny applications locally and take screenshots of the
+application; and it can render and screenshot static as well as interactive R
+Markdown documents.")
+    (license license:gpl2)))
+
+(define-public r-seriation
+  (package
+    (name "r-seriation")
+    (version "1.2-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "seriation" version))
+       (sha256
+        (base32
+         "1q6hw4hjw224b4y0dc0j630v2pgj6sn455nwkilb70w8k31hpk92"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-colorspace" ,r-colorspace)
+       ("r-dendextend" ,r-dendextend)
+       ("r-gclus" ,r-gclus)
+       ("r-gplots" ,r-gplots)
+       ("r-mass" ,r-mass)
+       ("r-qap" ,r-qap)
+       ("r-registry" ,r-registry)
+       ("r-tsp" ,r-tsp)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://s2.smu.edu/IDA/seriation/")
+    (synopsis "Infrastructure for ordering objects using seriation")
+    (description
+     "This package provides infrastructure for seriation with an
+implementation of several seriation/sequencing techniques to reorder matrices,
+dissimilarity matrices, and dendrograms.  It also provides (optimally)
+reordered heatmaps, color images and clustering visualizations like
+dissimilarity plots, and visual assessment of cluster tendency plots (VAT and
+iVAT).")
+    (license license:gpl3)))
+
+(define-public r-heatmaply
+  (package
+    (name "r-heatmaply")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "heatmaply" version))
+       (sha256
+        (base32
+         "03p2caclhfgqgpx3wwck5h06jy3mxgs05gjmwkb7hmwghkjh41jc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-colorspace" ,r-colorspace)
+       ("r-dendextend" ,r-dendextend)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gplots" ,r-gplots)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plotly" ,r-plotly)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape2" ,r-reshape2)
+       ("r-scales" ,r-scales)
+       ("r-seriation" ,r-seriation)
+       ("r-viridis" ,r-viridis)
+       ("r-webshot" ,r-webshot)))
+    (home-page "https://cran.r-project.org/package=heatmaply")
+    (synopsis "Interactive cluster heat maps using plotly")
+    (description "Heatmaps are used in many fields for visualizing
+observations, correlations, missing values patterns, and more.  Interactive
+heatmaps allow the inspection of specific value by hovering the mouse over a
+cell, as well as zooming into a region of the heatmap by dragging a rectangle
+around the relevant area.  This work is based on the @code{ggplot2} and
+@code{plotly.js} engine.  It produces similar heatmaps as @code{heatmap.2} or
+@code{d3heatmap}, with the advantage of speed, the ability to zoom from the
+dendrogram panes, and the placing of factor variables in the sides of the
+heatmap.")
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-xfun
+  (package
+    (name "r-xfun")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xfun" version))
+       (sha256
+        (base32
+         "1sm51gmwgw876d6d1q8smxmfgfh6zsnykfx8qp8z6jmh0fvd89pj"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/yihui/xfun")
+    (synopsis "Miscellaneous functions")
+    (description
+     "This package provides miscellaneous functions commonly used in other
+packages maintained by Yihui Xie.")
+    (license license:expat)))
+
+(define-public r-utf8
+  (package
+    (name "r-utf8")
+    (version "1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "utf8" version))
+       (sha256
+        (base32
+         "03s4j6059q0nly68vpk6wy3p3f5ypakw93fj35kzd82b4z1r9cs3"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/patperry/r-utf8")
+    (synopsis "Unicode text processing")
+    (description
+     "This package provides tools to process and print UTF-8 encoded
+international text (Unicode).  Input, validate, normalize, encode, format, and
+display.")
+    (license license:asl2.0)))
+
+(define-public r-pillar
+  (package
+    (name "r-pillar")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pillar" version))
+       (sha256
+        (base32
+         "1gh3j2pbbf5y4d5nyqnlr0x27jjyvjjspcccmw61airs1n6rx8jq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cli" ,r-cli)
+       ("r-crayon" ,r-crayon)
+       ("r-rlang" ,r-rlang)
+       ("r-utf8" ,r-utf8)))
+    (home-page "https://github.com/r-lib/pillar")
+    (synopsis "Coloured formatting for columns")
+    (description
+     "This package provides a @code{pillar} generic designed for formatting
+columns of data using the full range of colours provided by modern
+terminals.")
+    (license license:gpl3)))
+
+(define-public r-uuid
+  (package
+    (name "r-uuid")
+    (version "0.1-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "uuid" version))
+       (sha256
+        (base32
+         "1gmisd630fc8ybg845hbg13wmm3pk3npaamrh5wqbc1nqd6p0wfx"))))
+    (build-system r-build-system)
+    (home-page "http://www.rforge.net/uuid")
+    (synopsis "Tools for generating and handling of UUIDs")
+    (description
+     "This package provides tools for generating and handling of
+@dfn{Universally Unique Identifiers} (UUIDs).")
+    (license license:expat)))
+
+(define-public r-tinytex
+  (package
+    (name "r-tinytex")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tinytex" version))
+       (sha256
+        (base32
+         "0mhxlr4709mca9jshnah5i7yjyy6k12s933619p7p9c8nbqj39cn"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/yihui/tinytex")
+    (synopsis "Helper functions for TeX Live and compiling LaTeX documents")
+    (description
+     "This package provides helper functions to install and maintain the LaTeX
+distribution named TinyTeX, a lightweight, cross-platform, portable, and
+easy-to-maintain version of TeX Live.  This package also contains helper
+functions to compile LaTeX documents, and install missing LaTeX packages
+automatically.")
+    (license license:expat)))
+
+(define-public r-metap
+  (package
+    (name "r-metap")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "metap" version))
+       (sha256
+        (base32
+         "06ny9zkilawdy0s8yiwhnygs3yppw89bbyf76zgdavykbzscz5lh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "http://www.dewey.myzen.co.uk/meta/meta.html")
+    (synopsis "Meta-analysis of significance values")
+    (description
+     "The canonical way to perform meta-analysis involves using effect sizes.
+When they are not available this package provides a number of methods for
+meta-analysis of significance values including the methods of Edgington,
+Fisher, Stouffer, Tippett, and Wilkinson; a number of data-sets to replicate
+published results; and a routine for graphical display.")
+    (license license:gpl2)))

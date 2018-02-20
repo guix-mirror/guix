@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (gnu packages image)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
@@ -34,16 +35,18 @@
 (define-public cfitsio
   (package
     (name "cfitsio")
-    (version "3390")
+    (version "3.420")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/" name version
-             ".tar.gz"))
+             "http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/"
+             name (string-replace-substring version "." "") ".tar.gz"))
        (sha256
-        (base32 "02gllydm63irwbqqisa3mrskw1fphm5rlplglz3mq9whi3rxilv2"))))
+        (base32 "1f0nmki45h9kw7vxpxiav9cb6vs3qqi6zrp2lpci5yhqc5isl43c"))))
     (build-system gnu-build-system)
+    ;; XXX Building with curl currently breaks wcslib.  It doesn't use
+    ;; pkg-config and hence won't link with -lcurl.
     (arguments
      `(#:tests? #f ; no tests
        #:phases
@@ -52,10 +55,10 @@
            (lambda _
              (substitute* "Makefile.in" (("/bin/") ""))
              #t)))))
-    (home-page "http://heasarc.gsfc.nasa.gov/fitsio/fitsio.html")
+    (home-page "https://heasarc.gsfc.nasa.gov/fitsio/fitsio.html")
     (synopsis "Library for reading and writing FITS files")
     (description "CFITSIO provides simple high-level routines for reading and
-writing FITS (Flexible Image Transport System) files that insulate the
+writing @dfn{FITS} (Flexible Image Transport System) files that insulate the
 programmer from the internal complexities of the FITS format. CFITSIO also
 provides many advanced features for manipulating and filtering the information
 in FITS files.")

@@ -1,10 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -14,10 +14,11 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2018 Adam Van Ymeren <adam@vany.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -49,6 +51,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
@@ -66,6 +69,7 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
@@ -135,7 +139,7 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
 (define-public socat
   (package
     (name "socat")
-    (version "1.7.3.1")
+    (version "1.7.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -143,7 +147,7 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1apvi7sahcl44arnq1ad2y6lbfqnmvx7nhz9i3rkk0f382anbnnj"))))
+                "0lcj6zpra33xhgvhmz9l3cqz10v8ybafb8dd1yqkwf1rhy01ymp3"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))                    ;no 'check' phase
     (inputs `(("openssl" ,openssl)))
@@ -323,14 +327,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "4.13")
+    (version "4.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1flwz4x76ajxigadq9knxgwr778g03y3qfx6c7rflc3x020a7hdp"))))
+                "06pr3s7wg2pbvfbf7js61bgh3caff4qf50nqqk3cgz9z90rgvxvi"))))
     (build-system gnu-build-system)
     (home-page "https://www.kernel.org/pub/software/network/ethtool/")
     (synopsis "Display or change Ethernet device settings")
@@ -450,7 +454,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.2.20")
+    (version "5.3.0")
     (source
      (origin
        (method url-fetch)
@@ -458,15 +462,15 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "02f00vpgrdb77w7lskl9jfm2akpy21ws9cjazs13gash2xksnj38"))))
+         "08sp2gzv09rar1a5mnfmbc24pqvhpqqmz2hnmv436n7v7d09qy2d"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; Does not exist
+     `(#:tests? #f                      ; no test suite
        #:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; No configure
+         (delete 'configure)            ; no configure script
          (add-before 'build 'setenv
            (lambda _
              (setenv "HAVE_ICONV" "1")
@@ -478,18 +482,23 @@ and up to 1 Mbit/s downstream.")
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (synopsis "Improved whois client")
-    (description "This whois client is intelligent and can
-automatically select the appropriate whois server for most queries.
-Because of historical reasons this also includes a tool called mkpasswd
-which can be used to encrypt a password with @code{crypt(3)}.")
+    (synopsis "Intelligent client for the WHOIS directory service")
+    (description
+      "whois searches for an object in a @dfn{WHOIS} (RFC 3912) database.
+It is commonly used to look up the registered users or assignees of an Internet
+resource, such as a domain name, an IP address block, or an autonomous system.
+It can automatically select the appropriate server for most queries.
+
+For historical reasons, this package also includes @command{mkpasswd}, which
+encrypts passwords using @code{crypt(3)} and is unrelated to the Expect command
+of the same name.")
     (home-page "https://github.com/rfc1036/whois")
     (license license:gpl2+)))
 
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.4.3")
+    (version "2.4.4")
     (source
      (origin
        (method url-fetch)
@@ -497,7 +506,7 @@ which can be used to encrypt a password with @code{crypt(3)}.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0bpiby916k3k8bm7q8b1dflva6zs0a4ircskrck0d538dfcrb50q"))))
+         "0n3g28hrhifnchlz4av0blq4ykm4zaxwwxbzdm9wsba27677b6h4"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)
@@ -710,7 +719,7 @@ allows for heavy scripting.")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.14")
+  (version "1.15")
   (source
     (origin
       (method url-fetch)
@@ -720,7 +729,7 @@ allows for heavy scripting.")
              ".tar.gz"))
       (sha256
         (base32
-          "1z4r092qv0ify033dld5jayk8gs0bc7pl130dvb8ab7b9rcqmhw3"))))
+          "1l31kqrgjzq8zgpr86z12x550px5zpn563gmnja6m14b8fk6pm0s"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
@@ -1022,7 +1031,7 @@ library remains flexible, portable, and easily embeddable.")
 (define-public sslh
   (package
     (name "sslh")
-    (version "1.18")
+    (version "1.19b")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/yrutschle/sslh/archive/v"
@@ -1030,10 +1039,10 @@ library remains flexible, portable, and easily embeddable.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vzw7a7s9lhspbn5zn3hw8hir4pkjgbd68yys4hfsnjp1h7bzjpn"))))
+                "0p0zfy5ifzj7508zqidgkf8g43frm7l5xcs5s6v7132lypcsbd4k"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(;; Tests dependencies.
+     `(;; Test dependencies.
        ("lcov" ,lcov)
        ("perl" ,perl)
        ("perl-io-socket-inet6" ,perl-io-socket-inet6)
@@ -1043,6 +1052,7 @@ library remains flexible, portable, and easily embeddable.")
     (inputs
      `(("libcap" ,libcap)
        ("libconfig" ,libconfig)
+       ("pcre" ,pcre)
        ("tcp-wrappers" ,tcp-wrappers)))
     (arguments
      '(#:phases
@@ -1072,7 +1082,7 @@ library remains flexible, portable, and easily embeddable.")
                           "USELIBWRAP=1"
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:test-target "test"))
-    (home-page "http://www.rutschle.net/tech/sslh.shtml")
+    (home-page "https://www.rutschle.net/tech/sslh/README.html")
     (synopsis "Applicative network protocol demultiplexer")
     (description
      "sslh is a network protocol demultiplexer.  It acts like a switchboard,
@@ -1393,14 +1403,14 @@ does not use SSH and requires a pre-shared symmetric key.")
 (define-public quagga
   (package
     (name "quagga")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/quagga/quagga-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0c99rjjc62xl5kwvx2pwyvs0709vbwax1qydqbqf6r7fpvr24bjj"))
+                "0cddxip9gd579parx64n6d7iq937ikrb8qxgvjxjm406l43hjb7f"))
               (patches
                (search-patches "quagga-reproducible-build.patch"))))
     (build-system gnu-build-system)
@@ -1418,53 +1428,56 @@ acts as an abstraction layer to the underlying Unix kernel and presents the
 Zserv API over a Unix or TCP stream to Quagga clients.  It is these Zserv
 clients which typically implement a routing protocol and communicate routing
 updates to the zebra daemon.")
-    (home-page "http://www.nongnu.org/quagga/")
+    (home-page "https://www.nongnu.org/quagga/")
     (license license:gpl2+)))
 
 (define-public thc-ipv6
-  (package
-    (name "thc-ipv6")
-    (version "3.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/vanhauser-thc/thc-ipv6/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0yh2lpsazmm0pgbmh0dx023w6fss1kdfyr4cq7yw0fac8vkw32d3"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:tests? #f ; No test suite.
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure) ; No ./configure script.
-         (add-before 'build 'patch-paths
-           (lambda _
-             (substitute* "Makefile"
-               (("/bin/echo") "echo"))
-             #t))
-         (add-after 'install 'install-more-docs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/thc-ipv6/doc")))
-               (install-file "README" doc)
-               (install-file "HOWTO-INJECT" doc)
-               #t))))))
-    ;; TODO Add libnetfilter-queue once packaged.
-    (inputs
-     `(("libpcap" ,libpcap)
-       ("openssl" ,openssl)
-       ("perl" ,perl)))
-    (home-page "https://github.com/vanhauser-thc/thc-ipv6")
-    (synopsis "IPv6 security research toolkit")
-    (description "The THC IPv6 Toolkit provides command-line tools and a library
+  (let ((revision "0")
+        (commit "4bb72573e0950ce6f8ca2800a10748477020029e"))
+    (package
+      (name "thc-ipv6")
+      (version (git-version "3.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/vanhauser-thc/thc-ipv6.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1x5i6vbsddqc2yks7r1a2fw2fk16qxvd6hpzh1lykjfpkal8fdir"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:tests? #f ; No test suite.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; No ./configure script.
+           (add-before 'build 'patch-paths
+             (lambda _
+               (substitute* "Makefile"
+                 (("/bin/echo") "echo"))
+               #t))
+           (add-after 'install 'install-more-docs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (doc (string-append out "/share/thc-ipv6/doc")))
+                 (install-file "README" doc)
+                 (install-file "HOWTO-INJECT" doc)
+                 #t))))))
+      ;; TODO Add libnetfilter-queue once packaged.
+      (inputs
+       `(("libpcap" ,libpcap)
+         ("openssl" ,openssl)
+         ("perl" ,perl)))
+      (home-page "https://github.com/vanhauser-thc/thc-ipv6")
+      (synopsis "IPv6 security research toolkit")
+      (description "The THC IPv6 Toolkit provides command-line tools and a library
 for researching IPv6 implementations and deployments.  It requires Linux 2.6 or
 newer and only works on Ethernet network interfaces.")
-    ;; AGPL 3 with exception for linking with OpenSSL. See the 'LICENSE' file in
-    ;; the source distribution for more information.
-    (license license:agpl3)))
+      ;; AGPL 3 with exception for linking with OpenSSL. See the 'LICENSE' file in
+      ;; the source distribution for more information.
+      (license license:agpl3))))
 
 (define-public bmon
   (package
@@ -1567,3 +1580,81 @@ routers (or @dfn{hops}) between the local host and a user-specified destination.
 It then continually measures the response time and packet loss at each hop, and
 displays the results in real time.")
     (license license:gpl2+)))
+
+(define-public strongswan
+  (package
+    (name "strongswan")
+    (version "5.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.strongswan.org/strongswan-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "0lxbyiary8iapx3ysw40czrmxf983fhfzs5mvz2hk1j1mpc85hp0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'adjust-to-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Adjust file names.
+             (substitute* "src/libstrongswan/utils/process.c"
+               (("/bin/sh")
+                (string-append (assoc-ref inputs "bash") "/bin/sh")))
+
+             (substitute* "src/libstrongswan/tests/suites/test_process.c"
+               (("/bin/sh") (which "sh"))
+               (("/bin/echo") (which "echo"))
+               (("cat") (which "cat")))
+
+             ;; This is needed for tests.
+             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
+                                            "/share/zoneinfo"))
+             #t)))
+       #:configure-flags
+       (list
+        ;; Disable bsd-4 licensed plugins
+        "--disable-des"
+        "--disable-blowfish")))
+    (inputs
+     `(("curl" ,curl)
+       ("gmp" ,gmp)
+       ("libgcrypt" ,libgcrypt)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("coreutils" ,coreutils)
+       ("tzdata" ,tzdata-for-tests)))
+    (synopsis "IKEv1/v2 keying daemon")
+    (description "StrongSwan is an IPsec implementation originally based upon
+the FreeS/WAN project.  It contains support for IKEv1, IKEv2, MOBIKE, IPv6,
+NAT-T and more.")
+    (home-page "https://strongswan.org/")
+    (license
+     (list license:gpl2+
+           ;; src/aikgen/*
+           ;; src/libcharon/plugins/dnscert/*
+           ;; src/libcharon/plugins/ext_auth/*
+           ;; src/libcharon/plugins/vici/ruby/*
+           ;; src/libcharon/plugins/xauth_pam/xauth_pam_listener.[ch]
+           license:expat
+           ;; src/inclue/sys/*
+           license:bsd-3
+           ;; src/libstrongswan/plugins/sha3/sha3_keccak.c
+           license:public-domain
+           ;; src/libstrongswan/plugins/pkcs11/pkcs11.h
+           (license:non-copyleft
+            "file://src/libstrongswan/plugins/pkcs11/pkcs11.h"
+            "pkcs11 contains a unknown permissive license. View the specific
+file for more details.")
+           ;; These files are not included in the
+           ;; build, they are disabled through
+           ;; options to ./configure
+           ;;
+           ;; src/libstrongswan/plugins/blowfish/bf_enc.c
+           ;; src/libstrongswan/plugins/blowfish/bf_locl.h
+           ;; src/libstrongswan/plugins/blowfish/bf_pi.h
+           ;; src/libstrongswan/plugins/blowfish/bf_skey.c
+           ;; src/libstrongswan/plugins/blowfish/blowfish_crypter.c
+           ;; src/libstrongswan/plugins/des/des_crypter.c
+           license:bsd-4))))

@@ -70,7 +70,7 @@ pattern matching using the same syntax and semantics as Perl 5.  PCRE has its
 own native API, as well as a set of wrapper functions that correspond to the
 POSIX regular expression API.")
    (license license:bsd-3)
-   (home-page "http://www.pcre.org/")))
+   (home-page "https://www.pcre.org/")))
 
 (define-public pcre2
   (package
@@ -112,4 +112,4 @@ pattern matching using the same syntax and semantics as Perl 5.  PCRE has its
 own native API, as well as a set of wrapper functions that correspond to the
 POSIX regular expression API.")
    (license license:bsd-3)
-   (home-page "http://www.pcre.org/")))
+   (home-page "https://www.pcre.org/")))

@@ -135,7 +135,8 @@ appropriately.")
          "1xq1kcfs6hri101ss4dhym0jn96z4v6jdvx288mfywadc245mc1h"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-build? #f))           ; not supported
+     `(#:parallel-build? #f             ; not supported
+       #:parallel-tests? #f))           ; likewise
     (synopsis "Create parsers for command line options")
     (description
      "GNU Gengetopt is a program to generate a C/C++ function for parsing

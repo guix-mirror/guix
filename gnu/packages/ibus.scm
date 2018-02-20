@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -183,9 +184,9 @@ may also simplify input method development.")
       ("automake" ,automake)
       ("glib" ,glib "bin")
       ("libtool" ,libtool)))
-   (synopsis "Chinese Pinyin and ZhuYin input methods for IBus")
+   (synopsis "Chinese pinyin and ZhuYin input methods for IBus")
    (description
-    "This package includes a Chinese Pinyin input method and a Chinese
+    "This package includes a Chinese pinyin input method and a Chinese
 ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
    (home-page "https://github.com/libpinyin/ibus-libpinyin")
    (license gpl2+)))
@@ -193,7 +194,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
 (define-public libpinyin
   (package
     (name "libpinyin")
-    (version "2.1.0")
+    (version "2.1.91")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -202,7 +203,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1iijpin65cmgawfx7sfdw1anmabljva0af1f9gx8ad6b4slhvknn"))))
+                "1yr4zyz3rwvmvj6bh8pc54hbp4rd2xk3g06y38z220fshx2l8pwf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -230,7 +231,7 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
-    (synopsis "Library to handle Chinese Pinyin")
+    (synopsis "Library to handle Chinese pinyin")
     (description
      "The libpinyin C++ library provides algorithms needed for sentence-based
 Chinese pinyin input methods.")

@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,7 +73,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module ((srfi srfi-1) #:prefix srfi-1:))
 
 ;;; Commentary:
 ;;;
@@ -586,7 +588,7 @@ document syntax.
 Guile-Reader’s approach is similar to Common Lisp’s “read table”, but
 hopefully more powerful and flexible (for instance, one may instantiate as
 many readers as needed).")
-    (home-page "http://www.nongnu.org/guile-reader/")
+    (home-page "https://www.nongnu.org/guile-reader/")
     (license license:gpl3+)))
 
 (define-public guile2.0-reader
@@ -689,31 +691,45 @@ format is also supported.")
          ("pkg-config" ,pkg-config)
          ("texinfo" ,texinfo)
          ("help2man" ,help2man)))
+      (inputs
+       `(("guile-2.2" ,guile-2.2)
+         ,@(srfi-1:alist-delete "guile" (package-inputs mcron))))
       (arguments
        `(#:modules ((ice-9 match) (ice-9 ftw)
                     ,@%gnu-build-system-modules)
-
-         #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (zero? (system* "autoreconf" "-vfi"))))
-                    (add-after 'install 'wrap-mcron
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        ;; Wrap the 'mcron' command to refer to the right
-                        ;; modules.
-                        (let* ((out  (assoc-ref outputs "out"))
-                               (bin  (string-append out "/bin"))
-                               (site (string-append
-                                      out "/share/guile/site")))
-                          (match (scandir site)
-                            (("." ".." version)
-                             (let ((modules (string-append site "/" version)))
-                               (wrap-program (string-append bin "/mcron")
-                                 `("GUILE_LOAD_PATH" ":" prefix
-                                   (,modules))
-                                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                                   (,modules)))
-                               #t))))))))))))
+         ;; When building the targets in parallel, help2man tries to generate
+         ;; the manpage from ./cron --help before it is built, which fails.
+         #:parallel-build? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'use-guile-2.2
+             (lambda _
+               (substitute* "configure.ac"
+                 (("PKG_CHECK_MODULES\\(\\[GUILE\\],.*$")
+                  "PKG_CHECK_MODULES([GUILE], [guile-2.2])\n")
+                 (("guile/site/2.0")
+                  "guile/site/2.2"))
+               #t))
+           (add-after 'use-guile-2.2 'bootstrap
+             (lambda _
+               (invoke "autoreconf" "-vfi")))
+           (add-after 'install 'wrap-mcron
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Wrap the 'mcron' command to refer to the right
+               ;; modules.
+               (let* ((out  (assoc-ref outputs "out"))
+                      (bin  (string-append out "/bin"))
+                      (site (string-append
+                             out "/share/guile/site")))
+                 (match (scandir site)
+                   (("." ".." version)
+                    (let ((modules (string-append site "/" version)))
+                      (wrap-program (string-append bin "/mcron")
+                        `("GUILE_LOAD_PATH" ":" prefix
+                          (,modules))
+                        `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                          (,modules)))
+                      #t))))))))))))
 
 (define-public guile-ics
   (package
@@ -783,7 +799,7 @@ $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
              #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.2)))
-    (home-page "http://www.nongnu.org/guile-lib/")
+    (home-page "https://www.nongnu.org/guile-lib/")
     (synopsis "Collection of useful Guile Scheme modules")
     (description
      "Guile-Lib is intended as an accumulation place for pure-scheme Guile
@@ -826,7 +842,7 @@ for Guile\".")
                      (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
     (build-system gnu-build-system)
     (native-inputs `(("guile" ,guile-2.2)))
-    (home-page "http://savannah.nongnu.org/projects/guile-json/")
+    (home-page "https://savannah.nongnu.org/projects/guile-json/")
     (synopsis "JSON module for Guile")
     (description
      "Guile-JSON supports parsing and building JSON documents according to the
@@ -1174,10 +1190,11 @@ Guile's foreign function interface.")
   (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
 
 (define-public guile-sqlite3
-  (let ((commit "607721fe1174a299e45d457acacf94eefb964071"))
+  (let ((commit "10c13a7e02ab1655c8a758e560cafc9d6eff26f4")
+        (revision "4"))
     (package
       (name "guile-sqlite3")
-      (version (string-append "0.0-1." (string-take commit 7)))
+      (version (git-version "0.0" revision commit))
 
       ;; XXX: This used to be available read-only at
       ;; <https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/> but it
@@ -1190,7 +1207,7 @@ Guile's foreign function interface.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "09gaffhh5rawz5kdmqx2ahvj1ngvxddp469r18bmjz3sz8p0slj2"))
+                  "0nhhswpd7nb2f0gfr55fzcc2xm3l2xx4rbljsd1clrm8fj2d7q9d"))
                 (file-name (string-append name "-" version "-checkout"))
                 (modules '((guix build utils)))
                 (snippet
@@ -1333,7 +1350,7 @@ above command-line parameters.")
     (build-system gnu-build-system)
     (native-inputs
      `(("guile" ,guile-2.0)))
-    (home-page "http://savannah.nongnu.org/projects/guile-redis/")
+    (home-page "https://savannah.nongnu.org/projects/guile-redis/")
     (synopsis "Redis client library for Guile")
     (description "Guile-redis provides a Scheme interface to the Redis
 key-value cache and store.")
@@ -1503,7 +1520,7 @@ wrappers for inter-language calls.  It currently only supports generating Guile
 wrappers for C functions.  Given a definition of the types and prototypes for
 a given C interface, G-Wrap will automatically generate the C code that
 provides access to that interface and its types from the Scheme level.")
-    (home-page "http://www.nongnu.org/g-wrap/index.html")
+    (home-page "https://www.nongnu.org/g-wrap/index.html")
     (license license:lgpl2.1+)))
 
 (define-public guile-dbi

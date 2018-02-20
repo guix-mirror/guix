@@ -204,6 +204,6 @@ interface (inotify or fsevents).  It aggregates and combines events for a few
 seconds and then spawns one (or more) process(es) to synchronize the changes.
 By default this is rsync, which must be installed on all source and target
 machines.  Lsyncd is thus a light-weight live mirror solution that is
-comparatively easy to install not requiring new filesystems or block devices
-and does not hamper local filesystem performance.")
+comparatively easy to install not requiring new file systems or block devices
+and does not hamper local file system performance.")
     (license license:gpl2+)))

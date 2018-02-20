@@ -124,4 +124,4 @@ TeX macros because Lout is a high-level, purely functional language, the
 outcome of an eight-year research project that went back to the
 beginning.")
     (license gpl3+)
-    (home-page "http://savannah.nongnu.org/projects/lout/"))))
+    (home-page "https://savannah.nongnu.org/projects/lout/"))))

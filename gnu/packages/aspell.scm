@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -268,10 +268,20 @@ dictionaries, including personal ones.")
                     (hunspell (string-append out "/share/hunspell"))
                     (myspell  (string-append out "/share/myspell"))
                     (doc      (string-append out "/share/doc/"
-                                             ,name)))
+                                             ,name))
+                    (dot-dic  ,(string-append "speller/" language ".dic")))
                (mkdir-p myspell)
-               (install-file ,(string-append "speller/" language ".dic")
-                             hunspell)
+
+               ;; Usually there's only a 'LANGUAGE.dic' file, but for the "en"
+               ;; dictionary, there no 'en.dic'.  Instead, there's a set of
+               ;; 'en*.dic' files, hence the 'find-files' call below.
+               (if (file-exists? dot-dic)
+                   (install-file dot-dic hunspell)
+                   (for-each (lambda (dic)
+                               (install-file dic hunspell))
+                             (find-files "speller"
+                                         ,(string-append language ".*\\.dic$"))))
+
                (install-file ,(string-append "speller/" language ".aff")
                              hunspell)
                (symlink hunspell (string-append myspell "/dicts"))

@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
@@ -41,12 +43,16 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages python)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile, libsamplerate
   #:use-module (gnu packages compression)
@@ -83,40 +89,48 @@
                 "16f84mdzkmwjmqahjj64kbyk4kagdj4mcr8qjazs1952d7kh7pm9"))))
     (build-system cmake-build-system)
     (arguments
-     `(;; Test files are very large and not included in the release tarball.
-       #:tests? #f
-       #:configure-flags
-       (list "-DWITH_CODEC_FFMPEG=ON"
-             "-DWITH_CODEC_SNDFILE=ON"
-             "-DWITH_CYCLES=ON"
-             "-DWITH_DOC_MANPAGE=ON"
-             "-DWITH_FFTW3=ON"
-             "-DWITH_GAMEENGINE=ON"
-             "-DWITH_IMAGE_OPENJPEG=ON"
-             "-DWITH_INPUT_NDOF=ON"
-             "-DWITH_INSTALL_PORTABLE=OFF"
-             "-DWITH_JACK=ON"
-             "-DWITH_MOD_OCEANSIM=ON"
-             "-DWITH_PLAYER=ON"
-             "-DWITH_PYTHON_INSTALL=OFF"
-             "-DWITH_SYSTEM_OPENJPEG=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-broken-import
-           (lambda _
-             (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
-               (("import encode_bin") "from . import encode_bin"))
-             #t))
-         (add-after 'set-paths 'add-ilmbase-include-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; OpenEXR propagates ilmbase, but its include files do not appear
-             ;; in the CPATH, so we need to add "$ilmbase/include/OpenEXR/" to
-             ;; the CPATH to satisfy the dependency on "half.h".
-             (setenv "CPATH"
-                     (string-append (assoc-ref inputs "ilmbase")
-                                    "/include/OpenEXR"
-                                    ":" (or (getenv "CPATH") "")))
-             #t)))))
+      (let ((python-version (version-major+minor (package-version python))))
+       `(;; Test files are very large and not included in the release tarball.
+         #:tests? #f
+         #:configure-flags
+         (list "-DWITH_CODEC_FFMPEG=ON"
+               "-DWITH_CODEC_SNDFILE=ON"
+               "-DWITH_CYCLES=ON"
+               "-DWITH_DOC_MANPAGE=ON"
+               "-DWITH_FFTW3=ON"
+               "-DWITH_GAMEENGINE=ON"
+               "-DWITH_IMAGE_OPENJPEG=ON"
+               "-DWITH_INPUT_NDOF=ON"
+               "-DWITH_INSTALL_PORTABLE=OFF"
+               "-DWITH_JACK=ON"
+               "-DWITH_MOD_OCEANSIM=ON"
+               "-DWITH_PLAYER=ON"
+               "-DWITH_PYTHON_INSTALL=OFF"
+               "-DWITH_PYTHON_INSTALL=OFF"
+               "-DWITH_SYSTEM_OPENJPEG=ON"
+               (string-append "-DPYTHON_LIBRARY=python" ,python-version "m")
+               (string-append "-DPYTHON_LIBPATH=" (assoc-ref %build-inputs "python")
+                              "/lib")
+               (string-append "-DPYTHON_INCLUDE_DIR=" (assoc-ref %build-inputs "python")
+                              "/include/python" ,python-version "m")
+               (string-append "-DPYTHON_VERSION=" ,python-version))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-broken-import
+             (lambda _
+               (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
+                 (("import encode_bin") "from . import encode_bin"))
+               #t))
+           (add-after 'set-paths 'add-ilmbase-include-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; OpenEXR propagates ilmbase, but its include files do not appear
+               ;; in the CPATH, so we need to add "$ilmbase/include/OpenEXR/" to
+               ;; the CPATH to satisfy the dependency on "half.h".
+               (setenv "CPATH"
+                       (string-append (assoc-ref inputs "ilmbase")
+                                      "/include/OpenEXR"
+                                      ":" (or (getenv "CPATH") "")))
+               #t))))))
     (inputs
      `(("boost" ,boost)
        ("jemalloc" ,jemalloc)
@@ -135,7 +149,7 @@
        ("freetype" ,freetype)
        ("glew" ,glew)
        ("openal" ,openal)
-       ("python" ,python-wrapper)
+       ("python" ,python)
        ("zlib" ,zlib)))
     (home-page "https://blender.org/")
     (synopsis "3D graphics creation suite")
@@ -686,3 +700,86 @@ your terminal.  It comes bundled with predefined styles:
 
 (define-public python2-pastel
   (package-with-python2 python-pastel))
+
+(define-public fgallery
+  (package
+    (name "fgallery")
+    (version "1.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://www.thregr.org/~wavexx/software/fgallery/releases/"
+                "fgallery-" version ".zip"))
+              (sha256
+               (base32
+                "18wlvqbxcng8pawimbc8f2422s8fnk840hfr6946lzsxr0ijakvf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (bin    (string-append out "/bin/"))
+                    (share  (string-append out "/share/fgallery"))
+                    (man    (string-append out "/share/man/man1"))
+                    (perl5lib (getenv "PERL5LIB"))
+                    (script (string-append share "/fgallery")))
+               (define (bin-directory input-name)
+                 (string-append (assoc-ref inputs input-name) "/bin"))
+
+               (mkdir-p man)
+               (copy-file "fgallery.1" (string-append man "/fgallery.1"))
+
+               (mkdir-p share)
+               (copy-recursively "." share)
+
+               ;; fgallery copies files from store when it is run. The
+               ;; read-only permissions from the store directories will cause
+               ;; fgallery to fail. Do not preserve file attributes when
+               ;; copying files to prevent it.
+               (substitute* script
+                 (("'cp'")
+                  "'cp', '--no-preserve=all'"))
+
+               (mkdir-p bin)
+               (symlink script (string-append out "/bin/fgallery"))
+
+               (wrap-program script
+                 `("PATH" ":" prefix
+                   ,(map bin-directory '("imagemagick"
+                                         "lcms"
+                                         "fbida"
+                                         "libjpeg"
+                                         "zip"
+                                         "jpegoptim"
+                                         "pngcrush"
+                                         "p7zip")))
+                 `("PERL5LIB" ":" prefix (,perl5lib)))
+               #t))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    ;; TODO: Add missing optional dependency: facedetect.
+    (inputs
+     `(("imagemagick" ,imagemagick)
+       ("lcms" ,lcms)
+       ("fbida" ,fbida)
+       ("libjpeg" ,libjpeg)
+       ("zip" ,zip)
+       ("perl" ,perl)
+       ("perl-cpanel-json-xs" ,perl-cpanel-json-xs)
+       ("perl-image-exiftool" ,perl-image-exiftool)
+       ("jpegoptim" ,jpegoptim)
+       ("pngcrush" ,pngcrush)
+       ("p7zip" ,p7zip)))
+    (home-page "http://www.thregr.org/~wavexx/software/fgallery/")
+    (synopsis "Static photo gallery generator")
+    (description
+     "FGallery is a static, JavaScript photo gallery generator with minimalist
+look.  The result can be uploaded on any web server without additional
+requirements.")
+    (license license:gpl2+)))

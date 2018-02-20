@@ -66,6 +66,7 @@
   (package
     (name "libtasn1")
     (version "4.12")
+    (replacement libtasn1/fixed)
     (source
      (origin
       (method url-fetch)
@@ -85,6 +86,14 @@ for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
     (license license:lgpl2.0+)))
+
+(define libtasn1/fixed
+  (package
+    (inherit libtasn1)
+    (source (origin
+              (inherit (package-source libtasn1))
+              (patches (search-patches "libtasn1-CVE-2017-10790.patch"
+                                       "libtasn1-CVE-2018-6003.patch"))))))
 
 (define-public asn1c
   (package
@@ -133,7 +142,7 @@ in intelligent transportation networks.")
        ("libtasn1" ,libtasn1)))
     (arguments
      `(#:configure-flags '("--without-trust-paths")))
-    (home-page "http://p11-glue.freedesktop.org/p11-kit.html")
+    (home-page "https://p11-glue.freedesktop.org/p11-kit.html")
     (synopsis "PKCS#11 library")
     (description
      "p11-kit provides a way to load and enumerate PKCS#11 modules.  It
@@ -388,7 +397,7 @@ required structures.")
    (description
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
-   (home-page "http://www.openssl.org/")))
+   (home-page "https://www.openssl.org/")))
 
 (define-public openssl-next
   (package
@@ -503,13 +512,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.20.0")
+    (version "0.21.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1md3llp6640dviv9bzyy7qzn3szxil38645cjqcg7hlcdknil4j5"))))
+                "02x6f37ddldaxrxzh2wjw8wmzqchxb7gl5i4i4daysas9yzqlvi9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -534,14 +543,15 @@ netcat implementation that supports TLS.")
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
        ("texinfo" ,texinfo)))
     (propagated-inputs
-     `(("python-six" ,python-six)
+     `(("python-josepy" ,python-josepy)
+       ("python-six" ,python-six)
        ("python-requests" ,python-requests)
        ("python-pytz" ,python-pytz)
        ("python-pyrfc3339" ,python-pyrfc3339)
        ("python-pyasn1" ,python-pyasn1)
        ("python-cryptography" ,python-cryptography)
        ("python-pyopenssl" ,python-pyopenssl)))
-    (home-page "https://github.com/letsencrypt/letsencrypt")
+    (home-page "https://github.com/certbot/certbot")
     (synopsis "ACME protocol implementation in Python")
     (description "ACME protocol implementation in Python")
     (license license:asl2.0)))
@@ -557,7 +567,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "126y6jg1nyd8js2jchl4dbmpg507hawaxnyw7510qh7vcidm1gya"))))
+                "1sn4wqkp6kjj9p8maf4jnjwwvb083hgakm9i10rk9273nnqfkj76"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)

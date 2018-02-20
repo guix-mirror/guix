@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -44,16 +45,17 @@
 (define-public libsepol
   (package
     (name "libsepol")
-    (version "2.6")
-    (source (let ((release "20161014"))
+    (version "2.7")
+    (source (let ((release "20170804"))
               (origin
-                (method url-fetch)
-                (uri (string-append "https://github.com/SELinuxProject/selinux/"
-                                    "archive/" release ".tar.gz"))
-                (file-name (string-append "selinux-" release ".tar.gz"))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/SELinuxProject/selinux.git")
+                      (commit release)))
+                (file-name (string-append "selinux-" release "-checkout"))
                 (sha256
                  (base32
-                  "1dpwynfb6n31928343blac4159g4jbrwxdp61q5yffmxpy3c3czi")))))
+                  "1l1nn8bx08v4cxkw5kb0wgr61rfqj5ra9dh1dy5jslillj93vivq")))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; tests require checkpolicy, which requires libsepol
@@ -71,7 +73,14 @@
        (modify-phases %standard-phases
          (delete 'configure)
          (add-after 'unpack 'enter-dir
-           (lambda _ (chdir ,name) #t)))))
+           (lambda _ (chdir ,name) #t))
+         (add-after 'enter-dir 'portability
+           (lambda _
+             (substitute* "src/ibpkeys.c"
+               (("#include \"ibpkey_internal.h\"" line)
+                (string-append line "\n#include <inttypes.h>\n"))
+               (("%#lx") "%#\" PRIx64 \""))
+             #t)))))
     (native-inputs
      `(("flex" ,flex)))
     (home-page "https://selinuxproject.org/")
@@ -92,15 +101,14 @@ boolean settings).")
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list (string-append "PREFIX=" out)
-               (string-append "LDLIBS="
+               (string-append "LIBSEPOLA="
                               (assoc-ref %build-inputs "libsepol")
-                              "/lib/libsepol.a "
-                              (assoc-ref %build-inputs "flex")
-                              "/lib/libfl.a")
+                              "/lib/libsepol.a")
                "CC=gcc"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (delete 'portability)
          (add-after 'unpack 'enter-dir
            (lambda _ (chdir ,name) #t)))))
     (inputs
@@ -125,6 +133,9 @@ module into a binary representation.")
      (substitute-keyword-arguments (package-arguments libsepol)
        ((#:make-flags flags)
         `(cons* "PYTHON=python3"
+                (string-append "LIBSEPOLA="
+                              (assoc-ref %build-inputs "libsepol")
+                              "/lib/libsepol.a")
                 (string-append "PYSITEDIR="
                                (assoc-ref %outputs "out")
                                "/lib/python"
@@ -133,16 +144,9 @@ module into a binary representation.")
                 ,flags))
        ((#:phases phases)
         `(modify-phases ,phases
+           (delete 'portability)
            (replace 'enter-dir
              (lambda _ (chdir ,name) #t))
-           ;; libsepol.a is not located in this package's LIBDIR.
-           (add-after 'enter-dir 'patch-libsepol-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "src/Makefile"
-                 (("\\$\\(LIBDIR\\)/libsepol.a")
-                  (string-append (assoc-ref inputs "libsepol")
-                                 "/lib/libsepol.a")))
-               #t))
            (add-after 'enter-dir 'remove-Werror
              (lambda _
                ;; GCC complains about the fact that the output does not (yet)
@@ -192,6 +196,7 @@ the core SELinux management utilities.")
                 ,flags))
        ((#:phases phases)
         `(modify-phases ,phases
+           (delete 'portability)
            (replace 'enter-dir
              (lambda _ (chdir ,name) #t))
            (add-after 'build 'pywrap
@@ -233,6 +238,7 @@ binary policies.")
                  ,flags)))
        ((#:phases phases)
         `(modify-phases ,phases
+           (delete 'portability)
            (replace 'enter-dir
              (lambda _ (chdir ,name) #t))))))
     (inputs
@@ -255,8 +261,9 @@ binary policies.")
        ,@(substitute-keyword-arguments (package-arguments libsepol)
            ((#:phases phases)
             `(modify-phases ,phases
+               (delete 'portability)
                (replace 'enter-dir
-                 (lambda _ (chdir "sepolgen") #t))
+                 (lambda _ (chdir "python/sepolgen") #t))
                ;; By default all Python files would be installed to
                ;; $out/gnu/store/...-python-.../, so we override the
                ;; PACKAGEDIR to fix this.
@@ -297,25 +304,25 @@ based on required access.")
     ;; GPLv2 only
     (license license:gpl2)))
 
-;; The latest 4.1.x version does not work with the latest 2.6 release of
-;; policycoreutils, so we use the last 4.0.x release.
 (define-public python-setools
   (package
     (name "python-setools")
-    (version "4.0.1")
+    (version "4.1.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/TresysTechnology/"
-                                  "setools/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/TresysTechnology/setools.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1zndpl4ck5c23p7s4sci06db89q1w87jig3jbd4f8s1ggy3lj82c"))))
+                "0459xxly6zzqc5azcwk3rbbcxvj60dq08f8z6xr05y7dsbb16cg6"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; the test target causes a rebuild
        #:phases
        (modify-phases %standard-phases
+         (delete 'portability)
          (add-after 'unpack 'set-SEPOL-variable
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "SEPOL"
@@ -352,10 +359,6 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
 (define-public policycoreutils
   (package (inherit libsepol)
     (name "policycoreutils")
-    (source
-     (origin (inherit (package-source libsepol))
-             (patches (search-patches "policycoreutils-make-sepolicy-use-python3.patch"))
-             (patch-flags '("-p1" "-d" "policycoreutils"))))
     (arguments
      `(#:test-target "test"
        #:make-flags
@@ -382,6 +385,7 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (delete 'portability)
          (add-after 'unpack 'enter-dir
            (lambda _ (chdir ,name) #t))
          (add-after 'enter-dir 'ignore-/usr-tests
@@ -399,79 +403,13 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
                 (string-append (assoc-ref inputs "pam") file))
                (("/usr(/include/libaudit.h)" _ file)
                 (string-append (assoc-ref inputs "audit") file)))
-             #t))
-         (add-after 'enter-dir 'fix-glib-cflags
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "restorecond/Makefile"
-               (("/usr(/include/glib-2.0|/lib/glib-2.0/include)" _ path)
-                (string-append (assoc-ref inputs "glib") path))
-               (("/usr(/include/dbus-1.0|/lib/dbus-1.0/include)" _ path)
-                (string-append (assoc-ref inputs "dbus") path
-                               " -I"
-                               (assoc-ref inputs "dbus-glib") path)))
-             #t))
-         (add-after 'enter-dir 'fix-linkage-with-libsepol
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* '("semodule_deps/Makefile"
-                            "sepolgen-ifgen/Makefile")
-               (("\\$\\(LIBDIR\\)")
-                (string-append (assoc-ref inputs "libsepol") "/lib/")))))
-         (add-after 'enter-dir 'fix-target-paths
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "audit2allow/sepolgen-ifgen"
-                 (("ATTR_HELPER = \"/usr/bin/sepolgen-ifgen-attr-helper\"")
-                  (string-append "ATTR_HELPER = \"" out
-                                 "/bin/sepolgen-ifgen-attr-helper\"")))
-               (substitute* "sepolicy/sepolicy/__init__.py"
-                 (("/usr/bin/sepolgen-ifgen")
-                  (string-append out "/bin/sepolgen-ifgen")))
-               (substitute* "sepolicy/Makefile"
-                 ;; By default all Python files would be installed to
-                 ;; $out/gnu/store/...-python-.../.
-                 (("setup.py install.*$")
-                  (string-append "setup.py install --prefix=" out "\n"))
-                 (("\\$\\(DESTDIR\\)/etc")
-                  (string-append out "/etc"))
-                 (("\\$\\(DESTDIR\\)/usr") out)))
-             #t))
-         (add-after 'install 'wrap-python-tools
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (var (string-append out "/lib/python"
-                                        ,(version-major+minor (package-version python))
-                                        "/site-packages:"
-                                        (getenv "PYTHONPATH"))))
-               ;; The scripts' shebangs tell Python to ignore the PYTHONPATH,
-               ;; so we need to patch them before wrapping.
-               (for-each (lambda (file)
-                           (let ((path (string-append out "/" file)))
-                             (substitute* path
-                               (("bin/python -Es") "bin/python -s"))
-                             (wrap-program path
-                               `("PYTHONPATH" ":" prefix (,var)))))
-                         '("bin/audit2allow"
-                           "bin/chcat"
-                           "bin/sandbox"
-                           "bin/sepolgen-ifgen"
-                           "bin/sepolicy"
-                           "sbin/semanage")))
              #t)))))
     (inputs
-     `(("python" ,python-wrapper)
-       ("audit" ,audit)
+     `(("audit" ,audit)
        ("pam" ,linux-pam)
        ("libsepol" ,libsepol)
        ("libselinux" ,libselinux)
-       ("libsemanage" ,libsemanage)
-       ("python-sepolgen" ,python-sepolgen)
-       ("python-setools" ,python-setools)
-       ("python-ipy" ,python-ipy)
-       ("libcap-ng" ,libcap-ng)
-       ("pcre" ,pcre)
-       ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
-       ("glib" ,glib)))
+       ("libsemanage" ,libsemanage)))
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (synopsis "SELinux core utilities")

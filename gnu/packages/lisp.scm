@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -262,20 +262,17 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32 "0qjv3z274rbdmb941hy03hl63f4z7bmci234f8dyz4skgfr82d3i"))
-       (patches (search-patches "clisp-remove-failing-test.patch"))))
+       (patches (search-patches "clisp-glibc-2.26.patch"
+                                "clisp-remove-failing-test.patch"))))
     (build-system gnu-build-system)
     (inputs `(("libffcall" ,libffcall)
               ("ncurses" ,ncurses)
               ("readline" ,readline)
               ("libsigsegv" ,libsigsegv)))
     (arguments
-     '(;; XXX The custom configure script does not cope well when passed
-       ;; --build=<triplet>.
-       #:configure-flags '("CFLAGS=-falign-functions=4"
-                           "--enable-portability"
+     '(#:configure-flags '("--enable-portability"
                            "--with-dynamic-ffi"
                            "--with-dynamic-modules"
-                           "--with-module=bindings/glibc"
                            "--with-module=rawsock")
        #:build #f
        #:phases
@@ -316,14 +313,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "1.3.7")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "0fjdqnb2rsm2vi9794ywp27jr239ddvzc4xfr0dk49jd4v7p2kc5"))
+        (base32 "1k6v5b8qv7vyxvh8asx6phf2hbapx5pp5p5j47hgnq123fwnh4fa"))
        (modules '((guix build utils)))
        (snippet
         ;; Add sbcl-bundle-systems to 'default-system-source-registry'.

@@ -178,7 +178,7 @@ scheme.")
 (define-public ddrescue
   (package
     (name "ddrescue")
-    (version "1.22")
+    (version "1.23")
     (source
      (origin
       (method url-fetch)
@@ -186,7 +186,7 @@ scheme.")
                           version ".tar.lz"))
       (sha256
        (base32
-        "19qhx9ggkkjl0g3a88g501wmybkj1y4n5lm5kp0km0blh0p7p189"))))
+        "13cd6c0x91zq10vdlyl6r5rib47bmsn5sshmkin3igwj8pa2vbm9"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/ddrescue/ddrescue.html")
     (synopsis "Data recovery utility")
@@ -371,7 +371,7 @@ permit managing file systems not included in libparted.")
   (synopsis "Colourised @command{df} clone")
   (description "All-singing, all-dancing, fully colourised @command{df} clone
 written in Python.  It displays the amount of disk space available on the
-mounted filesystems, using different colours for different types of file
+mounted file systems, using different colours for different types of file
 systems.  Output format is completely customizable.")
   (license license:public-domain)))
 

@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,10 +29,10 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
-  #:use-module (gnu packages gcc) ; GCC@5 for MPD >= 0.20
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -55,7 +56,7 @@
 (define-public libmpdclient
   (package
     (name "libmpdclient")
-    (version "2.11")
+    (version "2.13")
     (source (origin
               (method url-fetch)
               (uri
@@ -64,19 +65,30 @@
                               "/libmpdclient-" version ".tar.xz"))
               (sha256
                (base32
-                "1xms8q44g6zc7sc212qpcihq6ch3pmph3i1m9hzymmy0jcw6kzhm"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("doxygen" ,doxygen)))
+                "0pflbv2jzik7yxnacci1iqs0awy1i5ipwn67xk0hg9r0pi9bs5ai"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; For building HTML documentation.
+       ("doxygen" ,doxygen)
+
+       ;; For tests.
+       ("check" ,check)))
+    (arguments
+     `(#:configure-flags
+       (list "-Ddocumentation=true"
+             "-Dtest=true")))
     (synopsis "Music Player Daemon client library")
     (description "A stable, documented, asynchronous API library for
 interfacing MPD in the C, C++ & Objective C languages.")
-    (home-page "http://www.musicpd.org/libs/libmpdclient/")
+    (home-page "https://www.musicpd.org/libs/libmpdclient/")
     (license license:bsd-3)))
 
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.20.13")
+    (version "0.20.15")
     (source (origin
               (method url-fetch)
               (uri
@@ -85,7 +97,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0h7z90dnpwlyad4kfi1ja9v9vzqic0xg93iy4q0dwlhav0scbha6"))))
+                "0h7bm561i8p0bjp1hy8fsiy5zj7db24zyv6ypfihwf35wrklz766"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -144,7 +156,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 server-side application for playing music.  Through plugins and libraries it
 can play a variety of sound files while being controlled by its network
 protocol.")
-    (home-page "http://www.musicpd.org/")
+    (home-page "https://www.musicpd.org/")
     (license license:gpl2)))
 
 (define-public mpd-mpc
@@ -166,7 +178,7 @@ protocol.")
     (synopsis "Music Player Daemon client")
     (description "MPC is a minimalist command line interface to MPD, the music
 player daemon.")
-    (home-page "http://www.musicpd.org/clients/mpc/")
+    (home-page "https://www.musicpd.org/clients/mpc/")
     (license license:gpl2)))
 
 (define-public ncmpc
@@ -190,7 +202,7 @@ player daemon.")
     (synopsis "Curses Music Player Daemon client")
     (description "ncmpc is a fully featured MPD client, which runs in a
 terminal using ncurses.")
-    (home-page "http://www.musicpd.org/clients/ncmpc/")
+    (home-page "https://www.musicpd.org/clients/ncmpc/")
     (license license:gpl2)))
 
 (define-public ncmpcpp
@@ -245,9 +257,7 @@ sort playlists, and a local file system browser.")
     (synopsis "MPD client for track scrobbling")
     (description "mpdscribble is a Music Player Daemon client which submits
 information about tracks being played to a scrobbler, such as Libre.FM.")
-    ;; musicpd.org doesn't mention mpdscribble.  It points users to this wiki
-    ;; instead.
-    (home-page "http://mpd.wikia.com/wiki/Client:Mpdscribble")
+    (home-page "https://www.musicpd.org/clients/mpdscribble/")
     (license license:gpl2+)))
 
 (define-public python-mpd2
@@ -322,5 +332,5 @@ interface for the Music Player Daemon.")
     (description "Sonata is an elegant graphical client for the Music Player
 Daemon (MPD).  It supports playlists, multiple profiles (connecting to different
 MPD servers, search and multimedia key support.")
-    (home-page "http://www.nongnu.org/sonata/")
+    (home-page "https://www.nongnu.org/sonata/")
     (license license:gpl3+)))

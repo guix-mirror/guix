@@ -1,0 +1,62 @@
+Fix build with glibc 2.26:
+
+https://github.com/tpaviot/oce/issues/675
+
+Patch copied from upstream source repository:
+
+https://github.com/tpaviot/oce/commit/aa1321e68cc004e3debe38d79ae74581a617c767
+
+From aa1321e68cc004e3debe38d79ae74581a617c767 Mon Sep 17 00:00:00 2001
+From: Janus Weil <janus@gcc.gnu.org>
+Date: Mon, 18 Dec 2017 11:27:55 +0100
+Subject: [PATCH] fix build errors with glibc 2.26+ due to missing xlocale.h
+ (issue #675)
+
+* check for the presence of xlocale.h via cmake
+* remove related logic from Standard_CLocaleSentry.hxx
+---
+ CMakeLists.txt                          |  1 +
+ src/Standard/Standard_CLocaleSentry.hxx | 15 ---------------
+ 2 files changed, 1 insertion(+), 15 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b782b4101..50e9500b2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -616,6 +616,7 @@ if (NOT WIN32)
+ 	# compilation anywhere in OCE
+ 	include(CheckIncludeFile)
+ 	check_include_file(strings.h HAVE_STRINGS_H)
++	check_include_file(xlocale.h HAVE_XLOCALE_H)
+ 	include(CheckIncludeFileCXX)
+ 	check_include_file_cxx(mm_malloc.h HAVE_MM_MALLOC_H)
+ 	check_include_file_cxx(atomic.h OCE_HAVE_ATOMIC_H)
+diff --git a/src/Standard/Standard_CLocaleSentry.hxx b/src/Standard/Standard_CLocaleSentry.hxx
+index 2b226e7f3..1a4c1dadc 100644
+--- a/src/Standard/Standard_CLocaleSentry.hxx
++++ b/src/Standard/Standard_CLocaleSentry.hxx
+@@ -20,21 +20,6 @@
+ 
+ #include <locale.h>
+ 
+-#ifndef HAVE_XLOCALE_H
+-  //! "xlocale.h" available in Mac OS X and glibc (Linux) for a long time as an extension
+-  //! and become part of POSIX since '2008.
+-  //! Notice that this is impossible to test (_POSIX_C_SOURCE >= 200809L)
+-  //! since POSIX didn't declared such identifier.
+-  #if defined(__APPLE__)
+-    #define HAVE_XLOCALE_H
+-  #endif
+-
+-  //! We check _GNU_SOURCE for glibc extensions here and it is always defined by g++ compiler.
+-  #if defined(_GNU_SOURCE) && !defined(__ANDROID__)
+-    #define HAVE_XLOCALE_H
+-  #endif
+-#endif // ifndef HAVE_LOCALE_H
+-
+ #ifdef HAVE_XLOCALE_H
+   #include <xlocale.h>
+ #endif
+-- 
+2.15.1
+

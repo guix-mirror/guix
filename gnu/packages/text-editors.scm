@@ -181,7 +181,7 @@ bindings and many of the powerful features of GNU Emacs.")
     (version "0.8.18.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://download.savannah.gnu.org/releases/"
+              (uri (string-append "mirror://savannah/"
                                   "leafpad/leafpad-" version ".tar.gz"))
               (sha256
                (base32

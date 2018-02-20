@@ -37,11 +37,11 @@
   #:export (mount-essential-file-systems
             linux-command-line
             find-long-option
+            find-long-options
             make-essential-device-nodes
             make-static-device-nodes
             configure-qemu-networking
 
-            bind-mount
             device-number
             boot-system))
 
@@ -98,6 +98,16 @@ Return the value associated with OPTION, or #f on failure."
                  arguments)
            (lambda (arg)
              (substring arg (+ 1 (string-index arg #\=)))))))
+
+(define (find-long-options option arguments)
+  "Find OPTIONs among ARGUMENTS, where OPTION is something like \"console\".
+Return the values associated with OPTIONs as a list, or the empty list if
+OPTION doesn't appear in ARGUMENTS."
+  (let ((opt (string-append option "=")))
+    (filter-map (lambda (arg)
+                  (and (string-prefix? opt arg)
+                       (substring arg (+ 1 (string-index arg #\=)))))
+                arguments)))
 
 (define* (make-disk-device-nodes base major #:optional (minor 0))
   "Make the block device nodes around BASE (something like \"/root/dev/sda\")
@@ -188,7 +198,7 @@ with the given MAJOR number, starting with MINOR."
     (lambda args
       (apply report-system-error name args))))
 
-;; Create a device node like the <device-node> passed here on the filesystem.
+;; Create a device node like the <device-node> passed here on the file system.
 (define create-device-node
   (match-lambda
     (($ <device-node> xname type major minor module)

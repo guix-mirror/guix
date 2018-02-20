@@ -41,7 +41,7 @@
      ;; expected to fail).
      ;; Report them upstream.
      '(#:tests? #f))
-    (home-page "http://www.nongnu.org/libunwind")
+    (home-page "https://www.nongnu.org/libunwind")
     (synopsis "Determining the call chain of a program")
     (description
      "The primary goal of this project is to define a portable and efficient C

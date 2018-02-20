@@ -1,12 +1,13 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (gnu packages disk)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
@@ -129,7 +131,8 @@
        ;; ("fuse" ,fuse)
        ("ncurses" ,ncurses)))
     (native-inputs
-     `(("unifont" ,unifont)
+     `(("pkg-config" ,pkg-config)
+       ("unifont" ,unifont)
        ("bison" ,bison)
        ;; Due to a bug in flex >= 2.6.2, GRUB must be built with an older flex:
        ;; <http://lists.gnu.org/archive/html/grub-devel/2017-02/msg00133.html>
@@ -299,7 +302,7 @@ menu to select one of the installed operating systems.")
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.4.5")
+    (version "1.4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -307,11 +310,7 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "08gnl39i4xy3dm8iqwlz2ygx0ml1bgc5kpiys5ll1wvah1j72b04"))
-              ;; Fix build and tests on 32 bits platforms.
-              ;; Will probably be fixed in 1.4.6 release.
-              (patches (search-patches "dtc-format-modifier.patch"
-                                       "dtc-32-bits-check.patch"))))
+                "0zkvih0fpwvk31aqyyfy9kn13nbi76c21ihax15p6h1wrjzh48rq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -327,7 +326,7 @@ menu to select one of the installed operating systems.")
              "INSTALL=install")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure))))         ; no configure script
     (home-page "https://www.devicetree.org")
     (synopsis "Compiles device tree source files")
     (description "@command{dtc} compiles
@@ -338,7 +337,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2017.11")
+    (version "2018.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -346,11 +345,12 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "01bcsah5imy6m3fbjwhqywxg0pfk5fl8ks9ylb7kv3zmrb9qy0ba"))))
+                "1nidnnjprgxdhiiz7gmaj8cgcf52l5gbv64cmzjq4gmkjirmk3wk"))))
     (native-inputs
      `(("bc" ,bc)
-       ("dtc" ,dtc)
-       ("python-2" ,python-2)))
+       ;("dtc" ,dtc) ; they have their own incompatible copy.
+       ("python-2" ,python-2)
+       ("swig" ,swig)))
     (build-system  gnu-build-system)
     (home-page "http://www.denx.de/wiki/U-Boot/")
     (synopsis "ARM bootloader")
@@ -366,12 +366,14 @@ also initializes the boards (RAM etc).")
                       `#f)))
     (package
       (inherit u-boot)
-      (name (string-append "u-boot-" (string-downcase board)))
+      (name (string-append "u-boot-"
+                           (string-replace-substring (string-downcase board)
+                                                     "_" "-")))
       (native-inputs
        `(,@(if (not same-arch?)
-             `(("cross-gcc" ,(cross-gcc triplet))
+             `(("cross-gcc" ,(cross-gcc triplet #:xgcc gcc-7))
                ("cross-binutils" ,(cross-binutils triplet)))
-             '())
+             `(("gcc-7" ,gcc-7)))
          ,@(package-native-inputs u-boot)))
       (arguments
        `(#:modules ((ice-9 ftw) (guix build utils) (guix build gnu-build-system))
@@ -400,13 +402,14 @@ also initializes the boards (RAM etc).")
                                                                  suffix-len))))))
                        #f)))))
            (replace 'install
-             (lambda* (#:key outputs make-flags #:allow-other-keys)
+             (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (libexec (string-append out "/libexec"))
                       (uboot-files (append
                                     (find-files "." ".*\\.(bin|efi|img|spl)$")
                                     (find-files "." "^MLO$"))))
                  (mkdir-p libexec)
+                 (install-file ".config" libexec)
                  (for-each
                   (lambda (file)
                     (let ((target-file (string-append libexec "/" file)))
@@ -425,6 +428,21 @@ also initializes the boards (RAM etc).")
 
 (define-public u-boot-odroid-c2
   (make-u-boot-package "odroid-c2" "aarch64-linux-gnu"))
+
+(define-public u-boot-banana-pi-m2-ultra
+  (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))
+
+(define-public u-boot-a20-olinuxino-lime
+  (make-u-boot-package "A20-OLinuXino-Lime" "arm-linux-gnueabihf"))
+
+(define-public u-boot-a20-olinuxino-lime2
+  (make-u-boot-package "A20-OLinuXino-Lime2" "arm-linux-gnueabihf"))
+
+(define-public u-boot-a20-olinuxino-micro
+  (make-u-boot-package "A20-OLinuXino_MICRO" "arm-linux-gnueabihf"))
+
+(define-public u-boot-nintendo-nes-classic-edition
+  (make-u-boot-package "Nintendo_NES_Classic_Edition" "arm-linux-gnueabihf"))
 
 (define-public vboot-utils
   (package

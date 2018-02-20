@@ -5,10 +5,11 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
+;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,12 +32,14 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -52,6 +55,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
@@ -372,7 +376,7 @@ has no notion of what's interesing, but it's very good at that notifying part.")
 (define-public unibilium
   (package
     (name "unibilium")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
@@ -381,7 +385,7 @@ has no notion of what's interesing, but it's very good at that notifying part.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1n7a0jrlwhn9nnkna76sbnjrr808m0pmzbiwznmp7rhmjl4z2fk2"))))
+         "1hbf011d8nzsp7c96fidjiq8yw8zlxf6f1s050ii2yyampvb8ib0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -572,3 +576,204 @@ eye-candy, customizable, and reasonably lightweight.")
 It's a terminal emulator with few dependencies, so you don't need a full GNOME
 desktop installed to have a decent terminal emulator.")
     (license license:gpl2)))
+
+(define-public go-github.com-nsf-termbox-go
+  (let ((commit "4ed959e0540971545eddb8c75514973d670cf739")
+        (revision "0"))
+    (package
+      (name "go-github.com-nsf-termbox-go")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/nsf/termbox-go.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1vx64i1mg660if3wwm81p4b7lzxfb3qbr39i7misdyld3fc486p9"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/nsf/termbox-go"))
+      (propagated-inputs
+       `(("go-github.com-mattn-go-runewidth"
+          ,go-github.com-mattn-go-runewidth)))
+      (synopsis "@code{termbox} provides a minimal API for text-based user
+interfaces")
+      (description
+       "Termbox is a library that provides a minimalistic API which allows the
+programmer to write text-based user interfaces.")
+      (home-page "https://github.com/nsf/termbox-go")
+      (license license:expat))))
+
+(define-public go-golang.org-x-crypto-ssh-terminal
+  (let ((commit "c78caca803c95773f48a844d3dcab04b9bc4d6dd")
+        (revision "0"))
+    (package
+      (name "go-golang.org-x-crypto-ssh-terminal")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/crypto")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0vxlfxr9y681yn2cfh6dbqmq35vvq4f45ay0mm31ffkny9cms0y4"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "golang.org/x/crypto/ssh/terminal"
+         #:unpack-path "golang.org/x/crypto"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map (lambda (file)
+                      (make-file-writable file))
+                    (find-files
+                     (string-append (assoc-ref outputs "out")
+                                    "/src/golang.org/x/crypto/ed25519/testdata")
+                     ".*\\.gz$"))
+               #t)))))
+      (synopsis "Support functions for dealing with terminals in Go")
+      (description "@code{terminal} provides support functions for dealing
+with terminals in Go.")
+      (home-page "https://go.googlesource.com/crypto/")
+      (license license:bsd-3))))
+
+(define-public go-github.com-howeyc-gopass
+  (let ((commit "bf9dde6d0d2c004a008c27aaee91170c786f6db8")
+        (revision "0"))
+    (package
+      (name "go-github.com-howeyc-gopass")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/howeyc/gopass.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1jxzyfnqi0h1fzlsvlkn10bncic803bfhslyijcxk55mgh297g45"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/howeyc/gopass"))
+      (propagated-inputs
+       `(("go-golang.org-x-crypto-ssh-terminal"
+          ,go-golang.org-x-crypto-ssh-terminal)))
+      (synopsis "Retrieve password from a terminal or piped input in Go")
+      (description
+       "@code{gopass} is a Go package for retrieving a password from user
+terminal or piped input.")
+      (home-page "https://github.com/howeyc/gopass")
+      (license license:isc))))
+
+(define-public python-pyte
+  (package
+    (name "python-pyte")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyte" version))
+       (sha256
+        (base32
+         "1an54hvyjm8gncx8cgabz9mkpgjkdb0bkyjlkh7g7f94nr3wnfl7"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-failing-test
+           ;; TODO: Reenable when the `captured` files required by this test
+           ;; are included in the archive.
+           (lambda _
+             (delete-file "tests/test_input_output.py")
+             #t)))))
+    (propagated-inputs
+     `(("python-wcwidth", python-wcwidth)))
+    (native-inputs
+     `(("python-pytest-runner" ,python-pytest-runner)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://pyte.readthedocs.io/")
+    (synopsis "Simple VTXXX-compatible terminal emulator")
+    (description "@code{pyte} is an in-memory VTxxx-compatible terminal
+emulator.  @var{VTxxx} stands for a series of video terminals, developed by
+DEC between 1970 and 1995.  The first and probably most famous one was the
+VT100 terminal, which is now a de-facto standard for all virtual terminal
+emulators.
+
+pyte is a fork of vt102, which was an incomplete pure Python implementation
+of VT100 terminal.")
+    (license license:lgpl3+)))
+
+(define-public python2-pyte
+  (package-with-python2 python-pyte))
+
+(define-public python-blessings
+  (package
+    (name "python-blessings")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "blessings" version))
+       (sha256
+        (base32
+         "1smngy65p8mi62lgm04icasx22v976szhs2aq95y2ljmi1srb4bl"))))
+    (build-system python-build-system)
+    (arguments
+     ;; TODO: For py3, 2to2 is used to convert the code, but test-suite fails
+     `(#:tests? #f))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/erikrose/blessings")
+    (synopsis "Python module to manage terminal color, styling, and
+positioning")
+    (description "Blessings is a pythonic API to manipulate terminal color,
+styling, and positioning.  It provides similar features to curses but avoids
+some of curses’s limitations: it does not require clearing the whole screen
+for little changes, provides a scroll-back buffer after the program exits, and
+avoids styling altogether when the output is redirected to something other
+than a terminal.")
+    (license license:expat)))
+
+(define-public python2-blessings
+  (package-with-python2 python-blessings))
+
+(define-public python-curtsies
+  (package
+    (name "python-curtsies")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "curtsies" version))
+       (sha256
+        (base32
+         "1vljmw3sy6lrqahhpyg4gk13mzcx3mwhvg8s41698ms3cpgkjipc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "nosetests" "-v"))))))
+    (propagated-inputs
+     `(("python-blessings" ,python-blessings)
+       ("python-wcwidth", python-wcwidth)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pyte" ,python-pyte)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/thomasballinger/curtsies")
+    (synopsis "Library for curses-like terminal interaction with colored
+strings")
+    (description "Curtsies is a Python library for interacting with the
+terminal.  It features string-like objects which carry formatting information,
+per-line fullscreen terminal rendering, and keyboard input event reporting.")
+    (license license:expat)))
+
+(define-public python2-curtsies
+  (package-with-python2 python-curtsies))

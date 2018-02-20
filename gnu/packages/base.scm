@@ -7,6 +7,7 @@
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -853,7 +854,6 @@ GLIBC/HURD for a Hurd host"
                                        "glibc-versioned-locpath.patch"
                                        "glibc-o-largefile.patch"
                                        "glibc-vectorized-strcspn-guards.patch"
-                                       "glibc-CVE-2015-5180.patch"
                                        "glibc-CVE-2017-1000366-pt1.patch"
                                        "glibc-CVE-2017-1000366-pt2.patch"
                                        "glibc-CVE-2017-1000366-pt3.patch"))))))

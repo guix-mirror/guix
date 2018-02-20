@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,17 +115,19 @@ comfortable for anyone.")
 (define-public rlwrap
   (package
     (name "rlwrap")
-    (version "0.42")
+    (version "0.43")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://utopia.knoware.nl/~hlub/uck/rlwrap/rlwrap-"
-                            version ".tar.gz"))
+        (uri (string-append "https://github.com/hanslub42/rlwrap/releases/"
+                            "download/v" version "/"
+                            name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0i3yz303wscrysyzpdq04h4nrl9ajz9dbwi80risdl5rkm3dhw2s"))))
+          "0bzb7ylk2770iv59v2d0gypb21y2xn87m299s9rqm6rdi2vx11lf"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs
+     `(("perl" ,perl)))
     (inputs
      `(("readline" ,readline)))
     (synopsis "Wrapper to allow the editing of keyboard commands")
@@ -134,5 +137,5 @@ readline library to allow the editing of keyboard input for any command.  You
 should consider rlwrap especially when you need user-defined completion (by way
 of completion word lists) and persistent history, or if you want to program
 'special effects' using the filter mechanism.")
-    (home-page "http://utopia.knoware.nl/~hlub/uck/rlwrap/")
+    (home-page "https://github.com/hanslub42/rlwrap")
     (license gpl2+)))

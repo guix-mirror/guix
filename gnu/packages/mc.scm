@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,7 @@
 (define-public mc
   (package
     (name "mc")
-    (version "4.8.16")
+    (version "4.8.20")
     (source
      (origin
       (method url-fetch)
@@ -44,7 +45,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "083h5gwc0nny9b557way5dsmj71g2bzkiai4bn30y5nkjwqbxg5v"))))
+        "072h7n9b3j79fqn48xaw0xhlcjavpsmfpz6nyh20lhmfz3sffzh1"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))
@@ -59,16 +60,37 @@
        '("--with-screen=ncurses" "--enable-aspell")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'patch-source-shebangs 'fix-absolutism
+         (add-after 'patch-source-shebangs 'patch-FHS-file-names
            (lambda _
-             ;; Modify files that contain absolute file names.
+             ;; Patch files to refer to executables in the store or $PATH.
              (substitute* "misc/mcedit.menu.in"
                (("#! /bin/sh") (string-append "#!" (which "sh")))
                (("/bin/bash") (which "bash")))
              (substitute* "misc/ext.d/misc.sh.in"
                (("/bin/cat") "cat"))
+             (substitute* (list "lib/utilunix.c"
+                                "src/usermenu.c"
+                                "src/vfs/fish/fish.c"
+                                "tests/src/vfs/extfs/helpers-list/Makefile.in")
+               (("/bin/sh") (which "sh")))
+             (substitute* "src/filemanager/ext.c"
+               (("/bin/rm") "rm")
+               (("/bin/sh") (which "sh")))
+
+             ;; There are other /bin/<shell>s hard-coded in this file, but they
+             ;; are never tried after bash (mc's first choice) is found.
+             (substitute* "lib/shell.c"
+               (("/bin/bash") (which "bash")))
+             #t))
+         (add-before 'check 'fix-tests
+           (lambda _
+             ;; Don't expect a UID or GID of ‘0’ in the build environment.
+             (with-directory-excursion "tests/src/vfs/extfs/helpers-list/data"
+               (substitute* (list "rpm.custom.output"
+                                  "rpm.glib.output")
+                 (("      0        0") "<<uid>>  <<gid>>")))
              #t)))))
-    (home-page "http://www.midnight-commander.org")
+    (home-page "https://www.midnight-commander.org")
     (synopsis "Graphical file manager")
     (description
      "GNU Midnight Commander is a command-line file manager laid out in a

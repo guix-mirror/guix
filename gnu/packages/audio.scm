@@ -8,7 +8,9 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -279,14 +281,14 @@ engineers, musicians, soundtrack editors and composers.")
 (define-public audacity
   (package
     (name "audacity")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/audacity/audacity/archive"
                            "/Audacity-" version ".tar.gz"))
        (sha256
-        (base32 "09xpr4bjnainz1xmc35v3qg3dadjr9wv8bmn1p4y91aqyihnhjry"))
+        (base32 "1n05r8b4rnf9fas0py0is8cm97s3h65dgvqkk040aym5d1x6wd7z"))
        (patches (search-patches "audacity-build-with-system-portaudio.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -705,7 +707,7 @@ language and software synthesizer.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("fftw" ,fftw)))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "C++ wrapper around the ALSA API")
     (description
      "clalsadrv is a C++ wrapper around the ALSA API simplifying access to
@@ -744,7 +746,7 @@ ALSA PCM devices.")
                (("/usr/bin/install") (which "install"))
                (("/bin/rm") "#"))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA ambisonics plugins")
     (description
      "The AMB plugins are a set of LADSPA ambisonics plugins, mainly to be
@@ -781,7 +783,7 @@ horizontal rotator, square, hexagon and cube decoders.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "Chorus, phaser, and vintage high-pass and low-pass filters")
     (description
      "This package provides various LADSPA plugins.  @code{cs_chorus} and
@@ -821,7 +823,7 @@ the non-linear circuit elements of their original analog counterparts.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA reverb plugin")
     (description
      "This package provides a stereo reverb LADSPA plugin based on the
@@ -857,7 +859,7 @@ well-known greverb.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA four-band parametric equalizer plugin")
     (description
      "This package provides a LADSPA plugin for a four-band parametric
@@ -902,7 +904,7 @@ for stage use.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA stereo width plugin")
     (description
      "This package provides a LADSPA plugin to manipulate the stereo width of
@@ -939,7 +941,7 @@ audio signals.")
                (("/usr") (assoc-ref outputs "out"))
                (("/bin/cp") (which "cp")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA plugin for synthesizer oscillators")
     (description
      "The @code{blvco} LADSPA plugin provides three anti-aliased oscillators:
@@ -983,7 +985,7 @@ output of analog synthesizers such as the Moog Voyager.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA Autowah effect plugin")
     (description
      "This package provides a LADSPA plugin for a Wah effect with envelope
@@ -1019,7 +1021,7 @@ follower.")
              (substitute* "Makefile"
                (("/usr") (assoc-ref outputs "out")))
              #t)))))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "LADSPA stereo reverb plugin")
     (description
      "This package provides a LADSPA plugin for a stereo reverb effect.")
@@ -1590,7 +1592,7 @@ to be plugged into a wide range of audio synthesis and recording packages.")
        ("libxml2" ,libxml2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.nongnu.org/lash/")
+    (home-page "https://www.nongnu.org/lash/")
     (synopsis "Audio application session manager")
     (description
      "LASH is a session management system for audio applications.  It allows
@@ -1644,6 +1646,33 @@ essential distortions.")
      "liblo is a lightweight library that provides an easy to use
 implementation of the Open Sound Control (OSC) protocol.")
     (license license:lgpl2.1+)))
+
+(define-public python-pyaudio
+  (package
+    (name "python-pyaudio")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://pypi.python.org/packages/ab/42/"
+         "b4f04721c5c5bfc196ce156b3c768998ef8c0ae3654ed29ea5020c749a6b"
+         "/PyAudio-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0x7vdsigm7xgvyg3shd3lj113m8zqj2pxmrgdyj66kmnw0qdxgwk"))))
+    (build-system python-build-system)
+    (inputs
+     `(("portaudio" ,portaudio)))
+    (home-page "https://people.csail.mit.edu/hubert/pyaudio/")
+    (synopsis "Bindings for PortAudio v19")
+    (description "This package provides bindings for PortAudio v19, the
+cross-platform audio input/output stream library.")
+    (license license:expat)))
+
+(define-public python2-pyaudio
+  (package-with-python2 python-pyaudio))
 
 (define-public python-pyliblo
   (package
@@ -2739,7 +2768,7 @@ result.")
          ;; no configure script
          (delete 'configure))))
     (inputs `(("fftwf" ,fftwf)))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "Fast, partitioned convolution engine library")
     (description
      "Zita convolver is a C++ library providing a real-time convolution
@@ -2786,7 +2815,7 @@ engine.")
                                     "/lib/libzita-resampler.so.1"))))
          ;; no configure script
          (delete 'configure))))
-    (home-page "http://kokkinizita.linuxaudio.org/linuxaudio/zita-resampler/resampler.html")
+    (home-page "https://kokkinizita.linuxaudio.org/linuxaudio/zita-resampler/resampler.html")
     (synopsis "C++ library for resampling audio signals")
     (description
      "Libzita-resampler is a C++ library for resampling audio signals.  It is
@@ -2830,7 +2859,7 @@ provide high-quality sample rate conversion.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("fftw" ,fftw)))
-    (home-page "http://kokkinizita.linuxaudio.org")
+    (home-page "https://kokkinizita.linuxaudio.org")
     (synopsis "C++ wrapper around the ALSA API")
     (description
      "Zita-alsa-pcmi is a C++ wrapper around the ALSA API.  It provides easy
@@ -2987,7 +3016,7 @@ code, used in @code{libtoxcore}.")
 (define-public gsm
   (package
     (name "gsm")
-    (version "1.0.14")
+    (version "1.0.17")
     (source
      (origin
        (method url-fetch)
@@ -2996,7 +3025,7 @@ code, used in @code{libtoxcore}.")
                        "-" version ".tar.gz"))
        (sha256
         (base32
-         "0b1mx69jq88wva3wk0hi6fcl5a52qhnq2f9p3f3jdh5k61ma252q"))))
+         "00bns0d4wwrvc60lj2w7wz4yk49q1f6rpdrwqzrxsha9d78mfnl5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tst"
@@ -3264,3 +3293,86 @@ the following features:
 transforms (FFTs) of the sound being played, as well as other graphical
 representations.")
     (license license:expat)))
+
+(define-public cava
+  (package
+    (name "cava")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/karlstav/cava/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1p24lz3h4d0h82ffylqr7mq8a8x1c66flm2r2bsv1liw51n1rma2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("ncurses" ,ncurses)
+       ("pulseaudio" ,pulseaudio)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "PREFIX=" %output)
+             (string-append "FONT_DIR=" %output "/usr/share/consolefonts"))
+       #:make-flags
+       (let ((lib (string-append %output "/lib")))
+         (list (string-append "cava_LDFLAGS = -L" lib " -Wl,-rpath " lib)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "HOME" (getcwd))
+             (invoke "sh" "autogen.sh")))
+         (add-before 'build 'make-cava-ldflags
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))))
+         (add-after 'install 'data
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each (lambda (file)
+                         (install-file file
+                                       (string-append (assoc-ref outputs "out")
+                                                      "/share/doc/examples")))
+                       (find-files "example_files")))))))
+    (home-page "https://karlstav.github.io/cava/")
+    (synopsis "Console audio visualizer for ALSA, MPD, and PulseAudio")
+    (description "C.A.V.A. is a bar audio spectrum visualizer for the terminal
+using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
+    (license license:expat)))
+
+(define-public fluid-3
+  (let ((commit "871c8ce2002e8b3c198f532fdb4fbcce7914f951"))
+    (package
+      (name "fluid-3")
+      (version "2.1")
+      (source
+       (origin
+         (method url-fetch)
+         ;; Only one file is required, but the release bundles the whole
+         ;; software which is 50MiB as tar and 200MiB unpacked. The website
+         ;; directly links the soundfont release to the github file download.
+         (uri (string-append "https://github.com/musescore/MuseScore/raw/"
+                             commit "/share/sound/FluidR3Mono_GM.sf3"))
+         (file-name (string-append name "-" version ".sf3"))
+         (sha256
+          (base32
+           "1hjfg5i15bw9279007xs92zsggjgn4s4k9pc00s851l3kvc6dkfg"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((file (assoc-ref %build-inputs "source"))
+                 (out (string-append %output "/share/soundfonts")))
+             (mkdir-p out)
+             (copy-file file (string-append out "/FluidR3Mono_GM.sf3"))))))
+      (home-page  "https://github.com/musescore/MuseScore/tree/master/share/sound")
+      (synopsis "Pro-quality GM soundfont")
+      (description "Fluid-3 is Frank Wen's pro-quality GM soundfont.")
+      (license license:expat))))
