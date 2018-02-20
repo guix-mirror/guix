@@ -4,6 +4,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,12 +82,14 @@
              `(modify-phases ,phases
                 (replace 'build
                   (lambda _
-                    (zero? (system* "./build.sh"))))
+                    (invoke "./build.sh")
+                    #t))
                 (replace 'install
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let* ((out (assoc-ref outputs "out"))
                            (bin (string-append out "/bin")))
-                      (install-file "make" bin)))))))))
+                      (install-file "make" bin)
+                      #t))))))))
      (native-inputs '())                          ; no need for 'pkg-config'
      (inputs %bootstrap-inputs))))
 
@@ -253,42 +256,40 @@
                                 "--(with-system-zlib|enable-languages.*)" <>)
                               ,flags)))
             ((#:phases phases)
-             `(alist-cons-after
-               'unpack 'unpack-gmp&co
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
-                       (mpfr (assoc-ref %build-inputs "mpfr-source"))
-                       (mpc  (assoc-ref %build-inputs "mpc-source")))
+             `(modify-phases ,phases
+                (add-after 'unpack 'unpack-gmp&co
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
+                          (mpfr (assoc-ref %build-inputs "mpfr-source"))
+                          (mpc  (assoc-ref %build-inputs "mpc-source")))
 
-                   ;; To reduce the set of pre-built bootstrap inputs, build
-                   ;; GMP & co. from GCC.
-                   (for-each (lambda (source)
-                               (or (zero? (system* "tar" "xvf" source))
-                                   (error "failed to unpack tarball"
-                                          source)))
-                             (list gmp mpfr mpc))
+                      ;; To reduce the set of pre-built bootstrap inputs, build
+                      ;; GMP & co. from GCC.
+                      (for-each (lambda (source)
+                                  (invoke "tar" "xvf" source))
+                                (list gmp mpfr mpc))
 
-                   ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
-                   ,@(map (lambda (lib)
-                            ;; Drop trailing letters, as gmp-6.0.0a unpacks
-                            ;; into gmp-6.0.0.
-                            `(symlink ,(string-trim-right
-                                        (package-full-name lib)
-                                        char-set:letter)
-                                      ,(package-name lib)))
-                          (list gmp-6.0 mpfr mpc))))
-               (alist-cons-after
-                'install 'symlink-libgcc_eh
-                (lambda* (#:key outputs #:allow-other-keys)
-                  (let ((out (assoc-ref outputs "lib")))
-                    ;; Glibc wants to link against libgcc_eh, so provide
-                    ;; it.
-                    (with-directory-excursion
-                        (string-append out "/lib/gcc/"
-                                       ,(boot-triplet)
-                                       "/" ,(package-version gcc))
-                      (symlink "libgcc.a" "libgcc_eh.a"))))
-                ,phases))))))
+                      ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
+                      ,@(map (lambda (lib)
+                               ;; Drop trailing letters, as gmp-6.0.0a unpacks
+                               ;; into gmp-6.0.0.
+                               `(symlink ,(string-trim-right
+                                           (package-full-name lib)
+                                           char-set:letter)
+                                         ,(package-name lib)))
+                             (list gmp-6.0 mpfr mpc))
+                      #t)))
+                (add-after 'install 'symlink-libgcc_eh
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "lib")))
+                      ;; Glibc wants to link against libgcc_eh, so provide
+                      ;; it.
+                      (with-directory-excursion
+                          (string-append out "/lib/gcc/"
+                                         ,(boot-triplet)
+                                         "/" ,(package-version gcc))
+                        (symlink "libgcc.a" "libgcc_eh.a"))
+                      #t))))))))
 
      (inputs `(("gmp-source" ,(package-source gmp-6.0))
                ("mpfr-source" ,(package-source mpfr))
@@ -503,29 +504,29 @@ the bootstrap environment."
                             "--enable-obsolete-rpc")
                       ,flags))
             ((#:phases phases)
-             `(alist-cons-before
-               'configure 'pre-configure
-               (lambda* (#:key inputs #:allow-other-keys)
-                 ;; Don't clobber CPATH with the bootstrap libc.
-                 (setenv "NATIVE_CPATH" (getenv "CPATH"))
-                 (unsetenv "CPATH")
+             `(modify-phases ,phases
+                (add-before 'configure 'pre-configure
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    ;; Don't clobber CPATH with the bootstrap libc.
+                    (setenv "NATIVE_CPATH" (getenv "CPATH"))
+                    (unsetenv "CPATH")
 
-                 ;; Tell 'libpthread' where to find 'libihash' on Hurd systems.
-                 ,@(if (hurd-triplet? (%current-system))
-                       `((substitute* "libpthread/Makefile"
-                           (("LDLIBS-pthread.so =.*")
-                            (string-append "LDLIBS-pthread.so = "
-                                           (assoc-ref %build-inputs "kernel-headers")
-                                           "/lib/libihash.a\n"))))
-                       '())
+                    ;; Tell 'libpthread' where to find 'libihash' on Hurd systems.
+                    ,@(if (hurd-triplet? (%current-system))
+                          `((substitute* "libpthread/Makefile"
+                              (("LDLIBS-pthread.so =.*")
+                               (string-append "LDLIBS-pthread.so = "
+                                              (assoc-ref %build-inputs "kernel-headers")
+                                              "/lib/libihash.a\n"))))
+                          '())
 
-                 ;; 'rpcgen' needs native libc headers to be built.
-                 (substitute* "sunrpc/Makefile"
-                   (("sunrpc-CPPFLAGS =.*" all)
-                    (string-append "CPATH = $(NATIVE_CPATH)\n"
-                                   "export CPATH\n"
-                                   all "\n"))))
-               ,phases)))))
+                    ;; 'rpcgen' needs native libc headers to be built.
+                    (substitute* "sunrpc/Makefile"
+                      (("sunrpc-CPPFLAGS =.*" all)
+                       (string-append "CPATH = $(NATIVE_CPATH)\n"
+                                      "export CPATH\n"
+                                      all "\n")))
+                    #t)))))))
      (propagated-inputs `(("kernel-headers" ,(kernel-headers-boot0))))
      (native-inputs
       `(("texinfo" ,texinfo-boot0)
