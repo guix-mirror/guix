@@ -370,7 +370,7 @@ out) and returning a package that uses that as its 'source'."
               ("perl-www-curl" ,perl-www-curl)
               ("perl-dbi" ,perl-dbi)
               ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
-    (home-page "http://nixos.org/nix/")
+    (home-page "https://nixos.org/nix/")
     (synopsis "The Nix package manager")
     (description
      "Nix is a purely functional package manager.  This means that it treats
