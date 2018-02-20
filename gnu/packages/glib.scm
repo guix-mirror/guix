@@ -368,13 +368,14 @@ bindings to call into the C library.")
        ("perl-xml-parser" ,perl-xml-parser)
        ("perl" ,perl)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'patch-file-references
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((file (assoc-ref inputs "file")))
-                     (substitute* "intltool-update.in"
-                       (("`file") (string-append "`" file "/bin/file")))))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-file-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((file (assoc-ref inputs "file")))
+               (substitute* "intltool-update.in"
+                 (("`file") (string-append "`" file "/bin/file")))
+               #t))))))
     (home-page "https://launchpad.net/intltool/+download")
     (synopsis "Tools to centralise translations of different file formats")
     (description
