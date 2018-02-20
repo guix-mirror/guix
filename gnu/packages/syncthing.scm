@@ -1724,32 +1724,6 @@ processor feature detection used by the Go standard libary.")
       (home-page "https://github.com/templexxx/cpufeat")
       (license bsd-3))))
 
-(define-public go-github-com-tjfoc-gmsm-sm4
-  (let ((commit "98aa888b79d8de04afe0fccf45ed10594efc858b")
-        (revision "1"))
-    (package
-      (name "go-github-com-tjfoc-gmsm-sm4")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/tjfoc/gmsm")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1ii4imnz3ims2s23pdv0l4ijzxjsvl82h4yzgfqm5y809ph6pjq9"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/tjfoc/gmsm/sm4"
-         #:unpack-path "github.com/tjfoc/gmsm"))
-      (synopsis "SM4 block cipher")
-      (description "This package provides a Go implementation of SM4, a block
-cipher used in the Chinese National Standard for Wireless LAN WAPI (Wired
-Authentication and Privacy Infrastructure).")
-      (home-page "https://github.com/tjfoc/gmsm")
-      (license asl2.0))))
-
 (define-public go-github-com-zillode-notify
   (let ((commit "a8abcfb1ce88ee8d79a300ed65d94b8fb616ddb3")
         (revision "2"))
