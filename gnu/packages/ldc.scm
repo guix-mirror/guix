@@ -310,7 +310,7 @@ bootstrapping more recent compilers written in D.")
          (delete 'configure)            ; no configure script
          (replace 'build
            (lambda _
-             (zero? (system* "./build.sh"))))
+             (invoke "./build.sh")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
