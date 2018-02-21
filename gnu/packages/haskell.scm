@@ -9656,4 +9656,24 @@ serialization code.")
    (home-page "https://hackage.haskell.org/package/bytes")
    (license license:bsd-3)))
 
+(define-public ghc-disk-free-space
+  (package
+    (name "ghc-disk-free-space")
+    (version "0.1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "disk-free-space/disk-free-space-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "07rqj8k1vh3cykq9yidpjxhgh1f7vgmjs6y1nv5kq2217ff4yypi"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/redneb/disk-free-space")
+    (synopsis "Retrieve information about disk space usage")
+    (description "A cross-platform library for retrieving information about
+disk space usage.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
