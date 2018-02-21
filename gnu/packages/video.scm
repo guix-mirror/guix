@@ -256,7 +256,7 @@ television and DVD.  It is also known as AC-3.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("yasm" ,yasm)))
+       ("nasm" ,nasm)))
     ;; TODO: Add gpac input
     (arguments
      `(#:tests? #f  ;no check target
