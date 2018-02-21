@@ -641,6 +641,7 @@ default) of the repository.")
               (method url-fetch)
               (uri (string-append "https://github.com/kward/shflags/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0zxw12haylaq60a335xlqcs4afw2zrgwqymmpw0m21r51w6irdmr"))))
