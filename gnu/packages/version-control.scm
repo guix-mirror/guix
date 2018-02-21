@@ -636,7 +636,7 @@ default) of the repository.")
 (define-public shflags
   (package
     (name "shflags")
-    (version "1.2.0")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/kward/shflags/archive/v"
@@ -644,7 +644,7 @@ default) of the repository.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0zxw12haylaq60a335xlqcs4afw2zrgwqymmpw0m21r51w6irdmr"))))
+                "1h9xfrwwdhzflipfwdcgcc3y7zapdslnyk1rg5y8jm7k144rfrs4"))))
     (build-system gnu-build-system)
     (native-inputs `(("tar" ,tar)
                      ("gzip" ,gzip)))
@@ -658,7 +658,7 @@ default) of the repository.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (src (string-append out "/src")))
-               (install-file "src/shflags" src)
+               (install-file "shflags" src)
                #t))))))
     (home-page "https://github.com/kward/shflags")
     (synopsis "Command-line flags library for shell scripts")
