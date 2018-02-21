@@ -5755,6 +5755,8 @@ representations of current time.")
        (sha256
         (base32 "0jkca97zyv23yyilp3jydcrzxqhyk27swhzh82llvban5zp8b21y"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-random" ,ghc-random)
        ("ghc-test-framework" ,ghc-test-framework)
