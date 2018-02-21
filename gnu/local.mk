@@ -52,6 +52,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/acl.scm				\
   %D%/packages/admin.scm			\
   %D%/packages/adns.scm				\
+  %D%/packages/agda.scm				\
   %D%/packages/algebra.scm			\
   %D%/packages/aidc.scm				\
   %D%/packages/android.scm			\
