@@ -3844,6 +3844,26 @@ strings, and code folding.")
 in Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-edit-indirect
+  (package
+    (name "emacs-edit-indirect")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Fanael/edit-indirect/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07kr58rd1p5j764wminsssazr73hy51yw8iqcsv5z2dwgj7msv71"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Fanael/edit-indirect")
+    (synopsis "Edit regions in separate buffers")
+    (description "This package allows you to edit regions in separate buffers,
+like @code{org-edit-src-code} but for arbitrary regions.")
+    (license license:gpl3+)))
+
 (define-public emacs-projectile
   (package
     (name "emacs-projectile")
