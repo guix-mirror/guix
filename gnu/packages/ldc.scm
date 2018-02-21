@@ -235,6 +235,7 @@ bootstrapping more recent compilers written in D.")
                (delete-file "tests/compilable/ctfe_math.d")
                (delete-file "tests/debuginfo/nested_gdb.d")
                (delete-file "tests/debuginfo/classtypes_gdb.d")
+               ;; the following tests requires AVX instruction set in the CPU.
                (substitute* "tests/d2/dmd-testsuite/runnable/test_cdvecfill.d"
                 (("^// DISABLED: ") "^// DISABLED: linux64 "))
                #t))
