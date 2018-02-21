@@ -43,6 +43,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml))
 
 (define-public geos
@@ -456,3 +457,36 @@ development.")
     (synopsis "Python bindings for Mapnik")
     (description "This package provides Python bindings for Mapnik.")
     (license license:lgpl2.1+)))
+
+(define-public spatialite-gui
+  (package
+    (name "spatialite-gui")
+    (version "1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gaia-gis.it/gaia-sins/spatialite_gui-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1r05dz9pyc8vsd2wbqxcsracpfbaamz470rcyp2myfpqwznv376b"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freexl" ,freexl)
+       ("geos" ,geos)
+       ("libgaiagraphics" ,libgaiagraphics)
+       ("libspatialite" ,libspatialite)
+       ("libxml2" ,libxml2)
+       ("proj.4" ,proj.4)
+       ("sqlite" ,sqlite)
+       ("wxwidgets" ,wxwidgets-2)
+       ("zlib" ,zlib)))
+    (synopsis "Graphical user interface for SpatiaLite")
+    (description "Spatialite-gui provides a visual interface for viewing and
+ maintaining a spatialite database.  You can easily see the structure of the
+ tables and data contents using point and click functions, many of which
+ construct common SQL queries, or craft your own SQL queries.")
+    (home-page "https://www.gaia-gis.it/fossil/spatialite_gui/index")
+    (license license:gpl3+)))
