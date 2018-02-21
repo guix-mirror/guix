@@ -41,6 +41,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
@@ -462,3 +463,27 @@ game development and other performance-critical applications.")
     (description "Read and write feather files, a lightweight binary columnar
 daa store designed for maximum speed.")
     (license license:asl2.0)))
+
+(define-public python-feather-format
+  (package
+    (name "python-feather-format")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "feather-format" version))
+        (sha256
+         (base32
+          "1adivm5w5ji4qv7hq7942vqlk8l2wgw87bdlsia771z14z3zp857"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-pyarrow" ,python-pyarrow)))
+    (home-page "https://github.com/wesm/feather")
+    (synopsis "Python wrapper to the Feather file format")
+    (description "This package provides a Python wrapper library to the
+Apache Arrow-based Feather binary columnar serialization data frame format.")
+    (license license:asl2.0)))
+
+(define-public python2-feather-format
+  (package-with-python2 python-feather-format))
