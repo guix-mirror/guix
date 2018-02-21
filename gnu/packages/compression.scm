@@ -1071,21 +1071,23 @@ algorithm within the Numpy framework.")
 (define-public snappy
   (package
     (name "snappy")
-    (version "1.1.3")
+    (version "1.1.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/google/snappy/releases/download/"
-                    version "/" name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/google/snappy/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append "snappy-" version ".tar.gz"))
               (sha256
                (base32
-                "1wzf8yif5ym2gj52db6v5m1pxnmn258i38x7llk9x346y2nq47ig"))))
-    (build-system gnu-build-system)
+                "1m7rcdqzkys5lspj8jcsaah8w33zh28s771bw0ga2lgzfgl05yix"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (home-page "https://github.com/google/snappy")
     (synopsis "Fast compressor/decompressor")
-    (description "Snappy is a compression/decompression library. It does not
+    (description "Snappy is a compression/decompression library.  It does not
 aim for maximum compression, or compatibility with any other compression library;
-instead, it aims for very high speeds and reasonable compression. For instance,
+instead, it aims for very high speeds and reasonable compression.  For instance,
 compared to the fastest mode of zlib, Snappy is an order of magnitude faster
 for most inputs, but the resulting compressed files are anywhere from 20% to
 100% bigger.")
