@@ -269,7 +269,8 @@ graphs and can export its output to different formats.")
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
-              "0j07z0xm2gj1vzvbgh4323k4db9mr7drd7gw95mmpqi61ncvwq1j"))))
+              "0j07z0xm2gj1vzvbgh4323k4db9mr7drd7gw95mmpqi61ncvwq1j"))
+            (patches (search-patches "htop-fix-process-tree.patch"))))
    (build-system gnu-build-system)
    (inputs
     `(("ncurses" ,ncurses)))
