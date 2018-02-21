@@ -1133,7 +1133,7 @@ install: libbitshuffle.so
 (define-public java-snappy
   (package
     (name "java-snappy")
-    (version "1.1.4")
+    (version "1.1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/xerial/snappy-java/archive/"
@@ -1141,7 +1141,7 @@ install: libbitshuffle.so
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1w58diryma7qz7aa24yv8shf3flxcbbw8jgcn2lih14wgmww58ww"))))
+                "0q4kxz2n97czf6g5gzq0d8yz22cgiaj7wp51rzsswh3bi99bpgg5"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "snappy.jar"
@@ -1181,7 +1181,9 @@ install: libbitshuffle.so
                (("NAME\\): \\$\\(SNAPPY_OBJ\\)")
                 "NAME): $(SNAPPY_OBJ)\n\t@mkdir -p $(@D)"))
              ;; Finally we can run the Makefile to build the dynamic library.
-             (zero? (system* "make" "native"))))
+             ;; Use the -nocmake target to avoid a dependency on cmake,
+             ;; which in turn requires the "git_unpacked" directory.
+             (invoke "make" "native-nocmake")))
          ;; Once we have built the shared library, we need to place it in the
          ;; "build" directory so it can be added to the jar file.
          (add-after 'build-jni 'copy-jni
@@ -1190,13 +1192,14 @@ install: libbitshuffle.so
                                "build/classes/org/xerial/snappy/native")))
          (add-before 'check 'fix-failing
            (lambda _
-             ;; This package assumes maven build, which puts results in "target".
-             ;; We put them in "build" instead, so fix that.
-             (substitute* "src/test/java/org/xerial/snappy/SnappyLoaderTest.java"
-               (("target/classes") "build/classes"))
-             ;; FIXME: probably an error
-             (substitute* "src/test/java/org/xerial/snappy/SnappyOutputStreamTest.java"
-               (("91080") "91013")))))))
+             (with-directory-excursion "src/test/java/org/xerial/snappy"
+               ;; This package assumes maven build, which puts results in "target".
+               ;; We put them in "build" instead, so fix that.
+               (substitute* "SnappyLoaderTest.java"
+                 (("target/classes") "build/classes"))
+               ;; This requires Hadoop, which is not in Guix yet.
+               (delete-file "SnappyHadoopCompatibleOutputStreamTest.java"))
+             #t)))))
     (inputs
      `(("osgi-framework" ,java-osgi-framework)))
     (propagated-inputs
@@ -1207,6 +1210,8 @@ install: libbitshuffle.so
        ("hamcrest" ,java-hamcrest-core)
        ("xerial-core" ,java-xerial-core)
        ("classworlds" ,java-plexus-classworlds)
+       ("commons-lang" ,java-commons-lang)
+       ("commons-io" ,java-commons-io)
        ("perl" ,perl)))
     (home-page "https://github.com/xerial/snappy-java")
     (synopsis "Compression/decompression algorithm in Java")
