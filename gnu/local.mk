@@ -581,7 +581,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
-  %D%/packages/patches/ceph-disable-unittest-throttle.patch	\
+  %D%/packages/patches/ceph-rocksdb-compat.patch		\
   %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
   %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
   %D%/packages/patches/chmlib-inttypes.patch			\
