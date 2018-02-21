@@ -2812,3 +2812,49 @@ representations of flat and hierarchical data along with multiple
 language-bindings for structure manipulation. It also provides IPC and common
 algorithm implementations.")
     (license license:asl2.0)))
+
+(define-public python-pyarrow
+  (package
+    (name "python-pyarrow")
+    (version "0.7.0")
+    (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/apache/arrow")
+             (commit (string-append "apache-arrow-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+         (base32
+           "1x7sdd8lbs3nfqjql1pcgbkjc19bls56zmgjayshkmablvlc4dy3"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f ; XXX Test failures related to missing libhdfs, libhdfs3,
+                   ; and "Unsupported numpy type 22".
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source-directory
+           (lambda _ (chdir "python") #t))
+         (add-after 'unpack 'set-env
+           (lambda _
+             (setenv "ARROW_HOME" (assoc-ref %build-inputs "apache-arrow"))
+             #t)))))
+    (propagated-inputs
+     `(("apache-arrow" ,apache-arrow)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://arrow.apache.org/docs/python/")
+    (synopsis "Python bindings for Apache Arrow")
+    (description "This library provides a Pythonic API wrapper for the reference
+Arrow C++ implementation, along with tools for interoperability with pandas,
+NumPy, and other traditional Python scientific computing packages.")
+    (license license:asl2.0)))
+
+(define-public python2-pyarrow
+  (package-with-python2 python-pyarrow))
