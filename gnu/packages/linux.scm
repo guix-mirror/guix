@@ -1111,14 +1111,17 @@ external rate conversion.")
        #:configure-flags ; add $libdir to the RUNPATH of executables
        (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
     (home-page "https://www.netfilter.org/projects/iptables/index.html")
-    (synopsis "Program to configure the Linux IP packet filtering rules")
+    (synopsis "Programs to configure Linux IP packet filtering rules")
     (description
-     "iptables is the userspace command line program used to configure the
-Linux 2.4.x and later IPv4 packet filtering ruleset (firewall).  It is targeted at
-system administrators.  Since Network Address Translation is also configured
-from the packet filter ruleset, iptables is used for this, too.  The iptables
-package also includes ip6tables.  ip6tables is used for configuring the IPv6
-packet filter.")
+     "@command{iptables} is the user-space command line program used to
+configure the Linux 2.4.x and later IPv4 packet filtering ruleset
+(@dfn{firewall}), including @dfn{NAT} (Network Address Translation).
+
+This package also includes @command{ip6tables}, which is used to configure the
+IPv6 packet filter.
+
+Both commands are targeted at system administrators.
+")
     (license license:gpl2+)))
 
 (define-public ebtables
