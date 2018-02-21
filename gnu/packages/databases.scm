@@ -17,7 +17,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
@@ -841,7 +841,7 @@ types are supported, as is encryption.")
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "5.2.1")
+    (version "5.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/rocksdb"
@@ -849,18 +849,28 @@ types are supported, as is encryption.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1v2q05bl56sfp51m09z7g6489hkfq4vf6b4qgfg3d96ylgmay9yb"))
+                "0hp7jxr99vyc57n708hiqk4lks9a9zmjgfjc21mx6v1rmabj2944"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; TODO: unbundle gtest.
                   (delete-file "build_tools/gnu_parallel")
+                  (substitute* "Makefile"
+                    (("build_tools/gnu_parallel") "parallel"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list "CC=gcc" "V=1"
+                          ;; Ceph requires that RTTI is enabled.
+                          "USE_RTTI=1"
                           (string-append "INSTALL_PATH="
-                                         (assoc-ref %outputs "out")))
+                                         (assoc-ref %outputs "out"))
+
+                          ;; Running the full test suite takes hours and require
+                          ;; a lot of disk space.  Instead we only run a subset
+                          ;; (see .travis.yml and Makefile).
+                          "ROCKSDBTESTS_END=db_tailing_iter_test")
+       #:test-target "check_some"
        ;; Many tests fail on 32-bit platforms. There are multiple reports about
        ;; this upstream, but it's not going to be supported any time soon.
        #:tests? (let ((system ,(or (%current-target-system)
@@ -872,7 +882,6 @@ types are supported, as is encryption.")
          (add-after 'unpack 'patch-Makefile
            (lambda _
              (substitute* "Makefile"
-               (("build_tools/gnu_parallel") "parallel")
                ;; Don't depend on the static library when installing.
                (("install: install-static")
                 "install: install-shared")
@@ -889,20 +898,20 @@ types are supported, as is encryption.")
          (add-before 'check 'disable-failing-tests
            (lambda _
              (substitute* "Makefile"
-               ;; This test fails with GCC-5 and is unmaintained.
-               ;; https://github.com/facebook/rocksdb/issues/2148
-               (("^[[:blank:]]+spatial_db_test[[:blank:]]+\\\\") "\\")
                ;; These tests reliably fail due to "Too many open files".
                (("^[[:blank:]]+env_test[[:blank:]]+\\\\") "\\")
                (("^[[:blank:]]+persistent_cache_test[[:blank:]]+\\\\") "\\"))
              #t))
-         (add-after 'check 'build-release-libraries
+         (add-after 'check 'build
            ;; The default build target is a debug build for tests. The
-           ;; install target depends on "shared_lib" and "static_lib"
-           ;; targets for release builds so we build them here for clarity.
-           ;; TODO: Add debug output.
-           (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "shared_lib" make-flags)))))))
+           ;; install target depends on the "shared_lib" release target
+           ;; so we build it here for clarity.
+           (lambda* (#:key (make-flags '()) parallel-build? #:allow-other-keys)
+               (apply invoke "make" "shared_lib"
+                      `(,@(if parallel-build?
+                              `("-j" ,(number->string (parallel-job-count)))
+                              '())
+                        ,@make-flags)))))))
     (native-inputs
      `(("parallel" ,parallel)
        ("perl" ,perl)
@@ -926,8 +935,9 @@ between @dfn{Write-Amplification-Factor} (WAF), @dfn{Read-Amplification-Factor}
 (RAF) and @dfn{Space-Amplification-Factor} (SAF).  It has multi-threaded
 compactions, making it specially suitable for storing multiple terabytes of
 data in a single database.  RocksDB is partially based on @code{LevelDB}.")
-    ;; RocksDB is BSD-3 and the JNI adapter is Apache 2.0.
-    (license (list license:bsd-3 license:asl2.0))))
+    ;; RocksDB is dual licensed under GPL2 and ASL 2.0.  Some header
+    ;; files carry the 3-clause BSD license.
+    (license (list license:gpl2 license:asl2.0 license:bsd-3))))
 
 (define-public sparql-query
   (package
