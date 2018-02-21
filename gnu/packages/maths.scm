@@ -3073,16 +3073,17 @@ specifications.")
           (("isnan\\(0\\)") "isnan(0.)")))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (replace 'build
            (lambda _
-             (and (with-directory-excursion "lpsolve55"
-                    (zero? (system* "bash" "ccc")))
-                  (with-directory-excursion "lp_solve"
-                    (zero? (system* "bash" "ccc"))))))
+             (with-directory-excursion "lpsolve55"
+               (invoke "bash" "ccc"))
+             (with-directory-excursion "lp_solve"
+               (invoke "bash" "ccc"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3091,11 +3092,8 @@ specifications.")
                     ;; This is where LibreOffice expects to find the header
                     ;; files, and where they are installed by Debian.
                     (include (string-append out "/include/lpsolve")))
-               (mkdir-p lib)
-               (copy-file "lpsolve55/bin/ux64/liblpsolve55.a"
-                          (string-append lib "/liblpsolve55.a"))
-               (copy-file "lpsolve55/bin/ux64/liblpsolve55.so"
-                          (string-append lib "/liblpsolve55.so"))
+               (install-file "lpsolve55/bin/ux64/liblpsolve55.a" lib)
+               (install-file "lpsolve55/bin/ux64/liblpsolve55.so" lib)
                (install-file "lp_solve/bin/ux64/lp_solve" bin)
 
                ;; Install a subset of the header files as on Debian
