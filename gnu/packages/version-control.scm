@@ -645,27 +645,21 @@ default) of the repository.")
               (sha256
                (base32
                 "0zxw12haylaq60a335xlqcs4afw2zrgwqymmpw0m21r51w6irdmr"))))
-    (build-system trivial-build-system)
+    (build-system gnu-build-system)
     (native-inputs `(("tar" ,tar)
                      ("gzip" ,gzip)))
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-                   (let* ((source (assoc-ref %build-inputs "source"))
-                          (tar    (assoc-ref %build-inputs "tar"))
-                          (gzip   (assoc-ref %build-inputs "gzip"))
-                          (output (assoc-ref %outputs "out"))
-                          (srcdir (string-append output "/src")))
-                     (begin
-                       (setenv "PATH" (string-append gzip "/bin"))
-                       (system* (string-append tar "/bin/tar") "xzf"
-                                source)
-                       (chdir ,(string-append name "-" version))
-                       (mkdir-p srcdir)
-                       (copy-file "src/shflags"
-                                  (string-append srcdir "/shflags"))
-                       #t)))))
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; nothing to configure
+         (delete 'build)                ; nothing to build
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (src (string-append out "/src")))
+               (install-file "src/shflags" src)
+               #t))))))
     (home-page "https://github.com/kward/shflags")
     (synopsis "Command-line flags library for shell scripts")
     (description
