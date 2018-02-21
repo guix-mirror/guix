@@ -153,6 +153,36 @@ and driving.")
     (home-page "https://wiki.gnome.org/Apps/Maps")
     (license license:gpl2+)))
 
+(define-public libgaiagraphics
+  (package
+    (name "libgaiagraphics")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gaia-gis.it/gaia-sins/libgaiagraphics-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "076afqv417ag3hfvnif0qc7qscmnq1dsf6y431yygwgf34rjkayc"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("libpng" ,libpng)
+       ("libjepeg-turbo" ,libjpeg-turbo)
+       ("libtiff" ,libtiff)
+       ("libgeotiff" ,libgeotiff)
+       ("proj.4" ,proj.4)
+       ("libxml2" ,libxml2)
+       ("zlib" ,zlib)))
+     (synopsis "Gaia common graphics support")
+     (description "libgaiagraphics is a library supporting
+ common-utility raster handling methods.")
+    (home-page "https://www.gaia-gis.it/fossil/libgaiagraphics/index")
+    (license license:lgpl3+)))
+
 (define-public libgeotiff
   (package
     (name "libgeotiff")
