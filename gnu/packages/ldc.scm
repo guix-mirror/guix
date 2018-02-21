@@ -58,7 +58,7 @@
          (replace
           'build
           (lambda _
-            (zero? (system* "ldc2" "rdmd.d"))))
+            (invoke "ldc2" "rdmd.d")))
          (replace
           'install
           (lambda* (#:key outputs #:allow-other-keys)
