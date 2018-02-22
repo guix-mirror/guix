@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -56,16 +56,16 @@
 (define-public libmpdclient
   (package
     (name "libmpdclient")
-    (version "2.13")
+    (version "2.14")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "http://musicpd.org/download/libmpdclient/"
+               (string-append "https://musicpd.org/download/libmpdclient/"
                               (car (string-split version #\.))
                               "/libmpdclient-" version ".tar.xz"))
               (sha256
                (base32
-                "0pflbv2jzik7yxnacci1iqs0awy1i5ipwn67xk0hg9r0pi9bs5ai"))))
+                "0whk0qw0lsd3kaimdznz0c45bfym0p4885zf4b7pfc7y3dwy510a"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
