@@ -2331,13 +2331,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "1.13.4")
+    (version "1.13.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "1az1qf50vyhm4w6k2a6wqw3pqc8jv2iqzdhs36cg079hx9swm0mb"))))
+                "1x3wsk7dh3yakii61kbfvafx9yz66h40ixiwfkf03dnp2n24hngs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
