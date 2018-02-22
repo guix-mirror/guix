@@ -965,16 +965,17 @@ transliteration, concatenation, date-time formatting and parsing, etc.")
 (define-public r-stringr
   (package
     (name "r-stringr")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringr" version))
        (sha256
-        (base32 "16hj2rmv8x03lp6cp2jk0k2plibvbggf444kp05przdvd03v7l31"))))
+        (base32 "07dvfbkhv8gk6l32j43jvxpmqlhqp0mdby406h5a3bsc6k94ic13"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-magrittr" ,r-magrittr)
+     `(("r-glue" ,r-glue)
+       ("r-magrittr" ,r-magrittr)
        ("r-stringi" ,r-stringi)))
     (home-page "https://github.com/hadley/stringr")
     (synopsis "Simple, consistent wrappers for common string operations")
