@@ -1596,9 +1596,8 @@ displays the results in real time.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'adjust-to-environment
+         (add-before 'build 'patch-command-file-names
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; Adjust file names.
              (substitute* "src/libstrongswan/utils/process.c"
                (("/bin/sh")
                 (string-append (assoc-ref inputs "bash") "/bin/sh")))
@@ -1607,8 +1606,9 @@ displays the results in real time.")
                (("/bin/sh") (which "sh"))
                (("/bin/echo") (which "echo"))
                (("cat") (which "cat")))
-
-             ;; This is needed for tests.
+             #t))
+         (add-before 'check 'set-up-test-environment
+           (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
                                             "/share/zoneinfo"))
              #t)))
