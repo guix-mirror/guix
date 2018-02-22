@@ -249,10 +249,10 @@ television and DVD.  It is also known as AC-3.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/pub/x264/snapshots/"
-                                  "x264-snapshot-" version ".tar.bz2"))
+                                  "x264-snapshot-" version "-stable.tar.bz2"))
               (sha256
                (base32
-                "166ahp82rn9xhiw9spisr8vhp516aylq1ggyddqdbi83w6fichcd"))))
+                "1x0cg8l30wp84mr7q0ddp06jclm0kjrszazrx87d4k7js3qxjy8m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
