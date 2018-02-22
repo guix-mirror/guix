@@ -88,16 +88,16 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.20.15")
+    (version "0.20.17")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "http://musicpd.org/download/mpd/"
+               (string-append "https://musicpd.org/download/mpd/"
                               (version-major+minor version)
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0h7bm561i8p0bjp1hy8fsiy5zj7db24zyv6ypfihwf35wrklz766"))))
+                "1hfssmvp4wmy7zh4bl4zv2zqwiddsy77v69w9fh61pqrwbqfgc1c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
