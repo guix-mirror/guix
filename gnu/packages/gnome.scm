@@ -2265,7 +2265,7 @@ configuration storage systems.")
 (define-public json-glib
   (package
     (name "json-glib")
-    (version "1.2.8")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2273,10 +2273,11 @@ configuration storage systems.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "02pl0wl3mf47c038bgv2r4pa6pr6y3shjhxn1l7s3rrrgl1sjmgx"))))
-    (build-system gnu-build-system)
+                "1j3dd2xj1l9fi12m1gpmfgf5p4c1w0i970m6k62k3is98yj0jxrd"))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("glib" ,glib "bin")              ;for glib-mkenums and glib-genmarshal
+     `(("gettext" ,gettext-minimal)
+       ("glib" ,glib "bin")              ;for glib-mkenums and glib-genmarshal
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
