@@ -142,6 +142,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/elixir.scm			\
   %D%/packages/embedded.scm			\
   %D%/packages/emacs.scm			\
+  %D%/packages/emulators.scm			\
   %D%/packages/enchant.scm			\
   %D%/packages/engineering.scm			\
   %D%/packages/enlightenment.scm		\
