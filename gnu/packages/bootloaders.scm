@@ -74,6 +74,7 @@
 ;; The GRUB test suite fails with later versions of Qemu, so we
 ;; keep it at 2.10 for now.  See
 ;; <https://lists.gnu.org/archive/html/bug-grub/2018-02/msg00004.html>.
+;; TODO: When grub no longer needs this version, move to gnu/packages/debug.scm.
 (define qemu-minimal-2.10
   (package
     (inherit qemu-minimal)
