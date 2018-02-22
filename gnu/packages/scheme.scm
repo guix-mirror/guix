@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 ng0 <contact.ng0@cryptolab.net>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,37 +90,37 @@
        (modify-phases %standard-phases
          (replace 'unpack
            (lambda* (#:key inputs #:allow-other-keys)
-             (and (zero? (system* "tar" "xzvf"
-                                  (assoc-ref inputs "source")))
-                  (chdir ,(mit-scheme-source-directory (%current-system)
-                                                       version))
-                  (begin
-                    ;; Delete these dangling symlinks since they break
-                    ;; `patch-shebangs'.
-                    (for-each delete-file
-                              (append '("src/lib/shim-config.scm")
-                                      (find-files "src/lib/lib" "\\.so$")
-                                      (find-files "src/lib" "^liarc-")
-                                      (find-files "src/compiler" "^make\\.")))
-                    (chdir "src")
-                    #t))))
+             (invoke "tar" "xzvf"
+                     (assoc-ref inputs "source"))
+             (chdir ,(mit-scheme-source-directory (%current-system)
+                                                  version))
+             ;; Delete these dangling symlinks since they break
+             ;; `patch-shebangs'.
+             (for-each delete-file
+                       (append '("src/lib/shim-config.scm")
+                               (find-files "src/lib/lib" "\\.so$")
+                               (find-files "src/lib" "^liarc-")
+                               (find-files "src/compiler" "^make\\.")))
+             (chdir "src")
+             #t))
          (replace 'build
            (lambda* (#:key system outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (if (or (string-prefix? "x86_64" system)
                        (string-prefix? "i686" system))
-                   (zero? (system* "make" "compile-microcode"))
-                   (zero? (system* "./etc/make-liarc.sh"
-                                   (string-append "--prefix=" out)))))))
+                   (invoke "make" "compile-microcode")
+                   (invoke "./etc/make-liarc.sh"
+                           (string-append "--prefix=" out)))
+               #t)))
          (add-after 'configure 'configure-doc
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (with-directory-excursion "../doc"
                (let* ((out (assoc-ref outputs "out"))
                       (bash (assoc-ref inputs "bash"))
                       (bin/sh (string-append bash "/bin/sh")))
-                 (system* bin/sh "./configure"
-                          (string-append "--prefix=" out)
-                          (string-append "SHELL=" bin/sh))
+                 (invoke bin/sh "./configure"
+                         (string-append "--prefix=" out)
+                         (string-append "SHELL=" bin/sh))
                  (substitute* '("Makefile" "make-common")
                    (("/lib/mit-scheme/doc")
                     (string-append "/share/doc/" ,name "-" ,version)))
@@ -128,7 +128,8 @@
          (add-after 'build 'build-doc
            (lambda* _
              (with-directory-excursion "../doc"
-               (zero? (system* "make")))))
+               (invoke "make"))
+             #t))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -138,7 +139,7 @@
                      (string-append doc "/share/doc/" ,name "-" ,version)))
                (with-directory-excursion "../doc"
                  (for-each (lambda (target)
-                             (system* "make" target))
+                             (invoke "make" target))
                            '("install-config" "install-info-gz" "install-man"
                              "install-html" "install-pdf")))
                (mkdir-p new-doc/mit-scheme-dir)
