@@ -162,17 +162,17 @@ protocol.")
 (define-public mpd-mpc
   (package
     (name "mpd-mpc")
-    (version "0.28")
+    (version "0.29")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "http://www.musicpd.org/download/mpc/"
+               (string-append "https://www.musicpd.org/download/mpc/"
                               (car (string-split version #\.))
                               "/mpc-" version ".tar.xz"))
               (sha256
                (base32
-                "0iy5mdffkk61255f62si7p8mhyhkib70zlr1i1iimj2xr037scx4"))))
-    (build-system gnu-build-system)
+                "1lxr0z5i5yx4lcvy9nyxj6q32qlz473j3zm6va68zd1cj3ndmw82"))))
+    (build-system meson-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (synopsis "Music Player Daemon client")
