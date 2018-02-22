@@ -119,33 +119,19 @@
                (url "https://github.com/dolphin-emu/dolphin.git")
                (commit commit)))
          (file-name (git-file-name name version))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (for-each delete-file-recursively
-                            ;; Remove external stuff we don't need.
-                            '("Externals/LZO"
-                              "Externals/OpenAL"
-                              "Externals/Qt"
-                              "Externals/SFML"
-                              "Externals/SOIL"
-                              "Externals/curl"
-                              "Externals/ffmpeg"
-                              "Externals/gettext"
-                              "Externals/hidapi"
-                              "Externals/libpng"
-                              "Externals/libusb"
-                              "Externals/mbedtls"
-                              "Externals/miniupnpc"
-                              "Externals/wxWidgets3"
-                              "Externals/zlib"))
-                  ;; Clean up source.
-                  (for-each delete-file (find-files "." "\\.bin$"))
-                  (for-each delete-file (find-files "." "\\.dsy$"))
-                  (for-each delete-file (find-files "." "\\.exe$"))
-                  (for-each delete-file (find-files "." "\\.jar$"))
-                  (for-each delete-file (find-files "." "\\.rar$"))
-                  #t))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Remove external stuff we don't need.
+             (for-each (lambda (dir)
+                         (delete-file-recursively
+                           (string-append "Externals/" dir)))
+                       '("LZO" "OpenAL" "Qt" "SFML" "SOIL" "curl" "ffmpeg"
+                         "gettext" "hidapi" "libpng" "libusb" "mbedtls"
+                         "miniupnpc" "wxWidgets3" "zlib"))
+             ;; Clean up source.
+             (for-each delete-file (find-files "." ".*\\.(bin|dsy|exe|jar|rar)$"))
+             #t))
          (sha256
           (base32
            "0g725wmhlim73zrhi47wmr1bmplpy4b7sbimd5pm8xpfhj5nm10l"))))
