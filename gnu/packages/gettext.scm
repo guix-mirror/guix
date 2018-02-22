@@ -198,7 +198,7 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
        ("texlive" ,texlive-tiny) ;for tests
        ("libxml2" ,libxml2)
        ("xsltproc" ,libxslt)))
-    (home-page "http://po4a.alioth.debian.org/")
+    (home-page "https://po4a.org/")
     (synopsis "Scripts to ease maintenance of translations")
     (description
      "The po4a (PO for anything) project goal is to ease translations (and
