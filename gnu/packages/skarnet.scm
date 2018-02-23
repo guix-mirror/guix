@@ -260,7 +260,7 @@ environment.")))
 (define-public s6-portable-utils
   (package
    (name "s6-portable-utils")
-   (version "2.0.6.0")
+   (version "2.2.1.1")
    (source
     (origin
      (method url-fetch)
@@ -269,7 +269,7 @@ environment.")))
            version ".tar.gz"))
      (sha256
       (base32
-       "0jwxj0ma4zd1h6i3i98nsp0miidr54phap7dqwf6c8vafq9psfr3"))))
+       "0ca5iiq3n6isj64jb81xpwjzjx1q8jg145nnnn91ra2qqk93kqka"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
