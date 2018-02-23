@@ -143,11 +143,14 @@
 
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'generate-fonts
+           (add-before 'configure 'generate-fonts&hardcore-libvulkan-path
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((fontfile
                       (string-append (assoc-ref inputs "font-wqy-microhei")
-                                     "/share/fonts/truetype/wqy-microhei.ttc")))
+                                     "/share/fonts/truetype/wqy-microhei.ttc"))
+                     (libvulkan
+                      (string-append (assoc-ref inputs "vulkan-icd-loader")
+                                     "/lib/libvulkan.so")))
                  (chdir "docs")
                  (invoke "bash" "-c" "g++ -O2 -std=c++11 $(freetype-config \
 --cflags --libs) gc-font-tool.cpp -o gc-font-tool")
@@ -156,6 +159,8 @@
                  (copy-file "font_japanese.bin" "../Data/Sys/GC/font_japanese.bin")
                  (copy-file "font_western.bin" "../Data/Sys/GC/font_western.bin")
                  (chdir "..")
+                 (substitute* "Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp"
+                              (("libvulkan.so") libvulkan))
                  #t))))
 
          #:configure-flags
@@ -172,7 +177,6 @@
                               (assoc-ref %build-inputs "libx11")
                               "/lib/libX11.so")
                "-DX11_FOUND=1")))
-      ; TODO: Make Vulkan backend work.
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("gettext" ,gnu-gettext)))
@@ -207,6 +211,7 @@
          ("sfml" ,sfml)
          ("soil" ,soil)
          ("soundtouch" ,soundtouch)
+         ("vulkan-icd-loader" ,vulkan-icd-loader)
          ("wxwidgets" ,wxwidgets-gtk2-3.1)
          ("zlib" ,zlib)))
       (home-page "https://dolphin-emu.org/")
