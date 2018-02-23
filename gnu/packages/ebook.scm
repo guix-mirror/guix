@@ -196,11 +196,11 @@
              #t)))))
     (home-page "http://calibre-ebook.com/")
     (synopsis "E-book library management software")
-    (description "Calibre is an ebook library manager.  It can view, convert
-and catalog ebooks in most of the major ebook formats.  It can also talk
-to many ebook reader devices.  It can go out to the Internet and fetch
+    (description "Calibre is an e-book library manager.  It can view, convert
+and catalog e-books in most of the major e-book formats.  It can also talk
+to many e-book reader devices.  It can go out to the Internet and fetch
 metadata for books.  It can download newspapers and convert them into
-ebooks for convenient reading.")
+e-books for convenient reading.")
     ;; Calibre is largely GPL3+, but includes a number of components covered
     ;; by other licenses. See COPYRIGHT for more details.
     (license (list license:gpl3+
