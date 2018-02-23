@@ -2233,6 +2233,120 @@ libraries from the SIS division at ETH Zurich like jHDF5.")
       (license (list license:asl2.0
                      (license:non-copyleft "file://source/c/COPYING"))))))
 
+(define-public java-cisd-args4j
+  (let ((revision 39162)
+        (base-version "9.11.2"))
+    (package
+      (name "java-cisd-args4j")
+      (version (string-append base-version "-" (number->string revision)))
+      (source (origin
+                (method svn-fetch)
+                (uri (svn-reference
+                      (url (string-append "http://svnsis.ethz.ch/repos/cisd/"
+                                          "args4j/tags/release/"
+                                          (version-major+minor base-version)
+                                          ".x/" base-version "/args4j/"))
+                      (revision revision)))
+                (file-name (string-append "java-cisd-args4j-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0hhqznjaivq7ips7mkwas78z42s6djsm20rrs7g1zd59rcsakxn2"))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:make-flags '("-file" "build/build.xml")
+         #:tests? #f ; there are no tests
+         ;; There are weird build failures with JDK8, such as: "The type
+         ;; java.io.ObjectInputStream cannot be resolved. It is indirectly
+         ;; referenced from required .class files"
+         #:jdk ,icedtea-7
+         #:modules ((guix build ant-build-system)
+                    (guix build utils)
+                    (guix build java-utils)
+                    (sxml simple)
+                    (sxml transform)
+                    (sxml xpath))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-build-resources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (mkdir-p "../build_resources")
+               (invoke "tar" "xf" (assoc-ref inputs "build-resources")
+                       "-C" "../build_resources"
+                       "--strip-components=1")
+               (mkdir-p "../build_resources/lib")
+               #t))
+           (add-after 'unpack-build-resources 'fix-dependencies
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; FIXME: There should be a more convenient abstraction for
+               ;; editing XML files.
+               (with-directory-excursion "../build_resources/ant/"
+                 (chmod "build-common.xml" #o664)
+                 (call-with-output-file "build-common.xml.new"
+                   (lambda (port)
+                     (sxml->xml
+                      (pre-post-order
+                       (with-input-from-file "build-common.xml"
+                         (lambda _ (xml->sxml #:trim-whitespace? #t)))
+                       `(;; Remove dependency on classycle and custom ant tasks
+                         (taskdef   . ,(lambda (tag . kids)
+                                         (let ((name ((sxpath '(name *text*)) kids)))
+                                           (if (or (member "build-info" name)
+                                                   (member "dependency-checker" name)
+                                                   (member "build-java-subprojects" name)
+                                                   (member "project-classpath" name))
+                                               '() ; skip
+                                               `(,tag ,@kids)))))
+                         (typedef   . ,(lambda (tag . kids)
+                                         (let ((name ((sxpath '(name *text*)) kids)))
+                                           (if (member "recursive-jar" name)
+                                               '() ; skip
+                                               `(,tag ,@kids)))))
+                         (build-java-subprojects . ,(lambda _ '()))
+                         ;; Ignore everything else
+                         (*default* . ,(lambda (tag . kids) `(,tag ,@kids)))
+                         (*text*    . ,(lambda (_ txt) txt))))
+                      port)))
+                 (rename-file "build-common.xml.new" "build-common.xml"))
+               (substitute* "build/build.xml"
+                 (("\\$\\{lib\\}/cisd-base/cisd-base.jar")
+                  (string-append (assoc-ref inputs "java-cisd-base")
+                                 "/share/java/sis-base.jar"))
+                 ;; Remove dependency on svn
+                 (("<build-info.*") "")
+                 (("\\$\\{revision.number\\}")
+                  ,(number->string revision))
+                 (("\\$\\{version.number\\}") ,base-version)
+                 ;; Don't use custom ant tasks.
+                 (("recursive-jar") "jar")
+                 (("<project-classpath.*") ""))
+               #t))
+           (replace 'install (install-jars "targets/dist")))))
+      (inputs
+       `(("java-cisd-base" ,java-cisd-base)))
+      (native-inputs
+       `(("ecj" ,java-ecj-3.5)
+         ("build-resources"
+          ,(origin
+             (method svn-fetch)
+             (uri (svn-reference
+                   (url (string-append "http://svnsis.ethz.ch/repos/cisd/"
+                                       "args4j/tags/release/"
+                                       (version-major+minor base-version)
+                                       ".x/" base-version
+                                       "/build_resources/"))
+                   (revision revision)))
+             (sha256
+              (base32
+               "056cam4k8pll7ass31sy6gwn8g8719njc41yf4l02b0342nilkyf"))
+             (modules '((guix build utils)))
+             ;; Delete bundled pre-built jars.
+             (snippet
+              '(begin (delete-file-recursively "lib/") #t))))))
+      (home-page "http://svnsis.ethz.ch")
+      (synopsis "Command line parser library")
+      (description "This package provides a parser for command line arguments.")
+      (license license:asl2.0))))
+
 (define-public java-classpathx-servletapi
   (package
     (name "java-classpathx-servletapi")
