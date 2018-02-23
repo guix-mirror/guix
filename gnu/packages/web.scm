@@ -5651,14 +5651,14 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
 (define-public java-tomcat
   (package
     (name "java-tomcat")
-    (version "8.5.23")
+    (version "8.5.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/tomcat/tomcat-8/v"
                                   version "/src/apache-tomcat-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1m6b1dikib46kbgz9gf0p6svi00nsw62b9kgjzn6sda151skbbza"))))
+                "0q2bc3sajrmcx3z3vhhwp78y47ryc2ky8ssbdmfk24zvqdb76hvl"))))
     (build-system ant-build-system)
     (inputs
      `(("java-eclipse-jdt-core" ,java-eclipse-jdt-core)))
