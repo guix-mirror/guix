@@ -144,7 +144,7 @@ functionality with a very small amount of code.")))
 (define-public s6-dns
   (package
    (name "s6-dns")
-   (version "2.0.1.0")
+   (version "2.3.0.0")
    (source
     (origin
      (method url-fetch)
@@ -152,7 +152,7 @@ functionality with a very small amount of code.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "1ji47iy8czx4jmi763dxd6lgjbnp4vqqgcijh46ym65l0a97z04w"))))
+       "0h47ldxvh9cny91r0pjxq7zr5iqpqf1j50p3ip42f6bl90z5ha58"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
