@@ -290,6 +290,44 @@ performing well-known tasks such as @command{cut} and @command{grep}, but
 optimized for simplicity and small size.  They were designed for embedded
 systems and other constrained environments, but they work everywhere.")))
 
+(define-public s6-linux-init
+  (package
+   (name "s6-linux-init")
+   (version "0.3.1.1")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "http://skarnet.org/software/s6-linux-init/s6-linux-init-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "0yfxrjqlbb6kac4gcn78phxbwp5sj9jmc1vxpsrbql62mfjyiqly"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("skalibs" ,skalibs)))
+    (arguments
+     '(#:configure-flags
+       (list
+        (string-append "--with-lib="
+                       (assoc-ref %build-inputs "skalibs")
+                       "/lib/skalibs")
+        (string-append "--with-sysdeps="
+                       (assoc-ref %build-inputs "skalibs")
+                       "/lib/skalibs/sysdeps"))
+       #:tests? #f))
+    (home-page "https://skarnet.org/software/s6-linux-init")
+    (license isc)
+    (synopsis "Minimalistic tools to create an s6-based init system on Linux")
+    (description
+     " s6-linux-init is a set of minimalistic tools to create a s6-based init
+system, including an @command{/sbin/init} binary, on a Linux kernel.
+
+It is meant to automate creation of scripts revolving around the use of other
+skarnet.org tools, especially s6, in order to provide a complete booting
+environment with integrated supervision and logging without having to hand-craft
+all the details. ")))
+
 (define-public s6-linux-utils
   (package
    (name "s6-linux-utils")
