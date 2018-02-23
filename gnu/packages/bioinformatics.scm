@@ -3195,6 +3195,85 @@ VCF.")
        ("jdk" ,icedtea-8 "jdk")
        ("jdk-src" ,(car (assoc-ref (package-native-inputs icedtea-8) "jdk-drop")))))))
 
+(define-public fastqc
+  (package
+    (name "fastqc")
+    (version "0.11.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.bioinformatics.babraham.ac.uk/"
+                           "projects/fastqc/fastqc_v"
+                           version "_source.zip"))
+       (sha256
+        (base32
+         "18rrlkhcrxvvvlapch4dpj6xc6mpayzys8qfppybi8jrpgx5cc5f"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:build-target "build"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dependencies
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("jbzip2-0.9.jar")
+                (string-append (assoc-ref inputs "java-jbzip2")
+                               "/share/java/jbzip2.jar"))
+               (("sam-1.103.jar")
+                (string-append (assoc-ref inputs "java-picard-1.113")
+                               "/share/java/sam-1.112.jar"))
+               (("cisd-jhdf5.jar")
+                (string-append (assoc-ref inputs "java-cisd-jhdf5")
+                               "/share/java/sis-jhdf5.jar")))
+             #t))
+         ;; There is no installation target
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (share (string-append out "/share/fastqc/"))
+                    (exe   (string-append share "/fastqc")))
+               (for-each mkdir-p (list bin share))
+               (copy-recursively "bin" share)
+               (substitute* exe
+                 (("my \\$java_bin = 'java';")
+                  (string-append "my $java_bin = '"
+                                 (assoc-ref inputs "java")
+                                 "/bin/java';")))
+               (chmod exe #o555)
+               (symlink exe (string-append bin "/fastqc"))
+               #t))))))
+    (inputs
+     `(("java" ,icedtea)
+       ("perl" ,perl)                   ; needed for the wrapper script
+       ("java-cisd-jhdf5" ,java-cisd-jhdf5)
+       ("java-picard-1.113" ,java-picard-1.113)
+       ("java-jbzip2" ,java-jbzip2)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://www.bioinformatics.babraham.ac.uk/projects/fastqc/")
+    (synopsis "Quality control tool for high throughput sequence data")
+    (description
+     "FastQC aims to provide a simple way to do some quality control
+checks on raw sequence data coming from high throughput sequencing
+pipelines.  It provides a modular set of analyses which you can use to
+give a quick impression of whether your data has any problems of which
+you should be aware before doing any further analysis.
+
+The main functions of FastQC are:
+
+@itemize
+@item Import of data from BAM, SAM or FastQ files (any variant);
+@item Providing a quick overview to tell you in which areas there may
+  be problems;
+@item Summary graphs and tables to quickly assess your data;
+@item Export of results to an HTML based permanent report;
+@item Offline operation to allow automated generation of reports
+  without running the interactive application.
+@end itemize\n")
+    (license license:gpl3+)))
+
 (define-public htslib
   (package
     (name "htslib")
