@@ -293,7 +293,7 @@ systems and other constrained environments, but they work everywhere.")))
 (define-public s6-linux-utils
   (package
    (name "s6-linux-utils")
-   (version "2.1.0.0")
+   (version "2.4.0.2")
    (source
     (origin
      (method url-fetch)
@@ -302,7 +302,7 @@ systems and other constrained environments, but they work everywhere.")))
            version ".tar.gz"))
      (sha256
       (base32
-       "1bby751blynb7p8wd3npjm71lf10ysmfvqrd3dqrhhajpa2bl8rm"))))
+       "0245rmk7wfyyfsi4g7f0niprwlvqlwkbyjxflb8kkbvhwfdavqip"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
