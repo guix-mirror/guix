@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,14 +28,14 @@
 (define-public musl
   (package
     (name "musl")
-    (version "1.1.18")
+    (version "1.1.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.musl-libc.org/releases/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0651lnj5spckqjf83nz116s8qhhydgqdy3rkl4icbh5f05fyw5yh"))))
+                "1nf1wh44bhm8gdcfr75ayib29b99vpq62zmjymrq7f96h9bshnfv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; Musl has no tests
