@@ -174,7 +174,7 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
 (define-public s6-networking
   (package
    (name "s6-networking")
-   (version "2.1.1.0")
+   (version "2.3.0.2")
    (source
     (origin
      (method url-fetch)
@@ -182,7 +182,7 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "0r8gfv0l2k449nacjy919gqlgn25q7fjxaqra5r37k7kiikkgqfw"))))
+       "06j8fpldn187cmbjqp191hd65ka3ys19vj3jm3kcvkmvd9snh6fq"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)
               ("execline" ,execline)
