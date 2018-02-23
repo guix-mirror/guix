@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Claes Wallin <claes.wallin@greatsinodevelopment.com>
 ;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
 ;;; Copyright © 2017 Z. Ren <zren@dlut.edu.cn>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,7 @@
 (define-public skalibs
   (package
     (name "skalibs")
-    (version "2.3.10.0")
+    (version "2.6.3.1")
     (source
      (origin
       (method url-fetch)
@@ -36,11 +37,10 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0i7af224kl1crxgml09wx0x6q8ab79vnyrllfwv2lnq585wi9mg4"))))
+        "108c4vslsfy57892ybbksscrjd4bx444hzzcq2g5wdg2sh0cl245"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-force-devr") ; do not analyze /dev/random
-       #:tests? #f ; no tests exist
+     '(#:tests? #f ; no tests exist
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'reproducible
                     (lambda _
