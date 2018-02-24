@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
@@ -83,32 +83,25 @@ to DOS format and vice versa.")
 (define-public recode
   (package
     (name "recode")
-    ;; Last beta release (3.7-beta2) is from 2008; last commit from Feb 2014.
-    ;; So we use that commit instead.
-    (version "3.7.0.201402")
+    (version "3.7")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/pinard/Recode.git")
-             (commit "2d7092a9999194fc0e9449717a8048c8d8e26c18")))
+       (method url-fetch)
+       (uri (string-append "https://github.com/rrthomas/recode/releases/"
+                           "download/v" version "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "1wssv8z6g3ryrw33sksz4rjhlnhgvvdqszw1ggl4rcwks34n86zm"))
-       (file-name (string-append name "-" version "-checkout"))))
+        (base32
+         "0r4yhf7i7zp2nl2apyzz7r3i2in12n385hmr8zcfr18ly0ly530q"))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           (delete-file "tests/Recode.c")
+           #t))))
     (build-system gnu-build-system)
-    (native-inputs `(("python" ,python-2)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'pre-check
-           (lambda _
-             (substitute* "tests/setup.py"
-               (("([[:space:]]*)include_dirs=.*" all space)
-                (string-append all space "library_dirs=['../src/.libs'],\n")))
-             ;; The test extension 'Recode.so' lacks RUNPATH for 'librecode.so'.
-             (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/src/.libs"))
-             #t)))))
-    (home-page "https://github.com/pinard/Recode")
+    (native-inputs
+     `(("python" ,python-2)
+       ("python2-cython" ,python2-cython)))
+    (home-page "https://github.com/rrthomas/recode")
     (synopsis "Text encoding converter")
     (description "The Recode library converts files between character sets and
 usages.  It recognises or produces over 200 different character sets (or about
@@ -116,7 +109,7 @@ usages.  It recognises or produces over 200 different character sets (or about
 any pair.  When exact transliteration are not possible, it gets rid of
 offending characters or falls back on approximations.  The recode program is a
 handy front-end to the library.")
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public enca
   (package
