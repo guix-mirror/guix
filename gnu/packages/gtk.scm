@@ -1265,6 +1265,33 @@ cairo.  It supports multiple output targets, including PNG, PDF and SVG.  Cairo
 produces identical output on all those targets.")
     (license license:lgpl2.1+)))
 
+(define-public perl-gtk2
+  (package
+    (name "perl-gtk2")
+    (version "1.24992")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/Gtk2-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1044rj3wbfmgaif2jb0k28m2aczli6ai2n5yvn6pr7zjyw16kvd2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (inputs
+     `(("gtk+" ,gtk+-2)))
+    (propagated-inputs
+     `(("perl-pango" ,perl-pango)))
+    (home-page "http://search.cpan.org/dist/Gtk2/")
+    (synopsis "Perl interface to the 2.x series of the Gimp Toolkit library")
+    (description "Perl bindings to the 2.x series of the Gtk+ widget set.
+This module allows you to write graphical user interfaces in a Perlish and
+object-oriented way, freeing you from the casting and memory management in C,
+yet remaining very close in spirit to original API.")
+    (license license:lgpl2.1+)))
+
 (define-public perl-pango
   (package
     (name "perl-pango")
