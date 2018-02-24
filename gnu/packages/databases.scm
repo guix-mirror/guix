@@ -1004,7 +1004,7 @@ for example from a shell script.")
                                             (map (cut string-pad <> 2 #\0)
                                                  other-digits))
                                            6 #\0))))))
-                   (string-append "https://sqlite.org/2017/sqlite-autoconf-"
+                   (string-append "https://sqlite.org/2018/sqlite-autoconf-"
                                   numeric-version ".tar.gz")))
             (sha256
              (base32
