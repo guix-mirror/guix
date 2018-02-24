@@ -2475,7 +2475,7 @@ RTSP or SIP clients and servers.")
 (define-public libdvbpsi
   (package
     (name "libdvbpsi")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2483,7 +2483,7 @@ RTSP or SIP clients and servers.")
                     version "/libdvbpsi-" version ".tar.bz2"))
               (sha256
                (base32
-                "0824r08kaspbrrg2dd5d46s475zb7j59brqkm2y6x3mdsnpng0yn"))))
+                "1zn5hfv4qbahmydbwh59a3b480s3m5ss27r6ml35gqdip7r3jkmc"))))
     (build-system gnu-build-system)
     (home-page "https://www.videolan.org/developers/libdvbpsi.html")
     (synopsis "Library for decoding and generation of MPEG TS and DVB PSI
