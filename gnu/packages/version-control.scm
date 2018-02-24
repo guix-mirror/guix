@@ -1768,7 +1768,7 @@ network protocols, and core version control algorithms.")
 (define-public gource
   (package
     (name "gource")
-    (version "0.47")
+    (version "0.48")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1776,7 +1776,7 @@ network protocols, and core version control algorithms.")
                     "/gource-" version "/gource-" version ".tar.gz"))
               (sha256
                (base32
-                "1llqwdnfa1pff8bxk27qsqff1fcg0a9kfdib0rn7p28vl21n1cgj"))))
+                "04qxcm05qiyr9rg2kv6abfy7kkzqr8ziw4iyp1d14lniv93m61dp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
