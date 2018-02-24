@@ -36,16 +36,19 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "1.10.8")
+    (version "1.11.10")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "1fwqqh2zbcy9dy0lnvk338s11llnnfz2k56bf84w0wv56ayq7vyl"))))
+                "1ndc7axr7cz8jwhr4mz16fvwd0jcd6i81q2wi9nl172s71kkaf12"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     '(#:modules ((srfi srfi-1)
+                  (guix build python-build-system)
+                  (guix build utils))
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-tzdir
            (lambda* (#:key inputs #:allow-other-keys)
@@ -56,9 +59,19 @@
                                     "/share/zoneinfo"))
              #t))
          (replace 'check
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (setenv "PYTHONPATH"
                      (string-append ".:" (getenv "PYTHONPATH")))
+             (substitute* "tests/admin_scripts/tests.py"
+               (("python_path = \\[")
+                (string-append "python_path = ['"
+                               (find (lambda (entry)
+                                       (string-prefix?
+                                        (assoc-ref inputs "python-pytz")
+                                        entry))
+                                     (string-split (getenv "PYTHONPATH")
+                                                   #\:))
+                               "', ")))
              (zero? (system* "python" "tests/runtests.py")))))))
     ;; TODO: Install extras/django_bash_completion.
     (native-inputs
@@ -75,10 +88,11 @@
        ("python-numpy" ,python-numpy)
        ("python-pillow" ,python-pillow)
        ("python-pyyaml" ,python-pyyaml)
-       ("python-pytz" ,python-pytz)
        ;; optional for tests: ("python-selenium" ,python-selenium)
        ("python-sqlparse" ,python-sqlparse)
        ("python-tblib" ,python-tblib)))
+    (propagated-inputs
+     `(("python-pytz" ,python-pytz)))
     (home-page "http://www.djangoproject.com/")
     (synopsis "High-level Python Web framework")
     (description
