@@ -44,29 +44,29 @@
     (name "cmake")
     (version "3.10.2")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://www.cmake.org/files/v"
-                                 (version-major+minor version)
-                                 "/cmake-" version ".tar.gz"))
-             (sha256
-              (base32
-               "12r1ldq4l032d6f5gc22dlayck4cr29cczqsl9xf0vdm9anzml40"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Drop bundled software.
-                 (with-directory-excursion "Utilities"
-                   (for-each delete-file-recursively
-                             '("cmbzip2"
-                               ;; "cmcompress"
-                               "cmcurl"
-                               "cmexpat"
-                               ;; "cmjsoncpp"
-                               ;; "cmlibarchive"
-                               "cmliblzma"
-                               ;; "cmlibuv"
-                               "cmzlib"))
-                   #t)))))
+              (method url-fetch)
+              (uri (string-append "https://www.cmake.org/files/v"
+                                  (version-major+minor version)
+                                  "/cmake-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12r1ldq4l032d6f5gc22dlayck4cr29cczqsl9xf0vdm9anzml40"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Drop bundled software.
+                  (with-directory-excursion "Utilities"
+                    (for-each delete-file-recursively
+                              '("cmbzip2"
+                                ;; "cmcompress"
+                                "cmcurl"
+                                "cmexpat"
+                                ;; "cmjsoncpp"
+                                ;; "cmlibarchive"
+                                "cmliblzma"
+                                ;; "cmlibuv"
+                                "cmzlib"))
+                    #t)))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -75,8 +75,8 @@
               (list "BundleUtilities" ; This test fails on Guix.
                     "CTestTestSubdir" ; This test fails to build 2 of the 3 tests.
                     "CMake.String" ; This test depends on clock being set to
-                                   ; current time, which is not the case in
-                                   ; the build environment.
+                                        ; current time, which is not the case in
+                                        ; the build environment.
                     ;; These tests requires network access.
                     "CTestCoverageCollectGCOV"
                     "CTestTestUpload")))
@@ -87,22 +87,22 @@
        (modify-phases %standard-phases
          (add-before 'configure 'patch-bin-sh
            (lambda _
-           ;; Replace "/bin/sh" by the right path in... a lot of
-           ;; files.
-           (substitute*
-               '("Modules/CompilerId/Xcode-3.pbxproj.in"
-                 "Modules/CPack.RuntimeScript.in"
-                 "Source/cmakexbuild.cxx"
-                 "Source/cmGlobalXCodeGenerator.cxx"
-                 "Source/CTest/cmCTestBatchTestHandler.cxx"
-                 "Source/cmLocalUnixMakefileGenerator3.cxx"
-                 "Source/cmExecProgramCommand.cxx"
-                 "Utilities/Release/release_cmake.cmake"
-                 "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
-                 "Tests/CMakeLists.txt"
-                 "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
+             ;; Replace "/bin/sh" by the right path in... a lot of
+             ;; files.
+             (substitute*
+                 '("Modules/CompilerId/Xcode-3.pbxproj.in"
+                   "Modules/CPack.RuntimeScript.in"
+                   "Source/cmakexbuild.cxx"
+                   "Source/cmGlobalXCodeGenerator.cxx"
+                   "Source/CTest/cmCTestBatchTestHandler.cxx"
+                   "Source/cmLocalUnixMakefileGenerator3.cxx"
+                   "Source/cmExecProgramCommand.cxx"
+                   "Utilities/Release/release_cmake.cmake"
+                   "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
+                   "Tests/CMakeLists.txt"
+                   "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
                (("/bin/sh") (which "sh")))
-           #t))
+             #t))
          (add-before 'configure 'set-paths
            (lambda _
              ;; Help cmake's bootstrap process to find system libraries
