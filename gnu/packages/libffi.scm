@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -152,13 +153,13 @@ conversions for values passed between the two languages.")
 (define-public ruby-ffi
   (package
     (name "ruby-ffi")
-    (version "1.9.18")
+    (version "1.9.22")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "ffi" version))
               (sha256
                (base32
-                "034f52xf7zcqgbvwbl20jwdyjwznvqnwpbaps9nk18v9lgb1dpx0"))))
+                "17lvnpmllg4mlzf25lxbmfzk4l6rsddlxwwdkbs4d9v5gv154529"))))
     (build-system ruby-build-system)
     ;; FIXME: Before running tests the build system attempts to build libffi
     ;; from sources.
