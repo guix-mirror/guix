@@ -3047,7 +3047,7 @@ specifications.")
 (define-public lpsolve
   (package
     (name "lpsolve")
-    (version "5.5.2.0")
+    (version "5.5.2.5")
     (source
      (origin
       (method url-fetch)
@@ -3055,7 +3055,7 @@ specifications.")
                           "/lp_solve_" version "_source.tar.gz"))
       (sha256
        (base32
-        "176c7f023mb6b8bfmv4rfqnrlw88lsg422ca74zjh19i2h5s69sq"))
+        "12pj1idjz31r7c2mb5w03vy1cmvycvbkx9z29s40qdmkp1i7q6i0"))
       (modules '((guix build utils)))
       (snippet
        '(substitute* (list "lp_solve/ccc" "lpsolve55/ccc")
@@ -3073,16 +3073,17 @@ specifications.")
           (("isnan\\(0\\)") "isnan(0.)")))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (replace 'build
            (lambda _
-             (and (with-directory-excursion "lpsolve55"
-                    (zero? (system* "bash" "ccc")))
-                  (with-directory-excursion "lp_solve"
-                    (zero? (system* "bash" "ccc"))))))
+             (with-directory-excursion "lpsolve55"
+               (invoke "bash" "ccc"))
+             (with-directory-excursion "lp_solve"
+               (invoke "bash" "ccc"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3091,11 +3092,8 @@ specifications.")
                     ;; This is where LibreOffice expects to find the header
                     ;; files, and where they are installed by Debian.
                     (include (string-append out "/include/lpsolve")))
-               (mkdir-p lib)
-               (copy-file "lpsolve55/bin/ux64/liblpsolve55.a"
-                          (string-append lib "/liblpsolve55.a"))
-               (copy-file "lpsolve55/bin/ux64/liblpsolve55.so"
-                          (string-append lib "/liblpsolve55.so"))
+               (install-file "lpsolve55/bin/ux64/liblpsolve55.a" lib)
+               (install-file "lpsolve55/bin/ux64/liblpsolve55.so" lib)
                (install-file "lp_solve/bin/ux64/lp_solve" bin)
 
                ;; Install a subset of the header files as on Debian
@@ -3437,14 +3435,14 @@ supports compressed MAT files, as well as newer (version 7.3) MAT files.")
 (define-public vc
   (package
     (name "vc")
-    (version "1.2.0")
+    (version "1.3.3")
     (source
       (origin (method url-fetch)
               (uri (string-append "https://github.com/VcDevel/Vc/releases/"
                                   "download/" version "/Vc-" version ".tar.gz"))
               (sha256
                (base32
-                "1rh6dhqar3y07n4xqyml0sa0v48qv3ch9dc3yc2in855hlh4vnqi"))))
+                "1zmlpn32jzb38smp3j834llmbix3whsrbw0h397qxysbw792kih8"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags

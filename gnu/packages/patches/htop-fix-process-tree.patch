@@ -1,0 +1,99 @@
+From 2971a187551e062ffefdab965f55377b36cd94eb Mon Sep 17 00:00:00 2001
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Wed, 21 Feb 2018 06:00:50 +0100
+Subject: [PATCH] Fix process tree
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This manually reverts:
+
+  commit 584a9bceab948590dabd189d234a86e6bf4ec3f4
+  Author: wangqr <wangqr@wangqr.tk>
+  Date:   Fri Sep 1 21:27:24 2017 +0800
+
+  Find roots when constructing process tree, fix #587
+
+which breaks the process tree (‘t’) view in at least some cases.
+I will investigate further...
+---
+ ProcessList.c | 63 +++++++++++++++++------------------------------------------
+ 1 file changed, 18 insertions(+), 45 deletions(-)
+
+diff --git a/ProcessList.c b/ProcessList.c
+index 48b2d95..225253d 100644
+--- a/ProcessList.c
++++ b/ProcessList.c
+@@ -213,51 +213,24 @@ void ProcessList_sort(ProcessList* this) {
+       // Restore settings
+       this->settings->sortKey = sortKey;
+       this->settings->direction = direction;
+-      int vsize = Vector_size(this->processes);
+-      // Find all processes whose parent is not visible
+-      int size;
+-      while ((size = Vector_size(this->processes))) {
+-         int i;
+-         for (i = 0; i < size; i++) {
+-            Process* process = (Process*)(Vector_get(this->processes, i));
+-            // Immediately consume not shown processes
+-            if (!process->show) {
+-               process = (Process*)(Vector_take(this->processes, i));
+-               process->indent = 0;
+-               Vector_add(this->processes2, process);
+-               ProcessList_buildTree(this, process->pid, 0, 0, direction, false);
+-               break;
+-            }
+-            pid_t ppid = process->tgid == process->pid ? process->ppid : process->tgid;
+-            // Bisect the process vector to find parent
+-            int l = 0, r = size;
+-            // If PID corresponds with PPID (e.g. "kernel_task" (PID:0, PPID:0)
+-            // on Mac OS X 10.11.6) cancel bisecting and regard this process as
+-            // root.
+-            if (process->pid == ppid)
+-               r = 0;
+-            while (l < r) {
+-               int c = (l + r) / 2;
+-               pid_t pid = ((Process*)(Vector_get(this->processes, c)))->pid;
+-               if (ppid == pid) {
+-                  break;
+-               } else if (ppid < pid) {
+-                  r = c;
+-               } else {
+-                  l = c + 1;
+-               }
+-            }
+-            // If parent not found, then construct the tree with this root
+-            if (l >= r) {
+-               process = (Process*)(Vector_take(this->processes, i));
+-               process->indent = 0;
+-               Vector_add(this->processes2, process);
+-               ProcessList_buildTree(this, process->pid, 0, 0, direction, process->showChildren);
+-               break;
+-            }
+-         }
+-         // There should be no loop in the process tree
+-         assert(i < size);
++
++      // Take PID 1 as root and add to the new listing
++       int vsize = Vector_size(this->processes);
++      Process* init = (Process*) (Vector_take(this->processes, 0));
++      if (!init) return;
++      // This assertion crashes on hardened kernels.
++      // I wonder how well tree view works on those systems.
++      // assert(init->pid == 1);
++      init->indent = 0;
++      Vector_add(this->processes2, init);
++      // Recursively empty list
++      ProcessList_buildTree(this, init->pid, 0, 0, direction, true);
++      // Add leftovers
++      while (Vector_size(this->processes)) {
++         Process* p = (Process*) (Vector_take(this->processes, 0));
++         p->indent = 0;
++         Vector_add(this->processes2, p);
++         ProcessList_buildTree(this, p->pid, 0, 0, direction, p->showChildren);
+       }
+       assert(Vector_size(this->processes2) == vsize); (void)vsize;
+       assert(Vector_size(this->processes) == 0);
+-- 
+2.16.2
+

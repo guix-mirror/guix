@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,14 +28,14 @@
 (define-public musl
   (package
     (name "musl")
-    (version "1.1.18")
+    (version "1.1.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.musl-libc.org/releases/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0651lnj5spckqjf83nz116s8qhhydgqdy3rkl4icbh5f05fyw5yh"))))
+                "1nf1wh44bhm8gdcfr75ayib29b99vpq62zmjymrq7f96h9bshnfv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; Musl has no tests
@@ -43,7 +44,7 @@
     (synopsis "Small C standard library")
     (description "musl is a simple and lightweight C standard library.  It
 strives to be correct in the sense of standards-conformance and safety.")
-    (home-page "http://www.musl-libc.org")
+    (home-page "https://www.musl-libc.org")
     ;; Musl as a whole is released under the Expat license.  Parts of it are
     ;; derived from various third-party projects that are released under
     ;; non-copyleft licenses.  See the COPYRIGHT file for details.

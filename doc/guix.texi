@@ -30,7 +30,7 @@ Copyright @copyright{} 2016, 2017 ng0@*
 Copyright @copyright{} 2016, 2017 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
-Copyright @copyright{} 2017 Clément Lassieur@*
+Copyright @copyright{} 2017, 2018 Clément Lassieur@*
 Copyright @copyright{} 2017 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017 Carlo Zancanaro@*
@@ -7231,6 +7231,15 @@ As an example, @var{file} might contain a definition like this
 @verbatiminclude environment-gdb.scm
 @end example
 
+@item --manifest=@var{file}
+@itemx -m @var{file}
+Create an environment for the packages contained in the manifest object
+returned by the Scheme code in @var{file}.
+
+This is similar to the same-named option in @command{guix package}
+(@pxref{profile-manifest, @option{--manifest}}) and uses the same
+manifest files.
+
 @item --ad-hoc
 Include all specified packages in the resulting environment, as if an
 @i{ad hoc} package were defined with them as inputs.  This option is
@@ -11262,6 +11271,9 @@ The XAuth package to use.
 @item @code{shepherd} (default: @code{shepherd})
 The Shepherd package used when invoking @command{halt} and
 @command{reboot}.
+
+@item @code{sessreg} (default: @code{sessreg})
+The sessreg package used in order to register the session.
 
 @item @code{slim} (default: @code{slim})
 The SLiM package to use.
@@ -15721,14 +15733,48 @@ signature.
 The certbot service automates this process: the initial key
 generation, the initial certification request to the Let's Encrypt
 service, the web server challenge/response integration, writing the
-certificate to disk, and the automated periodic renewals.
+certificate to disk, the automated periodic renewals, and the deployment
+tasks associated with the renewal (e.g. reloading services, copying keys
+with different permissions).
+
+Certbot is run twice a day, at a random minute within the hour.  It
+won't do anything until your certificates are due for renewal or
+revoked, but running it regularly would give your service a chance of
+staying online in case a Let's Encrypt-initiated revocation happened for
+some reason.
+
+By using this service, you agree to the ACME Subscriber Agreement, which
+can be found there:
+@url{https://acme-v01.api.letsencrypt.org/directory}.
 
 @defvr {Scheme Variable} certbot-service-type
-A service type for the @code{certbot} Let's Encrypt client.
+A service type for the @code{certbot} Let's Encrypt client.  Its value
+must be a @code{certbot-configuration} record as in this example:
+
+@example
+(define %nginx-deploy-hook
+  (program-file
+   "nginx-deploy-hook"
+   #~(let ((pid (call-with-input-file "/var/run/nginx/pid" read)))
+       (kill pid SIGHUP))))
+
+(service certbot-service-type
+         (certbot-configuration
+          (email "foo@@example.net")
+          (certificates
+           (list
+            (certificate-configuration
+             (domains '("example.net" "www.example.net"))
+             (deploy-hook %nginx-deploy-hook))
+            (certificate-configuration
+             (domains '("bar.example.net")))))))
+@end example
+
+See below for details about @code{certbot-configuration}.
 @end defvr
 
 @deftp {Data Type} certbot-configuration
-Data type representing the configuration of the @code{certbot} serice.
+Data type representing the configuration of the @code{certbot} service.
 This type has the following parameters:
 
 @table @asis
@@ -15739,16 +15785,24 @@ The certbot package to use.
 The directory from which to serve the Let's Encrypt challenge/response
 files.
 
-@item @code{hosts} (default: @code{()})
-A list of hosts for which to generate certificates and request
-signatures.
+@item @code{certificates} (default: @code{()})
+A list of @code{certificates-configuration}s for which to generate
+certificates and request signatures.  Each certificate has a @code{name}
+and several @code{domains}.
+
+@item @code{email}
+Mandatory email used for registration, recovery contact, and important
+account notifications.
+
+@item @code{rsa-key-size} (default: @code{2048})
+Size of the RSA key.
 
 @item @code{default-location} (default: @i{see below})
 The default @code{nginx-location-configuration}.  Because @code{certbot}
 needs to be able to serve challenges and responses, it needs to be able
 to run a web server.  It does so by extending the @code{nginx} web
 service with an @code{nginx-server-configuration} listening on the
-@var{hosts} on port 80, and which has a
+@var{domains} on port 80, and which has a
 @code{nginx-location-configuration} for the @code{/.well-known/} URI
 path subspace used by Let's Encrypt.  @xref{Web Services}, for more on
 these nginx configuration data types.
@@ -15758,19 +15812,44 @@ Requests to other URL paths will be matched by the
 @code{nginx-server-configuration}s.
 
 By default, the @code{default-location} will issue a redirect from
-@code{http://@var{host}/...} to @code{https://@var{host}/...}, leaving
+@code{http://@var{domain}/...} to @code{https://@var{domain}/...}, leaving
 you to define what to serve on your site via @code{https}.
 
 Pass @code{#f} to not issue a default location.
 @end table
 @end deftp
 
-The public key and its signatures will be written to
-@code{/etc/letsencrypt/live/@var{host}/fullchain.pem}, for each
-@var{host} in the configuration.  The private key is written to
-@code{/etc/letsencrypt/live/@var{host}/privkey.pem}.
+@deftp {Data Type} certificate-configuration
+Data type representing the configuration of a certificate.
+This type has the following parameters:
 
+@table @asis
+@item @code{name} (default: @i{see below})
+This name is used by Certbot for housekeeping and in file paths; it
+doesn't affect the content of the certificate itself.  To see
+certificate names, run @code{certbot certificates}.
 
+Its default is the first provided domain.
+
+@item @code{domains} (default: @code{()})
+The first domain provided will be the subject CN of the certificate, and
+all domains will be Subject Alternative Names on the certificate.
+
+@item @code{deploy-hook} (default: @code{#f})
+Command to be run in a shell once for each successfully issued
+certificate.  For this command, the shell variable
+@code{$RENEWED_LINEAGE} will point to the config live subdirectory (for
+example, @samp{"/etc/letsencrypt/live/example.com"}) containing the new
+certificates and keys; the shell variable @code{$RENEWED_DOMAINS} will
+contain a space-delimited list of renewed certificate domains (for
+example, @samp{"example.com www.example.com"}.
+
+@end table
+@end deftp
+
+For each @code{certificate-configuration}, the certificate is saved to
+@code{/etc/letsencrypt/live/@var{name}/fullchain.pem} and the key is
+saved to @code{/etc/letsencrypt/live/@var{name}/privkey.pem}.
 @node DNS Services
 @subsubsection DNS Services
 @cindex DNS (domain name system)

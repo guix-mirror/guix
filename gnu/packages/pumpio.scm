@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
 (define-public pumpa
   (package
     (name "pumpa")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method git-fetch) ; no source tarballs
               (uri (git-reference
@@ -38,7 +39,7 @@
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "09www29s4ldvd6apr73w7r4nmq93rcl2d182fylwgfcnncbvpy8s"))
+                "14072vis539zjgryjr5a77j2cprxii5znyg3p01qbb11lijk9nj7"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
@@ -57,7 +58,7 @@
              ;; Run qmake with proper installation prefix.
              (let ((prefix (string-append "PREFIX="
                                           (assoc-ref outputs "out"))))
-               (zero? (system* "qmake" prefix)))
+               (invoke "qmake" prefix))
              #t)))))
     (inputs
      `(("aspell" ,aspell)

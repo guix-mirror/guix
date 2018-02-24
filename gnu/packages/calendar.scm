@@ -23,7 +23,7 @@
 
 (define-module (gnu packages calendar)
   #:use-module (gnu packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build utils)
@@ -78,7 +78,7 @@
     (description
      "Libical is an implementation of the iCalendar protocols and protocol
 data units.")
-    (license lgpl2.1)))
+    (license license:lgpl2.1)))
 
 (define-public khal
   (package
@@ -140,7 +140,7 @@ data units.")
     (description "Khal is a standards based console calendar program,
 able to synchronize with CalDAV servers through vdirsyncer.")
     (home-page "http://lostpackets.de/khal/")
-    (license expat)))
+    (license license:expat)))
 
 (define-public remind
   (package
@@ -169,7 +169,7 @@ Each reminder or alarm can consist of a message sent to standard output, or a
 program to be executed.  It also features: sophisticated date calculation,
 moon phases, sunrise/sunset, Hebrew calendar, alarms, PostScript output and
 proper handling of holidays.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public libhdate
   (package
@@ -190,4 +190,4 @@ proper handling of holidays.")
 of day, written in C, and including bindings for C++, pascal, perl, php, python,
 and ruby.  It includes two illustrative command-line programs, @code{hcal} and
 @code{hdate}, and some snippets and scripts written in the binding languages.")
-    (license gpl3+)))
+    (license license:gpl3+)))

@@ -9,8 +9,8 @@
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -633,7 +633,7 @@ compose, and analyze GIF images.")
 (define-public imlib2
   (package
     (name "imlib2")
-    (version "1.4.10")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -641,7 +641,7 @@ compose, and analyze GIF images.")
                     "/imlib2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wm2q2xlkbm71k7mw2jyzbxgzylrkcj5yh6nq58w5gybhp98qs9z"))))
+                "0kg28b5wp886hiy12v7abdybrvlymb7g3nvg0ysn2y8h883s5w8m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkgconfig" ,pkg-config)))
@@ -1091,29 +1091,28 @@ installed as @code{stb_image}.")
 (define-public optipng
   (package
     (name "optipng")
-    (version "0.7.6")
+    (version "0.7.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://prdownloads.sourceforge.net/optipng/optipng-"
                            version ".tar.gz"))
-       (patches (search-patches "optipng-CVE-2017-1000229.patch"))
        (sha256
         (base32
-         "105yk5qykvhiahzag67gm36s2kplxf6qn5hay02md0nkrcgn6w28"))))
+         "0lj4clb851fzpaq446wgj0sfy922zs5l5misbpwv6w7qrqrz4cjg"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         ;; configure script does not accept arguments CONFIG_SHELL and SHELL
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "sh" "configure"
-                             (string-append "--prefix=" (assoc-ref outputs "out")))))))))
-    (synopsis "Optimizer that recompresses PNG image files to a
-smaller size")
+             ;; configure script doesn't accept arguments CONFIG_SHELL and SHELL
+             (invoke "sh" "configure"
+                     (string-append "--prefix=" (assoc-ref outputs "out")))
+             #t)))))
+    (synopsis "Optimizer that recompresses PNG image files to a smaller size")
     (description "OptiPNG is a PNG optimizer that recompresses image
 files to a smaller size, without losing any information.  This program
 also converts external formats (BMP, GIF, PNM and TIFF) to optimized

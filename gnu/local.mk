@@ -13,7 +13,7 @@
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2016, 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-# Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+# Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
@@ -142,6 +142,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/elixir.scm			\
   %D%/packages/embedded.scm			\
   %D%/packages/emacs.scm			\
+  %D%/packages/emulators.scm			\
   %D%/packages/enchant.scm			\
   %D%/packages/engineering.scm			\
   %D%/packages/enlightenment.scm		\
@@ -248,6 +249,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/libffcall.scm			\
   %D%/packages/libffi.scm			\
   %D%/packages/libftdi.scm			\
+  %D%/packages/license.scm			\
   %D%/packages/calendar.scm			\
   %D%/packages/libidn.scm			\
   %D%/packages/libphidget.scm			\
@@ -655,6 +657,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
   %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
   %D%/packages/patches/freeimage-fix-build-with-gcc-5.patch	\
+  %D%/packages/patches/freetype-CVE-2018-6942.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
@@ -763,6 +766,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/heimdal-CVE-2017-11103.patch		\
   %D%/packages/patches/hmmer-remove-cpu-specificity.patch	\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
+  %D%/packages/patches/htop-fix-process-tree.patch		\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hwloc-tests-without-sysfs.patch		\
@@ -800,9 +804,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-midicon-segmentation-fault.patch	\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
   %D%/packages/patches/laby-make-install.patch			\
-  %D%/packages/patches/ldc-disable-tests.patch			\
-  %D%/packages/patches/ldc-1.1.0-disable-dmd-tests.patch	\
-  %D%/packages/patches/ldc-1.1.0-disable-phobos-tests.patch	\
+  %D%/packages/patches/ldc-bootstrap-disable-tests.patch	\
+  %D%/packages/patches/ldc-1.7.0-disable-phobos-tests.patch	\
   %D%/packages/patches/ledger-fix-uninitialized.patch		\
   %D%/packages/patches/ledger-revert-boost-python-fix.patch	\
   %D%/packages/patches/liba52-enable-pic.patch			\
@@ -945,7 +948,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1.0-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
-  %D%/packages/patches/optipng-CVE-2017-1000229.patch		\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
   %D%/packages/patches/osip-CVE-2017-7853.patch			\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
@@ -953,6 +955,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch		\
   %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
+  %D%/packages/patches/password-store-gnupg-compat.patch	\
   %D%/packages/patches/patchelf-page-size.patch			\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
@@ -1041,8 +1044,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
-  %D%/packages/patches/qemu-CVE-2017-15038.patch		\
-  %D%/packages/patches/qemu-CVE-2017-15289.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
@@ -1137,6 +1138,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/vsearch-unbundle-cityhash.patch		\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
+  %D%/packages/patches/wavpack-CVE-2018-7253.patch		\
+  %D%/packages/patches/wavpack-CVE-2018-7254.patch		\
   %D%/packages/patches/weechat-python.patch			\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\

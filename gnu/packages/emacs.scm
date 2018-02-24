@@ -3844,6 +3844,26 @@ strings, and code folding.")
 in Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-edit-indirect
+  (package
+    (name "emacs-edit-indirect")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Fanael/edit-indirect/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07kr58rd1p5j764wminsssazr73hy51yw8iqcsv5z2dwgj7msv71"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Fanael/edit-indirect")
+    (synopsis "Edit regions in separate buffers")
+    (description "This package allows you to edit regions in separate buffers,
+like @code{org-edit-src-code} but for arbitrary regions.")
+    (license license:gpl3+)))
+
 (define-public emacs-projectile
   (package
     (name "emacs-projectile")
@@ -4265,6 +4285,52 @@ There are plenty of differences between CIDER and SLIME, but the core ideas
 are pretty much the same (and SLIME served as the principle inspiration for
 CIDER).")
     (license license:gpl3+)))
+
+;; There hasn't been a tag or release since 2015, so we take the latest
+;; commit.
+(define-public emacs-sly
+  (let ((commit "486bfbe95612bcdc0960c490207970a188e0fbb9")
+        (revision "1"))
+    (package
+      (name "emacs-sly")
+      (version (string-append "1.0.0-" revision "." (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/joaotavora/sly.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0ib4q4k3h3qn88pymyjjmlmnpizdn1mfg5gpk5a715nqsgxlg09l"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:include (cons "^lib\\/" %default-include)
+         #:phases
+         ;; The package provides autoloads.
+         (modify-phases %standard-phases
+           (delete 'make-autoloads))))
+      (home-page "https://github.com/joaotavora/sly")
+      (synopsis "Sylvester the Cat's Common Lisp IDE")
+      (description
+       "SLY is Sylvester the Cat's Common Lisp IDE.  SLY is a fork of SLIME, and
+contains the following improvements over it:
+
+@enumerate
+@item Completely redesigned REPL based on Emacs's own full-featured
+  @code{comint.el}
+@item Live code annotations via a new @code{sly-stickers} contrib
+@item Consistent interactive button interface.  Everything can be copied to
+  the REPL.
+@item Multiple inspectors with independent history
+@item Regexp-capable @code{M-x sly-apropos}
+@item Contribs are first class SLY citizens and enabled by default
+@item Use ASDF to loads contribs on demand.
+@end enumerate
+
+SLY tracks SLIME's bugfixes and all its familar features (debugger, inspector,
+xref, etc...) are still available, but with better integration.")
+      (license license:gpl3+))))
 
 (define-public emacs-lua-mode
   (let ((commit "652e299cb967fccca827dda381d61a9c144d97de")

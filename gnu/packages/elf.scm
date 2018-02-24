@@ -137,7 +137,7 @@ Executable and Linkable Format (@dfn{ELF}).  This includes @command{ld},
                             #t)))))
          '()))
 
-    (home-page "http://nixos.org/patchelf.html")
+    (home-page "https://nixos.org/patchelf.html")
     (synopsis "Modify the dynamic linker and RPATH of ELF executables")
     (description
      "PatchELF allows the ELF \"interpreter\" and RPATH of an ELF binary to be

@@ -383,8 +383,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.15.4")
-(define %linux-libre-hash "0dg5b2vgp2ph0l63cxyq6bz05hvc90wab05f8y3a8731c9xsxmzq")
+(define %linux-libre-version "4.15.5")
+(define %linux-libre-hash "1vrqya5zkhzl37fpj5v0v1igm7jf2gi13apkpak90l51xiw592cs")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -392,8 +392,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.20")
-(define %linux-libre-4.14-hash "1xc5g2kq3wpn6i61rpypnlb0f82f05b8jac2lg62rv4v46bsvfwv")
+(define %linux-libre-4.14-version "4.14.21")
+(define %linux-libre-4.14-hash "07d27mph514jxxkzil4b3c848ywfd4r4js0wl5wsfy7a3j757278")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -402,14 +402,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.82"
-                    "1x2hbn2kf7ikgdiqwj2d6d0s1pa1xh4xywliyj3rfsilanny2ipw"
+  (make-linux-libre "4.9.83"
+                    "09mw2r2fbn0g6xfhyxk0n54c7sg0vk9nlp7k2ca3v0v24n7lrfza"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.116"
-                    "00y5xhgqiyf7ivivnphwvkjgszk8rzn4s8q3sgshswz3kdic55hj"
+  (make-linux-libre "4.4.117"
+                    "1mlq9npyriwj0wpj24zah55bkxil31l182ypbn6b3x4yvmr8lhz0"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -1089,7 +1089,7 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.6.1")
+    (version "1.6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1097,7 +1097,7 @@ external rate conversion.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1x8c9y340x79djsq54bc1674ryv59jfphrk4f88i7qbvbnyxghhg"))))
+               "0crp0lvh5m2f15pr8cw97h8yb8zjj10x95zj06j46cr68vx2vl2m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1111,14 +1111,17 @@ external rate conversion.")
        #:configure-flags ; add $libdir to the RUNPATH of executables
        (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
     (home-page "https://www.netfilter.org/projects/iptables/index.html")
-    (synopsis "Program to configure the Linux IP packet filtering rules")
+    (synopsis "Programs to configure Linux IP packet filtering rules")
     (description
-     "iptables is the userspace command line program used to configure the
-Linux 2.4.x and later IPv4 packet filtering ruleset (firewall).  It is targeted at
-system administrators.  Since Network Address Translation is also configured
-from the packet filter ruleset, iptables is used for this, too.  The iptables
-package also includes ip6tables.  ip6tables is used for configuring the IPv6
-packet filter.")
+     "@command{iptables} is the user-space command line program used to
+configure the Linux 2.4.x and later IPv4 packet filtering ruleset
+(@dfn{firewall}), including @dfn{NAT} (Network Address Translation).
+
+This package also includes @command{ip6tables}, which is used to configure the
+IPv6 packet filter.
+
+Both commands are targeted at system administrators.
+")
     (license license:gpl2+)))
 
 (define-public ebtables

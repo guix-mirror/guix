@@ -97,6 +97,34 @@ a graphical user interface.  It has language bindings for Python, Perl, Ruby
 and many other languages.")
     (license (list l:lgpl2.0+ (l:fsf-free "file://doc/license.txt")))))
 
+(define-public wxwidgets-2
+  (package
+    (inherit wxwidgets)
+    (version "2.8.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/wxWidgets/wxWidgets/"
+                           "releases/download/v" version
+                           "/wxGTK-" version ".tar.gz"))
+       (sha256
+        (base32 "1gjs9vfga60mk4j4ngiwsk9h6c7j22pw26m3asxr1jwvqbr8kkqk"))))
+    (inputs
+     `(("gtk" ,gtk+-2)
+       ("libjpeg" ,libjpeg)
+       ("libtiff" ,libtiff)
+       ("libmspack" ,libmspack)
+       ("sdl" ,sdl)
+       ("unixodbc" ,unixodbc)))
+    (arguments
+     `(#:configure-flags
+       '("--enable-unicode" "--with-regex=sys" "--with-sdl")
+       #:make-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
+       ;; No 'check' target.
+       #:tests? #f))))
+
 (define-public wxwidgets-gtk2
   (package (inherit wxwidgets)
            (inputs `(("gtk+" ,gtk+-2)
@@ -125,6 +153,14 @@ and many other languages.")
             (substitute-keyword-arguments (package-arguments wxwidgets)
               ((#:configure-flags flags)
                `(cons "--enable-mediactrl" ,flags))))))
+
+(define-public wxwidgets-gtk2-3.1
+  (package (inherit wxwidgets-3.1)
+           (inputs `(("gtk+" ,gtk+-2)
+                     ,@(alist-delete
+                        "gtk+"
+                        (package-inputs wxwidgets-3.1))))
+           (name "wxwidgets-gtk2")))
 
 (define-public python2-wxpython
   (package

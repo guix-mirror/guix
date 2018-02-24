@@ -245,18 +245,18 @@ television and DVD.  It is also known as AC-3.")
 (define-public libx264
   (package
     (name "libx264")
-    (version "20170316-2245")
+    (version "20180219-2245")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/pub/x264/snapshots/"
-                                  "x264-snapshot-" version ".tar.bz2"))
+                                  "x264-snapshot-" version "-stable.tar.bz2"))
               (sha256
                (base32
-                "1s1nnvl3axz38sv4g09skijl6k9mbbngbb1nsh26w4dr2w2gyzad"))))
+                "1x0cg8l30wp84mr7q0ddp06jclm0kjrszazrx87d4k7js3qxjy8m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("yasm" ,yasm)))
+       ("nasm" ,nasm)))
     ;; TODO: Add gpac input
     (arguments
      `(#:tests? #f  ;no check target
@@ -1275,7 +1275,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1011")
+    (version "0.4.1025")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1284,7 +1284,7 @@ other site that youtube-dl supports.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0cdbh5w0chw3dlrwizm91l6sgkkzy7p6h0072dai4xbw5zgld31k"))))
+                "10103jw1gzar85jlajzl9wslk08vw21n26hkhfcz5bvkm9lxxs2c"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -1737,7 +1737,12 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "10m3ry0b2pvqx3bk34qh5dq337nn8pkc2gzfyhsj4nv9abskln47"))))
+                "10m3ry0b2pvqx3bk34qh5dq337nn8pkc2gzfyhsj4nv9abskln47"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; As of glibc 2.26, <xlocale.h> no longer is.
+               '(substitute* "src/framework/mlt_property.h"
+                  (("xlocale\\.h") "locale.h")))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests

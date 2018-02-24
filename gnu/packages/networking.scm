@@ -1584,21 +1584,20 @@ displays the results in real time.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.6.1")
+    (version "5.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0lxbyiary8iapx3ysw40czrmxf983fhfzs5mvz2hk1j1mpc85hp0"))))
+        (base32 "14ifqay54brw2b2hbmm517bxw8bs9631d7jm4g139igkxcq0m9p0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'adjust-to-environment
+         (add-before 'build 'patch-command-file-names
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; Adjust file names.
              (substitute* "src/libstrongswan/utils/process.c"
                (("/bin/sh")
                 (string-append (assoc-ref inputs "bash") "/bin/sh")))
@@ -1607,8 +1606,9 @@ displays the results in real time.")
                (("/bin/sh") (which "sh"))
                (("/bin/echo") (which "echo"))
                (("cat") (which "cat")))
-
-             ;; This is needed for tests.
+             #t))
+         (add-before 'check 'set-up-test-environment
+           (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
                                             "/share/zoneinfo"))
              #t)))

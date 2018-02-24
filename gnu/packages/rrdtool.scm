@@ -61,7 +61,7 @@
        ;; For tests.
        ("bc" ,bc)
        ("perl" ,perl)                   ; will also build Perl bindings
-       ("tzdata" ,tzdata)))
+       ("tzdata" ,tzdata-for-tests)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,26 +42,26 @@
     (arguments
      `(#:parallel-build? #f ; There are some nasty racy rules in the Makefile.
        #:phases
-       (alist-cons-before
-        'configure 'pre-conf
-        (lambda _
-          (substitute* (append '("common/env.c")
-                               (find-files "test" "\\.sh"))
-            (("/bin/sh") (which "sh")))
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-conf
+           (lambda _
+             (substitute* (append '("common/env.c")
+                                  (find-files "test" "\\.sh"))
+               (("/bin/sh") (which "sh")))
 
-          ;; Guix's binutils (because it wants bit-reproducable builds) is
-          ;; is configured with the  --enable-deterministic-archives flag.
-          ;; This means the timestamp of files appended to an ar archive
-          ;; are automatically and silently mutated to 00:00 1 Jan 1970
-          ;; which plays havoc with this test, for which correct timestamps
-          ;; are very important. Adding the U flag undoes the effect of
-          ;; --enable-deterministic-archives and allows this test to work
-          ;; again.
-          (substitute* "test/00/t0077a.sh"
-            (("ar qc") "ar qcU"))
+             ;; Guix's binutils (because it wants bit-reproducable builds) is
+             ;; is configured with the  --enable-deterministic-archives flag.
+             ;; This means the timestamp of files appended to an ar archive
+             ;; are automatically and silently mutated to 00:00 1 Jan 1970
+             ;; which plays havoc with this test, for which correct timestamps
+             ;; are very important. Adding the U flag undoes the effect of
+             ;; --enable-deterministic-archives and allows this test to work
+             ;; again.
+             (substitute* "test/00/t0077a.sh"
+               (("ar qc") "ar qcU"))
 
-          (setenv "SH" (which "sh")))
-        %standard-phases)))
+             (setenv "SH" (which "sh"))
+             #t)))))
     (native-inputs `(("bison" ,bison)
                      ;; For building the documentation:
                      ("groff" ,groff)

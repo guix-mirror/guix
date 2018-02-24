@@ -428,14 +428,14 @@ from software emulation to complete hardware acceleration for modern GPUs.")
 (define (mesa-demos-source version)
   (origin
     (method url-fetch)
-    (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/demos/" version
+    (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/demos"
                         "/mesa-demos-" version ".tar.bz2"))
-    (sha256 (base32 "1vqb7s5m3fcg2csbiz45mha1pys2xx6rhw94fcyvapqdpm5iawy1"))))
+    (sha256 (base32 "0zgzbz55a14hz83gbmm0n9gpjnf5zadzi2kjjvkn6khql2a9rs81"))))
 
 (define-public mesa-utils
   (package
     (name "mesa-utils")
-    (version "8.3.0")
+    (version "8.4.0")
     (source (mesa-demos-source version))
     (build-system gnu-build-system)
     (inputs

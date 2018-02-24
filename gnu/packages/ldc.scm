@@ -41,14 +41,14 @@
 (define-public rdmd
   (package
     (name "rdmd")
-    (version "2.073.0")
+    (version "2.077.1")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://github.com/dlang/tools/archive/v" version ".tar.gz"))
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "01if3ivnb7g2myfhymp4d9346s4vmvcl82i1kxfs5iza45almh7v"))))
+        "0c8w373rv6iz3xfid94w40ncv2lr2ncxi662qsr4lda4aghczmq7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -58,7 +58,7 @@
          (replace
           'build
           (lambda _
-            (zero? (system* "ldc2" "rdmd.d"))))
+            (invoke "ldc2" "rdmd.d")))
          (replace
           'install
           (lambda* (#:key outputs #:allow-other-keys)
@@ -77,7 +77,6 @@ and freshness without requiring additional information from the user.")
     (license license:boost1.0)))
 
 (define-public ldc-bootstrap
-  (let ((runtime-version "0.17.3"))
     (package
       (name "ldc")
       (version "0.17.4")
@@ -92,6 +91,10 @@ and freshness without requiring additional information from the user.")
                   "1kw0j378k6bh0k66dvx99bjq8ilp8bb24w3jrmibn8rhmqv0d5q8"))))
       (build-system cmake-build-system)
       (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
+      (properties
+       ;; Some of the tests take a very long time on ARMv7.  See
+       ;; <https://lists.gnu.org/archive/html/guix-devel/2018-02/msg00312.html>.
+       `((max-silent-time . ,(* 3600 3))))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -120,12 +123,15 @@ and freshness without requiring additional information from the user.")
                  (("echo") (which "echo")))
                (substitute* "runtime/phobos/std/datetime.d"
                  (("/usr/share/zoneinfo/")
-                  (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
+                  (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
+                 (("tzName == \"[+]VERSION\"")
+                  "(tzName == \"+VERSION\" || std.algorithm.endsWith(tzName, \"/leapseconds\"))"))
                (substitute* "tests/d2/dmd-testsuite/Makefile"
                  (("/bin/bash") (which "bash")))
                ;; FIXME: this test cannot be linked.
                (delete-file "tests/d2/dmd-testsuite/runnable/cppa.d")
-               #t)))))
+               ;; the following two tests fail on i686
+               (for-each delete-file '("tests/ir/attributes.d" "tests/ir/align.d")))))))
       (inputs
        `(("libconfig" ,libconfig)
          ("libedit" ,libedit)
@@ -142,59 +148,51 @@ and freshness without requiring additional information from the user.")
              (method url-fetch)
              (uri (string-append
                    "https://github.com/ldc-developers/phobos/archive/ldc-v"
-                   runtime-version ".tar.gz"))
+                   version ".tar.gz"))
              (sha256
               (base32
-               "0qywnvnp019mmmr74aw90ir9f03iz0hc7cgzna609agsar0b27jl"))
-             (patches (search-patches "ldc-disable-tests.patch"))))
+               "16x36kp46mqiihxx7jvr1d3mv3b96yfmhinb9lzinh2m4clr85wz"))
+             (patches (search-patches "ldc-bootstrap-disable-tests.patch"))))
          ("druntime-src"
           ,(origin
              (method url-fetch)
              (uri (string-append
                    "https://github.com/ldc-developers/druntime/archive/ldc-v"
-                   runtime-version ".tar.gz"))
+                   version ".tar.gz"))
              (sha256
               (base32
-               "0z418n6x2fxac07sxpi4rl69069qiym4w6r9sjppn91q58qh8hjs"))))
+               "0iw2xxhcbsc5f1707dgdzhff528363l4faqdk513gaxs2dhfx8vx"))))
          ("dmd-testsuite-src"
           ,(origin
              (method url-fetch)
              (uri (string-append
                    "https://github.com/ldc-developers/dmd-testsuite/archive/ldc-v"
-                   runtime-version ".tar.gz"))
+                   version ".tar.gz"))
              (sha256
               (base32
-               "196mkfax5y3yqm3gz7jhqhnkjwrvr2m4a8nc9k41l0511ldzsk9x"))))))
-
-      (properties
-       ;; Some of the tests take a very long time on ARMv7.  See
-       ;; <https://lists.gnu.org/archive/html/guix-devel/2018-02/msg00312.html>.
-       `((max-silent-time . ,(* 3600 3))))
-
+               "0z6ch930wjkg2vlnqkbliwxxxifad6ydsdpwdxwnajkb2kaxsjx4"))))))
       (home-page "http://wiki.dlang.org/LDC")
       (synopsis "LLVM compiler for the D programming language")
       (description
-       "LDC is a compiler for the D programming language.  It is based on the
-latest DMD frontend and uses LLVM as backend.")
+       "LDC is a compiler for the D programming language.  It is based on
+the latest DMD compiler that was written in C and is used for
+bootstrapping more recent compilers written in D.")
       ;; Most of the code is released under BSD-3, except for code originally
       ;; written for GDC, which is released under GPLv2+, and the DMD frontend,
       ;; which is released under the "Boost Software License version 1.0".
       (license (list license:bsd-3
                      license:gpl2+
-                     license:boost1.0)))))
+                     license:boost1.0))))
 
 (define-public ldc
-  ;; The phobos, druntime and dmd-testsuite dependencies do not have a newer
-  ;; release than 1.1.0-beta4, hence the need to make use of the older-version
-  ;; variable to hold this variable.
-  (let ((older-version "1.1.0"))
+  ;; Phobos, druntime and dmd-testsuite library dependencies do
+  ;; not always have a newer release than the compiler, hence we
+  ;; retain this variable.
+  (let ((older-version "1.7.0"))
     (package
       (inherit ldc-bootstrap)
       (name "ldc")
-      (version "1.1.1")
-      ;; Beta version needed to compile various scientific tools that require
-      ;; the newer beta versions, and won't compile successfully with the
-      ;; older stable version.
+      (version "1.7.0")
       (source (origin
                 (method url-fetch)
                 (uri (string-append
@@ -203,7 +201,7 @@ latest DMD frontend and uses LLVM as backend.")
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "0yjiwg8pnlm2286bwdkwasaqw6ys7lymrqvhh5xyb1adha1ndcav"))))
+                  "0rqchmlbhz1pd8ksl1vfhfd5s3cp9h9pqi4k4w2np9sq0zr7abwn"))))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -217,20 +215,36 @@ latest DMD frontend and uses LLVM as backend.")
                  (and (unpack "phobos-src" "runtime/phobos")
                       (unpack "druntime-src" "runtime/druntime")
                       (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite")))))
-           ;; The 'patch-dmd2 step in ldc causes the build to fail since
-           ;; dmd2/root/port.c no longer exists.  Arguments needed to have
-           ;; 'patch-dmd2 step removed, but retain everything else.
            (add-after 'unpack-submodule-sources 'patch-phobos
              (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "runtime/phobos/std/process.d"
+               (substitute* '("runtime/phobos/std/process.d"
+                              "tests/linking/linker_switches.d")
                  (("/bin/sh") (which "sh"))
                  (("echo") (which "echo")))
-               (substitute* "runtime/phobos/std/datetime.d"
-                 (("/usr/share/zoneinfo/")
-                  (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
                (substitute* "tests/d2/dmd-testsuite/Makefile"
-                 (("/bin/bash") (which "bash")))
-               #t)))))
+                            (("/bin/bash") (which "bash")))
+               ;; disable unittests in the following files. We are discussing with
+               ;; upstream
+               (substitute* '("runtime/phobos/std/net/curl.d"
+                              "runtime/phobos/std/datetime/systime.d"
+                              "runtime/phobos/std/datetime/timezone.d"
+                              )
+                 (("version(unittest)") "version(skipunittest)")
+                 ((" unittest") " version(skipunittest) unittest"))
+               ;; the following tests require a more recent LLVM
+               (delete-file "tests/compilable/ctfe_math.d")
+               (delete-file "tests/debuginfo/nested_gdb.d")
+               (delete-file "tests/debuginfo/classtypes_gdb.d")
+               ;; the following tests requires AVX instruction set in the CPU.
+               (substitute* "tests/d2/dmd-testsuite/runnable/test_cdvecfill.d"
+                (("^// DISABLED: ") "^// DISABLED: linux64 "))
+               #t))
+           (replace 'check
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; some tests call into gdb binary which needs SHELL and CC set
+                      (setenv "SHELL" (which "sh"))
+                      (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+                      (invoke "make" "test" "-j" (number->string (parallel-job-count))))))))
       (native-inputs
        `(("llvm" ,llvm)
          ("clang" ,clang)
@@ -247,7 +261,7 @@ latest DMD frontend and uses LLVM as backend.")
                    older-version ".tar.gz"))
              (sha256
               (base32
-               "0z5v55b9s1ppf0c2ivjq7sbmq688c37c92ihc3qwrbxnqvkkvrlk"))
+               "042hn3v0zk353r0h6yclq56z86hi437y969bckyb2qsnv00h60hi"))
              ;; This patch deactivates some tests that depend on network access
              ;; to pass.  It also deactivates some tests that have some reliance
              ;; on timezone.
@@ -257,7 +271,7 @@ latest DMD frontend and uses LLVM as backend.")
              ;; that is being pursued at
              ;; <https://forum.dlang.org/post/zmdbdgnzrxyvtpqafvyg@forum.dlang.org>.
              ;; It also deactivates a test that requires /root
-             (patches (search-patches "ldc-1.1.0-disable-phobos-tests.patch"))))
+             (patches (search-patches "ldc-1.7.0-disable-phobos-tests.patch"))))
          ("druntime-src"
           ,(origin
              (method url-fetch)
@@ -266,7 +280,7 @@ latest DMD frontend and uses LLVM as backend.")
                    older-version ".tar.gz"))
              (sha256
               (base32
-               "07qvrqj6vgakd6qr4x5f70w6zwkzd1li5x8i1b5ywnds1z5lnfp6"))))
+               "0pvabk70zw8c1gbmvy2i486bg22bn0l5nbacjz0qwmhf0w9y9ylh"))))
          ("dmd-testsuite-src"
           ,(origin
              (method url-fetch)
@@ -275,18 +289,12 @@ latest DMD frontend and uses LLVM as backend.")
                    older-version ".tar.gz"))
              (sha256
               (base32
-               "12cak7yqmsgjlflx0dp6fwmwb9dac25amgi86n0bb95ard3547wy"))
-             ;; Remove the gdb tests that fails with a "Error: No such file or
-             ;; directory" error, despite the files being present in the debug
-             ;; files left with the --keep-failed flag to guix build.
-             (patches (search-patches "ldc-1.1.0-disable-dmd-tests.patch")))))))))
-
-(define-public ldc-beta ldc)
+               "1i8j1raah7b26bprwkdick443ivdsihgi1l14sn9rh4a95rnrpd9")))))))))
 
 (define-public dub
   (package
     (name "dub")
-    (version "1.5.0")
+    (version "1.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/dlang/dub/archive/"
@@ -294,7 +302,7 @@ latest DMD frontend and uses LLVM as backend.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1p9pmzjsmd7v3jpilv0z0c8ar1ykvri6nn5fv95f8d2vriczj29m"))))
+                "1jvr1mmq8j77wnsrsg7x2xv8yfljqd6x8gn6yy7dd6h6y3cf408q"))))
    (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; it would have tested itself by installing some packages (vibe etc)
@@ -303,7 +311,7 @@ latest DMD frontend and uses LLVM as backend.")
          (delete 'configure)            ; no configure script
          (replace 'build
            (lambda _
-             (zero? (system* "./build.sh"))))
+             (invoke "./build.sh")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -317,10 +325,12 @@ latest DMD frontend and uses LLVM as backend.")
     (home-page "https://code.dlang.org/getting_started")
     (synopsis "Package and build manager for D projects")
     (description
-     "DUB is a package and build manager for applications and libraries written
-in the D programming language.  It can automatically retrieve a project's
-dependencies and integrate them in the build process.
+     "DUB is a package and build manager for applications and
+libraries written in the D programming language.  It can
+automatically retrieve a project's dependencies and integrate
+them in the build process.
 
-The design emphasis is on maximum simplicity for simple projects, while
-providing the opportunity to customize things when needed. ")
+The design emphasis is on maximum simplicity for simple projects,
+while providing the opportunity to customize things when
+needed.")
     (license license:expat)))

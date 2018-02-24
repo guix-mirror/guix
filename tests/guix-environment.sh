@@ -62,6 +62,15 @@ fi
 guix environment --bootstrap --ad-hoc guile-bootstrap --pure \
      -- "$SHELL" -c 'test -f "$GUIX_ENVIRONMENT/bin/guile"'
 
+# Make sure 'GUIX_ENVIRONMENT' points to the profile when building from a
+# manifest.
+echo "(use-modules (guix profiles) (gnu packages bootstrap))
+
+(packages->manifest (list %bootstrap-guile))
+" > $tmpdir/manifest.scm
+guix environment --bootstrap --manifest=$tmpdir/manifest.scm --pure \
+     -- "$SHELL" -c 'test -f "$GUIX_ENVIRONMENT/bin/guile"'
+
 # Make sure '-r' works as expected.
 rm -f "$gcroot"
 expected="`guix environment --bootstrap --ad-hoc guile-bootstrap \
