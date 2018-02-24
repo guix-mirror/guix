@@ -692,16 +692,16 @@ BLAKE.")
                 (string-append (assoc-ref outputs "out") "/etc")))
              #t))
          (add-after 'build 'build-library
-           (lambda* (#:key outputs make-flags #:allow-other-keys)
+           (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "lib-shared" make-flags)))
          (add-after 'install 'install-library
-           (lambda* (#:key outputs make-flags #:allow-other-keys)
+           (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "install-lib-shared" make-flags)
              (apply invoke
                     "make" "-C" "librhash" "install-headers"
                     "install-so-link" make-flags)))
          (add-after 'check 'check-library
-           (lambda* (#:key outputs make-flags #:allow-other-keys)
+           (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "test-shared-lib" make-flags))))))
     (home-page "https://sourceforge.net/projects/rhash/")
     (synopsis "Utility for computing hash sums")
