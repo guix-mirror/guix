@@ -124,7 +124,7 @@
        ;; '--autolaunch'.
        ("libx11" ,libx11)))
 
-    (home-page "http://dbus.freedesktop.org/")
+    (home-page "https://www.freedesktop.org/wiki/Software/dbus/")
     (synopsis "Message bus for inter-process communication (IPC)")
     (description
      "D-Bus is a message bus system, a simple way for applications to
@@ -461,7 +461,7 @@ translated.")
     (native-inputs
      `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
-    (home-page "http://dbus.freedesktop.org/doc/dbus-glib/")
+    (home-page "https://dbus.freedesktop.org/doc/dbus-glib/")
     (synopsis "D-Bus GLib bindings")
     (description
      "GLib bindings for D-Bus.  The package is obsolete and superseded
@@ -662,7 +662,7 @@ useful for C++.")
      `(("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
        ("glib" ,glib)))
-    (home-page "http://telepathy.freedesktop.org/wiki/")
+    (home-page "https://telepathy.freedesktop.org/wiki/")
     (synopsis "GLib Real-time communications framework over D-Bus")
     (description "Telepathy is a flexible, modular communications framework
 that enables real-time communication over D-Bus via pluggable protocol

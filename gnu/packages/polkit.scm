@@ -122,7 +122,7 @@
                                           out "/share/polkit-1/actions")
                            make-flags)
              #t))))))
-    (home-page "http://www.freedesktop.org/wiki/Software/polkit/")
+    (home-page "https://www.freedesktop.org/wiki/Software/polkit/")
     (synopsis "Authorization API for privilege management")
     (description "Polkit is an application-level toolkit for defining and
 handling the policy that allows unprivileged processes to speak to
@@ -186,5 +186,5 @@ easily with PolicyKit.")
     (description "PolicyKit-gnome provides a D-Bus session bus service
 that is used to bring up authentication dialogs used for obtaining
 privileges.")
-    (home-page "http://www.freedesktop.org/wiki/Software/polkit/")
+    (home-page "https://www.freedesktop.org/wiki/Software/polkit/")
     (license lgpl2.0+)))

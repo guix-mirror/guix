@@ -428,7 +428,7 @@ standard 21.0.2.")
       (sha256 (base32
                "1j6sjwkyhqvsgyw938bxxfwkzzi1mahk66g5342lv6j89jfvrz8k"))))
     (build-system gnu-build-system)
-    (home-page "http://www.freedesktop.org/wiki/Software/libexttextcat/")
+    (home-page "https://www.freedesktop.org/wiki/Software/libexttextcat/")
     (synopsis "Text Categorization library")
     (description "Libexttextcat is an N-Gram-Based Text Categorization
 library primarily intended for language guessing.")

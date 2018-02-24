@@ -229,7 +229,7 @@ sound server.")
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://freedesktop.org/software/pulseaudio/pavucontrol/")
+    (home-page "https://www.freedesktop.org/software/pulseaudio/pavucontrol/")
     (synopsis "PulseAudio volume control")
     (description
      "PulseAudio Volume Control (pavucontrol) provides a GTK+

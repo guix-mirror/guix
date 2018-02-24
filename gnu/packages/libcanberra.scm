@@ -130,7 +130,7 @@ sounds for various system events.")
     ;; The license of the various sounds is given in the 'CREDITS' file.
     (license (list cc-by-sa4.0 cc-by3.0 gpl2 gpl2+))
 
-    (home-page "http://www.freedesktop.org/wiki/Specifications/sound-theme-spec/")))
+    (home-page "https://www.freedesktop.org/wiki/Specifications/sound-theme-spec/")))
 
 (define-public python-pycanberra
   (package

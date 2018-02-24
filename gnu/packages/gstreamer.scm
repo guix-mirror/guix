@@ -87,7 +87,7 @@
                             "testsuite/exec_opcodes_sys.c")
                (("if \\(error\\) return 1;")
                 "if (error) return 77;")))))))
-    (home-page "http://gstreamer.freedesktop.org/modules/orc.html")
+    (home-page "https://gstreamer.freedesktop.org/modules/orc.html")
     (synopsis "Oil runtime compiler")
     (description
      "Orc is a just-in-time compiler implemented as a library and set of
@@ -405,7 +405,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
        ("ffmpeg" ,ffmpeg)
        ("orc" ,orc)
        ("zlib" ,zlib)))
-    (home-page "http://gstreamer.freedesktop.org/")
+    (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "Plugins for the GStreamer multimedia library")
     (description
      "This GStreamer plugin supports a large number of audio and video

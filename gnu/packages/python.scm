@@ -4762,7 +4762,7 @@ toolkit.  Use it to build trees of widgets.")
     (synopsis "Python bindings for D-bus")
     (description "python-dbus provides bindings for libdbus, the reference
 implementation of D-Bus.")
-    (home-page "http://www.freedesktop.org/wiki/Software/DBusBindings/")
+    (home-page "https://www.freedesktop.org/wiki/Software/DBusBindings/")
     (license license:expat)))
 
 (define-public python2-dbus

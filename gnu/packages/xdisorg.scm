@@ -406,7 +406,7 @@ tracking.")
     (inputs
      `(("libx11" ,libx11)
        ("xcb-util" ,xcb-util)))
-    (home-page "http://www.freedesktop.org/wiki/Software/startup-notification/")
+    (home-page "https://www.freedesktop.org/wiki/Software/startup-notification/")
     (synopsis "Application startup notification and feedback library")
     (description
      "Startup-notification contains a reference implementation of the startup

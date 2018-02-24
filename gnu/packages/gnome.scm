@@ -947,7 +947,7 @@ guidelines.")
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://freedesktop.org/wiki/Software/shared-mime-info")
+    (home-page "https://www.freedesktop.org/wiki/Software/shared-mime-info")
     (synopsis "Database of common MIME types")
     (description
      "The shared-mime-info package contains the core database of common types
@@ -972,7 +972,7 @@ database is translated at Transifex.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
-    (home-page "http://icon-theme.freedesktop.org/releases/")
+    (home-page "https://icon-theme.freedesktop.org/releases/")
     (synopsis
      "Freedesktop icon theme")
     (description
@@ -2322,7 +2322,7 @@ and objects.")
        ("libxkbfile"       ,libxkbfile)
        ("xkbcomp"          ,xkbcomp)
        ("xkeyboard-config" ,xkeyboard-config)))
-    (home-page "http://www.freedesktop.org/wiki/Software/LibXklavier/")
+    (home-page "https://www.freedesktop.org/wiki/Software/LibXklavier/")
     (synopsis "High-level API for X Keyboard Extension")
     (description
      "LibXklavier is a library providing high-level API for X Keyboard
@@ -2828,7 +2828,7 @@ keyboard shortcuts.")
        ("sqlite" ,sqlite)
        ("polkit" ,polkit)
        ("sane-backends" ,sane-backends)))
-    (home-page "http://www.freedesktop.org/software/colord/")
+    (home-page "https://www.freedesktop.org/software/colord/")
     (synopsis "Color management service")
     (description "Colord is a system service that makes it easy to manage,
 install and generate color profiles to accurately color manage input and
@@ -2964,7 +2964,7 @@ faster results and to avoid unnecessary server load.")
      `(("dbus-glib" ,dbus-glib)
        ("libgudev" ,libgudev)
        ("libusb" ,libusb)))
-    (home-page "http://upower.freedesktop.org/")
+    (home-page "https://upower.freedesktop.org/")
     (synopsis "System daemon for managing power devices")
     (description
      "UPower is an abstraction for enumerating power devices,
