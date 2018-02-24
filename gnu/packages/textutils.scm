@@ -114,22 +114,18 @@ handy front-end to the library.")
 (define-public enca
   (package
     (name "enca")
-    (version "1.16")
+    (version "1.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/nijel/enca/archive/" version ".tar.gz"))
        (sha256
-        (base32 "1xik00x0yvhswsw2isnclabhv536xk1s42cf5z54gfbpbhc7ni8l"))
+        (base32 "099z526i7qgij7q1w3lvhl88iv3jc3nqxca2i09h6s08ghyrmzf4"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
-    (inputs `(("recode" ,recode)))
-
-    ;; Both 'test-convert-64.sh' and 'test-convert-filter.sh' manipulate a
-    ;; 'test.tmp' file, so they have to run in sequence.
-    (arguments '(#:parallel-tests? #f))
-
+    ;; enca-1.19 tests fail with recent recode.
+    ;(inputs `(("recode" ,recode)))
     (home-page "https://github.com/nijel/enca")
     (synopsis "Text encoding detection tool")
     (description "Enca (Extremely Naive Charset Analyser) consists of libenca,
