@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -621,6 +622,33 @@ useful for C++.")
      `(("python" ,python-2)
        ("python-pycairo" ,python2-pycairo)
        ("gobject-introspection" ,gobject-introspection)))))
+
+(define-public perl-glib
+  (package
+    (name "perl-glib")
+    (version "1.326")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/X/XA/XAOC/Glib-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0prn9kkdpwjq9qmzqashbhk3pq4gvlrmvm3b10xf1dhc48406382"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "http://search.cpan.org/dist/Glib/")
+    (synopsis "Perl wrappers for the GLib utility and Object libraries")
+    (description "This module provides perl access to GLib and GLib's GObject
+libraries.  GLib is a portability and utility library; GObject provides a
+generic type system with inheritance and a powerful signal system.  Together
+these libraries are used as the foundation for many of the libraries that make
+up the Gnome environment, and are used in many unrelated projects.")
+    (license license:lgpl2.1+)))
 
 (define telepathy-glib
   (package
