@@ -4771,14 +4771,14 @@ common definitions and porting layer.")
 (define-public xorgproto
   (package
     (name "xorgproto")
-    (version "2018.2")
+    (version "2018.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/proto/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0r3fk48vp24hk4viw4fjpyh0y7rdg13p5faxc0vicdyqcn5w02cp"))))
+                "1rdhw28n1gp7yylwia41jhih66gfx75nxgrmi2ggglzvzqhwr0x8"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; To get util-macros in (almost?) all package inputs.

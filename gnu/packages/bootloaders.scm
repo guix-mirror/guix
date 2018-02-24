@@ -71,6 +71,22 @@
      (base32
       "0p2vhnc18cnbmb39vq4m7hzv4mhnm2l0a2s7gx3ar277fwng3hys"))))
 
+;; The GRUB test suite fails with later versions of Qemu, so we
+;; keep it at 2.10 for now.  See
+;; <https://lists.gnu.org/archive/html/bug-grub/2018-02/msg00004.html>.
+;; TODO: When grub no longer needs this version, move to gnu/packages/debug.scm.
+(define qemu-minimal-2.10
+  (package
+    (inherit qemu-minimal)
+    (version "2.10.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.qemu.org/qemu-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "17w21spvaxaidi2am5lpsln8yjpyp2zi3s3gc6nsxj5arlgamzgw"))))))
+
 (define-public grub
   (package
     (name "grub")
@@ -144,7 +160,7 @@
        ;; Dependencies for the test suite.  The "real" QEMU is needed here,
        ;; because several targets are used.
        ("parted" ,parted)
-       ("qemu" ,qemu-minimal)
+       ("qemu" ,qemu-minimal-2.10)
        ("xorriso" ,xorriso)))
     (home-page "https://www.gnu.org/software/grub/")
     (synopsis "GRand Unified Boot loader")

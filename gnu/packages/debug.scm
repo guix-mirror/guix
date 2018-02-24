@@ -169,7 +169,7 @@ tools that process C/C++ code.")
       (inputs
        `(("custom-qemu"
           ;; The afl-qemu tool builds qemu 2.10.0 with a few patches applied.
-          ,(package (inherit qemu-minimal)
+          ,(package (inherit (@@ (gnu packages bootloaders) qemu-minimal-2.10))
              (name "afl-qemu")
              (inputs
               `(("afl-src" ,source)

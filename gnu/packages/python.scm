@@ -12756,14 +12756,14 @@ and other tools.")
 (define-public bpython
   (package
     (name "bpython")
-    (version "0.17")
+    (version "0.17.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bpython" version))
        (sha256
         (base32
-         "1mbah208jhd7bsfaa17fwpi55f7fvif0ghjwgrjmpmx8w1vqab9l"))))
+         "0bxhxi5zxdkrf8b4gwn0d363kdz3qnypjwhm1aydki53ph8ca1w9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

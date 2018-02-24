@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -409,6 +410,28 @@ exception based code.  It is built with Test::Builder and plays happily with
 Test::More and friends.")
     (license perl-license)))
 
+(define-public perl-test-failwarnings
+  (package
+    (name "perl-test-failwarnings")
+    (version "0.008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Test-FailWarnings-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0vx9chcp5x8m0chq574p9fnfckh5gl94j7904rh9v17n568fyd6s"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (home-page "http://search.cpan.org/dist/Test-FailWarnings/")
+    (synopsis "Add test failures if warnings are caught")
+    (description
+     "Test::FailWarnings adds test failures if warnings are caught.")
+    (license asl2.0)))
+
 (define-public perl-test-fatal
   (package
     (name "perl-test-fatal")
@@ -455,6 +478,28 @@ testing exception-throwing code with about the same amount of typing.")
     (description "This module creates a Fake ShareDir for your modules
 for testing.")
     (license perl-license)))
+
+(define-public perl-test-filename
+  (package
+    (name "perl-test-filename")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Test-Filename-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1gpw4mjw68gnby8s4cifvbz6g2923xsc189jkw9d27i8qv20qiba"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-path-tiny" ,perl-path-tiny)))
+    (home-page "http://search.cpan.org/dist/Test-Filename/")
+    (synopsis "Portable filename comparison")
+    (description "Test::Filename provides functions to convert all path
+separators automatically.")
+    (license asl2.0)))
 
 (define-public perl-test-files
   (package
@@ -927,6 +972,34 @@ non-local Internet resources before functional tests begin.  If the sockets
 cannot connect to the specified hosts and ports, the exception is caught and
 reported, and the tests skipped.")
     (license perl-license)))
+
+(define-public perl-test-roo
+  (package
+    (name "perl-test-roo")
+    (version "1.004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Test-Roo-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1mnym49j1lj7gzylma5b6nr4vp75rmgz2v71904v01xmxhy9l4i1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (propagated-inputs
+     `(("perl-indirect" ,perl-indirect)
+       ("perl-moo" ,perl-moo)
+       ("perl-moox-types-mooselike" ,perl-moox-types-mooselike)
+       ("perl-multidimensional" ,perl-multidimensional)
+       ("perl-strictures" ,perl-strictures)
+       ("perl-sub-install" ,perl-sub-install)))
+    (home-page "http://search.cpan.org/dist/Test-Roo/")
+    (synopsis "Composable, reusable tests with roles and Moo")
+    (description "Test::Roo provides composable, reusable tests with roles.")
+    (license asl2.0)))
 
 (define-public perl-test-script
   (package

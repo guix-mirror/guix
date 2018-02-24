@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -56,16 +56,16 @@
 (define-public libmpdclient
   (package
     (name "libmpdclient")
-    (version "2.13")
+    (version "2.14")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "http://musicpd.org/download/libmpdclient/"
+               (string-append "https://musicpd.org/download/libmpdclient/"
                               (car (string-split version #\.))
                               "/libmpdclient-" version ".tar.xz"))
               (sha256
                (base32
-                "0pflbv2jzik7yxnacci1iqs0awy1i5ipwn67xk0hg9r0pi9bs5ai"))))
+                "0whk0qw0lsd3kaimdznz0c45bfym0p4885zf4b7pfc7y3dwy510a"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -88,16 +88,16 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.20.15")
+    (version "0.20.17")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "http://musicpd.org/download/mpd/"
+               (string-append "https://musicpd.org/download/mpd/"
                               (version-major+minor version)
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0h7bm561i8p0bjp1hy8fsiy5zj7db24zyv6ypfihwf35wrklz766"))))
+                "1hfssmvp4wmy7zh4bl4zv2zqwiddsy77v69w9fh61pqrwbqfgc1c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -162,17 +162,17 @@ protocol.")
 (define-public mpd-mpc
   (package
     (name "mpd-mpc")
-    (version "0.28")
+    (version "0.29")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "http://www.musicpd.org/download/mpc/"
+               (string-append "https://www.musicpd.org/download/mpc/"
                               (car (string-split version #\.))
                               "/mpc-" version ".tar.xz"))
               (sha256
                (base32
-                "0iy5mdffkk61255f62si7p8mhyhkib70zlr1i1iimj2xr037scx4"))))
-    (build-system gnu-build-system)
+                "1lxr0z5i5yx4lcvy9nyxj6q32qlz473j3zm6va68zd1cj3ndmw82"))))
+    (build-system meson-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (synopsis "Music Player Daemon client")

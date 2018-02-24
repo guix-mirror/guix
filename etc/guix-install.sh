@@ -2,6 +2,7 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2017 sharlatan <sharlatanus@gmail.com>
 # Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+# Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 #
 # This file is part of GNU Guix.
 #
@@ -152,6 +153,9 @@ chk_sys_arch()
             ;;
         x86_64 | x86-64 | x64 | amd64)
             local arch=x86_64
+            ;;
+        aarch64)
+            local arch=aarch64
             ;;
         *)
             _err "${ERR}Unsupported CPU type: ${arch}"

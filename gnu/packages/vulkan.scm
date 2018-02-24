@@ -158,7 +158,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-icd-loader
   (package
     (name "vulkan-icd-loader")
-    (version "1.0.65.2")
+    (version "1.0.68.0")
     (source
      (origin
        (method url-fetch)
@@ -167,11 +167,20 @@ interpretation of the specifications for these languages.")
              "archive/sdk-" version ".tar.gz"))
        (sha256
         (base32
-         "1ivvmb977n2xp95v3sryhflvryy3mxrcwrd1hnr2dmri40vg1sl8"))))
+         "1n5gry5zxpwi7330fmi06snalra8hkbbw68gnwbp531kd5ycyinh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
-       #:configure-flags (list (string-append "-DCMAKE_INSTALL_LIBDIR="
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-spirv-tools-commit-id
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Remove lines trying to build in a git commit id.
+             (substitute* "CMakeLists.txt" ((".*spirv_tools_commit_id.h.*") ""))
+             #t)))
+       #:configure-flags (list
+                          "-DBUILD_LAYERS=OFF" ; FIXME: Fails to build.
+                          (string-append "-DCMAKE_INSTALL_LIBDIR="
                                               (assoc-ref %outputs "out") "/lib"))))
     (inputs `(("glslang" ,glslang)
               ("libxcb" ,libxcb)

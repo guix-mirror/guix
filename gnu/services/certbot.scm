@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@member.fsf.org>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +32,8 @@
   #:use-module (ice-9 match)
   #:export (certbot-service-type
             certbot-configuration
-            certbot-configuration?))
+            certbot-configuration?
+            certificate-configuration))
 
 ;;; Commentary:
 ;;;
@@ -41,6 +42,16 @@
 ;;; Code:
 
 
+(define-record-type* <certificate-configuration>
+  certificate-configuration make-certificate-configuration
+  certificate-configuration?
+  (name                certificate-configuration-name
+                       (default #f))
+  (domains             certificate-configuration-domains
+                       (default '()))
+  (deploy-hook         certificate-configuration-deploy-hook
+                       (default #f)))
+
 (define-record-type* <certbot-configuration>
   certbot-configuration make-certbot-configuration
   certbot-configuration?
@@ -48,8 +59,11 @@
                        (default certbot))
   (webroot             certbot-configuration-webroot
                        (default "/var/www"))
-  (hosts               certbot-configuration-hosts
+  (certificates        certbot-configuration-certificates
                        (default '()))
+  (email               certbot-configuration-email)
+  (rsa-key-size        certbot-configuration-rsa-key-size
+                       (default #f))
   (default-location    certbot-configuration-default-location
                        (default
                          (nginx-location-configuration
@@ -57,59 +71,75 @@
                           (body
                            (list "return 301 https://$host$request_uri;"))))))
 
-(define certbot-renewal-jobs
+(define certbot-command
   (match-lambda
-    (($ <certbot-configuration> package webroot hosts default-location)
-     (match hosts
-       ;; Avoid pinging certbot if we have no hosts.
-       (() '())
-       (_
-        (list
-         ;; Attempt to renew the certificates twice a week.
-         #~(job (lambda (now)
-                  (next-day-from (next-hour-from now '(3))
-                                 '(2 5)))
-                (string-append #$package "/bin/certbot renew"
-                               (string-concatenate
-                                (map (lambda (host)
-                                       (string-append " -d " host))
-                                     '#$hosts))))))))))
+    (($ <certbot-configuration> package webroot certificates email
+                                rsa-key-size default-location)
+     (let* ((certbot (file-append package "/bin/certbot"))
+            (rsa-key-size (and rsa-key-size (number->string rsa-key-size)))
+            (commands
+             (map
+              (match-lambda
+                (($ <certificate-configuration> custom-name domains
+                                                deploy-hook)
+                 (let ((name (or custom-name (car domains))))
+                   (append
+                    (list name certbot "certonly" "-n" "--agree-tos"
+                          "-m" email
+                          "--webroot" "-w" webroot
+                          "--cert-name" name
+                          "-d" (string-join domains ","))
+                    (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '())
+                    (if deploy-hook `("--deploy-hook" ,deploy-hook) '())))))
+              certificates)))
+       (program-file
+        "certbot-command"
+        #~(begin
+            (use-modules (ice-9 match))
+            (let ((code 0))
+              (for-each
+               (match-lambda
+                 ((name . command)
+                  (begin
+                    (format #t "Acquiring or renewing certificate: ~a~%" name)
+                    (set! code (or (apply system* command) code)))))
+               '#$commands) code)))))))
 
-(define certbot-activation
-  (match-lambda
-    (($ <certbot-configuration> package webroot hosts default-location)
+(define (certbot-renewal-jobs config)
+  (list
+   ;; Attempt to renew the certificates twice per day, at a random minute
+   ;; within the hour.  See https://certbot.eff.org/all-instructions/.
+   #~(job '(next-minute-from (next-hour '(0 12)) (list (random 60)))
+          #$(certbot-command config))))
+
+(define (certbot-activation config)
+  (match config
+    (($ <certbot-configuration> package webroot certificates email
+                                rsa-key-size default-location)
      (with-imported-modules '((guix build utils))
        #~(begin
-	   (use-modules (guix build utils))
-	   (mkdir-p #$webroot)
-           (for-each
-            (lambda (host)
-              (unless (file-exists? (in-vicinity "/etc/letsencrypt/live" host))
-                (unless (zero? (system*
-                                (string-append #$certbot "/bin/certbot")
-                                "certonly" "--webroot" "-w" #$webroot
-                                "-d" host))
-                  (error "failed to acquire cert for host" host))))
-            '#$hosts))))))
+           (use-modules (guix build utils))
+           (mkdir-p #$webroot)
+           (zero? (system* #$(certbot-command config))))))))
 
 (define certbot-nginx-server-configurations
   (match-lambda
-    (($ <certbot-configuration> package webroot hosts default-location)
-     (map
-      (lambda (host)
-        (nginx-server-configuration
-         (listen '("80"))
-         (ssl-certificate #f)
-         (ssl-certificate-key #f)
-         (server-name (list host))
-         (locations
-          (filter identity
-                  (list
-                   (nginx-location-configuration
-                    (uri "/.well-known")
-                    (body (list (list "root " webroot ";"))))
-                   default-location)))))
-      hosts))))
+    (($ <certbot-configuration> package webroot certificates email
+                                rsa-key-size default-location)
+     (list
+      (nginx-server-configuration
+       (listen '("80" "[::]:80"))
+       (ssl-certificate #f)
+       (ssl-certificate-key #f)
+       (server-name
+        (apply append (map certificate-configuration-domains certificates)))
+       (locations
+        (filter identity
+                (list
+                 (nginx-location-configuration
+                  (uri "/.well-known")
+                  (body (list (list "root " webroot ";"))))
+                 default-location))))))))
 
 (define certbot-service-type
   (service-type (name 'certbot)
@@ -121,12 +151,13 @@
                        (service-extension mcron-service-type
                                           certbot-renewal-jobs)))
                 (compose concatenate)
-                (extend (lambda (config additional-hosts)
+                (extend (lambda (config additional-certificates)
                           (certbot-configuration
                            (inherit config)
-                           (hosts (append (certbot-configuration-hosts config)
-                                          additional-hosts)))))
-                (default-value (certbot-configuration))
+                           (certificates
+                            (append
+                             (certbot-configuration-certificates config)
+                             additional-certificates)))))
                 (description
                  "Automatically renew @url{https://letsencrypt.org, Let's
 Encrypt} HTTPS certificates by adjusting the nginx web server configuration

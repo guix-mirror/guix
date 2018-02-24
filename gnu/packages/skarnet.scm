@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Claes Wallin <claes.wallin@greatsinodevelopment.com>
 ;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
 ;;; Copyright © 2017 Z. Ren <zren@dlut.edu.cn>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,7 @@
 (define-public skalibs
   (package
     (name "skalibs")
-    (version "2.3.10.0")
+    (version "2.6.3.1")
     (source
      (origin
       (method url-fetch)
@@ -36,11 +37,10 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0i7af224kl1crxgml09wx0x6q8ab79vnyrllfwv2lnq585wi9mg4"))))
+        "108c4vslsfy57892ybbksscrjd4bx444hzzcq2g5wdg2sh0cl245"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-force-devr") ; do not analyze /dev/random
-       #:tests? #f ; no tests exist
+     '(#:tests? #f ; no tests exist
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'reproducible
                     (lambda _
@@ -50,7 +50,7 @@
                         (("\\$\\(wildcard src/lib\\*/\\*.c\\)")
                          "$(sort $(wildcard src/lib*/*.c))"))
                       #t)))))
-    (home-page "http://skarnet.org/software/skalibs/")
+    (home-page "https://skarnet.org/software/skalibs/")
     (synopsis "Platform abstraction libraries for skarnet.org software")
     (description
      "This package provides lightweight C libraries isolating the developer
@@ -62,7 +62,7 @@ and file system operations.  It is used by all skarnet.org software.")
 (define-public execline
   (package
     (name "execline")
-    (version "2.1.5.0")
+    (version "2.3.0.4")
     (source
      (origin
       (method url-fetch)
@@ -70,7 +70,7 @@ and file system operations.  It is used by all skarnet.org software.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0hhirdmyh3sj9qagkis7addmmdvyic717wkb6ym3n63kvfk0adla"))))
+        "0jx60wjz3yj3r1wircbvd15in275pi7ggw69pbs9djhcyb48zfz4"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
@@ -90,7 +90,7 @@ and file system operations.  It is used by all skarnet.org software.")
                       (wrap-program (string-append bin "/execlineb")
                         `("PATH" ":" prefix (,bin)))))))
        #:tests? #f)) ; No tests exist.
-    (home-page "http://skarnet.org/software/execline/")
+    (home-page "https://skarnet.org/software/execline/")
     (license isc)
     (synopsis "Non-interactive shell-like language with minimal overhead")
     (description
@@ -105,7 +105,7 @@ complexity.")))
 (define-public s6
   (package
    (name "s6")
-   (version "2.3.0.0")
+   (version "2.7.0.0")
    (source
     (origin
      (method url-fetch)
@@ -113,7 +113,7 @@ complexity.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "1rp8i228zxzbia1799pdav1kkzdk96fax9bcfyf2gilkdm3s1ja9"))))
+       "04vfviw00zvvb1mdpl78zdgzd7j491f1lahhqrkkq9vk5kwcn5v6"))))
    (build-system gnu-build-system)
    (inputs `(("skalibs" ,skalibs)
              ("execline" ,execline)))
@@ -129,7 +129,7 @@ complexity.")))
                                        (assoc-ref %build-inputs "skalibs")
                                        "/lib/skalibs/sysdeps"))
       #:tests? #f))
-   (home-page "http://skarnet.org/software/s6")
+   (home-page "https://skarnet.org/software/s6")
    (license isc)
    (synopsis "Small suite of programs for process supervision")
    (description
@@ -144,7 +144,7 @@ functionality with a very small amount of code.")))
 (define-public s6-dns
   (package
    (name "s6-dns")
-   (version "2.0.1.0")
+   (version "2.3.0.0")
    (source
     (origin
      (method url-fetch)
@@ -152,7 +152,7 @@ functionality with a very small amount of code.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "1ji47iy8czx4jmi763dxd6lgjbnp4vqqgcijh46ym65l0a97z04w"))))
+       "0h47ldxvh9cny91r0pjxq7zr5iqpqf1j50p3ip42f6bl90z5ha58"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
@@ -164,7 +164,7 @@ functionality with a very small amount of code.")))
                                          (assoc-ref %build-inputs "skalibs")
                                          "/lib/skalibs/sysdeps"))
        #:tests? #f))
-    (home-page "http://skarnet.org/software/s6-dns")
+    (home-page "https://skarnet.org/software/s6-dns")
     (license isc)
     (synopsis "Suite of DNS client programs")
     (description
@@ -174,7 +174,7 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
 (define-public s6-networking
   (package
    (name "s6-networking")
-   (version "2.1.1.0")
+   (version "2.3.0.2")
    (source
     (origin
      (method url-fetch)
@@ -182,7 +182,7 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "0r8gfv0l2k449nacjy919gqlgn25q7fjxaqra5r37k7kiikkgqfw"))))
+       "06j8fpldn187cmbjqp191hd65ka3ys19vj3jm3kcvkmvd9snh6fq"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)
               ("execline" ,execline)
@@ -206,7 +206,7 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
                                          (assoc-ref %build-inputs "skalibs")
                                          "/lib/skalibs/sysdeps"))
        #:tests? #f))
-    (home-page "http://skarnet.org/software/s6-networking")
+    (home-page "https://skarnet.org/software/s6-networking")
     (license isc)
     (synopsis "Suite of network utilities for Unix systems")
     (description
@@ -218,7 +218,7 @@ clock synchronization.")))
 (define-public s6-rc
   (package
    (name "s6-rc")
-   (version "0.0.3.0")
+   (version "0.4.0.0")
    (source
     (origin
      (method url-fetch)
@@ -226,7 +226,7 @@ clock synchronization.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "0bl94lbaphbpaaj4wbb86xqgp5bcgrf3m7p80mimw1qsjrvlxfay"))))
+       "1fkg9635cvrf6gw055y346a3n634dy2xiwbypawi68flfprfgf4n"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)
               ("execline" ,execline)
@@ -246,7 +246,7 @@ clock synchronization.")))
                                          (assoc-ref %build-inputs "skalibs")
                                          "/lib/skalibs/sysdeps"))
        #:tests? #f))
-    (home-page "http://skarnet.org/software/s6-rc")
+    (home-page "https://skarnet.org/software/s6-rc")
     (license isc)
     (synopsis "Service manager for s6-based systems")
     (description
@@ -260,7 +260,7 @@ environment.")))
 (define-public s6-portable-utils
   (package
    (name "s6-portable-utils")
-   (version "2.0.6.0")
+   (version "2.2.1.1")
    (source
     (origin
      (method url-fetch)
@@ -269,7 +269,7 @@ environment.")))
            version ".tar.gz"))
      (sha256
       (base32
-       "0jwxj0ma4zd1h6i3i98nsp0miidr54phap7dqwf6c8vafq9psfr3"))))
+       "0ca5iiq3n6isj64jb81xpwjzjx1q8jg145nnnn91ra2qqk93kqka"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
@@ -281,7 +281,7 @@ environment.")))
                                          (assoc-ref %build-inputs "skalibs")
                                          "/lib/skalibs/sysdeps"))
        #:tests? #f))
-    (home-page "http://skarnet.org/software/s6-portable-utils")
+    (home-page "https://skarnet.org/software/s6-portable-utils")
     (license isc)
     (synopsis "Tiny command-line Unix utilities")
     (description
@@ -290,10 +290,48 @@ performing well-known tasks such as @command{cut} and @command{grep}, but
 optimized for simplicity and small size.  They were designed for embedded
 systems and other constrained environments, but they work everywhere.")))
 
+(define-public s6-linux-init
+  (package
+   (name "s6-linux-init")
+   (version "0.3.1.1")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "http://skarnet.org/software/s6-linux-init/s6-linux-init-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "0yfxrjqlbb6kac4gcn78phxbwp5sj9jmc1vxpsrbql62mfjyiqly"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("skalibs" ,skalibs)))
+    (arguments
+     '(#:configure-flags
+       (list
+        (string-append "--with-lib="
+                       (assoc-ref %build-inputs "skalibs")
+                       "/lib/skalibs")
+        (string-append "--with-sysdeps="
+                       (assoc-ref %build-inputs "skalibs")
+                       "/lib/skalibs/sysdeps"))
+       #:tests? #f))
+    (home-page "https://skarnet.org/software/s6-linux-init")
+    (license isc)
+    (synopsis "Minimalistic tools to create an s6-based init system on Linux")
+    (description
+     " s6-linux-init is a set of minimalistic tools to create a s6-based init
+system, including an @command{/sbin/init} binary, on a Linux kernel.
+
+It is meant to automate creation of scripts revolving around the use of other
+skarnet.org tools, especially s6, in order to provide a complete booting
+environment with integrated supervision and logging without having to hand-craft
+all the details. ")))
+
 (define-public s6-linux-utils
   (package
    (name "s6-linux-utils")
-   (version "2.1.0.0")
+   (version "2.4.0.2")
    (source
     (origin
      (method url-fetch)
@@ -302,7 +340,7 @@ systems and other constrained environments, but they work everywhere.")))
            version ".tar.gz"))
      (sha256
       (base32
-       "1bby751blynb7p8wd3npjm71lf10ysmfvqrd3dqrhhajpa2bl8rm"))))
+       "0245rmk7wfyyfsi4g7f0niprwlvqlwkbyjxflb8kkbvhwfdavqip"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
@@ -314,7 +352,7 @@ systems and other constrained environments, but they work everywhere.")))
                                          (assoc-ref %build-inputs "skalibs")
                                          "/lib/skalibs/sysdeps"))
        #:tests? #f))
-    (home-page "http://skarnet.org/software/s6-linux-utils")
+    (home-page "https://skarnet.org/software/s6-linux-utils")
     (license isc)
     (synopsis "Set of minimalistic Linux-specific system utilities")
     (description

@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,7 +75,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "3.11.1")
+    (version "3.17.0")
     (source
       (origin
         (method url-fetch)
@@ -83,7 +84,7 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "0kwza7iyyyfhq476z5fk9962iyd0qpgmzm1k36nqcy8sfjbk8mrl"))
+          "1w6hw1s0d4daa4q2ykzhxdndiq61l8z7ls7rxh7k7p62ia0i5sxp"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
@@ -175,7 +176,8 @@
               (substitute* "setup/build_environment.py"
                 (("sys.prefix") (string-append "'" pyqt "'")))
               (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
-              (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib")))))
+              (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))
+              #t)))
          (add-after 'install 'install-font-liberation
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (for-each (lambda (file)
@@ -194,11 +196,11 @@
              #t)))))
     (home-page "http://calibre-ebook.com/")
     (synopsis "E-book library management software")
-    (description "Calibre is an ebook library manager.  It can view, convert
-and catalog ebooks in most of the major ebook formats.  It can also talk
-to many ebook reader devices.  It can go out to the Internet and fetch
+    (description "Calibre is an e-book library manager.  It can view, convert
+and catalog e-books in most of the major e-book formats.  It can also talk
+to many e-book reader devices.  It can go out to the Internet and fetch
 metadata for books.  It can download newspapers and convert them into
-ebooks for convenient reading.")
+e-books for convenient reading.")
     ;; Calibre is largely GPL3+, but includes a number of components covered
     ;; by other licenses. See COPYRIGHT for more details.
     (license (list license:gpl3+

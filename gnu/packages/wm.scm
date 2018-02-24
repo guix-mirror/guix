@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@crash.cx>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
@@ -46,6 +46,7 @@
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
@@ -914,4 +915,56 @@ It is inspired by Xmonad and dwm.  Its major features include:
 @item Customizable colors and border width
 @end itemize\n")
     (home-page "https://github.com/conformal/spectrwm")
+    (license license:isc)))
+
+(define-public cwm
+  (package
+    (name "cwm")
+    (version "6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://chneukirchen.org/releases/cwm-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1b8k2hjxpb0bzqjh2wj6mn2nf2360zacf8z19sw2rw5lxvmfy89x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'build 'install-xsession
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Add a .desktop file to xsessions.
+             (let* ((output (assoc-ref outputs "out"))
+                    (xsessions (string-append output "/share/xsessions")))
+               (mkdir-p xsessions)
+               (with-output-to-file
+                   (string-append xsessions "/cwm.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                     Name=cwm~@
+                     Comment=OpenBSD Calm Window Manager fork~@
+                     Exec=~a/bin/cwm~@
+                     TryExec=~@*~a/bin/cwm~@
+                     Icon=~@
+                     Type=Application~%"
+                           output)))
+               #t))))))
+    (inputs
+     `(("libxft" ,libxft)
+       ("libxrandr" ,libxrandr)
+       ("libxinerama" ,libxinerama)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("bison" ,bison)))
+    (home-page "https://github.com/chneukirchen/cwm")
+    (synopsis "OpenBSD fork of the calmwm window manager")
+    (description "Cwm is a stacking window manager for X11.  It is an OpenBSD
+project derived from the original Calm Window Manager.")
     (license license:isc)))
