@@ -1265,6 +1265,43 @@ cairo.  It supports multiple output targets, including PNG, PDF and SVG.  Cairo
 produces identical output on all those targets.")
     (license license:lgpl2.1+)))
 
+(define-public perl-pango
+  (package
+    (name "perl-pango")
+    (version "1.227")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/Pango-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0wdcidnfnb6nm79fzfs39ivawj3x8m98a147fmcxgv1zvwia9c1l"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (inputs
+     `(("pango" ,pango)))
+    (propagated-inputs
+     `(("perl-cairo" ,perl-cairo)
+       ("perl-glib" ,perl-glib)))
+    (home-page "http://search.cpan.org/dist/Pango/")
+    (synopsis "Layout and render international text")
+    (description "Pango is a library for laying out and rendering text, with an
+emphasis on internationalization.  Pango can be used anywhere that text layout
+is needed, but using Pango in conjunction with Cairo and/or Gtk2 provides a
+complete solution with high quality text handling and graphics rendering.
+
+Dynamically loaded modules handle text layout for particular combinations of
+script and font backend.  Pango provides a wide selection of modules, including
+modules for Hebrew, Arabic, Hangul, Thai, and a number of Indic scripts.
+Virtually all of the world's major scripts are supported.
+
+In addition to the low level layout rendering routines, Pango includes
+@code{Pango::Layout}, a high level driver for laying out entire blocks of text,
+and routines to assist in editing internationalized text.")
+    (license license:lgpl2.1+)))
+
 (define-public girara
   (package
     (name "girara")
