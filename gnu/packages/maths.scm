@@ -2489,7 +2489,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "17.10.1")
+    (version "18.02.0")
     (source
      (origin
        (method url-fetch)
@@ -2498,12 +2498,12 @@ point numbers.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0qlzc31cqkwpfgrb9cif9bcnkj3rq487plg4rns7jxv6pq4609v1"))))
-    (build-system gnu-build-system)
+         "03kr2rgfp4hcf3is8m8d8f9hj660c3xgrc50vrrfpixx4syh6wvj"))
+       (patches
+        (search-patches "wxmaxima-do-not-use-old-gnuplot-parameters.patch"))))
+    (build-system cmake-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)))
+     `(("gettext" ,gettext-minimal)))
     (inputs
      `(("wxwidgets" ,wxwidgets)
        ("maxima" ,maxima)
@@ -2512,11 +2512,9 @@ point numbers.")
        ("gtk+" ,gtk+)
        ("shared-mime-info" ,shared-mime-info)))
     (arguments
-     `(#:phases
+     `(#:tests? #f ; no check target
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             (zero? (system* "sh" "bootstrap"))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")

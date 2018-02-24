@@ -4,7 +4,7 @@
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
-# Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
+# Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 # Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -1160,6 +1160,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wpa-supplicant-fix-zeroed-keys.patch	\
   %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
   %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
+  %D%/packages/patches/wxmaxima-do-not-use-old-gnuplot-parameters.patch	\
   %D%/packages/patches/xboing-CVE-2004-0149.patch		\
   %D%/packages/patches/xcb-proto-python3-print.patch		\
   %D%/packages/patches/xcb-proto-python3-whitespace.patch	\
