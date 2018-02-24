@@ -122,7 +122,8 @@ conversions for values passed between the two languages.")
                                "linker_so='gcc -shared')")))
              (substitute* "testing/cffi0/test_ownlib.py"
                (("'cc testownlib") "'gcc testownlib"))
-             (zero? (system* "py.test" "-v" "c/" "testing/"))))
+             (invoke "py.test" "-v" "c/" "testing/")
+             #t))
          (add-before 'check 'disable-failing-test
            ;; This is assumed to be a libffi issue:
            ;; https://bitbucket.org/cffi/cffi/issues/312/tests-failed-with-armv8
@@ -131,15 +132,14 @@ conversions for values passed between the two languages.")
                (("ret.left") "ownlib.left"))
              #t))
          (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                    (doc (string-append data "/doc/" ,name "-" ,version))
+           (lambda* (#:key outputs (make-flags '())  #:allow-other-keys)
+             (let* ((doc (string-append (assoc-ref outputs "doc")
+                                        "/share/doc/" ,name "-" ,version))
                     (html (string-append doc "/html")))
                (with-directory-excursion "doc"
-                 (system* "make" "html")
+                 (apply invoke "make" "html" make-flags)
                  (mkdir-p html)
                  (copy-recursively "build/html" html))
-               (copy-file "LICENSE" (string-append doc "/LICENSE"))
                #t))))))
     (home-page "https://cffi.readthedocs.org")
     (synopsis "Foreign function interface for Python")
