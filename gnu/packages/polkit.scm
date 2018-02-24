@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,7 +78,8 @@
                  ;; Set the setuid helper's real location.
                  (substitute* "src/polkitagent/polkitagentsession.c"
                    (("PACKAGE_PREFIX \"/lib/polkit-1/polkit-agent-helper-1\"")
-                    "\"/run/setuid-programs/polkit-agent-helper-1\""))))))
+                    "\"/run/setuid-programs/polkit-agent-helper-1\""))
+                 #t))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
@@ -105,7 +107,8 @@
                 (("@INTROSPECTION_GIRDIR@")
                  (string-append out "/share/gir-1.0/"))
                 (("@INTROSPECTION_TYPELIBDIR@")
-                 (string-append out "/lib/girepository-1.0/"))))))
+                 (string-append out "/lib/girepository-1.0/")))
+              #t)))
          (replace
           'install
           (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
@@ -113,12 +116,12 @@
             ;; to install in /etc, and to instead install the skeletons in the
             ;; output directory.
             (let ((out (assoc-ref outputs "out")))
-             (zero? (apply system*
-                           "make" "install"
+             (invoke "make" "install"
                            (string-append "sysconfdir=" out "/etc")
                            (string-append "polkit_actiondir="
                                           out "/share/polkit-1/actions")
-                           make-flags))))))))
+                           make-flags)
+             #t))))))
     (home-page "http://www.freedesktop.org/wiki/Software/polkit/")
     (synopsis "Authorization API for privilege management")
     (description "Polkit is an application-level toolkit for defining and
