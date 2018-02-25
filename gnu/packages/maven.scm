@@ -63,3 +63,19 @@
     (synopsis "Maven repository system SPI")
     (description "This package contains the service provider interface (SPI)
 for repository system implementations and repository connectors.")))
+
+(define-public maven-resolver-test-util
+  (package
+    (inherit maven-resolver-api)
+    (name "maven-resolver-test-util")
+    (arguments
+     `(#:jar-name "maven-resolver-test-util.jar"
+       #:source-dir "maven-resolver-test-util/src/main/java"
+       #:test-dir "maven-resolver-test-util/src/test"
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("maven-resolver-api" ,maven-resolver-api)
+       ("maven-resolver-spi" ,maven-resolver-spi)))
+    (synopsis "Utility classes for testing the maven repository system")
+    (description "This package contains a collection of utility classes to
+ease testing of the repository system.")))
