@@ -198,7 +198,6 @@ authentication and support for SSL3 and TLS.")
               "doc"))                             ; 1.5 MiB of man3 pages
    (inputs `(("gnutls" ,gnutls/dane)
              ("libidn" ,libidn)
-             ("nghttp2" ,nghttp2 "lib")
              ("zlib" ,zlib)))
    (native-inputs
     `(("libtool" ,libtool)
