@@ -79,3 +79,22 @@ for repository system implementations and repository connectors.")))
     (synopsis "Utility classes for testing the maven repository system")
     (description "This package contains a collection of utility classes to
 ease testing of the repository system.")))
+
+(define-public maven-resolver-util
+  (package
+    (inherit maven-resolver-api)
+    (name "maven-resolver-util")
+    (arguments
+     `(#:jar-name "maven-resolver-util.jar"
+       #:source-dir "maven-resolver-util/src/main/java"
+       #:test-dir "maven-resolver-util/src/test"
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("maven-resolver-api" ,maven-resolver-api)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("maven-resolver-test-util" ,maven-resolver-test-util)))
+    (synopsis "Utility classes for the maven repository system")
+    (description "This package contains a collection of utility classes to
+ease usage of the repository system.")))
