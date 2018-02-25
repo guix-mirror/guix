@@ -1,0 +1,10 @@
+--- a/src/racket/src/number.c	2018-02-24 18:16:32.031698079 -0600
++++ b/src/racket/src/number.c	2018-02-24 18:15:41.055445301 -0600
+@@ -1775,6 +1775,7 @@
+ }
+ 
+ XFORM_NONGCING static MZ_INLINE int minus_zero_p(double d)
++  XFORM_SKIP_PROC
+ {
+ #ifdef MZ_IS_NEG_ZERO
+   return MZ_IS_NEG_ZERO(d);
