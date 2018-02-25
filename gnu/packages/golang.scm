@@ -664,3 +664,30 @@ program's help message rather than specifying it programatically with
 command-line parsers.")
     (home-page "https://github.com/tj/docopt")
     (license license:expat)))
+
+(define-public go-github-com-hashicorp-hcl
+  (let ((commit "23c074d0eceb2b8a5bfdbb271ab780cde70f05a8")
+        (revision "0"))
+    (package
+      (name "go-github-com-hashicorp-hcl")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/hashicorp/hcl")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                  (base32
+                    "0db4lpqb5m130rmfy3s3gjjf4dxllypmyrzxv6ggqhkmwmc7w4mc"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:tests? #f
+         #:import-path "github.com/hashicorp/hcl"))
+      (synopsis "Go implementation of HashiCorp Configuration Language")
+      (description
+       "This package contains the main implementation of the @acronym{HCL,
+HashiCorp Configuration Language}.  HCL is designed to be a language for
+expressing configuration which is easy for both humans and machines to read.")
+      (home-page "https://github.com/hashicorp/hcl")
+      (license license:mpl2.0))))
