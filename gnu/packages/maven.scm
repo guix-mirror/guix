@@ -48,3 +48,18 @@
     (synopsis "Maven repository system API")
     (description "This package contains the API for the maven repository system.")
     (license license:asl2.0)))
+
+(define-public maven-resolver-spi
+  (package
+    (inherit maven-resolver-api)
+    (name "maven-resolver-spi")
+    (arguments
+     `(#:jar-name "maven-resolver-spi.jar"
+       #:source-dir "maven-resolver-spi/src/main/java"
+       #:test-dir "maven-resolver-spi/src/test"
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("maven-resolver-api" ,maven-resolver-api)))
+    (synopsis "Maven repository system SPI")
+    (description "This package contains the service provider interface (SPI)
+for repository system implementations and repository connectors.")))
