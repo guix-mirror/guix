@@ -2271,6 +2271,7 @@ configuration storage systems.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "json-glib-fix-tests-32bit.patch"))
               (sha256
                (base32
                 "1j3dd2xj1l9fi12m1gpmfgf5p4c1w0i970m6k62k3is98yj0jxrd"))))
