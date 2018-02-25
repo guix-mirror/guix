@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -638,4 +639,28 @@ termination.")
      "The @code{gls} package provides a way to store a retrieve values
 per-goroutine.")
     (home-page "https://github.com/jtolds/gls")
+    (license license:expat)))
+
+(define-public go-github-com-tj-docopt
+  (package
+    (name "go-github-com-tj-docopt")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tj/docopt")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06h8hdg1mh3s78zqlr01g4si7k0f0g6pr7fj7lnvfg446hgc7080"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/tj/docopt"))
+    (synopsis "Go implementation of docopt")
+    (description
+     "This library allows the user to define a command-line interface from a
+program's help message rather than specifying it programatically with
+command-line parsers.")
+    (home-page "https://github.com/tj/docopt")
     (license license:expat)))
