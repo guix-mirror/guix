@@ -411,6 +411,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/tcl.scm				\
   %D%/packages/telephony.scm			\
   %D%/packages/terminals.scm			\
+  %D%/packages/terraform.scm			\
   %D%/packages/texinfo.scm			\
   %D%/packages/tex.scm				\
   %D%/packages/textutils.scm			\
