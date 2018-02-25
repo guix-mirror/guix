@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,13 +92,13 @@ algebra.")
 (define-public mpfr
   (package
    (name "mpfr")
-   (version "3.1.6")
+   (version "4.0.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/mpfr/mpfr-" version
                                 ".tar.xz"))
             (sha256 (base32
-                     "0l598h9klpgkz2bp0rxiqb90mkqh9f2f81n5rpy191j00hdaqqks"))))
+                     "0vp1lrc08gcmwdaqck6bpzllkrykvp06vz5gnqpyw0v3h9h4m1v7"))))
    (build-system gnu-build-system)
    (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
