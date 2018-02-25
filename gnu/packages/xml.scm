@@ -425,7 +425,7 @@ XML parser and the high performance DOM implementation.")
 (define-public perl-xml-libxslt
   (package
     (name "perl-xml-libxslt")
-    (version "1.95")
+    (version "1.96")
     (source
      (origin
        (method url-fetch)
@@ -433,7 +433,7 @@ XML parser and the high performance DOM implementation.")
                            "XML-LibXSLT-" version ".tar.gz"))
        (sha256
         (base32
-         "0dggycql18kfxzkb1kw3yc7gslxlrrgyyn2r2ygsylycb89j3jpi"))))
+         "0wyl8klgr65j8y8fzgwz9jlvfjwvxazna8j3dg9gksd2v973fpia"))))
     (build-system perl-build-system)
     (inputs
      `(("libxslt" ,libxslt)))
