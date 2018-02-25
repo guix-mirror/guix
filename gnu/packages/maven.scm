@@ -98,3 +98,33 @@ ease testing of the repository system.")))
     (synopsis "Utility classes for the maven repository system")
     (description "This package contains a collection of utility classes to
 ease usage of the repository system.")))
+
+(define-public maven-resolver-connector-basic
+  (package
+    (inherit maven-resolver-api)
+    (name "maven-resolver-connector-basic")
+    (arguments
+     `(#:jar-name "maven-resolver-connector-basic.jar"
+       #:source-dir "maven-resolver-connector-basic/src/main/java"
+       #:test-dir "maven-resolver-connector-basic/src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-sisu
+           (lambda _
+             (mkdir-p "build/classes/META-INF/sisu")
+             (with-output-to-file "build/classes/META-INF/sisu/javax.inject.Named"
+               (lambda _
+                 (display "org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory\n"))))))))
+    (inputs
+     `(("maven-resolver-api" ,maven-resolver-api)
+       ("maven-resolver-spi" ,maven-resolver-spi)
+       ("maven-resolver-util" ,maven-resolver-util)
+       ("java-javax-inject" ,java-javax-inject)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("maven-resolver-test-util" ,maven-resolver-test-util)))
+    (synopsis "Maven repository connector implementation")
+    (description "This package contains a repository connector implementation
+for repositories using URI-based layouts.")))
