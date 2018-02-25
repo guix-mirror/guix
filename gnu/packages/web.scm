@@ -60,6 +60,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system scons)
   #:use-module (gnu packages)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cran)
@@ -83,8 +84,10 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages java)
   #:use-module (gnu packages javascript)
+  #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages lisp)
@@ -6343,3 +6346,84 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
     ;; expat for the code, CC-BY 4.0 for the artwork
     (license (list l:expat
                    l:cc-by4.0))))
+
+(define-public nghttp2
+  (package
+    (name "nghttp2")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/nghttp2/nghttp2/"
+                           "releases/download/v" version "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1b2j7il0wp8hi4jl3cah7fkshmg29cchdski9cw74gx5496gp6h8"))))
+    (build-system gnu-build-system)
+    (outputs (list "out"
+                   "lib"))              ; only libnghttp2
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; Required by tests.
+       ("cunit" ,cunit)
+       ("tzdata" ,tzdata)))
+    (inputs
+     ;; Required to build the tools (i.e. without ‘--enable-lib-only’).
+     `(("c-ares" ,c-ares)
+       ("jansson" ,jansson)             ; for HPACK tools
+       ("jemalloc" ,jemalloc)           ; fight nghttpd{,x} heap fragmentation
+       ("libev" ,libev)
+       ("libxml2" ,libxml2)             ; for ‘nghttp -a’
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "lib") "/lib")
+             "--enable-app"             ; build all the tools
+             "--enable-hpack-tools"     ; ...all the tools
+             "--disable-examples"
+             "--disable-static")        ; don't bother building .a files
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'break-circular-reference
+           ;; libnghttp2.pc by default retains a reference to the ‘out’ output,
+           ;; which is not allowed.  Break this cycle.  While we could install
+           ;; only the library to ‘out’ and move everything else to a separate
+           ;; output, this would inconvenience the majority of (human) users.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "lib/libnghttp2.pc.in"
+               (("@prefix@")
+                (assoc-ref outputs "lib")))
+             #t))
+         (add-before 'check 'set-timezone-directory
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
+                                            "/share/zoneinfo"))
+             #t)))))
+    (home-page "https://nghttp2.org/")
+    (synopsis "HTTP/2 protocol client, proxy, server, and library")
+    (description
+     "nghttp2 implements the Hypertext Transfer Protocol, version
+2 (@dfn{HTTP/2}).
+
+A reusable C library provides the HTTP/2 framing layer, with several tools built
+on top of it:
+
+@itemize
+@item @command{nghttp}, a command-line HTTP/2 client.  It exposes many advanced
+and low-level aspects of the protocol and is useful for debugging.
+@item @command{nghttpd}, a fast, multi-threaded HTTP/2 static web server that
+serves files from a local directory.
+@item @command{nghttpx}, a fast, multi-threaded HTTP/2 reverse proxy that can be
+deployed in front of existing web servers that don't support HTTP/2.
+Both @command{nghttpd} and @command{nghttpx} can fall back to HTTP/1.1 for
+backwards compatibilty with clients that don't speak HTTP/2.
+@item @command{h2load} for benchmarking (only!) your own HTTP/2 servers.
+@item HTTP/2 uses a header compression method called @dfn{HPACK}.
+nghttp2 provides a HPACK encoder and decoder as part of its public API.
+@item @command{deflatehd} converts JSON data or HTTP/1-style header fields to
+compressed JSON header blocks.
+@item @command{inflatehd} converts such compressed headers back to JSON pairs.
+@end itemize\n")
+    (license l:expat)))
