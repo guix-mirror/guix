@@ -6959,7 +6959,7 @@ those in Perl and JavaScript.")
 (define-public java-testng
   (package
     (name "java-testng")
-    (version "6.14.2")
+    (version "6.14.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6968,7 +6968,7 @@ those in Perl and JavaScript.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0ngj88dpbqqdx9084cmiasmn9q3v5dgx45qbvxpip47nxc5x14xy"))))
+                "0y6vq30i5g276kw0v2bhbvci22ijg7ax49ap2611yqlhbs4d6dqv"))))
     (build-system ant-build-system)
     (arguments
      `(#:jdk ,icedtea-8; java.util.function
