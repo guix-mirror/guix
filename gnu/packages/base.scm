@@ -188,7 +188,13 @@ implementation offers several extensions over the standard utility.")
                        (substitute* "src/system.c"
                          (("/bin/sh")
                           (string-append bash "/bin/sh")))
-                       #t))))))
+                       #t))))
+
+      ;; Test #92 "link mismatch" expects "a/z: Not linked to a/y" but gets
+      ;; "a/y: Not linked to a/z" and fails, presumably due to differences in
+      ;; the order in which 'diff' traverses directories.  That leads to a
+      ;; test failure even though conceptually the test passes.  Skip it.
+      #:make-flags '("TESTSUITEFLAGS=-k '!link mismatch'")))
 
    ;; When cross-compiling, the 'set-shell-file-name' phase needs to be able
    ;; to refer to the target Bash.
