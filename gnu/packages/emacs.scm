@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
@@ -4549,14 +4549,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "20180103")
+    (version "20180226")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "1hyw9sigcv9wn37y2icmhf1czf0s3dgvsmn36355l95zsw7hnvgj"))))
+                "0jqvry6gah1bwnryha4asynj13jyds3qim0xcy7s01rxk99m2ziy"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4576,7 +4576,7 @@ reproducible research.")
                                   (package-version emacs-org) ".tar"))
               (sha256
                (base32
-                "164i2asqh34p1g3iqsn7rziyxbi1ys8fwdmn7nsw5xph8qszv9zj"))))
+                "034wp70hcqnpidji5k1k80mj35iyyy098nbvc2sl7i2aca4m03zc"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
