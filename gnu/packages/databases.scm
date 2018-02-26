@@ -2248,6 +2248,13 @@ SQLAlchemy Database Toolkit for Python.")
        (sha256
         (base32 "0yvk14dzxk7g6qpr7iw23vzqbsr0dh4ij4xynkhnzpfz4xr2bac4"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/vivainio/pickleshare")
     (synopsis "Tiny key value database with concurrency support")
     (description
