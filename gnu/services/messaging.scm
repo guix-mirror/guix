@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
@@ -115,16 +115,9 @@
                  "_")))
 
 (define (serialize-field field-name val)
-  (format #t "~a = ~a;\n" (uglify-field-name field-name) val))
+  #~(format #f "~a = ~a;\n" #$(uglify-field-name field-name) #$val))
 (define (serialize-field-list field-name val)
-  (serialize-field field-name
-                   (with-output-to-string
-                     (lambda ()
-                       (format #t "{\n")
-                       (for-each (lambda (x)
-                                   (format #t "~a;\n" x))
-                                 val)
-                       (format #t "}")))))
+  (serialize-field field-name #~(format #f "{\n~@{~a;\n~}}" #$@val)))
 
 (define (serialize-boolean field-name val)
   (serialize-field field-name (if val "true" "false")))
@@ -140,17 +133,17 @@
 (define (non-negative-integer? val)
   (and (exact-integer? val) (not (negative? val))))
 (define (serialize-non-negative-integer field-name val)
-  (serialize-field field-name val))
+  (serialize-field field-name (number->string val)))
 (define-maybe non-negative-integer)
 
 (define (non-negative-integer-list? val)
   (and (list? val) (and-map non-negative-integer? val)))
 (define (serialize-non-negative-integer-list field-name val)
-  (serialize-field-list field-name val))
+  (serialize-field-list field-name (map number->string val)))
 (define-maybe non-negative-integer-list)
 
 (define (enclose-quotes s)
-  (format #f "\"~a\"" s))
+  #~(string-append "\"" #$s "\""))
 (define (serialize-string field-name val)
   (serialize-field field-name (enclose-quotes val)))
 (define-maybe string)
@@ -183,10 +176,22 @@
   (serialize-string-list field-name val))
 (define-maybe file-name)
 
+(define (file-object? val)
+  (or (file-like? val) (file-name? val)))
+(define (serialize-file-object field-name val)
+  (serialize-string field-name val))
+(define-maybe file-object)
+
+(define (file-object-list? val)
+  (and (list? val) (and-map file-object? val)))
+(define (serialize-file-object-list field-name val)
+  (serialize-string-list field-name val))
+(define-maybe file-object)
+
 (define (raw-content? val)
   (not (eq? val 'disabled)))
 (define (serialize-raw-content field-name val)
-  (format #t "~a" val))
+  val)
 (define-maybe raw-content)
 
 (define-configuration mod-muc-configuration
@@ -224,12 +229,12 @@ just joined the room."))
    "Path to your certificate file.")
 
   (capath
-   (file-name "/etc/ssl/certs")
+   (file-object "/etc/ssl/certs")
    "Path to directory containing root certificates that you wish Prosody to
 trust when verifying the certificates of remote servers.")
 
   (cafile
-   (maybe-file-name 'disabled)
+   (maybe-file-object 'disabled)
    "Path to a file containing root certificates that you wish Prosody to trust.
 Similar to @code{capath} but with all certificates concatenated together.")
 
@@ -273,9 +278,8 @@ can create such a file with:
    (maybe-string 'disabled)
    "Password for encrypted private keys."))
 (define (serialize-ssl-configuration field-name val)
-  (format #t "ssl = {\n")
-  (serialize-configuration val ssl-configuration-fields)
-  (format #t "};\n"))
+  #~(format #f "ssl = {\n~a};\n"
+            #$(serialize-configuration val ssl-configuration-fields)))
 (define-maybe ssl-configuration)
 
 (define %default-modules-enabled
@@ -303,20 +307,23 @@ can create such a file with:
   (define (virtualhost-configuration-list? val)
     (and (list? val) (and-map virtualhost-configuration? val)))
   (define (serialize-virtualhost-configuration-list l)
-    (for-each
-     (lambda (val) (serialize-virtualhost-configuration val)) l))
+    #~(string-append
+       #$@(map (lambda (val)
+                 (serialize-virtualhost-configuration val)) l)))
 
   (define (int-component-configuration-list? val)
     (and (list? val) (and-map int-component-configuration? val)))
   (define (serialize-int-component-configuration-list l)
-    (for-each
-     (lambda (val) (serialize-int-component-configuration val)) l))
+    #~(string-append
+       #$@(map (lambda (val)
+                 (serialize-int-component-configuration val)) l)))
 
   (define (ext-component-configuration-list? val)
     (and (list? val) (and-map ext-component-configuration? val)))
   (define (serialize-ext-component-configuration-list l)
-    (for-each
-     (lambda (val) (serialize-ext-component-configuration val)) l))
+    #~(string-append
+       #$@(map (lambda (val)
+                 (serialize-ext-component-configuration val)) l)))
 
   (define-all-configurations prosody-configuration
     (prosody
@@ -331,7 +338,7 @@ can create such a file with:
      global)
 
     (plugin-paths
-     (file-name-list '())
+     (file-object-list '())
      "Additional plugin directories.  They are searched in all the specified
 paths in order.  See @url{https://prosody.im/doc/plugins_directory}."
      global)
@@ -372,7 +379,7 @@ should you want to disable them then add them to this list."
      common)
 
     (groups-file
-     (file-name "/var/lib/prosody/sharedgroups.txt")
+     (file-object "/var/lib/prosody/sharedgroups.txt")
      "Path to a text file where the shared groups are defined.  If this path is
 empty then @samp{mod_groups} does nothing.  See
 @url{https://prosody.im/doc/modules/mod_groups}."
@@ -566,8 +573,9 @@ See also @url{https://prosody.im/doc/modules/mod_muc}."
                '(domain))))
   (let ((domain (virtualhost-configuration-domain config))
         (rest (filter rest? virtualhost-configuration-fields)))
-    (format #t "VirtualHost \"~a\"\n" domain)
-    (serialize-configuration config rest)))
+    #~(string-append
+       #$(format #f "VirtualHost \"~a\"\n" domain)
+       #$(serialize-configuration config rest))))
 
 ;; Serialize Component line first.
 (define (serialize-int-component-configuration config)
@@ -577,8 +585,9 @@ See also @url{https://prosody.im/doc/modules/mod_muc}."
   (let ((hostname (int-component-configuration-hostname config))
         (plugin (int-component-configuration-plugin config))
         (rest (filter rest? int-component-configuration-fields)))
-    (format #t "Component \"~a\" \"~a\"\n" hostname plugin)
-    (serialize-configuration config rest)))
+    #~(string-append
+       #$(format #f "Component \"~a\" \"~a\"\n" hostname plugin)
+       #$(serialize-configuration config rest))))
 
 ;; Serialize Component line first.
 (define (serialize-ext-component-configuration config)
@@ -587,22 +596,24 @@ See also @url{https://prosody.im/doc/modules/mod_muc}."
                '(hostname))))
   (let ((hostname (ext-component-configuration-hostname config))
         (rest (filter rest? ext-component-configuration-fields)))
-    (format #t "Component \"~a\"\n" hostname)
-    (serialize-configuration config rest)))
+    #~(string-append
+       #$(format #f "Component \"~a\"\n" hostname)
+       #$(serialize-configuration config rest))))
 
 ;; Serialize virtualhosts and components last.
 (define (serialize-prosody-configuration config)
   (define (rest? field)
     (not (memq (configuration-field-name field)
                '(virtualhosts int-components ext-components))))
-  (let ((rest (filter rest? prosody-configuration-fields)))
-    (serialize-configuration config rest))
-  (serialize-virtualhost-configuration-list
-   (prosody-configuration-virtualhosts config))
-  (serialize-int-component-configuration-list
-   (prosody-configuration-int-components config))
-  (serialize-ext-component-configuration-list
-   (prosody-configuration-ext-components config)))
+  #~(string-append
+     #$(let ((rest (filter rest? prosody-configuration-fields)))
+         (serialize-configuration config rest))
+     #$(serialize-virtualhost-configuration-list
+        (prosody-configuration-virtualhosts config))
+     #$(serialize-int-component-configuration-list
+        (prosody-configuration-int-components config))
+     #$(serialize-ext-component-configuration-list
+        (prosody-configuration-ext-components config))))
 
 (define-configuration opaque-prosody-configuration
   (prosody
@@ -646,13 +657,12 @@ See also @url{https://prosody.im/doc/modules/mod_muc}."
          (default-certs-dir "/etc/prosody/certs")
          (data-path (prosody-configuration-data-path config))
          (pidfile-dir (dirname (prosody-configuration-pidfile config)))
-         (config-str
-          (if (opaque-prosody-configuration? config)
-              (opaque-prosody-configuration-prosody.cfg.lua config)
-              (with-output-to-string
-                (lambda ()
-                  (serialize-prosody-configuration config)))))
-         (config-file (plain-file "prosody.cfg.lua" config-str)))
+         (config-str (if (opaque-prosody-configuration? config)
+                         (opaque-prosody-configuration-prosody.cfg.lua config)
+                         #~(begin
+                             (use-modules (ice-9 format))
+                             #$(serialize-prosody-configuration config))))
+         (config-file (mixed-text-file "prosody.cfg.lua" config-str)))
     #~(begin
         (use-modules (guix build utils))
         (define %user (getpw "prosody"))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +87,7 @@
 
             define-gexp-compiler
             gexp-compiler?
+            file-like?
             lower-object
 
             lower-inputs
@@ -181,6 +183,11 @@ returns its output file name of OBJ's OUTPUT."
 procedure to lower it; otherwise return #f."
   (and=> (hashq-ref %gexp-compilers (struct-vtable object))
          gexp-compiler-lower))
+
+(define (file-like? object)
+  "Return #t if OBJECT leads to a file in the store once unquoted in a
+G-expression; otherwise return #f."
+  (and (struct? object) (->bool (lookup-compiler object))))
 
 (define (lookup-expander object)
   "Search for an expander for OBJECT.  Upon success, return the three argument
