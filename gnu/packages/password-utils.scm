@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -271,7 +271,7 @@ random passwords that pass the checks.")
 (define-public assword
   (package
     (name "assword")
-    (version "0.10")
+    (version "0.11")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -280,7 +280,7 @@ random passwords that pass the checks.")
                      "assword_" version ".orig.tar.gz")))
               (sha256
                (base32
-                "0l6170y6my1gprqkazvzabgjkrkr9v2q7z48vjflna4r323yqira"))))
+                "03gkb6kvsghznbcw5l7nmrc6mn3ixkjd5jcs96ni4zs9l47jf7yp"))))
     (arguments
      `(;; irritatingly, tests do run but not there are two problems:
        ;;  - "import gtk" fails for unknown reasons here despite it the
