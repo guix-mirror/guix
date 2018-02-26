@@ -11091,6 +11091,11 @@ It supports both normal and Unicode strings.")
        (sha256
         (base32 "0gbnhjzg42rj87ljv9kb648rfxph69ly3c8r9841dxy4d7l5pmdj"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "test/run_tests.py"))))))
     (home-page "https://github.com/benhoyt/scandir")
     (synopsis "Directory iteration function")
     (description
