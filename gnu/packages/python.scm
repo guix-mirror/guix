@@ -8061,13 +8061,13 @@ anymore.")
 (define-public python2-pathlib2
   (package
     (name "python2-pathlib2")
-    (version "2.1.0")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pathlib2" version))
               (sha256
                (base32
-                "0p050msg5c8d0kadv702jnfshaxrb0il765cpkgnhn6mq5hakcyy"))))
+                "1cx5gs2v9j2vnzmcrbq5l8fq2mwrr1h6pyf1sjdji2w1bavm09fk"))))
     (build-system python-build-system)
     ;; We only need the the Python 2 variant, since for Python 3 our minimum
     ;; version is 3.4 which already includes this package as part of the
@@ -8075,7 +8075,8 @@ anymore.")
     (arguments
      `(#:python ,python-2))
     (propagated-inputs
-     `(("python2-six" ,python2-six)))
+     `(("python2-scandir" ,python2-scandir)
+       ("python2-six" ,python2-six)))
     (home-page "https://pypi.python.org/pypi/pathlib2/")
     (synopsis "Object-oriented file system paths - backport of standard
 pathlib module")
