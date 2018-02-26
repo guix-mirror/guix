@@ -8074,7 +8074,7 @@ anymore.")
     ;; standard library.
     (arguments
      `(#:python ,python-2))
-    (native-inputs
+    (propagated-inputs
      `(("python2-six" ,python2-six)))
     (home-page "https://pypi.python.org/pypi/pathlib2/")
     (synopsis "Object-oriented file system paths - backport of standard
