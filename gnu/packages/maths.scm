@@ -1772,7 +1772,7 @@ arising after the discretization of partial differential equations.")
 (define-public mumps
   (package
     (name "mumps")
-    (version "5.0.2")
+    (version "5.1.2")
     (source
      (origin
        (method url-fetch)
@@ -1780,7 +1780,7 @@ arising after the discretization of partial differential equations.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0igyc1pfzxdhpbad3v3lb86ixkdbqa1a8gbs15b04r2294h2nabp"))
+         "1s9asin08zqzmh08257sdghhivvy9vjif7c53fhaxaax2kd5qd7b"))
        (patches (search-patches "mumps-build-parallelism.patch"))))
     (build-system gnu-build-system)
     (inputs
