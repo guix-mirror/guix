@@ -2537,7 +2537,7 @@ can play and record audio files.")
 (define-public soxr
   (package
     (name "soxr")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
@@ -2545,7 +2545,7 @@ can play and record audio files.")
         (string-append "mirror://sourceforge/soxr/soxr-" version
                        "-Source.tar.xz"))
        (sha256
-        (base32 "0xf2w3piwz9gfr1xqyrj4k685q5dy53kq3igv663i4f4y4sg9rjl"))))
+        (base32 "12aql6svkplxq5fjycar18863hcq84c5kx8g6f4rj0lcvigw24di"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ;no 'check' target
     (home-page "https://sourceforge.net/p/soxr/wiki/Home/")
