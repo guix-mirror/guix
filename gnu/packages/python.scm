@@ -1386,26 +1386,15 @@ backported for previous versions of Python from 2.4 to 3.3.")
 (define-public python-parse-type
   (package
     (name "python-parse-type")
-    (version "0.3.4")
+    (version "0.4.2")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/p/"
-                          "parse_type/parse_type-" version ".tar.gz"))
+      (uri (pypi-uri "parse_type" version))
       (sha256
        (base32
-        "0iv1c34npr4iynwpgv1vkjx9rjd18a85ir8c01gc5f7wp8iv7l1x"))))
+        "0g3b6gsdwnm8dpkh2vn34q6dzxm9gl908ggyzcv31n9xbp3vv5pm"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-tests
-           (lambda _
-             (substitute* "tests/test_parse_type_parse.py"
-               ;; Newer Python versions don't have the problem this test tests.
-               (("self[.]assertRaises[(]parse.TooManyFields, p.parse, ''[)]")
-                ""))
-             #t)))))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-parse" ,python-parse)))
