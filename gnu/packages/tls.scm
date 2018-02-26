@@ -797,7 +797,15 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "1vsmgxnw7dpvma51896n63yaf9sncmf885ax2jfcg89ssin6vdmf"))))
+         "1vsmgxnw7dpvma51896n63yaf9sncmf885ax2jfcg89ssin6vdmf"))
+       ;; An RFC 5114 constant was accidentally renamed in version 2.7.0.
+       ;; See https://github.com/ARMmbed/mbedtls/pull/1362.
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "include/mbedtls/dhm.h"
+             (("#define MBEDTLS_DHM_RFC5114_MODP_P")
+              "#define MBEDTLS_DHM_RFC5114_MODP_2048_P"))))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
