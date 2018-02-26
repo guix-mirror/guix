@@ -1030,7 +1030,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "1.1.9")
+    (version "1.1.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1039,14 +1039,15 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0krvmb1idnf95l2ydzfcb08ayyx3n4m71hf9fgwv3srzaikvpf3q"))))
+                "04jlgq1d1hd8r9cnmkl3lgf1fgm7kgy4hh9nfddap41fm1wp121p"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f  ; no check phase
+     '(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-libdir
            (lambda _
+             ;; Install libraries to /lib, not /lib64.
              (substitute* "CMakeLists.txt"
                (("LIB_SUFFIX \\$\\{_init_lib_suffix\\}")
                 "LIB_SUFFIX \"\""))
