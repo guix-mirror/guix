@@ -135,8 +135,8 @@ if test "x$guix_build_daemon" = "xyes"; then
   dnl Check for Guile-SSH, which is required by 'guix offload'.
   GUIX_CHECK_GUILE_SSH
 
-  case "x$ac_cv_guix_cbips_support_setvbuf$guix_cv_have_recent_guile_ssh" in
-    xyesyes)
+  case "x$guix_cv_have_recent_guile_ssh" in
+    xyes)
       guix_build_daemon_offload="yes"
       AC_DEFINE([HAVE_DAEMON_OFFLOAD_HOOK], [1],
 	[Define if the daemon's 'offload' build hook is being built (requires Guile-SSH).])
