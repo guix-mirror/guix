@@ -912,7 +912,7 @@ sending standard messages over D-Bus using the
 (define-public xfburn
   (package
     (name "xfburn")
-    (version "0.5.4")
+    (version "0.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/xfburn/"
@@ -920,7 +920,7 @@ sending standard messages over D-Bus using the
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1xn1kwxa3dl5r9bfj90a5322ynkwbn6k5v9b3a3pbr3a23zm604s"))))
+                "1qdd8prnsfilsprg36p95cz3z50ffr9kgvka4d5pm260lsl3l5xa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
