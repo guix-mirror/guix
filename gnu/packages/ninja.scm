@@ -47,8 +47,9 @@
          (replace 'configure
            (lambda _
              (substitute* "src/subprocess-posix.cc"
-               (("/bin/echo") (which "echo"))
                (("/bin/sh") (which "sh")))
+             (substitute* "src/subprocess_test.cc"
+               (("/bin/echo") (which "echo")))
              #t))
          (replace 'build
            (lambda _
