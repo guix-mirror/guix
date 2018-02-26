@@ -3208,7 +3208,7 @@ or to multiple server ports.")
 (define-public perl-net-smtp-ssl
   (package
     (name "perl-net-smtp-ssl")
-    (version "1.03")
+    (version "1.04")
     (source
      (origin
        (method url-fetch)
@@ -3216,7 +3216,7 @@ or to multiple server ports.")
                            "Net-SMTP-SSL-" version ".tar.gz"))
        (sha256
         (base32
-         "05y94mb1vdw32mvwb0cp2h4ggh32f8j8nwwfjb8kjwxvfkfhyp9h"))))
+         "001a6dcfahf7kkyirqkc8jd4fh4fkal7n7vm9c4dblqrvmdc8abv"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)))
