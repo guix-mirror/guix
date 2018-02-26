@@ -4496,13 +4496,13 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python-ipython
   (package
     (name "python-ipython")
-    (version "5.3.0")
+    (version "5.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipython" version ".tar.gz"))
        (sha256
-        (base32 "079wyjir4a9qx6kvx096b1asm63djbidk65z3ykcbnlngmg62pmz"))))
+        (base32 "03qmzpfy00if10i9k8fjkam1s4xg22j73f933x5d228z9n4rwik6"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
