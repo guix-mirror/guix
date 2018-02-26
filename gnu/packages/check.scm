@@ -1629,18 +1629,20 @@ backported from Python 2.7 for Python 2.4+.")
 (define-public behave
   (package
     (name "behave")
-    (version "1.2.5")
+    (version "1.2.6")
     (source (origin
              (method url-fetch)
-             (uri (pypi-uri "behave" version ".tar.bz2"))
+             (uri (pypi-uri "behave" version))
              (sha256
               (base32
-               "1iypp6z46r19n4xmgx6m1lwmlpfjh8vapq8izigrqlaarvp2y64c"))))
+               "11hsz365qglvpp1m1w16239c3kiw15lw7adha49lqaakm8kj6rmr"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-nose" ,python-nose)
-       ("python-pyhamcrest" ,python-pyhamcrest)))
+       ("python-pathpy" ,python-pathpy)
+       ("python-pyhamcrest" ,python-pyhamcrest)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-parse" ,python-parse)
