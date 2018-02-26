@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -360,14 +360,15 @@ capacity is user-selectable.")
          "0lwc0hn94m9r8fi07sjqz3fr618l6lnw3zsakxw7nlgnxbjsk7pi"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags (list (string-append "XMLTO="
-                                              (assoc-ref %build-inputs "xmlto")
-                                              "/bin/xmlto"
-                                              " --searchpath "
-                                              (assoc-ref %build-inputs "docbook-xsl")
-                                              "/xml/xsl/docbook-xsl-1.79.1/htmlhelp:"
-                                              (assoc-ref %build-inputs "docbook-xml")
-                                              "/xml/dtd/docbook"))
+     `(#:configure-flags
+       (list (string-append "XMLTO="
+                            (assoc-ref %build-inputs "xmlto")
+                            "/bin/xmlto --searchpath "
+                            (assoc-ref %build-inputs "docbook-xsl")
+                            "/xml/xsl/docbook-xsl-" ,(package-version docbook-xsl)
+                            "/htmlhelp:"
+                            (assoc-ref %build-inputs "docbook-xml")
+                            "/xml/dtd/docbook"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
