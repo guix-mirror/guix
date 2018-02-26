@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -241,14 +242,14 @@ output is indexed in many ways to simplify browsing.")
 (define-public automake
   (package
     (name "automake")
-    (version "1.15.1")
+    (version "1.16")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/automake/automake-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1bzd9g32dfm4rsbw93ld9x7b5nc1y6i4m6zp032qf1i28a8s6sxg"))
+               "12jvcmkcmd5p14b41w9f7ixd3sca97pymd6lqbkwnl8qn6bjv3zr"))
              (patches
               (search-patches "automake-skip-amhello-tests.patch"))))
     (build-system gnu-build-system)
@@ -280,32 +281,33 @@ output is indexed in many ways to simplify browsing.")
                (setenv "CONFIG_SHELL" sh)
                #t)))
 
-           ;; Files like `install-sh', `mdate.sh', etc. must use
-           ;; #!/bin/sh, otherwise users could leak erroneous shebangs
-           ;; in the wild.  See <http://bugs.gnu.org/14201> for an
-           ;; example.
-           (add-after 'install 'unpatch-shebangs
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (dir (string-append out "/share")))
-                 (define (starts-with-shebang? file)
-                   (equal? (call-with-input-file file
-                             (lambda (p)
-                               (list (get-u8 p) (get-u8 p))))
-                           (map char->integer '(#\# #\!))))
+         ;; Files like `install-sh', `mdate.sh', etc. must use
+         ;; #!/bin/sh, otherwise users could leak erroneous shebangs
+         ;; in the wild.  See <http://bugs.gnu.org/14201> for an
+         ;; example.
+         (add-after 'install 'unpatch-shebangs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/share")))
+               (define (starts-with-shebang? file)
+                 (equal? (call-with-input-file file
+                           (lambda (p)
+                             (list (get-u8 p) (get-u8 p))))
+                         (map char->integer '(#\# #\!))))
 
-                 (for-each (lambda (file)
-                             (when (and (starts-with-shebang? file)
-                                        (executable-file? file))
-                               (format #t "restoring shebang on `~a'~%"
-                                       file)
-                               (substitute* file
-                                 (("^#!.*/bin/sh")
-                                  "#!/bin/sh")
-                                 (("^#!.*/bin/env(.*)$" _ args)
-                                  (string-append "#!/usr/bin/env"
-                                                 args)))))
-                           (find-files dir ".*"))))))))
+               (for-each (lambda (file)
+                           (when (and (starts-with-shebang? file)
+                                      (executable-file? file))
+                             (format #t "restoring shebang on `~a'~%"
+                                     file)
+                             (substitute* file
+                               (("^#!.*/bin/sh")
+                                "#!/bin/sh")
+                               (("^#!.*/bin/env(.*)$" _ args)
+                                (string-append "#!/usr/bin/env"
+                                               args)))))
+                         (find-files dir ".*"))
+               #t))))))
     (home-page "https://www.gnu.org/software/automake/")
     (synopsis "Making GNU standards-compliant Makefiles")
     (description
