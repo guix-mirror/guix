@@ -11083,13 +11083,13 @@ It supports both normal and Unicode strings.")
 (define-public python-scandir
   (package
     (name "python-scandir")
-    (version "1.4")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scandir" version))
        (sha256
-        (base32 "0yjrgp0mxp3d8bjkq2m1ac2ys8n76wykksvgyjrnil9gr3fx7a5d"))))
+        (base32 "0gbnhjzg42rj87ljv9kb648rfxph69ly3c8r9841dxy4d7l5pmdj"))))
     (build-system python-build-system)
     (home-page "https://github.com/benhoyt/scandir")
     (synopsis "Directory iteration function")
@@ -11098,7 +11098,9 @@ It supports both normal and Unicode strings.")
 returning a list of bare filenames, it yields DirEntry objects that include
 file type and stat information along with the name.  Using scandir() increases
 the speed of os.walk() by 2-20 times (depending on the platform and file
-system) by avoiding unnecessary calls to os.stat() in most cases.")
+system) by avoiding unnecessary calls to os.stat() in most cases.
+
+This package is part of the Python standard library since version 3.5.")
     (license license:bsd-3)))
 
 (define-public python2-scandir
