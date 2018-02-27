@@ -422,8 +422,6 @@ common features used in Tempest.")
         (base32
          "0kvha0rs9295njyl2z6n6zm5dapi5mrl5zwjm0m6ldqrvccyf8c3"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Requires python-mock >= 1.2.
     (native-inputs
       `(("python-babel" ,python-babel)
         ("python-pbr" ,python-pbr)
