@@ -7538,18 +7538,18 @@ to use.")
              #t))
          (replace 'check
            (lambda _
-             (system* "ant" "compile-tests")
-             (and
-               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
-                                                           ":build/classes"
-                                                           ":build/test-classes")
-                               "org.testng.TestNG" "-testclass"
-                               "build/test-classes/com/neilalexander/jnacl/NaclSecretBoxTest.class"))
-               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
-                                                           ":build/classes"
-                                                           ":build/test-classes")
-                               "org.testng.TestNG" "-testclass"
-                               "build/test-classes/com/neilalexander/jnacl/NaClTest.class"))))))))
+             (invoke "ant" "compile-tests")
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                 ":build/classes"
+                                                 ":build/test-classes")
+                     "org.testng.TestNG" "-testclass"
+                     "build/test-classes/com/neilalexander/jnacl/NaclSecretBoxTest.class")
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                 ":build/classes"
+                                                 ":build/test-classes")
+                     "org.testng.TestNG" "-testclass"
+                     "build/test-classes/com/neilalexander/jnacl/NaClTest.class")
+             #t)))))
     (native-inputs
      `(("java-testng" ,java-testng)
        ("java-fest-util" ,java-fest-util)
