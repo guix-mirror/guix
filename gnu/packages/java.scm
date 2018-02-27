@@ -5709,12 +5709,13 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
                (for-each (lambda (file)
                            (display file)
                            (newline)
-                           (system* "antlr" "-o" dir (string-append dir file)))
+                           (invoke "antlr" "-o" dir (string-append dir file)))
                          '("antlr.g" "antlr.print.g" "assign.types.g"
                            "buildnfa.g" "define.g")))
              (format #t "codegen.g\n")
-             (system* "antlr" "-o" "src/org/antlr/codegen"
-                      "src/org/antlr/codegen/codegen.g")))
+             (invoke "antlr" "-o" "src/org/antlr/codegen"
+                     "src/org/antlr/codegen/codegen.g")
+             #t))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
