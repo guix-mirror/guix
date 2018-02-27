@@ -538,13 +538,13 @@ in transmittable and storable formats, such as JSON and MessagePack.")
 (define-public python-reno
   (package
     (name "python-reno")
-    (version "2.0.3")
+    (version "2.7.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "reno" version))
         (sha256
-          (base32 "1i2wnn5fnm3jm5774pahg000q0lma5i913hml91bbbm2mybphndd"))))
+          (base32 "0gwzi5dvacqx43smxl3rd1z33npn7gfhm50bvgmq90fib2q431wc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -554,33 +554,27 @@ in transmittable and storable formats, such as JSON and MessagePack.")
              ;; reno expects a git repo
              (zero? (system* "git" "init")))))))
     (propagated-inputs
-      `(("python-babel" ,python-babel)
-        ("python-dulwich" ,python-dulwich)
+      `(("python-dulwich" ,python-dulwich)
+        ("python-pbr" ,python-pbr)
         ("python-pyyaml" ,python-pyyaml)
         ("python-six" ,python-six)))
     (native-inputs
       `(("python-testtools" ,python-testtools)
-        ("python-pbr" ,python-pbr)
         ("python-testscenarios" ,python-testscenarios)
         ("python-testrepository" ,python-testrepository)
         ("python-mock" ,python-mock)
-        ("python-oslotest" ,python-oslotest)
+        ("python-docutils" ,python-docutils)
+        ("python-sphinx" ,python-sphinx)
         ("gnupg" ,gnupg)
         ("git" ,git)))
     (home-page "http://docs.openstack.org/developer/reno/")
     (synopsis "Release notes manager")
     (description "Reno is a tool for storing release notes in a git repository
 and building documentation from them.")
-    (properties `((python2-variant . ,(delay python2-reno))))
     (license asl2.0)))
 
 (define-public python2-reno
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-reno)))
-           (arguments
-            `(#:python ,python-2
-              ;; FIXME: 'subunit.run discover: error: no such option: --list'
-              #:tests? #f))))
+  (package-with-python2 python-reno))
 
 (define-public python-oslosphinx
   (package
