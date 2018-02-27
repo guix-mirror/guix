@@ -1,0 +1,43 @@
+Fix regex so that it works with Python 3.6.
+
+See <https://docs.python.org/3/library/re.html#re.LOCALE>.
+
+Copied from upstream bug report:
+https://bugs.launchpad.net/python-mox3/+bug/1665266
+
+From 05064cdb6ea7a16450c6beae2b6f7c6074212a69 Mon Sep 17 00:00:00 2001
+From: Zac Medico <zmedico@gentoo.org>
+Date: Thu, 16 Feb 2017 00:24:10 -0800
+Subject: [PATCH] RegexTest: python3.6 compatibility
+
+These fixes are backward-compatible with older python versions:
+
+* raw strings fix invalid escape sequences
+* flags=8 fixes ValueError: cannot use LOCALE flag with a str pattern
+---
+ mox3/tests/test_mox.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/mox3/tests/test_mox.py b/mox3/tests/test_mox.py
+index 15ac565..3a1af17 100644
+--- a/mox3/tests/test_mox.py
++++ b/mox3/tests/test_mox.py
+@@ -312,12 +312,12 @@ class RegexTest(testtools.TestCase):
+     def testReprWithoutFlags(self):
+         """repr should return the regular expression pattern."""
+         self.assertTrue(
+-            repr(mox.Regex(r"a\s+b")) == "<regular expression 'a\s+b'>")
++            repr(mox.Regex(r"a\s+b")) == r"<regular expression 'a\s+b'>")
+ 
+     def testReprWithFlags(self):
+         """repr should return the regular expression pattern and flags."""
+-        self.assertTrue(repr(mox.Regex(r"a\s+b", flags=4)) ==
+-                        "<regular expression 'a\s+b', flags=4>")
++        self.assertTrue(repr(mox.Regex(r"a\s+b", flags=8)) ==
++                        r"<regular expression 'a\s+b', flags=8>")
+ 
+ 
+ class IsTest(testtools.TestCase):
+-- 
+2.10.2
+

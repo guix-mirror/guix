@@ -21,6 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages openstack)
+  #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
@@ -156,31 +157,31 @@ guidelines}.")
 (define-public python-mox3
   (package
     (name "python-mox3")
-    (version "0.14.0")
+    (version "0.24.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mox3" version))
+        (patches (search-patches "python-mox3-python3.6-compat.patch"))
         (sha256
           (base32
-           "0njmh40i1lg5mzn9hc2ax83adj6dli455j6xifilrw27c4wlkjzx"))))
+           "0w58adwv7q9wzvmq9mlrk2asfk73myq9fpwy7mjkzsz3baa95zf5"))))
     (build-system python-build-system)
-    (arguments
-     ;; TODO: Resolve dependency cycle and re-enable.
-     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-fixtures" ,python-fixtures)
+       ("python-pbr" ,python-pbr)))
     (native-inputs
-      `(("python-fixtures" ,python-fixtures)
-        ; TODO re-add ("python-oslosphinx" ,python-oslosphinx)
-        ("python-pbr" ,python-pbr)
-        ("python-sphinx" ,python-sphinx)
+      `(("python-openstackdocstheme" ,python-openstackdocstheme)
+        ("python-sphinx" ,python-sphinx-1.6)
+        ("python-subunit" ,python-subunit)
+        ("python-testrepository" ,python-testrepository)
         ("python-testtools" ,python-testtools)))
     (home-page "https://www.openstack.org/")
     (synopsis "Mock object framework for Python")
     (description
       "Mox3 is an unofficial port of the @uref{https://code.google.com/p/pymox/,
 Google mox framework} to Python 3.  It was meant to be as compatible
-with mox as possible, but small enhancements have been made.  The library was
-tested on Python versions 3.2, 2.7, and 2.6.")
+with mox as possible, but small enhancements have been made.")
     (license asl2.0)))
 
 (define-public python2-mox3

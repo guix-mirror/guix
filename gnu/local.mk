@@ -1036,6 +1036,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-scikit-learn-fix-test-non-determinism.patch	\
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
+  %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python-pygit2-disable-network-tests.patch	\
