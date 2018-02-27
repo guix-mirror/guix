@@ -8384,26 +8384,23 @@ including pre-existing objects that you do not have source-code of.")
        (modify-phases %standard-phases
          (add-before 'build 'build-native
            (lambda* (#:key inputs #:allow-other-keys)
-             (with-directory-excursion "hawtjni-generator/src/main/resources/"
-               (and
-                 (system* "gcc" "-c" "hawtjni.c" "-o" "hawtjni.o"
-                          "-fPIC" "-O2"
-                          (string-append "-I" (assoc-ref inputs "jdk") "/include/linux"))
-                 (system* "gcc" "-c" "hawtjni-callback.c" "-o" "hawtjni-callback.o"
-                          "-fPIC" "-O2"
-                          (string-append "-I" (assoc-ref inputs "jdk") "/include/linux"))
-                 (system* "gcc" "-o" "libhawtjni.so" "-shared"
-                          "hawtjni.o" "hawtjni-callback.o")))))
+             (let ((include (string-append "-I" (assoc-ref inputs "jdk") "/include/linux")))
+               (with-directory-excursion "hawtjni-generator/src/main/resources/"
+                 (invoke "gcc" "-c" "hawtjni.c" "-o" "hawtjni.o"
+                         "-fPIC" "-O2" include)
+                 (invoke "gcc" "-c" "hawtjni-callback.c" "-o" "hawtjni-callback.o"
+                         "-fPIC" "-O2" include)
+                 (invoke "gcc" "-o" "libhawtjni.so" "-shared"
+                         "hawtjni.o" "hawtjni-callback.o")))
+             #t))
          (add-after 'install 'install-native
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (lib (string-append out "/lib"))
                     (inc (string-append out "/include")))
-               (mkdir-p lib)
-               (mkdir-p inc)
                (with-directory-excursion "hawtjni-generator/src/main/resources/"
-                 (copy-file "libhawtjni.so" (string-append lib "/libhawtjni.so"))
-                 (copy-file "hawtjni.h" (string-append inc "/hawtjni.h"))))
+                 (install-file "libhawtjni.so" lib)
+                 (install-file "hawtjni.h" inc)))
              #t)))))
     (inputs
      `(("java-commons-cli" ,java-commons-cli)
