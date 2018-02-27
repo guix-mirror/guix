@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -184,6 +185,36 @@ tested on Python versions 3.2, 2.7, and 2.6.")
 
 (define-public python2-mox3
   (package-with-python2 python-mox3))
+
+(define-public python-openstackdocstheme
+  (package
+    (name "python-openstackdocstheme")
+    (version "1.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "openstackdocstheme" version))
+              (sha256
+               (base32
+                "1ki5204rjdqjvr8xr9w2qc1z6b6d2i5jas0i70xzkf9njlzjzv2r"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: Tests require an old version of python-hacking, which in
+     ;; turn depends on mox3 which depends on this package.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-dulwich" ,python-dulwich)
+       ("python-pbr" ,python-pbr)))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx-1.6)))
+    (home-page "https://docs.openstack.org/openstackdocstheme/latest/")
+    (synopsis "OpenStack Docs Theme")
+    (description
+     "This package provides themes and extensions for Sphinx for publishing
+to docs.openstack.org and developer.openstack.org.")
+    (license asl2.0)))
+
+(define-public python2-openstackdocstheme
+  (package-with-python2 python-openstackdocstheme))
 
 (define-public python-os-client-config
   (package
