@@ -896,19 +896,24 @@ compatibility.")))
 (define-public python-testscenarios-bootstrap
   (package
     (name "python-testscenarios-bootstrap")
-    (version "0.4")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/testscenarios/testscenarios-"
-             version ".tar.gz"))
+       (uri (pypi-uri "testscenarios" version))
        (sha256
         (base32
-         "1671jvrvqlmbnc42j7pc5y6vc37q44aiwrq0zic652pxyy2fxvjg"))))
+         "1dm2aydqpv76vnsk1pw7k8n42hq58cfi4n1ixy7nyzpaj1mwnmy2"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "-m" "testtools.run"
+                              "testscenarios.test_suite"))))))
     (propagated-inputs
-     `(("python-testtools" ,python-testtools-bootstrap)))
+     `(("python-pbr" ,python-pbr-minimal)
+       ("python-testtools" ,python-testtools-bootstrap)))
     (home-page "https://launchpad.net/testscenarios")
     (synopsis "Pyunit extension for dependency injection")
     (description
@@ -923,7 +928,8 @@ compatibility.")))
     (inherit python-testscenarios-bootstrap)
     (name "python-testscenarios")
     (propagated-inputs
-     `(("python-testtools" ,python-testtools)))
+     `(("python-pbr" ,python-pbr)
+       ("python-testtools" ,python-testtools)))
     (description
      "Testscenarios provides clean dependency injection for Python unittest
 style tests.")))
