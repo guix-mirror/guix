@@ -7531,9 +7531,8 @@ to use.")
        (modify-phases %standard-phases
          (add-before 'build 'fix-tests
            (lambda _
-             (substitute* "src/test/java/com/neilalexander/jnacl/NaClTest.java"
-               (("assertions.Assertions") "assertions.api.Assertions"))
-             (substitute* "src/test/java/com/neilalexander/jnacl/NaclSecretBoxTest.java"
+             (substitute* '("src/test/java/com/neilalexander/jnacl/NaClTest.java"
+                            "src/test/java/com/neilalexander/jnacl/NaclSecretBoxTest.java")
                (("assertions.Assertions") "assertions.api.Assertions"))
              #t))
          (replace 'check
