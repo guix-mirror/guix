@@ -1033,13 +1033,13 @@ protocol.")))
 (define-public python-fixtures-bootstrap
   (package
     (name "python-fixtures-bootstrap")
-    (version "1.4.0")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "fixtures" version))
               (sha256
                (base32
-                "0djxvdwm8s60dbfn7bhf40x6g818p3b3mlwijm1c3bqg7msn271y"))))
+                "1vxj29bzz3rd4pcy51d05wng9q9dh4jq6wx92yklsm7i6h1ddw7w"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (propagated-inputs
