@@ -962,18 +962,37 @@ protocol.")
 (define-public python2-subunit
   (package-with-python2 python-subunit))
 
+;; Fixtures requires python-pbr at runtime, but pbr uses fixtures for its
+;; own tests.  Hence this bootstrap variant.
+(define-public python-fixtures-bootstrap
+  (package
+    (name "python-fixtures-bootstrap")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "fixtures" version))
+              (sha256
+               (base32
+                "0djxvdwm8s60dbfn7bhf40x6g818p3b3mlwijm1c3bqg7msn271y"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-pbr-minimal" ,python-pbr-minimal)
+       ("python-six" ,python-six)))
+    (home-page "https://launchpad.net/python-fixtures")
+    (synopsis "Python test fixture library")
+    (description
+     "This package is only used for bootstrapping.  Use the regular
+python-fixtures package instead.")
+    (license (list license:bsd-3 license:asl2.0)))) ; at user's option
+
+(define-public python2-fixtures-bootstrap
+  (package-with-python2 python-fixtures-bootstrap))
+
 (define-public python-fixtures
   (package
+    (inherit python-fixtures-bootstrap)
     (name "python-fixtures")
-    (version "1.4.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "fixtures" version))
-       (sha256
-        (base32
-         "0djxvdwm8s60dbfn7bhf40x6g818p3b3mlwijm1c3bqg7msn271y"))))
-    (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -982,25 +1001,23 @@ protocol.")
              (zero? (system* "python" "-m" "testtools.run"
                              "fixtures.test_suite")))))))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     ;; Fixtures uses pbr at runtime to check versions, etc.
+     `(("python-pbr" ,python-pbr)
+       ("python-six" ,python-six)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-pbr-minimal" ,python-pbr-minimal)
        ("python-testtools" ,python-testtools)))
-    (home-page "https://launchpad.net/python-fixtures")
-    (synopsis "Python test fixture library")
     (description
      "Fixtures provides a way to create reusable state, useful when writing
-Python tests.")
-    (license (list license:bsd-3 license:asl2.0)))) ; at user's option
+Python tests.")))
 
 (define-public python2-fixtures
   (package-with-python2 python-fixtures))
 
-(define-public python-testrepository
+(define-public python-testrepository-bootstrap
   (package
-    (name "python-testrepository")
-    (version "0.0.20")
+    (name "python-testrepository-bootstrap")
+     (version "0.0.20")
     (source
      (origin
        (method url-fetch)
@@ -1011,6 +1028,26 @@ Python tests.")
         (base32
          "1ssqb07c277010i6gzzkbdd46gd9mrj0bi0i8vn560n2k2y4j93m"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-fixtures" ,python-fixtures-bootstrap)
+       ("python-subunit" ,python-subunit)
+       ("python-testtools" ,python-testtools)))
+    (native-inputs
+     `(("python-mimeparse" ,python-mimeparse)))
+    (home-page "https://launchpad.net/testrepository")
+    (synopsis "Database for Python test results")
+    (description
+     "Bootstrap package for python-testrepository.  Don't use this.")
+    (license (list license:bsd-3 license:asl2.0)))) ; at user's option
+
+(define-public python2-testrepository-bootstrap
+  (package-with-python2 python-testrepository-bootstrap))
+
+(define-public python-testrepository
+  (package
+    (inherit python-testrepository-bootstrap)
+    (name "python-testrepository")
     (arguments
      ;; FIXME: Many tests are failing.
      '(#:tests? #f))
@@ -1019,14 +1056,10 @@ Python tests.")
        ("python-subunit" ,python-subunit)
        ("python-testtools" ,python-testtools)))
     (native-inputs
-     `(("python-pbr-minimal" ,python-pbr-minimal) ;; same as for building fixture
-       ("python-mimeparse" ,python-mimeparse)))
-    (home-page "https://launchpad.net/testrepository")
-    (synopsis "Database for Python test results")
+     `(("python-mimeparse" ,python-mimeparse)))
     (description "Testrepository provides a database of test results which can
 be used as part of a developer's workflow to check things such as what tests
-have failed since the last commit or what tests are currently failing.")
-    (license (list license:bsd-3 license:asl2.0)))) ; at user's option
+have failed since the last commit or what tests are currently failing.")))
 
 (define-public python2-testrepository
   (package-with-python2 python-testrepository))

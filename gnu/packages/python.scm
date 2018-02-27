@@ -1689,12 +1689,12 @@ code introspection, and logging.")
     (propagated-inputs
       `(("git" ,git))) ;; pbr actually uses the "git" binary.
     (native-inputs
-      `(("python-fixtures" ,python-fixtures)
+      `(("python-fixtures" ,python-fixtures-bootstrap)
         ;; discover, coverage, hacking, subunit
         ("python-mock" ,python-mock)
         ("python-six" ,python-six)
         ("python-sphinx" ,python-sphinx)
-        ("python-testrepository" ,python-testrepository)
+        ("python-testrepository" ,python-testrepository-bootstrap)
         ("python-testresources" ,python-testresources)
         ("python-testscenarios" ,python-testscenarios)
         ("python-testtools" ,python-testtools)
