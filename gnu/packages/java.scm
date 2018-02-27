@@ -8465,8 +8465,9 @@ that is part of the SWT Tools project.")
      `(("java-hawtjni" ,java-hawtjni)))
     (home-page "https://fusesource.github.io/jansi/")
     (synopsis "Native library for jansi")
-    (description "Java-jansi-native contains the native library for the jansi
-frobnication library/framework.")
+    (description "This package provides the native library for jansi, a small
+Java library that allows you to use ANSI escape sequences to format your
+console output.")
     (license license:asl2.0)))
 
 (define-public java-jansi
