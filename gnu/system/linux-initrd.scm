@@ -39,6 +39,7 @@
   #:use-module (gnu system mapped-devices)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (expression->initrd
@@ -242,6 +243,40 @@ FILE-SYSTEMS."
           (list btrfs-progs/static)
           '())))
 
+(define-syntax vhash                              ;TODO: factorize
+  (syntax-rules (=>)
+    "Build a vhash with the given key/value mappings."
+    ((_)
+     vlist-null)
+    ((_ (key others ... => value) rest ...)
+     (vhash-cons key value
+                 (vhash (others ... => value) rest ...)))
+    ((_ (=> value) rest ...)
+     (vhash rest ...))))
+
+(define-syntax lookup-procedure
+  (syntax-rules (else)
+    "Return a procedure that lookups keys in the given dictionary."
+    ((_ mapping ... (else default))
+     (let ((table (vhash mapping ...)))
+       (lambda (key)
+         (match (vhash-assoc key table)
+           (#f    default)
+           (value value)))))))
+
+(define file-system-type-modules
+  ;; Given a file system type, return the list of modules it needs.
+  (lookup-procedure ("cifs" => '("md4" "ecb" "cifs"))
+                    ("9p" => '("9p" "9pnet_virtio"))
+                    ("btrfs" => '("btrfs"))
+                    ("iso9660" => '("isofs"))
+                    (else '())))
+
+(define (file-system-modules file-systems)
+  "Return the list of Linux modules needed to mount FILE-SYSTEMS."
+  (append-map (compose file-system-type-modules file-system-type)
+              file-systems))
+
 (define* (base-initrd file-systems
                       #:key
                       (linux linux-libre)
@@ -272,18 +307,6 @@ loaded at boot time in the order in which they appear."
     '("virtio_pci" "virtio_balloon" "virtio_blk" "virtio_net"
       "virtio_console"))
 
-  (define cifs-modules
-    ;; Modules needed to mount CIFS file systems.
-    '("md4" "ecb" "cifs"))
-
-  (define virtio-9p-modules
-    ;; Modules for the 9p paravirtualized file system.
-    '("9p" "9pnet_virtio"))
-
-  (define (file-system-type-predicate type)
-    (lambda (fs)
-      (string=? (file-system-type fs) type)))
-
   (define linux-modules
     ;; Modules added to the initrd and loaded from the initrd.
     `("ahci"                                  ;for SATA controllers
@@ -298,18 +321,7 @@ loaded at boot time in the order in which they appear."
       ,@(if (or virtio? qemu-networking?)
             virtio-modules
             '())
-      ,@(if (find (file-system-type-predicate "cifs") file-systems)
-            cifs-modules
-            '())
-      ,@(if (find (file-system-type-predicate "9p") file-systems)
-            virtio-9p-modules
-            '())
-      ,@(if (find (file-system-type-predicate "btrfs") file-systems)
-            '("btrfs")
-            '())
-      ,@(if (find (file-system-type-predicate "iso9660") file-systems)
-            '("isofs")
-            '())
+      ,@(file-system-modules file-systems)
       ,@(if volatile-root?
             '("overlay")
             '())
