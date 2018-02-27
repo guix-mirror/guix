@@ -11500,6 +11500,48 @@ applying JSON Patches according to RFC 6902.")
 (define-public python2-jsonpatch-0.4
   (package-with-python2 python-jsonpatch-0.4))
 
+(define-public python-rfc3986
+  (package
+    (name "python-rfc3986")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "rfc3986" version))
+              (sha256
+               (base32
+                "06wlmysw83f75ff84zr1yr6n0shvc2xn1n1sb4iwzqap9hf5fn44"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build python-build-system)
+                  (ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (let ((cwd (getcwd)))
+               (setenv "PYTHONPATH"
+                       (string-append cwd "/build/"
+                                      (find (cut string-prefix? "lib" <>)
+                                            (scandir (string-append cwd "/build")))
+                                      ":"
+                                      (getenv "PYTHONPATH")))
+             (invoke "pytest" "-v")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://rfc3986.readthedocs.io/")
+    (synopsis "Parse and validate URI references")
+    (description
+     "@code{rfc3986} is a Python implementation of RFC@tie{}3986 including
+validation and authority parsing.  This module also supports RFC@tie{}6874
+which adds support for zone identifiers to IPv6 addresses.")
+    (license license:asl2.0)))
+
+(define-public python2-rfc3986
+  (package-with-python2 python-rfc3986))
+
 (define-public python-rfc3987
   (package
     (name "python-rfc3987")
