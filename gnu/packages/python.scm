@@ -1500,19 +1500,17 @@ software.")
 (define-public python-extras
   (package
     (name "python-extras")
-    (version "0.0.3")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/e/extras/extras-"
-             version ".tar.gz"))
+       (uri (pypi-uri "extras" version))
        (sha256
         (base32
-         "1h7zx4dfyclalg0fqnfjijpn0f793a9mx8sy3b27gd31nr6dhq3s"))))
+         "0khvm08rcwm62wc47j8niyl6h13f8w51c8669ifivjdr23g3cbhk"))))
     (build-system python-build-system)
     (arguments
-     ;; error in setup.cfg: command 'test' has no such option 'buffer'
+     ;; FIXME: Circular dependency on testtools.
      '(#:tests? #f))
     (home-page "https://github.com/testing-cabal/extras")
     (synopsis "Useful extensions to the Python standard library")
