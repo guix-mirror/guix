@@ -7727,7 +7727,8 @@ algorithms and xxHash hashing algorithm.")
            (lambda _
              (mkdir-p "src")
              (with-directory-excursion "src"
-               (zero? (system* "unzip" "../src.zip"))))))))
+               (invoke "unzip" "../src.zip"))
+             #t)))))
     (native-inputs
      `(("unzip" ,unzip)
        ("junit" ,java-junit)))
