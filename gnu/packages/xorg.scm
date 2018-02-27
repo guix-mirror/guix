@@ -5813,7 +5813,7 @@ programs that cannot use the window system directly.")
 (define-public perl-x11-xcb
   (package
     (name "perl-x11-xcb")
-    (version "0.16")
+    (version "0.17")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5821,7 +5821,7 @@ programs that cannot use the window system directly.")
                     "X11-XCB-" version ".tar.gz"))
               (sha256
                (base32
-                "14mnvr1001py2z1n43l18yaw0plwvjg5pcsyc7k81sa0amw8ahzw"))))
+                "12qyf98s5hbybmh0mblpz50c00i68srq73w5rw31m2dhclj8n96q"))))
     (build-system perl-build-system)
     (arguments
      '(;; Disable parallel build to prevent a race condition.
