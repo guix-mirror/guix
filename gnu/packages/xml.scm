@@ -538,7 +538,7 @@ building Perl SAX2 XML parsers, filters, and drivers.")
 (define-public perl-xml-sax-base
   (package
     (name "perl-xml-sax-base")
-    (version "1.08")
+    (version "1.09")
     (source
      (origin
        (method url-fetch)
@@ -546,7 +546,7 @@ building Perl SAX2 XML parsers, filters, and drivers.")
                            "XML-SAX-Base-" version ".tar.gz"))
        (sha256
         (base32
-         "17i161rq1ngjlk0c8vdkrkkc56y1pf51k1g54y28py0micqp0qk6"))))
+         "1l1ai9g1z11ja7mvnfl5mj346r13jyckbg9qlw6c2izglidkbjv6"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/XML-SAX-Base")
     (synopsis "Base class for SAX Drivers and Filters")
