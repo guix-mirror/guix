@@ -8437,14 +8437,14 @@ that is part of the SWT Tools project.")
              (with-directory-excursion "src/main/native-package/src"
                (substitute* "jansi_ttyname.c"
                  (("#include \"jansi_.*") ""))
-               (and
-                 (system* "gcc" "-c" "jansi_ttyname.c" "-o" "jansi_ttyname.o"
-                          (string-append "-I" (assoc-ref inputs "java-hawtjni")
-                                         "/include")
-                          (string-append "-I" (assoc-ref inputs "jdk")
-                                         "/include/linux")
-                          "-fPIC" "-O2")
-                 (system* "gcc" "-o" "libjansi.so" "-shared" "jansi_ttyname.o")))))
+               (invoke "gcc" "-c" "jansi_ttyname.c" "-o" "jansi_ttyname.o"
+                       (string-append "-I" (assoc-ref inputs "java-hawtjni")
+                                      "/include")
+                       (string-append "-I" (assoc-ref inputs "jdk")
+                                      "/include/linux")
+                       "-fPIC" "-O2")
+               (invoke "gcc" "-o" "libjansi.so" "-shared" "jansi_ttyname.o")
+               #t)))
          (add-before 'build 'install-native
            (lambda _
              (let ((dir (string-append "build/classes/META-INF/native/"
@@ -8457,7 +8457,6 @@ that is part of the SWT Tools project.")
              #t))
          (add-after 'install 'install-native
            (lambda* (#:key outputs #:allow-other-keys)
-             (mkdir-p (string-append (assoc-ref outputs "out") "/include"))
              (install-file "src/main/native-package/src/jansi.h"
                            (string-append (assoc-ref outputs "out") "/include"))
              #t)))))
