@@ -1720,7 +1720,7 @@ indentation and newlines plus sub deparsing.")
 (define-public perl-data-optlist
   (package
     (name "perl-data-optlist")
-    (version "0.109")
+    (version "0.110")
     (source
      (origin
        (method url-fetch)
@@ -1729,7 +1729,7 @@ indentation and newlines plus sub deparsing.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1j44rm2spprlq3bc80cxni3dzs3gfjiqv1qc9q7820n1qj0wgmqw"))))
+         "1hzmgr2imdg1fc3hmwx0d56fhsdfyrgmgx7jb4jkyiv6575ifq9n"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-sub-install" ,perl-sub-install)
