@@ -7526,7 +7526,7 @@ to use.")
                   "1d6g6xhn83byv5943n7935wwjsk0ibk0qdvqgr699qqgqqmwisbb"))))
       (build-system ant-build-system)
       (arguments
-       `(#:jar-name "java-jnacl.jar"
+       `(#:jar-name "jnacl.jar"
          #:source-dir "src/main/java"
          #:jdk ,icedtea-8
          #:phases
