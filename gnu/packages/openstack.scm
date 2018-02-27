@@ -315,16 +315,10 @@ mechanism by building on top of setuptools entry points.  The code for managing
 entry points tends to be repetitive, though, so stevedore provides manager
 classes for implementing common patterns for using dynamically loaded
 extensions.")
-    (properties `((python2-variant . ,(delay python2-stevedore))))
     (license asl2.0)))
 
 (define-public python2-stevedore
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-stevedore)))
-           (arguments
-            `(#:python ,python-2
-              ;; FIXME: 'subunit.run discover: error: no such option: --list'
-              #:tests? #f))))
+  (package-with-python2 python-stevedore))
 
 (define-public python-tempest-lib
   (package
