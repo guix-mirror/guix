@@ -908,27 +908,46 @@ style tests.")
 (define-public python2-testscenarios
   (package-with-python2 python-testscenarios))
 
-(define-public python-testresources
+;; Testresources requires python-pbr at runtime, but pbr needs it for its
+;; own tests.  Hence this bootstrap variant.
+(define-public python-testresources-bootstrap
   (package
-    (name "python-testresources")
-    (version "0.2.7")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/testresources/testresources-"
-             version ".tar.gz"))
-       (sha256
-        (base32
-         "0cbj3plbllyz42c4b5xxgwaa7mml54lakslrn4kkhinxhdri22md"))))
+    (name "python-testresources-bootstrap")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "testresources" version))
+              (sha256
+               (base32
+                "05s4dsli9g17m1r3b1gvwicbbgq011hnpb2b9qnj27ja2n11k7gf"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-pbr" ,python-pbr-minimal)))
     (home-page "https://launchpad.net/testresources")
     (synopsis
      "Pyunit extension for managing test resources")
     (description
-     "Testresources is an extension to Python's unittest to allow declarative
-use of resources by test cases.")
+     "This package is only here for bootstrapping purposes.  Use the regular
+testresources package instead.")
     (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
+
+(define-public python2-testresources-bootstrap
+  (package-with-python2 python-testresources-bootstrap))
+
+(define-public python-testresources
+  (package
+    (inherit python-testresources-bootstrap)
+    (name "python-testresources")
+    (propagated-inputs
+     `(("python-pbr" ,python-pbr)))
+    (arguments '())
+    (native-inputs
+     `(("python-fixtures" ,python-fixtures)
+       ("python-testtols" ,python-testtools)))
+    (description
+     "Testresources is an extension to Python's unittest to allow declarative
+use of resources by test cases.")))
 
 (define-public python2-testresources
   (package-with-python2 python-testresources))
