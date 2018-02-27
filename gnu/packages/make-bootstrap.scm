@@ -197,6 +197,18 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 				   (("/bin/sh") "sh")
 				   (("execv ") "execvp "))
 				 #t)))))))
+        ;; We don't want to retain a reference to /gnu/store in the bootstrap
+        ;; versions of egrep/fgrep, so we remove the custom phase added since
+        ;; grep@2.25. The effect is 'egrep' and 'fgrep' look for 'grep' in
+        ;; $PATH.
+        (grep (package
+                (inherit grep)
+                (inputs '())                   ;remove PCRE, which is optional
+                (arguments
+                 (substitute-keyword-arguments (package-arguments grep)
+                   ((#:phases phases)
+                    `(modify-phases ,phases
+                       (delete 'fix-egrep-and-fgrep)))))))
         (finalize (compose static-package
                            package-with-relocatable-glibc)))
     `(,@(map (match-lambda
@@ -209,17 +221,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                ("patch" ,patch)
                ("coreutils" ,coreutils)
                ("sed" ,sed)
-               ;; We don't want to retain a reference to /gnu/store in the
-               ;; bootstrap versions of egrep/fgrep, so we remove the custom
-               ;; phase added since grep@2.25. The effect is 'egrep' and
-               ;; 'fgrep' look for 'grep' in $PATH.
-               ("grep" ,(package
-                          (inherit grep)
-                          (arguments
-                            (substitute-keyword-arguments (package-arguments grep)
-                              ((#:phases phases)
-                               `(modify-phases ,phases
-                                  (delete 'fix-egrep-and-fgrep)))))))
+               ("grep" ,grep)
                ("gawk" ,gawk)))
       ("bash" ,static-bash))))
 
