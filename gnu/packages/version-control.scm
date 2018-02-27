@@ -1389,7 +1389,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.3.0")
+    (version "2.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1397,7 +1397,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                     version "/tig-" version ".tar.gz"))
               (sha256
                (base32
-                "1vf02snz8qiiqiyqss1z63rzzmwbrc9agcgh21jdq13rja306vv8"))))
+                "1skbhhj1narsnsff1azdylcy6xghxb18mzqysmipcyyvlv2i17fk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -1410,7 +1410,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
        (modify-phases %standard-phases
          (add-after 'install 'install-doc
            (lambda _
-             (zero? (system* "make" "install-doc")))))
+             (invoke "make" "install-doc"))))
        #:tests? #f)) ; tests require access to /dev/tty
     ;; #:test-target "test"))
     (home-page "https://jonas.github.io/tig/")
