@@ -7696,7 +7696,8 @@ by technical operatives or consultants working with enterprise platforms.")
          (add-before 'configure 'generate-source
            (lambda _
              (with-directory-excursion "src/build/source_templates"
-               (zero? (system* "mvel2" "../gen_sources.mvel" "../../java"))))))))
+               (invoke "mvel2" "../gen_sources.mvel" "../../java"))
+             #t)))))
     (native-inputs
      `(("mvel" ,java-mvel2)))
     (home-page "https://jpountz.github.io/lz4-java")
