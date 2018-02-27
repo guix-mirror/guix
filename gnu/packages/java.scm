@@ -7558,7 +7558,7 @@ to use.")
     (synopsis "Java implementation of NaCl")
     (description "Pure Java implementation of the NaCl: Networking and
 Cryptography library.")
-    (license license:mpl2.0)))
+    (license license:bsd-2)))
 
 (define-public java-mvel2
   (package
