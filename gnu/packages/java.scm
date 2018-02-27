@@ -5666,7 +5666,6 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
 (define antlr3-3.1
   (package
     (inherit antlr3)
-    (name "antlr3-3.1")
     (version "3.1")
     (source (origin
               (method url-fetch)
@@ -5677,7 +5676,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
                (base32
                 "0sfimc9cpbgrihz4giyygc8afgpma2c93yqpwb951giriri6x66z"))))
     (arguments
-     `(#:jar-name (string-append ,name "-" ,version ".jar")
+     `(#:jar-name (string-append "antlr3-" ,version ".jar")
        #:source-dir "src:runtime/Java/src"
        #:tests? #f
        #:phases
