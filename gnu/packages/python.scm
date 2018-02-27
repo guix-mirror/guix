@@ -2412,7 +2412,17 @@ sources.")
      `(("python-pytest" ,python-pytest)
        ("imagemagick" ,imagemagick) ; for "convert"
        ,@(package-native-inputs python-sphinx)))
-    (properties '())))
+    (properties `((python2-variant . ,(delay python2-sphinx-1.6))))))
+
+(define-public python2-sphinx-1.6
+  (let ((base (package-with-python2 (strip-python2-variant python-sphinx-1.6))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-typing" ,python2-typing)
+         ,@(package-propagated-inputs base)))
+      (native-inputs `(("python2-enum34" ,python2-enum34)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-sphinx-1.5.3
   (package
