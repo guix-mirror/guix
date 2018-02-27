@@ -72,16 +72,10 @@
 To do this Bandit processes each file, builds an AST from it, and runs
 appropriate plugins against the AST nodes.  Once Bandit has finished scanning
 all the files it generates a report.")
-    (properties `((python2-variant . ,(delay python2-bandit))))
     (license asl2.0)))
 
 (define-public python2-bandit
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-bandit)))
-           (arguments
-            `(#:python ,python-2
-              ;; FIXME: 'subunit.run discover: error: no such option: --list'
-              #:tests? #f))))
+  (package-with-python2 python-bandit))
 
 (define-public python-debtcollector
   (package
