@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -565,11 +565,10 @@ where /gnu lives on a separate partition.")
                  (bootloader grub-bootloader)
                  (target "/dev/vdb")))
     (kernel-arguments '("console=ttyS0"))
-    (initrd (lambda (file-systems . rest)
-              ;; Add a kernel module for RAID-0 (aka. "stripe").
-              (apply base-initrd file-systems
-                     #:extra-modules '("raid0")
-                     rest)))
+
+    ;; Add a kernel module for RAID-0 (aka. "stripe").
+    (initrd-modules (cons "raid0" %base-initrd-modules))
+
     (mapped-devices (list (mapped-device
                            (source (list "/dev/vda2" "/dev/vda3"))
                            (target "/dev/md0")

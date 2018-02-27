@@ -43,6 +43,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (expression->initrd
+            %base-initrd-modules
             raw-initrd
             file-system-packages
             base-initrd))
@@ -277,14 +278,31 @@ FILE-SYSTEMS."
   (append-map (compose file-system-type-modules file-system-type)
               file-systems))
 
+(define* (default-initrd-modules #:optional (system (%current-system)))
+  "Return the list of modules included in the initrd by default."
+  `("ahci"                                  ;for SATA controllers
+    "usb-storage" "uas"                     ;for the installation image etc.
+    "usbhid" "hid-generic" "hid-apple"      ;keyboards during early boot
+    "dm-crypt" "xts" "serpent_generic" "wp512" ;for encrypted root partitions
+    "nls_iso8859-1"                            ;for `mkfs.fat`, et.al
+    ,@(if (string-match "^(x86_64|i[3-6]86)-" system)
+          '("pata_acpi" "pata_atiixp"    ;for ATA controllers
+            "isci")                      ;for SAS controllers like Intel C602
+          '())))
+
+(define-syntax %base-initrd-modules
+  ;; This more closely matches our naming convention.
+  (identifier-syntax (default-initrd-modules)))
+
 (define* (base-initrd file-systems
                       #:key
                       (linux linux-libre)
+                      (linux-modules '())
                       (mapped-devices '())
                       qemu-networking?
                       volatile-root?
                       (virtio? #t)
-                      (extra-modules '())
+                      (extra-modules '())         ;deprecated
                       (on-error 'debug))
   "Return a monadic derivation that builds a generic initrd, with kernel
 modules taken from LINUX.  FILE-SYSTEMS is a list of file-systems to be
@@ -307,17 +325,9 @@ loaded at boot time in the order in which they appear."
     '("virtio_pci" "virtio_balloon" "virtio_blk" "virtio_net"
       "virtio_console"))
 
-  (define linux-modules
+  (define linux-modules*
     ;; Modules added to the initrd and loaded from the initrd.
-    `("ahci"                                  ;for SATA controllers
-      "usb-storage" "uas"                     ;for the installation image etc.
-      "usbhid" "hid-generic" "hid-apple"      ;keyboards during early boot
-      "dm-crypt" "xts" "serpent_generic" "wp512" ;for encrypted root partitions
-      "nls_iso8859-1"                            ;for `mkfs.fat`, et.al
-      ,@(if (string-match "^(x86_64|i[3-6]86)-" (%current-system))
-            '("pata_acpi" "pata_atiixp"    ;for ATA controllers
-              "isci")                      ;for SAS controllers like Intel C602
-            '())
+    `(,@linux-modules
       ,@(if (or virtio? qemu-networking?)
             virtio-modules
             '())
@@ -332,7 +342,7 @@ loaded at boot time in the order in which they appear."
 
   (raw-initrd file-systems
               #:linux linux
-              #:linux-modules linux-modules
+              #:linux-modules linux-modules*
               #:mapped-devices mapped-devices
               #:helper-packages helper-packages
               #:qemu-networking? qemu-networking?

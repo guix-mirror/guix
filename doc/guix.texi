@@ -8889,11 +8889,16 @@ the command-line of the kernel---e.g., @code{("console=ttyS0")}.
 @item @code{bootloader}
 The system bootloader configuration object.  @xref{Bootloader Configuration}.
 
-@item @code{initrd} (default: @code{base-initrd})
+@item @code{initrd-modules} (default: @code{%base-initrd-modules})
 @cindex initrd
 @cindex initial RAM disk
-A two-argument monadic procedure that returns an initial RAM disk for
-the Linux kernel.  @xref{Initial RAM Disk}.
+The list of Linux kernel modules that need to be available in the
+initial RAM disk.  @xref{Initial RAM Disk}.
+
+@item @code{initrd} (default: @code{base-initrd})
+A monadic procedure that returns an initial RAM disk for the Linux
+kernel.  This field is provided to support low-level customization and
+should rarely be needed for casual use.  @xref{Initial RAM Disk}.
 
 @item @code{firmware} (default: @var{%base-firmware})
 @cindex firmware
@@ -19768,7 +19773,27 @@ root file system as well as an initialization script.  The latter is
 responsible for mounting the real root file system, and for loading any
 kernel modules that may be needed to achieve that.
 
-The @code{initrd} field of an @code{operating-system} declaration allows
+The @code{initrd-modules} field of an @code{operating-system}
+declaration allows you to specify Linux-libre kernel modules that must
+be available in the initrd.  In particular, this is where you would list
+modules needed to actually drive the hard disk where your root partition
+is---although the default value of @code{initrd-modules} should cover
+most use cases.  For example, assuming you need the @code{megaraid_sas}
+module in addition to the default modules to be able to access your root
+file system, you would write:
+
+@example
+(operating-system
+  ;; @dots{}
+  (initrd-modules (cons "megaraid_sas" %base-initrd-modules)))
+@end example
+
+@defvr {Scheme Variable} %base-initrd-modules
+This is the list of kernel modules included in the initrd by default.
+@end defvr
+
+Furthermore, if you need lower-level customization, the @code{initrd}
+field of an @code{operating-system} declaration allows
 you to specify which initrd you would like to use.  The @code{(gnu
 system linux-initrd)} module provides three ways to build an initrd: the
 high-level @code{base-initrd} procedure and the low-level
@@ -19781,11 +19806,10 @@ system declaration like this:
 
 @example
 (initrd (lambda (file-systems . rest)
-          ;; Create a standard initrd that has modules "foo.ko"
-          ;; and "bar.ko", as well as their dependencies, in
-          ;; addition to the modules available by default.
+          ;; Create a standard initrd but set up networking
+          ;; with the parameters QEMU expects by default.
           (apply base-initrd file-systems
-                 #:extra-modules '("foo" "bar")
+                 #:qemu-networking? #t
                  rest)))
 @end example
 

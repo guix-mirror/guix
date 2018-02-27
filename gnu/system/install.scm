@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -396,10 +396,7 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
     (kernel-arguments
      (cons (string-append "console=" tty)
            (operating-system-user-kernel-arguments installation-os)))
-    (initrd (lambda (fs . rest)
-              (apply base-initrd fs
-                     #:extra-modules extra-modules
-                     rest)))))
+    (initrd-modules (append extra-modules %base-initrd-modules))))
 
 (define beaglebone-black-installation-os
   (embedded-installation-os u-boot-beaglebone-black-bootloader
