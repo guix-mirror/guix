@@ -7654,8 +7654,9 @@ configuration and string construction.")
          (add-before 'build 'run-javacc
            (lambda _
              (with-directory-excursion "src/main/java/org/apache/commons/jexl2/parser/"
-               (and (zero? (system* "java" "jjtree" "Parser.jjt"))
-                    (zero? (system* "java" "javacc" "Parser.jj")))))))))
+               (invoke "java" "jjtree" "Parser.jjt")
+               (invoke "java" "javacc" "Parser.jj"))
+             #t)))))
     (inputs
      `(("java-commons-logging-minimal" ,java-commons-logging-minimal)))
     (native-inputs
