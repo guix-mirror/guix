@@ -844,25 +844,16 @@ data that best fit this type of storage model are virtual machine images, photo
 storage, email storage and backup archiving.  Having no central \"brain\" or
 master point of control provides greater scalability, redundancy and
 permanence.")
-  (license asl2.0)))
+    (properties `((python2-variant . ,(delay python2-swiftclient))))
+    (license asl2.0)))
 
 (define-public python2-swiftclient
-  (let ((swiftclient (package-with-python2 python-swiftclient)))
+  (let ((swiftclient (package-with-python2
+                      (strip-python2-variant python-swiftclient))))
     (package (inherit swiftclient)
-      (arguments
-       `(#:python ,python-2
-         ;; FIXME: subunit.run discover: error: no such option: --list
-         #:tests? #f))
       (propagated-inputs
        `(("python2-futures" ,python2-futures)
-         ("python2-requests" ,python2-requests)
-         ,@(alist-delete "python-requests"
-                         (package-propagated-inputs swiftclient))))
-      (native-inputs
-       `(("python2-keystoneclient" ,python2-keystoneclient)
-         ("python2-oslosphinx" ,python2-oslosphinx)
-         ,@(fold alist-delete (package-native-inputs swiftclient)
-            '("python-keystoneclient" "python-oslosphinx")))))))
+         ,@(package-propagated-inputs swiftclient))))))
 
 (define-public python-git-review
   (package
