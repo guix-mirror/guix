@@ -834,57 +834,68 @@ subprocess and see the output as well as any file modifications.")
 (define-public python2-scripttest
   (package-with-python2 python-scripttest))
 
-(define-public python-testtools
+(define-public python-testtools-bootstrap
   (package
-    (name "python-testtools")
-    (version "1.4.0")
+    (name "python-testtools-bootstrap")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "testtools" version))
        (sha256
         (base32
-         "1vw8yljnd75d396hhw6s2hrf4cclzy845ifd5am0lxsl235z3i8c"))))
+         "0n8519lk8aaa91vymz842831181wf7fss98hyllhygi3z1nfq9sq"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-module-imports
-           (lambda _
-             (substitute* "setup.py"
-               (("'unittest2>=0.8.0',") ""))
-             (substitute* '("testtools/testcase.py"
-                            "testtools/testsuite.py"
-                            "testtools/run.py"
-                            "testtools/tests/test_run.py"
-                            "testtools/tests/test_testsuite.py"
-                            "testtools/tests/test_deferredruntest.py")
-               ;; unittest2 is a backport of Python2.7 features to Python 2.4.
-               (("import unittest2 as unittest") "import unittest")
-               (("import unittest2") "import unittest as unittest2")
-               (("from unittest2 import") "from unittest import"))
-             (substitute* "testtools/tests/test_testresult.py"
-               ;; NUL in source code is not allowed (raises ValueError).
-               (("\\x00\\x04") "\\x04"))
-             #t)))))
+    (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-mimeparse" ,python-mimeparse)
-       ("python-extras" ,python-extras)))
+     `(("python-extras" ,python-extras)
+       ("python-fixtures" ,python-fixtures-bootstrap)
+       ("python-mimeparse" ,python-mimeparse)
+       ("python-pbr" ,python-pbr-minimal)
+       ("python-six" ,python-six)
+       ("python-traceback2" ,python-traceback2)
+       ("python-unittest2" ,python-unittest2)))
     (home-page "https://github.com/testing-cabal/testtools")
     (synopsis
      "Extensions to the Python standard library unit testing framework")
     (description
+     "This package is only for bootstrapping.  Do not use this.")
+    (license license:psfl)))
+
+(define-public python2-testtools-bootstrap
+  (package-with-python2 python-testtools-bootstrap))
+
+(define-public python-testtools
+  (package
+    (inherit python-testtools-bootstrap)
+    (name "python-testtools")
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "-m" "testtools.run"
+                              "testtools.tests.test_suite"))))))
+    (propagated-inputs
+     `(("python-extras" ,python-extras)
+       ("python-fixtures" ,python-fixtures)
+       ("python-mimeparse" ,python-mimeparse)
+       ("python-pbr" ,python-pbr)
+       ("python-six" ,python-six)
+       ("python-traceback2" ,python-traceback2)
+       ("python-unittest2" ,python-unittest2)))
+    (native-inputs
+     `(("python-testscenarios" ,python-testscenarios-bootstrap)))
+    (description
      "Testtools extends the Python standard library unit testing framework to
 provide matchers, more debugging information, and cross-Python
-compatibility.")
-    (license license:psfl)))
+compatibility.")))
 
 (define-public python2-testtools
   (package-with-python2 python-testtools))
 
-(define-public python-testscenarios
+(define-public python-testscenarios-bootstrap
   (package
-    (name "python-testscenarios")
+    (name "python-testscenarios-bootstrap")
     (version "0.4")
     (source
      (origin
@@ -897,13 +908,25 @@ compatibility.")
          "1671jvrvqlmbnc42j7pc5y6vc37q44aiwrq0zic652pxyy2fxvjg"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-testtools" ,python-testtools)))
+     `(("python-testtools" ,python-testtools-bootstrap)))
     (home-page "https://launchpad.net/testscenarios")
     (synopsis "Pyunit extension for dependency injection")
     (description
-     "Testscenarios provides clean dependency injection for Python unittest
-style tests.")
+     "This package is only for bootstrapping.  Don't use this.")
     (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
+
+(define-public python2-testscenarios-bootstrap
+  (package-with-python2 python-testscenarios-bootstrap))
+
+(define-public python-testscenarios
+  (package
+    (inherit python-testscenarios-bootstrap)
+    (name "python-testscenarios")
+    (propagated-inputs
+     `(("python-testtools" ,python-testtools)))
+    (description
+     "Testscenarios provides clean dependency injection for Python unittest
+style tests.")))
 
 (define-public python2-testscenarios
   (package-with-python2 python-testscenarios))
@@ -952,31 +975,49 @@ use of resources by test cases.")))
 (define-public python2-testresources
   (package-with-python2 python-testresources))
 
-(define-public python-subunit
+(define-public python-subunit-bootstrap
   (package
-    (name "python-subunit")
+    (name "python-subunit-bootstrap")
     (version "1.2.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri name version))
+       (uri (pypi-uri "python-subunit" version))
        (sha256
         (base32
          "1yii2gx3z6323as3iraj1yphj76dy7i3h6kj63pnc5y0hwjs5sgx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-extras" ,python-extras)
-       ("python-testtools" ,python-testtools)))
+       ("python-testtools" ,python-testtools-bootstrap)))
     (native-inputs
      `(("python-fixtures" ,python-fixtures-bootstrap)
        ("python-hypothesis" ,python-hypothesis)
-       ("python-testscenarios" ,python-testscenarios)))
+       ("python-testscenarios" ,python-testscenarios-bootstrap)))
     (home-page "http://launchpad.net/subunit")
     (synopsis "Python implementation of the subunit protocol")
     (description
-     "Python-subunit is a Python implementation of the subunit test streaming
-protocol.")
+     "This package is here for bootstrapping purposes only.  Use the regular
+python-subunit package instead.")
     (license (list license:bsd-3 license:asl2.0)))) ; at the user's option
+
+(define-public python2-subunit-bootstrap
+  (package-with-python2 python-subunit-bootstrap))
+
+(define-public python-subunit
+  (package
+    (inherit python-subunit-bootstrap)
+    (name "python-subunit")
+    (propagated-inputs
+     `(("python-extras" ,python-extras)
+       ("python-testtools" ,python-testtools)))
+    (native-inputs
+     `(("python-fixtures" ,python-fixtures)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-testscenarios" ,python-testscenarios)))
+    (description
+     "Python-subunit is a Python implementation of the subunit test streaming
+protocol.")))
 
 (define-public python2-subunit
   (package-with-python2 python-subunit))
@@ -1025,7 +1066,7 @@ python-fixtures package instead.")
        ("python-six" ,python-six)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-testtools" ,python-testtools)))
+       ("python-testtools" ,python-testtools-bootstrap)))
     (description
      "Fixtures provides a way to create reusable state, useful when writing
 Python tests.")))
@@ -1050,8 +1091,8 @@ Python tests.")))
     (arguments '(#:tests? #f))
     (propagated-inputs
      `(("python-fixtures" ,python-fixtures-bootstrap)
-       ("python-subunit" ,python-subunit)
-       ("python-testtools" ,python-testtools)))
+       ("python-subunit" ,python-subunit-bootstrap)
+       ("python-testtools" ,python-testtools-bootstrap)))
     (native-inputs
      `(("python-mimeparse" ,python-mimeparse)))
     (home-page "https://launchpad.net/testrepository")
