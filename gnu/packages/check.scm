@@ -936,22 +936,22 @@ use of resources by test cases.")
 (define-public python-subunit
   (package
     (name "python-subunit")
-    (version "0.0.21")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/python-subunit/python-subunit-"
-             version ".tar.gz"))
+       (uri (pypi-uri name version))
        (sha256
         (base32
-         "1nkw9wfbvizmpajbj3in8ns07g7lwkiv8hip14jjlwk3cacls6jv"))))
+         "1yii2gx3z6323as3iraj1yphj76dy7i3h6kj63pnc5y0hwjs5sgx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-extras" ,python-extras)
-       ("python-mimeparse" ,python-mimeparse)))
+       ("python-testtools" ,python-testtools)))
     (native-inputs
-     `(("python-testscenarios" ,python-testscenarios)))
+     `(("python-fixtures" ,python-fixtures-bootstrap)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-testscenarios" ,python-testscenarios)))
     (home-page "http://launchpad.net/subunit")
     (synopsis "Python implementation of the subunit protocol")
     (description
