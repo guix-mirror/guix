@@ -623,45 +623,36 @@ from the OpenStack project.")
 (define-public python-oslotest
   (package
     (name "python-oslotest")
-    (version "1.10.0")
+    (version "3.2.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/o/oslotest/oslotest-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "oslotest" version))
         (sha256
           (base32
-            "0l3ny48ddz5xbf0v4r0jv1yhbdzinc2vy0lybhdkmx3xy0b886fs"))))
+            "1xay6wjxzqm4bg87fahqas84dhvhgf1gghzldkcczsfx897mqdkh"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-fixtures" ,python-fixtures)
         ("python-mock" ,python-mock)
         ("python-mox3" ,python-mox3)
-        ("python-six" ,python-six)))
-    (native-inputs
-      `(("python-pbr" ,python-pbr)
         ("python-os-client-config" ,python-os-client-config)
+        ("python-six" ,python-six)
         ("python-subunit" ,python-subunit)
         ("python-testrepository" ,python-testrepository)
-        ("python-testscenarios" ,python-testscenarios)
         ("python-testtools" ,python-testtools)))
+    (native-inputs
+      `(("python-pbr" ,python-pbr)
+        ("python-testscenarios" ,python-testscenarios)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo test framework")
     (description
       "The Oslo Test framework provides common fixtures, support for debugging,
 and better support for mocking results.")
-    (properties `((python2-variant . ,(delay python2-oslotest))))
     (license asl2.0)))
 
 (define-public python2-oslotest
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-oslotest)))
-           (arguments
-            `(#:python ,python-2
-              ;; FIXME: 'subunit.run discover: error: no such option: --list'
-              #:tests? #f))))
+  (package-with-python2 python-oslotest))
 
 (define-public python-oslo.utils
   (package
