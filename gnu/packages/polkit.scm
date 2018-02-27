@@ -116,7 +116,7 @@
             ;; to install in /etc, and to instead install the skeletons in the
             ;; output directory.
             (let ((out (assoc-ref outputs "out")))
-             (invoke "make" "install"
+             (apply invoke "make" "install"
                            (string-append "sysconfdir=" out "/etc")
                            (string-append "polkit_actiondir="
                                           out "/share/polkit-1/actions")
