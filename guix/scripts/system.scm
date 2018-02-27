@@ -41,6 +41,10 @@
   #:use-module (gnu build install)
   #:autoload   (gnu build file-systems)
                  (find-partition-by-label find-partition-by-uuid)
+  #:autoload   (gnu build linux-modules)
+                 (device-module-aliases matching-modules)
+  #:autoload   (gnu system linux-initrd)
+                 (base-initrd default-initrd-modules)
   #:use-module (gnu system)
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
@@ -624,21 +628,61 @@ any, are available.  Raise an error if they're not."
       ;; Better be safe than sorry.
       (exit 1))))
 
-(define (check-mapped-devices mapped-devices)
+(define (check-mapped-devices os)
   "Check that each of MAPPED-DEVICES is valid according to the 'check'
 procedure of its type."
+  (define boot-mapped-devices
+    (operating-system-boot-mapped-devices os))
+
+  (define (needed-for-boot? md)
+    (memq md boot-mapped-devices))
+
+  (define initrd-modules
+    (operating-system-initrd-modules os))
+
   (for-each (lambda (md)
               (let ((check (mapped-device-kind-check
                             (mapped-device-type md))))
                 ;; We expect CHECK to raise an exception with a detailed
-                ;; '&message' if something goes wrong, but handle the case
-                ;; where it just returns #f.
-                (unless (check md)
-                  (leave (G_ "~a: invalid '~a' mapped device~%")
-                         (location->string
-                          (source-properties->location
-                           (mapped-device-location md)))))))
-            mapped-devices))
+                ;; '&message' if something goes wrong.
+                (check md
+                       #:needed-for-boot? (needed-for-boot? md)
+                       #:initrd-modules initrd-modules)))
+            (operating-system-mapped-devices os)))
+
+(define (check-initrd-modules os)
+  "Check that modules needed by 'needed-for-boot' file systems in OS are
+available in the initrd.  Note that mapped devices are responsible for
+checking this by themselves in their 'check' procedure."
+  (define (file-system-/dev fs)
+    (let ((device (file-system-device fs)))
+      (match (file-system-title fs)
+        ('device device)
+        ('uuid   (find-partition-by-uuid device))
+        ('label  (find-partition-by-label device)))))
+
+  (define (check-device device location)
+    (let ((modules (delete-duplicates
+                    (append-map matching-modules
+                                (device-module-aliases device)))))
+      (unless (every (cute member <> (operating-system-initrd-modules os))
+                     modules)
+        (raise (condition
+                (&message
+                 (message (format #f (G_ "you need these modules \
+in the initrd for ~a:~{ ~a~}")
+                                  device modules)))
+                (&error-location (location location)))))))
+
+  (define file-systems
+    (filter file-system-needed-for-boot?
+            (operating-system-file-systems os)))
+
+  (for-each (lambda (fs)
+              (check-device (file-system-/dev fs)
+                            (source-properties->location
+                             (file-system-location fs))))
+            file-systems))
 
 
 ;;;
@@ -730,9 +774,10 @@ output when building a system derivation, such as a disk image."
   ;; instantiating a broken configuration.  Assume that we can only check if
   ;; running as root.
   (when (memq action '(init reconfigure))
+    (check-mapped-devices os)
     (when (zero? (getuid))
-      (check-file-system-availability (operating-system-file-systems os)))
-    (check-mapped-devices (operating-system-mapped-devices os)))
+      (check-file-system-availability (operating-system-file-systems os))
+      (check-initrd-modules os)))
 
   (mlet* %store-monad
       ((sys       (system-derivation-for-action os action
