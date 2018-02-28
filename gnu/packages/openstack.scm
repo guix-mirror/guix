@@ -380,31 +380,35 @@ common features used in Tempest.")
 (define-public python-oslo.config
   (package
     (name "python-oslo.config")
-    (version "2.4.0")
+    (version "5.2.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/o/oslo.config/oslo.config-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "oslo.config" version))
        (sha256
          (base32
-          "13r778jfb0fhna37c2pd1f2xipnsbd7zli7qhn96acrzymrwj5k1"))))
+          "0ymf7jxbq29fifyvkwhfiys1qvljqfxdw8ajwzwaf3yiqidgpxqd"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Requires packaging python-argparse.
     (propagated-inputs
-      `(("python-netaddr" ,python-netaddr)
-        ("python-six" ,python-six)
-        ("python-stevedore" ,python-stevedore)))
+     `(("python-debtcollector" ,python-debtcollector)
+       ("python-netaddr" ,python-netaddr)
+       ("python-oslo.i18n" ,python-oslo.i18n)
+       ("python-pbr" ,python-pbr)
+       ("python-rfc3986" ,python-rfc3986)
+       ("python-six" ,python-six)
+       ("python-stevedore" ,python-stevedore)
+       ("python-pyyaml" ,python-pyyaml)))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ;; Tests
-        ("python-oslo.i18n" ,python-oslo.i18n)
-        ("python-mock" ,python-mock)
-        ("python-oslotest" ,python-oslotest)
-        ("python-testscenarios" ,python-testscenarios)))
+     `(("python-bandit" ,python-bandit)
+       ("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)
+       ("python-openstackdocstheme" ,python-openstackdocstheme)
+       ("python-oslotest" ,python-oslotest)
+       ("python-reno" ,python-reno)
+       ("python-sphinx" ,python-sphinx-1.6)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testscenarios" ,python-testscenarios)
+       ("python-testtools" ,python-testtools)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo Configuration API")
     (description
