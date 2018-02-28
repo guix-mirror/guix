@@ -3559,28 +3559,6 @@ The purpose of this library is to wrap all the quirks and hassle of
 @code{package.el} into a sane API.")
     (license license:gpl3+)))
 
-(define-public emacs-esxml
-  (package
-    (name "emacs-esxml")
-    (version "0.3.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/tali713/esxml/archive/"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "01yk4ibbln3ykrin2124hfdi53fsp9gv7j49qw93s2ls52c9zb2f"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/tali713/esxml")
-    (synopsis "Elisp library for working with XML, ESXML and SXML")
-    (description
-     "This library provides two formats for XML code generation.  The primary
-form is esxml.  This is the form that is returned by such functions as
-@code{libxml-parse-xml-region} and it is used internally by emacs in many
-xml-related libraries.")
-    (license license:gpl3+)))
-
 (define-public emacs-queue
   (package
     (name "emacs-queue")
