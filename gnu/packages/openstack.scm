@@ -446,17 +446,15 @@ pipeline and used by various modules such as logging.")
 (define-public python-oslo.i18n
   (package
     (name "python-oslo.i18n")
-    (version "3.0.0")
+    (version "3.19.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "oslo.i18n" version))
         (sha256
           (base32
-           "0bpb1c20sm8my650gl824nzaip83bfn8hr91s65k5ncmyh8hb6pl"))))
+           "18lbfq55cqrbmwm5p6vci9mkjfzr0zwz54ax3ysa463wba5m84cp"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Circular dependency on python-oslo.config.
     (propagated-inputs
       `(("python-babel" ,python-babel)
         ("python-six" ,python-six)))
