@@ -691,6 +691,50 @@ allowing to handle large objects with a small memory footprint.")
 (define-public python2-gitdb
   (package-with-python2 python-gitdb))
 
+(define-public python-gitpython
+  (package
+    (name "python-gitpython")
+    (version "2.1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "GitPython" version))
+              (sha256
+               (base32
+                "1sbn018mn3y2r58ix5z12na1s02ccprhckb88yq3bdddvqjvqqdd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;XXX: Tests can only be run within the GitPython repository.
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'embed-git-reference
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "git/cmd.py"
+                        (("git_exec_name = \"git\"")
+                         (string-append "git_exec_name = \""
+                                        (assoc-ref inputs "git")
+                                        "/bin/git\"")))
+                      #t)))))
+    (inputs
+     `(("git" ,git)))
+    (propagated-inputs
+     `(("python-gitdb" ,python-gitdb)))
+    (native-inputs
+     `(("python-ddt" ,python-ddt)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/gitpython-developers/GitPython")
+    (synopsis "Python library for interacting with Git repositories")
+    (description
+     "GitPython is a python library used to interact with Git repositories,
+high-level like git-porcelain, or low-level like git-plumbing.
+
+It provides abstractions of Git objects for easy access of repository data,
+and additionally allows you to access the Git repository more directly using
+either a pure Python implementation, or the faster, but more resource intensive
+@command{git} command implementation.")
+    (license license:bsd-3)))
+
+(define-public python2-gitpython
+  (package-with-python2 python-gitpython))
+
 (define-public shflags
   (package
     (name "shflags")
