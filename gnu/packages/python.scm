@@ -448,14 +448,14 @@ instead of @command{python3}.")))
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "4.3.0")
+    (version "5.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
         (base32
-         "1w4r09fvn6kd80m5mx4ws1wz100brkaq6hzzpwrns8cgjzjpl6c6"))))
+         "063v69x7spyclyaxrd3gmzj3p16q5ayg97xqhwb1kyn22a9pwip2"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: some tests does not return and times out.
@@ -470,10 +470,16 @@ limiting process resources and management of running processes.  It implements
 many functionalities offered by command line tools such as: ps, top, lsof,
 netstat, ifconfig, who, df, kill, free, nice, ionice, iostat, iotop, uptime,
 pidof, tty, taskset, pmap.")
+    (properties `((python2-variant . ,(delay python2-psutil))))
     (license license:bsd-3)))
 
 (define-public python2-psutil
-  (package-with-python2 python-psutil))
+  (let ((base (package-with-python2 (strip-python2-variant python-psutil))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-enum34" ,python2-enum34)         ;optional
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-shapely
   (package
