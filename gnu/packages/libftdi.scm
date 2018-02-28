@@ -40,7 +40,7 @@
     (build-system cmake-build-system)
     (propagated-inputs
      `(("libusb" ,libusb))) ; required by libftdi1.pc
-    (home-page "http://www.intra2net.com/en/developer/libftdi/")
+    (home-page "https://www.intra2net.com/en/developer/libftdi/")
     (synopsis "FTDI USB driver with bitbang mode")
     (description
      "libFTDI is a library to talk to FTDI chips: FT232BM,
