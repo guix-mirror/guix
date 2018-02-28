@@ -241,13 +241,13 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
 (define-public python-webencodings
   (package
     (name "python-webencodings")
-    (version "0.5")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "webencodings" version))
               (sha256
                (base32
-                "015rw7662lkpb9aqiqah2hbizk6w531badqwjpz41rr47glmxid5"))))
+                "08qrgrc4hrximb2gqnl69g01s93rhf2842jfxdjljc1dbwj1qsmk"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
