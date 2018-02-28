@@ -485,34 +485,33 @@ in an application or library.")
 (define-public python-oslo.log
   (package
   (name "python-oslo.log")
-  (version "1.6.0")
+  (version "3.36.0")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append
-             "https://pypi.python.org/packages/source/o/oslo.log/oslo.log-"
-             version
-             ".tar.gz"))
+      (uri (pypi-uri "oslo.log" version))
       (sha256
         (base32
-          "1fhy6yvbd565nv4x4i3ppyrlbmz3yy9d0xsvw5nkqsa7g43nmf8z"))))
+          "0h7hplf1h8k24v75m3mq1jlrl74x5ynyr4hwgffsg5campxnza4x"))))
   (build-system python-build-system)
-  (arguments
-   '(#:tests? #f)) ; FIXME: Requires oslo.utils >= 3.2.0.
   (propagated-inputs
-   `(("python-debtcollector" ,python-debtcollector)
+   `(("python-dateutil" ,python-dateutil)
+     ("python-debtcollector" ,python-debtcollector)
+     ("python-monotonic" ,python-monotonic)
      ("python-oslo.config" ,python-oslo.config)
      ("python-oslo.context" ,python-oslo.context)
      ("python-oslo.i18n" ,python-oslo.i18n)
      ("python-oslo.utils" ,python-oslo.utils)
      ("python-oslo.serialization" ,python-oslo.serialization)
+     ("python-pbr" ,python-pbr)
+     ("python-pyinotify" ,python-pyinotify)
      ("python-six" ,python-six)))
   (native-inputs
-    `(("python-babel" ,python-babel)
-      ("python-iso8601" ,python-iso8601)
-      ("python-mock" ,python-mock)
+    `(("python-mock" ,python-mock)
       ("python-oslotest" ,python-oslotest)
-      ("python-pbr" ,python-pbr)))
+      ("python-subunit" ,python-subunit)
+      ("python-testrepository" ,python-testrepository)
+      ("python-testtools" ,python-testtools)))
   (home-page "https://launchpad.net/oslo")
   (synopsis "Python logging library of the Oslo project")
   (description
