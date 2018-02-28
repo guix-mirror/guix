@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
@@ -32,7 +32,7 @@
 (define-public libunistring
   (package
    (name "libunistring")
-   (version "0.9.8")
+   (version "0.9.9")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -40,7 +40,7 @@
                   version ".tar.xz"))
             (sha256
              (base32
-              "101gjj9q39pjlcaixylya6is5i7vlbnxr1w5w6raqvvhab7ki4vv"))
+              "0cx8v6862w7vvacbkcvg49kfx731ckdgaybmzw1zav71zkn97nd4"))
             (modules '((guix build utils)))
             (snippet
              '(begin
