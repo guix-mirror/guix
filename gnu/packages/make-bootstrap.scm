@@ -532,6 +532,13 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                       ''("LDFLAGS=-ldl"))
                      ((#:phases phases '%standard-phases)
                       `(modify-phases ,phases
+
+                         ;; Do not record the absolute file name of 'sh' in
+                         ;; (ice-9 popen).  This makes 'open-pipe' unusable in
+                         ;; a build chroot ('open-pipe*' is fine) but avoids
+                         ;; keeping a reference to Bash.
+                         (delete 'pre-configure)
+
                          (add-before 'configure 'static-guile
                            (lambda _
                              (substitute* "libguile/Makefile.in"
@@ -557,7 +564,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (name "guile-static-stripped")
     (build-system trivial-build-system)
     (arguments
-     `(#:modules ((guix build utils))
+     ;; The end result should depend on nothing but itself.
+     `(#:allowed-references ("out")
+       #:modules ((guix build utils))
        #:builder
        (let ()
          (use-modules (guix build utils))
