@@ -495,14 +495,14 @@ Microsoft Publisher documents of all versions.")
 (define-public libpagemaker
   (package
     (name "libpagemaker")
-    (version "0.0.3")
+    (version "0.0.4")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+      (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "1minj0q14d44qfas81a8lkpgj288h5xlkjp084sfx17xv9axr5nq"))))
+               "17ai8ajffr0ixxmmcv3k5vgjlcsix38ldb4fw2arild70pbsrbb6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
