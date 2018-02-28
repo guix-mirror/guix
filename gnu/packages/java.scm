@@ -2053,6 +2053,37 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
     (description "This package provides the Eclipse Java core batch compiler.")
     (license license:epl1.0)))
 
+;; This is needed for java-cisd-args4j
+(define-public java-ecj-3.5
+  (package (inherit java-ecj-3)
+    (version "3.5.1")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append "http://archive.eclipse.org/eclipse/"
+                                  "downloads/drops/R-" version
+                                  "-200909170800/ecjsrc-" version ".zip"))
+              (sha256
+               (base32
+                "1vnl2mavisc567bip736xzsvvbjif5279wc4a7pbdik5wlir8qr7"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; none included
+       #:jdk ,icedtea-7 ; doesn't build with JDK8+
+       #:build-target "build"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-manifest
+           (lambda _
+             ;; Record the main class to make ecj executable.
+             (with-atomic-file-replacement "META-INF/MANIFEST.MF"
+               (lambda (in out)
+                 (dump-port in out)
+                 (display "Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
+                          out)))))
+         (replace 'install (install-jars ".")))))
+    (native-inputs
+     `(("unzip" ,unzip)))))
+
 (define-public java-classpathx-servletapi
   (package
     (name "java-classpathx-servletapi")
