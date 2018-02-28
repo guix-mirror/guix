@@ -468,14 +468,14 @@ Aldus/Macromedia/Adobe FreeHand documents.")
 (define-public libmspub
   (package
     (name "libmspub")
-    (version "0.1.2")
+    (version "0.1.4")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+      (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "03sn6lxpr49sdq6j8q7fw7yjybyfahhs03z80388mh105pwapfmh"))))
+               "1fhkn013gzg59f4z7rldpbi0nj7lgdqzxanspsqa6axvmahw2dpg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
