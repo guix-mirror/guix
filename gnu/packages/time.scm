@@ -264,18 +264,16 @@ ISO 8601 dates, time and duration.")
 (define-public python-monotonic
   (package
     (name "python-monotonic")
-    (version "0.3")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/m/monotonic/monotonic-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "monotonic" version))
        (sha256
         (base32
-         "0yz0bcbwx8r2c01czzfpbrxddynxyk9k95jj8h6sgcb7xmfvl998"))))
+         "110zd5ld3nchdjds34r95lzs1csmmv81pli2px8l1k8qnpai29m0"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;no tests
     (home-page "https://github.com/atdt/monotonic")
     (synopsis "Implementation of time.monotonic() for Python 2 & < 3.3")
     (description
