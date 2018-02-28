@@ -2378,7 +2378,8 @@ stretching and pitch scaling of audio.  This package contains the library.")
               (method url-fetch)
               (uri (string-append "http://www.wavpack.com/"
                                   name "-" version ".tar.bz2"))
-              (patches (search-patches "wavpack-CVE-2018-7253.patch"
+              (patches (search-patches "wavpack-CVE-2018-6767.patch"
+                                       "wavpack-CVE-2018-7253.patch"
                                        "wavpack-CVE-2018-7254.patch"))
               (sha256
                (base32

@@ -1142,6 +1142,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/vsearch-unbundle-cityhash.patch		\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
+  %D%/packages/patches/wavpack-CVE-2018-6767.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7253.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7254.patch		\
   %D%/packages/patches/weechat-python.patch			\
