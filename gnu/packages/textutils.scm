@@ -534,7 +534,7 @@ in a portable way.")
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.lbreyer.com/dbacl.html")
+    (home-page "https://www.lbreyer.com/dbacl.html")
     (synopsis "Bayesian text and email classifier")
     (description
      "dbacl is a fast Bayesian text and email classifier.  It builds a variety
