@@ -508,10 +508,12 @@ in a portable way.")
          (add-after 'unpack 'delete-test
            ;; See comments about the license.
            (lambda _
-             (delete-file "src/tests/dbacl-jap.shin")))
+             (delete-file "src/tests/dbacl-jap.shin")
+             #t))
          (add-after 'delete-sample6-and-japanese 'autoreconf
            (lambda _
-             (zero? (system* "autoreconf" "-vif"))))
+             (invoke "autoreconf" "-vif")
+             #t))
          (add-after 'unpack 'fix-test-files
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
