@@ -422,26 +422,22 @@ common features used in Tempest.")
 (define-public python-oslo.context
   (package
     (name "python-oslo.context")
-    (version "1.0.0")
+    (version "2.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslo.context" version))
        (sha256
         (base32
-         "0kvha0rs9295njyl2z6n6zm5dapi5mrl5zwjm0m6ldqrvccyf8c3"))))
+         "0iiq9rpwg6wrdqnhf3d8z8g0g7fjhs5zn6qw6igvxplz2c3rbvvx"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-debtcollector" ,python-debtcollector)
+       ("python-pbr" ,python-pbr)))
     (native-inputs
-      `(("python-babel" ,python-babel)
-        ("python-pbr" ,python-pbr)
-        ;; Tests.
-        ("python-coverage" ,python-coverage)
-        ("python-hacking" ,python-hacking)
-        ("python-mock" ,python-mock)
-        ("python-os-client-config" ,python-os-client-config)
-        ("python-oslotest" ,python-oslotest)
-        ("python-oslosphinx" ,python-oslosphinx)
-        ("python-sphinx" ,python-sphinx)))
+     `(("python-fixtures" ,python-fixtures)
+       ("python-hacking" ,python-hacking)
+       ("python-oslotest" ,python-oslotest)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo context library")
     (description
