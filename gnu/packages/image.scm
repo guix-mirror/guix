@@ -572,7 +572,9 @@ error-resilience, a Java-viewer for j2k-images, ...")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1md83dip8rf29y40cm5r7nn19705f54iraz6545zhwa6y8zyq9yz"))))
+                "1md83dip8rf29y40cm5r7nn19705f54iraz6545zhwa6y8zyq9yz"))
+              (patches (search-patches
+                        "giflib-make-reallocarray-private.patch"))))
     (build-system gnu-build-system)
     (outputs '("bin"                    ; utility programs
                "out"))                  ; library
