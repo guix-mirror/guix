@@ -527,27 +527,23 @@ handlers and support for context specific logging (like resource id’s etc).")
 (define-public python-oslo.serialization
   (package
     (name "python-oslo.serialization")
-    (version "2.2.0")
+    (version "2.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslo.serialization" version))
        (sha256
         (base32
-         "00s03krhf833gs76aw5ns32w9m1i4hx6x6d9g82m0j5wyqk0sci4"))))
+         "08bxkp98c617y58x630xq44iiffm7f0f3cwh6zbnlkgq0zgh7jk1"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Requires python-oslo.utils >= 3.2.0.
     (propagated-inputs
-      `(("python-iso8601" ,python-iso8601)
+      `(("python-msgpack" ,python-msgpack)
         ("python-netaddr" ,python-netaddr)
         ("python-oslo.utils" ,python-oslo.utils)
-        ("python-simplejson" ,python-simplejson)
         ("python-six" ,python-six)
         ("python-pytz" ,python-pytz)))
     (native-inputs
-      `(("python-babel" ,python-babel)
-        ("python-pbr" ,python-pbr)
+      `(("python-pbr" ,python-pbr)
         ;; Tests.
         ("python-mock" ,python-mock)
         ("python-oslo.i18n" ,python-oslo.i18n)
@@ -557,10 +553,17 @@ handlers and support for context specific logging (like resource id’s etc).")
     (description
       "The oslo.serialization library provides support for representing objects
 in transmittable and storable formats, such as JSON and MessagePack.")
+    (properties `((python2-variant . ,(delay python2-oslo.serialization))))
     (license asl2.0)))
 
 (define-public python2-oslo.serialization
-  (package-with-python2 python-oslo.serialization))
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-oslo.serialization))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-ipaddress" ,python2-ipaddress)
+         ,@(package-native-inputs base))))))
 
 (define-public python-reno
   (package
