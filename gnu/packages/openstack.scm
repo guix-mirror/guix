@@ -90,36 +90,42 @@ all the files it generates a report.")
 (define-public python-debtcollector
   (package
     (name "python-debtcollector")
-    (version "1.0.0")
+    (version "1.19.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "debtcollector" version))
         (sha256
           (base32
-           "0g4dfskaiy47rhsh4gh66l5vmdsrgq0qk68pl3ix1cj3ffvfndzv"))))
+           "06c7vyn184y9f0lsrwaz13aq63hdz5fjrd191b8nifx6acsni42f"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ;FIXME: Requires packaging python-doc8.
     (propagated-inputs
-     `(("python-six" ,python-six)
+     `(("python-pbr" ,python-pbr)
+       ("python-six" ,python-six)
        ("python-wrapt" ,python-wrapt)))
     (native-inputs
-      `(("python-babel" ,python-babel)
-        ("python-pbr" ,python-pbr)
-        ;; Tests.
-        ("python-oslotest" ,python-oslotest)))
+     `(;; Tests.
+       ("python-subunit" ,python-subunit)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testtools" ,python-testtools)))
     (home-page "https://www.openstack.org/")
     (synopsis
-      "Find deprecated patterns and strategies in Python code")
+     "Find deprecated patterns and strategies in Python code")
     (description
       "This package provides a collection of Python deprecation patterns and
 strategies that help you collect your technical debt in a non-destructive
 manner.")
+    (properties `((python2-variant . ,(delay python2-debtcollector))))
     (license asl2.0)))
 
 (define-public python2-debtcollector
-  (package-with-python2 python-debtcollector))
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-debtcollector))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-funcsigs" ,python2-funcsigs)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-hacking
   (package
