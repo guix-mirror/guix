@@ -295,14 +295,14 @@ as Alfresco or Nuxeo.")
 (define-public libabw
   (package
     (name "libabw")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+      (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0zi1zj4fpxgpglbbb5n1kg3dmhqq5rpf46lli89r5daavp19iing"))))
+               "11949iscdb99f2jplxjd39282jxcrf2fw0sqbh5dl7gqb96r8whb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
