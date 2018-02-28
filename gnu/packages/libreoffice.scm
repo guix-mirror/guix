@@ -190,7 +190,7 @@ into other word processors.")
 (define-public libe-book
   (package
     (name "libe-book")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
       (origin
         (method url-fetch)
@@ -198,7 +198,7 @@ into other word processors.")
                             version "/libe-book-" version ".tar.xz"))
         (sha256
           (base32
-            "1v48pd32r2pfysr3a3igc4ivcf6vvb26jq4pdkcnq75p70alp2bz"))))
+            "1yg1vws1wggzhjw672bpgh2x541g5i9wryf67g51m0r79zrqz3by"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -206,6 +206,7 @@ into other word processors.")
        ("pkg-config" ,pkg-config)))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
      `(("icu4c" ,icu4c)
+       ("liblangtag" ,liblangtag)
        ("librevenge" ,librevenge)
        ("libxml2" ,libxml2)))
     (inputs
