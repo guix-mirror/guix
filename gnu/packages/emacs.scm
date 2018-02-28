@@ -3581,41 +3581,6 @@ form is esxml.  This is the form that is returned by such functions as
 xml-related libraries.")
     (license license:gpl3+)))
 
-(define-public emacs-nov
-  (package
-    (name "emacs-nov")
-    (version "0.2.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/wasamasa/nov.el/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0pc07cr2qfa66pxyxhvgrxiwssykisj25yjxvx3qr4v7bp5qmms7"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-esxml" ,emacs-esxml)))
-    (home-page "https://github.com/wasamasa/nov.el")
-    (synopsis "Major mode for reading EPUB files in Emacs")
-    (description
-     "This package provides a major mode for reading EPUB documents.
-Features:
-@itemize
-@item Basic navigation (jump to table of contents (TOC), previous/next chapter)
-@item Remembering and restoring the last read position
-@item Jump to next chapter when scrolling beyond end
-@item Renders EPUB2 (.ncx) and EPUB3 (<nav>) TOCs
-@item Hyperlinks to internal and external targets
-@item Supports textual and image documents
-@item View source of document files
-@item Metadata display
-@item Image rescaling
-@end itemize\n")
-    (license license:gpl3+)))
-
 (define-public emacs-queue
   (package
     (name "emacs-queue")
