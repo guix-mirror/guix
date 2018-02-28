@@ -682,22 +682,15 @@ and better support for mocking results.")
 (define-public python-oslo.utils
   (package
     (name "python-oslo.utils")
-    (version "3.0.0")
+    (version "3.35.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "oslo.utils" version))
         (sha256
           (base32
-           "1c4jrbvfs4hs37fics8frqlyhmsv7v92ncv2cpbm0av9x0ic6pnj"))
-        (snippet
-         '(begin
-            ;; FIXME: setuptools fails to import this file during the test
-            ;; phase.
-            (delete-file "oslo_utils/tests/test_netutils.py")))))
+           "1ai9yyasyh1563khsri6ryk6iqdprmyiashg377m9h4nmv700ybx"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Requires oslo.config >= 2.7.0.
     (propagated-inputs
       `(("python-debtcollector" ,python-debtcollector)
         ("python-oslo.i18n" ,python-oslo.i18n)
@@ -705,18 +698,21 @@ and better support for mocking results.")
         ("python-monotonic" ,python-monotonic)
         ("python-netaddr" ,python-netaddr)
         ("python-netifaces" ,python-netifaces)
+        ("python-pyparsing" ,python-pyparsing)
         ("python-pytz" ,python-pytz)
         ("python-six" ,python-six)))
     (native-inputs
-      `(("python-babel" ,python-babel)
-        ("python-pbr" ,python-pbr)
+      `(("python-pbr" ,python-pbr)
         ;; Tests.
         ("python-bandit" ,python-bandit)
+        ("python-ddt" ,python-ddt)
+        ("python-fixtures" ,python-fixtures)
         ("python-oslo.config" ,python-oslo.config)
         ("python-oslotest" ,python-oslotest)
         ("python-mock" ,python-mock)
-        ("python-mox3" ,python-mox3)
-        ("python-testscenarios" ,python-testscenarios)))
+        ("python-testrepository" ,python-testrepository)
+        ("python-testscenarios" ,python-testscenarios)
+        ("python-testtools" ,python-testtools)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo utility library")
     (description
