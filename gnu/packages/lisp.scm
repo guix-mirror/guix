@@ -484,6 +484,8 @@ statistical profiler, a code coverage tool, and many other extensions.")
            ;; Enter the source directory for the current platform's lisp
            ;; kernel, and run 'make clean' to remove the precompiled one.
            (lambda _
+             (substitute* "lisp-kernel/m4macros.m4"
+               (("/bin/pwd") (which "pwd")))
              (chdir (string-append
                      "lisp-kernel/"
                      ,(match (or (%current-target-system) (%current-system))
