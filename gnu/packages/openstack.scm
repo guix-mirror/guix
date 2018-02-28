@@ -283,27 +283,22 @@ to docs.openstack.org and developer.openstack.org.")
 (define-public python-stevedore
   (package
     (name "python-stevedore")
-    (version "1.12.0")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stevedore" version))
        (sha256
-         (base32
-          "0999zvawaapzg6givjhn7vjscdwblcs73wf28wq1wb4g5mbb5phv"))))
+        (base32
+         "02ynfgwma84g59834dmvzr39mcppy5s229zf1w23c0qngf753izi"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-six" ,python-six)))
+     `(("python-pbr" ,python-pbr)
+       ("python-six" ,python-six)))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ;; Tests
-        ("python-discover" ,python-discover)
-        ("python-docutils" ,python-docutils)
-        ("python-mock" ,python-mock)
-        ("python-oslosphinx" ,python-oslosphinx)
-        ("python-oslotest" ,python-oslotest)
-        ("python-sphinx" ,python-sphinx)
-        ("python-testrepository" ,python-testrepository)))
+     `(("python-mock" ,python-mock)
+       ("python-sphinx" ,python-sphinx-1.6)
+       ("python-testrepository" ,python-testrepository)))
     (home-page "https://github.com/dreamhost/stevedore")
     (synopsis "Manage dynamic plugins for Python applications")
     (description
