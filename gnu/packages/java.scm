@@ -2018,6 +2018,41 @@ debugging, etc.")
              (delete-file-recursively "lib") #t))
          (replace 'install (install-jars "bin/lib")))))))
 
+;; This is the last 3.x release of ECJ
+(define-public java-ecj-3
+  (package
+    (name "java-ecj")
+    (version "3.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.eclipse.org/eclipse/"
+                                  "downloads/drops/R-" version
+                                  "-201301310800/ecjsrc-" version ".jar"))
+              (sha256
+               (base32
+                "01mdj14jw11g1jfnki4fi8229p0c6zzckd38zqy2w4m3cjcvsx04"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; none included
+       #:jdk ,icedtea-7 ; doesn't build with JDK8+
+       #:make-flags (list "-f" "src/build.xml")
+       #:build-target "build"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-manifest
+           (lambda _
+             ;; Record the main class to make ecj executable.
+             (with-atomic-file-replacement "src/META-INF/MANIFEST.MF"
+               (lambda (in out)
+                 (display "Manifest-Version: 1.0
+Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
+                          out)))))
+         (replace 'install (install-jars ".")))))
+    (home-page "https://eclipse.org")
+    (synopsis "Eclipse Java development tools core batch compiler")
+    (description "This package provides the Eclipse Java core batch compiler.")
+    (license license:epl1.0)))
+
 (define-public java-classpathx-servletapi
   (package
     (name "java-classpathx-servletapi")
