@@ -5832,19 +5832,19 @@ should be stored on various operating systems.")
 (define-public python-msgpack
   (package
     (name "python-msgpack")
-    (version "0.4.8")
+    (version "0.5.6")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "msgpack-python" version))
+              (uri (pypi-uri "msgpack" version))
               (sha256
                (base32
-                "11pqk5braa6wndpnr1dhg64js82vjgxnm0lzy73rwl831zgijaqs"))))
+                "1hz2dba1nvvn52afg34liijsm7kn65cmn06dl0xbwld6bb4cis0f"))))
     (build-system python-build-system)
     (synopsis "MessagePack (de)serializer")
     (description "MessagePack is a fast, compact binary serialization format,
 suitable for similar data to JSON.  This package provides CPython bindings for
 reading and writing MessagePack data.")
-    (home-page "https://pypi.python.org/pypi/msgpack-python/")
+    (home-page "https://pypi.python.org/pypi/msgpack/")
     (license license:asl2.0)))
 
 (define-public python2-msgpack
