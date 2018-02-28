@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 André <eu@euandre.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
@@ -52,6 +52,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cook)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages docbook)
@@ -632,6 +633,63 @@ default) of the repository.")
 (define-public python2-ghp-import
   (package-with-python2
    (strip-python2-variant python-ghp-import)))
+
+(define-public python-gitdb
+  (package
+    (name "python-gitdb")
+    (version "2.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "gitdb2" version))
+              (sha256
+               (base32
+                "02azg62mr99b7cllyjrly77np3vw32y8nrxpa2xjapiyaga2j3mn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'create-test-repository
+                    (lambda _
+                      (mkdir "/tmp/testrepo")
+                      ;; Some tests require a git repository, so create one.
+                      (with-directory-excursion "/tmp/testrepo"
+                        (do ((filecount 1 (1+ filecount)))
+                            ((> filecount 1000))
+                          (call-with-output-file (string-append
+                                                  "file" (number->string filecount))
+                            (lambda (port)
+                              (format port "~a" filecount))))
+                        (and
+                         (invoke "git" "init")
+                         (invoke "git" "config" "user.name" "Total Git")
+                         (invoke "git" "config" "user.email" "git@localhost")
+                         (invoke "git" "add" "-A")
+                         (invoke "git" "commit" "-q" "-m" "dummy commit")))
+
+                      ;; The repository checkout must be a "bare" clone.
+                      (invoke "git" "clone" "--bare" "/tmp/testrepo"
+                              "/tmp/testrepo.git")))
+                  (replace 'check
+                    (lambda _
+                      (setenv "GITDB_TEST_GIT_REPO_BASE" "/tmp/testrepo.git")
+                      ;; Skip tests that must be run from the gitdb repository.
+                      (setenv "TRAVIS" "1")
+                      (invoke "nosetests" "-v"))))))
+    (propagated-inputs
+     `(("python-smmap2" ,python-smmap2)))
+    (native-inputs
+     `(("git" ,git)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/gitpython-developers/gitdb")
+    (synopsis "Python implementation of the Git object database")
+    (description
+     "GitDB allows you to access @dfn{bare} Git repositories for reading and
+writing.  It aims at allowing full access to loose objects as well as packs
+with performance and scalability in mind.  It operates exclusively on streams,
+allowing to handle large objects with a small memory footprint.")
+    (license license:bsd-3)))
+
+(define-public python2-gitdb
+  (package-with-python2 python-gitdb))
 
 (define-public shflags
   (package
