@@ -473,7 +473,7 @@ to lock down your entire repository.")
 (define-public git-remote-gcrypt
   (package
    (name "git-remote-gcrypt")
-   (version "1.0.1")
+   (version "1.0.2")
    (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -482,7 +482,7 @@ to lock down your entire repository.")
              (file-name (string-append name "-" version "-checkout"))
              (sha256
               (base32
-               "0znrx77vpm4a8l7yiybsxk5vrawijqqfxmp1p2yhaaw8cbgrj7az"))))
+               "0kc6qi5gavziqlwnzpy7v4ah7yw860v3i8pyna6way0cfr0qnpr2"))))
    (build-system trivial-build-system)
    (arguments
     `(#:modules ((guix build utils))
