@@ -44,6 +44,8 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -100,9 +102,15 @@ human.")
         (base32
          "1v6v59fnbbsssbwy4is6hh2l4qqwy3ddb6dp2jk8clx0xbd5hn7c"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DWITH_XC_NETWORKING=YES"
+                           "-DWITH_XC_BROWSER=YES"
+                           "-DWITH_XC_SSHAGENT=YES")))
     (inputs
      `(("argon2" ,argon2)
+       ("curl" ,curl) ; XC_NETWORKING
        ("libgcrypt" ,libgcrypt)
+       ("libsodium" ,libsodium) ; XC_BROWSER
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)
        ("qtbase" ,qtbase)
