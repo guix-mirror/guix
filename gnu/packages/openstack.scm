@@ -41,27 +41,37 @@
 (define-public python-bandit
   (package
     (name "python-bandit")
-    (version "0.13.2")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/b/bandit/bandit-"
-             version ".tar.gz"))
+       (uri (pypi-uri "bandit" version))
        (sha256
         (base32
-         "03g3cflvrc99ncjd611iy5nnnscsc2vgnrx4mjaqyx8glbfw8y7g"))))
+         "1m5bm42120zyazky4k0lp3d9r0jwhjmp6sb108xfr0vz952p15yb"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'check)
+                  (add-after 'install 'check
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Tests require the 'bandit' executable in PATH.
+                      ;; It's only built during install time.
+                      (add-installed-pythonpath inputs outputs)
+                      (setenv "PATH" (string-append (assoc-ref outputs "out")
+                                                    "/bin:" (getenv "PATH")))
+                      (invoke "python" "setup.py" "testr"))))))
     (propagated-inputs
-      `(("python-appdirs" ,python-appdirs)
+      `(("python-gitpython" ,python-gitpython)
         ("python-pyyaml" ,python-pyyaml)
         ("python-six" ,python-six)
         ("python-stevedore" ,python-stevedore)))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ;; Tests
+      `(;; Tests.
+        ("python-beautifulsoup4" ,python-beautifulsoup4)
         ("python-fixtures" ,python-fixtures)
         ("python-mock" ,python-mock)
+        ("python-subunit" ,python-subunit)
         ("python-testrepository" ,python-testrepository)
         ("python-testscenarios" ,python-testscenarios)
         ("python-testtools" ,python-testtools)))
