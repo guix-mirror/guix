@@ -961,8 +961,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   %D%/packages/patches/patch-hurd-path-max.patch		\
   %D%/packages/patches/pcmanfm-CVE-2017-8934.patch		\
-  %D%/packages/patches/pcre2-CVE-2017-7186.patch		\
-  %D%/packages/patches/pcre2-CVE-2017-8786.patch		\
   %D%/packages/patches/perl-file-path-CVE-2017-6512.patch	\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-dbd-mysql-CVE-2017-10788.patch	\
