@@ -89,7 +89,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.2.4")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -98,10 +98,11 @@ human.")
                            version "-src.tar.xz"))
        (sha256
         (base32
-         "1pfkq1m5vb90kx67vyw70s1hc4ivjsvq2535vm6wdwwsncna6bz5"))))
+         "1v6v59fnbbsssbwy4is6hh2l4qqwy3ddb6dp2jk8clx0xbd5hn7c"))))
     (build-system cmake-build-system)
     (inputs
-     `(("libgcrypt" ,libgcrypt)
+     `(("argon2" ,argon2)
+       ("libgcrypt" ,libgcrypt)
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)
        ("qtbase" ,qtbase)
