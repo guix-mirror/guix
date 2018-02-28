@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -180,10 +180,6 @@ success, false otherwise.  When RECURSIVE? is true, load its dependencies
 first (à la 'modprobe'.)  The actual files containing modules depended on are
 obtained by calling LOOKUP-MODULE with the module name.  Modules whose name
 appears in BLACK-LIST are not loaded."
-  (define (slurp module)
-    ;; TODO: Use 'finit_module' to reduce memory usage.
-    (call-with-input-file file get-bytevector-all))
-
   (define (black-listed? module)
     (let ((result (member module black-list)))
       (when result
@@ -200,16 +196,20 @@ appears in BLACK-LIST are not loaded."
   (and (not (black-listed? (file-name->module-name file)))
        (or (not recursive?)
            (load-dependencies file))
-       (begin
+       (let ((fd #f))
          (format (current-module-debugging-port)
                  "loading Linux module from '~a'...~%" file)
 
          (catch 'system-error
            (lambda ()
-             (load-linux-module (slurp file)))
+             (set! fd (open-fdes file O_RDONLY))
+             (load-linux-module/fd fd)
+             (close-fdes fd)
+             #t)
            (lambda args
              ;; If this module was already loaded and we're in modprobe style, ignore
              ;; the error.
+             (when fd (close-fdes fd))
              (or (and recursive? (= EEXIST (system-error-errno args)))
                  (apply throw args)))))))
 
