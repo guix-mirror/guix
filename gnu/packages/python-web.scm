@@ -332,19 +332,19 @@ for clients and servers.")
 (define-public python-cssutils
   (package
     (name "python-cssutils")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "cssutils" version))
         (sha256
          (base32
-          "0qwha9x1wml2qmipbcz03gndnlwhzrjdvw9i09si247a90l8p8fq"))))
+          "1bxchrbqzapwijap0yhlxdil1w9bmwvgx77aizlkhc2mcxjg1z52"))))
     (build-system python-build-system)
     (native-inputs
-      `(("unzip" ,unzip))) ; for unpacking the source
+     `(("unzip" ,unzip)))               ; for unpacking the source
     (arguments
-     `(#:tests? #f))                    ;tests require python-pbr < 1.7.0
+     `(#:tests? #f))                    ; tests require python-pbr < 1.7.0
     (home-page "http://cthedot.de/cssutils/")
     (synopsis
       "CSS Cascading Style Sheets library for Python")
