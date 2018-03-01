@@ -12270,3 +12270,39 @@ contains
               (sha256
                (base32
                 "13675f6y9aqi7bi2lk3s1z7a22ynccjiqwa8izh7p97xi9wsfmd8"))))))
+
+(define-public java-biojava-phylo-4.0
+  (package (inherit java-biojava-core-4.0)
+    (name "java-biojava-phylo")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jdk ,icedtea-8
+       #:jar-name "biojava-phylo.jar"
+       #:source-dir "biojava-phylo/src/main/java/"
+       #:test-dir "biojava-phylo/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "biojava-phylo/src/main/resources"
+                               "build/classes")
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "biojava-phylo/src/test/resources"
+                               "build/test-classes")
+             #t)))))
+    (propagated-inputs
+     `(("java-log4j-api" ,java-log4j-api)
+       ("java-log4j-core" ,java-log4j-core)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-slf4j-simple" ,java-slf4j-simple)
+       ("java-biojava-core" ,java-biojava-core-4.0)
+       ("java-forester" ,java-forester-1.005)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://biojava.org")
+    (synopsis "Biojava interface to the forester phylogenomics library")
+    (description "The phylo module provides a biojava interface layer to the
+forester phylogenomics library for constructing phylogenetic trees.")))
