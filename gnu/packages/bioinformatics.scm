@@ -11950,6 +11950,82 @@ graphs.  This library makes it easy to work with @file{.loom} files for
 single-cell RNA-seq data.")
     (license license:bsd-3)))
 
+;; We cannot use the latest commit because it requires Java 9.
+(define-public java-forester
+  (let ((commit "86b07efe302d5094b42deed9260f719a4c4ac2e6")
+        (revision "1"))
+    (package
+      (name "java-forester")
+      (version (string-append "0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/cmzmasek/forester.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0vxavc1yrf84yrnf20dq26hi0lglidk8d382xrxsy4qmlbjd276z"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Delete bundled jars and pre-built classes
+                    (delete-file-recursively "forester/java/resources")
+                    (delete-file-recursively "forester/java/classes")
+                    (for-each delete-file (find-files "forester/java/" "\\.jar$"))
+                    ;; Delete bundled applications
+                    (delete-file-recursively "forester_applications")
+                    #t))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f ; there are none
+         #:jdk ,icedtea-8
+         #:modules ((guix build ant-build-system)
+                    (guix build utils)
+                    (guix build java-utils)
+                    (sxml simple)
+                    (sxml transform))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "forester/java") #t))
+           (add-after 'chdir 'fix-dependencies
+             (lambda _
+               (chmod "build.xml" #o664)
+               (call-with-output-file "build.xml.new"
+                 (lambda (port)
+                   (sxml->xml
+                    (pre-post-order
+                     (with-input-from-file "build.xml"
+                       (lambda _ (xml->sxml #:trim-whitespace? #t)))
+                     `(;; Remove all unjar tags to avoid repacking classes.
+                       (unjar     . ,(lambda _ '()))
+                       (*default* . ,(lambda (tag . kids) `(,tag ,@kids)))
+                       (*text*    . ,(lambda (_ txt) txt))))
+                    port)))
+               (rename-file "build.xml.new" "build.xml")
+               #t))
+           ;; FIXME: itext is difficult to package as it depends on a few
+           ;; unpackaged libraries.
+           (add-after 'chdir 'remove-dependency-on-unpackaged-itext
+             (lambda _
+               (delete-file "src/org/forester/archaeopteryx/PdfExporter.java")
+               (substitute* "src/org/forester/archaeopteryx/MainFrame.java"
+                 (("pdf_written_to = PdfExporter.*")
+                  "throw new IOException(\"PDF export is not available.\");"))
+               #t))
+           ;; There is no install target
+           (replace 'install (install-jars ".")))))
+      (propagated-inputs
+       `(("java-commons-codec" ,java-commons-codec)
+         ("java-openchart2" ,java-openchart2)))
+      (home-page "https://sites.google.com/site/cmzmasek/home/software/forester")
+      (synopsis "Phylogenomics libraries for Java")
+      (description "Forester is a collection of Java libraries for
+phylogenomics and evolutionary biology research.  It includes support for
+reading, writing, and exporting phylogenetic trees.")
+      (license license:lgpl2.1+))))
+
 (define-public java-biojava-core
   (package
     (name "java-biojava-core")
