@@ -71,11 +71,8 @@
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (fw-dir (string-append out "/lib/firmware")))
-               (mkdir-p fw-dir)
                (for-each (lambda (file)
-                           (copy-file file
-                                      (string-append fw-dir "/"
-                                                     (basename file))))
+                           (install-file file fw-dir))
                          (find-files "." "\\.fw$"))
               #t))))
        #:tests? #f))
