@@ -12,7 +12,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016, 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -5727,7 +5727,7 @@ shared object databases, search tools and indexing.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.24.2.1")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5735,16 +5735,17 @@ shared object databases, search tools and indexing.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1cv138z04qx0fh1a2z2hvxy4p1x15vdv5gmkx5f3hb6c3w2rsz9m"))))
-    (build-system glib-or-gtk-build-system)
+                "1d0l4vgcjqj4671hb6s2a56baqlasbxn3wl6vfrpdsk5qq299jbr"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:configure-flags
-       '("--disable-selinux") ; XXX: not packaged
+     '(#:glib-or-gtk? #t
        ;; XXX: FAIL: check-nautilus
        ;;   Settings schema 'org.gnome.nautilus.preferences' is not installed
        #:tests? #f))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("glib:bin" ,glib "bin")         ; for glib-mkenums, etc.
+       ("gtk+:bin" ,gtk+ "bin")         ; for gtk-update-icon-cache
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -5754,7 +5755,8 @@ shared object databases, search tools and indexing.")
        ("exempi" ,exempi)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-autoar" ,gnome-autoar)
-       ("nettle" ,nettle)    ; XXX required by libarchive.pc via gnome-autoar
+       ("libselinux" ,libselinux)
+       ("nettle" ,nettle) ; XXX required by libarchive.pc via gnome-autoar
        ("tracker" ,tracker)
        ;; XXX: gtk+ is required by libnautilus-extension.pc
        ;;
