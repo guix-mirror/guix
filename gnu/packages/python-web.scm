@@ -138,14 +138,14 @@ between a web browser and web server.")
 (define-public python-flask-babel
   (package
     (name "python-flask-babel")
-    (version "0.11.1")
+    (version "0.11.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "Flask-Babel" version))
         (sha256
           (base32
-            "16b80cipdba9xj3jlaiaq6wgrgpjb70w3j01jjy9hbp4k71kd6yj"))))
+            "0ff9n165vhf1nhv6807ckhpp224jw7k7sd7jz5kfh3sbpl85gmy0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flask" ,python-flask)
