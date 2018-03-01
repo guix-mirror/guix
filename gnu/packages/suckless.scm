@@ -564,7 +564,7 @@ environment variable.")
 (define-public fortify-headers
   (package
     (name "fortify-headers")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method url-fetch)
@@ -572,7 +572,7 @@ environment variable.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1cacdczpjb49c4i1168g541wnl3i3gbpv2m2wbnmw5wddlyhgkdg"))))
+         "1z517ajy34l2k5lz2gvhbmia9xjgagffi4s22azqxnlmgb1g2xfg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests
