@@ -146,7 +146,8 @@ rejects UDP traffic from the application you're using.")
            (lambda _
              ;; Unfortunately, this is not a tarball produced by
              ;; "make dist".
-             (zero? (system* "autoreconf" "-vfi")))))
+             (invoke "autoreconf" "-vfi")
+             #t)))
        #:tests? #f))
     (inputs
      `(("w3m" ,w3m)
