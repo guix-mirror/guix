@@ -3046,6 +3046,33 @@ sequencing (HTS) data.  There are also an number of useful utilities for
 manipulating HTS data.")
     (license license:expat)))
 
+;; This is needed for picard 2.10.3
+(define-public java-htsjdk-2.10.1
+  (package (inherit java-htsjdk-latest)
+    (name "java-htsjdk")
+    (version "2.10.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/samtools/htsjdk.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1kxh7slm2pm3x9p6jxa1wqsq9a31dhiiflhxnxqcisan4k3rwia2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; tests require Scala
+       #:jdk ,icedtea-8
+       #:jar-name "htsjdk.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-useless-build.xml
+           (lambda _ (delete-file "build.xml") #t))
+         ;; The tests require the scalatest package.
+         (add-after 'unpack 'remove-tests
+           (lambda _ (delete-file-recursively "src/test") #t)))))))
+
 ;; This version matches java-htsjdk 2.3.0.  Later versions also require a more
 ;; recent version of java-htsjdk, which depends on gradle.
 (define-public java-picard
