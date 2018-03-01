@@ -60,10 +60,10 @@
              #t)))))
     (home-page "http://sdcc.sourceforge.net")
     (synopsis "Small devices C compiler")
-    (description "SDCC is a retargettable, optimizing Standard C compiler suite
-that targets the Intel MCS51 based microprocessors (8031, 8032, 8051, 8052, ...),
+    (description "SDCC is a retargetable, optimizing Standard C compiler suite
+that targets the Intel MCS51-based microprocessors (8031, 8032, 8051, 8052, ...),
 Maxim (formerly Dallas) DS80C390 variants, Freescale (formerly Motorola)
-HC08 based (hc08, s08), Zilog Z80 based MCUs (z80, z180, gbz80, Rabbit
+HC08-based (hc08, s08), Zilog Z80-based MCUs (z80, z180, gbz80, Rabbit
 2000/3000, Rabbit 3000A, TLCS-90) and STMicroelectronics STM8.
 Work is in progress on supporting the Microchip PIC16 and PIC18 targets.
 It can be retargeted for other microprocessors.")
