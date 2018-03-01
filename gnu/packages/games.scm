@@ -370,7 +370,7 @@ effects and music to make a completely free game.")
     (version "3.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/golly/golly-"
+              (uri (string-append "mirror://sourceforge/golly/golly/golly-"
                                   version "/golly-" version
                                   "-src.tar.gz"))
               (sha256
