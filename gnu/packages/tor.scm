@@ -231,7 +231,9 @@ networks.")
            ;; After all the patching we run the tests after installing.
            ;; This is also a known issue:
            ;; https://github.com/micahflee/onionshare/issues/284
-           (lambda _ (zero? (system* "nosetests" "test")))))))
+           (lambda _
+             (invoke "nosetests" "test")
+             #t)))))
     (native-inputs
      `(("python-nose" ,python-nose)))
     (inputs
