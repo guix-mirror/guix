@@ -130,19 +130,20 @@ Linux-libre.")
                  #t))
              (replace 'build
                (lambda _
-                 (every (lambda (dir)
-                          (zero? (system* "make" "-C" dir "CC=gcc")))
-                        subdirs)))
+                 (for-each (lambda (dir)
+                             (invoke "make" "-C" dir "CC=gcc"))
+                           subdirs)
+                 #t))
              (replace 'install
                (lambda* (#:key outputs #:allow-other-keys)
                  (let ((out (assoc-ref outputs "out")))
                    (mkdir-p (string-append out "/bin"))
-                   (every (lambda (dir)
-                            (zero?
-                             (system* "make" "-C" dir
-                                      (string-append "PREFIX=" out)
-                                      "install")))
-                          subdirs))))))))
+                   (for-each (lambda (dir)
+                               (invoke "make" "-C" dir
+                                       (string-append "PREFIX=" out)
+                                       "install"))
+                             subdirs)
+                   #t)))))))
       (home-page
        "http://bues.ch/cms/hacking/misc.html#linux_b43_driver_firmware_tools")
       (synopsis "Collection of tools for the b43 wireless driver")
