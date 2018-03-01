@@ -685,6 +685,34 @@ the la4j library are:
 that can store up to 263 elements.")
     (license license:bsd-2)))
 
+(define-public java-jtransforms
+  (package
+    (name "java-jtransforms")
+    (version "3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://search.maven.org/remotecontent?"
+                                  "filepath=com/github/wendykierp/JTransforms/"
+                                  version "/JTransforms-" version "-sources.jar"))
+              (sha256
+               (base32
+                "1haw5m8shv5srgcpwkl853dz8bv6h90bzlhcps6mdpb4cixjirsg"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jtransforms.jar"
+       #:tests? #f ; tests are not included in the release archive
+       #:jdk ,icedtea-8))
+    (propagated-inputs
+     `(("java-commons-math3" ,java-commons-math3)
+       ("java-jlargearrays" ,java-jlargearrays)))
+    (home-page "https://github.com/wendykierp/JTransforms")
+    (synopsis "Multithreaded FFT library written in pure Java")
+    (description "JTransforms is a multithreaded FFT library written in pure
+Java.  Currently, four types of transforms are available: @dfn{Discrete
+Fourier Transform} (DFT), @dfn{Discrete Cosine Transform} (DCT), @dfn{Discrete
+Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
+    (license license:bsd-2)))
+
 (define-public eigen
   (package
     (name "eigen")
