@@ -2529,7 +2529,8 @@ in applications using the KDE Frameworks.")
                 "1rq9b59gdgcpvwd694l8h55sqahpdaky0n7ag5psjlfn5myf1d95"))
               ;; Use the store paths for other packages and dynamically loaded
               ;; libs
-              (patches (search-patches "kinit-kdeinit-extra_libs.patch"))))
+              (patches (search-patches "kinit-kdeinit-extra_libs.patch"
+                                       "kinit-kdeinit-libpath.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases

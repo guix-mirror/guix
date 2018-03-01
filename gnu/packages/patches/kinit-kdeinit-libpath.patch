@@ -1,0 +1,37 @@
+Search libraries in GUIX_KF5INIT_LIB_PATH.
+
+Based on an idea by NixOs
+pkgs/development/libraries/kde-frameworks/kinit/kinit-libpath.patch
+
+===================================================================
+--- kinit-5.32.0/src/kdeinit/kinit.cpp.orig	2017-10-22 21:02:20.908765455 +0200
++++ kinit-5.32.0/src/kdeinit/kinit.cpp	2017-10-22 21:03:25.312818248 +0200
+@@ -623,20 +623,18 @@
+             if (libpath_relative) {
+                 // NB: Because Qt makes the actual dlopen() call, the
+                 //     RUNPATH of kdeinit is *not* respected - see
+                 //     https://sourceware.org/bugzilla/show_bug.cgi?id=13945
+                 //     - so we try hacking it in ourselves
+-                QString install_lib_dir = QFile::decodeName(
+-                        CMAKE_INSTALL_PREFIX "/" LIB_INSTALL_DIR "/");
+-                QString orig_libpath = libpath;
+-                libpath = install_lib_dir + libpath;
+-                l.setFileName(libpath);
+-                if (!l.load()) {
+-                    libpath = orig_libpath;
+-                    l.setFileName(libpath);
+-                    l.load();
+-                }
++                // Try to load the library relative to the active profiles.
++                QByteArrayList profiles = qgetenv("LIBRARY_PATH").split(':');
++                for (const QByteArray &profile: profiles) {
++                    if (!profile.isEmpty()) {
++                        l.setFileName(QFile::decodeName(profile) + QStringLiteral("/") + libpath);
++                        if (l.load()) break;
++                    }
++		}
+             } else {
+                 l.load();
+             }
+             if (!l.isLoaded()) {
+                 QString ltdlError(l.errorString());
