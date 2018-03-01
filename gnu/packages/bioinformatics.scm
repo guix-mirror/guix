@@ -11949,3 +11949,59 @@ variable number of row and column annotations.  Loom also supports sparse
 graphs.  This library makes it easy to work with @file{.loom} files for
 single-cell RNA-seq data.")
     (license license:bsd-3)))
+
+(define-public java-biojava-core
+  (package
+    (name "java-biojava-core")
+    (version "4.2.11")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/biojava/biojava")
+                    (commit (string-append "biojava-" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1bvryh2bpsvash8ln79cmc9sqm8qw72hz4xzwqxcrjm8ssxszhqk"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jdk ,icedtea-8
+       #:jar-name "biojava-core.jar"
+       #:source-dir "biojava-core/src/main/java/"
+       #:test-dir "biojava-core/src/test"
+       ;; These tests seem to require internet access.
+       #:test-exclude (list "**/SearchIOTest.java"
+                            "**/BlastXMLParserTest.java"
+                            "**/GenbankCookbookTest.java"
+                            "**/GenbankProxySequenceReaderTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "biojava-core/src/main/resources"
+                               "build/classes")
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "biojava-core/src/test/resources"
+                               "build/test-classes")
+             #t)))))
+    (propagated-inputs
+     `(("java-log4j-api" ,java-log4j-api)
+       ("java-log4j-core" ,java-log4j-core)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-slf4j-simple" ,java-slf4j-simple)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://biojava.org")
+    (synopsis "Core libraries of Java framework for processing biological data")
+    (description "BioJava is a project dedicated to providing a Java framework
+for processing biological data.  It provides analytical and statistical
+routines, parsers for common file formats, reference implementations of
+popular algorithms, and allows the manipulation of sequences and 3D
+structures.  The goal of the biojava project is to facilitate rapid
+application development for bioinformatics.
+
+This package provides the core libraries.")
+    (license license:lgpl2.1+)))
