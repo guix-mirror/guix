@@ -8365,14 +8365,14 @@ in SNV base substitution data.")
 (define-public r-wgcna
   (package
     (name "r-wgcna")
-    (version "1.62")
+    (version "1.63")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "WGCNA" version))
        (sha256
         (base32
-         "0c52rp09gqphz6g5x9jzkdcsyvfrknq0dkq9saslgy8q8ap974vx"))))
+         "1225dqm68bynkmklnsxdqdd3zqrpzbvqwyly8ibxmk75z33xz309"))))
     (properties `((upstream-name . "WGCNA")))
     (build-system r-build-system)
     (propagated-inputs
