@@ -32,11 +32,13 @@
   #:use-module (guix hg-download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
@@ -5540,3 +5542,40 @@ inferring an appropriate positioning method.")
       (description "Did you ever wish you could make scatter plots with cat
 shaped points?  Now you can!")
       (license license:asl2.0))))
+
+(define-public java-jdistlib
+  (package
+    (name "java-jdistlib")
+    (version "0.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/jdistlib/jdistlib-"
+                                  version "-src.jar"))
+              (sha256
+               (base32
+                "1pkj8aahw9ydr1isbaqrkd05nvq98ik5jwwhf3yf3rky3z869v11"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jdistlib.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f ; no dedicated test directory
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-broken-encoding
+           (lambda _
+             (with-fluids ((%default-port-encoding "ISO-8859-1"))
+               (substitute* "src/jdistlib/Beta.java"
+                 (("Scheff.+-Tukey") "Scheffe-Tukey")))
+             #t)))))
+    (propagated-inputs
+     `(("java-jtransforms" ,java-jtransforms)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://jdistlib.sourceforge.net/")
+    (synopsis "Java library of statistical distributions")
+    (description "JDistlib is the Java Statistical Distribution Library, a
+Java package that provides routines for various statistical distributions.")
+    ;; The files that were translated from R code are under GPLv2+; some files
+    ;; are under the GPLv3, which is a mistake.  The author confirmed in an
+    ;; email that this whole project should be under GPLv2+.
+    (license license:gpl2+)))
