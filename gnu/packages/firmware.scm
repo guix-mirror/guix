@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,11 +95,11 @@ Linux-libre.")
     (license (license:non-copyleft "http://directory.fsf.org/wiki/License:ClearBSD"))))
 
 (define-public b43-tools
-  (let ((commit "8dce53297966b31b6c70a7a03c2433978dd9f288")
-        (rev "1"))
+  (let ((commit "27892ef741e7f1d08cb939744f8b8f5dac7b04ae")
+        (revision "1"))
     (package
       (name "b43-tools")
-      (version (string-append "20140625-" rev "." (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -108,7 +109,7 @@ Linux-libre.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "08k7sdr9jagm43r2zv4h03j86klhkblpk73p12444a3vzg1gy1lv"))))
+           "1wgmj4d65izbhprwb5bcwimc2ryv19b9066lqzy4sa5m6wncm9cn"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("flex" ,flex)
@@ -117,11 +118,11 @@ Linux-libre.")
        `(#:modules ((srfi srfi-1)
                     (guix build gnu-build-system)
                     (guix build utils))
-         #:tests? #f                    ;no tests
+         #:tests? #f                    ; no tests
          #:phases
          (let ((subdirs '("assembler" "disassembler")))
            (modify-phases %standard-phases
-             (delete 'configure)
+             (delete 'configure)        ; no configure script
              (add-before 'build 'patch-/bin/true
                (lambda _
                  (substitute* (find-files "." "Makefile")
