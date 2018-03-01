@@ -12306,3 +12306,47 @@ contains
     (synopsis "Biojava interface to the forester phylogenomics library")
     (description "The phylo module provides a biojava interface layer to the
 forester phylogenomics library for constructing phylogenetic trees.")))
+
+(define-public java-biojava-alignment-4.0
+  (package (inherit java-biojava-core-4.0)
+    (name "java-biojava-alignment")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jdk ,icedtea-8
+       #:jar-name "biojava-alignment.jar"
+       #:source-dir "biojava-alignment/src/main/java/"
+       #:test-dir "biojava-alignment/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "biojava-alignment/src/main/resources"
+                               "build/classes")
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "biojava-alignment/src/test/resources"
+                               "build/test-classes")
+             #t)))))
+    (propagated-inputs
+     `(("java-log4j-api" ,java-log4j-api)
+       ("java-log4j-core" ,java-log4j-core)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-slf4j-simple" ,java-slf4j-simple)
+       ("java-biojava-core" ,java-biojava-core-4.0)
+       ("java-biojava-phylo" ,java-biojava-phylo-4.0)
+       ("java-forester" ,java-forester-1.005)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://biojava.org")
+    (synopsis "Biojava API for genetic sequence alignment")
+    (description "The alignment module of BioJava provides an API that
+contains
+
+@itemize
+@item implementations of dynamic programming algorithms for sequence
+  alignment;
+@item reading and writing of popular alignment file formats;
+@item a single-, or multi- threaded multiple sequence alignment algorithm.
+@end itemize\n")))
