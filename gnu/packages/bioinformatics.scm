@@ -12026,6 +12026,101 @@ phylogenomics and evolutionary biology research.  It includes support for
 reading, writing, and exporting phylogenetic trees.")
       (license license:lgpl2.1+))))
 
+(define-public java-forester-1.005
+  (package
+    (name "java-forester")
+    (version "1.005")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://search.maven.org/remotecontent?"
+                                  "filepath=org/biojava/thirdparty/forester/"
+                                  version "/forester-" version "-sources.jar"))
+              (file-name (string-append name "-" version ".jar"))
+              (sha256
+               (base32
+                "04r8qv4rk3p71z4ajrvp11py1z46qrx0047j3zzs79s6lnsm3lcv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:jdk ,icedtea-8
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build java-utils)
+                  (sxml simple)
+                  (sxml transform))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dependencies
+           (lambda* (#:key inputs #:allow-other-keys)
+             (call-with-output-file "build.xml"
+               (lambda (port)
+                 (sxml->xml
+                  (pre-post-order
+                   (with-input-from-file "src/build.xml"
+                     (lambda _ (xml->sxml #:trim-whitespace? #t)))
+                   `(;; Remove all unjar tags to avoid repacking classes.
+                     (unjar     . ,(lambda _ '()))
+                     (*default* . ,(lambda (tag . kids) `(,tag ,@kids)))
+                     (*text*    . ,(lambda (_ txt) txt))))
+                  port)))
+             (copy-file (assoc-ref inputs "synth_look_and_feel_1.xml")
+                        "synth_look_and_feel_1.xml")
+             (copy-file (assoc-ref inputs "phyloxml.xsd")
+                        "phyloxml.xsd")
+             (substitute* "build.xml"
+               (("../resources/synth_laf/synth_look_and_feel_1.xml")
+                "synth_look_and_feel_1.xml")
+               (("../resources/phyloxml_schema/1.10/phyloxml.xsd")
+                "phyloxml.xsd"))
+             #t))
+         ;; FIXME: itext is difficult to package as it depends on a few
+         ;; unpackaged libraries.
+         (add-after 'unpack 'remove-dependency-on-unpackaged-itext
+           (lambda _
+             (delete-file "src/org/forester/archaeopteryx/PdfExporter.java")
+             (substitute* '("src/org/forester/archaeopteryx/MainFrame.java"
+                            "src/org/forester/archaeopteryx/MainFrameApplication.java")
+               (("pdf_written_to = PdfExporter.*")
+                "throw new IOException(\"PDF export is not available.\"); /*")
+               ((".getPrintSizeX\\(\\), getOptions\\(\\).getPrintSizeY\\(\\) \\);") "*/")
+               (("getCurrentTreePanel\\(\\).getHeight\\(\\) \\);") "*/"))
+             #t))
+         (add-after 'unpack 'delete-pre-built-classes
+           (lambda _ (delete-file-recursively "src/classes") #t))
+         ;; There is no install target
+         (replace 'install (install-jars ".")))))
+    (propagated-inputs
+     `(("java-commons-codec" ,java-commons-codec)
+       ("java-openchart2" ,java-openchart2)))
+    ;; The source archive does not contain the resources.
+    (native-inputs
+     `(("phyloxml.xsd"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://raw.githubusercontent.com/cmzmasek/forester/"
+                               "b61cc2dcede0bede317db362472333115756b8c6/"
+                               "forester/resources/phyloxml_schema/1.10/phyloxml.xsd"))
+           (file-name (string-append name "-phyloxml-" version ".xsd"))
+           (sha256
+            (base32
+             "1zxc4m8sn4n389nqdnpxa8d0k17qnr3pm2y5y6g6vh4k0zm52npv"))))
+       ("synth_look_and_feel_1.xml"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://raw.githubusercontent.com/cmzmasek/forester/"
+                               "29e04321615da6b35c1e15c60e52caf3f21d8e6a/"
+                               "forester/java/classes/resources/synth_look_and_feel_1.xml"))
+           (file-name (string-append name "-synth-look-and-feel-" version ".xml"))
+           (sha256
+            (base32
+             "1gv5602gv4k7y7713y75a4jvj7i9s7nildsbdl7n9q10sc2ikg8h"))))))
+    (home-page "https://sites.google.com/site/cmzmasek/home/software/forester")
+    (synopsis "Phylogenomics libraries for Java")
+    (description "Forester is a collection of Java libraries for
+phylogenomics and evolutionary biology research.  It includes support for
+reading, writing, and exporting phylogenetic trees.")
+    (license license:lgpl2.1+)))
+
 (define-public java-biojava-core
   (package
     (name "java-biojava-core")
