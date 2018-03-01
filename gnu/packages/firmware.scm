@@ -145,7 +145,7 @@ Linux-libre.")
                              subdirs)
                    #t)))))))
       (home-page
-       "http://bues.ch/cms/hacking/misc.html#linux_b43_driver_firmware_tools")
+       "https://bues.ch/cms/hacking/misc.html#linux_b43_driver_firmware_tools")
       (synopsis "Collection of tools for the b43 wireless driver")
       (description
        "The b43 firmware tools is a collection of firmware extractor,
