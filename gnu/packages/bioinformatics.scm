@@ -12504,3 +12504,140 @@ contains
 @item reading and writing of popular alignment file formats;
 @item a single-, or multi- threaded multiple sequence alignment algorithm.
 @end itemize\n")))
+
+(define-public dropseq-tools
+  (package
+    (name "dropseq-tools")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "http://mccarrolllab.com/download/1276/")
+       (file-name (string-append "dropseq-tools-" version ".zip"))
+       (sha256
+        (base32
+         "0yrffckxqk5l8b5xb6z4laq157zd9mdypr2p4b4vq2bhjzi1sj0s"))
+       ;; Delete bundled libraries
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file (find-files "jar/lib" "\\.jar$"))
+           (delete-file-recursively "3rdParty")))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; test data are not included
+       #:test-target "test"
+       #:build-target "all"
+       #:source-dir "public/src/"
+       #:jdk ,icedtea-8
+       #:make-flags
+       (list (string-append "-Dpicard.executable.dir="
+                            (assoc-ref %build-inputs "java-picard")
+                            "/share/java/"))
+       #:modules ((ice-9 match)
+                  (srfi srfi-1)
+                  (guix build utils)
+                  (guix build java-utils)
+                  (guix build ant-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         ;; All dependencies must be linked to "lib", because that's where
+         ;; they will be searched for when the Class-Path property of the
+         ;; manifest is computed.
+         (add-after 'unpack 'record-references
+	   (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "jar/lib")
+             (let ((dirs (filter-map (match-lambda
+                                       ((name . dir)
+                                        (if (and (string-prefix? "java-" name)
+                                                 (not (string=? name "java-testng")))
+                                            dir #f)))
+                                     inputs)))
+               (for-each (lambda (jar)
+                           (symlink jar (string-append "jar/lib/" (basename jar))))
+                         (append-map (lambda (dir) (find-files dir "\\.jar$"))
+                                     dirs)))
+	     #t))
+         ;; There is no installation target
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (bin     (string-append out "/bin"))
+                    (share   (string-append out "/share/java/"))
+                    (lib     (string-append share "/lib/"))
+                    (scripts (list "BAMTagHistogram"
+                                   "BAMTagofTagCounts"
+                                   "BaseDistributionAtReadPosition"
+                                   "CollapseBarcodesInPlace"
+                                   "CollapseTagWithContext"
+                                   "ConvertToRefFlat"
+                                   "CreateIntervalsFiles"
+                                   "DetectBeadSynthesisErrors"
+                                   "DigitalExpression"
+                                   "Drop-seq_alignment.sh"
+                                   "FilterBAM"
+                                   "FilterBAMByTag"
+                                   "GatherGeneGCLength"
+                                   "GatherMolecularBarcodeDistributionByGene"
+                                   "GatherReadQualityMetrics"
+                                   "PolyATrimmer"
+                                   "ReduceGTF"
+                                   "SelectCellsByNumTranscripts"
+                                   "SingleCellRnaSeqMetricsCollector"
+                                   "TagBamWithReadSequenceExtended"
+                                   "TagReadWithGeneExon"
+                                   "TagReadWithInterval"
+                                   "TrimStartingSequence"
+                                   "ValidateReference")))
+               (for-each mkdir-p (list bin share lib))
+               (install-file "dist/dropseq.jar" share)
+               (for-each (lambda (script)
+                           (chmod script #o555)
+                           (install-file script bin))
+                         scripts)
+               (substitute* (map (lambda (script)
+                                   (string-append bin "/" script))
+                                 scripts)
+                 (("^java") (which "java"))
+                 (("jar_deploy_dir=.*")
+                  (string-append "jar_deploy_dir=" share "\n"))))
+             #t))
+         ;; FIXME: We do this after stripping jars because we don't want it to
+         ;; copy all these jars and strip them.  We only want to install
+         ;; links.  Arguably, this is a problem with the ant-build-system.
+         (add-after 'strip-jar-timestamps 'install-links
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (share   (string-append out "/share/java/"))
+                    (lib     (string-append share "/lib/")))
+               (for-each (lambda (jar)
+                           (symlink (readlink jar)
+                                    (string-append lib (basename jar))))
+                         (find-files "jar/lib" "\\.jar$")))
+             #t)))))
+    (inputs
+     `(("jdk" ,icedtea-8)
+       ("java-picard" ,java-picard-2.10.3)
+       ("java-log4j-1.2-api" ,java-log4j-1.2-api)
+       ("java-commons-math3" ,java-commons-math3)
+       ("java-commons-jexl2" ,java-commons-jexl-2)
+       ("java-commons-collections4" ,java-commons-collections4)
+       ("java-commons-lang2" ,java-commons-lang)
+       ("java-commons-io" ,java-commons-io)
+       ("java-snappy-1.0.3-rc3" ,java-snappy-1)
+       ("java-guava" ,java-guava)
+       ("java-la4j" ,java-la4j)
+       ("java-biojava-core" ,java-biojava-core-4.0)
+       ("java-biojava-alignment" ,java-biojava-alignment-4.0)
+       ("java-jdistlib" ,java-jdistlib)
+       ("java-simple-xml" ,java-simple-xml)
+       ("java-snakeyaml" ,java-snakeyaml)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-testng" ,java-testng)))
+    (home-page "http://mccarrolllab.com/dropseq/")
+    (synopsis "Tools for Drop-seq analyses")
+    (description "Drop-seq is a technology to enable biologists to
+analyze RNA expression genome-wide in thousands of individual cells at
+once.  This package provides tools to perform Drop-seq analyses.")
+    (license license:expat)))
