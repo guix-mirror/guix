@@ -3151,6 +3151,90 @@ commonly used for high-throughput sequencing data such as SAM, BAM, CRAM and
 VCF.")
     (license license:expat)))
 
+;; This is needed for dropseq-tools
+(define-public java-picard-2.10.3
+  (package
+    (name "java-picard")
+    (version "2.10.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/broadinstitute/picard.git")
+                    (commit version)))
+              (file-name (string-append "java-picard-" version "-checkout"))
+              (sha256
+               (base32
+                "1ajlx31l6i1k3y2rhnmgq07sz99g2czqfqgkr9mihmdjp3gwjhvi"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "picard.jar"
+       ;; Tests require jacoco:coverage.
+       #:tests? #f
+       #:jdk ,icedtea-8
+       #:main-class "picard.cmdline.PicardCommandLine"
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build java-utils)
+                  (sxml simple)
+                  (sxml transform)
+                  (sxml xpath))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-useless-build.xml
+           (lambda _ (delete-file "build.xml") #t))
+         ;; This is necessary to ensure that htsjdk is found when using
+         ;; picard.jar as an executable.
+         (add-before 'build 'edit-classpath-in-manifest
+           (lambda* (#:key inputs #:allow-other-keys)
+             (chmod "build.xml" #o664)
+             (call-with-output-file "build.xml.new"
+               (lambda (port)
+                 (sxml->xml
+                  (pre-post-order
+                   (with-input-from-file "build.xml"
+                     (lambda _ (xml->sxml #:trim-whitespace? #t)))
+                   `((target    . ,(lambda (tag . kids)
+                                     (let ((name ((sxpath '(name *text*))
+                                                  (car kids)))
+                                           ;; FIXME: We're breaking the line
+                                           ;; early with a dummy path to
+                                           ;; ensure that the store reference
+                                           ;; isn't broken apart and can still
+                                           ;; be found by the reference
+                                           ;; scanner.
+                                           (msg (format #f
+                                                        "\
+Class-Path: /~a \
+ ~a/share/java/htsjdk.jar${line.separator}"
+                                                        ;; maximum line length is 70
+                                                        (string-tabulate (const #\b) 57)
+                                                        (assoc-ref inputs "java-htsjdk"))))
+                                       (if (member "manifest" name)
+                                           `(,tag ,@kids
+                                                  (echo
+                                                   (@ (message ,msg)
+                                                      (file "${manifest.file}")
+                                                      (append "true"))))
+                                           `(,tag ,@kids)))))
+                     (*default* . ,(lambda (tag . kids) `(,tag ,@kids)))
+                     (*text*    . ,(lambda (_ txt) txt))))
+                  port)))
+             (rename-file "build.xml.new" "build.xml")
+             #t)))))
+    (propagated-inputs
+     `(("java-htsjdk" ,java-htsjdk-2.10.1)))
+    (native-inputs
+     `(("java-testng" ,java-testng)
+       ("java-guava" ,java-guava)))
+    (home-page "http://broadinstitute.github.io/picard/")
+    (synopsis "Tools for manipulating high-throughput sequencing data and formats")
+    (description "Picard is a set of Java command line tools for manipulating
+high-throughput sequencing (HTS) data and formats.  Picard is implemented
+using the HTSJDK Java library to support accessing file formats that are
+commonly used for high-throughput sequencing data such as SAM, BAM, CRAM and
+VCF.")
+    (license license:expat)))
+
 ;; This is the last version of Picard to provide net.sf.samtools
 (define-public java-picard-1.113
   (package (inherit java-picard)
