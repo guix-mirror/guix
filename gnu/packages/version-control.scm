@@ -1643,14 +1643,15 @@ repository\" with git-annex.")
        #:phases (modify-phases %standard-phases
                   (replace 'configure
                     (lambda* (#:key outputs (configure-flags '())
-                                    #:allow-other-keys)
+                              #:allow-other-keys)
                       ;; The 'configure' script is not an autoconf script and
                       ;; chokes on unrecognized options.
-                      (zero? (apply system*
-                                    "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out"))
-                                    configure-flags))))
+                      (apply invoke
+                             "./configure"
+                             (string-append "--prefix="
+                                            (assoc-ref outputs "out"))
+                             configure-flags)
+                      #t))
                   (add-before 'check 'test-setup
                     (lambda _
                       (setenv "USER" "guix")
