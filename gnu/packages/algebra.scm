@@ -658,6 +658,33 @@ the la4j library are:
 @end itemize\n")
     (license license:asl2.0)))
 
+(define-public java-jlargearrays
+  (package
+    (name "java-jlargearrays")
+    (version "1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://search.maven.org/remotecontent?"
+                                  "filepath=pl/edu/icm/JLargeArrays/"
+                                  version "/JLargeArrays-" version
+                                  "-sources.jar"))
+              (file-name (string-append name "-" version ".jar"))
+              (sha256
+               (base32
+                "0v05iphpxbjnd7f4jf1rlqq3m8hslhcm0imdbsgxr20pi3xkaf2a"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jlargearrays.jar"
+       #:tests? #f ; tests are not included in the release archive
+       #:jdk ,icedtea-8))
+    (propagated-inputs
+     `(("java-commons-math3" ,java-commons-math3)))
+    (home-page "https://gitlab.com/ICM-VisLab/JLargeArrays")
+    (synopsis "Library of one-dimensional arrays that can store up to 263 elements")
+    (description "JLargeArrays is a Java library of one-dimensional arrays
+that can store up to 263 elements.")
+    (license license:bsd-2)))
+
 (define-public eigen
   (package
     (name "eigen")
