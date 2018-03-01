@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -272,14 +272,14 @@ traversing network address translators (NATs) and firewalls.")
 (define-public tinc
   (package
     (name "tinc")
-    (version "1.0.28")
+    (version "1.0.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://tinc-vpn.org/packages/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0i5kx3hza359nclyhb60kxlzqyx0phmg175350hww28g6scjcl0b"))))
+                "1x0hpfz13vn4pl6dcpnls6xq3rfcbdsg90awcfn53ijb8k35svvz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

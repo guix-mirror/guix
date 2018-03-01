@@ -7,9 +7,8 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -633,7 +632,7 @@ compose, and analyze GIF images.")
 (define-public imlib2
   (package
     (name "imlib2")
-    (version "1.4.10")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -641,7 +640,7 @@ compose, and analyze GIF images.")
                     "/imlib2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wm2q2xlkbm71k7mw2jyzbxgzylrkcj5yh6nq58w5gybhp98qs9z"))))
+                "0kg28b5wp886hiy12v7abdybrvlymb7g3nvg0ysn2y8h883s5w8m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkgconfig" ,pkg-config)))
@@ -1230,3 +1229,24 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
     (synopsis "Color picker")
     (description "Gpick is an advanced color picker and palette editing tool.")
     (license license:bsd-3)))
+
+(define-public libiptcdata
+  (package
+    (name "libiptcdata")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/" name "/"
+                                  version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03pfvkmmx762iydq0q207x2028d275pbdysfsgpmrr0ywy63pxkr"))))
+    (build-system gnu-build-system)
+    (home-page "http://libiptcdata.sourceforge.net/")
+    (synopsis "IPTC metadata manipulation library")
+    (description "Libiptcdata is a C library for manipulating the International
+Press Telecommunications Council (IPTC) metadata stored within multimedia files
+such as images.  This metadata can include captions and keywords, often used by
+popular photo management applications.  The library provides routines for
+parsing, viewing, modifying, and saving this metadata.")
+    (license license:lgpl2.0+)))

@@ -1030,7 +1030,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "1.1.9")
+    (version "1.1.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1039,14 +1039,15 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0krvmb1idnf95l2ydzfcb08ayyx3n4m71hf9fgwv3srzaikvpf3q"))))
+                "04jlgq1d1hd8r9cnmkl3lgf1fgm7kgy4hh9nfddap41fm1wp121p"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f  ; no check phase
+     '(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-libdir
            (lambda _
+             ;; Install libraries to /lib, not /lib64.
              (substitute* "CMakeLists.txt"
                (("LIB_SUFFIX \\$\\{_init_lib_suffix\\}")
                 "LIB_SUFFIX \"\""))
@@ -2377,7 +2378,8 @@ stretching and pitch scaling of audio.  This package contains the library.")
               (method url-fetch)
               (uri (string-append "http://www.wavpack.com/"
                                   name "-" version ".tar.bz2"))
-              (patches (search-patches "wavpack-CVE-2018-7253.patch"
+              (patches (search-patches "wavpack-CVE-2018-6767.patch"
+                                       "wavpack-CVE-2018-7253.patch"
                                        "wavpack-CVE-2018-7254.patch"))
               (sha256
                (base32
@@ -2536,7 +2538,7 @@ can play and record audio files.")
 (define-public soxr
   (package
     (name "soxr")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
@@ -2544,7 +2546,7 @@ can play and record audio files.")
         (string-append "mirror://sourceforge/soxr/soxr-" version
                        "-Source.tar.xz"))
        (sha256
-        (base32 "0xf2w3piwz9gfr1xqyrj4k685q5dy53kq3igv663i4f4y4sg9rjl"))))
+        (base32 "12aql6svkplxq5fjycar18863hcq84c5kx8g6f4rj0lcvigw24di"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ;no 'check' target
     (home-page "https://sourceforge.net/p/soxr/wiki/Home/")

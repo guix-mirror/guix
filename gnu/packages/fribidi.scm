@@ -26,15 +26,16 @@
 (define-public fribidi
   (package
     (name "fribidi")
-    (version "0.19.7")
+    (version "1.0.1")
     (source
       (origin
         (method url-fetch)
         (uri
-          (string-append "http://fribidi.org/download/" name "-" version
+         (string-append "https://github.com/fribidi/fribidi/releases"
+                        "/download/v" version "/fribidi-" version
                          ".tar.bz2"))
         (sha256
-          (base32 "13jsb5qadlhsaxkbrb49nqslmbh904vvzhsm5mm2ghmv29i2l8h8"))))
+          (base32 "1r3ll7apx4b8bhvdkwi71y06df9kvr4q3asvajswvdlh0pbq5cf1"))))
 
     (build-system gnu-build-system)
     (synopsis "Implementation of the Unicode bidirectional algorithm")
@@ -42,5 +43,5 @@
      "GNU FriBidi is an implementation of the Unicode Bidirectional
 Algorithm.  This algorithm is used to properly display text in left-to-right
 or right-to-left ordering as necessary.")
-    (home-page "http://fribidi.org/")
+    (home-page "https://github.com/fribidi/fribidi")
     (license lgpl2.1+)))

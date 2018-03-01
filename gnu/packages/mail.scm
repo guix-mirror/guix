@@ -296,7 +296,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20171215")
+    (version "20180223")
     (source
      (origin
        (method url-fetch)
@@ -304,7 +304,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1df1c2ynvivna42ifj1lxmgb0bbfih0ggn1afyniadzjm6cnxdvz"))))
+         "1fr7158xhrhasylyxp709g9mdbggdmni3qn3baxvczfg2w003fhh"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -325,7 +325,7 @@ operating systems.")
        ("gettext-minimal" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
        ("docbook-xsl" ,docbook-xsl)
-       ("docbook-xml" ,docbook-xml)
+       ("docbook-xml" ,docbook-xml-4.2)
        ("w3m" ,w3m)
        ("tcl" ,tcl)))
     (arguments
@@ -368,18 +368,6 @@ operating systems.")
        (modify-phases %standard-phases
          ;; TODO: autosetup is meant to be included in the source,
          ;; but we should package autosetup and use our own version of it.
-         (add-before 'configure 'fix-docbook
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* '("doc/chunk.xsl" "doc/manual.xml.tail"
-                            "doc/html.xsl" "doc/manual.xml.head")
-               (("http://docbook.sourceforge.net/release/xsl/current/")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl) "/"))
-               (("http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd")
-                (string-append (assoc-ref inputs "docbook-xml")
-                               "/xml/dtd/docbook/docbookx.dtd")))
-             #t))
          (add-before 'configure 'fix-sasl-test
            (lambda _
              ;; Upstream suggestion to fix the failing sasl autosetup test.
@@ -1192,16 +1180,15 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.0")
+    (version "2.3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.dovecot.org/releases/"
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
-       (patches (search-patches "dovecot-CVE-2017-15132.patch"))
        (sha256 (base32
-                "10c5myzgys866c3x6jdr1s9x9pqnjd5vpyz8z384sph21m3wnq6y"))))
+                "0lzisrdgrj5qqwjb7bv99mf2aljm568r6g108yisp0s644z2nxxb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

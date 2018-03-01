@@ -4771,14 +4771,14 @@ common definitions and porting layer.")
 (define-public xorgproto
   (package
     (name "xorgproto")
-    (version "2018.3")
+    (version "2018.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/proto/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1rdhw28n1gp7yylwia41jhih66gfx75nxgrmi2ggglzvzqhwr0x8"))))
+                "180mqkp70i44rkmj430pmn9idssvffrgv4y5h19fm698a7h8bs7y"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; To get util-macros in (almost?) all package inputs.
@@ -5813,7 +5813,7 @@ programs that cannot use the window system directly.")
 (define-public perl-x11-xcb
   (package
     (name "perl-x11-xcb")
-    (version "0.16")
+    (version "0.17")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5821,7 +5821,7 @@ programs that cannot use the window system directly.")
                     "X11-XCB-" version ".tar.gz"))
               (sha256
                (base32
-                "14mnvr1001py2z1n43l18yaw0plwvjg5pcsyc7k81sa0amw8ahzw"))))
+                "12qyf98s5hbybmh0mblpz50c00i68srq73w5rw31m2dhclj8n96q"))))
     (build-system perl-build-system)
     (arguments
      '(;; Disable parallel build to prevent a race condition.

@@ -435,7 +435,7 @@ statistical profiler, a code coverage tool, and many other extensions.")
 (define-public ccl
   (package
     (name "ccl")
-    (version "1.11")
+    (version "1.11.5")
     (source #f)
     (build-system gnu-build-system)
     ;; CCL consists of a "lisp kernel" and "heap image", both of which are
@@ -448,7 +448,7 @@ statistical profiler, a code coverage tool, and many other extensions.")
         ,(origin
            (method url-fetch)
            (uri (string-append
-                 "ftp://ftp.clozure.com/pub/release/" version
+                 "https://github.com/Clozure/ccl/releases/download/v" version
                  "/ccl-" version "-"
                  (match (%current-system)
                    ((or "i686-linux" "x86_64-linux") "linuxx86")
@@ -461,9 +461,9 @@ statistical profiler, a code coverage tool, and many other extensions.")
             (base32
              (match (%current-system)
                ((or "i686-linux" "x86_64-linux")
-                "0w3dmj7q9kqyra3yrf1lxclnjz151yvf5s5q8ayllvmvqbl8bs08")
+                "0hs1f3z7crgzvinpj990kv9gvbsipxvcvwbmk54n51nasvc5025q")
                ("armhf-linux"
-                "1x487aaz2rqcb6k301sy2p39a1m4qdhg6z9p9fb76ssipqgr38b4")
+                "0p0l1dzsygb6i1xxgbipjpxkn46xhq3jm41a34ga1qqp4x8lkr62")
                (_ ""))))))))
     (native-inputs
      `(("m4" ,m4)
@@ -484,6 +484,8 @@ statistical profiler, a code coverage tool, and many other extensions.")
            ;; Enter the source directory for the current platform's lisp
            ;; kernel, and run 'make clean' to remove the precompiled one.
            (lambda _
+             (substitute* "lisp-kernel/m4macros.m4"
+               (("/bin/pwd") (which "pwd")))
              (chdir (string-append
                      "lisp-kernel/"
                      ,(match (or (%current-target-system) (%current-system))
@@ -726,27 +728,29 @@ interactive development model in mind.")
   (sbcl-package->ecl-package sbcl-fiveam))
 
 (define-public sbcl-bordeaux-threads
-  (package
-    (name "sbcl-bordeaux-threads")
-    (version "0.8.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/sionescu/bordeaux-threads/archive/v"
-                    version ".tar.gz"))
-              (sha256
-               (base32 "10ryrcx832fwqdawb6jmknymi7wpdzhi30qzx7cbrk0cpnka71w2"))
-              (file-name
-               (string-append "bordeaux-threads-" version ".tar.gz"))))
-    (inputs `(("alexandria" ,sbcl-alexandria)))
-    (native-inputs `(("fiveam" ,sbcl-fiveam)))
-    (build-system asdf-build-system/sbcl)
-    (synopsis "Portable shared-state concurrency library for Common Lisp")
-    (description "BORDEAUX-THREADS is a proposed standard for a minimal
+  (let ((commit "354abb0ae9f1d9324001e1a8abab3128d7420e0e")
+        (revision "1"))
+    (package
+      (name "sbcl-bordeaux-threads")
+      (version (git-version "0.8.5" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/sionescu/bordeaux-threads.git")
+                      (commit commit)))
+                (sha256
+                 (base32 "1hcfp21l6av1xj6z7r77sp6h4mwf9vvx4s745803sysq2qy2mwnq"))
+                (file-name
+                 (git-file-name "bordeaux-threads" version))))
+      (inputs `(("alexandria" ,sbcl-alexandria)))
+      (native-inputs `(("fiveam" ,sbcl-fiveam)))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Portable shared-state concurrency library for Common Lisp")
+      (description "BORDEAUX-THREADS is a proposed standard for a minimal
 MP/Threading interface.  It is similar to the CLIM-SYS threading and lock
 support.")
-    (home-page "https://common-lisp.net/project/bordeaux-threads/")
-    (license license:x11)))
+      (home-page "https://common-lisp.net/project/bordeaux-threads/")
+      (license license:x11))))
 
 (define-public cl-bordeaux-threads
   (sbcl-package->cl-source-package sbcl-bordeaux-threads))

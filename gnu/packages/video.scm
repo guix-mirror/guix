@@ -53,6 +53,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system meson)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
@@ -1157,7 +1158,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.02.11")
+    (version "2018.02.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1165,7 +1166,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0zg34spkfiwjq55jrk417ifdcyvrj80gdbc338rdpfw2s6ibggv8"))))
+                "0ijjnx8qjxk07v5dbz3n5z3cvz8dlkmh7jkyvgng7inl74c29zq5"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1310,6 +1311,59 @@ other site that youtube-dl supports.")
 audio, images) from the Web.  It can use either mpv or vlc for playback.")
     (home-page "https://you-get.org/")
     (license license:expat)))
+
+(define-public youtube-viewer
+  (package
+    (name "youtube-viewer")
+    (version "3.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/trizen/youtube-viewer/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1j572his6qmazlmyrbnfq62s9bqml875ay7wy26byy9hfc7m0vgk"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    ;; FIXME: Add optional dependencies once available:
+    ;; perl-lwp-useragent-cached and perl-term-readline-gnu
+    (inputs
+     `(("perl-data-dump" ,perl-data-dump)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-gtk2" ,perl-gtk2)
+       ("perl-json" ,perl-json)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-unicode-linebreak" ,perl-unicode-linebreak)))
+    (arguments
+     `(#:modules ((guix build perl-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:module-build-flags '("--gtk")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-program
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((bin-dir (string-append (assoc-ref outputs "out")
+                                                    "/bin/"))
+                            (perl-path (getenv "PERL5LIB")))
+                        (for-each (cut wrap-program <>
+                                       `("PERL5LIB" ":" prefix (,perl-path)))
+                                  (find-files bin-dir))
+                        #t))))))
+    (synopsis
+     "Lightweight application for searching and streaming videos from YouTube")
+    (description
+     "Youtube-viewer searches and plays YouTube videos in a native player.
+It comes with various search options; it can search for videos, playlists
+and/or channels.  The videos are streamed directly in a selected video player
+at the best resolution (customizable) and with closed-captions (if available).
+Both command-line and GTK2 interface are available.")
+    (home-page "https://github.com/trizen/youtube-viewer")
+    (license license:perl-license)))
 
 (define-public libbluray
   (package
@@ -2475,7 +2529,7 @@ RTSP or SIP clients and servers.")
 (define-public libdvbpsi
   (package
     (name "libdvbpsi")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2483,7 +2537,7 @@ RTSP or SIP clients and servers.")
                     version "/libdvbpsi-" version ".tar.bz2"))
               (sha256
                (base32
-                "0824r08kaspbrrg2dd5d46s475zb7j59brqkm2y6x3mdsnpng0yn"))))
+                "1zn5hfv4qbahmydbwh59a3b480s3m5ss27r6ml35gqdip7r3jkmc"))))
     (build-system gnu-build-system)
     (home-page "https://www.videolan.org/developers/libdvbpsi.html")
     (synopsis "Library for decoding and generation of MPEG TS and DVB PSI

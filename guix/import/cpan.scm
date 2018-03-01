@@ -131,7 +131,11 @@ or #f on failure.  MODULE should be e.g. \"Test::Script\""
      ;; version is sometimes not quoted in the module json, so it gets
      ;; imported into Guile as a number, so convert it to a string.
      (number->string version))
-    (version version)))
+    (version
+     ;; Sometimes we get a "v" prefix.  Strip it.
+     (if (string-prefix? "v" version)
+         (string-drop version 1)
+         version))))
 
 (define (perl-package)
   "Return the 'perl' package.  This is a lazy reference so that we don't

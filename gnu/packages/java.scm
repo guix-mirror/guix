@@ -2018,6 +2018,72 @@ debugging, etc.")
              (delete-file-recursively "lib") #t))
          (replace 'install (install-jars "bin/lib")))))))
 
+;; This is the last 3.x release of ECJ
+(define-public java-ecj-3
+  (package
+    (name "java-ecj")
+    (version "3.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.eclipse.org/eclipse/"
+                                  "downloads/drops/R-" version
+                                  "-201301310800/ecjsrc-" version ".jar"))
+              (sha256
+               (base32
+                "01mdj14jw11g1jfnki4fi8229p0c6zzckd38zqy2w4m3cjcvsx04"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; none included
+       #:jdk ,icedtea-7 ; doesn't build with JDK8+
+       #:make-flags (list "-f" "src/build.xml")
+       #:build-target "build"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-manifest
+           (lambda _
+             ;; Record the main class to make ecj executable.
+             (with-atomic-file-replacement "src/META-INF/MANIFEST.MF"
+               (lambda (in out)
+                 (display "Manifest-Version: 1.0
+Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
+                          out)))))
+         (replace 'install (install-jars ".")))))
+    (home-page "https://eclipse.org")
+    (synopsis "Eclipse Java development tools core batch compiler")
+    (description "This package provides the Eclipse Java core batch compiler.")
+    (license license:epl1.0)))
+
+;; This is needed for java-cisd-args4j
+(define-public java-ecj-3.5
+  (package (inherit java-ecj-3)
+    (version "3.5.1")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append "http://archive.eclipse.org/eclipse/"
+                                  "downloads/drops/R-" version
+                                  "-200909170800/ecjsrc-" version ".zip"))
+              (sha256
+               (base32
+                "1vnl2mavisc567bip736xzsvvbjif5279wc4a7pbdik5wlir8qr7"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; none included
+       #:jdk ,icedtea-7 ; doesn't build with JDK8+
+       #:build-target "build"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-manifest
+           (lambda _
+             ;; Record the main class to make ecj executable.
+             (with-atomic-file-replacement "META-INF/MANIFEST.MF"
+               (lambda (in out)
+                 (dump-port in out)
+                 (display "Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
+                          out)))))
+         (replace 'install (install-jars ".")))))
+    (native-inputs
+     `(("unzip" ,unzip)))))
+
 (define-public java-classpathx-servletapi
   (package
     (name "java-classpathx-servletapi")
@@ -2483,7 +2549,7 @@ mechanism of Java.  It is especially useful for dynamic loading of application
 components.")
     (license license:asl2.0)))
 
-(define-public java-plexus-container-default-bootstrap
+(define java-plexus-container-default-bootstrap
   (package
     (name "java-plexus-container-default-bootstrap")
     (version "1.7.1")
@@ -2659,6 +2725,418 @@ archives (jar).")
     (native-inputs
      `(("archiver" ,java-plexus-archiver)
        ("hamcrest" ,java-hamcrest-core)))))
+
+(define-public java-plexus-component-annotations
+  (package
+    (inherit java-plexus-container-default)
+    (name "java-plexus-component-annotations")
+    (arguments
+     `(#:jar-name "plexus-component-annotations.jar"
+       #:source-dir "plexus-component-annotations/src/main/java"
+       #:tests? #f)); no tests
+    (inputs '())
+    (native-inputs '())
+    (synopsis "Plexus descriptors generator")
+    (description "This package is a Maven plugin to generate Plexus descriptors
+from source tags and class annotations.")))
+
+(define-public java-plexus-cipher
+  (package
+    (name "java-plexus-cipher")
+    (version "1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/plexus-cipher"
+                                  "/archive/plexus-cipher-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1j3r8xzlxlk340snkjp6lk2ilkxlkn8qavsfiq01f43xmvv8ymk3"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-cipher.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; FIXME: requires sisu-inject-bean
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             (mkdir-p "build/classes/META-INF/sisu")
+             (with-output-to-file "build/classes/META-INF/sisu/javax.inject.Named"
+               (lambda _
+                 (display "org.sonatype.plexus.components.cipher.DefaultPlexusCipher\n")))
+             #t)))))
+    (inputs
+     `(("java-cdi-api" ,java-cdi-api)
+       ("java-javax-inject" ,java-javax-inject)))
+    (home-page "https://github.com/sonatype/plexus-cipher")
+    (synopsis "Encryption/decryption Component")
+    (description "Plexus-cipher contains a component to deal with encryption
+and decryption.")
+    (license license:asl2.0)))
+
+(define-public java-plexus-compiler-api
+  (package
+    (name "java-plexus-compiler-api")
+    (version "2.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/plexus-compiler"
+                                  "/archive/plexus-compiler-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0g3x26pymcdnfnwv2a1i57pd5s26f5zqfi1rdy98z1bn01klx25k"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-compiler-api.jar"
+       #:source-dir "plexus-compiler-api/src/main/java"
+       #:jdk ,icedtea-8
+       #:test-dir "plexus-compiler-api/src/test"))
+    (inputs
+     `(("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-plexus-util" ,java-plexus-utils)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/codehaus-plexus/plexus-compiler")
+    (synopsis "Plexus Compilers component's API to manipulate compilers")
+    (description "This package contains the API used by components to manipulate
+compilers.")
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public java-plexus-compiler-javac
+  (package
+    (inherit java-plexus-compiler-api)
+    (name "java-plexus-compiler-javac")
+    (arguments
+     `(#:jar-name "plexus-compiler-javac.jar"
+       #:source-dir "plexus-compilers/plexus-compiler-javac/src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; depends on compiler-test -> maven-core -> ... -> this package.
+       #:test-dir "plexus-compilers/plexus-compiler-javac/src/test"))
+    (inputs
+     `(("java-plexus-compiler-api" ,java-plexus-compiler-api)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-container-default" ,java-plexus-container-default)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (synopsis "Javac Compiler support for Plexus Compiler component")
+    (description "This package contains the Javac Compiler support for Plexus
+Compiler component.")))
+
+(define-public java-plexus-sec-dispatcher
+  (package
+    (name "java-plexus-sec-dispatcher")
+    (version "1.4") ;; Newest release listed at the Maven Central Repository.
+    (source (origin
+              ;; This project doesn't tag releases or publish tarballs, so we take
+              ;; the "prepare release plexus-sec-dispatcher-1.4" git commit.
+              (method url-fetch)
+              (uri (string-append "https://github.com/sonatype/plexus-sec-dispatcher/"
+                                  "archive/7db8f88048.tar.gz"))
+              (sha256
+               (base32
+                "1smfrk4n7xbrsxpxcp2j4i0j8q86j73w0w6xg7qz83dp6dagdjgp"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (arguments
+     `(#:jar-name "plexus-sec-dispatcher.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-models
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (modello-single-mode file version mode)
+               (zero? (system* "java"
+                               "org.codehaus.modello.ModelloCli"
+                               file mode "src/main/java" version
+                               "false" "true")))
+             (let ((file "src/main/mdo/settings-security.mdo"))
+               (and
+               (modello-single-mode file "1.0.0" "java")
+               (modello-single-mode file "1.0.0" "xpp3-reader")
+               (modello-single-mode file "1.0.0" "xpp3-writer")))))
+         (add-before 'build 'generate-components.xml
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             (with-output-to-file "build/classes/META-INF/plexus/components.xml"
+               (lambda _
+                 (display
+                   "<component-set>\n
+  <components>\n
+    <component>\n
+      <role>org.sonatype.plexus.components.sec.dispatcher.SecDispatcher</role>\n
+      <role-hint>default</role-hint>\n
+      <implementation>org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher</implementation>\n
+      <description></description>\n
+      <requirements>\n
+        <requirement>\n
+          <role>org.sonatype.plexus.components.cipher.PlexusCipher</role>\n
+          <field-name>_cipher</field-name>\n
+        </requirement>\n
+        <requirement>\n
+          <role>org.sonatype.plexus.components.sec.dispatcher.PasswordDecryptor</role>\n
+          <field-name>_decryptors</field-name>\n
+        </requirement>\n
+      </requirements>\n
+      <configuration>\n
+        <_configuration-file>~/.settings-security.xml</_configuration-file>\n
+      </configuration>\n
+    </component>\n
+  </components>\n
+</component-set>\n")))))
+         (add-before 'check 'fix-paths
+           (lambda _
+             (copy-recursively "src/test/resources" "target"))))))
+    (inputs
+     `(("java-plexus-cipher" ,java-plexus-cipher)))
+    (native-inputs
+     `(("java-modello-core" ,java-modello-core)
+       ;; for modello:
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-guava" ,java-guava)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ("java-sisu-build-api" ,java-sisu-build-api)
+       ;; modello plugins:
+       ("java-modellop-plugins-java" ,java-modello-plugins-java)
+       ("java-modellop-plugins-xml" ,java-modello-plugins-xml)
+       ("java-modellop-plugins-xpp3" ,java-modello-plugins-xpp3)
+       ;; for tests
+       ("java-junit" ,java-junit)))
+    (build-system ant-build-system)
+    (home-page "https://github.com/sonatype/plexus-sec-dispatcher")
+    (synopsis "Plexus Security Dispatcher Component")
+    (description "This package is the Plexus Security Dispatcher Component.
+This component decrypts a string passed to it.")
+    (license license:asl2.0)))
+
+(define-public java-sisu-build-api
+  (package
+    (name "java-sisu-build-api")
+    (version "0.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/sonatype/sisu-build-api/"
+                                  "archive/plexus-build-api-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1c3rrpma3x634xp2rm2p5iskfhzdyc7qfbhjzr70agrl1jwghgy2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "sisu-build-api.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; FIXME: how to run the tests?
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             (substitute* (find-files "build/classes")
+               (("\\$\\{project.version\\}") ,version))
+             #t))
+         (add-before 'build 'generate-plexus-compontent
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             ;; This file is required for plexus to inject this package.
+             ;; FIXME: how is it generated?
+             (with-output-to-file "build/classes/META-INF/plexus/components.xml"
+               (lambda _
+                 (display
+                   "<component-set>\n
+  <components>\n
+    <component>\n
+      <role>org.sonatype.plexus.build.incremental.BuildContext</role>\n
+      <role-hint>default</role-hint>\n
+      <implementation>org.sonatype.plexus.build.incremental.DefaultBuildContext</implementation>\n
+      <description>Filesystem based non-incremental build context implementation\n
+which behaves as if all files were just created.</description>\n
+    </component>\n
+  </components>\n
+</component-set>\n")))
+             #t)))))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-container-default" ,java-plexus-container-default)))
+    (home-page "https://github.com/sonatype/sisu-build-api/")
+    (synopsis "Base build API for maven")
+    (description "This package contains the base build API for maven and
+a default implementation of it.  This API is about scanning files in a
+project and determining what files need to be rebuilt.")
+    (license license:asl2.0)))
+
+(define-public java-modello-core
+  (package
+    (name "java-modello-core")
+    (version "1.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/codehaus-plexus/modello"
+                                  "/archive/modello-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0l2pvns8pmlrmjm3iknp7gpg3654y1m8qhy55b19sdwdchdcyxfh"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "modello-core.jar"
+       #:source-dir "modello-core/src/main/java"
+       #:test-dir "modello-core/src/test"
+       #:main-class "org.codehaus.modello.ModelloCli"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             (copy-file "modello-core/src/main/resources/META-INF/plexus/components.xml"
+                        "build/classes/META-INF/plexus/components.xml")
+             #t))
+         (add-before 'check 'fix-tests
+           (lambda _
+             (with-directory-excursion "modello-core/src/test/java/org/codehaus"
+               (substitute* '("modello/core/DefaultModelloCoreTest.java"
+                              "modello/core/io/ModelReaderTest.java")
+                 (("src/test") "modello-core/src/test")))
+             #t)))))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-sisu-build-api" ,java-sisu-build-api)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ("java-guava" ,java-guava)))
+    (home-page "http://codehaus-plexus.github.io/modello/")
+    (synopsis "Framework for code generation from a simple model")
+    (description "Modello is a framework for code generation from a simple model.
+
+Modello generates code from a simple model format: based on a plugin
+architecture, various types of code and descriptors can be generated from the
+single model, including Java POJOs, XML/JSON/YAML marshallers/unmarshallers,
+XSD and documentation.")
+    (license (list
+               license:expat
+               ;; Although this package uses only files licensed under expat,
+               ;; other parts of the source are licensed under different
+               ;; licenses.  We include them to be inherited by other packages.
+               license:asl2.0
+               ;; Some files in modello-plugin-java are licensed under a
+               ;; 5-clause BSD license.
+               (license:non-copyleft
+                 (string-append "file:///modello-plugins/modello-plugin-java/"
+                                "src/main/java/org/codehaus/modello/plugin/"
+                                "java/javasource/JNaming.java"))))))
+
+(define-public java-modello-plugins-java
+  (package
+    (inherit java-modello-core)
+    (name "java-modello-plugins-java")
+    (arguments
+     `(#:jar-name "modello-plugins-java.jar"
+       #:source-dir "modello-plugins/modello-plugin-java/src/main/java"
+       #:test-dir "modello-plugins/modello-plugin-java/src/test"
+       #:jdk ,icedtea-8
+       #:tests? #f; requires maven-model, which depends on this package
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes")
+             (copy-recursively "modello-plugins/modello-plugin-java/src/main/resources"
+                               "build/classes")
+             #t)))))
+    (inputs
+     `(("java-modello-core" ,java-modello-core)
+       ,@(package-inputs java-modello-core)))
+    (synopsis "Modello Java Plugin")
+    (description "Modello Java Plugin generates Java objects for the model.")))
+
+(define-public java-modello-plugins-xml
+  (package
+    (inherit java-modello-core)
+    (name "java-modello-plugins-xml")
+    (arguments
+     `(#:jar-name "modello-plugins-xml.jar"
+       #:source-dir "modello-plugins/modello-plugin-xml/src/main/java"
+       #:test-dir "modello-plugins/modello-plugin-xml/src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes")
+             (copy-recursively
+               "modello-plugins/modello-plugin-xml/src/main/resources"
+               "build/classes")
+             #t))
+         (add-before 'check 'fix-paths
+           (lambda _
+             (with-directory-excursion "modello-plugins/modello-plugin-xml/src/test"
+               (substitute*
+                 "java/org/codehaus/modello/plugins/xml/XmlModelloPluginTest.java"
+                 (("src/test") "modello-plugins/modello-plugin-xml/src/test"))))))))
+    (inputs
+     `(("java-modello-core" ,java-modello-core)
+       ("java-modello-plugins-java" ,java-modello-plugins-java)
+       ,@(package-inputs java-modello-core)))
+    (synopsis "Modello XML Plugin")
+    (description "Modello XML Plugin contains shared code for every plugins
+working on XML representation of the model.")))
+
+(define-public java-modello-test
+  (package
+    (inherit java-modello-core)
+    (name "java-modello-test")
+    (arguments
+     `(#:jar-name "modello-test.jar"
+       #:source-dir "modello-test/src/main/java"
+       #:tests? #f; no tests
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-compiler-api" ,java-plexus-compiler-api)
+       ("java-plexus-compiler-javac" ,java-plexus-compiler-javac)
+       ("java-plexus-container-default" ,java-plexus-container-default)))
+    (synopsis "Modello test package")
+    (description "The modello test package contains the basis to create
+Modello generator unit-tests, including sample models and xml files to test
+every feature for every plugin.")))
+
+(define-public java-modello-plugins-xpp3
+  (package
+    (inherit java-modello-core)
+    (name "java-modello-plugins-xpp3")
+    (arguments
+     `(#:jar-name "modello-plugins-xpp3.jar"
+       #:source-dir "modello-plugins/modello-plugin-xpp3/src/main/java"
+       #:test-dir "modello-plugins/modello-plugin-xpp3/src/test"
+       ;; One of the test dependencies is maven-model which depends on this package.
+       #:tests? #f
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes")
+             (copy-recursively "modello-plugins/modello-plugin-xpp3/src/main/resources"
+                               "build/classes")
+             #t)))))
+    (inputs
+     `(("java-modello-core" ,java-modello-core)
+       ("java-modello-plugins-java" ,java-modello-plugins-java)
+       ("java-modello-plugins-xml" ,java-modello-plugins-xml)
+       ,@(package-inputs java-modello-core)))
+    (native-inputs
+     `(("java-xmlunit" ,java-xmlunit)
+       ("java-modello-test" ,java-modello-test)
+       ,@(package-native-inputs java-modello-core)))
+    (synopsis "Modello XPP3 Plugin")
+    (description "The modello XPP3 plugin generates XML readers and writers based
+on the XPP3 API (XML Pull Parser).")))
 
 (define-public java-asm
   (package
@@ -5188,7 +5666,6 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
 (define antlr3-3.1
   (package
     (inherit antlr3)
-    (name "antlr3-3.1")
     (version "3.1")
     (source (origin
               (method url-fetch)
@@ -5199,7 +5676,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
                (base32
                 "0sfimc9cpbgrihz4giyygc8afgpma2c93yqpwb951giriri6x66z"))))
     (arguments
-     `(#:jar-name (string-append ,name "-" ,version ".jar")
+     `(#:jar-name (string-append "antlr3-" ,version ".jar")
        #:source-dir "src:runtime/Java/src"
        #:tests? #f
        #:phases
@@ -5231,12 +5708,13 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
                (for-each (lambda (file)
                            (display file)
                            (newline)
-                           (system* "antlr" "-o" dir (string-append dir file)))
+                           (invoke "antlr" "-o" dir (string-append dir file)))
                          '("antlr.g" "antlr.print.g" "assign.types.g"
                            "buildnfa.g" "define.g")))
              (format #t "codegen.g\n")
-             (system* "antlr" "-o" "src/org/antlr/codegen"
-                      "src/org/antlr/codegen/codegen.g")))
+             (invoke "antlr" "-o" "src/org/antlr/codegen"
+                     "src/org/antlr/codegen/codegen.g")
+             #t))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
@@ -6959,7 +7437,7 @@ those in Perl and JavaScript.")
 (define-public java-testng
   (package
     (name "java-testng")
-    (version "6.14.2")
+    (version "6.14.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6968,7 +7446,7 @@ those in Perl and JavaScript.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0ngj88dpbqqdx9084cmiasmn9q3v5dgx45qbvxpip47nxc5x14xy"))))
+                "0y6vq30i5g276kw0v2bhbvci22ijg7ax49ap2611yqlhbs4d6dqv"))))
     (build-system ant-build-system)
     (arguments
      `(#:jdk ,icedtea-8; java.util.function
@@ -7033,54 +7511,55 @@ to use.")
     (license license:asl2.0)))
 
 (define-public java-jnacl
-  (package
-    (name "java-jnacl")
-    (version "0.1.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/neilalexander/jnacl")
-                     (commit "40c322e0a42637ab17cdf941138eeaf2494055f8")))
-              (sha256
-               (base32
-                "1pspnmp44q61a2q4bpslpxw86rfn8s5l0xgvyrikqgdvg7ypx597"))))
-    (build-system ant-build-system)
-    (arguments
-     `(#:jar-name "java-jnacl.jar"
-       #:source-dir "src/main/java"
-       #:jdk ,icedtea-8
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'fix-tests
-           (lambda _
-             (substitute* "src/test/java/com/neilalexander/jnacl/NaClTest.java"
-               (("assertions.Assertions") "assertions.api.Assertions"))
-             (substitute* "src/test/java/com/neilalexander/jnacl/NaclSecretBoxTest.java"
-               (("assertions.Assertions") "assertions.api.Assertions"))
-             #t))
-         (replace 'check
-           (lambda _
-             (system* "ant" "compile-tests")
-             (and
-               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
-                                                           ":build/classes"
-                                                           ":build/test-classes")
-                               "org.testng.TestNG" "-testclass"
-                               "build/test-classes/com/neilalexander/jnacl/NaclSecretBoxTest.class"))
-               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
-                                                           ":build/classes"
-                                                           ":build/test-classes")
-                               "org.testng.TestNG" "-testclass"
-                               "build/test-classes/com/neilalexander/jnacl/NaClTest.class"))))))))
-    (native-inputs
-     `(("java-testng" ,java-testng)
-       ("java-fest-util" ,java-fest-util)
-       ("java-fest-assert" ,java-fest-assert)))
-    (home-page "https://github.com/neilalexander/jnacl")
-    (synopsis "Java implementation of NaCl")
-    (description "Pure Java implementation of the NaCl: Networking and
+  (let ((commit "094e819afdd63ea81a499b3bcb42a271006bebd9")
+        (revision "2"))
+    (package
+      (name "java-jnacl")
+      (version (string-append "0.1.0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/neilalexander/jnacl.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1d6g6xhn83byv5943n7935wwjsk0ibk0qdvqgr699qqgqqmwisbb"))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:jar-name "jnacl.jar"
+         #:source-dir "src/main/java"
+         #:jdk ,icedtea-8
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'fix-tests
+             (lambda _
+               (substitute* '("src/test/java/com/neilalexander/jnacl/NaClTest.java"
+                              "src/test/java/com/neilalexander/jnacl/NaclSecretBoxTest.java")
+                 (("assertions.Assertions") "assertions.api.Assertions"))
+               #t))
+           (replace 'check
+             (lambda _
+               (invoke "ant" "compile-tests")
+               (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                   ":build/classes"
+                                                   ":build/test-classes")
+                       "org.testng.TestNG" "-testclass"
+                       "build/test-classes/com/neilalexander/jnacl/NaclSecretBoxTest.class")
+               (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                   ":build/classes"
+                                                   ":build/test-classes")
+                       "org.testng.TestNG" "-testclass"
+                       "build/test-classes/com/neilalexander/jnacl/NaClTest.class")
+               #t)))))
+      (native-inputs
+       `(("java-testng" ,java-testng)
+         ("java-fest-util" ,java-fest-util)
+         ("java-fest-assert" ,java-fest-assert)))
+      (home-page "https://github.com/neilalexander/jnacl")
+      (synopsis "Java implementation of NaCl")
+      (description "Pure Java implementation of the NaCl: Networking and
 Cryptography library.")
-    (license license:mpl2.0)))
+      (license license:bsd-2))))
 
 (define-public java-mvel2
   (package
@@ -7175,8 +7654,9 @@ configuration and string construction.")
          (add-before 'build 'run-javacc
            (lambda _
              (with-directory-excursion "src/main/java/org/apache/commons/jexl2/parser/"
-               (and (zero? (system* "java" "jjtree" "Parser.jjt"))
-                    (zero? (system* "java" "javacc" "Parser.jj")))))))))
+               (invoke "java" "jjtree" "Parser.jjt")
+               (invoke "java" "javacc" "Parser.jj"))
+             #t)))))
     (inputs
      `(("java-commons-logging-minimal" ,java-commons-logging-minimal)))
     (native-inputs
@@ -7216,7 +7696,8 @@ by technical operatives or consultants working with enterprise platforms.")
          (add-before 'configure 'generate-source
            (lambda _
              (with-directory-excursion "src/build/source_templates"
-               (zero? (system* "mvel2" "../gen_sources.mvel" "../../java"))))))))
+               (invoke "mvel2" "../gen_sources.mvel" "../../java"))
+             #t)))))
     (native-inputs
      `(("mvel" ,java-mvel2)))
     (home-page "https://jpountz.github.io/lz4-java")
@@ -7246,7 +7727,8 @@ algorithms and xxHash hashing algorithm.")
            (lambda _
              (mkdir-p "src")
              (with-directory-excursion "src"
-               (zero? (system* "unzip" "../src.zip"))))))))
+               (invoke "unzip" "../src.zip"))
+             #t)))))
     (native-inputs
      `(("unzip" ,unzip)
        ("junit" ,java-junit)))
@@ -7277,7 +7759,8 @@ for the Java programming language.")
            (lambda _
              (mkdir-p "src")
              (with-directory-excursion "src"
-               (zero? (system* "unzip" "../src.zip"))))))))
+               (invoke "unzip" "../src.zip"))
+             #t)))))
     (native-inputs
      `(("unzip" ,unzip)
        ("junit" ,java-junit)))
@@ -7904,26 +8387,23 @@ including pre-existing objects that you do not have source-code of.")
        (modify-phases %standard-phases
          (add-before 'build 'build-native
            (lambda* (#:key inputs #:allow-other-keys)
-             (with-directory-excursion "hawtjni-generator/src/main/resources/"
-               (and
-                 (system* "gcc" "-c" "hawtjni.c" "-o" "hawtjni.o"
-                          "-fPIC" "-O2"
-                          (string-append "-I" (assoc-ref inputs "jdk") "/include/linux"))
-                 (system* "gcc" "-c" "hawtjni-callback.c" "-o" "hawtjni-callback.o"
-                          "-fPIC" "-O2"
-                          (string-append "-I" (assoc-ref inputs "jdk") "/include/linux"))
-                 (system* "gcc" "-o" "libhawtjni.so" "-shared"
-                          "hawtjni.o" "hawtjni-callback.o")))))
+             (let ((include (string-append "-I" (assoc-ref inputs "jdk") "/include/linux")))
+               (with-directory-excursion "hawtjni-generator/src/main/resources/"
+                 (invoke "gcc" "-c" "hawtjni.c" "-o" "hawtjni.o"
+                         "-fPIC" "-O2" include)
+                 (invoke "gcc" "-c" "hawtjni-callback.c" "-o" "hawtjni-callback.o"
+                         "-fPIC" "-O2" include)
+                 (invoke "gcc" "-o" "libhawtjni.so" "-shared"
+                         "hawtjni.o" "hawtjni-callback.o")))
+             #t))
          (add-after 'install 'install-native
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (lib (string-append out "/lib"))
                     (inc (string-append out "/include")))
-               (mkdir-p lib)
-               (mkdir-p inc)
                (with-directory-excursion "hawtjni-generator/src/main/resources/"
-                 (copy-file "libhawtjni.so" (string-append lib "/libhawtjni.so"))
-                 (copy-file "hawtjni.h" (string-append inc "/hawtjni.h"))))
+                 (install-file "libhawtjni.so" lib)
+                 (install-file "hawtjni.h" inc)))
              #t)))))
     (inputs
      `(("java-commons-cli" ,java-commons-cli)
@@ -7960,14 +8440,14 @@ that is part of the SWT Tools project.")
              (with-directory-excursion "src/main/native-package/src"
                (substitute* "jansi_ttyname.c"
                  (("#include \"jansi_.*") ""))
-               (and
-                 (system* "gcc" "-c" "jansi_ttyname.c" "-o" "jansi_ttyname.o"
-                          (string-append "-I" (assoc-ref inputs "java-hawtjni")
-                                         "/include")
-                          (string-append "-I" (assoc-ref inputs "jdk")
-                                         "/include/linux")
-                          "-fPIC" "-O2")
-                 (system* "gcc" "-o" "libjansi.so" "-shared" "jansi_ttyname.o")))))
+               (invoke "gcc" "-c" "jansi_ttyname.c" "-o" "jansi_ttyname.o"
+                       (string-append "-I" (assoc-ref inputs "java-hawtjni")
+                                      "/include")
+                       (string-append "-I" (assoc-ref inputs "jdk")
+                                      "/include/linux")
+                       "-fPIC" "-O2")
+               (invoke "gcc" "-o" "libjansi.so" "-shared" "jansi_ttyname.o")
+               #t)))
          (add-before 'build 'install-native
            (lambda _
              (let ((dir (string-append "build/classes/META-INF/native/"
@@ -7980,7 +8460,6 @@ that is part of the SWT Tools project.")
              #t))
          (add-after 'install 'install-native
            (lambda* (#:key outputs #:allow-other-keys)
-             (mkdir-p (string-append (assoc-ref outputs "out") "/include"))
              (install-file "src/main/native-package/src/jansi.h"
                            (string-append (assoc-ref outputs "out") "/include"))
              #t)))))
@@ -7988,8 +8467,9 @@ that is part of the SWT Tools project.")
      `(("java-hawtjni" ,java-hawtjni)))
     (home-page "https://fusesource.github.io/jansi/")
     (synopsis "Native library for jansi")
-    (description "Java-jansi-native contains the native library for the jansi
-frobnication library/framework.")
+    (description "This package provides the native library for jansi, a small
+Java library that allows you to use ANSI escape sequences to format your
+console output.")
     (license license:asl2.0)))
 
 (define-public java-jansi

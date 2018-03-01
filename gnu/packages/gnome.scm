@@ -12,7 +12,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016, 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -947,7 +947,7 @@ guidelines.")
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://freedesktop.org/wiki/Software/shared-mime-info")
+    (home-page "https://www.freedesktop.org/wiki/Software/shared-mime-info")
     (synopsis "Database of common MIME types")
     (description
      "The shared-mime-info package contains the core database of common types
@@ -972,7 +972,7 @@ database is translated at Transifex.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
-    (home-page "http://icon-theme.freedesktop.org/releases/")
+    (home-page "https://icon-theme.freedesktop.org/releases/")
     (synopsis
      "Freedesktop icon theme")
     (description
@@ -2324,7 +2324,7 @@ and objects.")
        ("libxkbfile"       ,libxkbfile)
        ("xkbcomp"          ,xkbcomp)
        ("xkeyboard-config" ,xkeyboard-config)))
-    (home-page "http://www.freedesktop.org/wiki/Software/LibXklavier/")
+    (home-page "https://www.freedesktop.org/wiki/Software/LibXklavier/")
     (synopsis "High-level API for X Keyboard Extension")
     (description
      "LibXklavier is a library providing high-level API for X Keyboard
@@ -2830,7 +2830,7 @@ keyboard shortcuts.")
        ("sqlite" ,sqlite)
        ("polkit" ,polkit)
        ("sane-backends" ,sane-backends)))
-    (home-page "http://www.freedesktop.org/software/colord/")
+    (home-page "https://www.freedesktop.org/software/colord/")
     (synopsis "Color management service")
     (description "Colord is a system service that makes it easy to manage,
 install and generate color profiles to accurately color manage input and
@@ -2966,7 +2966,7 @@ faster results and to avoid unnecessary server load.")
      `(("dbus-glib" ,dbus-glib)
        ("libgudev" ,libgudev)
        ("libusb" ,libusb)))
-    (home-page "http://upower.freedesktop.org/")
+    (home-page "https://upower.freedesktop.org/")
     (synopsis "System daemon for managing power devices")
     (description
      "UPower is an abstraction for enumerating power devices,
@@ -5729,7 +5729,7 @@ shared object databases, search tools and indexing.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.24.2.1")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5737,16 +5737,17 @@ shared object databases, search tools and indexing.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1cv138z04qx0fh1a2z2hvxy4p1x15vdv5gmkx5f3hb6c3w2rsz9m"))))
-    (build-system glib-or-gtk-build-system)
+                "1d0l4vgcjqj4671hb6s2a56baqlasbxn3wl6vfrpdsk5qq299jbr"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:configure-flags
-       '("--disable-selinux") ; XXX: not packaged
+     '(#:glib-or-gtk? #t
        ;; XXX: FAIL: check-nautilus
        ;;   Settings schema 'org.gnome.nautilus.preferences' is not installed
        #:tests? #f))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("glib:bin" ,glib "bin")         ; for glib-mkenums, etc.
+       ("gtk+:bin" ,gtk+ "bin")         ; for gtk-update-icon-cache
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -5756,7 +5757,8 @@ shared object databases, search tools and indexing.")
        ("exempi" ,exempi)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-autoar" ,gnome-autoar)
-       ("nettle" ,nettle)    ; XXX required by libarchive.pc via gnome-autoar
+       ("libselinux" ,libselinux)
+       ("nettle" ,nettle) ; XXX required by libarchive.pc via gnome-autoar
        ("tracker" ,tracker)
        ;; XXX: gtk+ is required by libnautilus-extension.pc
        ;;

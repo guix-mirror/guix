@@ -2240,17 +2240,21 @@ SQLAlchemy Database Toolkit for Python.")
 (define-public python-pickleshare
   (package
     (name "python-pickleshare")
-    (version "0.5")
+    (version "0.7.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "pickleshare/pickleshare-" version ".tar.gz"))
+       (uri (pypi-uri "pickleshare" version))
        (sha256
-        (base32 "11ljr90j3p6qswdrbl7p4cjb2i93f6vn0vx9anzpshsx0d2mggn0"))))
+        (base32 "0yvk14dzxk7g6qpr7iw23vzqbsr0dh4ij4xynkhnzpfz4xr2bac4"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-pathpy" ,python-pathpy)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/vivainio/pickleshare")
     (synopsis "Tiny key value database with concurrency support")
     (description
@@ -2261,10 +2265,15 @@ value in database is immediately visible to other processes accessing the same
 database.  Concurrency is possible because the values are stored in separate
 files.  Hence the “database” is a directory where all files are governed by
 PickleShare.")
+    (properties `((python2-variant . ,(delay python2-pickleshare))))
     (license license:expat)))
 
 (define-public python2-pickleshare
-  (package-with-python2 python-pickleshare))
+  (let ((pickleshare (package-with-python2
+                      (strip-python2-variant python-pickleshare))))
+    (package (inherit pickleshare)
+      (propagated-inputs `(("python2-pathlib2" ,python2-pathlib2)
+                           ,@(package-propagated-inputs pickleshare))))))
 
 (define-public python-apsw
   (package

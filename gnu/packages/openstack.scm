@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages openstack)
+  #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
@@ -39,27 +41,37 @@
 (define-public python-bandit
   (package
     (name "python-bandit")
-    (version "0.13.2")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/b/bandit/bandit-"
-             version ".tar.gz"))
+       (uri (pypi-uri "bandit" version))
        (sha256
         (base32
-         "03g3cflvrc99ncjd611iy5nnnscsc2vgnrx4mjaqyx8glbfw8y7g"))))
+         "1m5bm42120zyazky4k0lp3d9r0jwhjmp6sb108xfr0vz952p15yb"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'check)
+                  (add-after 'install 'check
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Tests require the 'bandit' executable in PATH.
+                      ;; It's only built during install time.
+                      (add-installed-pythonpath inputs outputs)
+                      (setenv "PATH" (string-append (assoc-ref outputs "out")
+                                                    "/bin:" (getenv "PATH")))
+                      (invoke "python" "setup.py" "testr"))))))
     (propagated-inputs
-      `(("python-appdirs" ,python-appdirs)
+      `(("python-gitpython" ,python-gitpython)
         ("python-pyyaml" ,python-pyyaml)
         ("python-six" ,python-six)
         ("python-stevedore" ,python-stevedore)))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ;; Tests
+      `(;; Tests.
+        ("python-beautifulsoup4" ,python-beautifulsoup4)
         ("python-fixtures" ,python-fixtures)
         ("python-mock" ,python-mock)
+        ("python-subunit" ,python-subunit)
         ("python-testrepository" ,python-testrepository)
         ("python-testscenarios" ,python-testscenarios)
         ("python-testtools" ,python-testtools)))
@@ -70,50 +82,50 @@
 To do this Bandit processes each file, builds an AST from it, and runs
 appropriate plugins against the AST nodes.  Once Bandit has finished scanning
 all the files it generates a report.")
-    (properties `((python2-variant . ,(delay python2-bandit))))
     (license asl2.0)))
 
 (define-public python2-bandit
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-bandit)))
-           (arguments
-            `(#:python ,python-2
-              ;; FIXME: 'subunit.run discover: error: no such option: --list'
-              #:tests? #f))))
+  (package-with-python2 python-bandit))
 
 (define-public python-debtcollector
   (package
     (name "python-debtcollector")
-    (version "1.0.0")
+    (version "1.19.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "debtcollector" version))
         (sha256
           (base32
-           "0g4dfskaiy47rhsh4gh66l5vmdsrgq0qk68pl3ix1cj3ffvfndzv"))))
+           "06c7vyn184y9f0lsrwaz13aq63hdz5fjrd191b8nifx6acsni42f"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ;FIXME: Requires packaging python-doc8.
     (propagated-inputs
-     `(("python-six" ,python-six)
+     `(("python-pbr" ,python-pbr)
+       ("python-six" ,python-six)
        ("python-wrapt" ,python-wrapt)))
     (native-inputs
-      `(("python-babel" ,python-babel)
-        ("python-pbr" ,python-pbr)
-        ;; Tests.
-        ("python-oslotest" ,python-oslotest)))
+     `(;; Tests.
+       ("python-subunit" ,python-subunit)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testtools" ,python-testtools)))
     (home-page "https://www.openstack.org/")
     (synopsis
-      "Find deprecated patterns and strategies in Python code")
+     "Find deprecated patterns and strategies in Python code")
     (description
       "This package provides a collection of Python deprecation patterns and
 strategies that help you collect your technical debt in a non-destructive
 manner.")
+    (properties `((python2-variant . ,(delay python2-debtcollector))))
     (license asl2.0)))
 
 (define-public python2-debtcollector
-  (package-with-python2 python-debtcollector))
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-debtcollector))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-funcsigs" ,python2-funcsigs)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-hacking
   (package
@@ -155,35 +167,65 @@ guidelines}.")
 (define-public python-mox3
   (package
     (name "python-mox3")
-    (version "0.14.0")
+    (version "0.24.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mox3" version))
+        (patches (search-patches "python-mox3-python3.6-compat.patch"))
         (sha256
           (base32
-           "0njmh40i1lg5mzn9hc2ax83adj6dli455j6xifilrw27c4wlkjzx"))))
+           "0w58adwv7q9wzvmq9mlrk2asfk73myq9fpwy7mjkzsz3baa95zf5"))))
     (build-system python-build-system)
-    (arguments
-     ;; TODO: Resolve dependency cycle and re-enable.
-     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-fixtures" ,python-fixtures)
+       ("python-pbr" ,python-pbr)))
     (native-inputs
-      `(("python-fixtures" ,python-fixtures)
-        ; TODO re-add ("python-oslosphinx" ,python-oslosphinx)
-        ("python-pbr" ,python-pbr)
-        ("python-sphinx" ,python-sphinx)
+      `(("python-openstackdocstheme" ,python-openstackdocstheme)
+        ("python-sphinx" ,python-sphinx-1.6)
+        ("python-subunit" ,python-subunit)
+        ("python-testrepository" ,python-testrepository)
         ("python-testtools" ,python-testtools)))
     (home-page "https://www.openstack.org/")
     (synopsis "Mock object framework for Python")
     (description
       "Mox3 is an unofficial port of the @uref{https://code.google.com/p/pymox/,
 Google mox framework} to Python 3.  It was meant to be as compatible
-with mox as possible, but small enhancements have been made.  The library was
-tested on Python versions 3.2, 2.7, and 2.6.")
+with mox as possible, but small enhancements have been made.")
     (license asl2.0)))
 
 (define-public python2-mox3
   (package-with-python2 python-mox3))
+
+(define-public python-openstackdocstheme
+  (package
+    (name "python-openstackdocstheme")
+    (version "1.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "openstackdocstheme" version))
+              (sha256
+               (base32
+                "1ki5204rjdqjvr8xr9w2qc1z6b6d2i5jas0i70xzkf9njlzjzv2r"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: Tests require an old version of python-hacking, which in
+     ;; turn depends on mox3 which depends on this package.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-dulwich" ,python-dulwich)
+       ("python-pbr" ,python-pbr)))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx-1.6)))
+    (home-page "https://docs.openstack.org/openstackdocstheme/latest/")
+    (synopsis "OpenStack Docs Theme")
+    (description
+     "This package provides themes and extensions for Sphinx for publishing
+to docs.openstack.org and developer.openstack.org.")
+    (license asl2.0)))
+
+(define-public python2-openstackdocstheme
+  (package-with-python2 python-openstackdocstheme))
 
 (define-public python-os-client-config
   (package
@@ -257,27 +299,22 @@ tested on Python versions 3.2, 2.7, and 2.6.")
 (define-public python-stevedore
   (package
     (name "python-stevedore")
-    (version "1.12.0")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stevedore" version))
        (sha256
-         (base32
-          "0999zvawaapzg6givjhn7vjscdwblcs73wf28wq1wb4g5mbb5phv"))))
+        (base32
+         "02ynfgwma84g59834dmvzr39mcppy5s229zf1w23c0qngf753izi"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-six" ,python-six)))
+     `(("python-pbr" ,python-pbr)
+       ("python-six" ,python-six)))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ;; Tests
-        ("python-discover" ,python-discover)
-        ("python-docutils" ,python-docutils)
-        ("python-mock" ,python-mock)
-        ("python-oslosphinx" ,python-oslosphinx)
-        ("python-oslotest" ,python-oslotest)
-        ("python-sphinx" ,python-sphinx)
-        ("python-testrepository" ,python-testrepository)))
+     `(("python-mock" ,python-mock)
+       ("python-sphinx" ,python-sphinx-1.6)
+       ("python-testrepository" ,python-testrepository)))
     (home-page "https://github.com/dreamhost/stevedore")
     (synopsis "Manage dynamic plugins for Python applications")
     (description
@@ -289,16 +326,10 @@ mechanism by building on top of setuptools entry points.  The code for managing
 entry points tends to be repetitive, though, so stevedore provides manager
 classes for implementing common patterns for using dynamically loaded
 extensions.")
-    (properties `((python2-variant . ,(delay python2-stevedore))))
     (license asl2.0)))
 
 (define-public python2-stevedore
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-stevedore)))
-           (arguments
-            `(#:python ,python-2
-              ;; FIXME: 'subunit.run discover: error: no such option: --list'
-              #:tests? #f))))
+  (package-with-python2 python-stevedore))
 
 (define-public python-tempest-lib
   (package
@@ -349,31 +380,35 @@ common features used in Tempest.")
 (define-public python-oslo.config
   (package
     (name "python-oslo.config")
-    (version "2.4.0")
+    (version "5.2.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/o/oslo.config/oslo.config-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "oslo.config" version))
        (sha256
          (base32
-          "13r778jfb0fhna37c2pd1f2xipnsbd7zli7qhn96acrzymrwj5k1"))))
+          "0ymf7jxbq29fifyvkwhfiys1qvljqfxdw8ajwzwaf3yiqidgpxqd"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Requires packaging python-argparse.
     (propagated-inputs
-      `(("python-netaddr" ,python-netaddr)
-        ("python-six" ,python-six)
-        ("python-stevedore" ,python-stevedore)))
+     `(("python-debtcollector" ,python-debtcollector)
+       ("python-netaddr" ,python-netaddr)
+       ("python-oslo.i18n" ,python-oslo.i18n)
+       ("python-pbr" ,python-pbr)
+       ("python-rfc3986" ,python-rfc3986)
+       ("python-six" ,python-six)
+       ("python-stevedore" ,python-stevedore)
+       ("python-pyyaml" ,python-pyyaml)))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ;; Tests
-        ("python-oslo.i18n" ,python-oslo.i18n)
-        ("python-mock" ,python-mock)
-        ("python-oslotest" ,python-oslotest)
-        ("python-testscenarios" ,python-testscenarios)))
+     `(("python-bandit" ,python-bandit)
+       ("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)
+       ("python-openstackdocstheme" ,python-openstackdocstheme)
+       ("python-oslotest" ,python-oslotest)
+       ("python-reno" ,python-reno)
+       ("python-sphinx" ,python-sphinx-1.6)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testscenarios" ,python-testscenarios)
+       ("python-testtools" ,python-testtools)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo Configuration API")
     (description
@@ -387,28 +422,22 @@ common features used in Tempest.")
 (define-public python-oslo.context
   (package
     (name "python-oslo.context")
-    (version "1.0.0")
+    (version "2.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslo.context" version))
        (sha256
         (base32
-         "0kvha0rs9295njyl2z6n6zm5dapi5mrl5zwjm0m6ldqrvccyf8c3"))))
+         "0iiq9rpwg6wrdqnhf3d8z8g0g7fjhs5zn6qw6igvxplz2c3rbvvx"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Requires python-mock >= 1.2.
+    (propagated-inputs
+     `(("python-debtcollector" ,python-debtcollector)
+       ("python-pbr" ,python-pbr)))
     (native-inputs
-      `(("python-babel" ,python-babel)
-        ("python-pbr" ,python-pbr)
-        ;; Tests.
-        ("python-coverage" ,python-coverage)
-        ("python-hacking" ,python-hacking)
-        ("python-mock" ,python-mock)
-        ("python-os-client-config" ,python-os-client-config)
-        ("python-oslotest" ,python-oslotest)
-        ("python-oslosphinx" ,python-oslosphinx)
-        ("python-sphinx" ,python-sphinx)))
+     `(("python-fixtures" ,python-fixtures)
+       ("python-hacking" ,python-hacking)
+       ("python-oslotest" ,python-oslotest)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo context library")
     (description
@@ -423,17 +452,15 @@ pipeline and used by various modules such as logging.")
 (define-public python-oslo.i18n
   (package
     (name "python-oslo.i18n")
-    (version "3.0.0")
+    (version "3.19.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "oslo.i18n" version))
         (sha256
           (base32
-           "0bpb1c20sm8my650gl824nzaip83bfn8hr91s65k5ncmyh8hb6pl"))))
+           "18lbfq55cqrbmwm5p6vci9mkjfzr0zwz54ax3ysa463wba5m84cp"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Circular dependency on python-oslo.config.
     (propagated-inputs
       `(("python-babel" ,python-babel)
         ("python-six" ,python-six)))
@@ -458,34 +485,33 @@ in an application or library.")
 (define-public python-oslo.log
   (package
   (name "python-oslo.log")
-  (version "1.6.0")
+  (version "3.36.0")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append
-             "https://pypi.python.org/packages/source/o/oslo.log/oslo.log-"
-             version
-             ".tar.gz"))
+      (uri (pypi-uri "oslo.log" version))
       (sha256
         (base32
-          "1fhy6yvbd565nv4x4i3ppyrlbmz3yy9d0xsvw5nkqsa7g43nmf8z"))))
+          "0h7hplf1h8k24v75m3mq1jlrl74x5ynyr4hwgffsg5campxnza4x"))))
   (build-system python-build-system)
-  (arguments
-   '(#:tests? #f)) ; FIXME: Requires oslo.utils >= 3.2.0.
   (propagated-inputs
-   `(("python-debtcollector" ,python-debtcollector)
+   `(("python-dateutil" ,python-dateutil)
+     ("python-debtcollector" ,python-debtcollector)
+     ("python-monotonic" ,python-monotonic)
      ("python-oslo.config" ,python-oslo.config)
      ("python-oslo.context" ,python-oslo.context)
      ("python-oslo.i18n" ,python-oslo.i18n)
      ("python-oslo.utils" ,python-oslo.utils)
      ("python-oslo.serialization" ,python-oslo.serialization)
+     ("python-pbr" ,python-pbr)
+     ("python-pyinotify" ,python-pyinotify)
      ("python-six" ,python-six)))
   (native-inputs
-    `(("python-babel" ,python-babel)
-      ("python-iso8601" ,python-iso8601)
-      ("python-mock" ,python-mock)
+    `(("python-mock" ,python-mock)
       ("python-oslotest" ,python-oslotest)
-      ("python-pbr" ,python-pbr)))
+      ("python-subunit" ,python-subunit)
+      ("python-testrepository" ,python-testrepository)
+      ("python-testtools" ,python-testtools)))
   (home-page "https://launchpad.net/oslo")
   (synopsis "Python logging library of the Oslo project")
   (description
@@ -500,27 +526,23 @@ handlers and support for context specific logging (like resource id’s etc).")
 (define-public python-oslo.serialization
   (package
     (name "python-oslo.serialization")
-    (version "2.2.0")
+    (version "2.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslo.serialization" version))
        (sha256
         (base32
-         "00s03krhf833gs76aw5ns32w9m1i4hx6x6d9g82m0j5wyqk0sci4"))))
+         "08bxkp98c617y58x630xq44iiffm7f0f3cwh6zbnlkgq0zgh7jk1"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Requires python-oslo.utils >= 3.2.0.
     (propagated-inputs
-      `(("python-iso8601" ,python-iso8601)
+      `(("python-msgpack" ,python-msgpack)
         ("python-netaddr" ,python-netaddr)
         ("python-oslo.utils" ,python-oslo.utils)
-        ("python-simplejson" ,python-simplejson)
         ("python-six" ,python-six)
         ("python-pytz" ,python-pytz)))
     (native-inputs
-      `(("python-babel" ,python-babel)
-        ("python-pbr" ,python-pbr)
+      `(("python-pbr" ,python-pbr)
         ;; Tests.
         ("python-mock" ,python-mock)
         ("python-oslo.i18n" ,python-oslo.i18n)
@@ -530,21 +552,28 @@ handlers and support for context specific logging (like resource id’s etc).")
     (description
       "The oslo.serialization library provides support for representing objects
 in transmittable and storable formats, such as JSON and MessagePack.")
+    (properties `((python2-variant . ,(delay python2-oslo.serialization))))
     (license asl2.0)))
 
 (define-public python2-oslo.serialization
-  (package-with-python2 python-oslo.serialization))
+  (let ((base (package-with-python2 (strip-python2-variant
+                                     python-oslo.serialization))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-ipaddress" ,python2-ipaddress)
+         ,@(package-native-inputs base))))))
 
 (define-public python-reno
   (package
     (name "python-reno")
-    (version "2.0.3")
+    (version "2.7.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "reno" version))
         (sha256
-          (base32 "1i2wnn5fnm3jm5774pahg000q0lma5i913hml91bbbm2mybphndd"))))
+          (base32 "0gwzi5dvacqx43smxl3rd1z33npn7gfhm50bvgmq90fib2q431wc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -554,33 +583,27 @@ in transmittable and storable formats, such as JSON and MessagePack.")
              ;; reno expects a git repo
              (zero? (system* "git" "init")))))))
     (propagated-inputs
-      `(("python-babel" ,python-babel)
-        ("python-dulwich" ,python-dulwich)
+      `(("python-dulwich" ,python-dulwich)
+        ("python-pbr" ,python-pbr)
         ("python-pyyaml" ,python-pyyaml)
         ("python-six" ,python-six)))
     (native-inputs
       `(("python-testtools" ,python-testtools)
-        ("python-pbr" ,python-pbr)
         ("python-testscenarios" ,python-testscenarios)
         ("python-testrepository" ,python-testrepository)
         ("python-mock" ,python-mock)
-        ("python-oslotest" ,python-oslotest)
+        ("python-docutils" ,python-docutils)
+        ("python-sphinx" ,python-sphinx)
         ("gnupg" ,gnupg)
         ("git" ,git)))
     (home-page "http://docs.openstack.org/developer/reno/")
     (synopsis "Release notes manager")
     (description "Reno is a tool for storing release notes in a git repository
 and building documentation from them.")
-    (properties `((python2-variant . ,(delay python2-reno))))
     (license asl2.0)))
 
 (define-public python2-reno
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-reno)))
-           (arguments
-            `(#:python ,python-2
-              ;; FIXME: 'subunit.run discover: error: no such option: --list'
-              #:tests? #f))))
+  (package-with-python2 python-reno))
 
 (define-public python-oslosphinx
   (package
@@ -623,65 +646,49 @@ from the OpenStack project.")
 (define-public python-oslotest
   (package
     (name "python-oslotest")
-    (version "1.10.0")
+    (version "3.2.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/o/oslotest/oslotest-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "oslotest" version))
         (sha256
           (base32
-            "0l3ny48ddz5xbf0v4r0jv1yhbdzinc2vy0lybhdkmx3xy0b886fs"))))
+            "1xay6wjxzqm4bg87fahqas84dhvhgf1gghzldkcczsfx897mqdkh"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-fixtures" ,python-fixtures)
         ("python-mock" ,python-mock)
         ("python-mox3" ,python-mox3)
-        ("python-six" ,python-six)))
-    (native-inputs
-      `(("python-pbr" ,python-pbr)
         ("python-os-client-config" ,python-os-client-config)
+        ("python-six" ,python-six)
         ("python-subunit" ,python-subunit)
         ("python-testrepository" ,python-testrepository)
-        ("python-testscenarios" ,python-testscenarios)
         ("python-testtools" ,python-testtools)))
+    (native-inputs
+      `(("python-pbr" ,python-pbr)
+        ("python-testscenarios" ,python-testscenarios)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo test framework")
     (description
       "The Oslo Test framework provides common fixtures, support for debugging,
 and better support for mocking results.")
-    (properties `((python2-variant . ,(delay python2-oslotest))))
     (license asl2.0)))
 
 (define-public python2-oslotest
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-oslotest)))
-           (arguments
-            `(#:python ,python-2
-              ;; FIXME: 'subunit.run discover: error: no such option: --list'
-              #:tests? #f))))
+  (package-with-python2 python-oslotest))
 
 (define-public python-oslo.utils
   (package
     (name "python-oslo.utils")
-    (version "3.0.0")
+    (version "3.35.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "oslo.utils" version))
         (sha256
           (base32
-           "1c4jrbvfs4hs37fics8frqlyhmsv7v92ncv2cpbm0av9x0ic6pnj"))
-        (snippet
-         '(begin
-            ;; FIXME: setuptools fails to import this file during the test
-            ;; phase.
-            (delete-file "oslo_utils/tests/test_netutils.py")))))
+           "1ai9yyasyh1563khsri6ryk6iqdprmyiashg377m9h4nmv700ybx"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Requires oslo.config >= 2.7.0.
     (propagated-inputs
       `(("python-debtcollector" ,python-debtcollector)
         ("python-oslo.i18n" ,python-oslo.i18n)
@@ -689,18 +696,21 @@ and better support for mocking results.")
         ("python-monotonic" ,python-monotonic)
         ("python-netaddr" ,python-netaddr)
         ("python-netifaces" ,python-netifaces)
+        ("python-pyparsing" ,python-pyparsing)
         ("python-pytz" ,python-pytz)
         ("python-six" ,python-six)))
     (native-inputs
-      `(("python-babel" ,python-babel)
-        ("python-pbr" ,python-pbr)
+      `(("python-pbr" ,python-pbr)
         ;; Tests.
         ("python-bandit" ,python-bandit)
+        ("python-ddt" ,python-ddt)
+        ("python-fixtures" ,python-fixtures)
         ("python-oslo.config" ,python-oslo.config)
         ("python-oslotest" ,python-oslotest)
         ("python-mock" ,python-mock)
-        ("python-mox3" ,python-mox3)
-        ("python-testscenarios" ,python-testscenarios)))
+        ("python-testrepository" ,python-testrepository)
+        ("python-testscenarios" ,python-testscenarios)
+        ("python-testtools" ,python-testtools)))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo utility library")
     (description
@@ -827,25 +837,16 @@ data that best fit this type of storage model are virtual machine images, photo
 storage, email storage and backup archiving.  Having no central \"brain\" or
 master point of control provides greater scalability, redundancy and
 permanence.")
-  (license asl2.0)))
+    (properties `((python2-variant . ,(delay python2-swiftclient))))
+    (license asl2.0)))
 
 (define-public python2-swiftclient
-  (let ((swiftclient (package-with-python2 python-swiftclient)))
+  (let ((swiftclient (package-with-python2
+                      (strip-python2-variant python-swiftclient))))
     (package (inherit swiftclient)
-      (arguments
-       `(#:python ,python-2
-         ;; FIXME: subunit.run discover: error: no such option: --list
-         #:tests? #f))
       (propagated-inputs
        `(("python2-futures" ,python2-futures)
-         ("python2-requests" ,python2-requests)
-         ,@(alist-delete "python-requests"
-                         (package-propagated-inputs swiftclient))))
-      (native-inputs
-       `(("python2-keystoneclient" ,python2-keystoneclient)
-         ("python2-oslosphinx" ,python2-oslosphinx)
-         ,@(fold alist-delete (package-native-inputs swiftclient)
-            '("python-keystoneclient" "python-oslosphinx")))))))
+         ,@(package-propagated-inputs swiftclient))))))
 
 (define-public python-git-review
   (package

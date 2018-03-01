@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -124,7 +125,7 @@
        ;; '--autolaunch'.
        ("libx11" ,libx11)))
 
-    (home-page "http://dbus.freedesktop.org/")
+    (home-page "https://www.freedesktop.org/wiki/Software/dbus/")
     (synopsis "Message bus for inter-process communication (IPC)")
     (description
      "D-Bus is a message bus system, a simple way for applications to
@@ -461,7 +462,7 @@ translated.")
     (native-inputs
      `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
-    (home-page "http://dbus.freedesktop.org/doc/dbus-glib/")
+    (home-page "https://dbus.freedesktop.org/doc/dbus-glib/")
     (synopsis "D-Bus GLib bindings")
     (description
      "GLib bindings for D-Bus.  The package is obsolete and superseded
@@ -622,6 +623,33 @@ useful for C++.")
        ("python-pycairo" ,python2-pycairo)
        ("gobject-introspection" ,gobject-introspection)))))
 
+(define-public perl-glib
+  (package
+    (name "perl-glib")
+    (version "1.326")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/X/XA/XAOC/Glib-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0prn9kkdpwjq9qmzqashbhk3pq4gvlrmvm3b10xf1dhc48406382"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "http://search.cpan.org/dist/Glib/")
+    (synopsis "Perl wrappers for the GLib utility and Object libraries")
+    (description "This module provides perl access to GLib and GLib's GObject
+libraries.  GLib is a portability and utility library; GObject provides a
+generic type system with inheritance and a powerful signal system.  Together
+these libraries are used as the foundation for many of the libraries that make
+up the Gnome environment, and are used in many unrelated projects.")
+    (license license:lgpl2.1+)))
+
 (define telepathy-glib
   (package
     (name "telepathy-glib")
@@ -662,7 +690,7 @@ useful for C++.")
      `(("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
        ("glib" ,glib)))
-    (home-page "http://telepathy.freedesktop.org/wiki/")
+    (home-page "https://telepathy.freedesktop.org/wiki/")
     (synopsis "GLib Real-time communications framework over D-Bus")
     (description "Telepathy is a flexible, modular communications framework
 that enables real-time communication over D-Bus via pluggable protocol

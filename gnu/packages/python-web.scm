@@ -165,14 +165,14 @@ both of which are installed automatically if you install this library.")
 (define-public python-html5lib
   (package
     (name "python-html5lib")
-    (version "1.0b10")
+    (version "1.0.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "html5lib" version))
         (sha256
           (base32
-            "1yd068a5c00wd0ajq0hqimv7fd82lhrw0w3s01vbhy9bbd6xapqd"))))
+            "0dipzfrycv6j1jw82v9b7d8lzggx3x8xngx6l4xrqkxwvg7hvjv6"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
@@ -241,13 +241,13 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
 (define-public python-webencodings
   (package
     (name "python-webencodings")
-    (version "0.5")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "webencodings" version))
               (sha256
                (base32
-                "015rw7662lkpb9aqiqah2hbizk6w531badqwjpz41rr47glmxid5"))))
+                "08qrgrc4hrximb2gqnl69g01s93rhf2842jfxdjljc1dbwj1qsmk"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

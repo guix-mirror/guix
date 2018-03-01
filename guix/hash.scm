@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -159,7 +159,6 @@ data read from PORT.  The thunk always returns the same value."
 
   (define (unbuffered port)
     ;; Guile <= 2.0.9 does not support 'setvbuf' on custom binary input ports.
-    ;; If you get a wrong-type-arg error here, the fix is to upgrade Guile.  :-)
     (setvbuf port _IONBF)
     port)
 

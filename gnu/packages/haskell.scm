@@ -5755,6 +5755,8 @@ representations of current time.")
        (sha256
         (base32 "0jkca97zyv23yyilp3jydcrzxqhyk27swhzh82llvban5zp8b21y"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-random" ,ghc-random)
        ("ghc-test-framework" ,ghc-test-framework)
@@ -7358,6 +7360,8 @@ Haskell, using gnuplot for rendering.")
        (sha256
         (base32 "1b6w9xznk42732vpd8ili60k12yq190xnajgga0iwbdpyg424lgg"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=vector")))
     (inputs
      `(("ghc-hashable" ,ghc-hashable)
        ("ghc-primitive" ,ghc-primitive)

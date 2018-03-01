@@ -9,13 +9,14 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,8 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -89,7 +92,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.2.4")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -98,10 +101,17 @@ human.")
                            version "-src.tar.xz"))
        (sha256
         (base32
-         "1pfkq1m5vb90kx67vyw70s1hc4ivjsvq2535vm6wdwwsncna6bz5"))))
+         "1v6v59fnbbsssbwy4is6hh2l4qqwy3ddb6dp2jk8clx0xbd5hn7c"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DWITH_XC_NETWORKING=YES"
+                           "-DWITH_XC_BROWSER=YES"
+                           "-DWITH_XC_SSHAGENT=YES")))
     (inputs
-     `(("libgcrypt" ,libgcrypt)
+     `(("argon2" ,argon2)
+       ("curl" ,curl) ; XC_NETWORKING
+       ("libgcrypt" ,libgcrypt)
+       ("libsodium" ,libsodium) ; XC_BROWSER
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)
        ("qtbase" ,qtbase)
@@ -271,7 +281,7 @@ random passwords that pass the checks.")
 (define-public assword
   (package
     (name "assword")
-    (version "0.10")
+    (version "0.11")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -280,7 +290,7 @@ random passwords that pass the checks.")
                      "assword_" version ".orig.tar.gz")))
               (sha256
                (base32
-                "0l6170y6my1gprqkazvzabgjkrkr9v2q7z48vjflna4r323yqira"))))
+                "03gkb6kvsghznbcw5l7nmrc6mn3ixkjd5jcs96ni4zs9l47jf7yp"))))
     (arguments
      `(;; irritatingly, tests do run but not there are two problems:
        ;;  - "import gtk" fails for unknown reasons here despite it the
@@ -603,3 +613,31 @@ password hash types most commonly found on various Unix systems, supported out
 of the box are Windows LM hashes, plus lots of other hashes and ciphers.  This
 is the community-enhanced, \"jumbo\" version of John the Ripper.")
       (license license:gpl2+))))
+
+(define-public sala
+  (package
+    (name "sala")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sala" version))
+       (sha256
+        (base32
+         "13qgmc3i2a0cqp8jqrfl93lnphfagb32pgfikc1gza2a14asxzi8"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Sala is supposed to work with Python 3.2 or higher,
+     ;; but it doesn't work with Python 3.6. Better stick
+     ;; to Python 2, which works fine.
+     `(#:python ,python-2))
+    (propagated-inputs
+     `(("gnupg" ,gnupg)
+       ("pwgen" ,pwgen)))
+    (home-page "http://www.digip.org/sala/")
+    (synopsis "Encrypted plaintext password store")
+    (description
+     "Store passwords and other bits of sensitive plain-text information
+to encrypted files on a directory hierarchy.  The information is protected
+by GnuPG's symmetrical encryption.")
+    (license license:expat)))

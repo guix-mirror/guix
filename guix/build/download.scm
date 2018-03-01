@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -320,14 +320,6 @@ host name without trailing dot."
    ((string? uri-or-string) (string->uri uri-or-string))
    ((uri? uri-or-string) uri-or-string)
    (else (error "Invalid URI" uri-or-string))))
-
-(define current-http-proxy
-  ;; XXX: Add a dummy definition for Guile < 2.0.10; this is used in
-  ;; 'open-socket-for-uri'.
-  (or (and=> (module-variable (resolve-interface '(web client))
-                              'current-http-proxy)
-             variable-ref)
-      (const #f)))
 
 (define* (open-socket-for-uri uri-or-string #:key timeout)
   "Return an open input/output port for a connection to URI.  When TIMEOUT is

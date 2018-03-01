@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
@@ -67,14 +69,14 @@
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.18.7")
+    (version "0.18.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0wap67mb03fl2himbs20yncnnrr71mszsfm2v4spks58c714gqw7"))))
+                "1qi0fkw2zmd0yplrf79z7lgpz0hxl45dj5rdgpaj7283jzys9b2n"))))
     (build-system gnu-build-system)
     (home-page "https://www.libraw.org")
     (synopsis "Raw image decoder")
@@ -465,3 +467,57 @@ user interface.  It can be used to assemble a mosaic of photographs into
 a complete panorama and stitch any series of overlapping pictures.")
     (license license:gpl2+)))
 
+(define-public rawtherapee
+  (package
+    (name "rawtherapee")
+    (version "5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://rawtherapee.com/shared/source/"
+                                  "rawtherapee-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1y1ygxqmqfp4zg8rcgrlfdc1597cyr5zqgp5zjpldhvwdfa9r5cp"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; no test suite
+       #:configure-flags
+       (list (string-append "-DLENSFUNDBDIR="
+                            (assoc-ref %build-inputs "lensfun")
+                            "/share/lensfun")
+             "-DCMAKE_BUILD_TYPE=release"
+             ; Don't optimize the build for the host machine. See the file
+             ; 'ProcessorTargets.cmake' in the source distribution for more
+             ; information.
+             "-DPROC_TARGET_NUMBER=1"
+             ; These flags are recommended by upstream for distributed packages.
+             ; See the file 'RELEASE_NOTES.txt' in the source distribution.
+             "-O3"
+             "-DCACHE_NAME_SUFFIX=\"\"")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("expat" ,expat)
+       ("fftw" ,fftwf)
+       ("glib" ,glib)
+       ("glibmm" ,glibmm)
+       ("gtk+" ,gtk+)
+       ("gtkmm" ,gtkmm)
+       ("lcms" ,lcms)
+       ("lensfun" ,lensfun)
+       ("libcanberra" ,libcanberra)
+       ("libiptcdata" ,libiptcdata)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libsigc++" ,libsigc++)
+       ("libtiff" ,libtiff)
+       ("zlib" ,zlib)))
+    (home-page "http://rawtherapee.com")
+    (synopsis "Raw image developing and processing")
+    (description "RawTherapee is a raw image processing suite.  It comprises a
+subset of image editing operations specifically aimed at non-destructive raw
+photo post-production and is primarily focused on improving a photographer's
+workflow by facilitating the handling of large numbers of images.  Most raw
+formats are supported, including Pentax Pixel Shift, Canon Dual-Pixel, and those
+from Foveon and X-Trans sensors.")
+    (license license:gpl3+)))

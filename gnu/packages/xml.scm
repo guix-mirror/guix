@@ -425,7 +425,7 @@ XML parser and the high performance DOM implementation.")
 (define-public perl-xml-libxslt
   (package
     (name "perl-xml-libxslt")
-    (version "1.95")
+    (version "1.96")
     (source
      (origin
        (method url-fetch)
@@ -433,7 +433,7 @@ XML parser and the high performance DOM implementation.")
                            "XML-LibXSLT-" version ".tar.gz"))
        (sha256
         (base32
-         "0dggycql18kfxzkb1kw3yc7gslxlrrgyyn2r2ygsylycb89j3jpi"))))
+         "0wyl8klgr65j8y8fzgwz9jlvfjwvxazna8j3dg9gksd2v973fpia"))))
     (build-system perl-build-system)
     (inputs
      `(("libxslt" ,libxslt)))
@@ -538,7 +538,7 @@ building Perl SAX2 XML parsers, filters, and drivers.")
 (define-public perl-xml-sax-base
   (package
     (name "perl-xml-sax-base")
-    (version "1.08")
+    (version "1.09")
     (source
      (origin
        (method url-fetch)
@@ -546,7 +546,7 @@ building Perl SAX2 XML parsers, filters, and drivers.")
                            "XML-SAX-Base-" version ".tar.gz"))
        (sha256
         (base32
-         "17i161rq1ngjlk0c8vdkrkkc56y1pf51k1g54y28py0micqp0qk6"))))
+         "1l1ai9g1z11ja7mvnfl5mj346r13jyckbg9qlw6c2izglidkbjv6"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/XML-SAX-Base")
     (synopsis "Base class for SAX Drivers and Filters")
@@ -1109,7 +1109,7 @@ XSLT and EXSLT.")
 (define-public html-xml-utils
  (package
    (name "html-xml-utils")
-   (version "7.5")
+   (version "7.6")
    (source
     (origin
       (method url-fetch)
@@ -1118,7 +1118,7 @@ XSLT and EXSLT.")
             version ".tar.gz"))
       (sha256
        (base32
-        "0cbmqa9c4bc4ikk7vmgd65ixh2pl9mr336c4his3m8l7rgsjnh8n"))))
+        "0l97ps089byy62838wf2jwvvc465iw29z9r5kwmwcq7f3bn11y3m"))))
    (build-system gnu-build-system)
    (home-page "https://www.w3.org/Tools/HTML-XML-utils/")
    (synopsis "Command line utilities to manipulate HTML and XML files")

@@ -2373,7 +2373,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "1.6")
+    (version "1.7.1")
     (source
      (origin
       (method url-fetch)
@@ -2381,7 +2381,7 @@ make it a perfect utility on modern distros.")
                           version ".tar.gz"))
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256 (base32
-               "14klz9fnvi9jdlaqwrp61xa5nh051n8ykrs1fh1wxd7j66qf2fn6"))))
+               "0isgmav3z3nb5bsdya8m3haqhzj1lyfjx7i812cqfjrh2a9msin4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -2389,6 +2389,7 @@ make it a perfect utility on modern distros.")
                    'unpack 'autogen.sh-and-fix-paths
                    (lambda* (#:key outputs #:allow-other-keys)
                      (let ((out (assoc-ref outputs "out")))
+                       ;; XXX this can probably be removed after version 1.7.1.
                        ;; upstartconfir is hardcoded to /etc/init and the build
                        ;; system tries to mkdir that.  We don't even need upstart
                        ;; files at all; this is a fast and kludgy workaround
@@ -2397,7 +2398,8 @@ make it a perfect utility on modern distros.")
                           (string-append "upstartconfdir = "
                                          out "/etc/init")))
                        ;; Now run autogen
-                       (zero? (system* "sh" "autogen.sh"))))))
+                       (invoke "sh" "autogen.sh")
+                       #t))))
        #:configure-flags
        (let ((out      (assoc-ref %outputs "out")))
          (list (string-append "--sysconfdir="

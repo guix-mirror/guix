@@ -190,7 +190,7 @@ into other word processors.")
 (define-public libe-book
   (package
     (name "libe-book")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
       (origin
         (method url-fetch)
@@ -198,7 +198,7 @@ into other word processors.")
                             version "/libe-book-" version ".tar.xz"))
         (sha256
           (base32
-            "1v48pd32r2pfysr3a3igc4ivcf6vvb26jq4pdkcnq75p70alp2bz"))))
+            "1yg1vws1wggzhjw672bpgh2x541g5i9wryf67g51m0r79zrqz3by"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -206,6 +206,7 @@ into other word processors.")
        ("pkg-config" ,pkg-config)))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
      `(("icu4c" ,icu4c)
+       ("liblangtag" ,liblangtag)
        ("librevenge" ,librevenge)
        ("libxml2" ,libxml2)))
     (inputs
@@ -295,14 +296,14 @@ as Alfresco or Nuxeo.")
 (define-public libabw
   (package
     (name "libabw")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+      (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0zi1zj4fpxgpglbbb5n1kg3dmhqq5rpf46lli89r5daavp19iing"))))
+               "11949iscdb99f2jplxjd39282jxcrf2fw0sqbh5dl7gqb96r8whb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -428,7 +429,7 @@ standard 21.0.2.")
       (sha256 (base32
                "1j6sjwkyhqvsgyw938bxxfwkzzi1mahk66g5342lv6j89jfvrz8k"))))
     (build-system gnu-build-system)
-    (home-page "http://www.freedesktop.org/wiki/Software/libexttextcat/")
+    (home-page "https://www.freedesktop.org/wiki/Software/libexttextcat/")
     (synopsis "Text Categorization library")
     (description "Libexttextcat is an N-Gram-Based Text Categorization
 library primarily intended for language guessing.")
@@ -468,14 +469,14 @@ Aldus/Macromedia/Adobe FreeHand documents.")
 (define-public libmspub
   (package
     (name "libmspub")
-    (version "0.1.2")
+    (version "0.1.4")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+      (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "03sn6lxpr49sdq6j8q7fw7yjybyfahhs03z80388mh105pwapfmh"))))
+               "1fhkn013gzg59f4z7rldpbi0nj7lgdqzxanspsqa6axvmahw2dpg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -495,14 +496,14 @@ Microsoft Publisher documents of all versions.")
 (define-public libpagemaker
   (package
     (name "libpagemaker")
-    (version "0.0.3")
+    (version "0.0.4")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+      (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "1minj0q14d44qfas81a8lkpgj288h5xlkjp084sfx17xv9axr5nq"))))
+               "17ai8ajffr0ixxmmcv3k5vgjlcsix38ldb4fw2arild70pbsrbb6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)

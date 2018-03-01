@@ -448,14 +448,14 @@ instead of @command{python3}.")))
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "4.3.0")
+    (version "5.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
         (base32
-         "1w4r09fvn6kd80m5mx4ws1wz100brkaq6hzzpwrns8cgjzjpl6c6"))))
+         "063v69x7spyclyaxrd3gmzj3p16q5ayg97xqhwb1kyn22a9pwip2"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: some tests does not return and times out.
@@ -470,10 +470,16 @@ limiting process resources and management of running processes.  It implements
 many functionalities offered by command line tools such as: ps, top, lsof,
 netstat, ifconfig, who, df, kill, free, nice, ionice, iostat, iotop, uptime,
 pidof, tty, taskset, pmap.")
+    (properties `((python2-variant . ,(delay python2-psutil))))
     (license license:bsd-3)))
 
 (define-public python2-psutil
-  (package-with-python2 python-psutil))
+  (let ((base (package-with-python2 (strip-python2-variant python-psutil))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-enum34" ,python2-enum34)         ;optional
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-shapely
   (package
@@ -1386,26 +1392,15 @@ backported for previous versions of Python from 2.4 to 3.3.")
 (define-public python-parse-type
   (package
     (name "python-parse-type")
-    (version "0.3.4")
+    (version "0.4.2")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/p/"
-                          "parse_type/parse_type-" version ".tar.gz"))
+      (uri (pypi-uri "parse_type" version))
       (sha256
        (base32
-        "0iv1c34npr4iynwpgv1vkjx9rjd18a85ir8c01gc5f7wp8iv7l1x"))))
+        "0g3b6gsdwnm8dpkh2vn34q6dzxm9gl908ggyzcv31n9xbp3vv5pm"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-tests
-           (lambda _
-             (substitute* "tests/test_parse_type_parse.py"
-               ;; Newer Python versions don't have the problem this test tests.
-               (("self[.]assertRaises[(]parse.TooManyFields, p.parse, ''[)]")
-                ""))
-             #t)))))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-parse" ,python-parse)))
@@ -1431,21 +1426,20 @@ backported for previous versions of Python from 2.4 to 3.3.")
 (define-public python-parse
   (package
     (name "python-parse")
-    (version "1.6.6")
+    (version "1.8.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "parse" version))
       (sha256
        (base32
-        "0y31i3mwgv35qn0kzzjn9q8jqfdqmbi6sr6yfvn8rq4lqjm5lhvi"))
-      (patches (search-patches "python-parse-too-many-fields.patch"))))
+        "1lj9v1q4imszyhvipb6drsm3xdl35nan011mqxxas1yaypixsj40"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (zero? (system* "python" "test_parse.py")))))))
+           (lambda _ (invoke "python" "test_parse.py"))))))
     (home-page "https://github.com/r1chardj0n3s/parse")
     (synopsis "Parse strings")
     (description
@@ -1512,19 +1506,17 @@ software.")
 (define-public python-extras
   (package
     (name "python-extras")
-    (version "0.0.3")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/e/extras/extras-"
-             version ".tar.gz"))
+       (uri (pypi-uri "extras" version))
        (sha256
         (base32
-         "1h7zx4dfyclalg0fqnfjijpn0f793a9mx8sy3b27gd31nr6dhq3s"))))
+         "0khvm08rcwm62wc47j8niyl6h13f8w51c8669ifivjdr23g3cbhk"))))
     (build-system python-build-system)
     (arguments
-     ;; error in setup.cfg: command 'test' has no such option 'buffer'
+     ;; FIXME: Circular dependency on testtools.
      '(#:tests? #f))
     (home-page "https://github.com/testing-cabal/extras")
     (synopsis "Useful extensions to the Python standard library")
@@ -1701,15 +1693,15 @@ code introspection, and logging.")
     (propagated-inputs
       `(("git" ,git))) ;; pbr actually uses the "git" binary.
     (native-inputs
-      `(("python-fixtures" ,python-fixtures)
+      `(("python-fixtures" ,python-fixtures-bootstrap)
         ;; discover, coverage, hacking, subunit
         ("python-mock" ,python-mock)
         ("python-six" ,python-six)
         ("python-sphinx" ,python-sphinx)
-        ("python-testrepository" ,python-testrepository)
-        ("python-testresources" ,python-testresources)
-        ("python-testscenarios" ,python-testscenarios)
-        ("python-testtools" ,python-testtools)
+        ("python-testrepository" ,python-testrepository-bootstrap)
+        ("python-testresources" ,python-testresources-bootstrap)
+        ("python-testscenarios" ,python-testscenarios-bootstrap)
+        ("python-testtools" ,python-testtools-bootstrap)
         ("python-virtualenv" ,python-virtualenv)))
     (synopsis "Enhance the default behavior of Python’s setuptools")
     (description
@@ -2426,7 +2418,17 @@ sources.")
      `(("python-pytest" ,python-pytest)
        ("imagemagick" ,imagemagick) ; for "convert"
        ,@(package-native-inputs python-sphinx)))
-    (properties '())))
+    (properties `((python2-variant . ,(delay python2-sphinx-1.6))))))
+
+(define-public python2-sphinx-1.6
+  (let ((base (package-with-python2 (strip-python2-variant python-sphinx-1.6))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-typing" ,python2-typing)
+         ,@(package-propagated-inputs base)))
+      (native-inputs `(("python2-enum34" ,python2-enum34)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-sphinx-1.5.3
   (package
@@ -4282,15 +4284,14 @@ them as the version argument or in a SCM managed file.")
 (define-public python-pathpy
   (package
     (name "python-pathpy")
-    (version "8.1.1")
+    (version "11.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "path.py/path.py-" version ".tar.gz"))
+       (uri (pypi-uri "path.py" version))
        (sha256
-        (base32 "1p8s1l2vfkqhqxdhqlj0g1jjw4f1as2frr35sjcpjjpd5a89y41f"))))
-    (outputs '("out" "doc"))
+        (base32 "12s84maimiz61980q065rjgi8ang6xw2wwm64m0lmfks51dlw4qn"))))
+    ;; (outputs '("out" "doc"))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)))
@@ -4301,22 +4302,24 @@ them as the version argument or in a SCM managed file.")
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'build-doc
-           (lambda _
-             (setenv "LANG" "en_US.UTF-8")
-             (zero? (system* "python" "setup.py" "build_sphinx"))))
-         (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                    (doc (string-append data "/doc/" ,name "-" ,version))
-                    (html (string-append doc "/html")))
-               (mkdir-p html)
-               (for-each (lambda (file)
-                           (copy-file file (string-append doc "/" file)))
-                         '("README.rst" "CHANGES.rst"))
-               (copy-recursively "build/sphinx/html" html)))))))
+     ;; FIXME: Documentation and tests require "jaraco.packaging".
+     `(#:tests? #f))
+    ;;    #:phases
+    ;;    (modify-phases %standard-phases
+    ;;      (add-after 'build 'build-doc
+    ;;        (lambda _
+    ;;          (setenv "LANG" "en_US.UTF-8")
+    ;;          (zero? (system* "python" "setup.py" "build_sphinx"))))
+    ;;      (add-after 'install 'install-doc
+    ;;        (lambda* (#:key outputs #:allow-other-keys)
+    ;;          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+    ;;                 (doc (string-append data "/doc/" ,name "-" ,version))
+    ;;                 (html (string-append doc "/html")))
+    ;;            (mkdir-p html)
+    ;;            (for-each (lambda (file)
+    ;;                        (copy-file file (string-append doc "/" file)))
+    ;;                      '("README.rst" "CHANGES.rst"))
+    ;;            (copy-recursively "build/sphinx/html" html)))))))
     (home-page "https://github.com/jaraco/path.py")
     (synopsis "Python module wrapper for built-in os.path")
     (description
@@ -4507,13 +4510,13 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python-ipython
   (package
     (name "python-ipython")
-    (version "5.3.0")
+    (version "5.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipython" version ".tar.gz"))
        (sha256
-        (base32 "079wyjir4a9qx6kvx096b1asm63djbidk65z3ykcbnlngmg62pmz"))))
+        (base32 "03qmzpfy00if10i9k8fjkam1s4xg22j73f933x5d228z9n4rwik6"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
@@ -4773,7 +4776,7 @@ toolkit.  Use it to build trees of widgets.")
     (synopsis "Python bindings for D-bus")
     (description "python-dbus provides bindings for libdbus, the reference
 implementation of D-Bus.")
-    (home-page "http://www.freedesktop.org/wiki/Software/DBusBindings/")
+    (home-page "https://www.freedesktop.org/wiki/Software/DBusBindings/")
     (license license:expat)))
 
 (define-public python2-dbus
@@ -4859,20 +4862,16 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 (define-public python-netifaces
   (package
     (name "python-netifaces")
-    (version "0.10.4")
+    (version "0.10.6")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-              "https://pypi.python.org/packages/source/n/netifaces/netifaces-"
-              version
-              ".tar.gz"))
+        (uri (pypi-uri "netifaces" version))
         (sha256
           (base32
-            "1plw237a4zib4z8s62g0mrs8gm3kjfrp5sxh6bbk9nl3rdls2mln"))))
+            "1q7bi5k2r955rlcpspx4salvkkpk28jky67fjbpz2dkdycisak8c"))))
     (build-system python-build-system)
-    (home-page
-      "https://bitbucket.org/al45tair/netifaces")
+    (home-page "https://github.com/al45tair/netifaces")
     (synopsis
       "Python module for portable network interface information")
     (description
@@ -5835,20 +5834,58 @@ should be stored on various operating systems.")
 (define-public python-msgpack
   (package
     (name "python-msgpack")
-    (version "0.4.8")
+    (version "0.5.6")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "msgpack-python" version))
+              (uri (pypi-uri "msgpack" version))
               (sha256
                (base32
-                "11pqk5braa6wndpnr1dhg64js82vjgxnm0lzy73rwl831zgijaqs"))))
+                "1hz2dba1nvvn52afg34liijsm7kn65cmn06dl0xbwld6bb4cis0f"))))
     (build-system python-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build python-build-system)
+                  (ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (let ((cwd (getcwd)))
+               (setenv "PYTHONPATH"
+                       (string-append cwd "/build/"
+                                      (find (cut string-prefix? "lib" <>)
+                                            (scandir (string-append cwd "/build")))
+                                      ":"
+                                      (getenv "PYTHONPATH")))
+             (invoke "pytest" "-v" "test")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (synopsis "MessagePack (de)serializer")
     (description "MessagePack is a fast, compact binary serialization format,
 suitable for similar data to JSON.  This package provides CPython bindings for
 reading and writing MessagePack data.")
-    (home-page "https://pypi.python.org/pypi/msgpack-python/")
+    (home-page "https://pypi.python.org/pypi/msgpack/")
     (license license:asl2.0)))
+
+;; This msgpack library's name changed from "python-msgpack" to "msgpack" with
+;; release 0.5. Some packages like borg still call it by the old name for now.
+;; <https://bugs.gnu.org/30662>
+(define-public python-msgpack-transitional
+  (package
+    (inherit python-msgpack)
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-msgpack)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'configure-transitional
+             (lambda _
+               ;; Keep using the old name.
+               (substitute* "setup.py"
+                 (("TRANSITIONAL = False")
+                   "TRANSITIONAL = 1"))
+               #t))))))))
 
 (define-public python2-msgpack
   (package-with-python2 python-msgpack))
@@ -5879,14 +5916,14 @@ and MAC network addresses.")
 (define-public python-wrapt
   (package
     (name "python-wrapt")
-    (version "1.10.8")
+    (version "1.10.11")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wrapt" version))
         (sha256
           (base32
-            "0wrcm1mydvfivbkzz0h81ygzdchnscshi6xvy5n3r21r9s0px8af"))))
+            "1ip3dwib39xhp79kblskgvz3fjzcwxgx3fs3ahdixhpjg7a61mfl"))))
     (build-system python-build-system)
     (arguments
      ;; Tests are not included in the tarball, they are only available in the
@@ -8072,21 +8109,22 @@ anymore.")
 (define-public python2-pathlib2
   (package
     (name "python2-pathlib2")
-    (version "2.1.0")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pathlib2" version))
               (sha256
                (base32
-                "0p050msg5c8d0kadv702jnfshaxrb0il765cpkgnhn6mq5hakcyy"))))
+                "1cx5gs2v9j2vnzmcrbq5l8fq2mwrr1h6pyf1sjdji2w1bavm09fk"))))
     (build-system python-build-system)
     ;; We only need the the Python 2 variant, since for Python 3 our minimum
     ;; version is 3.4 which already includes this package as part of the
     ;; standard library.
     (arguments
      `(#:python ,python-2))
-    (native-inputs
-     `(("python2-six" ,python2-six)))
+    (propagated-inputs
+     `(("python2-scandir" ,python2-scandir)
+       ("python2-six" ,python2-six)))
     (home-page "https://pypi.python.org/pypi/pathlib2/")
     (synopsis "Object-oriented file system paths - backport of standard
 pathlib module")
@@ -11093,14 +11131,19 @@ It supports both normal and Unicode strings.")
 (define-public python-scandir
   (package
     (name "python-scandir")
-    (version "1.4")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scandir" version))
        (sha256
-        (base32 "0yjrgp0mxp3d8bjkq2m1ac2ys8n76wykksvgyjrnil9gr3fx7a5d"))))
+        (base32 "0gbnhjzg42rj87ljv9kb648rfxph69ly3c8r9841dxy4d7l5pmdj"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "test/run_tests.py"))))))
     (home-page "https://github.com/benhoyt/scandir")
     (synopsis "Directory iteration function")
     (description
@@ -11108,7 +11151,9 @@ It supports both normal and Unicode strings.")
 returning a list of bare filenames, it yields DirEntry objects that include
 file type and stat information along with the name.  Using scandir() increases
 the speed of os.walk() by 2-20 times (depending on the platform and file
-system) by avoiding unnecessary calls to os.stat() in most cases.")
+system) by avoiding unnecessary calls to os.stat() in most cases.
+
+This package is part of the Python standard library since version 3.5.")
     (license license:bsd-3)))
 
 (define-public python2-scandir
@@ -11494,6 +11539,48 @@ applying JSON Patches according to RFC 6902.")
 
 (define-public python2-jsonpatch-0.4
   (package-with-python2 python-jsonpatch-0.4))
+
+(define-public python-rfc3986
+  (package
+    (name "python-rfc3986")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "rfc3986" version))
+              (sha256
+               (base32
+                "06wlmysw83f75ff84zr1yr6n0shvc2xn1n1sb4iwzqap9hf5fn44"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build python-build-system)
+                  (ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (let ((cwd (getcwd)))
+               (setenv "PYTHONPATH"
+                       (string-append cwd "/build/"
+                                      (find (cut string-prefix? "lib" <>)
+                                            (scandir (string-append cwd "/build")))
+                                      ":"
+                                      (getenv "PYTHONPATH")))
+             (invoke "pytest" "-v")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://rfc3986.readthedocs.io/")
+    (synopsis "Parse and validate URI references")
+    (description
+     "@code{rfc3986} is a Python implementation of RFC@tie{}3986 including
+validation and authority parsing.  This module also supports RFC@tie{}6874
+which adds support for zone identifiers to IPv6 addresses.")
+    (license license:asl2.0)))
+
+(define-public python2-rfc3986
+  (package-with-python2 python-rfc3986))
 
 (define-public python-rfc3987
   (package
@@ -12841,3 +12928,25 @@ interpreter. bpython's main features are
                  (("^(\\s+'bpython)(-\\S+)?(\\s+=.*',?)\\s*?$" _ name sub rest)
                   (string-append name "2" (or sub "") rest "\n")))
                #t))))))))
+
+(define-public python-pyinotify
+  (package
+    (name "python-pyinotify")
+    (version "0.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyinotify" version))
+              (sha256
+               (base32
+                "1x3i9wmzw33fpkis203alygfnrkcmq9w1aydcm887jh6frfqm6cw"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))          ;no tests
+    (home-page "https://github.com/seb-m/pyinotify")
+    (synopsis "Python library for monitoring inotify events")
+    (description
+     "@code{pyinotify} provides a Python interface for monitoring
+filesystem events on Linux.")
+    (license license:expat)))
+
+(define-public python2-pyinotify
+  (package-with-python2 python-pyinotify))

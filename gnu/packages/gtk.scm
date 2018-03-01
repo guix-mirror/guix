@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
@@ -1235,6 +1237,95 @@ extensive documentation, including API reference and a tutorial.")
      "PyGTK allows you to write full featured GTK programs in Python.  It is
 targeted at GTK 2.x, and can be used in conjunction with gnome-python to
 write GNOME applications.")
+    (license license:lgpl2.1+)))
+
+(define-public perl-cairo
+  (package
+    (name "perl-cairo")
+    (version "1.106")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/X/XA/XAOC/Cairo-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1i25kks408c54k2zxskvg54l5k3qadzm8n72ffga9jy7ic0h6j76"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (inputs
+     `(("cairo" ,cairo)))
+    (home-page "http://search.cpan.org/dist/Cairo/")
+    (synopsis "Perl interface to the cairo 2d vector graphics library")
+    (description "Cairo provides Perl bindings for the vector graphics library
+cairo.  It supports multiple output targets, including PNG, PDF and SVG.  Cairo
+produces identical output on all those targets.")
+    (license license:lgpl2.1+)))
+
+(define-public perl-gtk2
+  (package
+    (name "perl-gtk2")
+    (version "1.24992")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/Gtk2-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1044rj3wbfmgaif2jb0k28m2aczli6ai2n5yvn6pr7zjyw16kvd2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (inputs
+     `(("gtk+" ,gtk+-2)))
+    (propagated-inputs
+     `(("perl-pango" ,perl-pango)))
+    (home-page "http://search.cpan.org/dist/Gtk2/")
+    (synopsis "Perl interface to the 2.x series of the Gimp Toolkit library")
+    (description "Perl bindings to the 2.x series of the Gtk+ widget set.
+This module allows you to write graphical user interfaces in a Perlish and
+object-oriented way, freeing you from the casting and memory management in C,
+yet remaining very close in spirit to original API.")
+    (license license:lgpl2.1+)))
+
+(define-public perl-pango
+  (package
+    (name "perl-pango")
+    (version "1.227")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/Pango-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0wdcidnfnb6nm79fzfs39ivawj3x8m98a147fmcxgv1zvwia9c1l"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (inputs
+     `(("pango" ,pango)))
+    (propagated-inputs
+     `(("perl-cairo" ,perl-cairo)
+       ("perl-glib" ,perl-glib)))
+    (home-page "http://search.cpan.org/dist/Pango/")
+    (synopsis "Layout and render international text")
+    (description "Pango is a library for laying out and rendering text, with an
+emphasis on internationalization.  Pango can be used anywhere that text layout
+is needed, but using Pango in conjunction with Cairo and/or Gtk2 provides a
+complete solution with high quality text handling and graphics rendering.
+
+Dynamically loaded modules handle text layout for particular combinations of
+script and font backend.  Pango provides a wide selection of modules, including
+modules for Hebrew, Arabic, Hangul, Thai, and a number of Indic scripts.
+Virtually all of the world's major scripts are supported.
+
+In addition to the low level layout rendering routines, Pango includes
+@code{Pango::Layout}, a high level driver for laying out entire blocks of text,
+and routines to assist in editing internationalized text.")
     (license license:lgpl2.1+)))
 
 (define-public girara

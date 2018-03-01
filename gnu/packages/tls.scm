@@ -125,7 +125,7 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.9")
+    (version "0.23.10")
     (source
      (origin
       (method url-fetch)
@@ -133,7 +133,7 @@ in intelligent transportation networks.")
                           "download/" version "/p11-kit-" version ".tar.gz"))
       (sha256
        (base32
-        "0qyvnkb5hfi94wv3bn67y20hcbbvynvjwxpk7k9sh1si6ff69hg1"))))
+        "0hxfwnyb5yllvlsh0cj6favcph36gm94b6df7zhl7xay48zjl8gr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -797,7 +797,15 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "1vsmgxnw7dpvma51896n63yaf9sncmf885ax2jfcg89ssin6vdmf"))))
+         "1vsmgxnw7dpvma51896n63yaf9sncmf885ax2jfcg89ssin6vdmf"))
+       ;; An RFC 5114 constant was accidentally renamed in version 2.7.0.
+       ;; See https://github.com/ARMmbed/mbedtls/pull/1362.
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "include/mbedtls/dhm.h"
+             (("#define MBEDTLS_DHM_RFC5114_MODP_P")
+              "#define MBEDTLS_DHM_RFC5114_MODP_2048_P"))))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

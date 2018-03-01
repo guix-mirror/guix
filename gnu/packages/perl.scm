@@ -1341,7 +1341,7 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
 (define-public perl-config-autoconf
   (package
     (name "perl-config-autoconf")
-    (version "0.309")
+    (version "0.315")
     (source
      (origin
        (method url-fetch)
@@ -1349,7 +1349,7 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
                            "Config-AutoConf-" version ".tar.gz"))
        (sha256
         (base32
-         "1nqc7calfny12dwfhz7ylsvx55nf69kirdc5dbyvh3sjsqj8yvdq"))))
+         "0h39x9rzrhhilpg8yxlzpka269qrzsjg0iy0c1b9xflqlvhx2g2b"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
@@ -1720,7 +1720,7 @@ indentation and newlines plus sub deparsing.")
 (define-public perl-data-optlist
   (package
     (name "perl-data-optlist")
-    (version "0.109")
+    (version "0.110")
     (source
      (origin
        (method url-fetch)
@@ -1729,7 +1729,7 @@ indentation and newlines plus sub deparsing.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1j44rm2spprlq3bc80cxni3dzs3gfjiqv1qc9q7820n1qj0wgmqw"))))
+         "1hzmgr2imdg1fc3hmwx0d56fhsdfyrgmgx7jb4jkyiv6575ifq9n"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-sub-install" ,perl-sub-install)
@@ -2585,7 +2585,7 @@ based memory management, circular references will cause memory leaks.")
 (define-public perl-devel-globaldestruction
   (package
     (name "perl-devel-globaldestruction")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
@@ -2593,7 +2593,7 @@ based memory management, circular references will cause memory leaks.")
                            "Devel-GlobalDestruction-" version ".tar.gz"))
        (sha256
         (base32
-         "0qn4iszgylnxjdkb6430f6a3ci7bcx9ih1az6bd5cbij1pf2965j"))))
+         "1aslj6myylsvzr0vpqry1cmmvzbmpbdcl4v9zrl18ccik7rabf1l"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-sub-exporter-progressive" ,perl-sub-exporter-progressive)))
@@ -3104,7 +3104,7 @@ extensions")
 (define-public perl-extutils-installpaths
   (package
     (name "perl-extutils-installpaths")
-    (version "0.010")
+    (version "0.011")
     (source
      (origin
        (method url-fetch)
@@ -3112,7 +3112,7 @@ extensions")
                            "ExtUtils-InstallPaths-" version ".tar.gz"))
        (sha256
         (base32
-         "0mi1px42in7i442jqncg3gmxd5zn7sw5b2s85h690rz433qvyk6i"))))
+         "0z06y0fhx9hy9x01abb7s2xdbqrh9x4ps7avmlf4bwfwih2gl2bn"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-extutils-config" ,perl-extutils-config)))
@@ -3913,15 +3913,15 @@ variables.")
 (define-public perl-import-into
   (package
     (name "perl-import-into")
-    (version "1.002004")
+    (version "1.002005")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Import-Into-" version ".tar.gz"))
        (sha256
         (base32
-         "110hifk3cj14lxgjq2vaa2qfja21gll4lpn8vbimy0gzqadjbjyy"))))
+         "0rq5kz7c270q33jq6hnrv3xgkvajsc62ilqq7fs40av6zfipg7mx"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-module-runtime" ,perl-module-runtime)))
@@ -4580,7 +4580,7 @@ functionality on lists which is not going to go into List::Util.")
 (define-public perl-list-moreutils-xs
   (package
     (name "perl-list-moreutils-xs")
-    (version "0.426")
+    (version "0.428")
     (source
      (origin
        (method url-fetch)
@@ -4588,7 +4588,7 @@ functionality on lists which is not going to go into List::Util.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0ss0a0f9yqs7gd9qamhaxq27mvn573ljg28ry1gy2pxbz56byzbc"))))
+         "0bfndmnkqaaf3gffprak143bzplxd69c368jxgr7rzlx88hyd7wx"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-config-autoconf" ,perl-config-autoconf)
@@ -6557,7 +6557,7 @@ up inheritance from those modules at the same time.")
 (define-public perl-path-class
   (package
     (name "perl-path-class")
-    (version "0.35")
+    (version "0.37")
     (source
      (origin
        (method url-fetch)
@@ -6565,7 +6565,7 @@ up inheritance from those modules at the same time.")
                            "Path-Class-" version ".tar.gz"))
        (sha256
         (base32
-         "1viaj8jyshcj135la0kgfgzalaw06xnbsg9h54jx09v1342v69lj"))))
+         "1kj8q8dmd8jci94w5arav59nkp0pkxrkliz4n8n6yf02hsa82iv5"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Path-Class/")
@@ -7861,7 +7861,7 @@ and escapes.")
 (define-public perl-text-diff
   (package
     (name "perl-text-diff")
-    (version "1.44")
+    (version "1.45")
     (source
      (origin
        (method url-fetch)
@@ -7869,7 +7869,7 @@ and escapes.")
                            "Text-Diff-" version ".tar.gz"))
        (sha256
         (base32
-         "041v92zla2acdc433f47giridf6p820sdczs7x5d71fhsyza1xsp"))))
+         "013g13prdghxvrp5754gyc7rmv1syyxrhs33yc5f0lrz3dxs1fp8"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-algorithm-diff" ,perl-algorithm-diff)))
@@ -8041,7 +8041,7 @@ system.")
 (define-public perl-throwable
   (package
     (name "perl-throwable")
-    (version "0.200012")
+    (version "0.200013")
     (source
      (origin
        (method url-fetch)
@@ -8049,7 +8049,7 @@ system.")
                            "Throwable-" version ".tar.gz"))
        (sha256
         (base32
-         "0cy8kza9pd9y5m7k5385asf4xqm54vdqnqm0am10z6j2mrxwr527"))))
+         "184gdcwxqwnkrx5md968v1ny70pq6blzpkihccm3bpdxnpgd11wr"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-devel-stacktrace" ,perl-devel-stacktrace)))
@@ -8647,7 +8647,7 @@ built-in.")
 (define-public perl-variable-magic
   (package
     (name "perl-variable-magic")
-    (version "0.61")
+    (version "0.62")
     (source
      (origin
        (method url-fetch)
@@ -8655,7 +8655,7 @@ built-in.")
                            "Variable-Magic-" version ".tar.gz"))
        (sha256
         (base32
-         "1mx6z36c3wk61x6lag6kyws5g1cba68cw20vrb92wan7ahpfkbxq"))))
+         "0p31dclnj47k4hj35rzay9pzxasl3gq46kzwqalhdw1kgr8ii6iz"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Variable-Magic/")
     (synopsis "Associate user-defined magic to variables from Perl")
@@ -8721,15 +8721,15 @@ neither visible nor modifiable from Perl space).")
 (define-public perl-yaml
   (package
     (name "perl-yaml")
-    (version "1.23")
+    (version "1.24")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/I/IN/INGY/"
+       (uri (string-append "mirror://cpan/authors/id/T/TI/TINITA/"
                            "YAML-" version ".tar.gz"))
        (sha256
         (base32
-         "0kf8mllrgnrmlvjijxc6srjj1y9i8rik5jpjvm8jh4yx70h9gn1a"))))
+         "1dpzgnjbd8yvf94vf45cmyj5bc6vrm6bchhx9xqwxqd5f9d093dm"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-yaml" ,perl-test-yaml)))
@@ -8742,7 +8742,7 @@ on the YAML 1.0 specification.")
 (define-public perl-yaml-libyaml
   (package
     (name "perl-yaml-libyaml")
-    (version "0.65")
+    (version "0.69")
     (source
      (origin
        (method url-fetch)
@@ -8752,7 +8752,7 @@ on the YAML 1.0 specification.")
              ".tar.gz"))
        (sha256
         (base32
-         "0izhvz8f29x1f50hhwfgm0iq1lz7apjjvg77lmky949jr07hnwfv"))))
+         "06msvj3vmjszl5zj1k7g47ll0kkds9gdb5sky0q27lh4zw1vlj33"))))
     (build-system perl-build-system)
     (home-page
      "http://search.cpan.org/dist/YAML-LibYAML/")
@@ -8961,7 +8961,7 @@ files, using JSON::PP and/or CPAN::Meta::YAML.")
 (define-public perl-scalar-list-utils
   (package
     (name "perl-scalar-list-utils")
-    (version "1.47")
+    (version "1.50")
     (source
      (origin
        (method url-fetch)
@@ -8969,7 +8969,7 @@ files, using JSON::PP and/or CPAN::Meta::YAML.")
                            "Scalar-List-Utils-" version ".tar.gz"))
        (sha256
         (base32
-         "1qgg6zxqwziva5j1k5gjks4xmhmgklm551ni3zb74sd9f9rk90y4"))))
+         "0x9n0617gjjcqa4nk5biiwkxdi90xpdfg6z07gjr009qjg3bkah6"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Scalar-List-Utils/")
     (synopsis "Common Scalar and List utility subroutines")

@@ -4,7 +4,7 @@
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
-# Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
+# Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 # Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -52,6 +52,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/acl.scm				\
   %D%/packages/admin.scm			\
   %D%/packages/adns.scm				\
+  %D%/packages/agda.scm				\
   %D%/packages/algebra.scm			\
   %D%/packages/aidc.scm				\
   %D%/packages/android.scm			\
@@ -453,6 +454,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/avahi.scm			\
   %D%/services/base.scm				\
   %D%/services/certbot.scm			\
+  %D%/services/cgit.scm			\
   %D%/services/configuration.scm		\
   %D%/services/cuirass.scm			\
   %D%/services/cups.scm				\
@@ -608,7 +610,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-2017-12836.patch			\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
-  %D%/packages/patches/dblatex-remove-multirow.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
@@ -617,7 +618,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
-  %D%/packages/patches/dovecot-CVE-2017-15132.patch		\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
   %D%/packages/patches/eigen-arm-neon-fixes.patch		\
@@ -971,7 +971,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/perl-dbd-mysql-CVE-2017-10788.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
-  %D%/packages/patches/perl-gd-options-passthrough-and-fontconfig.patch \
   %D%/packages/patches/perl-io-socket-ssl-openssl-1.0.2f-fix.patch \
   %D%/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
   %D%/packages/patches/perl-net-dns-resolver-programmable-fix.patch	\
@@ -1030,13 +1029,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python-networkx2-reproducible-build.patch	\
   %D%/packages/patches/python-nose-timer-drop-ordereddict.patch \
-  %D%/packages/patches/python-parse-too-many-fields.patch	\
   %D%/packages/patches/python-pillow-fix-failing-tests.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-statsmodels-fix-tests.patch	\
   %D%/packages/patches/python-scikit-learn-fix-test-non-determinism.patch	\
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
+  %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python-pygit2-disable-network-tests.patch	\
@@ -1142,6 +1141,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/vsearch-unbundle-cityhash.patch		\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
+  %D%/packages/patches/wavpack-CVE-2018-6767.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7253.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7254.patch		\
   %D%/packages/patches/weechat-python.patch			\
@@ -1160,6 +1160,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wpa-supplicant-fix-zeroed-keys.patch	\
   %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
   %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
+  %D%/packages/patches/wxmaxima-do-not-use-old-gnuplot-parameters.patch	\
   %D%/packages/patches/xboing-CVE-2004-0149.patch		\
   %D%/packages/patches/xcb-proto-python3-print.patch		\
   %D%/packages/patches/xcb-proto-python3-whitespace.patch	\
