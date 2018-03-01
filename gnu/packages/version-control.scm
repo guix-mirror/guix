@@ -1510,7 +1510,7 @@ repository\" with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "2.4")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
@@ -1524,7 +1524,7 @@ repository\" with git-annex.")
               "fossil-src-" version ".tar.gz")))
        (sha256
         (base32
-         "0add35lk2ac4qg29d7ygj7pskv8lfln33f3kgf6x3548msv9hd6j"))))
+         "1lxawkhr1ki9fqw8076fxib2b1w673449yzb6vxjshqzh5h77c7r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)                     ;for configuration only
