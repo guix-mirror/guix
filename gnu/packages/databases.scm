@@ -2042,14 +2042,14 @@ and web services platform functionality.")
 (define-public r-rmysql
   (package
     (name "r-rmysql")
-    (version "0.10.13")
+    (version "0.10.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RMySQL" version))
        (sha256
         (base32
-         "1j0vr2l4s02cg2hzgr3pla96pjj4h85sxw28lidy58rg5awnsf82"))))
+         "01891kn263b02y6addgpy3gn5axg7m10bqbqv7dg9yx9k85am590"))))
     (properties `((upstream-name . "RMySQL")))
     (build-system r-build-system)
     (native-inputs
