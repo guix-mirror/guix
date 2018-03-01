@@ -745,14 +745,14 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.6")
+    (version "9.6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0m417h30s18rwa7yzkqqcdb22ifpcda2fpg2cyx8bxvjp3ydz71r"))))))
+                "0w7bwf19wbdd3jjbjv03cnx56qka4801srcbsayk9v792awv7zga"))))))
 
 (define-public qdbm
   (package
