@@ -301,7 +301,7 @@ coreboot.")
                    '()))
              #t)))))
     (supported-systems '("x86_64-linux" "i686-linux"))
-    (home-page "http://www.tianocore.org")
+    (home-page "https://www.tianocore.org")
     (synopsis "UEFI firmware for QEMU")
     (description "OVMF is an EDK II based project to enable UEFI support for
 Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
