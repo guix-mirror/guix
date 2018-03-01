@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -35,6 +35,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
@@ -46,9 +47,11 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
@@ -611,6 +614,49 @@ cosine/ sine transforms or DCT/DST).")
         '%standard-phases)))
     (synopsis "Computing the discrete Fourier transform (AVX2-optimized)")
     (supported-systems '("x86_64-linux"))))
+
+(define-public java-la4j
+  (package
+    (name "java-la4j")
+    (version "0.6.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vkostyukov/la4j.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1qir8dr978cfvz9k12m2kbdwpyf6cqdf1d0ilb7lnkhbgq5i53w3"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "la4j.jar"
+       #:jdk ,icedtea-8
+       #:test-exclude (list "**/Abstract*.java"
+                            "**/MatrixTest.java"
+                            "**/DenseMatrixTest.java"
+                            "**/SparseMatrixTest.java"
+                            "**/VectorTest.java"
+                            "**/SparseVectorTest.java"
+                            "**/DenseVectorTest.java")))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://la4j.org/")
+    (synopsis "Java library that provides Linear Algebra primitives and algorithms")
+    (description "The la4j library is a Java library that provides Linear
+Algebra primitives (matrices and vectors) and algorithms.  The key features of
+the la4j library are:
+
+@itemize
+@item No dependencies and tiny size
+@item Fluent object-oriented/functional API
+@item Sparse (CRS, CCS) and dense (1D/2D arrays) matrices
+@item Linear systems solving (Gaussian, Jacobi, Zeidel, Square Root, Sweep and other)
+@item Matrices decomposition (Eigenvalues/Eigenvectors, SVD, QR, LU, Cholesky and other)
+@item MatrixMarket/CSV IO formats support for matrices and vectors
+@end itemize\n")
+    (license license:asl2.0)))
 
 (define-public eigen
   (package
