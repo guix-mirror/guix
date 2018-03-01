@@ -9366,7 +9366,8 @@ etc.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "./run_tests.py" "--unit")))))))
+             (invoke "./run_tests.py" "--unit")
+             #t)))))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pep8" ,python-pep8)
