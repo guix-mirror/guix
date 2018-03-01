@@ -9292,3 +9292,44 @@ against expected outcomes.")
        ("java-junit" ,java-junit)))
     (native-inputs
      `(("java-mockito-1" ,java-mockito-1)))))
+
+(define-public java-openchart2
+  (package
+    (name "java-openchart2")
+    (version "1.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.approximatrix.com/openchart2/"
+                                  "openchart2-" version ".source.zip"))
+              (sha256
+               (base32
+                "1xq96zm5r02n1blja0072jmmsifmxc40lbyfbnmcnr6mw42frh4g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-junit-errors
+           (lambda _
+             (with-directory-excursion "unittest/src/com/approximatrix/charting/"
+               (substitute* '("coordsystem/ticklocator/NumericXTickLocatorTest.java"
+                              "coordsystem/ticklocator/NumericYTickLocatorTest.java"
+                              "coordsystem/ticklocator/ObjectXTickLocatorTest.java"
+                              "model/DefaultChartDataModelConstraintsTest.java"
+                              "model/MultiScatterDataModelConstraintsTest.java"
+                              "model/threedimensional/DotPlotDataModelConstraintsTest.java")
+                 (("(assertEquals[^;]+);" before _)
+                  (string-append (string-drop-right before 2) ", 1E-6);"))))
+             #t))
+         (replace 'install (install-jars ".")))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://approximatrix.com/products/openchart2/")
+    (synopsis "Simple plotting for Java")
+    (description "Openchart2 provides a simple, yet powerful, interface for
+Java programmers to create two-dimensional charts and plots.  The library
+features an assortment of graph styles, including advanced scatter plots, bar
+graphs, and pie charts.")
+    (license license:lgpl2.1+)))
