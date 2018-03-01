@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
 (define-public sdcc
   (package
     (name "sdcc")
-    (version "3.6.0")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -38,7 +39,7 @@
                     "/" version "/sdcc-src-" version ".tar.bz2"))
               (sha256
                (base32
-                "0x53gh5yrrfjvlnkk29mjn8hq4v52alrsf7c8nsyzzq13sqwwpg8"))))
+                "13llvx0j3v5qa7qd4fh7nix4j3alpd3ccprxvx163c4q8q4lfkc5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
