@@ -69,6 +69,8 @@
               (sha256
                (base32
                 "1zkn5ix81xck3n84dxvkjh4alwc6zj8x989d0zqi5c6ppijvgadh"))))
+    (outputs '("out"       ; 49 MB
+               "include")) ; 17 MB
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
