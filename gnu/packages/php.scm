@@ -50,6 +50,15 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:))
 
+(define gd-for-php
+  (package
+    (inherit gd)
+    (source (origin
+             (inherit (package-source gd))
+             (patches (search-patches "gd-fix-tests-on-i686.patch"
+                                      "gd-freetype-test-failure.patch"
+                                      "gd-CVE-2018-5711.patch"))))))
+
 (define-public php
   (package
     (name "php")
@@ -278,11 +287,7 @@
                          "ext/mbstring/tests/mb_ereg_variation3.phpt"
                          "ext/mbstring/tests/mb_ereg_replace_variation1.phpt"
                          "ext/mbstring/tests/bug72994.phpt"
-                         "ext/ldap/tests/ldap_set_option_error.phpt"
-                         
-                         ;; XXX: This is CVE-2018-5711. There is no fix yet in libgd.
-                         ;; See https://github.com/libgd/libgd/issues/420
-                         "ext/gd/tests/bug75571.phpt"))
+                         "ext/ldap/tests/ldap_set_option_error.phpt"))
 
              ;; Skip tests requiring network access.
              (setenv "SKIP_ONLINE_TESTS" "1")
@@ -299,7 +304,7 @@
        ("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
        ("freetype" ,freetype)
-       ("gd" ,gd)
+       ("gd" ,gd-for-php)
        ("gdbm" ,gdbm)
        ("glibc" ,glibc)
        ("gmp" ,gmp)
