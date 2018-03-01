@@ -12256,3 +12256,17 @@ contains
 @item reading and writing of popular alignment file formats;
 @item a single-, or multi- threaded multiple sequence alignment algorithm.
 @end itemize\n")))
+
+(define-public java-biojava-core-4.0
+  (package (inherit java-biojava-core)
+    (name "java-biojava-core")
+    (version "4.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/biojava/biojava")
+                    (commit (string-append "biojava-" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "13675f6y9aqi7bi2lk3s1z7a22ynccjiqwa8izh7p97xi9wsfmd8"))))))
