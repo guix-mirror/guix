@@ -1098,20 +1098,21 @@ agnes cluster diagrams.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "103wnc8sq0iwcnj4j14hd420d2dqdyf13s3f25icsznrlyzdkhf5"))))
+         "122k9spymawfnfyksxyapwq9cigydy5nrjwhrwrhy3qkax3aycf6"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("cairo" ,cairo)))
+     `(("cairo" ,cairo)
+       ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-withr" ,r-withr)))
     (home-page "https://cran.r-project.org/web/packages/gdtools")
