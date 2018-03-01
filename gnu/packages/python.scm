@@ -9352,18 +9352,25 @@ etc.")
 (define-public python-stem
   (package
     (name "python-stem")
-    (version "1.5.4")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stem" version))
        (sha256
         (base32
-         "1j7pnblrn0yr6jmxvsq6y0ihmxmj5x50jl2n2606w67f6wq16j9n"))))
+         "1va9p3ij7lxg6ixfsvaql06dn11l3fgpxmss1dhlvafm7sqizznp"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'check 'fix-test-environment
+           (lambda _
+             ;; Fixes: FileNotFoundError: [Errno 2] No such file or directory:
+             ;; '/tmp/guix-build-python-stem-1.6.0.drv-0/stem-1.6.0/.gitignore'.
+             (with-output-to-file ".gitignore"
+               (lambda _ (format #t "%")))
+             #t))
          (replace 'check
            (lambda _
              (invoke "./run_tests.py" "--unit")
