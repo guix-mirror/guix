@@ -261,7 +261,7 @@ coreboot.")
                (setenv "WORKSPACE" cwd)
                (setenv "EDK_TOOLS_PATH" tools)
                (setenv "PATH" (string-append (getenv "PATH") ":" bin))
-               (system* "bash" "edksetup.sh" "BaseTools")
+               (invoke "bash" "edksetup.sh" "BaseTools")
                (substitute* "Conf/target.txt"
                  (("^TARGET[ ]*=.*$") "TARGET = RELEASE\n")
                  (("^TOOL_CHAIN_TAG[ ]*=.*$") "TOOL_CHAIN_TAG = GCC49\n")
@@ -270,14 +270,16 @@ coreboot.")
                           (number->string (parallel-job-count)))))
                ;; Build build support.
                (setenv "BUILD_CC" "gcc")
-               (zero? (system* "make" "-C" (string-append tools "/Source/C"))))))
+               (invoke "make" "-C" (string-append tools "/Source/C"))
+               #t)))
          (add-after 'build 'build-ia32
            (lambda _
              (substitute* "Conf/target.txt"
                (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = IA32\n")
                (("^ACTIVE_PLATFORM[ ]*=.*$")
                 "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgIa32.dsc\n"))
-             (zero? (system* "build"))))
+             (invoke "build")
+             #t))
          ,@(if (string=? "x86_64-linux" (%current-system))
              '((add-after 'build 'build-x64
                 (lambda _
@@ -285,7 +287,8 @@ coreboot.")
                     (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = X64\n")
                     (("^ACTIVE_PLATFORM[ ]*=.*$")
                      "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgX64.dsc\n"))
-                  (zero? (system* "build")))))
+                  (invoke "build")
+                  #t)))
              '())
          (delete 'build)
          (replace 'install
