@@ -3003,6 +3003,49 @@ sequencing (HTS) data.  There are also an number of useful utilities for
 manipulating HTS data.")
     (license license:expat)))
 
+(define-public java-htsjdk-latest
+  (package
+    (name "java-htsjdk")
+    (version "2.14.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/samtools/htsjdk.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1lmya1fdjy03mz6zmdmd86j9v9vfhqb3952mqq075navx1i6g4bc"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; test require Scala
+       #:jdk ,icedtea-8
+       #:jar-name "htsjdk.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-useless-build.xml
+           (lambda _ (delete-file "build.xml") #t))
+         ;; The tests require the scalatest package.
+         (add-after 'unpack 'remove-tests
+           (lambda _ (delete-file-recursively "src/test") #t)))))
+    (inputs
+     `(("java-ngs" ,java-ngs)
+       ("java-snappy-1" ,java-snappy-1)
+       ("java-commons-compress" ,java-commons-compress)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ("java-commons-jexl-2" ,java-commons-jexl-2)
+       ("java-xz" ,java-xz)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://samtools.github.io/htsjdk/")
+    (synopsis "Java API for high-throughput sequencing data (HTS) formats")
+    (description
+     "HTSJDK is an implementation of a unified Java library for accessing
+common file formats, such as SAM and VCF, used for high-throughput
+sequencing (HTS) data.  There are also an number of useful utilities for
+manipulating HTS data.")
+    (license license:expat)))
+
 ;; This version matches java-htsjdk 2.3.0.  Later versions also require a more
 ;; recent version of java-htsjdk, which depends on gradle.
 (define-public java-picard
