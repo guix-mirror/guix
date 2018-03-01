@@ -5357,14 +5357,14 @@ is supported.")
 (define-public r-lubridate
   (package
     (name "r-lubridate")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lubridate" version))
        (sha256
         (base32
-         "0k417a1xp5gxf77ycbnx5apzpc5d25sjm83ss7wmqpbnhnr5dcav"))))
+         "1pzkqfiahnsdm3zx46asgn8fw43vlxvbh7r4cn70c7ffmxabzzrc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
