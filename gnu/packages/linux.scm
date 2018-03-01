@@ -560,10 +560,11 @@ providing the system administrator with some help in common tasks.")
                                        "util-linux-CVE-2018-7738.patch"))
               (modules '((guix build utils)))
               (snippet
-               ;; We take the 'logger' program from GNU Inetutils and 'kill'
-               ;; from GNU Coreutils.
+               ;; We take 'nologin' from Shadow, the 'logger' program from
+               ;; GNU Inetutils and 'kill' from GNU Coreutils.
                '(begin
                   (substitute* "configure"
+                    (("build_nologin=yes") "build_nologin=no")
                     (("build_logger=yes") "build_logger=no")
                     (("build_kill=yes") "build_kill=no"))
                   #t))))
