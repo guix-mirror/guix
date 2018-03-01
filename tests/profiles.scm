@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -147,6 +147,11 @@
            ((($ <manifest-entry> "guile" "2.0.9" "out")) #t)
            (_ #f))
          (equal? m3 m4))))
+
+(test-equal "manifest-add removes duplicates"    ;<https://bugs.gnu.org/30569>
+  (list guile-2.0.9)
+  (manifest-entries (manifest-add (manifest '())
+                                  (list guile-2.0.9 guile-2.0.9))))
 
 (test-assert "manifest-perform-transaction"
   (let* ((m0 (manifest (list guile-2.0.9 guile-2.0.9:debug)))
