@@ -2448,3 +2448,27 @@ financial trading strategies.")
      "This package provides functions relating to time series analysis and
 computational finance.")
     (license license:gpl2)))
+
+(define-public r-wmtsa
+  (package
+    (name "r-wmtsa")
+    (version "2.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "wmtsa" version))
+       (sha256
+        (base32
+         "1q436krz5p1f4a7a7sya6a9rh9x9mi8zzcgq66gbk9w9w4hcqcj6"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ifultools" ,r-ifultools)
+       ("r-mass" ,r-mass)
+       ("r-splus2r" ,r-splus2r)))
+    (home-page "http://cran.r-project.org/web/packages/wmtsa/")
+    (synopsis "Wavelet methods for time series analysis")
+    (description
+     "This package provides software to accompany the book \"Wavelet Methods
+for Time Series Analysis\", Donald B. Percival and Andrew T. Walden, Cambridge
+University Press, 2000.")
+    (license license:gpl2)))
