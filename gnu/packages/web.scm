@@ -799,7 +799,7 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.20.0")
+    (version "0.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
@@ -807,7 +807,7 @@ for efficient socket-like bidirectional reliable communication channels.")
                                   "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "0rsjm6mb71nnj6ikr2dq5qmny314v3j7m07zz1i7m6v8hxxm98i7"))))
+                "17r18y25ka2ck2ykfidbg4a7jpyzmkqwrzplgqjp7mwd2l9rc6cm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
