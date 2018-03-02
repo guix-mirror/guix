@@ -60,8 +60,8 @@
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-               (mkdir-p bin)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
                (install-file "src/conky" bin))
              #t)))))
     (inputs
