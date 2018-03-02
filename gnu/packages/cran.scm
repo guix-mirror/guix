@@ -2547,3 +2547,24 @@ multivariate distributions.")
      "This package provides tools for stochastic fractal and deterministic
 chaotic time series analysis.")
     (license license:gpl2)))
+
+(define-public r-urca
+  (package
+    (name "r-urca")
+    (version "1.3-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "urca" version))
+       (sha256
+        (base32
+         "1akaqwf3fvvvx4sgfn641fd4sj51s0701pvfl6s5hnz2k0iwh732"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-nlme" ,r-nlme)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/urca/")
+    (synopsis "Unit root and cointegration tests for time series data")
+    (description
+     "This package provides unit root and cointegration tests encountered in
+applied econometric analysis.")
+    (license license:gpl2+)))
