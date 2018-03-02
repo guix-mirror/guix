@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages groff)
@@ -266,7 +267,8 @@ seen in a terminal.")
            (lambda _
              (substitute* "src/makefile"
                (("(pkg-config.*)lua" _ prefix)
-                (string-append prefix "lua-5.3")))
+                (string-append prefix "lua-" ,(version-major+minor
+                                               (package-version lua)))))
              #t)))))
     (inputs
      `(("lua" ,lua)
