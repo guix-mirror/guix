@@ -2399,3 +2399,27 @@ sapa R packages.")
 Analysis for Physical Applications, Donald B. Percival and Andrew T. Walden,
 Cambridge University Press, 1993.")
     (license license:gpl2)))
+
+(define-public r-quantmod
+  (package
+    (name "r-quantmod")
+    (version "0.4-12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "quantmod" version))
+       (sha256
+        (base32
+         "0y7gh0k1s10vdsfch8777avbhf99mc9crikvx7ahqrw0j631vmhq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-ttr" ,r-ttr)
+       ("r-xts" ,r-xts)
+       ("r-zoo" ,r-zoo)))
+    (home-page "http://cran.r-project.org/web/packages/quantmod/")
+    (synopsis "Quantitative financial modelling framework")
+    (description "This package provides a quantitative financial modelling
+framework to allow users to specify, build, trade, and analyse quantitative
+financial trading strategies.")
+    (license license:gpl3)))
