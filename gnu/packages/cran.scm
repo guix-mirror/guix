@@ -2667,3 +2667,25 @@ exponential, logarithm, square root, and related quantities.")
      "This package extends several functions to the complex domain, including
 the matrix exponential and logarithm, and the determinant.")
     (license license:gpl2)))
+
+(define-public r-phontools
+  (package
+    (name "r-phontools")
+    (version "0.2-2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "phonTools" version))
+       (sha256
+        (base32
+         "01i481mhswsys3gpasw9gn6nxkfmi7bz46g5c84m13pg0cv8hxc7"))))
+    (properties `((upstream-name . "phonTools")))
+    (build-system r-build-system)
+    (home-page "http://www.santiagobarreda.com/rscripts.html")
+    (synopsis "Tools for phonetic and acoustic analyses")
+    (description
+     "This package contains tools for the organization, display, and analysis
+of the sorts of data frequently encountered in phonetics research and
+experimentation, including the easy creation of IPA vowel plots, and the
+creation and manipulation of WAVE audio files.")
+    (license license:bsd-2)))
