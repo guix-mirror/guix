@@ -2593,3 +2593,34 @@ interface.")
     ;; The included cubature C library is released under GPLv2+, but the
     ;; wrapper declares the license to be GPLv3+.
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-trend
+  (package
+    (name "r-trend")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "trend" version))
+       (sha256
+        (base32
+         "06yifqbsvxbmk5gld4z2nnyhf59v8ks5xjwacmb25mv9r6bn388b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-extradistr" ,r-extradistr)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/trend/")
+    (synopsis "Non-parametric trend tests and change-point detection")
+    (description
+     "The analysis of environmental data often requires the detection of
+trends and change-points.  This package includes tests for trend
+detection (Cox-Stuart Trend Test, Mann-Kendall Trend Test, (correlated)
+Hirsch-Slack Test, partial Mann-Kendall Trend Test, multivariate (multisite)
+Mann-Kendall Trend Test, (Seasonal) Sen's slope, partial Pearson and Spearman
+correlation trend test), change-point detection (Lanzante's test procedures,
+Pettitt's test, Buishand Range Test, Buishand U Test, Standard Normal
+Homogeinity Test), detection of non-randomness (Wallis-Moore Phase Frequency
+Test, Bartels rank von Neumann's ratio test, Wald-Wolfowitz Test) and the two
+sample Robust Rank-Order Distributional Test.")
+    (license license:gpl3)))
