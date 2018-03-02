@@ -1877,16 +1877,16 @@ specs from your Flask-Restful projects.")
 (define-public python-htmlmin
   (package
     (name "python-htmlmin")
-    (version "0.1.10")
+    (version "0.1.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "htmlmin" version))
        (sha256
         (base32
-         "0qxa93j3p1ak32qh8d9kshqv8v3z0hkc13dwbhp5cn7sn3xmsp6a"))))
+         "0y51xhabw6x8jk8k93xl8vznshpz3jb6l28075r5sjip613fzhah"))))
     (arguments
-     `(#:tests? #f)) ;htmlmin has no tests
+     `(#:tests? #f))                    ; no tests
     (build-system python-build-system)
     (home-page "https://htmlmin.readthedocs.org/en/latest/")
     (synopsis "HTML minifier")
