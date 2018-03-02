@@ -2314,3 +2314,23 @@ generation, and 2D/3D network visualization.")
      "This package provides functions and data to construct technical trading
 rules with R.")
     (license license:gpl2)))
+
+(define-public r-leaps
+  (package
+    (name "r-leaps")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "leaps" version))
+       (sha256
+        (base32
+         "11gjmn1azrjw5xlvdb4gknj9985kck9x8zb9np1rnk2smp6pka2m"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/leaps/")
+    (synopsis "Regression subset selection")
+    (description
+     "This package provides tools for regression subset selection, including
+exhaustive search.")
+    (license license:gpl2+)))
