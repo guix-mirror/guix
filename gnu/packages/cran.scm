@@ -2377,3 +2377,25 @@ provides some missing S-PLUS functionality in R.")
     (description "This package provides C code used by the wmtsa, fractal, and
 sapa R packages.")
     (license license:gpl2)))
+
+(define-public r-sapa
+  (package
+    (name "r-sapa")
+    (version "2.0-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sapa" version))
+       (sha256
+        (base32
+         "056xlh14dnzq4x7sbp7ff2k61jxy7110a742b502vz549qfrr5ds"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ifultools" ,r-ifultools)
+       ("r-splus2r" ,r-splus2r)))
+    (home-page "http://cran.r-project.org/web/packages/sapa/")
+    (synopsis "Spectral analysis for physical applications")
+    (description "This package provides software for the book Spectral
+Analysis for Physical Applications, Donald B. Percival and Andrew T. Walden,
+Cambridge University Press, 1993.")
+    (license license:gpl2)))
