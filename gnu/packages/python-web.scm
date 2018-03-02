@@ -265,7 +265,7 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
 something like @code{Content-Type: text/html; charset=latin1}, tools need
 to use a particular set of aliases for encoding labels as well as some
 overriding rules.  For example, @code{US-ASCII} and @code{iso-8859-1} on
-the web are actually aliases for @code{windows-1252}, and an @code{UTF-8}
+the web are actually aliases for @code{windows-1252}, and a @code{UTF-8}
 or @code{UTF-16} BOM takes precedence over any other encoding declaration.
 The WHATWG @url{https://encoding.spec.whatwg.org/,Encoding} standard
 defines all such details so that implementations do not have to
