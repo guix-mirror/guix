@@ -2713,3 +2713,28 @@ kernel methods that seamlessly handle a mix of continuous, unordered, and
 ordered factor data types.")
     ;; Any version of the GPL.
     (license license:gpl3+)))
+
+(define-public r-powerplus
+  (package
+    (name "r-powerplus")
+    (version "3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "powerplus" version))
+       (sha256
+        (base32
+         "0ayp6x34hkzgris4j3zbbs0r23n81bhww3wgfyy630ri4sk6brrn"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-complexplus" ,r-complexplus)
+       ("r-expm" ,r-expm)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-phontools" ,r-phontools)))
+    (home-page "http://cran.r-project.org/web/packages/powerplus/")
+    (synopsis "Exponentiation operations")
+    (description
+     "This package provides tools for the computation of matrix and scalar
+exponentiation.")
+    (license license:gpl2)))
