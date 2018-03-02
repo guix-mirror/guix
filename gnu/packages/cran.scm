@@ -2356,3 +2356,24 @@ exhaustive search.")
 facilitate the conversion of S-PLUS packages to R packages, this package
 provides some missing S-PLUS functionality in R.")
     (license license:gpl2)))
+
+(define-public r-ifultools
+  (package
+    (name "r-ifultools")
+    (version "2.0-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ifultools" version))
+       (sha256
+        (base32
+         "0pv2msaa1rmj8csxdclzi2jwg9pfdvh87blj9j3xa3myisglq092"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-splus2r" ,r-splus2r)))
+    (home-page "http://cran.r-project.org/web/packages/ifultools/")
+    (synopsis "Insightful research tools")
+    (description "This package provides C code used by the wmtsa, fractal, and
+sapa R packages.")
+    (license license:gpl2)))
