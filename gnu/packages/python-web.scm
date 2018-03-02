@@ -2081,14 +2081,14 @@ this it tries to be opinion-free and very extendable.")
 (define-public python-flask-script
   (package
   (name "python-flask-script")
-  (version "2.0.5")
+  (version "2.0.6")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Flask-Script" version))
       (sha256
         (base32
-          "0zqh2yq8zk7m9b4xw1ryqmrljkdigfb3hk5155a3b5hkfnn6xxyf"))))
+          "0r8w2v89nj6b9p91p495cga5m72a673l2wc0hp0zqk05j4yrc9b4"))))
   (build-system python-build-system)
   (propagated-inputs
    `(("python-flask" ,python-flask)
