@@ -2225,3 +2225,23 @@ meta-analysis of significance values including the methods of Edgington,
 Fisher, Stouffer, Tippett, and Wilkinson; a number of data-sets to replicate
 published results; and a routine for graphical display.")
     (license license:gpl2)))
+
+(define-public r-network
+  (package
+    (name "r-network")
+    (version "1.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "network" version))
+       (sha256
+        (base32
+         "11sg330xb7gcnl3f6lwhhjdabz6mk43828i2np635pqw4s4yl13s"))))
+    (build-system r-build-system)
+    (home-page "http://statnet.org/")
+    (synopsis "Classes for relational data")
+    (description
+     "This package provides tools to create and modify network objects.  The
+@code{network} class can represent a range of relational data types, and
+supports arbitrary vertex/edge/graph attributes.")
+    (license license:gpl2+)))
