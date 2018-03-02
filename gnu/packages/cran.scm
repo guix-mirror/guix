@@ -2289,3 +2289,28 @@ including node and graph-level indices, structural distance and covariance
 methods, structural equivalence detection, network regression, random graph
 generation, and 2D/3D network visualization.")
     (license license:gpl2+)))
+
+(define-public r-ttr
+  (package
+    (name "r-ttr")
+    (version "0.23-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TTR" version))
+       (sha256
+        (base32
+         "07r62ngyzjl4aszdxnr3n6bnbcgcap32yhd430jsilicg8n06di1"))))
+    (properties `((upstream-name . "TTR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-xts" ,r-xts)
+       ("r-zoo" ,r-zoo)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://github.com/joshuaulrich/TTR")
+    (synopsis "Technical trading rules")
+    (description
+     "This package provides functions and data to construct technical trading
+rules with R.")
+    (license license:gpl2)))
