@@ -2423,3 +2423,28 @@ Cambridge University Press, 1993.")
 framework to allow users to specify, build, trade, and analyse quantitative
 financial trading strategies.")
     (license license:gpl3)))
+
+(define-public r-tseries
+  (package
+    (name "r-tseries")
+    (version "0.10-43")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tseries" version))
+       (sha256
+        (base32
+         "1yjxhj7l1p2przczl6frggfcr5iwda9lbcsmh0y75gbbbps14yf2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quadprog" ,r-quadprog)
+       ("r-quantmod" ,r-quantmod)
+       ("r-zoo" ,r-zoo)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/tseries/")
+    (synopsis "Time series analysis and computational finance")
+    (description
+     "This package provides functions relating to time series analysis and
+computational finance.")
+    (license license:gpl2)))
