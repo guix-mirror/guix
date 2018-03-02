@@ -2472,3 +2472,29 @@ computational finance.")
 for Time Series Analysis\", Donald B. Percival and Andrew T. Walden, Cambridge
 University Press, 2000.")
     (license license:gpl2)))
+
+(define-public r-tsa
+  (package
+    (name "r-tsa")
+    (version "1.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TSA" version))
+       (sha256
+        (base32
+         "0cm97hwxm6vfgy9mc3kgwq6dnmn86p8a4avnfjbai048qnwrn6hx"))))
+    (properties `((upstream-name . "TSA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-leaps" ,r-leaps)
+       ("r-locfit" ,r-locfit)
+       ("r-mgcv" ,r-mgcv)
+       ("r-tseries" ,r-tseries)))
+    (home-page "http://www.stat.uiowa.edu/~kchan/TSA.htm")
+    (synopsis "Time series analysis")
+    (description
+     "This package contains R functions and datasets detailed in the book
+\"Time Series Analysis with Applications in R (second edition)\" by Jonathan
+Cryer and Kung-Sik Chan.")
+    (license license:gpl2+)))
