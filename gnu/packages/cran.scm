@@ -2334,3 +2334,25 @@ rules with R.")
      "This package provides tools for regression subset selection, including
 exhaustive search.")
     (license license:gpl2+)))
+
+(define-public r-splus2r
+  (package
+    (name "r-splus2r")
+    (version "1.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "splus2R" version))
+       (sha256
+        (base32
+         "0xrbj8vxy0pc6hl7m8abv71d3hjw47cl51s7j7priadyqczkq6sz"))))
+    (properties `((upstream-name . "splus2R")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/splus2R/")
+    (synopsis "Supplemental S-PLUS functionality in R")
+    (description
+     "Currently there are many functions in S-PLUS that are missing in R.  To
+facilitate the conversion of S-PLUS packages to R packages, this package
+provides some missing S-PLUS functionality in R.")
+    (license license:gpl2)))
