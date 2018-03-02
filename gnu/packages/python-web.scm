@@ -1306,14 +1306,14 @@ file.")
 (define-public python-webtest
   (package
     (name "python-webtest")
-    (version "2.0.20")
+    (version "2.0.29")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WebTest" version))
        (sha256
         (base32
-         "0bv0qhdjakdsdgj4sk21gnpp8xp8bga4x03p6gjb83ihrsb7n4xv"))))
+         "0bcj1ica5lnmj5zbvk46x28kgphcsgh7sfnwjmn0cr94mhawrg6v"))))
     (build-system python-build-system)
     (arguments
      `(;; Unfortunately we have to disable tests!
