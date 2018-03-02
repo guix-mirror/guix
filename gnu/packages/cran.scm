@@ -2645,3 +2645,25 @@ sample Robust Rank-Order Distributional Test.")
      "This package provides tools for the computation of the matrix
 exponential, logarithm, square root, and related quantities.")
     (license license:gpl2+)))
+
+(define-public r-complexplus
+  (package
+    (name "r-complexplus")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "complexplus" version))
+       (sha256
+        (base32
+         "16w9v7d1ckavqmr86l34frr37pkvdn0iqnb17ssb8xaggns5lgqx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-expm" ,r-expm)
+       ("r-matrix" ,r-matrix)))
+    (home-page "http://cran.r-project.org/web/packages/complexplus/")
+    (synopsis "Functions of complex or real variables")
+    (description
+     "This package extends several functions to the complex domain, including
+the matrix exponential and logarithm, and the determinant.")
+    (license license:gpl2)))
