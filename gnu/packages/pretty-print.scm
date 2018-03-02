@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -242,7 +242,7 @@ seen in a terminal.")
 (define-public highlight
   (package
     (name "highlight")
-    (version "3.33")
+    (version "3.42")
     (source
      (origin
        (method url-fetch)
@@ -250,10 +250,10 @@ seen in a terminal.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "0g2whi6pxl640795vymikm82a1my841jmh7fiqzbrjpc9wsk1db4"))))
+         "07iihzy8ckzdrxqd6bzbij4hy4mmlixibjnjviqfihd0hh1q30m5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags
        (let ((confdir (string-append %output "/share/highlight/config/")))
          (list (string-append "PREFIX=" %output)
@@ -261,7 +261,7 @@ seen in a terminal.")
                (string-append "conf_dir=" confdir)))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (add-after 'unpack 'fix-search-for-lua
            (lambda _
              (substitute* "src/makefile"
