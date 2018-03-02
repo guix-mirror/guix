@@ -8181,12 +8181,12 @@ Background: There exists a feature space for queues that extends between:
 @itemize
 @item Simple, single-ended, non-concurrent, bounded queues
 
-@item Double-ended, threadsafe, growable queues with important points
-inbetween (such as the queues used for work-stealing).
+@item Double-ended, thread-safe, growable queues with important points
+in between (such as the queues used for work stealing).
 @end itemize
 
 This package includes an interface for Deques that allows the programmer
-to use a single API for all of the above, while using the type-system to
+to use a single API for all of the above, while using the type system to
 select an efficient implementation given the requirements (using type families).
 
 This package also includes a simple reference implementation based on
