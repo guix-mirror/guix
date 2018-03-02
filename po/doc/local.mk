@@ -16,7 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-EXTRA_DIST =
+EXTRA_DIST = \
+  %D%/contributing.fr.po \
+  %D%/guix.fr.po
 
 POT_OPTIONS = --package-name "guix" --package-version "$(VERSION)" \
 	          --copyright-holder "Ludovic Courtès" \

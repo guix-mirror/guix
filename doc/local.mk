@@ -21,7 +21,8 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-info_TEXINFOS = %D%/guix.texi
+info_TEXINFOS = %D%/guix.texi \
+  %D%/guix.fr.texi
 
 %C%_guix_TEXINFOS = \
   %D%/contributing.texi \
@@ -52,7 +53,9 @@ OS_CONFIG_EXAMPLES_TEXI =			\
   %D%/os-config-desktop.texi			\
   %D%/os-config-lightweight-desktop.texi
 
-TRANSLATED_INFO =
+TRANSLATED_INFO = \
+  %D%/guix.fr.texi \
+  %D%/contributing.fr.texi
 
 # Bundle this file so that makeinfo finds it in out-of-source-tree builds.
 BUILT_SOURCES        += $(OS_CONFIG_EXAMPLES_TEXI) $(TRANSLATED_INFO)
