@@ -1031,7 +1031,7 @@ library remains flexible, portable, and easily embeddable.")
 (define-public sslh
   (package
     (name "sslh")
-    (version "1.19b")
+    (version "1.19c")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/yrutschle/sslh/archive/v"
@@ -1039,7 +1039,7 @@ library remains flexible, portable, and easily embeddable.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0p0zfy5ifzj7508zqidgkf8g43frm7l5xcs5s6v7132lypcsbd4k"))))
+                "0pd8hifa9h0rm7vms3k6ic1k29xigrlv2idc5wgcafmb1v1243di"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Test dependencies.
