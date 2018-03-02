@@ -66,8 +66,6 @@
                     (bin (string-append out "/bin"))
                     (doc (string-append out "/share/doc/delta-" ,version)))
                (begin
-                 (mkdir-p bin)
-                 (mkdir-p doc)
                  (for-each (lambda (h)
                              (install-file h doc))
                            `("License.txt" ,@(find-files "www" ".*\\.html")))
@@ -75,7 +73,7 @@
                              (install-file b bin))
                            `("delta" "multidelta" "topformflat"))))
              #t))
-         (delete 'configure))))
+         (delete 'configure))))         ; no configure script
     (home-page "http://delta.tigris.org/")
     (synopsis "Heuristical file minimizer")
     (description
