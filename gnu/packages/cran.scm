@@ -2521,3 +2521,29 @@ Cryer and Kung-Sik Chan.")
 functions and random generation functions for a large number of univariate and
 multivariate distributions.")
     (license license:gpl2)))
+
+(define-public r-fractal
+  (package
+    (name "r-fractal")
+    (version "2.0-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fractal" version))
+       (sha256
+        (base32
+         "18lr9z0gslvfc3z8vyj3krqj3bfhg60zv1fzinrwwkc4cpk1w7mp"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ifultools" ,r-ifultools)
+       ("r-mass" ,r-mass)
+       ("r-sapa" ,r-sapa)
+       ("r-scatterplot3d" ,r-scatterplot3d)
+       ("r-splus2r" ,r-splus2r)
+       ("r-wmtsa" ,r-wmtsa)))
+    (home-page "http://cran.r-project.org/web/packages/fractal/")
+    (synopsis "Fractal time series modeling and analysis")
+    (description
+     "This package provides tools for stochastic fractal and deterministic
+chaotic time series analysis.")
+    (license license:gpl2)))
