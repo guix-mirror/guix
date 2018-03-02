@@ -1854,38 +1854,22 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
 (define-public cutadapt
   (package
     (name "cutadapt")
-    (version "1.14")
+    (version "1.16")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/marcelm/cutadapt/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/marcelm/cutadapt.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "16gbpiwy4m48vq2h5wqar3i8vr6vcj9gcl2qvqim19x6ya9dp8kd"))))
+                "09pr02067jiks19nc0aby4xp70hhgvb554i2y1c04rv1m401w7q8"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; The tests must be run after installation.
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (setenv "PYTHONPATH"
-                     (string-append
-                      (getenv "PYTHONPATH")
-                      ":" (assoc-ref outputs "out")
-                      "/lib/python"
-                      (string-take (string-take-right
-                                    (assoc-ref inputs "python") 5) 3)
-                      "/site-packages"))
-             (zero? (system* "nosetests" "-P" "tests")))))))
     (inputs
      `(("python-xopen" ,python-xopen)))
     (native-inputs
      `(("python-cython" ,python-cython)
-       ("python-nose" ,python-nose)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://cutadapt.readthedocs.io/en/stable/")
     (synopsis "Remove adapter sequences from nucleotide sequencing reads")
     (description
