@@ -2689,3 +2689,27 @@ of the sorts of data frequently encountered in phonetics research and
 experimentation, including the easy creation of IPA vowel plots, and the
 creation and manipulation of WAVE audio files.")
     (license license:bsd-2)))
+
+(define-public r-np
+  (package
+    (name "r-np")
+    (version "0.60-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "np" version))
+       (sha256
+        (base32
+         "1y72x5j9j9mcgcy2xizk31gl843hfkngxdn8s4qw7yhw2qj79hsr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-boot" ,r-boot)
+       ("r-cubature" ,r-cubature)
+       ("r-quantreg" ,r-quantreg)))
+    (home-page "https://github.com/JeffreyRacine/R-Package-np")
+    (synopsis "Non-parametric kernel smoothing methods for mixed data types")
+    (description "This package provides non-parametric (and semi-parametric)
+kernel methods that seamlessly handle a mix of continuous, unordered, and
+ordered factor data types.")
+    ;; Any version of the GPL.
+    (license license:gpl3+)))
