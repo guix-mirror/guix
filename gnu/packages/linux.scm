@@ -873,7 +873,7 @@ ext3 or ext4 partition.")
 (define-public zerofree
   (package
     (name "zerofree")
-    (version "1.1.0")
+    (version "1.1.1")
     (home-page "https://frippery.org/uml/")
     (source (origin
               (method url-fetch)
@@ -881,7 +881,7 @@ ext3 or ext4 partition.")
                                   ".tgz"))
               (sha256
                (base32
-                "059g29x5r1xj6wcj4xj85l8w6qrxyl86yqbybjqqz6nxz4falxzf"))))
+                "0rrqfa5z103ws89vi8kfvbks1cfs74ix6n1wb6vs582vnmhwhswm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
