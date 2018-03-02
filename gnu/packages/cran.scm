@@ -2265,3 +2265,27 @@ supports arbitrary vertex/edge/graph attributes.")
     (description "This package provides non-statistical utilities used by the
 software developed by the Statnet Project.")
     (license license:gpl3)))
+
+(define-public r-sna
+  (package
+    (name "r-sna")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sna" version))
+       (sha256
+        (base32
+         "1ks8819qvpdfansfqj9p32s1rhvl26frvbi78m4rx1wd1qcv74i2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-network" ,r-network)
+       ("r-statnet-common" ,r-statnet-common)))
+    (home-page "http://www.statnet.org")
+    (synopsis "Tools for social network analysis")
+    (description
+     "This package provides a range of tools for social network analysis,
+including node and graph-level indices, structural distance and covariance
+methods, structural equivalence detection, network regression, random graph
+generation, and 2D/3D network visualization.")
+    (license license:gpl2+)))
