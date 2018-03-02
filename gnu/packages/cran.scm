@@ -2624,3 +2624,24 @@ Homogeinity Test), detection of non-randomness (Wallis-Moore Phase Frequency
 Test, Bartels rank von Neumann's ratio test, Wald-Wolfowitz Test) and the two
 sample Robust Rank-Order Distributional Test.")
     (license license:gpl3)))
+
+(define-public r-expm
+  (package
+    (name "r-expm")
+    (version "0.999-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "expm" version))
+       (sha256
+        (base32
+         "1mihl67kvv1xv0figp25jkmwfn4iwkcx15cng2348y8gm6zybw9q"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-matrix" ,r-matrix)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://r-forge.r-project.org/projects/expm/")
+    (synopsis "Tools for matrix exponentials and related quantities")
+    (description
+     "This package provides tools for the computation of the matrix
+exponential, logarithm, square root, and related quantities.")
+    (license license:gpl2+)))
