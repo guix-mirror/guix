@@ -4,6 +4,7 @@
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 # Copyright © 2016, 2018 Mathieu Lirzin <mthl@gnu.org>
+# Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 #
 # This file is part of GNU Guix.
 #
@@ -51,10 +52,51 @@ OS_CONFIG_EXAMPLES_TEXI =			\
   %D%/os-config-desktop.texi			\
   %D%/os-config-lightweight-desktop.texi
 
+TRANSLATED_INFO =
+
 # Bundle this file so that makeinfo finds it in out-of-source-tree builds.
-BUILT_SOURCES        += $(OS_CONFIG_EXAMPLES_TEXI)
-EXTRA_DIST           += $(OS_CONFIG_EXAMPLES_TEXI)
-MAINTAINERCLEANFILES  = $(OS_CONFIG_EXAMPLES_TEXI)
+BUILT_SOURCES        += $(OS_CONFIG_EXAMPLES_TEXI) $(TRANSLATED_INFO)
+EXTRA_DIST           += $(OS_CONFIG_EXAMPLES_TEXI) $(TRANSLATED_INFO)
+MAINTAINERCLEANFILES  = $(OS_CONFIG_EXAMPLES_TEXI) $(TRANSLATED_INFO)
+
+PO4A_PARAMS := -M UTF-8 -L UTF-8 #master and localized encoding
+PO4A_PARAMS += -k 0 # produce an output even if the translation is not complete
+PO4A_PARAMS += -f texinfo # texinfo format
+
+# When a change to guix.texi occurs, it is not translated immediately.
+# Because @pxref and @xref commands are reference to a section by name, they
+# should be translated. If a modification adds a reference to a section, this
+# reference is not translated, which means it references a section that does not
+# exist.
+# This command loops through the translated files looking for references. For
+# each of these references, it tries to find the translation and replaces the
+# reference name, even in untranslated strings.
+# The last sed is a multiline sed because some references span multiple lines.
+define xref_command
+cat "$@.tmp" | egrep '@p?x?ref' -A1 | sed 'N;s|--\n||g;P;D' | sed 's|^| |g' | \
+        tr -d '\012' | sed 's|\(@p\?x\?ref\)|\n\1|g' | egrep '@p?x?ref' | \
+        sed 's|^.*@p\?x\?ref{\([^,}]*\).*$$|\1|g' | sort | uniq | while read e; do \
+  line=$$(grep -n "^msgid \"$$e\"" "$<" | cut -f1 --delimiter=":") ;\
+  ((line++)) ;\
+  if [ "$$line" != "1" ]; then \
+    translation=$$(head -n $$line "$<" | tail -1 | grep msgstr | sed 's|msgstr "\(.*\)"|\1|') ;\
+    if [ "$$translation" != "" ]; then \
+	  sed "N;s@\(p\?x\?ref\){$$(echo $$e | sed 's| |[\\n ]|g')\(,\|}\)@\1{$$translation\2@g;P;D" -i "$@.tmp" ;\
+    fi ;\
+  fi ;\
+done
+endef
+
+$(srcdir)/%D%/guix.%.texi: po/doc/guix.%.po $(srcdir)/%D%/contributing.%.texi
+	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/guix.texi" -p "$<" -l "$@.tmp"
+	-sed -i "s|guix\.info|$$(basename "$@" | sed 's|texi$$|info|')|" "$@.tmp"
+	-$(xref_command)
+	-mv "$@.tmp" "$@"
+
+$(srcdir)/%D%/contributing.%.texi: po/doc/guix.%.po po/doc/contributing.%.po
+	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/contributing.texi" -p "$(word 2,$^)" -l "$@.tmp"
+	-$(xref_command)
+	-mv "$@.tmp" "$@"
 
 %D%/os-config-%.texi: gnu/system/examples/%.tmpl
 	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";	\
