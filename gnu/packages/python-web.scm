@@ -254,7 +254,8 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "py.test" "-v" "webencodings/tests.py")))))))
+             (invoke "py.test" "-v" "webencodings/tests.py")
+             #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/SimonSapin/python-webencodings")
@@ -295,7 +296,8 @@ is Python’s.")
        (modify-phases %standard-phases
         (replace 'check
           (lambda _
-            (zero? (system* "./admin/runtests")))))))
+            (invoke "./admin/runtests")
+            #t)))))
     (properties `((python2-variant . ,(delay python2-openid))))
     (propagated-inputs
      `(("python-defusedxml" ,python-defusedxml)))
@@ -451,7 +453,8 @@ teams extension for python-openid.")
        ;;     (lambda _
        ;;       ;; 'setup.py test' hits an AssertionError on BSD-specific
        ;;       ;; "tornado/platform/kqueue.py". This is the supported method:
-       ;;       (zero? (system* "python" "-m" "tornado.test")))))
+       ;;       (invoke- "python" "-m" "tornado.test")
+       ;;       #t)))
        #:tests? #f))
     (native-inputs
      `(("python-certifi" ,python-certifi)))
@@ -522,7 +525,8 @@ web framework, either via the basic or digest authentication schemes.")
        (modify-phases %standard-phases
          (replace 'check
                   (lambda _
-                    (zero? (system* "nosetests")))))))
+                    (invoke "nosetests")
+                    #t)))))
     (home-page "https://github.com/takluyver/terminado")
     (synopsis "Terminals served to term.js using Tornado websockets")
     (description "This package provides a Tornado websocket backend for the
@@ -1519,7 +1523,8 @@ library.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "py.test" "src/geventhttpclient/tests" "-v")))))))
+             (invoke "py.test" "src/geventhttpclient/tests" "-v")
+             #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (propagated-inputs
@@ -1629,7 +1634,8 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/build/lib:"
                                     (getenv "PYTHONPATH")))
-             (zero? (system* "py.test" "-vv")))))))
+             (invoke "py.test" "-vv")
+             #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-redis" ,python-redis)
@@ -1715,7 +1721,8 @@ Betamax.")
            (lambda _
              ;; 7 of the 'integration' tests require network access or login
              ;; credentials.
-             (zero? (system* "nosetests" "--exclude=integration")))))))
+             (invoke "nosetests" "--exclude=integration")
+             #t)))))
     (native-inputs
      `(("python-docutils" ,python-docutils)
        ("python-mock" ,python-mock)
@@ -1831,7 +1838,8 @@ transfers.")
        ;; (modify-phases %standard-phases
        ;;   (replace 'check
        ;;     (lambda _
-       ;;       (zero? (system* "nosetests")))))))
+       ;;       (invoke "nosetests")
+       ;;       #t)))))
     (propagated-inputs
       `(("python-aniso8601" ,python-aniso8601)
         ("python-flask" ,python-flask)
