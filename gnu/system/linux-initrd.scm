@@ -262,8 +262,8 @@ FILE-SYSTEMS."
      (let ((table (vhash mapping ...)))
        (lambda (key)
          (match (vhash-assoc key table)
-           (#f    default)
-           (value value)))))))
+           (#f            default)
+           ((key . value) value)))))))
 
 (define file-system-type-modules
   ;; Given a file system type, return the list of modules it needs.
