@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
@@ -10173,14 +10173,14 @@ network.")
 (define-public python-xopen
   (package
     (name "python-xopen")
-    (version "0.1.1")
+    (version "0.3.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xopen" version))
         (sha256
           (base32
-           "1wx6mylzcsyhjl19ycb83qq6iqpmr927lz62njfsar6ldsj0qcni"))
+           "0bzjmn3rl1cd3d2q39cjwnkhaspk2b0hfj3rl64pclm44ihg5fb6"))
         (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (home-page "https://github.com/marcelm/xopen/")
