@@ -2245,3 +2245,23 @@ published results; and a routine for graphical display.")
 @code{network} class can represent a range of relational data types, and
 supports arbitrary vertex/edge/graph attributes.")
     (license license:gpl2+)))
+
+(define-public r-statnet-common
+  (package
+    (name "r-statnet-common")
+    (version "4.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "statnet.common" version))
+        (sha256
+          (base32
+            "0yw6l5b4qv0jqlg4zyczas7m12a5pyqghs6ydxy2f6v6vxkijvi0"))))
+    (properties
+      `((upstream-name . "statnet.common")))
+    (build-system r-build-system)
+    (home-page "http://www.statnet.org")
+    (synopsis "R scripts and utilities used by the Statnet software")
+    (description "This package provides non-statistical utilities used by the
+software developed by the Statnet Project.")
+    (license license:gpl3)))
