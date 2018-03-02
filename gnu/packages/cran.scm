@@ -2498,3 +2498,26 @@ University Press, 2000.")
 \"Time Series Analysis with Applications in R (second edition)\" by Jonathan
 Cryer and Kung-Sik Chan.")
     (license license:gpl2+)))
+
+(define-public r-extradistr
+  (package
+    (name "r-extradistr")
+    (version "1.8.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "extraDistr" version))
+       (sha256
+        (base32
+         "0ywn4qwnamv36l1hw27l9y5kh3v6ha5781wsv2bz6szqjgg7kdb3"))))
+    (properties `((upstream-name . "extraDistr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/twolodzko/extraDistr")
+    (synopsis "Additional univariate and multivariate distributions")
+    (description
+     "This package implements density, distribution functions, quantile
+functions and random generation functions for a large number of univariate and
+multivariate distributions.")
+    (license license:gpl2)))
