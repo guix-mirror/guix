@@ -2199,16 +2199,18 @@ implemented in ANSI C, and MPI for communications.")
 (define-public scotch
   (package
     (name "scotch")
-    (version "6.0.4")
+    (version "6.0.5a")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://gforge.inria.fr/frs/download.php/"
                           "latestfile/298/scotch_" version ".tar.gz"))
       (sha256
-       (base32 "1ir088mvrqggyqdkx9qfynmiaffqbyih5qfl5mga2nrlm1qlsgzm"))
+       (base32 "0vsmgjz8qv80di3ljmc7hbdsizxxxwy2b9rgd2fl1mdc6dgbj8av"))
       (patches (search-patches "scotch-test-threading.patch"
-                               "pt-scotch-build-parallelism.patch"))))
+                               "scotch-build-parallelism.patch"
+                               "scotch-graph-induce-type-64.patch"
+                               "scotch-graph-diam-64.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)

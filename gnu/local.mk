@@ -1014,7 +1014,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/psm-arch.patch				\
   %D%/packages/patches/psm-ldflags.patch			\
   %D%/packages/patches/psm-repro.patch				\
-  %D%/packages/patches/pt-scotch-build-parallelism.patch	\
   %D%/packages/patches/pulseaudio-fix-mult-test.patch		\
   %D%/packages/patches/pulseaudio-longer-test-timeout.patch	\
   %D%/packages/patches/pycairo-wscript.patch			\
@@ -1086,6 +1085,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
+  %D%/packages/patches/scotch-build-parallelism.patch		\
+  %D%/packages/patches/scotch-graph-diam-64.patch		\
+  %D%/packages/patches/scotch-graph-induce-type-64.patch	\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/shadow-CVE-2018-7169.patch		\
