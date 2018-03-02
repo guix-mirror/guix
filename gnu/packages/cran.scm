@@ -2568,3 +2568,28 @@ chaotic time series analysis.")
      "This package provides unit root and cointegration tests encountered in
 applied econometric analysis.")
     (license license:gpl2+)))
+
+(define-public r-cubature
+  (package
+    (name "r-cubature")
+    (version "1.3-11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cubature" version))
+       (sha256
+        (base32
+         "06f6gsvbb732p80r6hxvzh4ik546icxfvx21dyh65ypmw3kgm64k"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/bnaras/cubature")
+    (synopsis "Adaptive multivariate integration over hypercubes")
+    (description
+     "This package is an R wrapper around the cubature C library for adaptive
+multivariate integration over hypercubes.  This version provides both
+@code{hcubature} and @code{pcubature} routines in addition to a vector
+interface.")
+    ;; The included cubature C library is released under GPLv2+, but the
+    ;; wrapper declares the license to be GPLv3+.
+    (license (list license:gpl2+ license:gpl3+))))
