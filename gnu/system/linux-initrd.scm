@@ -280,6 +280,11 @@ FILE-SYSTEMS."
 
 (define* (default-initrd-modules #:optional (system (%current-system)))
   "Return the list of modules included in the initrd by default."
+  (define virtio-modules
+    ;; Modules for Linux para-virtualized devices, for use in QEMU guests.
+    '("virtio_pci" "virtio_balloon" "virtio_blk" "virtio_net"
+      "virtio_console"))
+
   `("ahci"                                  ;for SATA controllers
     "usb-storage" "uas"                     ;for the installation image etc.
     "usbhid" "hid-generic" "hid-apple"      ;keyboards during early boot
@@ -288,7 +293,9 @@ FILE-SYSTEMS."
     ,@(if (string-match "^(x86_64|i[3-6]86)-" system)
           '("pata_acpi" "pata_atiixp"    ;for ATA controllers
             "isci")                      ;for SAS controllers like Intel C602
-          '())))
+          '())
+
+    ,@virtio-modules))
 
 (define-syntax %base-initrd-modules
   ;; This more closely matches our naming convention.
@@ -301,7 +308,6 @@ FILE-SYSTEMS."
                       (mapped-devices '())
                       qemu-networking?
                       volatile-root?
-                      (virtio? #t)
                       (extra-modules '())         ;deprecated
                       (on-error 'debug))
   "Return a monadic derivation that builds a generic initrd, with kernel
@@ -312,25 +318,13 @@ mappings to realize before FILE-SYSTEMS are mounted.
 
 QEMU-NETWORKING? and VOLATILE-ROOT? behaves as in raw-initrd.
 
-When VIRTIO? is true, load additional modules so the initrd can
-be used as a QEMU guest with the root file system on a para-virtualized block
-device.
-
 The initrd is automatically populated with all the kernel modules necessary
-for FILE-SYSTEMS and for the given options.  However, additional kernel
-modules can be listed in EXTRA-MODULES.  They will be added to the initrd, and
+for FILE-SYSTEMS and for the given options.  Additional kernel
+modules can be listed in LINUX-MODULES.  They will be added to the initrd, and
 loaded at boot time in the order in which they appear."
-  (define virtio-modules
-    ;; Modules for Linux para-virtualized devices, for use in QEMU guests.
-    '("virtio_pci" "virtio_balloon" "virtio_blk" "virtio_net"
-      "virtio_console"))
-
   (define linux-modules*
     ;; Modules added to the initrd and loaded from the initrd.
     `(,@linux-modules
-      ,@(if (or virtio? qemu-networking?)
-            virtio-modules
-            '())
       ,@(file-system-modules file-systems)
       ,@(if volatile-root?
             '("overlay")

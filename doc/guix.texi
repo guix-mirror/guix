@@ -19893,18 +19893,18 @@ to it are lost.
 
 @deffn {Monadic Procedure} base-initrd @var{file-systems} @
        [#:mapped-devices '()] [#:qemu-networking? #f] [#:volatile-root? #f]@
-       [#:virtio? #t] [#:extra-modules '()]
-Return a monadic derivation that builds a generic initrd.  @var{file-systems} is
-a list of file systems to be mounted by the initrd like for @code{raw-initrd}.
-@var{mapped-devices}, @var{qemu-networking?} and @var{volatile-root?}
-also behaves as in @code{raw-initrd}.
+       [#:linux-modules '()]
+Return a monadic derivation that builds a generic initrd, with kernel
+modules taken from @var{linux}.  @var{file-systems} is a list of file-systems to be
+mounted by the initrd, possibly in addition to the root file system specified
+on the kernel command line via @code{--root}.  @var{mapped-devices} is a list of device
+mappings to realize before @var{file-systems} are mounted.
 
-When @var{virtio?} is true, load additional modules so that the
-initrd can be used as a QEMU guest with para-virtualized I/O drivers.
+@var{qemu-networking?} and @var{volatile-root?} behaves as in @code{raw-initrd}.
 
 The initrd is automatically populated with all the kernel modules necessary
-for @var{file-systems} and for the given options.  However, additional kernel
-modules can be listed in @var{extra-modules}.  They will be added to the initrd, and
+for @var{file-systems} and for the given options.  Additional kernel
+modules can be listed in @var{linux-modules}.  They will be added to the initrd, and
 loaded at boot time in the order in which they appear.
 @end deffn
 
