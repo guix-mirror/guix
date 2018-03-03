@@ -1072,7 +1072,7 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
     (synopsis "Specify refactorings to perform with apply-refact")
     (description
      "This library provides a datatype which can be interpreted by
-@code{apply-refact}.  It exists as a seperate library so that applications can
+@code{apply-refact}.  It exists as a separate library so that applications can
 specify refactorings without depending on GHC.")
     (license license:bsd-3)))
 
