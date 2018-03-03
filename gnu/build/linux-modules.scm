@@ -30,6 +30,7 @@
   #:use-module (ice-9 rdelim)
   #:export (dot-ko
             ensure-dot-ko
+            module-aliases
             module-dependencies
             recursive-module-dependencies
             modules-loaded
@@ -94,6 +95,15 @@ contains module names, not actual file names."
     (match (assq 'depends info)
       (('depends . what)
        (string-tokenize what %not-comma)))))
+
+(define (module-aliases file)
+  "Return the list of aliases of module FILE."
+  (let ((info (modinfo-section-contents file)))
+    (filter-map (match-lambda
+                 (('alias . value)
+                  value)
+                 (_ #f))
+                (modinfo-section-contents file))))
 
 (define dot-ko
   (cut string-append <> ".ko"))
