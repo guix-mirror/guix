@@ -143,6 +143,7 @@ made available under the /xchg CIFS share."
                          (return initrd)
                          (base-initrd %linux-vm-file-systems
                                       #:linux linux
+                                      #:linux-modules %base-initrd-modules
                                       #:virtio? #t
                                       #:qemu-networking? #t))))
 
