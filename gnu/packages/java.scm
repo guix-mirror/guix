@@ -6980,7 +6980,8 @@ it manages project dependencies, gives diffs jars, and much more.")
              ;; packaging.  It uses the version referenced in pom.xml.  We replace
              ;; it with our own version.
              (substitute* "src/test/java/org/ops4j/pax/tinybundles/bnd/BndTest.java"
-               (("2.4.0.201411031534") "3.4.0")))))))
+               (("[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*")
+                ,(package-version java-aqute-bndlib))))))))
     (inputs
      `(("lang" ,java-ops4j-base-lang)
        ("io" ,java-ops4j-base-io)
