@@ -412,7 +412,7 @@ no man page, refer to the home page for usage details.")
              (let ((tomb (string-append (assoc-ref outputs "out")
                                         "/bin/tomb")))
                (zero? (system* tomb "dig" "-s" "10" "secrets.tomb"))))))))
-    (home-page "http://www.dyne.org/software/tomb")
+    (home-page "https://www.dyne.org/software/tomb")
     (synopsis "File encryption for secret data")
     (description
      "Tomb is an application to manage the creation and access of encrypted
