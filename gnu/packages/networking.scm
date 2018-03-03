@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -534,7 +534,7 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.4.4")
+    (version "2.4.5")
     (source
      (origin
        (method url-fetch)
@@ -542,7 +542,7 @@ of the same name.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0n3g28hrhifnchlz4av0blq4ykm4zaxwwxbzdm9wsba27677b6h4"))))
+         "1mvgy67rvnwj2kbc43s4il81jvz5ai0bx2j3j2js7x50zclyrcmk"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)
