@@ -1646,7 +1646,7 @@ essential distortions.")
     (synopsis "Implementation of the Open Sound Control protocol")
     (description
      "liblo is a lightweight library that provides an easy to use
-implementation of the Open Sound Control (OSC) protocol.")
+implementation of the Open Sound Control (@dfn{OSC}) protocol.")
     (license license:lgpl2.1+)))
 
 (define-public python-pyaudio
