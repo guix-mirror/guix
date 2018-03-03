@@ -37,6 +37,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
@@ -497,3 +498,32 @@ importantly we give you proper follow-symbol and find-references support.")
     (description "This package provides a wrapper around @command{make} to
 produce colored output.")
     (license license:gpl2+)))
+
+(define-public makefile2graph
+  (package
+    (name "makefile2graph")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/lindenb/" name
+                                  "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h1vchkpmm9h6s87p5nf0ksjxcmsxpx8k62a508w428n570wcr4l"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:test-target "test"
+       #:make-flags (list "CC=gcc" (string-append "prefix=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("graphviz" ,graphviz)))
+    (home-page "https://github.com/lindenb/makefile2graph")
+    (synopsis "Creates a graph of dependencies from GNU Make")
+    (description
+     "@code{make2graph} creates a graph of dependencies from GNU Make.  The
+output is a graphviz-dot file, a Gexf-XML file or a list of the deepest
+independent targets.")
+    (license license:expat)))
