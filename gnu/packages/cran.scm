@@ -1637,21 +1637,21 @@ simplifying cross-class interoperability.")
 (define-public r-performanceanalytics
   (package
     (name "r-performanceanalytics")
-    (version "1.4.3541")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "PerformanceAnalytics" version))
        (sha256
         (base32
-         "1czchsccsbdfjw743j6rm101q2q01pggyl8zmlva213pwm86zb3v"))))
+         "01bgm57z079g6r505w3bj293zkbd49fwa8sg55z87vizwavipml6"))))
     (properties
      `((upstream-name . "PerformanceAnalytics")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-xts" ,r-xts)
+     `(("r-quadprog" ,r-quadprog)
+       ("r-xts" ,r-xts)
        ("r-zoo" ,r-zoo)))
-    (native-inputs `(("gfortran" ,gfortran)))
     (home-page "http://r-forge.r-project.org/projects/returnanalytics/")
     (synopsis "Econometric tools for performance and risk analysis")
     (description "This is a collection of econometric functions for
