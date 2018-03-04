@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,10 +83,11 @@ available to help to click.")
     (license license:gpl2+)))
 
 (define-public footswitch
-  (let ((commit "7cb0a9333a150c27c7e4746ee827765d244e567a"))
+  (let ((commit "deedd87fd90fad90ce342aeabafd4a3198d7d3d4")
+        (revision "2"))
     (package
       (name "footswitch")
-      (version (git-version "0.1" "1" commit))
+      (version (git-version "0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -93,7 +95,7 @@ available to help to click.")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
-                 (base32 "0mg1vr4a9vls5y435w7wdnr1vb5059gy60lvrdfjgzhd2wwf47iw"))))
+                 (base32 "1ys90wqyz62kffa8m3hgaq1dl7f29x3mrc3zqfjrkbn2ps0k6ps0"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("pkg-config" ,pkg-config)))
