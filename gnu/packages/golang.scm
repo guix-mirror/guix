@@ -552,6 +552,7 @@ jar struct to manage the cookies added to the cookie jar.")
                 (uri (git-reference
                        (url "https://github.com/davidjpeacock/cli.git")
                        (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "01s53ny3p0fdx64rnwcnmjj4xpc5adihnh6islsfq5z1ph2phhnj"))))
