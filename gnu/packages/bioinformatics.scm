@@ -3775,7 +3775,7 @@ sequences).")
 (define-public mash
   (package
     (name "mash")
-    (version "1.1.1")
+    (version "2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3784,7 +3784,7 @@ sequences).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08znbvqq5xknfhmpp3wcj574zvi4p7i8zifi67c9qw9a6ikp42fj"))
+                "00fx14vpmgsijwxd1xql3if934l82v8ckqgjjyyhnr36qb9qrskv"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled kseq.
@@ -3802,7 +3802,9 @@ sequences).")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-includes
            (lambda _
-             (substitute* '("src/mash/Sketch.cpp" "src/mash/CommandFind.cpp")
+             (substitute* '("src/mash/Sketch.cpp"
+                            "src/mash/CommandFind.cpp"
+                            "src/mash/CommandScreen.cpp")
                (("^#include \"kseq\\.h\"")
                 "#include \"htslib/kseq.h\""))
              #t))
