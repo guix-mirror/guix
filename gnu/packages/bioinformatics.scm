@@ -8924,6 +8924,7 @@ intervals (e.g. genes, sequence alignments).")
                 (uri (git-reference
                       (url "https://github.com/smithlabcode/piranha.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "117dc0zf20c61jam69sk4abl57ah6yi6i7qra7d7y5zrbgk12q5n"))))
