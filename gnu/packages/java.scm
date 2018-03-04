@@ -6023,7 +6023,9 @@ tree walking, and translation.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0qgg5vgsm4l1d6dj9pfbaa25dpv2ry2gny8ajy4vvgvfklw97b3m"))))
+                "0qgg5vgsm4l1d6dj9pfbaa25dpv2ry2gny8ajy4vvgvfklw97b3m"))
+              (patches
+               (search-patches "antlr3-3_3-fix-java8-compilation.patch"))))
     (arguments
      `(#:jar-name (string-append ,name "-" ,version ".jar")
        #:source-dir (string-join '("tool/src/main/java"
