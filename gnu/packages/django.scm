@@ -267,15 +267,18 @@ account authentication.")
 (define-public python-django-gravatar2
   (package
     (name "python-django-gravatar2")
-    (version "1.4.0")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-gravatar2" version))
        (sha256
         (base32
-         "1v4qyj6kms321yw0z2g1kch6b2dskmv6fjd6sfxzwr4xshq9mccl"))))
+         "1qsv40xywbqsf4mkrmsswrpzqd7nfljxpfiim9an2z3dykn5rka6"))))
     (build-system python-build-system)
+    (arguments
+     '(;; TODO: The django project for the tests is missing from the release.
+       #:tests? #f))
     (inputs
      `(("python-django" ,python-django)))
     (home-page "https://github.com/twaddington/django-gravatar")
