@@ -4301,6 +4301,7 @@ CIDER).")
          (uri (git-reference
                (url "https://github.com/joaotavora/sly.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0ib4q4k3h3qn88pymyjjmlmnpizdn1mfg5gpk5a715nqsgxlg09l"))))
