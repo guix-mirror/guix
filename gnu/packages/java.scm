@@ -6113,7 +6113,9 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0sfimc9cpbgrihz4giyygc8afgpma2c93yqpwb951giriri6x66z"))))
+                "0sfimc9cpbgrihz4giyygc8afgpma2c93yqpwb951giriri6x66z"))
+              (patches
+               (search-patches "antlr3-3_1-fix-java8-compilation.patch"))))
     (arguments
      `(#:jar-name (string-append "antlr3-" ,version ".jar")
        #:source-dir "src:runtime/Java/src"
