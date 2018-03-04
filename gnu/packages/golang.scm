@@ -502,6 +502,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                 (uri (git-reference
                        (url "https://github.com/alsm/ioprogress.git")
                        (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "10ym5qlq77nynmkxbk767f2hfwyxg2k7hrzph05hvgzv833dhivh"))))
