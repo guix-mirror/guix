@@ -3546,6 +3546,7 @@ It is recommended to use @code{clojure-mode} with paredit or smartparens.")
               (uri (string-append
                     "https://github.com/cask/epl/archive/"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1511n3a3f5gvaf2b4nh018by61ciyzi3y3603fzqma7p9hrckarc"))))
