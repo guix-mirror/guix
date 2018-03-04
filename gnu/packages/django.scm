@@ -182,13 +182,13 @@ useful tools for testing Django applications and projects.")
 (define-public python-django-filter
   (package
     (name "python-django-filter")
-    (version "0.14.0")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-filter" version))
               (sha256
                (base32
-                "0f78hmk8c903zwfzlsiw7ivgag81ymmb5hi73rzxbhnlg2v0l3fx"))))
+                "0slpfqfhnjrzlrb6vmswyhrzn01p84s16j2x1xib35gg4fxg23pc"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -198,6 +198,8 @@ useful tools for testing Django applications and projects.")
              (zero? (system* "python" "runtests.py")))))))
     (native-inputs
      `(("python-django" ,python-django)
+       ("python-djangorestframework" ,python-djangorestframework)
+       ("python-django-crispy-forms", python-django-crispy-forms)
        ("python-mock" ,python-mock)))
     (home-page "https://django-filter.readthedocs.io/en/latest/")
     (synopsis "Reusable Django application to filter querysets dynamically")
