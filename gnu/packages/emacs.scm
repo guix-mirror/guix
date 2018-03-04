@@ -614,7 +614,7 @@ process, passing on the arguments as command line arguments.")
           'build 'pre-build
           (lambda* (#:key inputs #:allow-other-keys)
             (define (el-dir store-dir)
-              (match (find-files store-dir)
+              (match (find-files store-dir "\\.el$")
                 ((f1 f2 ...) (dirname f1))
                 (_ "")))
 
