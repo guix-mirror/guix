@@ -2285,6 +2285,7 @@ PickleShare.")
         (method url-fetch)
         (uri (string-append "https://github.com/rogerbinns/apsw/archive/"
                             version ".tar.gz"))
+        (file-name (string-append "apsw-" version ".tar.gz"))
         (sha256
           (base32
            "00ai7m2pqi26qaflhz314d8k5i3syw7xzr145fhfl0crhyh6adz2"))))
