@@ -204,23 +204,24 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.74")
+    (version "1.76")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/AlDanial/cloc/releases/download/" version
+             "https://github.com/AlDanial/cloc/releases/download/v" version
              "/cloc-" version ".tar.gz"))
        (sha256
         (base32
-         "0rq5xfiln1wlv3yr9mg18ax4gskbss786iqaf0v45iv6awyl5b2m"))))
+         "05srlvzwisr7y7ymvzb5yfdsrspja27ysqdmkwhiiivy84mq2gnl"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)
        ("perl" ,perl)
        ("perl-algorithm-diff" ,perl-algorithm-diff)
-       ("perl-regexp-common" ,perl-regexp-common)
-       ("perl-digest-md5" ,perl-digest-md5)))
+       ("perl-digest-md5" ,perl-digest-md5)
+       ("perl-parallel-forkmanager" ,perl-parallel-forkmanager)
+       ("perl-regexp-common" ,perl-regexp-common)))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure)
