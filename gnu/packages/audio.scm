@@ -1783,6 +1783,7 @@ software.")
                 (uri (git-reference
                       (url "http://lv2plug.in/git/lv2.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1gp2rd99dfmpibvpixrqn115mrhybzf3if3h8bssf6siyi13f29r")))))))
