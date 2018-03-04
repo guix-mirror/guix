@@ -10888,6 +10888,7 @@ memory usage and processing time is minimized.")
          (uri (git-reference
                (url "https://github.com/rajewsky-lab/dropbead.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1b2lphsc236s1rdzlijxg8yl1jnqpwcvj4x938r89rqpj93jb780"))))
