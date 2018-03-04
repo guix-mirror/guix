@@ -958,7 +958,8 @@ also walk each side of a merge and test those changes individually.")
                         ;; This works because gitolite-shell is in the PATH.
                         (substitute* "src/triggers/post-compile/ssh-authkeys"
                           (("\\$glshell \\$user")
-                           "gitolite-shell $user")))))
+                           "gitolite-shell $user"))
+                        #t)))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((output (assoc-ref outputs "out"))
@@ -966,7 +967,7 @@ also walk each side of a merge and test those changes individually.")
                              (bindir (string-append output "/bin")))
                         (mkdir-p sharedir)
                         (mkdir-p bindir)
-                        (system* "./install" "-to" sharedir)
+                        (invoke "./install" "-to" sharedir)
                         ;; Create symlinks for executable scripts in /bin.
                         (for-each (lambda (script)
                                     (symlink (string-append sharedir "/" script)
