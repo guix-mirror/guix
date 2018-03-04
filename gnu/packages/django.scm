@@ -755,3 +755,27 @@ Django projects, which allows association of a number of tags with any
 
 (define-public python2-django-tagging
   (package-with-python2 python-django-tagging))
+
+(define-public python-djangorestframework
+  (package
+    (name "python-djangorestframework")
+    (version "3.7.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "djangorestframework" version))
+       (sha256
+        (base32
+         "11qv117gqwswxjljs7wafxg1hyzzlx3qrviwlk9hw41bsbl997lz"))))
+    (build-system python-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://www.django-rest-framework.org")
+    (synopsis "Toolkit for building Web APIs with Django")
+    (description
+     "The Django REST framework is for building Web APIs with Django.  It
+provides features like a web browseable API and authentication policies.")
+    (license license:bsd-2)))
