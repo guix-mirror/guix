@@ -2933,7 +2933,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
 (define-public perl-io-socket-ip
   (package
     (name "perl-io-socket-ip")
-    (version "0.38")
+    (version "0.39")
     (source
      (origin
        (method url-fetch)
@@ -2941,7 +2941,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
                            "IO-Socket-IP-" version ".tar.gz"))
        (sha256
         (base32
-         "0scsnahxwnymg80a3k0p0cnr574nk7x9inn9wjniz0iycicclyhb"))))
+         "15kv5g1yb4a345sk3r5wfr99f868lhfqkddzsgpqddvccfkhv58i"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/IO-Socket-IP")
