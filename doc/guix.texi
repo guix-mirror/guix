@@ -1572,8 +1572,10 @@ full name of a font using XLFD (X Logical Font Description), like this:
 To be able to use such full names for the TrueType fonts installed in
 your Guix profile, you need to extend the font path of the X server:
 
+@c Note: 'xset' does not accept symlinks so the trick below arranges to
+@c get at the real directory.  See <https://bugs.gnu.org/30655>.
 @example
-xset +fp `readlink -f ~/.guix-profile/share/fonts/truetype`
+xset +fp $(dirname $(readlink -f ~/.guix-profile/share/fonts/truetype/fonts.dir))
 @end example
 
 @cindex @code{xlsfonts}
