@@ -600,6 +600,7 @@ with the sfArk algorithm.")
               (uri (git-reference
                     (url "https://github.com/raboof/sfarkxtc.git")
                     (commit commit)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0f5x6i46qfl6ry21s7g2p4sd4b2r1g4fb03yqi2vv4kq3saryhvj"))))
