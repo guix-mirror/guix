@@ -158,6 +158,7 @@ tunneling, and so on.")
               (uri (git-reference
                      (url "https://github.com/davidjpeacock/kurly.git")
                      (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1q192f457sjypgvwq7grrf8gq8w272p3zf1d5ppc20mriqm0mbc3"))))
