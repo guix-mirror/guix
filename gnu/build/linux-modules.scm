@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,7 +49,9 @@
             device-module-aliases
             known-module-aliases
             matching-modules
-            missing-modules))
+            missing-modules
+
+            write-module-alias-database))
 
 ;;; Commentary:
 ;;;
@@ -485,5 +488,23 @@ are required to access DEVICE."
              (provided (map file-name->module-name modules-provided)))
         (remove (cut member <> provided) modules))
       '()))
+
+(define (write-module-alias-database directory)
+  "Traverse the '.ko' files in DIRECTORY and create the corresponding
+'modules.alias' file."
+  (define aliases
+    (map (lambda (file)
+           (cons (file-name->module-name file) (module-aliases file)))
+         (find-files directory "\\.ko$")))
+
+  (call-with-output-file (string-append directory "/modules.alias")
+    (lambda (port)
+      (display "# Aliases extracted from modules themselves.\n" port)
+      (for-each (match-lambda
+                  ((module . aliases)
+                   (for-each (lambda (alias)
+                               (format port "alias ~a ~a\n" alias module))
+                             aliases)))
+                aliases))))
 
 ;;; linux-modules.scm ends here
