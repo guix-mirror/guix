@@ -1796,6 +1796,7 @@ software.")
               (uri (git-reference
                     (url "http://git.elephly.net/software/lv2-mdametapiano.git")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "07lywf6lpfpndg3i9w752mmlg2hgn1bwp23h8b0mdj6awh67abqd"))))
