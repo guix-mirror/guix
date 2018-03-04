@@ -2106,6 +2106,7 @@ aimed at audio/musical applications.")
                (string-append "https://bitbucket.org/breakfastquay/rubberband/get/v"
                               version
                               ".tar.bz2"))
+              (file-name (string-append name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "05amrbrxx0da3w7m237q51799r8xgs4ffqabi2qv06hq8dpcj386"))))
