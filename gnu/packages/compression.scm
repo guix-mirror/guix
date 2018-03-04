@@ -1534,6 +1534,7 @@ or junctions, and always follows hard links.")
      (origin (method url-fetch)
              (uri (string-append "http://github.com/twogood/unshield/archive/"
                                  version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
                "0x7ps644yp5dka2zhb8w0ifqmw3d255jafpzfwv8xbcpgq6fmm2x"))))
