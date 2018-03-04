@@ -12733,7 +12733,6 @@ functions by partial application of operators.")
              (invoke "py.test"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-pytest-warnings" ,python-pytest-warnings)
        ("python-whatever" ,python-whatever)))
     (home-page "http://github.com/Suor/funcy")
     (synopsis "Functional tools")
