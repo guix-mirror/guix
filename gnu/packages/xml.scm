@@ -1249,14 +1249,14 @@ libxls cannot write Excel files.")
 (define-public freexl
   (package
     (name "freexl")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.gaia-gis.it/gaia-sins/"
                                   name  "-" version ".tar.gz"))
               (sha256
                (base32
-                "09bwzqjc41cc8qw8qkw9wq58rg9nax8r3fg19iny5vmw1c0z23sh"))))
+                "03bmwq6hngmzwpqpb7c2amqlspz4q69iv96nlf0f5c0qs98b3j9x"))))
     (build-system gnu-build-system)
     (home-page "https://www.gaia-gis.it/fossil/freexl/index")
     (synopsis "Read Excel files")
