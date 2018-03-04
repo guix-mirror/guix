@@ -4846,6 +4846,7 @@ distribution, coverage uniformity, strand specificity, etc.")
                 (uri (hg-reference
                       (url "https://bitbucket.org/libsleipnir/sleipnir")
                       (changeset changeset)))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "0qrvilwh18dpbhkf92qvxbmay0j75ra3jg2wrhz67gf538zzphsx"))))
