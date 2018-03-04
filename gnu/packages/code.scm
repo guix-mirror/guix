@@ -229,13 +229,13 @@ COCOMO model or user-provided parameters.")
                   (replace 'install
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out")))
-                        (zero?
-                         (system* "make" "-C" "Unix"
-                                  (string-append "prefix=" out)
-                                  (string-append "INSTALL="
-                                                 (assoc-ref inputs "coreutils")
-                                                 "/bin/install")
-                                  "install")))))
+                        (invoke "make" "-C" "Unix"
+                                (string-append "prefix=" out)
+                                (string-append "INSTALL="
+                                               (assoc-ref inputs "coreutils")
+                                               "/bin/install")
+                                "install")
+                        #t)))
                   (add-after 'install 'wrap-program
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
