@@ -3491,6 +3491,7 @@ Magic, Egypt, Indians, Norsemen, Persian or Romans.")
                 (uri (git-reference
                       (url "https://github.com/freegish/freegish.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1p1zf5qqagmcpi1db2bs02cnalpy3qiymp6yzan7k1bhmv859gsx"))
