@@ -2433,6 +2433,7 @@ on systems running the Linux kernel.")
               (method url-fetch)
               (uri (string-append "https://github.com/robertdavidgraham/masscan"
                                   "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1y9af345g00z83rliv6bmlqg37xwc7xpnx5xqdgmjikzcxgk9pji"))))
