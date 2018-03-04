@@ -116,7 +116,7 @@ stealtime lmsensors infiniband powercap"
                            (install-file file doc))
                          '("README" "RELEASENOTES.txt"))
                #t))))))
-    (home-page "http://icl.cs.utk.edu/papi/")
+    (home-page "https://icl.utk.edu/papi/")
     (synopsis "Performance Application Programming Interface")
     (description
      "PAPI provides the tool designer and application engineer with a consistent
