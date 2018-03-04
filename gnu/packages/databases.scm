@@ -2291,25 +2291,25 @@ PickleShare.")
            "00ai7m2pqi26qaflhz314d8k5i3syw7xzr145fhfl0crhyh6adz2"))))
     (build-system python-build-system)
     (inputs
-      `(("sqlite" ,sqlite)))
+     `(("sqlite" ,sqlite)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'build
            (lambda _
-             (zero?
-              (system* "python" "setup.py" "build" "--enable-all-extensions"))))
+             (invoke "python" "setup.py" "build" "--enable-all-extensions")
+             #t))
          (add-after 'build 'build-test-helper
            (lambda _
-             (zero?
-              (system
-               (string-append "gcc -fPIC -shared -o ./testextension.sqlext "
-                              "-I. -Isqlite3 src/testextension.c") ))))
+             (invoke "gcc" "-fPIC" "-shared" "-o" "./testextension.sqlext"
+                     "-I." "-Isqlite3" "src/testextension.c")
+             #t))
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "python" "setup.py" "test")))))))
+             (invoke "python" "setup.py" "test")
+             #t)))))
     (home-page "https://github.com/rogerbinns/apsw/")
     (synopsis "Another Python SQLite Wrapper")
     (description "APSW is a Python wrapper for the SQLite
