@@ -288,7 +288,7 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure
-    (home-page "http://tools.suckless.org/ii/")
+    (home-page "https://tools.suckless.org/ii/")
     (synopsis "FIFO and file system based IRC client")
     (description
      "ii (Irc it) is a minimalist FIFO and file system based IRC client.")
@@ -313,7 +313,7 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; no configure
-    (home-page "http://tools.suckless.org/sic/")
+    (home-page "https://tools.suckless.org/sic/")
     (synopsis "Simple IRC client")
     (description
      "sic is a simple IRC client, even more minimalistic than ii.")
