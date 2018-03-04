@@ -39,7 +39,15 @@
             postgresql-config-file-ident-file
             postgresql-config-file-extra-config
 
+            <postgresql-configuration>
+            postgresql-configuration
             postgresql-configuration?
+            postgresql-configuration-postgresql
+            postgresql-configuration-port
+            postgresql-configuration-locale
+            postgresql-configuration-file
+            postgresql-configuration-data-directory
+
             postgresql-service
             postgresql-service-type
 
