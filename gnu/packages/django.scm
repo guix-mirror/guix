@@ -779,3 +779,28 @@ Django projects, which allows association of a number of tags with any
      "The Django REST framework is for building Web APIs with Django.  It
 provides features like a web browseable API and authentication policies.")
     (license license:bsd-2)))
+
+(define-public python-django-crispy-forms
+  (package
+    (name "python-django-crispy-forms")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-crispy-forms" version))
+       (sha256
+        (base32
+         "16s05jx86jmimlvnwpq73kl0mqw1v9lryc8zi61a9qwl25krm6mj"))))
+    (build-system python-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (home-page
+     "http://github.com/maraujop/django-crispy-forms")
+    (synopsis "Tool to control Django forms without custom templates")
+    (description
+     "@code{django-crispy-forms} lets you easily build, customize and reuse
+forms using your favorite CSS framework, without writing template code.")
+    (license license:expat)))
