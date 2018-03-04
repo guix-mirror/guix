@@ -1155,6 +1155,7 @@ PS, and DAB+.")
                                            (string-map (lambda (c)
                                                          (if (char=? c #\.) #\- c))
                                                        version)))))
+              (file-name (string-append "faust-" version "-checkout"))
               (sha256
                (base32
                 "06km0ygwxxwgw1lqldccqidxhmjfz8ck0wnbd95qk5sg8sbpc068"))))
