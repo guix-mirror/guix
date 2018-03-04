@@ -262,11 +262,12 @@ and probably others.")
        ("linux-pam" ,linux-pam)))
     (home-page "https://openvpn.net/")
     (synopsis "Virtual private network daemon")
-    (description "OpenVPN implements virtual private network (VPN) techniques
+    (description
+     "OpenVPN implements virtual private network (@dfn{VPN}) techniques
 for creating secure point-to-point or site-to-site connections in routed or
 bridged configurations and remote access facilities.  It uses a custom
 security protocol that utilizes SSL/TLS for key exchange.  It is capable of
-traversing network address translators (NATs) and firewalls.")
+traversing network address translators (@dfn{NAT}s) and firewalls.")
     (license license:gpl2)))
 
 (define-public tinc
