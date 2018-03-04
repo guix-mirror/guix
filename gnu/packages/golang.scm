@@ -528,6 +528,7 @@ writers can be supplied for alternate environments.")
                 (uri (git-reference
                        (url "https://github.com/aki237/nscjar.git")
                        (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "03y7zzq12qvhsq86lb06sgns8xrkblbn7i7wd886wk3zr5574b96"))))
