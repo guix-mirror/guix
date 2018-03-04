@@ -11650,6 +11650,7 @@ dependency like SeqAn.")
               (uri (git-reference
                     (url "https://github.com/y-256/libdivsufsort.git")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0fgdz9fzihlvjjrxy01md1bv9vh12rkgkwbm90b1hj5xpbaqp7z2"))))
