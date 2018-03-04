@@ -66,7 +66,7 @@
      `(("autoconf" ,autoconf)
        ("gfortran" ,gfortran)))
     (arguments
-     '(#:tests? #f ; no check target
+     `(#:tests? #f ; no check target
        #:configure-flags
        ;; These are roughly per Fedora, but elide mx (assumed to be dead, even
        ;; Open-MX) and add and powercap -- I don't know the pros/cons of
@@ -110,7 +110,7 @@ stealtime lmsensors infiniband powercap"
          (add-after 'install 'extra-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((doc (string-append (assoc-ref outputs "out")
-                                       "/share/doc")))
+                                       "/share/doc/" ,name "-" ,version)))
                (chdir "..")             ; we went into src above
                (for-each (lambda (file)
                            (install-file file doc))
