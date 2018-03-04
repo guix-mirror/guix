@@ -2026,6 +2026,7 @@ into various outputs and to start, stop and configure jackd")
               (uri (git-reference
                     (url "https://github.com/orouits/qjackrcd.git")
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1l5iq2mkqd4gn9yr8xbh9qlpp1clcflazychl4vhdbz0bzq4c6al"))))
