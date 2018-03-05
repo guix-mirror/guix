@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
@@ -929,3 +929,58 @@ keyring content.  Parcimonie is a daemon that fetches one key at a time using
 the Tor network, waits a bit, changes the Tor circuit being used, and starts
 over.")
     (license license:gpl1+)))
+
+(define-public jetring
+  (package
+    (name "jetring")
+    (version "0.25")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://debian/pool/main/j/" name "/"
+                            name "_" version ".tar.xz"))
+        (sha256
+         (base32
+          "0shcnnw0h31b08vmnvf18ni33dg40w18wv9smb69vkklz3h4jhpw"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure script
+         (add-before 'install 'hardlink-gnupg
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gpg (string-append (assoc-ref inputs "gnupg")
+                                       "/bin/gpg")))
+               (substitute* (find-files "." "jetring-[[:alpha:]]+$")
+                 (("gpg -") (string-append gpg " -"))
+                 (("\\\"gpg\\\"") (string-append "\"" gpg "\"")))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (for-each (lambda (file)
+                           (install-file file (string-append out "/bin/")))
+                         (find-files "." "jetring-[[:alpha:]]+$"))
+               (for-each (lambda (file)
+                           (install-file file (string-append man "/man1/")))
+                         (find-files "." ".*\\.1$"))
+               (install-file "jetring.7" (string-append man "/man7/"))
+               #t))))
+       #:tests? #f)) ; no test phase
+    (inputs
+     `(("gnupg" ,gnupg)
+       ("perl" ,perl)))
+    (home-page "https://joeyh.name/code/jetring/")
+    (synopsis "GnuPG keyring maintenance using changesets")
+    (description
+     "Jetring is a collection of tools that allow for gpg keyrings to be
+maintained using changesets.  It was developed with the Debian keyring in mind,
+and aims to solve the problem that a gpg keyring is a binary blob that's hard
+for multiple people to collaboratively edit.
+
+With jetring, changesets can be submitted, reviewed to see exactly what they
+will do, applied, and used to build a keyring.  The origin of every change made
+to the keyring is available for auditing, and gpg signatures can be used for
+integrity guarantees.")
+    (license license:gpl2+)))
