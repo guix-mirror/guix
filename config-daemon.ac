@@ -118,14 +118,10 @@ if test "x$guix_build_daemon" = "xyes"; then
   dnl Check for <linux/fs.h> (for immutable file support).
   AC_CHECK_HEADERS([linux/fs.h])
 
-  dnl Determine the appropriate default list of substitute URLs.
-  GUILE_MODULE_AVAILABLE([have_gnutls], [(gnutls)])
-  if test "x$have_gnutls" = "xyes"; then
-    guix_substitute_urls="https://mirror.hydra.gnu.org"
-  else
-    AC_MSG_WARN([GnuTLS is missing, substitutes will be downloaded in the clear])
-    guix_substitute_urls="http://mirror.hydra.gnu.org"
-  fi
+  dnl Determine the appropriate default list of substitute URLs (GnuTLS
+  dnl is required so we can default to 'https'.)
+  guix_substitute_urls="https://mirror.hydra.gnu.org"
+
   AC_MSG_CHECKING([for default substitute URLs])
   AC_MSG_RESULT([$guix_substitute_urls])
 
