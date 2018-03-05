@@ -21,7 +21,9 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages gnupg))
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages wget))
 
 (define-public debian-archive-keyring
   (package
@@ -105,3 +107,64 @@ contains the archive keys used for that.")
 contains the archive keys used for that.")
     (license (list license:public-domain ; the keys
                    license:gpl2+)))) ; see debian/copyright
+
+(define-public debootstrap
+  (package
+    (name "debootstrap")
+    (version "1.0.93")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://debian/pool/main/d/" name "/"
+                            name "_" version ".tar.gz"))
+        (sha256
+         (base32
+          "1nyp9fwb7xrk1vin81dmgx2g9rb52yg4gwz4rcx97gamw4mlvbfd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out    (assoc-ref outputs "out"))
+                   (wget   (assoc-ref inputs "wget"))
+                   (debian (assoc-ref inputs "debian-keyring"))
+                   (ubuntu (assoc-ref inputs "ubuntu-keyring")))
+               (substitute* "Makefile"
+                 (("/usr") "")
+                 (("-o root -g root") "")
+                 (("chown root.*") "\n"))
+               (substitute* "scripts/sid"
+                 (("/usr") debian))
+               (substitute* "scripts/gutsy"
+                 (("/usr") ubuntu))
+               (substitute* "debootstrap"
+                 (("=/usr") (string-append "=" out)))
+               (substitute* "functions"
+                 (("wget ") (string-append wget "/bin/wget ")))
+               #t)))
+         (add-after 'install 'install-man-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "debootstrap.8"
+                             (string-append out "/share/man/man8"))
+               #t))))
+       #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:tests? #f)) ; no tests
+    (inputs
+     `(("debian-keyring" ,debian-archive-keyring)
+       ("ubuntu-keyring" ,ubuntu-keyring)
+       ("wget" ,wget)))
+    ;; The following are required for debootstrap to work correctly
+    (propagated-inputs
+     `(("binutils" ,binutils)
+       ("gnupg" ,gnupg)
+       ("perl" ,perl)))
+    (home-page "https://anonscm.debian.org/cgit/d-i/debootstrap.git")
+    (synopsis "Bootstrap a basic Debian system")
+    (description "Debootstrap is used to create a Debian base system from
+scratch, without requiring the availability of @code{dpkg} or @code{apt}.
+It does this by downloading .deb files from a mirror site, and carefully
+unpacking them into a directory which can eventually be chrooted into.")
+    (license license:gpl2)))
