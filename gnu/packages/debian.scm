@@ -18,6 +18,9 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg))
 
 (define-public debian-archive-keyring
@@ -57,6 +60,48 @@
     (synopsis "GnuPG archive keys of the Debian archive")
     (description
      "The Debian project digitally signs its Release files.  This package
+contains the archive keys used for that.")
+    (license (list license:public-domain ; the keys
+                   license:gpl2+)))) ; see debian/copyright
+
+(define-public ubuntu-keyring
+  (package
+    (name "ubuntu-keyring")
+    (version "2018.02.28")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://launchpad.net/ubuntu/+archive/primary/"
+                            "+files/" name "_" version ".tar.gz"))
+        (sha256
+         (base32
+          "1zj3012cz7rlx9pm39wnwa0lmi1h38n6bkgbz81vnmcsvqsc9a3a"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let* ((out (assoc-ref %outputs "out"))
+                          (apt (string-append out "/etc/apt/trusted.gpg.d/"))
+                          (key (string-append out "/share/keyrings/")))
+                     (setenv "PATH" (string-append
+                                      (assoc-ref %build-inputs "gzip") "/bin:"
+                                      (assoc-ref %build-inputs "tar") "/bin"))
+                     (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
+                     (for-each (lambda (file)
+                                 (install-file file apt))
+                               (find-files "." "ubuntu-[^am].*\\.gpg$"))
+                     (for-each (lambda (file)
+                                 (install-file file key))
+                               (find-files "." "ubuntu-[am].*\\.gpg$")))
+                   #t)))
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)))
+    (home-page "https://launchpad.net/ubuntu/+source/ubuntu-keyring")
+    (synopsis "GnuPG keys of the Ubuntu archive")
+    (description
+     "The Ubuntu project digitally signs its Release files.  This package
 contains the archive keys used for that.")
     (license (list license:public-domain ; the keys
                    license:gpl2+)))) ; see debian/copyright
