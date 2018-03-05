@@ -120,6 +120,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/datastructures.scm		\
   %D%/packages/dav.scm				\
   %D%/packages/dc.scm				\
+  %D%/packages/debian.scm			\
   %D%/packages/debug.scm			\
   %D%/packages/dejagnu.scm			\
   %D%/packages/dico.scm				\
