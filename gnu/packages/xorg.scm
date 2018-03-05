@@ -357,7 +357,7 @@ provided.")
 (define-public editres
   (package
     (name "editres")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
@@ -367,7 +367,7 @@ provided.")
                ".tar.bz2"))
         (sha256
          (base32
-          "1w2d5hb5pw9ii2jlf4yjlp899402zfwc8hdkpdr3i1fy1cjd2riv"))))
+          "04awfwmy3f9f0bchidc4ssbgrbicn5gzasg3jydpfnp5513d76h8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
