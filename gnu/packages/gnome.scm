@@ -6207,6 +6207,7 @@ desktop.  It supports multiple calendars, month, week and year view.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "gnome-todo-libical-compat.patch"))
               (sha256
                (base32
                 "106xx1w18pxjmj5k0k2qjzi6b3c3kaz7b5kyrpknykibnr401ff9"))))
