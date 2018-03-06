@@ -2814,6 +2814,19 @@ plotted and compared with the asymptotic curve.")
                 "0vql32np716dpd0kjn7s7wgawd02ysgp2a5il4kb19nlw661ii3x"))))
     (properties `((upstream-name . "lambda.r")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'check 'delete-test-log
+           ;; The test report contains time stamps and is not important for
+           ;; the installed package.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively
+              (string-append (assoc-ref outputs "out")
+                             "/site-library/lambda.r/unitTests"))
+             #t)))))
+    (native-inputs
+     `(("r-runit" ,r-runit)))
     (home-page "https://cran.r-project.org/web/packages/lambda.r")
     (synopsis "Functional programming extension for R")
     (description
