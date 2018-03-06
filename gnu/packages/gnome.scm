@@ -4875,7 +4875,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.24.3")
+    (version "3.26.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4883,27 +4883,44 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1jj1q81bl3r0c8rnsfqi83igqlprzdcjim1fvygbyfy7b8gigqqk"))))
+                "1v0hwlrlm23bz5dmamdavm771f4gs64fyq82argrc0nwgn2a2fp4"))))
     (build-system cmake-build-system)
     (arguments
      '(;; XXX FIXME: 11/85 tests are failing.
        #:tests? #f
        #:configure-flags
-       (list "-DENABLE_UOA=OFF"             ;disable Ubuntu Online Accounts support
-             "-DENABLE_GOOGLE=OFF"          ;disable Google Contacts support
-             "-DENABLE_GOOGLE_AUTH=OFF"     ;disable Google authentication
-             "-DENABLE_VALA_BINDINGS=ON"
-             ;; FIXME: Building against ICU 60 requires C++11 or higher.  Remove
-             ;; this when our default compiler is >= GCC6.
-             "-DCMAKE_CXX_FLAGS=-std=gnu++11"
-             "-DENABLE_INTROSPECTION=ON")   ;required for Vala bindings
+       (let* ((lib (string-append (assoc-ref %outputs "out")
+                                  "/lib"))
+              (runpaths (map (lambda (s) (string-append
+                                          lib "/evolution-data-server/" s))
+                             '("addressbook-backends" "calendar-backends"
+                               "camel-providers" "credential-modules"
+                               "registry-modules"))))
+         (list "-DENABLE_UOA=OFF"             ;disable Ubuntu Online Accounts support
+               "-DENABLE_GOOGLE=OFF"          ;disable Google Contacts support
+               "-DENABLE_GOOGLE_AUTH=OFF"     ;disable Google authentication
+               "-DENABLE_VALA_BINDINGS=ON"
+               ;; FIXME: Building against ICU 60 requires C++11 or higher.  Remove
+               ;; this when our default compiler is >= GCC6.
+               "-DCMAKE_CXX_FLAGS=-std=gnu++11"
+               (string-append "-DCMAKE_INSTALL_RPATH=" lib ";"
+                              (string-append lib "/evolution-data-server;")
+                              (string-join runpaths ";"))
+               "-DENABLE_INTROSPECTION=ON"))  ;required for Vala bindings
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths
           (lambda _
             (substitute* "tests/test-server-utils/e-test-server-utils.c"
               (("/bin/rm") (which "rm")))
-            #t)))))
+            #t))
+         (add-before 'configure 'dont-override-rpath
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               ;; CMakeLists.txt hard-codes runpath to just the libdir.
+               ;; Remove it so the configure flag is respected.
+               (("SET\\(CMAKE_INSTALL_RPATH .*") ""))
+             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
