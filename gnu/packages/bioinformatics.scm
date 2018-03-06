@@ -4896,7 +4896,7 @@ to the user's query of interest.")
 (define-public samtools
   (package
     (name "samtools")
-    (version "1.5")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
@@ -4905,7 +4905,7 @@ to the user's query of interest.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "1xidmv0jmfy7l0kb32hdnlshcxgzi1hmygvig0cqrq1fhckdlhl5"))))
+         "18acyqysbxpydlc44lqv2hpp57l06bs9a3yqmcvjk8va2xrrdc77"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
