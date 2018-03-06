@@ -8760,6 +8760,16 @@ of gene-level counts.")
                       "src/hdf5source/hdf5small.tgz" "-C" "src/" )
              (substitute* "src/hdf5/configure"
                (("/bin/mv") "mv"))
+             ;; Remove timestamp and host system information to make
+             ;; the build reproducible.
+             (substitute* "src/hdf5/src/libhdf5.settings.in"
+               (("Configured on: @CONFIG_DATE@")
+                "Configured on: Guix")
+               (("Uname information:.*")
+                "Uname information: Linux\n")
+               ;; Remove unnecessary store reference.
+               (("C Compiler:.*")
+                "C Compiler: GCC\n"))
              #t)))))
     (propagated-inputs
      `(("r-zlibbioc" ,r-zlibbioc)))
