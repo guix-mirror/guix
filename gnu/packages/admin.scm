@@ -610,14 +610,14 @@ connection alive.")
                                       bind-release-version)))
     (package
       (name "isc-dhcp")
-      (version "4.3.6")
+      (version "4.3.6-P1")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "http://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "06vgxhm6agzkp6r1jy10467vrfw2rzcp2mnkcph7ydziciisy7m4"))))
+                  "1hx3az6ckvgvybr1ag4k9kqr8zfcpzcww4vpw5gz0mi8y2z7gl9g"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
