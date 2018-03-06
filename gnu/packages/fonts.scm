@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
+;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,27 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xorg))
+
+(define-public font-ibm-plex
+  (package
+    (name "font-ibm-plex")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/IBM/plex/releases/download/"
+                    "v" version "/OpenType.zip"))
+              (sha256
+               (base32
+                "0nzxw9z6waixslam248yr26ci3fbk83c7jf6m90hncnaj6zxx795"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/IBM/plex")
+    (synopsis "IBM Plex typeface")
+    (description "This package provides the Plex font family.  It comes in a
+Sans, Serif, Mono and Sans Condensed, all with roman and true italics.  The
+fonts have been designed to work well in user interface (UI) environments as
+well as other mediums.")
+    (license license:silofl1.1)))
 
 (define-public font-inconsolata
   (package
