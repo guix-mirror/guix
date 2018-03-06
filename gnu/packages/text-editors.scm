@@ -283,7 +283,7 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
                              (doc (string-append out "/share/doc/mg")))
                         (install-file "tutorial" doc)
                         #t))))))
-    (home-page "http://homepage.boetes.org/software/mg/")
+    (home-page "https://homepage.boetes.org/software/mg/")
     (synopsis "Microscopic GNU Emacs clone")
     (description
      "Mg (mg) is a GNU Emacs style editor, with which it is \"broadly\"
