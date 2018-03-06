@@ -6891,7 +6891,7 @@ in a generalized CSV (character-separated values) format.")
 (define-public emacs-transmission
   (package
     (name "emacs-transmission")
-    (version "0.12")
+    (version "0.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6900,7 +6900,7 @@ in a generalized CSV (character-separated values) format.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1y0bpsy16pycp6m9aqvfjh2x1yswfb305ib7m2slcjpb6njgxfi6"))))
+                "1rrlgn96gi1ljfwbwvlyyxbq75xzamlbdhq1bpyadxxmxcvlmk3n"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/holomorph/transmission")
     (synopsis "Emacs interface to a Transmission session")
