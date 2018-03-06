@@ -204,9 +204,8 @@ messages."
       ;; avoid ABI breakage in the user's config file, we explicitly compile
       ;; it (the problem remains if the user's config is spread on several
       ;; modules.)  See <https://bugs.gnu.org/29881>.
-      (if (string=? (version) "2.2.3")
-          (compile-file file #:env user-module)
-          (set! %fresh-auto-compile #t))
+      (unless (string=? (version) "2.2.3")
+        (set! %fresh-auto-compile #t))
 
       (set! %load-should-auto-compile #t)
 
@@ -218,6 +217,12 @@ messages."
          (parameterize ((current-warning-port (%make-void-port "w")))
            (call-with-prompt tag
              (lambda ()
+               (when (string=? (version) "2.2.3")
+                 (catch 'system-error
+                   (lambda ()
+                     (compile-file file #:env user-module))
+                   (const #f)))              ;EACCES maybe, let's interpret it
+
                ;; Give 'load' an absolute file name so that it doesn't try to
                ;; search for FILE in %LOAD-PATH.  Note: use 'load', not
                ;; 'primitive-load', so that FILE is compiled, which then allows us
