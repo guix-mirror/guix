@@ -918,7 +918,7 @@ rendering commands to the X server.")
 (define-public iceauth
   (package
     (name "iceauth")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
@@ -928,7 +928,7 @@ rendering commands to the X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "02izdyzhwpgiyjd8brzilwvwnfr72ncjb6mzz3y1icwrxqnsy5hj"))))
+            "1ik0mdidmyvy48hn8p2hwvf3535rf3m96hhf0mvcqrbj44x23vp6"))))
     (build-system gnu-build-system)
     (inputs
       `(("libice" ,libice)))
