@@ -1992,12 +1992,10 @@ shortcut syntax and completion options.")
       (home-page "https://github.com/TrilbyWhite/interrobang")
       (license license:gpl3+))))
 
-
-
 (define-public pam-krb5
   (package
     (name "pam-krb5")
-    (version "4.7")
+    (version "4.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2005,7 +2003,7 @@ shortcut syntax and completion options.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0abf8cfpkprmhw5ca8iyqgrggh65lgqvmfllc1y6qz7zw1gas894"))))
+                "1qjp8i1s9bz7g6kiqrkzzkxn5pfspa4sy53b6z40fqmdf9przdfb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2041,8 +2039,6 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
     ;; we put one in, we cannot distribute it under GPL without violating
     ;; clause requiring us to give all recipients a copy.
     (license license:gpl1+)))
-
-;;http://archives.eyrie.org/software/kerberos/pam-krb5-4.7.tar.xz
 
 (define-public sunxi-tools
   (package
