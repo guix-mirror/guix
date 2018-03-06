@@ -17,7 +17,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
@@ -396,14 +396,15 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.5.0")
+    (version "1.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32 "0chwc0g7wfvcad36z8pf2jbgygdnm9nm1l6pwjsn3d2b089gh0f0"))))
+        (base32
+         "00szy9d4szaixi260dcd4846zci04y0sd47ia2lzg0bxkn2ywxcn"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -699,14 +700,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.2")
+    (version "10.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1bav2iyi93h866skrrlqlvsp4sfv1sfww1s305zpzffxcadh0cpy"))))
+                "06lkcwsf851z49zqcws5yc77s2yrbaazf2nvbk38hpp31rw6i8kf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-uuid=e2fs")
@@ -744,14 +745,14 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.6")
+    (version "9.6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0m417h30s18rwa7yzkqqcdb22ifpcda2fpg2cyx8bxvjp3ydz71r"))))))
+                "0w7bwf19wbdd3jjbjv03cnx56qka4801srcbsayk9v792awv7zga"))))))
 
 (define-public qdbm
   (package
@@ -840,7 +841,7 @@ types are supported, as is encryption.")
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "5.2.1")
+    (version "5.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/rocksdb"
@@ -848,18 +849,28 @@ types are supported, as is encryption.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1v2q05bl56sfp51m09z7g6489hkfq4vf6b4qgfg3d96ylgmay9yb"))
+                "0hp7jxr99vyc57n708hiqk4lks9a9zmjgfjc21mx6v1rmabj2944"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; TODO: unbundle gtest.
                   (delete-file "build_tools/gnu_parallel")
+                  (substitute* "Makefile"
+                    (("build_tools/gnu_parallel") "parallel"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list "CC=gcc" "V=1"
+                          ;; Ceph requires that RTTI is enabled.
+                          "USE_RTTI=1"
                           (string-append "INSTALL_PATH="
-                                         (assoc-ref %outputs "out")))
+                                         (assoc-ref %outputs "out"))
+
+                          ;; Running the full test suite takes hours and require
+                          ;; a lot of disk space.  Instead we only run a subset
+                          ;; (see .travis.yml and Makefile).
+                          "ROCKSDBTESTS_END=db_tailing_iter_test")
+       #:test-target "check_some"
        ;; Many tests fail on 32-bit platforms. There are multiple reports about
        ;; this upstream, but it's not going to be supported any time soon.
        #:tests? (let ((system ,(or (%current-target-system)
@@ -871,7 +882,6 @@ types are supported, as is encryption.")
          (add-after 'unpack 'patch-Makefile
            (lambda _
              (substitute* "Makefile"
-               (("build_tools/gnu_parallel") "parallel")
                ;; Don't depend on the static library when installing.
                (("install: install-static")
                 "install: install-shared")
@@ -888,20 +898,20 @@ types are supported, as is encryption.")
          (add-before 'check 'disable-failing-tests
            (lambda _
              (substitute* "Makefile"
-               ;; This test fails with GCC-5 and is unmaintained.
-               ;; https://github.com/facebook/rocksdb/issues/2148
-               (("^[[:blank:]]+spatial_db_test[[:blank:]]+\\\\") "\\")
                ;; These tests reliably fail due to "Too many open files".
                (("^[[:blank:]]+env_test[[:blank:]]+\\\\") "\\")
                (("^[[:blank:]]+persistent_cache_test[[:blank:]]+\\\\") "\\"))
              #t))
-         (add-after 'check 'build-release-libraries
+         (add-after 'check 'build
            ;; The default build target is a debug build for tests. The
-           ;; install target depends on "shared_lib" and "static_lib"
-           ;; targets for release builds so we build them here for clarity.
-           ;; TODO: Add debug output.
-           (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "shared_lib" make-flags)))))))
+           ;; install target depends on the "shared_lib" release target
+           ;; so we build it here for clarity.
+           (lambda* (#:key (make-flags '()) parallel-build? #:allow-other-keys)
+               (apply invoke "make" "shared_lib"
+                      `(,@(if parallel-build?
+                              `("-j" ,(number->string (parallel-job-count)))
+                              '())
+                        ,@make-flags)))))))
     (native-inputs
      `(("parallel" ,parallel)
        ("perl" ,perl)
@@ -925,8 +935,9 @@ between @dfn{Write-Amplification-Factor} (WAF), @dfn{Read-Amplification-Factor}
 (RAF) and @dfn{Space-Amplification-Factor} (SAF).  It has multi-threaded
 compactions, making it specially suitable for storing multiple terabytes of
 data in a single database.  RocksDB is partially based on @code{LevelDB}.")
-    ;; RocksDB is BSD-3 and the JNI adapter is Apache 2.0.
-    (license (list license:bsd-3 license:asl2.0))))
+    ;; RocksDB is dual licensed under GPL2 and ASL 2.0.  Some header
+    ;; files carry the 3-clause BSD license.
+    (license (list license:gpl2 license:asl2.0 license:bsd-3))))
 
 (define-public sparql-query
   (package
@@ -2042,14 +2053,14 @@ and web services platform functionality.")
 (define-public r-rmysql
   (package
     (name "r-rmysql")
-    (version "0.10.13")
+    (version "0.10.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RMySQL" version))
        (sha256
         (base32
-         "1j0vr2l4s02cg2hzgr3pla96pjj4h85sxw28lidy58rg5awnsf82"))))
+         "01891kn263b02y6addgpy3gn5axg7m10bqbqv7dg9yx9k85am590"))))
     (properties `((upstream-name . "RMySQL")))
     (build-system r-build-system)
     (native-inputs
@@ -2284,30 +2295,31 @@ PickleShare.")
         (method url-fetch)
         (uri (string-append "https://github.com/rogerbinns/apsw/archive/"
                             version ".tar.gz"))
+        (file-name (string-append "apsw-" version ".tar.gz"))
         (sha256
           (base32
            "00ai7m2pqi26qaflhz314d8k5i3syw7xzr145fhfl0crhyh6adz2"))))
     (build-system python-build-system)
     (inputs
-      `(("sqlite" ,sqlite)))
+     `(("sqlite" ,sqlite)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'build
            (lambda _
-             (zero?
-              (system* "python" "setup.py" "build" "--enable-all-extensions"))))
+             (invoke "python" "setup.py" "build" "--enable-all-extensions")
+             #t))
          (add-after 'build 'build-test-helper
            (lambda _
-             (zero?
-              (system
-               (string-append "gcc -fPIC -shared -o ./testextension.sqlext "
-                              "-I. -Isqlite3 src/testextension.c") ))))
+             (invoke "gcc" "-fPIC" "-shared" "-o" "./testextension.sqlext"
+                     "-I." "-Isqlite3" "src/testextension.c")
+             #t))
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "python" "setup.py" "test")))))))
+             (invoke "python" "setup.py" "test")
+             #t)))))
     (home-page "https://github.com/rogerbinns/apsw/")
     (synopsis "Another Python SQLite Wrapper")
     (description "APSW is a Python wrapper for the SQLite

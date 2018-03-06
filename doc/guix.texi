@@ -24,7 +24,7 @@ Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017 Chris Marusich@*
-Copyright @copyright{} 2016, 2017 Efraim Flashner@*
+Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 ng0@*
 Copyright @copyright{} 2016, 2017 Jan Nieuwenhuizen@*
@@ -46,7 +46,8 @@ Copyright @copyright{} 2017 Andy Wingo@*
 Copyright @copyright{} 2017, 2018 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
-Copyright @copyright{} 2018 Oleg Pykhalov
+Copyright @copyright{} 2018 Oleg Pykhalov@*
+Copyright @copyright{} 2018 Mike Gerwitz
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1571,8 +1572,10 @@ full name of a font using XLFD (X Logical Font Description), like this:
 To be able to use such full names for the TrueType fonts installed in
 your Guix profile, you need to extend the font path of the X server:
 
+@c Note: 'xset' does not accept symlinks so the trick below arranges to
+@c get at the real directory.  See <https://bugs.gnu.org/30655>.
 @example
-xset +fp ~/.guix-profile/share/fonts/truetype
+xset +fp $(dirname $(readlink -f ~/.guix-profile/share/fonts/truetype/fonts.dir))
 @end example
 
 @cindex @code{xlsfonts}
@@ -7285,16 +7288,58 @@ Attempt to build for @var{system}---e.g., @code{i686-linux}.
 @cindex container
 Run @var{command} within an isolated container.  The current working
 directory outside the container is mapped inside the container.
-Additionally, a dummy home directory is created that matches the current
-user's home directory, and @file{/etc/passwd} is configured accordingly.
-The spawned process runs as the current user outside the container, but
-has root privileges in the context of the container.
+Additionally, unless overridden with @code{--user}, a dummy home
+directory is created that matches the current user's home directory, and
+@file{/etc/passwd} is configured accordingly.  The spawned process runs
+as the current user outside the container, but has root privileges in
+the context of the container.
 
 @item --network
 @itemx -N
 For containers, share the network namespace with the host system.
 Containers created without this flag only have access to the loopback
 device.
+
+@item --link-profile
+@itemx -P
+For containers, link the environment profile to
+@file{~/.guix-profile} within the container.  This is equivalent to
+running the command @command{ln -s $GUIX_ENVIRONMENT ~/.guix-profile}
+within the container.  Linking will fail and abort the environment if
+the directory already exists, which will certainly be the case if
+@command{guix environment} was invoked in the user's home directory.
+
+Certain packages are configured to look in
+@code{~/.guix-profile} for configuration files and data;@footnote{For
+example, the @code{fontconfig} package inspects
+@file{~/.guix-profile/share/fonts} for additional fonts.}
+@code{--link-profile} allows these programs to behave as expected within
+the environment.
+
+@item --user=@var{user}
+@itemx -u @var{user}
+For containers, use the username @var{user} in place of the current
+user.  The generated @file{/etc/passwd} entry within the container will
+contain the name @var{user}; the home directory will be
+@file{/home/USER}; and no user GECOS data will be copied.  @var{user}
+need not exist on the system.
+
+Additionally, any shared or exposed path (see @code{--share} and
+@code{--expose} respectively) whose target is within the current user's
+home directory will be remapped relative to @file{/home/USER}; this
+includes the automatic mapping of the current working directory.
+
+@example
+# will expose paths as /home/foo/wd, /home/foo/test, and /home/foo/target
+cd $HOME/wd
+guix environment --container --user=foo \
+     --expose=$HOME/test \
+     --expose=/tmp/target=$HOME/target
+@end example
+
+While this will limit the leaking of user identity through home paths
+and each of the user fields, this is only one useful component of a
+broader privacy/anonymity solution---not one in and of itself.
 
 @item --expose=@var{source}[=@var{target}]
 For containers, expose the file system @var{source} from the host system
@@ -8846,11 +8891,16 @@ the command-line of the kernel---e.g., @code{("console=ttyS0")}.
 @item @code{bootloader}
 The system bootloader configuration object.  @xref{Bootloader Configuration}.
 
-@item @code{initrd} (default: @code{base-initrd})
+@item @code{initrd-modules} (default: @code{%base-initrd-modules})
 @cindex initrd
 @cindex initial RAM disk
-A two-argument monadic procedure that returns an initial RAM disk for
-the Linux kernel.  @xref{Initial RAM Disk}.
+The list of Linux kernel modules that need to be available in the
+initial RAM disk.  @xref{Initial RAM Disk}.
+
+@item @code{initrd} (default: @code{base-initrd})
+A monadic procedure that returns an initial RAM disk for the Linux
+kernel.  This field is provided to support low-level customization and
+should rarely be needed for casual use.  @xref{Initial RAM Disk}.
 
 @item @code{firmware} (default: @var{%base-firmware})
 @cindex firmware
@@ -10718,6 +10768,59 @@ make an initial adjustment of more than 1,000 seconds.
 @defvr {Scheme Variable} %ntp-servers
 List of host names used as the default NTP servers.
 @end defvr
+
+@cindex OpenNTPD
+@deffn {Scheme Procedure} openntpd-service-type
+Run the @command{ntpd}, the Network Time Protocol (NTP) daemon, as implemented
+by @uref{http://www.openntpd.org, OpenNTPD}.  The daemon will keep the system
+clock synchronized with that of the given servers.
+
+@example
+(service
+ openntpd-service-type
+ (openntpd-configuration
+  (listen-on '("127.0.0.1" "::1"))
+  (sensor '("udcf0 correction 70000"))
+  (constraint-from '("www.gnu.org"))
+  (constraints-from '("https://www.google.com/"))
+  (allow-large-adjustment? #t)))
+
+@end example
+@end deffn
+
+@deftp {Data Type} openntpd-configuration
+@table @asis
+@item @code{openntpd} (default: @code{(file-append openntpd "/sbin/ntpd")})
+The openntpd executable to use.
+@item @code{listen-on} (default: @code{'("127.0.0.1" "::1")})
+A list of local IP addresses or hostnames the ntpd daemon should listen on.
+@item @code{query-from} (default: @code{'()})
+A list of local IP address the ntpd daemon should use for outgoing queries.
+@item @code{sensor} (default: @code{'()})
+Specify a list of timedelta sensor devices ntpd should use.  @code{ntpd}
+will listen to each sensor that acutally exists and ignore non-existant ones.
+See @uref{https://man.openbsd.org/ntpd.conf, upstream documentation} for more
+information.
+@item @code{server} (default: @var{%ntp-servers})
+Specify a list of IP addresses or hostnames of NTP servers to synchronize to.
+@item @code{servers} (default: @code{'()})
+Specify a list of IP addresses or hostnames of NTP pools to synchronize to.
+@item @code{constraint-from} (default: @code{'()})
+@code{ntpd} can be configured to query the ‘Date’ from trusted HTTPS servers via TLS.
+This time information is not used for precision but acts as an authenticated
+constraint, thereby reducing the impact of unauthenticated NTP
+man-in-the-middle attacks.
+Specify a list of URLs, IP addresses or hostnames of HTTPS servers to provide
+a constraint.
+@item @code{constraints-from} (default: @code{'()})
+As with constraint from, specify a list of URLs, IP addresses or hostnames of
+HTTPS servers to provide a constraint.  Should the hostname resolve to multiple
+IP addresses, @code{ntpd} will calculate a median constraint from all of them.
+@item @code{allow-large-adjustment?} (default: @code{#f})
+Determines if @code{ntpd} is allowed to make an initial adjustment of more
+than 180 seconds.
+@end table
+@end deftp
 
 @cindex inetd
 @deffn {Scheme variable} inetd-service-type
@@ -14210,6 +14313,9 @@ There is also a way to specify the configuration as a string, if you
 have an old @code{prosody.cfg.lua} file that you want to port over from
 some other system; see the end for more details.
 
+The @code{file-object} type designates either a file-like object
+(@pxref{G-Expressions, file-like objects}) or a file name.
+
 @c The following documentation was initially generated by
 @c (generate-documentation) in (gnu services messaging).  Manually maintained
 @c documentation is better, so we shouldn't hesitate to edit below as
@@ -14230,7 +14336,7 @@ Location of the Prosody data storage directory.  See
 Defaults to @samp{"/var/lib/prosody"}.
 @end deftypevr
 
-@deftypevr {@code{prosody-configuration} parameter} file-name-list plugin-paths
+@deftypevr {@code{prosody-configuration} parameter} file-object-list plugin-paths
 Additional plugin directories.  They are searched in all the specified
 paths in order.  See @url{https://prosody.im/doc/plugins_directory}.
 Defaults to @samp{()}.
@@ -14271,7 +14377,7 @@ should you want to disable them then add them to this list.
 Defaults to @samp{()}.
 @end deftypevr
 
-@deftypevr {@code{prosody-configuration} parameter} file-name groups-file
+@deftypevr {@code{prosody-configuration} parameter} file-object groups-file
 Path to a text file where the shared groups are defined.  If this path is
 empty then @samp{mod_groups} does nothing.  See
 @url{https://prosody.im/doc/modules/mod_groups}.
@@ -14304,13 +14410,13 @@ Path to your private key file.
 Path to your certificate file.
 @end deftypevr
 
-@deftypevr {@code{ssl-configuration} parameter} file-name capath
+@deftypevr {@code{ssl-configuration} parameter} file-object capath
 Path to directory containing root certificates that you wish Prosody to
 trust when verifying the certificates of remote servers.
 Defaults to @samp{"/etc/ssl/certs"}.
 @end deftypevr
 
-@deftypevr {@code{ssl-configuration} parameter} maybe-file-name cafile
+@deftypevr {@code{ssl-configuration} parameter} maybe-file-object cafile
 Path to a file containing root certificates that you wish Prosody to trust.
 Similar to @code{capath} but with all certificates concatenated together.
 @end deftypevr
@@ -14569,6 +14675,8 @@ string, you could instantiate a prosody service like this:
          (opaque-prosody-configuration
           (prosody.cfg.lua "")))
 @end example
+
+@c end of Prosody auto-generated documentation
 
 @subsubheading BitlBee Service
 
@@ -19725,7 +19833,27 @@ root file system as well as an initialization script.  The latter is
 responsible for mounting the real root file system, and for loading any
 kernel modules that may be needed to achieve that.
 
-The @code{initrd} field of an @code{operating-system} declaration allows
+The @code{initrd-modules} field of an @code{operating-system}
+declaration allows you to specify Linux-libre kernel modules that must
+be available in the initrd.  In particular, this is where you would list
+modules needed to actually drive the hard disk where your root partition
+is---although the default value of @code{initrd-modules} should cover
+most use cases.  For example, assuming you need the @code{megaraid_sas}
+module in addition to the default modules to be able to access your root
+file system, you would write:
+
+@example
+(operating-system
+  ;; @dots{}
+  (initrd-modules (cons "megaraid_sas" %base-initrd-modules)))
+@end example
+
+@defvr {Scheme Variable} %base-initrd-modules
+This is the list of kernel modules included in the initrd by default.
+@end defvr
+
+Furthermore, if you need lower-level customization, the @code{initrd}
+field of an @code{operating-system} declaration allows
 you to specify which initrd you would like to use.  The @code{(gnu
 system linux-initrd)} module provides three ways to build an initrd: the
 high-level @code{base-initrd} procedure and the low-level
@@ -19738,11 +19866,10 @@ system declaration like this:
 
 @example
 (initrd (lambda (file-systems . rest)
-          ;; Create a standard initrd that has modules "foo.ko"
-          ;; and "bar.ko", as well as their dependencies, in
-          ;; addition to the modules available by default.
+          ;; Create a standard initrd but set up networking
+          ;; with the parameters QEMU expects by default.
           (apply base-initrd file-systems
-                 #:extra-modules '("foo" "bar")
+                 #:qemu-networking? #t
                  rest)))
 @end example
 
@@ -19826,18 +19953,18 @@ to it are lost.
 
 @deffn {Monadic Procedure} base-initrd @var{file-systems} @
        [#:mapped-devices '()] [#:qemu-networking? #f] [#:volatile-root? #f]@
-       [#:virtio? #t] [#:extra-modules '()]
-Return a monadic derivation that builds a generic initrd.  @var{file-systems} is
-a list of file systems to be mounted by the initrd like for @code{raw-initrd}.
-@var{mapped-devices}, @var{qemu-networking?} and @var{volatile-root?}
-also behaves as in @code{raw-initrd}.
+       [#:linux-modules '()]
+Return a monadic derivation that builds a generic initrd, with kernel
+modules taken from @var{linux}.  @var{file-systems} is a list of file-systems to be
+mounted by the initrd, possibly in addition to the root file system specified
+on the kernel command line via @code{--root}.  @var{mapped-devices} is a list of device
+mappings to realize before @var{file-systems} are mounted.
 
-When @var{virtio?} is true, load additional modules so that the
-initrd can be used as a QEMU guest with para-virtualized I/O drivers.
+@var{qemu-networking?} and @var{volatile-root?} behaves as in @code{raw-initrd}.
 
 The initrd is automatically populated with all the kernel modules necessary
-for @var{file-systems} and for the given options.  However, additional kernel
-modules can be listed in @var{extra-modules}.  They will be added to the initrd, and
+for @var{file-systems} and for the given options.  Additional kernel
+modules can be listed in @var{linux-modules}.  They will be added to the initrd, and
 loaded at boot time in the order in which they appear.
 @end deffn
 

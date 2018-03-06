@@ -614,7 +614,7 @@ process, passing on the arguments as command line arguments.")
           'build 'pre-build
           (lambda* (#:key inputs #:allow-other-keys)
             (define (el-dir store-dir)
-              (match (find-files store-dir)
+              (match (find-files store-dir "\\.el$")
                 ((f1 f2 ...) (dirname f1))
                 (_ "")))
 
@@ -3546,6 +3546,7 @@ It is recommended to use @code{clojure-mode} with paredit or smartparens.")
               (uri (string-append
                     "https://github.com/cask/epl/archive/"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1511n3a3f5gvaf2b4nh018by61ciyzi3y3603fzqma7p9hrckarc"))))
@@ -4300,6 +4301,7 @@ CIDER).")
          (uri (git-reference
                (url "https://github.com/joaotavora/sly.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0ib4q4k3h3qn88pymyjjmlmnpizdn1mfg5gpk5a715nqsgxlg09l"))))
@@ -6889,7 +6891,7 @@ in a generalized CSV (character-separated values) format.")
 (define-public emacs-transmission
   (package
     (name "emacs-transmission")
-    (version "0.12")
+    (version "0.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6898,7 +6900,7 @@ in a generalized CSV (character-separated values) format.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1y0bpsy16pycp6m9aqvfjh2x1yswfb305ib7m2slcjpb6njgxfi6"))))
+                "1rrlgn96gi1ljfwbwvlyyxbq75xzamlbdhq1bpyadxxmxcvlmk3n"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/holomorph/transmission")
     (synopsis "Emacs interface to a Transmission session")
@@ -7310,4 +7312,52 @@ Features:
     (synopsis "Pipe to the @code{emacsclient}")
     (description "@code{epipe} provides an utility to use your editor in
 the pipeline, featuring the support for running @code{emacsclient}.")
+    (license license:gpl3+)))
+
+(define-public emacs-hcl-mode
+  (package
+    (name "emacs-hcl-mode")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/syohex/emacs-hcl-mode/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pvw74qpwh0znqzp6syp4wxjqs7dp1hbn5h7xfk97mff9l5d8k6x"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/syohex/emacs-hcl-mode")
+    (synopsis "Major mode for the Hashicorp Configuration Language")
+    (description
+     "@code{emacs-hcl-mode} provides an Emacs major mode for working with
+@acronym{HCL, Hashicorp Configuration Language}.  It provides syntax
+highlighting and indentation support.")
+    (license license:gpl3+)))
+
+(define-public emacs-terraform-mode
+  (package
+    (name "emacs-terraform-mode")
+    (version "0.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/syohex/emacs-terraform-mode/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h9267ifdjmcin4sj8slxydbacx4bqicbvg8pa1qq2l72h9m5381"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-hcl-mode" ,emacs-hcl-mode)))
+    (home-page "https://github.com/syohex/emacs-terraform-mode")
+    (synopsis "Major mode for Terraform")
+    (description
+     "@code{emacs-terraform-mode} provides a major mode for working with
+@uref{https://www.terraform.io/, Terraform} configuration files.  Most of the
+functionality is inherited from @code{hcl-mode}.")
     (license license:gpl3+)))

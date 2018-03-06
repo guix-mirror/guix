@@ -1854,38 +1854,22 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
 (define-public cutadapt
   (package
     (name "cutadapt")
-    (version "1.14")
+    (version "1.16")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/marcelm/cutadapt/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/marcelm/cutadapt.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "16gbpiwy4m48vq2h5wqar3i8vr6vcj9gcl2qvqim19x6ya9dp8kd"))))
+                "09pr02067jiks19nc0aby4xp70hhgvb554i2y1c04rv1m401w7q8"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; The tests must be run after installation.
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (setenv "PYTHONPATH"
-                     (string-append
-                      (getenv "PYTHONPATH")
-                      ":" (assoc-ref outputs "out")
-                      "/lib/python"
-                      (string-take (string-take-right
-                                    (assoc-ref inputs "python") 5) 3)
-                      "/site-packages"))
-             (zero? (system* "nosetests" "-P" "tests")))))))
     (inputs
      `(("python-xopen" ,python-xopen)))
     (native-inputs
      `(("python-cython" ,python-cython)
-       ("python-nose" ,python-nose)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://cutadapt.readthedocs.io/en/stable/")
     (synopsis "Remove adapter sequences from nucleotide sequencing reads")
     (description
@@ -3019,6 +3003,76 @@ sequencing (HTS) data.  There are also an number of useful utilities for
 manipulating HTS data.")
     (license license:expat)))
 
+(define-public java-htsjdk-latest
+  (package
+    (name "java-htsjdk")
+    (version "2.14.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/samtools/htsjdk.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1lmya1fdjy03mz6zmdmd86j9v9vfhqb3952mqq075navx1i6g4bc"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; test require Scala
+       #:jdk ,icedtea-8
+       #:jar-name "htsjdk.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-useless-build.xml
+           (lambda _ (delete-file "build.xml") #t))
+         ;; The tests require the scalatest package.
+         (add-after 'unpack 'remove-tests
+           (lambda _ (delete-file-recursively "src/test") #t)))))
+    (inputs
+     `(("java-ngs" ,java-ngs)
+       ("java-snappy-1" ,java-snappy-1)
+       ("java-commons-compress" ,java-commons-compress)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ("java-commons-jexl-2" ,java-commons-jexl-2)
+       ("java-xz" ,java-xz)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://samtools.github.io/htsjdk/")
+    (synopsis "Java API for high-throughput sequencing data (HTS) formats")
+    (description
+     "HTSJDK is an implementation of a unified Java library for accessing
+common file formats, such as SAM and VCF, used for high-throughput
+sequencing (HTS) data.  There are also an number of useful utilities for
+manipulating HTS data.")
+    (license license:expat)))
+
+;; This is needed for picard 2.10.3
+(define-public java-htsjdk-2.10.1
+  (package (inherit java-htsjdk-latest)
+    (name "java-htsjdk")
+    (version "2.10.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/samtools/htsjdk.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1kxh7slm2pm3x9p6jxa1wqsq9a31dhiiflhxnxqcisan4k3rwia2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; tests require Scala
+       #:jdk ,icedtea-8
+       #:jar-name "htsjdk.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-useless-build.xml
+           (lambda _ (delete-file "build.xml") #t))
+         ;; The tests require the scalatest package.
+         (add-after 'unpack 'remove-tests
+           (lambda _ (delete-file-recursively "src/test") #t)))))))
+
 ;; This version matches java-htsjdk 2.3.0.  Later versions also require a more
 ;; recent version of java-htsjdk, which depends on gradle.
 (define-public java-picard
@@ -3088,6 +3142,90 @@ manipulating HTS data.")
        ("java-guava" ,java-guava)))
     (native-inputs
      `(("java-testng" ,java-testng)))
+    (home-page "http://broadinstitute.github.io/picard/")
+    (synopsis "Tools for manipulating high-throughput sequencing data and formats")
+    (description "Picard is a set of Java command line tools for manipulating
+high-throughput sequencing (HTS) data and formats.  Picard is implemented
+using the HTSJDK Java library to support accessing file formats that are
+commonly used for high-throughput sequencing data such as SAM, BAM, CRAM and
+VCF.")
+    (license license:expat)))
+
+;; This is needed for dropseq-tools
+(define-public java-picard-2.10.3
+  (package
+    (name "java-picard")
+    (version "2.10.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/broadinstitute/picard.git")
+                    (commit version)))
+              (file-name (string-append "java-picard-" version "-checkout"))
+              (sha256
+               (base32
+                "1ajlx31l6i1k3y2rhnmgq07sz99g2czqfqgkr9mihmdjp3gwjhvi"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "picard.jar"
+       ;; Tests require jacoco:coverage.
+       #:tests? #f
+       #:jdk ,icedtea-8
+       #:main-class "picard.cmdline.PicardCommandLine"
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build java-utils)
+                  (sxml simple)
+                  (sxml transform)
+                  (sxml xpath))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-useless-build.xml
+           (lambda _ (delete-file "build.xml") #t))
+         ;; This is necessary to ensure that htsjdk is found when using
+         ;; picard.jar as an executable.
+         (add-before 'build 'edit-classpath-in-manifest
+           (lambda* (#:key inputs #:allow-other-keys)
+             (chmod "build.xml" #o664)
+             (call-with-output-file "build.xml.new"
+               (lambda (port)
+                 (sxml->xml
+                  (pre-post-order
+                   (with-input-from-file "build.xml"
+                     (lambda _ (xml->sxml #:trim-whitespace? #t)))
+                   `((target    . ,(lambda (tag . kids)
+                                     (let ((name ((sxpath '(name *text*))
+                                                  (car kids)))
+                                           ;; FIXME: We're breaking the line
+                                           ;; early with a dummy path to
+                                           ;; ensure that the store reference
+                                           ;; isn't broken apart and can still
+                                           ;; be found by the reference
+                                           ;; scanner.
+                                           (msg (format #f
+                                                        "\
+Class-Path: /~a \
+ ~a/share/java/htsjdk.jar${line.separator}"
+                                                        ;; maximum line length is 70
+                                                        (string-tabulate (const #\b) 57)
+                                                        (assoc-ref inputs "java-htsjdk"))))
+                                       (if (member "manifest" name)
+                                           `(,tag ,@kids
+                                                  (echo
+                                                   (@ (message ,msg)
+                                                      (file "${manifest.file}")
+                                                      (append "true"))))
+                                           `(,tag ,@kids)))))
+                     (*default* . ,(lambda (tag . kids) `(,tag ,@kids)))
+                     (*text*    . ,(lambda (_ txt) txt))))
+                  port)))
+             (rename-file "build.xml.new" "build.xml")
+             #t)))))
+    (propagated-inputs
+     `(("java-htsjdk" ,java-htsjdk-2.10.1)))
+    (native-inputs
+     `(("java-testng" ,java-testng)
+       ("java-guava" ,java-guava)))
     (home-page "http://broadinstitute.github.io/picard/")
     (synopsis "Tools for manipulating high-throughput sequencing data and formats")
     (description "Picard is a set of Java command line tools for manipulating
@@ -3211,10 +3349,89 @@ VCF.")
        ("jdk" ,icedtea-8 "jdk")
        ("jdk-src" ,(car (assoc-ref (package-native-inputs icedtea-8) "jdk-drop")))))))
 
+(define-public fastqc
+  (package
+    (name "fastqc")
+    (version "0.11.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.bioinformatics.babraham.ac.uk/"
+                           "projects/fastqc/fastqc_v"
+                           version "_source.zip"))
+       (sha256
+        (base32
+         "18rrlkhcrxvvvlapch4dpj6xc6mpayzys8qfppybi8jrpgx5cc5f"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:build-target "build"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dependencies
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("jbzip2-0.9.jar")
+                (string-append (assoc-ref inputs "java-jbzip2")
+                               "/share/java/jbzip2.jar"))
+               (("sam-1.103.jar")
+                (string-append (assoc-ref inputs "java-picard-1.113")
+                               "/share/java/sam-1.112.jar"))
+               (("cisd-jhdf5.jar")
+                (string-append (assoc-ref inputs "java-cisd-jhdf5")
+                               "/share/java/sis-jhdf5.jar")))
+             #t))
+         ;; There is no installation target
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (share (string-append out "/share/fastqc/"))
+                    (exe   (string-append share "/fastqc")))
+               (for-each mkdir-p (list bin share))
+               (copy-recursively "bin" share)
+               (substitute* exe
+                 (("my \\$java_bin = 'java';")
+                  (string-append "my $java_bin = '"
+                                 (assoc-ref inputs "java")
+                                 "/bin/java';")))
+               (chmod exe #o555)
+               (symlink exe (string-append bin "/fastqc"))
+               #t))))))
+    (inputs
+     `(("java" ,icedtea)
+       ("perl" ,perl)                   ; needed for the wrapper script
+       ("java-cisd-jhdf5" ,java-cisd-jhdf5)
+       ("java-picard-1.113" ,java-picard-1.113)
+       ("java-jbzip2" ,java-jbzip2)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://www.bioinformatics.babraham.ac.uk/projects/fastqc/")
+    (synopsis "Quality control tool for high throughput sequence data")
+    (description
+     "FastQC aims to provide a simple way to do some quality control
+checks on raw sequence data coming from high throughput sequencing
+pipelines.  It provides a modular set of analyses which you can use to
+give a quick impression of whether your data has any problems of which
+you should be aware before doing any further analysis.
+
+The main functions of FastQC are:
+
+@itemize
+@item Import of data from BAM, SAM or FastQ files (any variant);
+@item Providing a quick overview to tell you in which areas there may
+  be problems;
+@item Summary graphs and tables to quickly assess your data;
+@item Export of results to an HTML based permanent report;
+@item Offline operation to allow automated generation of reports
+  without running the interactive application.
+@end itemize\n")
+    (license license:gpl3+)))
+
 (define-public htslib
   (package
     (name "htslib")
-    (version "1.6")
+    (version "1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3222,17 +3439,8 @@ VCF.")
                     version "/htslib-" version ".tar.bz2"))
               (sha256
                (base32
-                "1jsca3hg4rbr6iqq6imkj4lsvgl8g9768bcmny3hlff2w25vx24m"))))
+                "1il6i2p84b0y9c93dhvzzki1ifw9bvapm2mvpr0xvb2nq8jlwgdy"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after
-          'unpack 'patch-tests
-          (lambda _
-            (substitute* "test/test.pl"
-              (("/bin/bash") (which "bash")))
-            #t)))))
     (inputs
      `(("openssl" ,openssl)
        ("curl" ,curl)
@@ -4629,6 +4837,7 @@ distribution, coverage uniformity, strand specificity, etc.")
                 (uri (hg-reference
                       (url "https://bitbucket.org/libsleipnir/sleipnir")
                       (changeset changeset)))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "0qrvilwh18dpbhkf92qvxbmay0j75ra3jg2wrhz67gf538zzphsx"))))
@@ -4687,7 +4896,7 @@ to the user's query of interest.")
 (define-public samtools
   (package
     (name "samtools")
-    (version "1.5")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
@@ -4696,7 +4905,7 @@ to the user's query of interest.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "1xidmv0jmfy7l0kb32hdnlshcxgzi1hmygvig0cqrq1fhckdlhl5"))))
+         "18acyqysbxpydlc44lqv2hpp57l06bs9a3yqmcvjk8va2xrrdc77"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -6017,14 +6226,14 @@ distribution.")
 (define-public r-dexseq
   (package
     (name "r-dexseq")
-    (version "1.24.2")
+    (version "1.24.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DEXSeq" version))
        (sha256
         (base32
-         "18nh8ynxirfwkmc4sawdxgl7w1sl9ny5zpv8zbhv9vi5vgb8pxmj"))))
+         "0xip73hlbr3zry9d7ly9vvvsbb3xjcmfa09lr9fdy528dwjrf084"))))
     (properties `((upstream-name . "DEXSeq")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6200,14 +6409,14 @@ testing and other simple calculations.")
 (define-public r-shortread
   (package
     (name "r-shortread")
-    (version "1.36.0")
+    (version "1.36.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ShortRead" version))
        (sha256
         (base32
-         "06mknlsmd4hnaxzdjapgvp2kgdnf9w103y500dsac5jgsz4vwzcz"))))
+         "1cyv47632m9ljkxfsvnvmd19sb607ys5kz8fwh6v39dnw16g0a6m"))))
     (properties `((upstream-name . "ShortRead")))
     (build-system r-build-system)
     (inputs
@@ -6968,13 +7177,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.20.8")
+    (version "3.20.9")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "0g7bj6w61blw3m22hw9rc01n554k9qkjizh7njr3j4shmhads58d"))))
+                "0y52snwbz37xzdd7gihdkqczbndlfzmmypv6hri3ymjyfmlx6qaw"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7034,13 +7243,13 @@ coding changes and predict coding outcomes.")
 (define-public r-limma
   (package
     (name "r-limma")
-    (version "3.34.8")
+    (version "3.34.9")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "limma" version))
               (sha256
                (base32
-                "0bmxsgz2yll83sd3wbxsrsfd35468igb0d8lldym0d0lqfz906bw"))))
+                "1y2fm61g5i0fn0j3l31xvwh9zww9bpkc4nwzb1d0yv1cag20jkdc"))))
     (build-system r-build-system)
     (home-page "http://bioinf.wehi.edu.au/limma")
     (synopsis "Package for linear models for microarray and RNA-seq data")
@@ -7089,13 +7298,13 @@ different technologies, including microarrays, RNA-seq, and quantitative PCR.")
 (define-public r-genomicranges
   (package
     (name "r-genomicranges")
-    (version "1.30.2")
+    (version "1.30.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicRanges" version))
               (sha256
                (base32
-                "0c3r155603vb4zjs3adqa72770bh8karc11y8gl62l1m24jrkbnj"))))
+                "07cszc9ri94nzk4dffwnsj247ih6pchnrzrvnb0q4dkk33gwy8n1"))))
     (properties
      `((upstream-name . "GenomicRanges")))
     (build-system r-build-system)
@@ -7519,13 +7728,13 @@ information about the latest version of the Gene Ontologies.")
 (define-public r-topgo
   (package
     (name "r-topgo")
-    (version "2.30.0")
+    (version "2.30.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "topGO" version))
               (sha256
                (base32
-                "1hqffz5qp7glxdvjp37005g8qk5nam3f9wpf6d1wjnzpar04f3dz"))))
+                "1cgz4knxr328xfqlhl6ypxl6x86rfrlqz748kn94ainxjzz55i6x"))))
     (properties
      `((upstream-name . "topGO")))
     (build-system r-build-system)
@@ -8365,14 +8574,14 @@ in SNV base substitution data.")
 (define-public r-wgcna
   (package
     (name "r-wgcna")
-    (version "1.62")
+    (version "1.63")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "WGCNA" version))
        (sha256
         (base32
-         "0c52rp09gqphz6g5x9jzkdcsyvfrknq0dkq9saslgy8q8ap974vx"))))
+         "1225dqm68bynkmklnsxdqdd3zqrpzbvqwyly8ibxmk75z33xz309"))))
     (properties `((upstream-name . "WGCNA")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8542,6 +8751,16 @@ of gene-level counts.")
                       "src/hdf5source/hdf5small.tgz" "-C" "src/" )
              (substitute* "src/hdf5/configure"
                (("/bin/mv") "mv"))
+             ;; Remove timestamp and host system information to make
+             ;; the build reproducible.
+             (substitute* "src/hdf5/src/libhdf5.settings.in"
+               (("Configured on: @CONFIG_DATE@")
+                "Configured on: Guix")
+               (("Uname information:.*")
+                "Uname information: Linux\n")
+               ;; Remove unnecessary store reference.
+               (("C Compiler:.*")
+                "C Compiler: GCC\n"))
              #t)))))
     (propagated-inputs
      `(("r-zlibbioc" ,r-zlibbioc)))
@@ -8706,6 +8925,7 @@ intervals (e.g. genes, sequence alignments).")
                 (uri (git-reference
                       (url "https://github.com/smithlabcode/piranha.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "117dc0zf20c61jam69sk4abl57ah6yi6i7qra7d7y5zrbgk12q5n"))))
@@ -10588,14 +10808,14 @@ quality control.")
 (define-public r-scran
   (package
     (name "r-scran")
-    (version "1.6.7")
+    (version "1.6.8")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scran" version))
        (sha256
         (base32
-         "0zfm5i8xrnzb3894xygqd6zkbwaa2x3z74wbxw39fcjhyhxv2hmb"))))
+         "07wniyrh2fhhkz28v0bfgpvpi1hkkn2cvhacrvvvck142j79944x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
@@ -10671,6 +10891,7 @@ memory usage and processing time is minimized.")
          (uri (git-reference
                (url "https://github.com/rajewsky-lab/dropbead.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1b2lphsc236s1rdzlijxg8yl1jnqpwcvj4x938r89rqpj93jb780"))))
@@ -11431,6 +11652,7 @@ dependency like SeqAn.")
               (uri (git-reference
                     (url "https://github.com/y-256/libdivsufsort.git")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0fgdz9fzihlvjjrxy01md1bv9vh12rkgkwbm90b1hj5xpbaqp7z2"))))
@@ -11886,3 +12108,541 @@ variable number of row and column annotations.  Loom also supports sparse
 graphs.  This library makes it easy to work with @file{.loom} files for
 single-cell RNA-seq data.")
     (license license:bsd-3)))
+
+;; We cannot use the latest commit because it requires Java 9.
+(define-public java-forester
+  (let ((commit "86b07efe302d5094b42deed9260f719a4c4ac2e6")
+        (revision "1"))
+    (package
+      (name "java-forester")
+      (version (string-append "0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/cmzmasek/forester.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0vxavc1yrf84yrnf20dq26hi0lglidk8d382xrxsy4qmlbjd276z"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Delete bundled jars and pre-built classes
+                    (delete-file-recursively "forester/java/resources")
+                    (delete-file-recursively "forester/java/classes")
+                    (for-each delete-file (find-files "forester/java/" "\\.jar$"))
+                    ;; Delete bundled applications
+                    (delete-file-recursively "forester_applications")
+                    #t))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f ; there are none
+         #:jdk ,icedtea-8
+         #:modules ((guix build ant-build-system)
+                    (guix build utils)
+                    (guix build java-utils)
+                    (sxml simple)
+                    (sxml transform))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "forester/java") #t))
+           (add-after 'chdir 'fix-dependencies
+             (lambda _
+               (chmod "build.xml" #o664)
+               (call-with-output-file "build.xml.new"
+                 (lambda (port)
+                   (sxml->xml
+                    (pre-post-order
+                     (with-input-from-file "build.xml"
+                       (lambda _ (xml->sxml #:trim-whitespace? #t)))
+                     `(;; Remove all unjar tags to avoid repacking classes.
+                       (unjar     . ,(lambda _ '()))
+                       (*default* . ,(lambda (tag . kids) `(,tag ,@kids)))
+                       (*text*    . ,(lambda (_ txt) txt))))
+                    port)))
+               (rename-file "build.xml.new" "build.xml")
+               #t))
+           ;; FIXME: itext is difficult to package as it depends on a few
+           ;; unpackaged libraries.
+           (add-after 'chdir 'remove-dependency-on-unpackaged-itext
+             (lambda _
+               (delete-file "src/org/forester/archaeopteryx/PdfExporter.java")
+               (substitute* "src/org/forester/archaeopteryx/MainFrame.java"
+                 (("pdf_written_to = PdfExporter.*")
+                  "throw new IOException(\"PDF export is not available.\");"))
+               #t))
+           ;; There is no install target
+           (replace 'install (install-jars ".")))))
+      (propagated-inputs
+       `(("java-commons-codec" ,java-commons-codec)
+         ("java-openchart2" ,java-openchart2)))
+      (home-page "https://sites.google.com/site/cmzmasek/home/software/forester")
+      (synopsis "Phylogenomics libraries for Java")
+      (description "Forester is a collection of Java libraries for
+phylogenomics and evolutionary biology research.  It includes support for
+reading, writing, and exporting phylogenetic trees.")
+      (license license:lgpl2.1+))))
+
+(define-public java-forester-1.005
+  (package
+    (name "java-forester")
+    (version "1.005")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://search.maven.org/remotecontent?"
+                                  "filepath=org/biojava/thirdparty/forester/"
+                                  version "/forester-" version "-sources.jar"))
+              (file-name (string-append name "-" version ".jar"))
+              (sha256
+               (base32
+                "04r8qv4rk3p71z4ajrvp11py1z46qrx0047j3zzs79s6lnsm3lcv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:jdk ,icedtea-8
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build java-utils)
+                  (sxml simple)
+                  (sxml transform))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dependencies
+           (lambda* (#:key inputs #:allow-other-keys)
+             (call-with-output-file "build.xml"
+               (lambda (port)
+                 (sxml->xml
+                  (pre-post-order
+                   (with-input-from-file "src/build.xml"
+                     (lambda _ (xml->sxml #:trim-whitespace? #t)))
+                   `(;; Remove all unjar tags to avoid repacking classes.
+                     (unjar     . ,(lambda _ '()))
+                     (*default* . ,(lambda (tag . kids) `(,tag ,@kids)))
+                     (*text*    . ,(lambda (_ txt) txt))))
+                  port)))
+             (copy-file (assoc-ref inputs "synth_look_and_feel_1.xml")
+                        "synth_look_and_feel_1.xml")
+             (copy-file (assoc-ref inputs "phyloxml.xsd")
+                        "phyloxml.xsd")
+             (substitute* "build.xml"
+               (("../resources/synth_laf/synth_look_and_feel_1.xml")
+                "synth_look_and_feel_1.xml")
+               (("../resources/phyloxml_schema/1.10/phyloxml.xsd")
+                "phyloxml.xsd"))
+             #t))
+         ;; FIXME: itext is difficult to package as it depends on a few
+         ;; unpackaged libraries.
+         (add-after 'unpack 'remove-dependency-on-unpackaged-itext
+           (lambda _
+             (delete-file "src/org/forester/archaeopteryx/PdfExporter.java")
+             (substitute* '("src/org/forester/archaeopteryx/MainFrame.java"
+                            "src/org/forester/archaeopteryx/MainFrameApplication.java")
+               (("pdf_written_to = PdfExporter.*")
+                "throw new IOException(\"PDF export is not available.\"); /*")
+               ((".getPrintSizeX\\(\\), getOptions\\(\\).getPrintSizeY\\(\\) \\);") "*/")
+               (("getCurrentTreePanel\\(\\).getHeight\\(\\) \\);") "*/"))
+             #t))
+         (add-after 'unpack 'delete-pre-built-classes
+           (lambda _ (delete-file-recursively "src/classes") #t))
+         ;; There is no install target
+         (replace 'install (install-jars ".")))))
+    (propagated-inputs
+     `(("java-commons-codec" ,java-commons-codec)
+       ("java-openchart2" ,java-openchart2)))
+    ;; The source archive does not contain the resources.
+    (native-inputs
+     `(("phyloxml.xsd"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://raw.githubusercontent.com/cmzmasek/forester/"
+                               "b61cc2dcede0bede317db362472333115756b8c6/"
+                               "forester/resources/phyloxml_schema/1.10/phyloxml.xsd"))
+           (file-name (string-append name "-phyloxml-" version ".xsd"))
+           (sha256
+            (base32
+             "1zxc4m8sn4n389nqdnpxa8d0k17qnr3pm2y5y6g6vh4k0zm52npv"))))
+       ("synth_look_and_feel_1.xml"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://raw.githubusercontent.com/cmzmasek/forester/"
+                               "29e04321615da6b35c1e15c60e52caf3f21d8e6a/"
+                               "forester/java/classes/resources/synth_look_and_feel_1.xml"))
+           (file-name (string-append name "-synth-look-and-feel-" version ".xml"))
+           (sha256
+            (base32
+             "1gv5602gv4k7y7713y75a4jvj7i9s7nildsbdl7n9q10sc2ikg8h"))))))
+    (home-page "https://sites.google.com/site/cmzmasek/home/software/forester")
+    (synopsis "Phylogenomics libraries for Java")
+    (description "Forester is a collection of Java libraries for
+phylogenomics and evolutionary biology research.  It includes support for
+reading, writing, and exporting phylogenetic trees.")
+    (license license:lgpl2.1+)))
+
+(define-public java-biojava-core
+  (package
+    (name "java-biojava-core")
+    (version "4.2.11")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/biojava/biojava")
+                    (commit (string-append "biojava-" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1bvryh2bpsvash8ln79cmc9sqm8qw72hz4xzwqxcrjm8ssxszhqk"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jdk ,icedtea-8
+       #:jar-name "biojava-core.jar"
+       #:source-dir "biojava-core/src/main/java/"
+       #:test-dir "biojava-core/src/test"
+       ;; These tests seem to require internet access.
+       #:test-exclude (list "**/SearchIOTest.java"
+                            "**/BlastXMLParserTest.java"
+                            "**/GenbankCookbookTest.java"
+                            "**/GenbankProxySequenceReaderTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "biojava-core/src/main/resources"
+                               "build/classes")
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "biojava-core/src/test/resources"
+                               "build/test-classes")
+             #t)))))
+    (propagated-inputs
+     `(("java-log4j-api" ,java-log4j-api)
+       ("java-log4j-core" ,java-log4j-core)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-slf4j-simple" ,java-slf4j-simple)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://biojava.org")
+    (synopsis "Core libraries of Java framework for processing biological data")
+    (description "BioJava is a project dedicated to providing a Java framework
+for processing biological data.  It provides analytical and statistical
+routines, parsers for common file formats, reference implementations of
+popular algorithms, and allows the manipulation of sequences and 3D
+structures.  The goal of the biojava project is to facilitate rapid
+application development for bioinformatics.
+
+This package provides the core libraries.")
+    (license license:lgpl2.1+)))
+
+(define-public java-biojava-phylo
+  (package (inherit java-biojava-core)
+    (name "java-biojava-phylo")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jdk ,icedtea-8
+       #:jar-name "biojava-phylo.jar"
+       #:source-dir "biojava-phylo/src/main/java/"
+       #:test-dir "biojava-phylo/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "biojava-phylo/src/main/resources"
+                               "build/classes")
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "biojava-phylo/src/test/resources"
+                               "build/test-classes")
+             #t)))))
+    (propagated-inputs
+     `(("java-log4j-api" ,java-log4j-api)
+       ("java-log4j-core" ,java-log4j-core)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-slf4j-simple" ,java-slf4j-simple)
+       ("java-biojava-core" ,java-biojava-core)
+       ("java-forester" ,java-forester)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://biojava.org")
+    (synopsis "Biojava interface to the forester phylogenomics library")
+    (description "The phylo module provides a biojava interface layer to the
+forester phylogenomics library for constructing phylogenetic trees.")))
+
+(define-public java-biojava-alignment
+  (package (inherit java-biojava-core)
+    (name "java-biojava-alignment")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jdk ,icedtea-8
+       #:jar-name "biojava-alignment.jar"
+       #:source-dir "biojava-alignment/src/main/java/"
+       #:test-dir "biojava-alignment/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "biojava-alignment/src/main/resources"
+                               "build/classes")
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "biojava-alignment/src/test/resources"
+                               "build/test-classes")
+             #t)))))
+    (propagated-inputs
+     `(("java-log4j-api" ,java-log4j-api)
+       ("java-log4j-core" ,java-log4j-core)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-slf4j-simple" ,java-slf4j-simple)
+       ("java-biojava-core" ,java-biojava-core)
+       ("java-biojava-phylo" ,java-biojava-phylo)
+       ("java-forester" ,java-forester)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://biojava.org")
+    (synopsis "Biojava API for genetic sequence alignment")
+    (description "The alignment module of BioJava provides an API that
+contains
+
+@itemize
+@item implementations of dynamic programming algorithms for sequence
+  alignment;
+@item reading and writing of popular alignment file formats;
+@item a single-, or multi- threaded multiple sequence alignment algorithm.
+@end itemize\n")))
+
+(define-public java-biojava-core-4.0
+  (package (inherit java-biojava-core)
+    (name "java-biojava-core")
+    (version "4.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/biojava/biojava")
+                    (commit (string-append "biojava-" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "13675f6y9aqi7bi2lk3s1z7a22ynccjiqwa8izh7p97xi9wsfmd8"))))))
+
+(define-public java-biojava-phylo-4.0
+  (package (inherit java-biojava-core-4.0)
+    (name "java-biojava-phylo")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jdk ,icedtea-8
+       #:jar-name "biojava-phylo.jar"
+       #:source-dir "biojava-phylo/src/main/java/"
+       #:test-dir "biojava-phylo/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "biojava-phylo/src/main/resources"
+                               "build/classes")
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "biojava-phylo/src/test/resources"
+                               "build/test-classes")
+             #t)))))
+    (propagated-inputs
+     `(("java-log4j-api" ,java-log4j-api)
+       ("java-log4j-core" ,java-log4j-core)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-slf4j-simple" ,java-slf4j-simple)
+       ("java-biojava-core" ,java-biojava-core-4.0)
+       ("java-forester" ,java-forester-1.005)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://biojava.org")
+    (synopsis "Biojava interface to the forester phylogenomics library")
+    (description "The phylo module provides a biojava interface layer to the
+forester phylogenomics library for constructing phylogenetic trees.")))
+
+(define-public java-biojava-alignment-4.0
+  (package (inherit java-biojava-core-4.0)
+    (name "java-biojava-alignment")
+    (build-system ant-build-system)
+    (arguments
+     `(#:jdk ,icedtea-8
+       #:jar-name "biojava-alignment.jar"
+       #:source-dir "biojava-alignment/src/main/java/"
+       #:test-dir "biojava-alignment/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "biojava-alignment/src/main/resources"
+                               "build/classes")
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "biojava-alignment/src/test/resources"
+                               "build/test-classes")
+             #t)))))
+    (propagated-inputs
+     `(("java-log4j-api" ,java-log4j-api)
+       ("java-log4j-core" ,java-log4j-core)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-slf4j-simple" ,java-slf4j-simple)
+       ("java-biojava-core" ,java-biojava-core-4.0)
+       ("java-biojava-phylo" ,java-biojava-phylo-4.0)
+       ("java-forester" ,java-forester-1.005)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://biojava.org")
+    (synopsis "Biojava API for genetic sequence alignment")
+    (description "The alignment module of BioJava provides an API that
+contains
+
+@itemize
+@item implementations of dynamic programming algorithms for sequence
+  alignment;
+@item reading and writing of popular alignment file formats;
+@item a single-, or multi- threaded multiple sequence alignment algorithm.
+@end itemize\n")))
+
+(define-public dropseq-tools
+  (package
+    (name "dropseq-tools")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "http://mccarrolllab.com/download/1276/")
+       (file-name (string-append "dropseq-tools-" version ".zip"))
+       (sha256
+        (base32
+         "0yrffckxqk5l8b5xb6z4laq157zd9mdypr2p4b4vq2bhjzi1sj0s"))
+       ;; Delete bundled libraries
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file (find-files "jar/lib" "\\.jar$"))
+           (delete-file-recursively "3rdParty")))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; test data are not included
+       #:test-target "test"
+       #:build-target "all"
+       #:source-dir "public/src/"
+       #:jdk ,icedtea-8
+       #:make-flags
+       (list (string-append "-Dpicard.executable.dir="
+                            (assoc-ref %build-inputs "java-picard")
+                            "/share/java/"))
+       #:modules ((ice-9 match)
+                  (srfi srfi-1)
+                  (guix build utils)
+                  (guix build java-utils)
+                  (guix build ant-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         ;; All dependencies must be linked to "lib", because that's where
+         ;; they will be searched for when the Class-Path property of the
+         ;; manifest is computed.
+         (add-after 'unpack 'record-references
+	   (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "jar/lib")
+             (let ((dirs (filter-map (match-lambda
+                                       ((name . dir)
+                                        (if (and (string-prefix? "java-" name)
+                                                 (not (string=? name "java-testng")))
+                                            dir #f)))
+                                     inputs)))
+               (for-each (lambda (jar)
+                           (symlink jar (string-append "jar/lib/" (basename jar))))
+                         (append-map (lambda (dir) (find-files dir "\\.jar$"))
+                                     dirs)))
+	     #t))
+         ;; There is no installation target
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (bin     (string-append out "/bin"))
+                    (share   (string-append out "/share/java/"))
+                    (lib     (string-append share "/lib/"))
+                    (scripts (list "BAMTagHistogram"
+                                   "BAMTagofTagCounts"
+                                   "BaseDistributionAtReadPosition"
+                                   "CollapseBarcodesInPlace"
+                                   "CollapseTagWithContext"
+                                   "ConvertToRefFlat"
+                                   "CreateIntervalsFiles"
+                                   "DetectBeadSynthesisErrors"
+                                   "DigitalExpression"
+                                   "Drop-seq_alignment.sh"
+                                   "FilterBAM"
+                                   "FilterBAMByTag"
+                                   "GatherGeneGCLength"
+                                   "GatherMolecularBarcodeDistributionByGene"
+                                   "GatherReadQualityMetrics"
+                                   "PolyATrimmer"
+                                   "ReduceGTF"
+                                   "SelectCellsByNumTranscripts"
+                                   "SingleCellRnaSeqMetricsCollector"
+                                   "TagBamWithReadSequenceExtended"
+                                   "TagReadWithGeneExon"
+                                   "TagReadWithInterval"
+                                   "TrimStartingSequence"
+                                   "ValidateReference")))
+               (for-each mkdir-p (list bin share lib))
+               (install-file "dist/dropseq.jar" share)
+               (for-each (lambda (script)
+                           (chmod script #o555)
+                           (install-file script bin))
+                         scripts)
+               (substitute* (map (lambda (script)
+                                   (string-append bin "/" script))
+                                 scripts)
+                 (("^java") (which "java"))
+                 (("jar_deploy_dir=.*")
+                  (string-append "jar_deploy_dir=" share "\n"))))
+             #t))
+         ;; FIXME: We do this after stripping jars because we don't want it to
+         ;; copy all these jars and strip them.  We only want to install
+         ;; links.  Arguably, this is a problem with the ant-build-system.
+         (add-after 'strip-jar-timestamps 'install-links
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (share   (string-append out "/share/java/"))
+                    (lib     (string-append share "/lib/")))
+               (for-each (lambda (jar)
+                           (symlink (readlink jar)
+                                    (string-append lib (basename jar))))
+                         (find-files "jar/lib" "\\.jar$")))
+             #t)))))
+    (inputs
+     `(("jdk" ,icedtea-8)
+       ("java-picard" ,java-picard-2.10.3)
+       ("java-log4j-1.2-api" ,java-log4j-1.2-api)
+       ("java-commons-math3" ,java-commons-math3)
+       ("java-commons-jexl2" ,java-commons-jexl-2)
+       ("java-commons-collections4" ,java-commons-collections4)
+       ("java-commons-lang2" ,java-commons-lang)
+       ("java-commons-io" ,java-commons-io)
+       ("java-snappy-1.0.3-rc3" ,java-snappy-1)
+       ("java-guava" ,java-guava)
+       ("java-la4j" ,java-la4j)
+       ("java-biojava-core" ,java-biojava-core-4.0)
+       ("java-biojava-alignment" ,java-biojava-alignment-4.0)
+       ("java-jdistlib" ,java-jdistlib)
+       ("java-simple-xml" ,java-simple-xml)
+       ("java-snakeyaml" ,java-snakeyaml)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-testng" ,java-testng)))
+    (home-page "http://mccarrolllab.com/dropseq/")
+    (synopsis "Tools for Drop-seq analyses")
+    (description "Drop-seq is a technology to enable biologists to
+analyze RNA expression genome-wide in thousands of individual cells at
+once.  This package provides tools to perform Drop-seq analyses.")
+    (license license:expat)))

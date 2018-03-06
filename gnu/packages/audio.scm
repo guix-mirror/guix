@@ -1155,6 +1155,7 @@ PS, and DAB+.")
                                            (string-map (lambda (c)
                                                          (if (char=? c #\.) #\- c))
                                                        version)))))
+              (file-name (string-append "faust-" version "-checkout"))
               (sha256
                (base32
                 "06km0ygwxxwgw1lqldccqidxhmjfz8ck0wnbd95qk5sg8sbpc068"))))
@@ -1628,14 +1629,14 @@ essential distortions.")
 (define-public liblo
   (package
     (name "liblo")
-    (version "0.28")
+    (version "0.29")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/liblo/liblo/" version
                                  "/liblo-" version ".tar.gz"))
              (sha256
               (base32
-               "02drgnpirvl2ihvzgsmn02agr5sj3vipzzw9vma56qlkgfvak56s"))))
+               "0sn0ckc1d0845mhsaa62wf7f9v0c0ykiq796a30ja5096kib9qdc"))))
     (build-system gnu-build-system)
     (arguments
      `(;; liblo test FAILED
@@ -1645,7 +1646,7 @@ essential distortions.")
     (synopsis "Implementation of the Open Sound Control protocol")
     (description
      "liblo is a lightweight library that provides an easy to use
-implementation of the Open Sound Control (OSC) protocol.")
+implementation of the Open Sound Control (@dfn{OSC}) protocol.")
     (license license:lgpl2.1+)))
 
 (define-public python-pyaudio
@@ -1783,6 +1784,7 @@ software.")
                 (uri (git-reference
                       (url "http://lv2plug.in/git/lv2.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1gp2rd99dfmpibvpixrqn115mrhybzf3if3h8bssf6siyi13f29r")))))))
@@ -1796,6 +1798,7 @@ software.")
               (uri (git-reference
                     (url "http://git.elephly.net/software/lv2-mdametapiano.git")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "07lywf6lpfpndg3i9w752mmlg2hgn1bwp23h8b0mdj6awh67abqd"))))
@@ -2024,6 +2027,7 @@ into various outputs and to start, stop and configure jackd")
               (uri (git-reference
                     (url "https://github.com/orouits/qjackrcd.git")
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1l5iq2mkqd4gn9yr8xbh9qlpp1clcflazychl4vhdbz0bzq4c6al"))))
@@ -2103,6 +2107,7 @@ aimed at audio/musical applications.")
                (string-append "https://bitbucket.org/breakfastquay/rubberband/get/v"
                               version
                               ".tar.bz2"))
+              (file-name (string-append name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "05amrbrxx0da3w7m237q51799r8xgs4ffqabi2qv06hq8dpcj386"))))

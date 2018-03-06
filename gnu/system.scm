@@ -74,6 +74,7 @@
             operating-system-kernel
             operating-system-kernel-file
             operating-system-kernel-arguments
+            operating-system-initrd-modules
             operating-system-initrd
             operating-system-users
             operating-system-groups
@@ -154,6 +155,10 @@ booted from ROOT-DEVICE"
 
   (initrd operating-system-initrd                 ; (list fs) -> M derivation
           (default base-initrd))
+  (initrd-modules operating-system-initrd-modules ; list of strings
+                  (thunked)                       ; it's system-dependent
+                  (default %base-initrd-modules))
+
   (firmware operating-system-firmware             ; list of packages
             (default %base-firmware))
 
@@ -846,6 +851,8 @@ hardware-related operations as necessary when booting a Linux container."
 
   (mlet %store-monad ((initrd (make-initrd boot-file-systems
                                            #:linux (operating-system-kernel os)
+                                           #:linux-modules
+                                           (operating-system-initrd-modules os)
                                            #:mapped-devices mapped-devices)))
     (return (file-append initrd "/initrd"))))
 

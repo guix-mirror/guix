@@ -357,7 +357,7 @@ provided.")
 (define-public editres
   (package
     (name "editres")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
@@ -367,7 +367,7 @@ provided.")
                ".tar.bz2"))
         (sha256
          (base32
-          "1w2d5hb5pw9ii2jlf4yjlp899402zfwc8hdkpdr3i1fy1cjd2riv"))))
+          "04awfwmy3f9f0bchidc4ssbgrbicn5gzasg3jydpfnp5513d76h8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -918,7 +918,7 @@ rendering commands to the X server.")
 (define-public iceauth
   (package
     (name "iceauth")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
@@ -928,7 +928,7 @@ rendering commands to the X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "02izdyzhwpgiyjd8brzilwvwnfr72ncjb6mzz3y1icwrxqnsy5hj"))))
+            "1ik0mdidmyvy48hn8p2hwvf3535rf3m96hhf0mvcqrbj44x23vp6"))))
     (build-system gnu-build-system)
     (inputs
       `(("libice" ,libice)))
@@ -5944,7 +5944,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.2.4")
+    (version "2.2.5")
     (source
      (origin
        (method url-fetch)
@@ -5952,7 +5952,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0v8yflvisk94bfj0zg4ggdfwrig0f3ss9kjnws3zflsr33cb2hxy"))))
+         "1q2l00nc3bgwlhjzkbk4a8x2l8z9w1799yn31icsx5hrgh98a1js"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)

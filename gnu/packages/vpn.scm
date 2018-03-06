@@ -241,7 +241,7 @@ and probably others.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.4.4")
+    (version "2.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -249,7 +249,7 @@ and probably others.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "102an395nv8l7qfx3syydzhmd9xfbycd6gvwy0h2kjz8w67ipkcn"))))
+                "17njq59hsraqyxrbhkrxr7dvx0p066s3pn8w1mi0yd9jldis7h23"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))
@@ -262,11 +262,12 @@ and probably others.")
        ("linux-pam" ,linux-pam)))
     (home-page "https://openvpn.net/")
     (synopsis "Virtual private network daemon")
-    (description "OpenVPN implements virtual private network (VPN) techniques
+    (description
+     "OpenVPN implements virtual private network (@dfn{VPN}) techniques
 for creating secure point-to-point or site-to-site connections in routed or
 bridged configurations and remote access facilities.  It uses a custom
 security protocol that utilizes SSL/TLS for key exchange.  It is capable of
-traversing network address translators (NATs) and firewalls.")
+traversing network address translators (@dfn{NAT}s) and firewalls.")
     (license license:gpl2)))
 
 (define-public tinc

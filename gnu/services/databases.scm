@@ -77,8 +77,10 @@
                   (default 5432))
   (locale         postgresql-configuration-locale
                   (default "en_US.utf8"))
-  (config-file    postgresql-configuration-file)
-  (data-directory postgresql-configuration-data-directory))
+  (config-file    postgresql-configuration-file
+                  (default %default-postgres-config))
+  (data-directory postgresql-configuration-data-directory
+                  (default "/var/lib/postgresql/data")))
 
 (define %default-postgres-hba
   (plain-file "pg_hba.conf"
@@ -184,7 +186,8 @@ host	all	all	::1/128 	trust"))
                        (service-extension activation-service-type
                                           postgresql-activation)
                        (service-extension account-service-type
-                                          (const %postgresql-accounts))))))
+                                          (const %postgresql-accounts))))
+                (default-value (postgresql-configuration))))
 
 (define* (postgresql-service #:key (postgresql postgresql)
                              (port 5432)
@@ -466,7 +469,8 @@ FLUSH PRIVILEGES;
           (service-extension activation-service-type
                              %mysql-activation)
           (service-extension shepherd-root-service-type
-                             mysql-shepherd-service)))))
+                             mysql-shepherd-service)))
+   (default-value (mysql-configuration))))
 
 (define* (mysql-service #:key (config (mysql-configuration)))
   "Return a service that runs @command{mysqld}, the MySQL or MariaDB
@@ -548,4 +552,5 @@ The optional @var{config} argument specifies the configuration for
                        (service-extension activation-service-type
                                           redis-activation)
                        (service-extension account-service-type
-                                          (const %redis-accounts))))))
+                                          (const %redis-accounts))))
+                (default-value (redis-configuration))))

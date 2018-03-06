@@ -138,14 +138,14 @@ between a web browser and web server.")
 (define-public python-flask-babel
   (package
     (name "python-flask-babel")
-    (version "0.11.1")
+    (version "0.11.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "Flask-Babel" version))
         (sha256
           (base32
-            "16b80cipdba9xj3jlaiaq6wgrgpjb70w3j01jjy9hbp4k71kd6yj"))))
+            "0ff9n165vhf1nhv6807ckhpp224jw7k7sd7jz5kfh3sbpl85gmy0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flask" ,python-flask)
@@ -254,7 +254,8 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "py.test" "-v" "webencodings/tests.py")))))))
+             (invoke "py.test" "-v" "webencodings/tests.py")
+             #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/SimonSapin/python-webencodings")
@@ -264,7 +265,7 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
 something like @code{Content-Type: text/html; charset=latin1}, tools need
 to use a particular set of aliases for encoding labels as well as some
 overriding rules.  For example, @code{US-ASCII} and @code{iso-8859-1} on
-the web are actually aliases for @code{windows-1252}, and an @code{UTF-8}
+the web are actually aliases for @code{windows-1252}, and a @code{UTF-8}
 or @code{UTF-16} BOM takes precedence over any other encoding declaration.
 The WHATWG @url{https://encoding.spec.whatwg.org/,Encoding} standard
 defines all such details so that implementations do not have to
@@ -295,7 +296,8 @@ is Python’s.")
        (modify-phases %standard-phases
         (replace 'check
           (lambda _
-            (zero? (system* "./admin/runtests")))))))
+            (invoke "./admin/runtests")
+            #t)))))
     (properties `((python2-variant . ,(delay python2-openid))))
     (propagated-inputs
      `(("python-defusedxml" ,python-defusedxml)))
@@ -332,19 +334,19 @@ for clients and servers.")
 (define-public python-cssutils
   (package
     (name "python-cssutils")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "cssutils" version))
         (sha256
          (base32
-          "0qwha9x1wml2qmipbcz03gndnlwhzrjdvw9i09si247a90l8p8fq"))))
+          "1bxchrbqzapwijap0yhlxdil1w9bmwvgx77aizlkhc2mcxjg1z52"))))
     (build-system python-build-system)
     (native-inputs
-      `(("unzip" ,unzip))) ; for unpacking the source
+     `(("unzip" ,unzip)))               ; for unpacking the source
     (arguments
-     `(#:tests? #f))                    ;tests require python-pbr < 1.7.0
+     `(#:tests? #f))                    ; tests require python-pbr < 1.7.0
     (home-page "http://cthedot.de/cssutils/")
     (synopsis
       "CSS Cascading Style Sheets library for Python")
@@ -451,7 +453,8 @@ teams extension for python-openid.")
        ;;     (lambda _
        ;;       ;; 'setup.py test' hits an AssertionError on BSD-specific
        ;;       ;; "tornado/platform/kqueue.py". This is the supported method:
-       ;;       (zero? (system* "python" "-m" "tornado.test")))))
+       ;;       (invoke- "python" "-m" "tornado.test")
+       ;;       #t)))
        #:tests? #f))
     (native-inputs
      `(("python-certifi" ,python-certifi)))
@@ -522,7 +525,8 @@ web framework, either via the basic or digest authentication schemes.")
        (modify-phases %standard-phases
          (replace 'check
                   (lambda _
-                    (zero? (system* "nosetests")))))))
+                    (invoke "nosetests")
+                    #t)))))
     (home-page "https://github.com/takluyver/terminado")
     (synopsis "Terminals served to term.js using Tornado websockets")
     (description "This package provides a Tornado websocket backend for the
@@ -956,13 +960,13 @@ facilities for defining, registering and looking up components.")
 (define-public python-ndg-httpsclient
   (package
     (name "python-ndg-httpsclient")
-    (version "0.4.2")
+    (version "0.4.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ndg_httpsclient" version))
               (sha256
                 (base32
-                  "1b5qirv46v4dpnmfqviwq42mdwfcby4dxmz0i41wad2337pqf2aq"))))
+                  "0sl5ak1r1xil9ms0a9fh9fm6ncml65kgnjpjfic9dhnaimwx997v"))))
     (build-system python-build-system)
     (arguments
      '(;; The tests appear to require networking.
@@ -1306,14 +1310,14 @@ file.")
 (define-public python-webtest
   (package
     (name "python-webtest")
-    (version "2.0.20")
+    (version "2.0.29")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WebTest" version))
        (sha256
         (base32
-         "0bv0qhdjakdsdgj4sk21gnpp8xp8bga4x03p6gjb83ihrsb7n4xv"))))
+         "0bcj1ica5lnmj5zbvk46x28kgphcsgh7sfnwjmn0cr94mhawrg6v"))))
     (build-system python-build-system)
     (arguments
      `(;; Unfortunately we have to disable tests!
@@ -1519,7 +1523,8 @@ library.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "py.test" "src/geventhttpclient/tests" "-v")))))))
+             (invoke "py.test" "src/geventhttpclient/tests" "-v")
+             #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (propagated-inputs
@@ -1629,7 +1634,8 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/build/lib:"
                                     (getenv "PYTHONPATH")))
-             (zero? (system* "py.test" "-vv")))))))
+             (invoke "py.test" "-vv")
+             #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-redis" ,python-redis)
@@ -1700,13 +1706,13 @@ Betamax.")
 (define-public python-s3transfer
   (package
     (name "python-s3transfer")
-    (version "0.1.11")
+    (version "0.1.13")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "s3transfer" version))
               (sha256
                (base32
-                "0yfrfnf404cxzn3iswibqjxklsl0b1lwgqiml6pwiqj79a7zbwbn"))))
+                "1harvyn1s8v54n1w5h7c0lg4bgjh68aylhg28s8n174q53h1ip4h"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1715,7 +1721,8 @@ Betamax.")
            (lambda _
              ;; 7 of the 'integration' tests require network access or login
              ;; credentials.
-             (zero? (system* "nosetests" "--exclude=integration")))))))
+             (invoke "nosetests" "--exclude=integration")
+             #t)))))
     (native-inputs
      `(("python-docutils" ,python-docutils)
        ("python-mock" ,python-mock)
@@ -1831,7 +1838,8 @@ transfers.")
        ;; (modify-phases %standard-phases
        ;;   (replace 'check
        ;;     (lambda _
-       ;;       (zero? (system* "nosetests")))))))
+       ;;       (invoke "nosetests")
+       ;;       #t)))))
     (propagated-inputs
       `(("python-aniso8601" ,python-aniso8601)
         ("python-flask" ,python-flask)
@@ -1877,16 +1885,16 @@ specs from your Flask-Restful projects.")
 (define-public python-htmlmin
   (package
     (name "python-htmlmin")
-    (version "0.1.10")
+    (version "0.1.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "htmlmin" version))
        (sha256
         (base32
-         "0qxa93j3p1ak32qh8d9kshqv8v3z0hkc13dwbhp5cn7sn3xmsp6a"))))
+         "0y51xhabw6x8jk8k93xl8vznshpz3jb6l28075r5sjip613fzhah"))))
     (arguments
-     `(#:tests? #f)) ;htmlmin has no tests
+     `(#:tests? #f))                    ; no tests
     (build-system python-build-system)
     (home-page "https://htmlmin.readthedocs.org/en/latest/")
     (synopsis "HTML minifier")
@@ -2081,14 +2089,14 @@ this it tries to be opinion-free and very extendable.")
 (define-public python-flask-script
   (package
   (name "python-flask-script")
-  (version "2.0.5")
+  (version "2.0.6")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Flask-Script" version))
       (sha256
         (base32
-          "0zqh2yq8zk7m9b4xw1ryqmrljkdigfb3hk5155a3b5hkfnn6xxyf"))))
+          "0r8w2v89nj6b9p91p495cga5m72a673l2wc0hp0zqk05j4yrc9b4"))))
   (build-system python-build-system)
   (propagated-inputs
    `(("python-flask" ,python-flask)

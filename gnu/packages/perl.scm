@@ -6008,7 +6008,7 @@ of data.")
 (define-public perl-mozilla-ca
   (package
     (name "perl-mozilla-ca")
-    (version "20160104")
+    (version "20180117")
     (source
      (origin
        (method url-fetch)
@@ -6016,7 +6016,7 @@ of data.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0aizn08lrdrgjz9vagkjmw2c7sxn46fzz521v9dbcqii4jd0d9r7"))))
+         "01p4ykyilk1639dxgjaa2n7rz1f0zbqxkq11yc9n6xcz26z9zk7j"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Mozilla-CA/")
     (synopsis "Mozilla's CA cert bundle in PEM format")
@@ -7340,7 +7340,7 @@ return value is the sub.")
 (define-public perl-sub-quote
   (package
     (name "perl-sub-quote")
-    (version "2.004000")
+    (version "2.005000")
     (source
      (origin
        (method url-fetch)
@@ -7349,7 +7349,7 @@ return value is the sub.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1zrh3apxsw1ks25zkh9dcn00656rsvq4mimqz3w8p37s2c1m4qaq"))))
+         "1zv45cvj4ifkbr61ydcpphnj6lvib37gfxwfh40h0yzf3c8lbca4"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))

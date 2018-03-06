@@ -97,6 +97,31 @@ grep -e "$NIX_STORE_DIR/.*-bash" $tmpdir/mounts # bootstrap bash
 
 rm $tmpdir/mounts
 
+# Make sure 'GUIX_ENVIRONMENT' is linked to '~/.guix-profile' when requested
+# within a container.
+(
+  linktest='(exit (string=? (getenv "GUIX_ENVIRONMENT")
+(readlink (string-append (getenv "HOME") "/.guix-profile"))))'
+
+  cd "$tmpdir" \
+     && guix environment --bootstrap --container --link-profile \
+             --ad-hoc guile-bootstrap --pure \
+             -- guile -c "$linktest"
+)
+
+# Test that user can be mocked.
+usertest='(exit (and (string=? (getenv "HOME") "/home/foognu")
+                     (string=? (passwd:name (getpwuid 0)) "foognu")
+                     (file-exists? "/home/foognu/umock")))'
+touch "$tmpdir/umock"
+HOME="$tmpdir" guix environment --bootstrap --container --user=foognu \
+     --ad-hoc guile-bootstrap --pure \
+     --share="$tmpdir/umock" \
+     -- guile -c "$usertest"
+
+
+# Check the exit code.
+
 abnormal_exit_code="
 (use-modules (system foreign))
 ;; Purposely make Guile crash with a segfault. :)

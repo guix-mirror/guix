@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +18,7 @@
 
 (define-module (gnu packages graph)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -172,3 +173,29 @@ model.")
      "This package interfaces R with the graphviz library for plotting R graph
 objects from the @code{graph} package.")
     (license license:epl1.0)))
+
+(define-public r-rbiofabric
+  (let ((commit "666c2ae8b0a537c006592d067fac6285f71890ac")
+        (revision "1"))
+    (package
+      (name "r-rbiofabric")
+      (version (string-append "0.3-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/wjrl/RBioFabric.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1yahqrcrqpbcywv73y9rlmyz8apdnp08afialibrr93ch0p06f8z"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-igraph" ,r-igraph)))
+      (home-page "http://www.biofabric.org/")
+      (synopsis "BioFabric network visualization")
+      (description "This package provides an implementation of the function
+@code{bioFabric} for creating scalable network digrams where nodes are
+represented by horizontal lines, and edges are represented by vertical
+lines.")
+      (license license:expat))))

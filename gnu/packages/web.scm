@@ -799,7 +799,7 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.20.0")
+    (version "0.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
@@ -807,7 +807,7 @@ for efficient socket-like bidirectional reliable communication channels.")
                                   "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "0rsjm6mb71nnj6ikr2dq5qmny314v3j7m07zz1i7m6v8hxxm98i7"))))
+                "17r18y25ka2ck2ykfidbg4a7jpyzmkqwrzplgqjp7mwd2l9rc6cm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2933,7 +2933,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
 (define-public perl-io-socket-ip
   (package
     (name "perl-io-socket-ip")
-    (version "0.38")
+    (version "0.39")
     (source
      (origin
        (method url-fetch)
@@ -2941,7 +2941,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
                            "IO-Socket-IP-" version ".tar.gz"))
        (sha256
         (base32
-         "0scsnahxwnymg80a3k0p0cnr574nk7x9inn9wjniz0iycicclyhb"))))
+         "15kv5g1yb4a345sk3r5wfr99f868lhfqkddzsgpqddvccfkhv58i"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/IO-Socket-IP")
@@ -3660,7 +3660,7 @@ library.")
 (define-public perl-www-mechanize
   (package
     (name "perl-www-mechanize")
-    (version "1.86")
+    (version "1.87")
     (source
      (origin
        (method url-fetch)
@@ -3668,7 +3668,7 @@ library.")
                            "WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "0sfl6b7mx8nannnh3ys5jk44d1s1b2d1mffrnrphkzzykaw6hm0f"))))
+         "1kxrydhl7nxlyjv0xvyiyj4igdv4fwnggv0ihlp79bysbjjl54w1"))))
     (build-system perl-build-system)
     (native-inputs                      ;only for tests
      `(("perl-cgi" ,perl-cgi)
@@ -3783,13 +3783,13 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.3.6")
+    (version "1.3.6.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "1nzbcw1dm4l5qc9156kz95rdb8bwnpdr57wfc87w8arv7m0i40bc"))))
+                "0h3hkw575b211bxma23inbq1565wkhiapgasd539h219apqs534f"))))
     (build-system r-build-system)
     (native-inputs `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/rstudio/httpuv")
@@ -6353,7 +6353,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 (define-public nghttp2
   (package
     (name "nghttp2")
-    (version "1.30.0")
+    (version "1.31.0")
     (source
      (origin
        (method url-fetch)
@@ -6362,7 +6362,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1b2j7il0wp8hi4jl3cah7fkshmg29cchdski9cw74gx5496gp6h8"))))
+         "1ivs74v9sa2sds3dq0s7vn9bkmhr2hgwyg1an1rah3agqwnkqmrn"))))
     (build-system gnu-build-system)
     (outputs (list "out"
                    "lib"))              ; only libnghttp2

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -63,6 +63,10 @@
             ntp-configuration?
             ntp-service
             ntp-service-type
+
+            openntpd-configuration
+            openntpd-configuration?
+            openntpd-service-type
 
             inetd-configuration
             inetd-entry
@@ -445,6 +449,102 @@ make an initial adjustment of more than 1,000 seconds."
                               (servers servers)
                               (allow-large-adjustment?
                                allow-large-adjustment?))))
+
+
+;;;
+;;; OpenNTPD.
+;;;
+
+(define-record-type* <openntpd-configuration>
+  openntpd-configuration make-openntpd-configuration
+  openntpd-configuration?
+  (openntpd                openntpd-configuration-openntpd
+                           (default openntpd))
+  (listen-on               openntpd-listen-on
+                           (default '("127.0.0.1"
+                                      "::1")))
+  (query-from              openntpd-query-from
+                           (default '()))
+  (sensor                  openntpd-sensor
+                           (default '()))
+  (server                  openntpd-server
+                           (default %ntp-servers))
+  (servers                 openntpd-servers
+                           (default '()))
+  (constraint-from         openntpd-constraint-from
+                           (default '()))
+  (constraints-from        openntpd-constraints-from
+                           (default '()))
+  (allow-large-adjustment? openntpd-allow-large-adjustment?
+                           (default #f))) ; upstream default
+
+(define (openntpd-shepherd-service config)
+  (match-record config <openntpd-configuration>
+    (openntpd listen-on query-from sensor server servers constraint-from
+              constraints-from allow-large-adjustment?)
+    (let ()
+      (define config
+        (string-join
+          (filter-map
+            (lambda (field value)
+              (string-join
+                (map (cut string-append field <> "\n")
+                     value)))
+            '("listen on " "query from " "sensor " "server " "servers "
+              "constraint from ")
+            (list listen-on query-from sensor server servers constraint-from))
+          ;; The 'constraints from' field needs to be enclosed in double quotes.
+          (string-join
+            (map (cut string-append "constraints from \"" <> "\"\n")
+                 constraints-from))))
+
+      (define ntpd.conf
+        (plain-file "ntpd.conf" config))
+
+      (list (shepherd-service
+              (provision '(ntpd))
+              (documentation "Run the Network Time Protocol (NTP) daemon.")
+              (requirement '(user-processes networking))
+              (start #~(make-forkexec-constructor
+                         (list (string-append #$openntpd "/sbin/ntpd")
+                               "-f" #$ntpd.conf
+                               "-d" ;; don't daemonize
+                               #$@(if allow-large-adjustment?
+                                    '("-s")
+                                    '()))
+                         ;; When ntpd is daemonized it repeatedly tries to respawn
+                         ;; while running, leading shepherd to disable it.  To
+                         ;; prevent spamming stderr, redirect output to logfile.
+                         #:log-file "/var/log/ntpd"))
+              (stop #~(make-kill-destructor)))))))
+
+(define (openntpd-service-activation config)
+  "Return the activation gexp for CONFIG."
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (mkdir-p "/var/db")
+        (mkdir-p "/var/run")
+        (unless (file-exists? "/var/db/ntpd.drift")
+          (with-output-to-file "/var/db/ntpd.drift"
+                               (lambda _
+                                 (format #t "0.0")))))))
+
+(define openntpd-service-type
+  (service-type (name 'openntpd)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          openntpd-shepherd-service)
+                       (service-extension account-service-type
+                                          (const %ntp-accounts))
+                       (service-extension activation-service-type
+                                          openntpd-service-activation)))
+                (default-value (openntpd-configuration))
+                (description
+                 "Run the @command{ntpd}, the Network Time Protocol (NTP)
+daemon, as implemented by @uref{http://www.openntpd.org, OpenNTPD}.  The
+daemon will keep the system clock synchronized with that of the given servers.")))
 
 
 ;;;

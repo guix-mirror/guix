@@ -469,14 +469,14 @@ checks.")
 (define-public perl-xml-rss
   (package
     (name "perl-xml-rss")
-    (version "1.59")
+    (version "1.60")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
                                   "XML-RSS-" version ".tar.gz"))
               (sha256
                (base32
-                "0v6vfizn2psy6av057kp7fv3z3y73s6b3w56jm3zr6hlq48llsx2"))))
+                "0xw6aaqka3vqwbv152sbh6fbi8j306q1gvg7v83br8miif3mjcsb"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -684,14 +684,14 @@ a schema.")
 (define-public perl-xml-compile-cache
   (package
     (name "perl-xml-compile-cache")
-    (version "1.05")
+    (version "1.06")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-Cache-" version ".tar.gz"))
               (sha256
                (base32
-                "0xbwlszhi9hg8sxm5ylglm2qvnb689i595p913awrj2g4mp9yfsw"))))
+                "181qf1s7ymgi7saph3cf9p6dbxkxyh1ja23na4dchhi8v5mi66sr"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
@@ -1249,14 +1249,14 @@ libxls cannot write Excel files.")
 (define-public freexl
   (package
     (name "freexl")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.gaia-gis.it/gaia-sins/"
                                   name  "-" version ".tar.gz"))
               (sha256
                (base32
-                "09bwzqjc41cc8qw8qkw9wq58rg9nax8r3fg19iny5vmw1c0z23sh"))))
+                "03bmwq6hngmzwpqpb7c2amqlspz4q69iv96nlf0f5c0qs98b3j9x"))))
     (build-system gnu-build-system)
     (home-page "https://www.gaia-gis.it/fossil/freexl/index")
     (synopsis "Read Excel files")

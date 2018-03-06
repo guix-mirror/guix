@@ -1072,7 +1072,7 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
     (synopsis "Specify refactorings to perform with apply-refact")
     (description
      "This library provides a datatype which can be interpreted by
-@code{apply-refact}.  It exists as a seperate library so that applications can
+@code{apply-refact}.  It exists as a separate library so that applications can
 specify refactorings without depending on GHC.")
     (license license:bsd-3)))
 
@@ -8181,12 +8181,12 @@ Background: There exists a feature space for queues that extends between:
 @itemize
 @item Simple, single-ended, non-concurrent, bounded queues
 
-@item Double-ended, threadsafe, growable queues with important points
-inbetween (such as the queues used for work-stealing).
+@item Double-ended, thread-safe, growable queues with important points
+in between (such as the queues used for work stealing).
 @end itemize
 
 This package includes an interface for Deques that allows the programmer
-to use a single API for all of the above, while using the type-system to
+to use a single API for all of the above, while using the type system to
 select an efficient implementation given the requirements (using type families).
 
 This package also includes a simple reference implementation based on
@@ -8532,6 +8532,8 @@ functions.")
         (base32
          "09xhk42yhxvqmka0iqrv3338asncz8cap3j0ic0ps896f2581b6z"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs `(("ghc-cryptohash-sha1" ,ghc-cryptohash-sha1)
               ("ghc-cryptohash-md5" ,ghc-cryptohash-md5)
               ("ghc-entropy" ,ghc-entropy)

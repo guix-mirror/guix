@@ -928,7 +928,7 @@ also walk each side of a merge and test those changes individually.")
 (define-public gitolite
   (package
     (name "gitolite")
-    (version "3.6.6")
+    (version "3.6.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -937,7 +937,7 @@ also walk each side of a merge and test those changes individually.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07q33f86694s0x3k9lcmy1vzfw9appdrlmmb9j3bz4qkrxqdnwb9"))))
+                "1idxipg0df80bhjcxgwxs3lllqnkvhwpinmfv1xvg1l98fxiapgp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -958,7 +958,8 @@ also walk each side of a merge and test those changes individually.")
                         ;; This works because gitolite-shell is in the PATH.
                         (substitute* "src/triggers/post-compile/ssh-authkeys"
                           (("\\$glshell \\$user")
-                           "gitolite-shell $user")))))
+                           "gitolite-shell $user"))
+                        #t)))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((output (assoc-ref outputs "out"))
@@ -966,7 +967,7 @@ also walk each side of a merge and test those changes individually.")
                              (bindir (string-append output "/bin")))
                         (mkdir-p sharedir)
                         (mkdir-p bindir)
-                        (system* "./install" "-to" sharedir)
+                        (invoke "./install" "-to" sharedir)
                         ;; Create symlinks for executable scripts in /bin.
                         (for-each (lambda (script)
                                     (symlink (string-append sharedir "/" script)
@@ -1643,14 +1644,15 @@ repository\" with git-annex.")
        #:phases (modify-phases %standard-phases
                   (replace 'configure
                     (lambda* (#:key outputs (configure-flags '())
-                                    #:allow-other-keys)
+                              #:allow-other-keys)
                       ;; The 'configure' script is not an autoconf script and
                       ;; chokes on unrecognized options.
-                      (zero? (apply system*
-                                    "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out"))
-                                    configure-flags))))
+                      (apply invoke
+                             "./configure"
+                             (string-append "--prefix="
+                                            (assoc-ref outputs "out"))
+                             configure-flags)
+                      #t))
                   (add-before 'check 'test-setup
                     (lambda _
                       (setenv "USER" "guix")

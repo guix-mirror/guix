@@ -3424,6 +3424,47 @@ TeX metrics (VF and TFM files) and macros for use with LaTeX.")
     ;; Any version of the GPL with font exception.
     (license license:gpl3+)))
 
+(define-public texlive-fonts-iwona
+  (package
+    (name "texlive-fonts-iwona")
+    (version "0.995b")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://jmn.pl/pliki/Iwona-tex-"
+                                  (string-map (lambda (c)
+                                                (if (char=? c #\.)
+                                                    #\_ c))
+                                              version)
+                                  ".zip"))
+              (sha256
+               (base32
+                "13684iqx5granpc5rfvqnmyvdpgpbr1x9y7i7y7bcaq0qxv7ph1x"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/"))
+               (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                      "/bin/unzip")))
+           (system* unzip (assoc-ref %build-inputs "source"))
+           (mkdir-p target)
+           (copy-recursively "iwona" target)))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://jmn.pl/en/kurier-i-iwona/")
+    (synopsis "Sans-serif typeface for TeX")
+    (description "Iwona is a two-element sans-serif typeface. It was created
+as an alternative version of the Kurier typeface, which was designed in 1975
+for a diploma in typeface design at the Warsaw Academy of Fine Arts under the
+supervision of Roman Tomaszewski.  Kurier was designed for linotype
+typesetting of newspapers and similar periodicals. The Iwona fonts are an
+alternative version of the Kurier fonts.  The difference lies in the absence
+of ink traps which typify the Kurier font.")
+    (license license:gfl1.0)))
+
 (define-public texlive-latex-titlesec
   (package
     (name "texlive-latex-titlesec")

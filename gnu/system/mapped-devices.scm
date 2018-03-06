@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -30,9 +30,12 @@
   #:use-module (gnu services shepherd)
   #:use-module (gnu system uuid)
   #:autoload   (gnu build file-systems) (find-partition-by-luks-uuid)
+  #:autoload   (gnu build linux-modules)
+                 (device-module-aliases matching-modules)
   #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
   #:autoload   (gnu packages linux) (mdadm-static)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
@@ -151,19 +154,43 @@
   #~(zero? (system* #$(file-append cryptsetup-static "/sbin/cryptsetup")
                     "close" #$target)))
 
-(define (check-luks-device md)
+(define (check-device-initrd-modules device linux-modules location)
+  "Raise an error if DEVICE needs modules beyond LINUX-MODULES to operate.
+DEVICE must be a \"/dev\" file name."
+  (let ((modules (delete-duplicates
+                  (append-map matching-modules
+                              (device-module-aliases device)))))
+    (unless (every (cute member <> linux-modules) modules)
+      (raise (condition
+              (&message
+               (message (format #f (G_ "you may need these modules \
+in the initrd for ~a:~{ ~a~}")
+                                device modules)))
+              (&error-location
+               (location (source-properties->location location))))))))
+
+(define* (check-luks-device md #:key
+                            needed-for-boot?
+                            (initrd-modules '())
+                            #:allow-other-keys
+                            #:rest rest)
   "Ensure the source of MD is valid."
-  (let ((source (mapped-device-source md)))
-    (or (not (uuid? source))
-        (not (zero? (getuid)))
-        (find-partition-by-luks-uuid (uuid-bytevector source))
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "no LUKS partition with UUID '~a'")
-                                  (uuid->string source))))
-                (&error-location
-                 (location (source-properties->location
-                            (mapped-device-location md)))))))))
+  (let ((source   (mapped-device-source md))
+        (location (mapped-device-location md)))
+    (or (not (zero? (getuid)))
+        (if (uuid? source)
+            (match (find-partition-by-luks-uuid (uuid-bytevector source))
+              (#f
+               (raise (condition
+                       (&message
+                        (message (format #f (G_ "no LUKS partition with UUID '~a'")
+                                         (uuid->string source))))
+                       (&error-location
+                        (location (source-properties->location
+                                   (mapped-device-location md)))))))
+              ((? string? device)
+               (check-device-initrd-modules device initrd-modules location)))
+            (check-device-initrd-modules source initrd-modules location)))))
 
 (define luks-device-mapping
   ;; The type of LUKS mapped devices.

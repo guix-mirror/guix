@@ -32,11 +32,13 @@
   #:use-module (guix hg-download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
@@ -318,14 +320,14 @@ D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
 (define-public r-mass
   (package
     (name "r-mass")
-    (version "7.3-48")
+    (version "7.3-49")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MASS" version))
        (sha256
         (base32
-         "02q95ba909p2gxnzfp295ipxjnv14f7bm55nicxwn2kj8hizpzqd"))))
+         "1yjbnj1p4z0vw84wga8q5fyqiw4n6r7pc6rdwam7vsbiamyzfcqs"))))
     (properties `((upstream-name . "MASS")))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
@@ -554,14 +556,14 @@ single hidden layer, and for multinomial log-linear models.")
 (define-public r-rpart
   (package
     (name "r-rpart")
-    (version "4.1-12")
+    (version "4.1-13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rpart" version))
        (sha256
         (base32
-         "177p03w4m0qshb3sqkdyixim3f44g2an31v3vlbjmpzjvd5ff6yq"))))
+         "0k29qx3k3pj5sgrpg0p47yd8i811rmdakaw57bigpq1449asc4cf"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/rpart")
     (synopsis "Recursive partitioning and regression trees")
@@ -1098,20 +1100,21 @@ agnes cluster diagrams.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "103wnc8sq0iwcnj4j14hd420d2dqdyf13s3f25icsznrlyzdkhf5"))))
+         "122k9spymawfnfyksxyapwq9cigydy5nrjwhrwrhy3qkax3aycf6"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("cairo" ,cairo)))
+     `(("cairo" ,cairo)
+       ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-withr" ,r-withr)))
     (home-page "https://cran.r-project.org/web/packages/gdtools")
@@ -1187,13 +1190,13 @@ evaluation (NSE) in R.")
 (define-public r-dbi
   (package
     (name "r-dbi")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DBI" version))
               (sha256
                (base32
-                "04fyrxdpqcygg5wviy637y6lgk64xqjjq31lvv4hwqj5kbaxamr5"))))
+                "16nf8flxr5vdz8yrpprfbzydy3ajixkp9hc8ibd9n7r9nc29waym"))))
     (build-system r-build-system)
     (home-page "https://github.com/rstats-db/DBI")
     (synopsis "R database interface")
@@ -1330,13 +1333,13 @@ syntax that can be converted to XHTML or other formats.")
 (define-public r-yaml
   (package
     (name "r-yaml")
-    (version "2.1.16")
+    (version "2.1.17")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "yaml" version))
               (sha256
                (base32
-                "1xlsmqal607w6c9rx86061y1fwpbyd5lqp9bad5n7cc9a0blpnkm"))))
+                "10y6wnv2v8k396far29haqv2s82p4zm04rrsxk183wg19gb51was"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/yaml/")
     (synopsis "Methods to convert R data to YAML and back")
@@ -2481,13 +2484,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.8.300.1.0")
+    (version "0.8.400.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "0p6cbnwxgzigf7n5qhqvxdr3nd3pq3c2qq6pskqz7avzf813fy83"))))
+                "11y2ksf46zw6fcz0kk70szyfn7qqxwwd33xylrxvnyb7ldmbc5yr"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     (native-inputs
@@ -2575,14 +2578,14 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.8")
+    (version "1.9")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "0q1y1qx87xp6vf9h7mfl77rqhmd01xl53l9ap9qj99bfvpabb572"))))
+            "0wq6kbhrkv3fhcy4hg5yyv9gdvf8gr4nsjwdifs4ih8lnn0dmdyb"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2811,6 +2814,19 @@ plotted and compared with the asymptotic curve.")
                 "0vql32np716dpd0kjn7s7wgawd02ysgp2a5il4kb19nlw661ii3x"))))
     (properties `((upstream-name . "lambda.r")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'check 'delete-test-log
+           ;; The test report contains time stamps and is not important for
+           ;; the installed package.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively
+              (string-append (assoc-ref outputs "out")
+                             "/site-library/lambda.r/unitTests"))
+             #t)))))
+    (native-inputs
+     `(("r-runit" ,r-runit)))
     (home-page "https://cran.r-project.org/web/packages/lambda.r")
     (synopsis "Functional programming extension for R")
     (description
@@ -3577,14 +3593,14 @@ the 'lite' version of the more complete @code{viridis} package.")
 (define-public r-tidyselect
   (package
     (name "r-tidyselect")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyselect" version))
        (sha256
         (base32
-         "0b0w30yq30c7bwpaghp3hp0nncqwcmvrra9j58fhx9jihay3l68c"))))
+         "1592dbzawhd1hpsp9919l4sifyiaaj6xr7lnhsbwa6jwmmb0xcsw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-glue" ,r-glue)
@@ -4039,6 +4055,14 @@ Zurich, including many that are related to graphics.")
         (base32
          "1xknwk9xlsj027pg0nwiizigcrsc84hdrig0jn0cgcyxj8dabdl6"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-deterministic
+           (lambda _
+             (substitute* "R/checkReverseDependencies.R"
+               (("tempdir\\(\\)") "\"/tmp\""))
+             #t)))))
     (home-page "https://cran.r-project.org/web/packages/gtools")
     (synopsis "Various R programming tools")
     (description
@@ -5356,14 +5380,14 @@ is supported.")
 (define-public r-lubridate
   (package
     (name "r-lubridate")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lubridate" version))
        (sha256
         (base32
-         "0k417a1xp5gxf77ycbnx5apzpc5d25sjm83ss7wmqpbnhnr5dcav"))))
+         "1pzkqfiahnsdm3zx46asgn8fw43vlxvbh7r4cn70c7ffmxabzzrc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
@@ -5539,3 +5563,40 @@ inferring an appropriate positioning method.")
       (description "Did you ever wish you could make scatter plots with cat
 shaped points?  Now you can!")
       (license license:asl2.0))))
+
+(define-public java-jdistlib
+  (package
+    (name "java-jdistlib")
+    (version "0.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/jdistlib/jdistlib-"
+                                  version "-src.jar"))
+              (sha256
+               (base32
+                "1pkj8aahw9ydr1isbaqrkd05nvq98ik5jwwhf3yf3rky3z869v11"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jdistlib.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f ; no dedicated test directory
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-broken-encoding
+           (lambda _
+             (with-fluids ((%default-port-encoding "ISO-8859-1"))
+               (substitute* "src/jdistlib/Beta.java"
+                 (("Scheff.+-Tukey") "Scheffe-Tukey")))
+             #t)))))
+    (propagated-inputs
+     `(("java-jtransforms" ,java-jtransforms)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://jdistlib.sourceforge.net/")
+    (synopsis "Java library of statistical distributions")
+    (description "JDistlib is the Java Statistical Distribution Library, a
+Java package that provides routines for various statistical distributions.")
+    ;; The files that were translated from R code are under GPLv2+; some files
+    ;; are under the GPLv3, which is a mistake.  The author confirmed in an
+    ;; email that this whole project should be under GPLv2+.
+    (license license:gpl2+)))

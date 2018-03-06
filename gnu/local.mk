@@ -7,7 +7,7 @@
 # Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 # Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
-# Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+# Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -76,6 +76,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/bash.scm				\
   %D%/packages/bdw-gc.scm			\
   %D%/packages/benchmark.scm			\
+  %D%/packages/bioconductor.scm			\
   %D%/packages/bioinformatics.scm		\
   %D%/packages/bittorrent.scm			\
   %D%/packages/bison.scm			\
@@ -552,6 +553,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/ansible-wrap-program-hack.patch		\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
+  %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
+  %D%/packages/patches/antlr3-3_3-fix-java8-compilation.patch	\
   %D%/packages/patches/ao-cad-aarch64-support.patch		\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
@@ -578,7 +581,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
-  %D%/packages/patches/ceph-disable-unittest-throttle.patch	\
+  %D%/packages/patches/ceph-rocksdb-compat.patch		\
   %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
   %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
   %D%/packages/patches/chmlib-inttypes.patch			\
@@ -681,6 +684,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-source-date-epoch-2.patch		\
   %D%/packages/patches/gcr-disable-failing-tests.patch		\
   %D%/packages/patches/gcr-fix-collection-tests-to-work-with-gpg-21.patch	\
+  %D%/packages/patches/gd-CVE-2018-5711.patch			\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-freetype-test-failure.patch		\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
@@ -708,6 +712,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt1.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt2.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt3.patch		\
+  %D%/packages/patches/glibc-allow-kernel-2.6.32.patch		\
   %D%/packages/patches/glibc-bootstrap-system.patch		\
   %D%/packages/patches/glibc-ldd-x86_64.patch			\
   %D%/packages/patches/glibc-locales.patch			\
@@ -771,10 +776,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hwloc-tests-without-sysfs.patch		\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
-  %D%/packages/patches/icecat-bug-1348660-pt5.patch		\
-  %D%/packages/patches/icecat-bug-1415133.patch			\
-  %D%/packages/patches/icecat-bug-1414945.patch			\
-  %D%/packages/patches/icecat-bug-1424373-pt2.patch		\
   %D%/packages/patches/icecat-use-system-graphite2.patch	\
   %D%/packages/patches/icecat-use-system-harfbuzz.patch		\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\

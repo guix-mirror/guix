@@ -37,28 +37,31 @@ recursively.  Return #t on success, #f otherwise."
   ;; in advance anyway.
   (setenv "GIT_SSL_NO_VERIFY" "true")
 
-  ;; We cannot use "git clone --recursive" since the following "git checkout"
-  ;; effectively removes sub-module checkouts as of Git 2.6.3.
-  (and (zero? (system* git-command "clone" url directory))
-       (with-directory-excursion directory
-         (system* git-command "tag" "-l")
-         (and (zero? (system* git-command "checkout" commit))
-              (begin
-                (when recursive?
-                  ;; Now is the time to fetch sub-modules.
-                  (unless (zero? (system* git-command "submodule" "update"
+  (mkdir-p directory)
+
+  (with-directory-excursion directory
+    (invoke git-command "init")
+    (invoke git-command "remote" "add" "origin" url)
+    (if (zero? (system* git-command "fetch" "--depth" "1" "origin" commit))
+        (invoke git-command "checkout" "FETCH_HEAD")
+        (begin
+          (invoke git-command "fetch" "origin")
+          (invoke git-command "checkout" commit)))
+    (when recursive?
+      ;; Now is the time to fetch sub-modules.
+      (unless (zero? (system* git-command "submodule" "update"
                                           "--init" "--recursive"))
-                    (error "failed to fetch sub-modules" url))
+        (error "failed to fetch sub-modules" url))
 
-                  ;; In sub-modules, '.git' is a flat file, not a directory,
-                  ;; so we can use 'find-files' here.
-                  (for-each delete-file-recursively
-                            (find-files directory "^\\.git$")))
+      ;; In sub-modules, '.git' is a flat file, not a directory,
+      ;; so we can use 'find-files' here.
+      (for-each delete-file-recursively
+                (find-files directory "^\\.git$")))
 
-                ;; The contents of '.git' vary as a function of the current
-                ;; status of the Git repo.  Since we want a fixed output, this
-                ;; directory needs to be taken out.
-                (delete-file-recursively ".git")
-                #t)))))
+      ;; The contents of '.git' vary as a function of the current
+      ;; status of the Git repo.  Since we want a fixed output, this
+      ;; directory needs to be taken out.
+      (delete-file-recursively ".git")
+      #t))
 
 ;;; git.scm ends here

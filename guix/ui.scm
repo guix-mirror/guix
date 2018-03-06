@@ -52,6 +52,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
+  #:autoload   (system base compile) (compile-file)
   #:autoload   (system repl repl)  (start-repl)
   #:autoload   (system repl debug) (make-debug stack->vector)
   #:use-module (texinfo)
@@ -186,8 +187,8 @@ messages."
 
   (define (error-string frame args)
     (call-with-output-string
-     (lambda (port)
-       (apply display-error frame port (cdr args)))))
+      (lambda (port)
+        (apply display-error frame port (cdr args)))))
 
   (define tag
     (make-prompt-tag "user-code"))
@@ -199,9 +200,10 @@ messages."
       ;; In 2.2.3, the bogus answer to <https://bugs.gnu.org/29226> was to
       ;; ignore all available .go, not just those from ~/.cache, which in turn
       ;; meant that we had to rebuild *everything*.  Since this is too costly,
-      ;; we have to turn auto '%fresh-auto-compile' with that version, at the
-      ;; risk of getting ABI breakage in the user's config file.  See
-      ;; <https://bugs.gnu.org/29881>.
+      ;; we have to turn off '%fresh-auto-compile' with that version, so to
+      ;; avoid ABI breakage in the user's config file, we explicitly compile
+      ;; it (the problem remains if the user's config is spread on several
+      ;; modules.)  See <https://bugs.gnu.org/29881>.
       (unless (string=? (version) "2.2.3")
         (set! %fresh-auto-compile #t))
 
@@ -215,6 +217,12 @@ messages."
          (parameterize ((current-warning-port (%make-void-port "w")))
            (call-with-prompt tag
              (lambda ()
+               (when (string=? (version) "2.2.3")
+                 (catch 'system-error
+                   (lambda ()
+                     (compile-file file #:env user-module))
+                   (const #f)))              ;EACCES maybe, let's interpret it
+
                ;; Give 'load' an absolute file name so that it doesn't try to
                ;; search for FILE in %LOAD-PATH.  Note: use 'load', not
                ;; 'primitive-load', so that FILE is compiled, which then allows us

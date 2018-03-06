@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
@@ -9352,21 +9352,29 @@ etc.")
 (define-public python-stem
   (package
     (name "python-stem")
-    (version "1.5.4")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stem" version))
        (sha256
         (base32
-         "1j7pnblrn0yr6jmxvsq6y0ihmxmj5x50jl2n2606w67f6wq16j9n"))))
+         "1va9p3ij7lxg6ixfsvaql06dn11l3fgpxmss1dhlvafm7sqizznp"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'check 'fix-test-environment
+           (lambda _
+             ;; Fixes: FileNotFoundError: [Errno 2] No such file or directory:
+             ;; '/tmp/guix-build-python-stem-1.6.0.drv-0/stem-1.6.0/.gitignore'.
+             (with-output-to-file ".gitignore"
+               (lambda _ (format #t "%")))
+             #t))
          (replace 'check
            (lambda _
-             (zero? (system* "./run_tests.py" "--unit")))))))
+             (invoke "./run_tests.py" "--unit")
+             #t)))))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pep8" ,python-pep8)
@@ -10165,14 +10173,14 @@ network.")
 (define-public python-xopen
   (package
     (name "python-xopen")
-    (version "0.1.1")
+    (version "0.3.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xopen" version))
         (sha256
           (base32
-           "1wx6mylzcsyhjl19ycb83qq6iqpmr927lz62njfsar6ldsj0qcni"))
+           "0bzjmn3rl1cd3d2q39cjwnkhaspk2b0hfj3rl64pclm44ihg5fb6"))
         (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (home-page "https://github.com/marcelm/xopen/")
@@ -12717,7 +12725,6 @@ functions by partial application of operators.")
              (invoke "py.test"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-pytest-warnings" ,python-pytest-warnings)
        ("python-whatever" ,python-whatever)))
     (home-page "http://github.com/Suor/funcy")
     (synopsis "Functional tools")

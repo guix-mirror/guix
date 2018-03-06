@@ -143,7 +143,7 @@ made available under the /xchg CIFS share."
                          (return initrd)
                          (base-initrd %linux-vm-file-systems
                                       #:linux linux
-                                      #:virtio? #t
+                                      #:linux-modules %base-initrd-modules
                                       #:qemu-networking? #t))))
 
     (define builder
@@ -512,12 +512,7 @@ of the GNU system as described by OS."
 
 
   (let ((os (operating-system (inherit os)
-              ;; Use an initrd with the whole QEMU shebang.
-              (initrd (lambda (file-systems . rest)
-                        (apply (operating-system-initrd os)
-                               file-systems
-                               #:virtio? #t
-                               rest)))
+              ;; Assume we have an initrd with the whole QEMU shebang.
 
               ;; Force our own root file system.  Refer to it by UUID so that
               ;; it works regardless of how the image is used ("qemu -hda",
@@ -614,7 +609,6 @@ environment with the store shared with the host.  MAPPINGS is a list of
               (apply (operating-system-initrd os)
                      file-systems
                      #:volatile-root? #t
-                     #:virtio? #t
                      rest)))
 
     ;; Disable swap.

@@ -39,9 +39,11 @@
   #:use-module (gnu system mapped-devices)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (expression->initrd
+            %base-initrd-modules
             raw-initrd
             file-system-packages
             base-initrd))
@@ -242,14 +244,71 @@ FILE-SYSTEMS."
           (list btrfs-progs/static)
           '())))
 
+(define-syntax vhash                              ;TODO: factorize
+  (syntax-rules (=>)
+    "Build a vhash with the given key/value mappings."
+    ((_)
+     vlist-null)
+    ((_ (key others ... => value) rest ...)
+     (vhash-cons key value
+                 (vhash (others ... => value) rest ...)))
+    ((_ (=> value) rest ...)
+     (vhash rest ...))))
+
+(define-syntax lookup-procedure
+  (syntax-rules (else)
+    "Return a procedure that lookups keys in the given dictionary."
+    ((_ mapping ... (else default))
+     (let ((table (vhash mapping ...)))
+       (lambda (key)
+         (match (vhash-assoc key table)
+           (#f            default)
+           ((key . value) value)))))))
+
+(define file-system-type-modules
+  ;; Given a file system type, return the list of modules it needs.
+  (lookup-procedure ("cifs" => '("md4" "ecb" "cifs"))
+                    ("9p" => '("9p" "9pnet_virtio"))
+                    ("btrfs" => '("btrfs"))
+                    ("iso9660" => '("isofs"))
+                    (else '())))
+
+(define (file-system-modules file-systems)
+  "Return the list of Linux modules needed to mount FILE-SYSTEMS."
+  (append-map (compose file-system-type-modules file-system-type)
+              file-systems))
+
+(define* (default-initrd-modules #:optional (system (%current-system)))
+  "Return the list of modules included in the initrd by default."
+  (define virtio-modules
+    ;; Modules for Linux para-virtualized devices, for use in QEMU guests.
+    '("virtio_pci" "virtio_balloon" "virtio_blk" "virtio_net"
+      "virtio_console"))
+
+  `("ahci"                                  ;for SATA controllers
+    "usb-storage" "uas"                     ;for the installation image etc.
+    "usbhid" "hid-generic" "hid-apple"      ;keyboards during early boot
+    "dm-crypt" "xts" "serpent_generic" "wp512" ;for encrypted root partitions
+    "nls_iso8859-1"                            ;for `mkfs.fat`, et.al
+    ,@(if (string-match "^(x86_64|i[3-6]86)-" system)
+          '("pata_acpi" "pata_atiixp"    ;for ATA controllers
+            "isci")                      ;for SAS controllers like Intel C602
+          '())
+
+    ,@virtio-modules))
+
+(define-syntax %base-initrd-modules
+  ;; This more closely matches our naming convention.
+  (identifier-syntax (default-initrd-modules)))
+
 (define* (base-initrd file-systems
                       #:key
                       (linux linux-libre)
+                      (linux-modules '())
                       (mapped-devices '())
                       qemu-networking?
                       volatile-root?
-                      (virtio? #t)
-                      (extra-modules '())
+                      (extra-modules '())         ;deprecated
                       (on-error 'debug))
   "Return a monadic derivation that builds a generic initrd, with kernel
 modules taken from LINUX.  FILE-SYSTEMS is a list of file-systems to be
@@ -259,57 +318,14 @@ mappings to realize before FILE-SYSTEMS are mounted.
 
 QEMU-NETWORKING? and VOLATILE-ROOT? behaves as in raw-initrd.
 
-When VIRTIO? is true, load additional modules so the initrd can
-be used as a QEMU guest with the root file system on a para-virtualized block
-device.
-
 The initrd is automatically populated with all the kernel modules necessary
-for FILE-SYSTEMS and for the given options.  However, additional kernel
-modules can be listed in EXTRA-MODULES.  They will be added to the initrd, and
+for FILE-SYSTEMS and for the given options.  Additional kernel
+modules can be listed in LINUX-MODULES.  They will be added to the initrd, and
 loaded at boot time in the order in which they appear."
-  (define virtio-modules
-    ;; Modules for Linux para-virtualized devices, for use in QEMU guests.
-    '("virtio_pci" "virtio_balloon" "virtio_blk" "virtio_net"
-      "virtio_console"))
-
-  (define cifs-modules
-    ;; Modules needed to mount CIFS file systems.
-    '("md4" "ecb" "cifs"))
-
-  (define virtio-9p-modules
-    ;; Modules for the 9p paravirtualized file system.
-    '("9p" "9pnet_virtio"))
-
-  (define (file-system-type-predicate type)
-    (lambda (fs)
-      (string=? (file-system-type fs) type)))
-
-  (define linux-modules
+  (define linux-modules*
     ;; Modules added to the initrd and loaded from the initrd.
-    `("ahci"                                  ;for SATA controllers
-      "usb-storage" "uas"                     ;for the installation image etc.
-      "usbhid" "hid-generic" "hid-apple"      ;keyboards during early boot
-      "dm-crypt" "xts" "serpent_generic" "wp512" ;for encrypted root partitions
-      "nls_iso8859-1"                            ;for `mkfs.fat`, et.al
-      ,@(if (string-match "^(x86_64|i[3-6]86)-" (%current-system))
-            '("pata_acpi" "pata_atiixp"    ;for ATA controllers
-              "isci")                      ;for SAS controllers like Intel C602
-            '())
-      ,@(if (or virtio? qemu-networking?)
-            virtio-modules
-            '())
-      ,@(if (find (file-system-type-predicate "cifs") file-systems)
-            cifs-modules
-            '())
-      ,@(if (find (file-system-type-predicate "9p") file-systems)
-            virtio-9p-modules
-            '())
-      ,@(if (find (file-system-type-predicate "btrfs") file-systems)
-            '("btrfs")
-            '())
-      ,@(if (find (file-system-type-predicate "iso9660") file-systems)
-            '("isofs")
-            '())
+    `(,@linux-modules
+      ,@(file-system-modules file-systems)
       ,@(if volatile-root?
             '("overlay")
             '())
@@ -320,7 +336,7 @@ loaded at boot time in the order in which they appear."
 
   (raw-initrd file-systems
               #:linux linux
-              #:linux-modules linux-modules
+              #:linux-modules linux-modules*
               #:mapped-devices mapped-devices
               #:helper-packages helper-packages
               #:qemu-networking? qemu-networking?

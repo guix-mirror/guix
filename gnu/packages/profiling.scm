@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,7 +66,7 @@
      `(("autoconf" ,autoconf)
        ("gfortran" ,gfortran)))
     (arguments
-     '(#:tests? #f ; no check target
+     `(#:tests? #f ; no check target
        #:configure-flags
        ;; These are roughly per Fedora, but elide mx (assumed to be dead, even
        ;; Open-MX) and add and powercap -- I don't know the pros/cons of
@@ -84,7 +85,8 @@ stealtime lmsensors infiniband powercap"
          (add-before 'configure 'autoconf
            (lambda _
              (chdir "src")
-             (zero? (system* "autoconf"))))
+             (invoke "autoconf")
+             #t))
          ;; Amalgamating with the following clause gives double substitution.
          (add-before 'patch-source-shebangs 'patch-components
            (lambda _
@@ -95,28 +97,26 @@ stealtime lmsensors infiniband powercap"
          (add-after 'configure 'components
            (lambda*  (#:key inputs #:allow-other-keys)
              (with-directory-excursion "components"
-               (and
-                (with-directory-excursion "infiniband_umad"
-                  (zero? (system* "./configure")))
-                (with-directory-excursion "lmsensors"
-                  (let ((base  (assoc-ref inputs "lm-sensors")))
-                    (zero?
-                     (system*
-                      "./configure"
-                      (string-append "--with-sensors_incdir=" base
-                                     "/include/sensors")
-                      (string-append "--with-sensors_libdir=" base "/lib")))))))))
+               (with-directory-excursion "infiniband_umad"
+                 (invoke "./configure"))
+               (with-directory-excursion "lmsensors"
+                 (let ((base (assoc-ref inputs "lm-sensors")))
+                   (invoke "./configure"
+                           (string-append "--with-sensors_incdir="
+                                          base "/include/sensors")
+                           (string-append "--with-sensors_libdir="
+                                          base "/lib")))))
+             #t))
          (add-after 'install 'extra-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((doc (string-append (assoc-ref outputs "out")
-                                       "/share/doc")))
-               (mkdir-p doc)
+                                       "/share/doc/" ,name "-" ,version)))
                (chdir "..")             ; we went into src above
                (for-each (lambda (file)
                            (install-file file doc))
-                         '("README" "RELEASENOTES.txt" "LICENSE.txt"))
+                         '("README" "RELEASENOTES.txt"))
                #t))))))
-    (home-page "http://icl.cs.utk.edu/papi/")
+    (home-page "https://icl.utk.edu/papi/")
     (synopsis "Performance Application Programming Interface")
     (description
      "PAPI provides the tool designer and application engineer with a consistent

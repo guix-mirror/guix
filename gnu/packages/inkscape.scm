@@ -87,7 +87,10 @@
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     ;; FIXME: tests require gmock
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:tests? #f
+       #:make-flags
+       '("gtk_update_icon_cache=true")))
     (home-page "https://inkscape.org/")
     (synopsis "Vector graphics editor")
     (description "Inkscape is a vector graphics editor.  What sets Inkscape

@@ -59,6 +59,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux) ;alsa
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wget)
   #:use-module (gnu packages pkg-config)
@@ -2083,6 +2084,444 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
          (replace 'install (install-jars ".")))))
     (native-inputs
      `(("unzip" ,unzip)))))
+
+(define-public java-cisd-base
+  (let ((revision 38938)
+        (base-version "14.12.0"))
+    (package
+      (name "java-cisd-base")
+      (version (string-append base-version "-" (number->string revision)))
+      (source (origin
+                (method svn-fetch)
+                (uri (svn-reference
+                      (url (string-append "http://svnsis.ethz.ch/repos/cisd/"
+                                          "base/tags/release/"
+                                          (version-major+minor base-version)
+                                          ".x/" base-version "/base/"))
+                      (revision revision)))
+                (file-name (string-append "java-cisd-base-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1i5adyf7nzclb0wydgwa1az04qliid8035vpahaandmkmigbnxiy"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Delete included gradle jar
+                    (delete-file-recursively "gradle/wrapper")
+                    ;; Delete pre-built native libraries
+                    (delete-file-recursively "libs")
+                    #t))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:make-flags '("-file" "build/build.xml")
+         #:test-target "jar-test"
+         #:jdk ,icedtea-8
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-build-resources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (copy-recursively (assoc-ref inputs "build-resources")
+                                 "../build_resources")
+               #t))
+           (add-after 'unpack-build-resources 'fix-dependencies
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "build/build.xml"
+                 (("\\$\\{lib\\}/testng/testng-jdk15.jar")
+                  (string-append (assoc-ref inputs "java-testng")
+                                 "/share/java/java-testng.jar"))
+                 (("\\$\\{lib\\}/commons-lang/commons-lang.jar")
+                  (string-append (assoc-ref inputs "java-commons-lang")
+                                 "/share/java/commons-lang-"
+                                 ,(package-version java-commons-lang) ".jar"))
+                 (("\\$\\{lib\\}/commons-io/commons-io.jar")
+                  (string-append (assoc-ref inputs "java-commons-io")
+                                 "/share/java/commons-io-"
+                                 ,(package-version java-commons-io)
+                                 "-SNAPSHOT.jar"))
+                 ;; Remove dependency on svn
+                 (("<build-info.*") "")
+                 (("\\$\\{revision.number\\}")
+                  ,(number->string revision))
+                 (("\\$\\{version.number\\}") ,base-version))
+               ;; Remove dependency on classycle
+               (substitute* "../build_resources/ant/build-common.xml"
+                 (("<taskdef name=\"dependency-checker.*") "")
+                 (("classname=\"classycle.*") "")
+                 (("classpath=\"\\$\\{lib\\}/classycle.*") ""))
+               #t))
+           ;; A few tests fail because of the lack of a proper /etc/groups and
+           ;; /etc/passwd file in the build container.
+           (add-after 'unpack 'disable-broken-tests
+             (lambda _
+               (substitute* "sourceTest/java/ch/systemsx/cisd/base/AllTests.java"
+                 (("Unix.isOperational\\(\\)") "false"))
+               #t))
+           ;; These decorators are almost useless and pull in an unpackaged
+           ;; dependency.
+           (add-after 'unpack 'remove-useless-decorators
+             (lambda _
+               (substitute* "source/java/ch/systemsx/cisd/base/unix/Unix.java"
+                 (("@Private") "")
+                 (("import ch.rinn.restrictions.Private;") ""))
+               (substitute* "sourceTest/java/ch/systemsx/cisd/base/unix/UnixTests.java"
+                 (("@Friend.*") "")
+                 (("import ch.rinn.restrictions.Friend;") ""))
+               #t))
+           (add-before 'configure 'build-native-code
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((jdk (assoc-ref inputs "jdk"))
+                     (dir ,(match (%current-system)
+                             ("i686-linux"
+                              "i386-Linux")
+                             ((or "armhf-linux" "aarch64-linux")
+                              "arm-Linux")
+                             ((or "x86_64-linux")
+                              "amd64-Linux")
+                             (_ "unknown-Linux"))))
+                 (with-directory-excursion "source/c"
+                   (invoke "gcc" "-shared" "-O3" "-fPIC" "unix.c"
+                           (string-append "-I" jdk "/include")
+                           (string-append "-I" jdk "/include/linux")
+                           "-o" "libunix.so")
+                   (invoke "gcc" "-shared" "-O3" "-fPIC"
+                           "-DMACHINE_BYTE_ORDER=1"
+                           "copyCommon.c"
+                           "copyByteChar.c"
+                           "copyByteDouble.c"
+                           "copyByteFloat.c"
+                           "copyByteInt.c"
+                           "copyByteLong.c"
+                           "copyByteShort.c"
+                           (string-append "-I" jdk "/include")
+                           (string-append "-I" jdk "/include/linux")
+                           "-o" "libnativedata.so"))
+                 (install-file "source/c/libunix.so"
+                               (string-append "libs/native/unix/" dir))
+                 (install-file "source/c/libnativedata.so"
+                               (string-append "libs/native/nativedata/" dir))
+                 #t)))
+           ;; In the "check" phase we only build the test executable.
+           (add-after 'check 'run-tests
+             (lambda _
+               (invoke "java" "-jar" "targets/dist/sis-base-test.jar")
+               (delete-file "targets/dist/sis-base-test.jar")
+               #t))
+           (replace 'install (install-jars "targets/dist")))))
+      (native-inputs
+       `(("jdk" ,icedtea-8)
+         ("java-commons-lang" ,java-commons-lang)
+         ("java-commons-io" ,java-commons-io)
+         ("java-testng" ,java-testng)
+         ("build-resources"
+          ,(origin
+             (method svn-fetch)
+             (uri (svn-reference
+                   (url (string-append "http://svnsis.ethz.ch/repos/cisd/"
+                                       "base/tags/release/"
+                                       (version-major+minor base-version)
+                                       ".x/" base-version
+                                       "/build_resources/"))
+                   (revision revision)))
+             (sha256
+              (base32
+               "0b6335gkm4x895rac6kfg9d3rpq0sy19ph4zpg2gyw6asfsisjhk"))))))
+      (home-page "http://svnsis.ethz.ch")
+      (synopsis "Utility classes for libraries from ETH Zurich")
+      (description "This library supplies some utility classes needed for
+libraries from the SIS division at ETH Zurich like jHDF5.")
+      ;; The C sources are under a non-copyleft license, which looks like a
+      ;; variant of the BSD licenses.  The whole package is under the ASL2.0.
+      (license (list license:asl2.0
+                     (license:non-copyleft "file://source/c/COPYING"))))))
+
+(define-public java-cisd-args4j
+  (let ((revision 39162)
+        (base-version "9.11.2"))
+    (package
+      (name "java-cisd-args4j")
+      (version (string-append base-version "-" (number->string revision)))
+      (source (origin
+                (method svn-fetch)
+                (uri (svn-reference
+                      (url (string-append "http://svnsis.ethz.ch/repos/cisd/"
+                                          "args4j/tags/release/"
+                                          (version-major+minor base-version)
+                                          ".x/" base-version "/args4j/"))
+                      (revision revision)))
+                (file-name (string-append "java-cisd-args4j-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0hhqznjaivq7ips7mkwas78z42s6djsm20rrs7g1zd59rcsakxn2"))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:make-flags '("-file" "build/build.xml")
+         #:tests? #f ; there are no tests
+         ;; There are weird build failures with JDK8, such as: "The type
+         ;; java.io.ObjectInputStream cannot be resolved. It is indirectly
+         ;; referenced from required .class files"
+         #:jdk ,icedtea-7
+         #:modules ((guix build ant-build-system)
+                    (guix build utils)
+                    (guix build java-utils)
+                    (sxml simple)
+                    (sxml transform)
+                    (sxml xpath))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-build-resources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (mkdir-p "../build_resources")
+               (invoke "tar" "xf" (assoc-ref inputs "build-resources")
+                       "-C" "../build_resources"
+                       "--strip-components=1")
+               (mkdir-p "../build_resources/lib")
+               #t))
+           (add-after 'unpack-build-resources 'fix-dependencies
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; FIXME: There should be a more convenient abstraction for
+               ;; editing XML files.
+               (with-directory-excursion "../build_resources/ant/"
+                 (chmod "build-common.xml" #o664)
+                 (call-with-output-file "build-common.xml.new"
+                   (lambda (port)
+                     (sxml->xml
+                      (pre-post-order
+                       (with-input-from-file "build-common.xml"
+                         (lambda _ (xml->sxml #:trim-whitespace? #t)))
+                       `(;; Remove dependency on classycle and custom ant tasks
+                         (taskdef   . ,(lambda (tag . kids)
+                                         (let ((name ((sxpath '(name *text*)) kids)))
+                                           (if (or (member "build-info" name)
+                                                   (member "dependency-checker" name)
+                                                   (member "build-java-subprojects" name)
+                                                   (member "project-classpath" name))
+                                               '() ; skip
+                                               `(,tag ,@kids)))))
+                         (typedef   . ,(lambda (tag . kids)
+                                         (let ((name ((sxpath '(name *text*)) kids)))
+                                           (if (member "recursive-jar" name)
+                                               '() ; skip
+                                               `(,tag ,@kids)))))
+                         (build-java-subprojects . ,(lambda _ '()))
+                         ;; Ignore everything else
+                         (*default* . ,(lambda (tag . kids) `(,tag ,@kids)))
+                         (*text*    . ,(lambda (_ txt) txt))))
+                      port)))
+                 (rename-file "build-common.xml.new" "build-common.xml"))
+               (substitute* "build/build.xml"
+                 (("\\$\\{lib\\}/cisd-base/cisd-base.jar")
+                  (string-append (assoc-ref inputs "java-cisd-base")
+                                 "/share/java/sis-base.jar"))
+                 ;; Remove dependency on svn
+                 (("<build-info.*") "")
+                 (("\\$\\{revision.number\\}")
+                  ,(number->string revision))
+                 (("\\$\\{version.number\\}") ,base-version)
+                 ;; Don't use custom ant tasks.
+                 (("recursive-jar") "jar")
+                 (("<project-classpath.*") ""))
+               #t))
+           (replace 'install (install-jars "targets/dist")))))
+      (inputs
+       `(("java-cisd-base" ,java-cisd-base)))
+      (native-inputs
+       `(("ecj" ,java-ecj-3.5)
+         ("build-resources"
+          ,(origin
+             (method svn-fetch)
+             (uri (svn-reference
+                   (url (string-append "http://svnsis.ethz.ch/repos/cisd/"
+                                       "args4j/tags/release/"
+                                       (version-major+minor base-version)
+                                       ".x/" base-version
+                                       "/build_resources/"))
+                   (revision revision)))
+             (sha256
+              (base32
+               "056cam4k8pll7ass31sy6gwn8g8719njc41yf4l02b0342nilkyf"))
+             (modules '((guix build utils)))
+             ;; Delete bundled pre-built jars.
+             (snippet
+              '(begin (delete-file-recursively "lib/") #t))))))
+      (home-page "http://svnsis.ethz.ch")
+      (synopsis "Command line parser library")
+      (description "This package provides a parser for command line arguments.")
+      (license license:asl2.0))))
+
+(define-public java-cisd-jhdf5
+  (let ((revision 39162)
+        (base-version "14.12.6"))
+    (package
+      (name "java-cisd-jhdf5")
+      (version (string-append base-version "-" (number->string revision)))
+      (source (origin
+                (method svn-fetch)
+                (uri (svn-reference
+                      (url (string-append "http://svnsis.ethz.ch/repos/cisd/"
+                                          "jhdf5/tags/release/"
+                                          (version-major+minor base-version)
+                                          ".x/" base-version "/jhdf5/"))
+                      (revision revision)))
+                (file-name (string-append "java-cisd-jhdf5-" version "-checkout"))
+                (sha256
+                 (base32
+                  "13i17s2hn0q9drdqvp8csy7770p3hdbh9rp30ihln2ldkfawdmz0"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Delete included gradle jar
+                    (delete-file-recursively "gradle/wrapper")
+                    ;; Delete pre-built native libraries
+                    (delete-file-recursively "libs")
+                    #t))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:make-flags '("-file" "build/build.xml")
+         #:build-target "jar-all"
+         #:test-target "jar-test"
+         #:jdk ,icedtea-8
+         #:phases
+         (modify-phases %standard-phases
+           ;; Don't erase results from the build phase when building tests.
+           (add-after 'unpack 'separate-test-target-from-clean
+             (lambda _
+               (substitute* "build/build.xml"
+                 (("\"jar-test\" depends=\"clean, ")
+                  "\"jar-test\" depends=\""))
+               #t))
+           (add-after 'unpack 'unpack-build-resources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (copy-recursively (assoc-ref inputs "build-resources")
+                                 "../build_resources")
+               (delete-file-recursively "../build_resources/lib/")
+               (mkdir-p "../build_resources/lib")
+               ;; Remove dependency on classycle
+               (substitute* "../build_resources/ant/build-common.xml"
+                 (("<taskdef name=\"dependency-checker.*") "")
+                 (("classname=\"classycle.*") "")
+                 (("classpath=\"\\$\\{lib\\}/classycle.*") ""))
+               ;; Remove dependency on svn
+               (substitute* "build/build.xml"
+                 (("<build-info.*") "")
+                 (("\\$\\{revision.number\\}")
+                  ,(number->string revision))
+                 (("\\$\\{version.number\\}") ,base-version))
+               #t))
+           (add-after 'unpack-build-resources 'fix-dependencies
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "../build_resources/ant/build-common.xml"
+                 (("../libraries/testng/testng-jdk15.jar")
+                  (string-append (assoc-ref inputs "java-testng")
+                                 "/share/java/java-testng.jar")))
+               (substitute* "build/build.xml"
+                 (("\\$\\{lib\\}/sis-base/sis-base.jar")
+                  (string-append (assoc-ref inputs "java-cisd-base")
+                                 "/share/java/sis-base.jar"))
+                 (("\\$\\{lib\\}/cisd-args4j/cisd-args4j.jar")
+                  (string-append (assoc-ref inputs "java-cisd-args4j")
+                                 "/share/java/cisd-args4j.jar"))
+                 (("\\$\\{lib\\}/commons-lang/commons-lang.jar")
+                  (string-append (assoc-ref inputs "java-commons-lang")
+                                 "/share/java/commons-lang-"
+                                 ,(package-version java-commons-lang) ".jar"))
+                 (("\\$\\{lib\\}/commons-io/commons-io.jar")
+                  (string-append (assoc-ref inputs "java-commons-io")
+                                 "/share/java/commons-io-"
+                                 ,(package-version java-commons-io)
+                                 "-SNAPSHOT.jar"))
+                 (("\\$\\{lib\\}/testng/testng-jdk15.jar")
+                  (string-append (assoc-ref inputs "java-testng")
+                                 "/share/java/java-testng.jar"))
+                 (("\\$\\{lib\\}/junit4/junit.jar")
+                  (string-append (assoc-ref inputs "java-junit")
+                                 "/share/java/junit.jar"))
+                 (("\\$\\{lib\\}/jmock/hamcrest/hamcrest-core.jar")
+                  (string-append (assoc-ref inputs "java-hamcrest-core")
+                                 "/share/java/hamcrest-core.jar")))
+               ;; Remove dependency on ch.rinn.restrictions
+               (with-directory-excursion "source/java/ch/systemsx/cisd/hdf5/"
+                 (substitute* '("BitSetConversionUtils.java"
+                                "HDF5Utils.java")
+                   (("import ch.rinn.restrictions.Private;") "")
+                   (("@Private") "")))
+               (with-directory-excursion "sourceTest/java/ch/systemsx/cisd/hdf5/"
+                 (substitute* '("BitSetConversionTest.java"
+                                "h5ar/HDF5ArchiverTest.java")
+                   (("import ch.rinn.restrictions.Friend;") "")
+                   (("@Friend.*") ""))
+                 ;; Remove leftovers from removing @Friend
+                 (substitute* "h5ar/HDF5ArchiverTest.java"
+                   (("\\{ HDF5Archiver.class, IdCache.class, LinkRecord.class \\}\\)")
+                    "")))
+               #t))
+           (add-before 'configure 'build-native-library
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((jdk  (assoc-ref inputs "jdk"))
+                     (hdf5 (assoc-ref inputs "hdf5"))
+                     (dir  ,(match (%current-system)
+                              ("i686-linux"
+                               "i386-Linux")
+                              ((or "armhf-linux" "aarch64-linux")
+                               "arm-Linux")
+                              ((or "x86_64-linux")
+                               "amd64-Linux")
+                              (_ "unknown-Linux"))))
+                 (with-directory-excursion "source/c"
+                   (apply invoke `("gcc" "-shared" "-O3"
+                                   "-fPIC"
+                                   "-Wl,--exclude-libs,ALL"
+                                   ,@(find-files "jhdf5" "\\.c$")
+                                   ,@(find-files "hdf-java" "\\.c$")
+                                   ,(string-append "-I" hdf5 "/include")
+                                   ,(string-append "-I" jdk "/include")
+                                   ,(string-append "-I" jdk "/include/linux")
+                                   ,(string-append hdf5 "/lib/libhdf5.a")
+                                   "-o" "libjhdf5.so" "-lz")))
+                 (install-file "source/c/libjhdf5.so"
+                               (string-append "libs/native/jhdf5/" dir))
+                 #t)))
+           ;; In the "check" phase we only build the test executable.
+           (add-after 'check 'run-tests
+             (lambda _
+               (invoke "java" "-jar" "targets/dist/sis-jhdf5-test.jar")
+               (delete-file "targets/dist/sis-jhdf5-test.jar")
+               #t))
+           (replace 'install
+             (install-jars "targets/dist")))))
+      (inputs
+       `(("java-cisd-base" ,java-cisd-base)
+         ("java-cisd-args4j" ,java-cisd-args4j)
+         ("java-commons-lang" ,java-commons-lang)
+         ("java-commons-io" ,java-commons-io)
+         ("hdf5" ,hdf5)
+         ("zlib" ,zlib)))
+      (native-inputs
+       `(("jdk" ,icedtea-8)
+         ("java-testng" ,java-testng)
+         ("java-junit" ,java-junit)
+         ("java-jmock" ,java-jmock)
+         ("java-hamcrest-core" ,java-hamcrest-core)
+         ("build-resources"
+          ,(origin
+             (method svn-fetch)
+             (uri (svn-reference
+                   (url (string-append "http://svnsis.ethz.ch/repos/cisd/"
+                                       "jhdf5/tags/release/"
+                                       (version-major+minor base-version)
+                                       ".x/" base-version
+                                       "/build_resources/"))
+                   (revision revision)))
+             (sha256
+              (base32
+               "0b6335gkm4x895rac6kfg9d3rpq0sy19ph4zpg2gyw6asfsisjhk"))))))
+      (home-page "https://wiki-bsse.ethz.ch/display/JHDF5/")
+      (synopsis "Java binding for HDF5")
+      (description "JHDF5 is a high-level API in Java for reading and writing
+HDF5 files, building on the libraries provided by the HDF Group.")
+      ;; The C sources are under a non-copyleft license, which looks like a
+      ;; variant of the BSD licenses.  The whole package is under the ASL2.0.
+      (license (list license:asl2.0
+                     (license:non-copyleft "file://source/c/COPYING"))))))
 
 (define-public java-classpathx-servletapi
   (package
@@ -5584,7 +6023,9 @@ tree walking, and translation.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0qgg5vgsm4l1d6dj9pfbaa25dpv2ry2gny8ajy4vvgvfklw97b3m"))))
+                "0qgg5vgsm4l1d6dj9pfbaa25dpv2ry2gny8ajy4vvgvfklw97b3m"))
+              (patches
+               (search-patches "antlr3-3_3-fix-java8-compilation.patch"))))
     (arguments
      `(#:jar-name (string-append ,name "-" ,version ".jar")
        #:source-dir (string-join '("tool/src/main/java"
@@ -5674,7 +6115,9 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0sfimc9cpbgrihz4giyygc8afgpma2c93yqpwb951giriri6x66z"))))
+                "0sfimc9cpbgrihz4giyygc8afgpma2c93yqpwb951giriri6x66z"))
+              (patches
+               (search-patches "antlr3-3_1-fix-java8-compilation.patch"))))
     (arguments
      `(#:jar-name (string-append "antlr3-" ,version ".jar")
        #:source-dir "src:runtime/Java/src"
@@ -6537,7 +6980,8 @@ it manages project dependencies, gives diffs jars, and much more.")
              ;; packaging.  It uses the version referenced in pom.xml.  We replace
              ;; it with our own version.
              (substitute* "src/test/java/org/ops4j/pax/tinybundles/bnd/BndTest.java"
-               (("2.4.0.201411031534") "3.4.0")))))))
+               (("[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*")
+                ,(package-version java-aqute-bndlib))))))))
     (inputs
      `(("lang" ,java-ops4j-base-lang)
        ("io" ,java-ops4j-base-io)
@@ -8853,3 +9297,44 @@ against expected outcomes.")
        ("java-junit" ,java-junit)))
     (native-inputs
      `(("java-mockito-1" ,java-mockito-1)))))
+
+(define-public java-openchart2
+  (package
+    (name "java-openchart2")
+    (version "1.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.approximatrix.com/openchart2/"
+                                  "openchart2-" version ".source.zip"))
+              (sha256
+               (base32
+                "1xq96zm5r02n1blja0072jmmsifmxc40lbyfbnmcnr6mw42frh4g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-junit-errors
+           (lambda _
+             (with-directory-excursion "unittest/src/com/approximatrix/charting/"
+               (substitute* '("coordsystem/ticklocator/NumericXTickLocatorTest.java"
+                              "coordsystem/ticklocator/NumericYTickLocatorTest.java"
+                              "coordsystem/ticklocator/ObjectXTickLocatorTest.java"
+                              "model/DefaultChartDataModelConstraintsTest.java"
+                              "model/MultiScatterDataModelConstraintsTest.java"
+                              "model/threedimensional/DotPlotDataModelConstraintsTest.java")
+                 (("(assertEquals[^;]+);" before _)
+                  (string-append (string-drop-right before 2) ", 1E-6);"))))
+             #t))
+         (replace 'install (install-jars ".")))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://approximatrix.com/products/openchart2/")
+    (synopsis "Simple plotting for Java")
+    (description "Openchart2 provides a simple, yet powerful, interface for
+Java programmers to create two-dimensional charts and plots.  The library
+features an assortment of graph styles, including advanced scatter plots, bar
+graphs, and pie charts.")
+    (license license:lgpl2.1+)))
