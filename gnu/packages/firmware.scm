@@ -258,7 +258,9 @@ coreboot.")
                (setenv "WORKSPACE" cwd)
                (setenv "EDK_TOOLS_PATH" tools)
                (setenv "PATH" (string-append (getenv "PATH") ":" bin))
-               (invoke "bash" "edksetup.sh" "BaseTools")
+               ; FIXME: The below script errors out. When using 'invoke' instead
+               ; of 'system*' this causes the build to fail.
+               (system* "bash" "edksetup.sh" "BaseTools")
                (substitute* "Conf/target.txt"
                  (("^TARGET[ ]*=.*$") "TARGET = RELEASE\n")
                  (("^TOOL_CHAIN_TAG[ ]*=.*$") "TOOL_CHAIN_TAG = GCC49\n")
