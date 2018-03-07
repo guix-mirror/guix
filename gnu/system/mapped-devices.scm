@@ -29,9 +29,9 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system uuid)
+  #:use-module ((gnu system linux-initrd)
+                #:select (check-device-initrd-modules))
   #:autoload   (gnu build file-systems) (find-partition-by-luks-uuid)
-  #:autoload   (gnu build linux-modules)
-                 (device-module-aliases matching-modules)
   #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
   #:autoload   (gnu packages linux) (mdadm-static)
   #:use-module (srfi srfi-1)
@@ -153,21 +153,6 @@
   "Return a gexp that closes TARGET, a LUKS device."
   #~(zero? (system* #$(file-append cryptsetup-static "/sbin/cryptsetup")
                     "close" #$target)))
-
-(define (check-device-initrd-modules device linux-modules location)
-  "Raise an error if DEVICE needs modules beyond LINUX-MODULES to operate.
-DEVICE must be a \"/dev\" file name."
-  (let ((modules (delete-duplicates
-                  (append-map matching-modules
-                              (device-module-aliases device)))))
-    (unless (every (cute member <> linux-modules) modules)
-      (raise (condition
-              (&message
-               (message (format #f (G_ "you may need these modules \
-in the initrd for ~a:~{ ~a~}")
-                                device modules)))
-              (&error-location
-               (location (source-properties->location location))))))))
 
 (define* (check-luks-device md #:key
                             needed-for-boot?

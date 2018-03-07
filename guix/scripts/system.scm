@@ -43,8 +43,7 @@
                  (find-partition-by-label find-partition-by-uuid)
   #:autoload   (gnu build linux-modules)
                  (device-module-aliases matching-modules)
-  #:autoload   (gnu system linux-initrd)
-                 (base-initrd default-initrd-modules)
+  #:use-module (gnu system linux-initrd)
   #:use-module (gnu system)
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
@@ -661,27 +660,15 @@ checking this by themselves in their 'check' procedure."
         ('uuid   (find-partition-by-uuid device))
         ('label  (find-partition-by-label device)))))
 
-  (define (check-device device location)
-    (let ((modules (delete-duplicates
-                    (append-map matching-modules
-                                (device-module-aliases device)))))
-      (unless (every (cute member <> (operating-system-initrd-modules os))
-                     modules)
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "you need these modules \
-in the initrd for ~a:~{ ~a~}")
-                                  device modules)))
-                (&error-location (location location)))))))
-
   (define file-systems
     (filter file-system-needed-for-boot?
             (operating-system-file-systems os)))
 
   (for-each (lambda (fs)
-              (check-device (file-system-/dev fs)
-                            (source-properties->location
-                             (file-system-location fs))))
+              (check-device-initrd-modules (file-system-/dev fs)
+                                           (operating-system-initrd-modules os)
+                                           (source-properties->location
+                                            (file-system-location fs))))
             file-systems))
 
 
