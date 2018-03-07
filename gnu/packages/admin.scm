@@ -2062,7 +2062,8 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
        ("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf"
                                 #:xbinutils (cross-binutils "arm-linux-gnueabihf")
                                 #:libc (cross-libc "arm-linux-gnueabihf")))
-       ("cross-libc" ,(cross-libc "arm-linux-gnueabihf"))))
+       ("cross-libc" ,(cross-libc "arm-linux-gnueabihf")) ; header files
+       ("cross-libc-static" ,(cross-libc "arm-linux-gnueabihf") "static")))
     (inputs
      `(("libusb" ,libusb)))
     (build-system gnu-build-system)
