@@ -2802,3 +2802,27 @@ dendrograms.")
 Genomics Data Server (CGDS), hosted by the Computational Biology Center at
 Memorial-Sloan-Kettering Cancer Center (MSKCC).")
     (license license:lgpl3)))
+
+(define-public r-import
+  (package
+    (name "r-import")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "import" version))
+       (sha256
+        (base32
+         "0blf9539rbfwcmw8zsb4k58slb4pdnc075v34vmyjw752fznhcji"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/smbache/import")
+    (synopsis "Import mechanism for R")
+    (description
+     "This is an alternative mechanism for importing objects from packages.
+The syntax allows for importing multiple objects from a package with a single
+command in an expressive way.  The import package bridges some of the gap
+between using @code{library} (or @code{require}) and direct (single-object)
+imports.  Furthermore the imported objects are not placed in the current
+environment.  It is also possible to import objects from stand-alone @code{.R}
+files.")
+    (license license:expat)))
