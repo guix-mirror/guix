@@ -362,6 +362,18 @@ DEVICE must be a \"/dev\" file name."
                (message (format #f (G_ "you may need these modules \
 in the initrd for ~a:~{ ~a~}")
                                 device modules)))
+              (&fix-hint
+               (hint (format #f (G_ "Try adding them to the
+@code{initrd-modules} field of your @code{operating-system} declaration, along
+these lines:
+
+@example
+ (operating-system
+   ;; @dots{}
+   (initrd-modules (append (list~{ ~s~})
+                           %base-initrd-modules)))
+@end example\n")
+                             modules)))
               (&error-location
                (location (source-properties->location location))))))))
 
