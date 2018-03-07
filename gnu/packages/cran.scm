@@ -2738,3 +2738,44 @@ ordered factor data types.")
      "This package provides tools for the computation of matrix and scalar
 exponentiation.")
     (license license:gpl2)))
+
+(define-public r-heatmaply
+  (package
+    (name "r-heatmaply")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "heatmaply" version))
+       (sha256
+        (base32
+         "03p2caclhfgqgpx3wwck5h06jy3mxgs05gjmwkb7hmwghkjh41jc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-colorspace" ,r-colorspace)
+       ("r-dendextend" ,r-dendextend)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gplots" ,r-gplots)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plotly" ,r-plotly)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape2" ,r-reshape2)
+       ("r-scales" ,r-scales)
+       ("r-seriation" ,r-seriation)
+       ("r-viridis" ,r-viridis)
+       ("r-webshot" ,r-webshot)))
+    (home-page "https://cran.r-project.org/package=heatmaply")
+    (synopsis "Interactive cluster heat maps using plotly")
+    (description
+     "This package enables you to create interactive cluster heatmaps that can
+be saved as a stand-alone HTML file, embedded in R Markdown documents or in a
+Shiny app, and made available in the RStudio viewer pane.  Hover the mouse
+pointer over a cell to show details or drag a rectangle to zoom.  A heatmap is
+a popular graphical method for visualizing high-dimensional data, in which a
+table of numbers is encoded as a grid of colored cells.  The rows and columns
+of the matrix are ordered to highlight patterns and are often accompanied by
+dendrograms.")
+    ;; Either version of the license.
+    (license (list license:gpl2 license:gpl3))))
