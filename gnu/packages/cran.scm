@@ -2826,3 +2826,25 @@ imports.  Furthermore the imported objects are not placed in the current
 environment.  It is also possible to import objects from stand-alone @code{.R}
 files.")
     (license license:expat)))
+
+(define-public r-shinyace
+  (package
+    (name "r-shinyace")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyAce" version))
+       (sha256
+        (base32
+         "0ycka8rsw0178q9klfid97vdn5cbyx3r778nis5s3dqipdyazdm9"))))
+    (properties `((upstream-name . "shinyAce")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-shiny" ,r-shiny)))
+    (home-page "http://cran.r-project.org/web/packages/shinyAce")
+    (synopsis "Ace editor bindings for Shiny")
+    (description
+     "This package provides Ace editor bindings to enable a rich text editing
+environment within Shiny.")
+    (license license:expat)))
