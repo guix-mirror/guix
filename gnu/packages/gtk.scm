@@ -1053,7 +1053,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.22.0")
+    (version "3.22.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1061,7 +1061,7 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1x8l0ny6r3ym53z82q9d5fan4m9vi93xy3b3hj1hrclgc95lvnh5"))))
+               "1400535lhyya462pfx8bp11k3mg3jsbdghlpygskd5ai665dkbwi"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")        ;for 'glib-compile-resources'
@@ -1073,7 +1073,10 @@ toolkit.")
        ("gtk+" ,gtk+)
        ("glibmm" ,glibmm)))
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     '(;; XXX: Tests require C++14 or later.  Remove this when the default
+       ;; compiler is >= GCC6.
+       #:configure-flags '("CXXFLAGS=-std=gnu++14")
+       #:phases (modify-phases %standard-phases
                   (add-before 'check 'run-xvfb
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((xorg-server (assoc-ref inputs "xorg-server")))
