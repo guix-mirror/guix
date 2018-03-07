@@ -10408,14 +10408,14 @@ convering text with ANSI color codes to HTML or LaTeX.")
 (define-public python-ddt
   (package
     (name "python-ddt")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ddt" version))
        (sha256
         (base32
-         "1c00ikkxr7lha97c81k938bzhgd4pbwamkjn0h4nkhr3xk00zp6n"))))
+         "1wqkmz0yhanly8sif5vb02p2iik7mwxwph8ywph2kbb8ws8szdpx"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
