@@ -1065,7 +1065,7 @@ toolkit.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")        ;for 'glib-compile-resources'
-                     ("xorg-server" ,xorg-server)))
+                     ("xorg-server" ,xorg-server-1.19.3)))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
@@ -1073,9 +1073,10 @@ toolkit.")
        ("gtk+" ,gtk+)
        ("glibmm" ,glibmm)))
     (arguments
-     '(;; XXX: Tests require C++14 or later.  Remove this when the default
+     `(;; XXX: Tests require C++14 or later.  Remove this when the default
        ;; compiler is >= GCC6.
        #:configure-flags '("CXXFLAGS=-std=gnu++14")
+       #:disallowed-references (,xorg-server-1.19.3)
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'run-xvfb
                     (lambda* (#:key inputs #:allow-other-keys)
