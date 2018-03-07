@@ -1558,7 +1558,7 @@ input from UTF-8 into the locale's encoding.")
 (define-public mkfontscale
   (package
     (name "mkfontscale")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -1568,7 +1568,7 @@ input from UTF-8 into the locale's encoding.")
                ".tar.bz2"))
         (sha256
           (base32
-            "081z8lwh9c1gyrx3ad12whnpv3jpfbqsc366mswpfm48mwl54vcc"))))
+            "0siag28jpm8hj62bgjvw81sjfgrc7vcy2h7127bl4iazxrlxz60y"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
