@@ -299,8 +299,10 @@ VARIABLE and return it, or #f if none was found."
   "Display MESSAGE, a l10n message possibly containing Texinfo markup, to
 PORT."
   (format port (G_ "hint: ~a~%")
-          (fill-paragraph (texi->plain-text message)
-                          (terminal-columns) 8)))
+          ;; XXX: We should arrange so that the initial indent is wider.
+          (parameterize ((%text-width (max 15
+                                           (- (terminal-columns) 5))))
+            (texi->plain-text message))))
 
 (define* (report-load-error file args #:optional frame)
   "Report the failure to load FILE, a user-provided Scheme file.
