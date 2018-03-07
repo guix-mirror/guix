@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -75,6 +75,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages pciutils)
@@ -1855,7 +1856,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.19")
+    (version "3.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nvbn/thefuck/archive/"
@@ -1863,7 +1864,7 @@ throughput (in the same interval).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "191zbvkyc02h0wwd46xwj4zzg7jhlr8xv0ji6knqkgjnk0nvqq01"))
+                "088bn2l1376qlndbpnjya4q1x3913nj3yj3wc7s2w3bz66d23skk"))
               (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -1881,14 +1882,12 @@ throughput (in the same interval).")
      `(("python-colorama" ,python-colorama)
        ("python-decorator" ,python-decorator)
        ("python-psutil" ,python-psutil)
+       ("python-pyte" ,python-pyte)
        ("python-six" ,python-six)))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ;; Requires setuptools >= 17.1 due to some features used, while our
-       ;; python currently only includes 12.0. TODO: Remove this input.
-       ("python-setuptools" ,python-setuptools)))
+       ("python-pytest-mock" ,python-pytest-mock)))
     (home-page "https://github.com/nvbn/thefuck")
     (synopsis "Correct mistyped console command")
     (description

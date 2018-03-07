@@ -1,14 +1,14 @@
 Retain environment setting of "HOME" for tests that need os.path.expanduser()
 to return a readable directory in the build chroot.
 
---- thefuck-3.15/tests/test_conf.py
-+++ thefuck-3.15/tests/test_conf.py
-@@ -12,7 +12,7 @@
+--- thefuck-3.25/tests/conftest.py
++++ thefuck-3.25/tests/conftest.py
+@@ -64,6 +64,7 @@ def set_shell(monkeypatch):
  
- @pytest.fixture
- def environ(monkeypatch):
--    data = {}
-+    data = {"HOME": os.environ.get("HOME")}
-     monkeypatch.setattr('thefuck.conf.os.environ', data)
-     return data
- 
+ @pytest.fixture(autouse=True)
+ def os_environ(monkeypatch):
+-    env = {'PATH': os.environ['PATH']}
++    env = {'PATH': os.environ['PATH'],
++           'HOME': os.environ['HOME']}
+     monkeypatch.setattr('os.environ', env)
+     return env
