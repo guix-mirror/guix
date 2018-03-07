@@ -499,7 +499,7 @@ has an ease of use unmatched by other C++ callback libraries.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.50.1")
+    (version "2.54.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/glibmm/"
@@ -507,10 +507,13 @@ has an ease of use unmatched by other C++ callback libraries.")
                                  "/glibmm-" version ".tar.xz"))
              (sha256
               (base32
-               "1926b3adx903hzvdp8glblsgjyadzqnwgkj8hg605d4wv98m1n0z"))))
+               "0jkapw18icz59cmlmsl00nwwz0wh291kb4hc9z9hxmq45drqrhkw"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(;; XXX: Some tests uses C++14 features.  Remove this when the default
+       ;; compiler is >= GCC6.
+       #:configure-flags '("CXXFLAGS=-std=gnu++14")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'build 'pre-build
            (lambda _
