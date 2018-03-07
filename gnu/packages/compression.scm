@@ -99,7 +99,7 @@
                (zero?
                 (system* "./configure"
                          (string-append "--prefix=" out)))))))))
-    (home-page "http://zlib.net/")
+    (home-page "https://zlib.net/")
     (synopsis "Compression library")
     (description
      "zlib is designed to be a free, general-purpose, legally unencumbered --
@@ -869,7 +869,7 @@ extract such file systems.")
        #:make-flags (list "CC=gcc")
        #:test-target "tests"))
     (inputs `(("zlib" ,zlib)))
-    (home-page "http://zlib.net/pigz/")
+    (home-page "https://zlib.net/pigz/")
     (synopsis "Parallel implementation of gzip")
     (description
      "This package provides a parallel implementation of gzip that exploits
