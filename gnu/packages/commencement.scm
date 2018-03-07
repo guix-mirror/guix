@@ -673,7 +673,12 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define glibc-final
   ;; The final glibc, which embeds the statically-linked Bash built above.
-  (package (inherit glibc-final-with-bootstrap-bash)
+  (package (inherit glibc)
+  (package
+    (inherit (package
+               (inherit glibc)
+               ;; Use the source patched with %BOOTSTRAP-GUILE.
+               (source (package-source glibc-final-with-bootstrap-bash))))
     (name "glibc")
     (inputs `(("static-bash" ,static-bash-for-glibc)
               ,@(alist-delete
@@ -683,6 +688,9 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     ;; This time we need 'msgfmt' to install all the libc.mo files.
     (native-inputs `(,@(package-native-inputs glibc-final-with-bootstrap-bash)
                      ("gettext" ,gettext-boot0)))
+
+    (propagated-inputs
+     (package-propagated-inputs glibc-final-with-bootstrap-bash))
 
     ;; The final libc only refers to itself, but the 'debug' output contains
     ;; references to GCC-BOOT0 and to the Linux headers.  XXX: Would be great
