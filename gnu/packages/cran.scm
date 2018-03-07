@@ -2779,3 +2779,26 @@ of the matrix are ordered to highlight patterns and are often accompanied by
 dendrograms.")
     ;; Either version of the license.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-cgdsr
+  (package
+    (name "r-cgdsr")
+    (version "1.2.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cgdsr" version))
+       (sha256
+        (base32
+         "1xyhw7mhmjichr1l6f9y1qvfj9wm87kfbm87ji7lcwf36gxh5g23"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)))
+    (home-page "https://github.com/cBioPortal/cgdsr")
+    (synopsis "R-based API for accessing the MSKCC Cancer Genomics Data Server")
+    (description
+     "This package provides a basic set of R functions for querying the Cancer
+Genomics Data Server (CGDS), hosted by the Computational Biology Center at
+Memorial-Sloan-Kettering Cancer Center (MSKCC).")
+    (license license:lgpl3)))
