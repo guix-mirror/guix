@@ -535,7 +535,7 @@ has an ease of use unmatched by other C++ callback libraries.")
     (propagated-inputs
      `(("libsigc++" ,libsigc++)
        ("glib" ,glib)))
-    (home-page "http://gtkmm.org/")
+    (home-page "https://gtkmm.org/")
     (synopsis "C++ interface to the GLib library")
     (description
      "Glibmm provides a C++ programming interface to the part of GLib that are

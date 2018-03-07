@@ -1043,7 +1043,7 @@ library.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("glibmm" ,glibmm) ("atk" ,atk)))
-    (home-page "http://www.gtkmm.org")
+    (home-page "https://www.gtkmm.org")
     (synopsis "C++ interface to the ATK accessibility library")
     (description
      "ATKmm provides a C++ programming interface to the ATK accessibility
@@ -1088,7 +1088,7 @@ toolkit.")
                         ;; Don't fail because of the missing /etc/machine-id.
                         (setenv "DBUS_FATAL_WARNINGS" "0")
                         #t))))))
-    (home-page "http://gtkmm.org/")
+    (home-page "https://gtkmm.org/")
     (synopsis
      "C++ interface to the GTK+ graphical user interface library")
     (description

@@ -1595,7 +1595,7 @@ creating interactive structured graphics.")
     (native-inputs
      `(("gtkmm-2" ,gtkmm-2)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://gtkmm.org")
+    (home-page "https://gtkmm.org")
     (synopsis "C++ bindings to the GNOME Canvas library")
     (description "C++ bindings to the GNOME Canvas library.")
     (license license:lgpl2.0+)))
