@@ -133,7 +133,7 @@ program to exhibit a bug.")
                            "file-which"      "getopt-tabular"
                            "regex-common"    "sys-cpu")))))
              #t)))))
-    (home-page "http://embed.cs.utah.edu/creduce")
+    (home-page "https://embed.cs.utah.edu/creduce")
     (synopsis "Reducer for interesting code")
     (description
      "C-Reduce is a tool that takes a large C or C++ program that has a
