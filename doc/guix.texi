@@ -443,7 +443,8 @@ and rerun the @code{gpg --verify} command.
 @c end authentication part
 
 @item
-As @code{root}, run:
+Now, you need to become the @code{root} user.  Depending on your distribution,
+you may have to run @code{su -} or @code{sudo -i}.  As @code{root}, run:
 
 @example
 # cd /tmp
