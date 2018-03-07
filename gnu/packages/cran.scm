@@ -2848,3 +2848,56 @@ files.")
      "This package provides Ace editor bindings to enable a rich text editing
 environment within Shiny.")
     (license license:expat)))
+
+(define-public r-radiant-data
+  (package
+    (name "r-radiant-data")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "radiant.data" version))
+       (sha256
+        (base32
+         "1ylina1jlrmvjkj8pwg0ip5jv1038vnzyckmf542xl7g11x8rvw1"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete files that are under CC-NC-SA.
+           (delete-file-recursively "inst/app/tools/help")
+           #t))))
+    (properties `((upstream-name . "radiant.data")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-broom" ,r-broom)
+       ("r-car" ,r-car)
+       ("r-curl" ,r-curl)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dt" ,r-dt)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-import" ,r-import)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-markdown" ,r-markdown)
+       ("r-pryr" ,r-pryr)
+       ("r-psych" ,r-psych)
+       ("r-readr" ,r-readr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-scales" ,r-scales)
+       ("r-shiny" ,r-shiny)
+       ("r-shinyace" ,r-shinyace)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/radiant-rstats/radiant.data")
+    (synopsis "Data menu for Radiant: business analytics using R and Shiny")
+    (description
+     "The Radiant Data menu includes interfaces for loading, saving, viewing,
+visualizing, summarizing, transforming, and combining data.  It also contains
+functionality to generate reproducible reports of the analyses conducted in
+the application.")
+    (license license:agpl3)))
