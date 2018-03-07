@@ -2080,25 +2080,34 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
            (lambda* (#:key make-flags #:allow-other-keys)
              (define (cross? x)
                (string-contains x "cross-arm-linux"))
+             (define (filter-environment! filter-predicate
+                                          environment-variable-names)
+               (for-each
+                (lambda (env-name)
+                  (let* ((env-value (getenv env-name))
+                         (search-path (search-path-as-string->list env-value))
+                         (new-search-path (filter filter-predicate
+                                                  search-path))
+                         (new-env-value (list->search-path-as-string
+                                         new-search-path ":")))
+                    (setenv env-name new-env-value)))
+                environment-variable-names))
              (setenv "CROSS_C_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
              (setenv "CROSS_CPLUS_INCLUDE_PATH" (getenv "CPLUS_INCLUDE_PATH"))
              (setenv "CROSS_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-             (for-each
-              (lambda (env-name)
-                (let* ((env-value (getenv env-name))
-                       (search-path (search-path-as-string->list env-value))
-                       (new-search-path (filter (lambda (e) (not (cross? e)))
-                                                search-path))
-                       (new-env-value (list->search-path-as-string
-                                       new-search-path ":")))
-                  (setenv env-name new-env-value)))
-              '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH" "LIBRARY_PATH"))
+             (filter-environment! cross?
+              '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH"
+                "CROSS_LIBRARY_PATH"))
+             (filter-environment! (lambda (e) (not (cross? e)))
+              '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"
+                "LIBRARY_PATH"))
              #t))
          (replace 'build
            (lambda* (#:key make-flags #:allow-other-keys)
              (zero? (apply system* "make" "tools" "misc" make-flags))))
          (add-after 'build 'build-armhf
            (lambda* (#:key make-flags #:allow-other-keys)
+             (setenv "LIBRARY_PATH" #f)
              (zero? (apply system* "make" "target-tools" make-flags))))
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
