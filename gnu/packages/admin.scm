@@ -2029,8 +2029,8 @@ It supports ticket refreshing by screen savers, configurable
 authorization handling, authentication of non-local accounts for network
 services, password changing, and password expiration, as well as all the
 standard expected PAM features.  It works correctly with OpenSSH, even
-with ChallengeResponseAuthentication and PrivilegeSeparation enabled,
-and supports extensive configuration either by PAM options or in
+with @code{ChallengeResponseAuthentication} and @code{PrivilegeSeparation}
+enabled, and supports extensive configuration either by PAM options or in
 krb5.conf or both.  PKINIT is supported with recent versions of both MIT
 Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
     (home-page "http://www.eyrie.org/~eagle/software/pam-krb5")
