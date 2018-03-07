@@ -844,7 +844,6 @@ GLIBC/HURD for a Hurd host"
 (define glibc-2.26-patched
   (package
     (inherit glibc)
-    (replacement #f)
     (source (origin
               (inherit (package-source glibc))
               (patches (cons (search-patch "glibc-allow-kernel-2.6.32.patch")
