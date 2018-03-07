@@ -4,6 +4,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -243,10 +244,20 @@ installed with setuptools."
                #t))
     #t))
 
+(define* (enable-bytecode-determinism #:rest _)
+  "Improve determinism of pyc files."
+  ;; Set DETERMINISTIC_BUILD to override the embedded mtime in pyc files.
+  (setenv "DETERMINISTIC_BUILD" "1")
+  ;; Use deterministic hashes for strings, bytes, and datetime objects.
+  (setenv "PYTHONHASHSEED" "0")
+  #t)
+
 (define %standard-phases
   ;; 'configure' phase is not needed.
   (modify-phases gnu:%standard-phases
     (add-after 'unpack 'ensure-no-mtimes-pre-1980 ensure-no-mtimes-pre-1980)
+    (add-after 'ensure-no-mtimes-pre-1980 'enable-bytecode-determinism
+      enable-bytecode-determinism)
     (delete 'bootstrap)
     (delete 'configure)
     (replace 'install install)
