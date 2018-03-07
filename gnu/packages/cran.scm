@@ -2901,3 +2901,26 @@ visualizing, summarizing, transforming, and combining data.  It also contains
 functionality to generate reproducible reports of the analyses conducted in
 the application.")
     (license license:agpl3)))
+
+(define-public r-algdesign
+  (package
+    (name "r-algdesign")
+    (version "1.1-7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AlgDesign" version))
+       (sha256
+        (base32
+         "0bl7mx4dnmkgs2x1fj7cqnrp7jx18mqwxyga0rzlniq12h8mc3fz"))))
+    (properties `((upstream-name . "AlgDesign")))
+    (build-system r-build-system)
+    (home-page "https://github.com/jvbraun/AlgDesign")
+    (synopsis "Algorithmic experimental design")
+    (description
+     "This package provides tools to calculate exact and approximate theory
+experimental designs for D, A, and I criteria.  Very large designs may be
+created.  Experimental designs may be blocked or blocked designs created from
+a candidate list, using several criteria.  The blocking can be done when whole
+and within plot factors interact.")
+    (license license:gpl2+)))
