@@ -639,6 +639,8 @@ directories:~{ ~a~}~%")
                      (G_ "~a: error: ~a~%")
                      (location->string (error-location c))
                      (gettext (condition-message c) %gettext-domain))
+             (when (fix-hint? c)
+               (display-hint (condition-fix-hint c)))
              (exit 1))
             ((and (message-condition? c) (fix-hint? c))
              (format (current-error-port) "~a: error: ~a~%"
