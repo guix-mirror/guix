@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -202,14 +202,14 @@ multi-paradigm automated test framework for C++ and Objective-C.")
 (define-public cmdtest
   (package
     (name "cmdtest")
-    (version "0.29")
+    (version "0.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://git.liw.fi/cmdtest/snapshot/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1i6gi4yp4qqx1liax098c7nwdb24pghh11xqlrcs7lnhh079rqhb"))))
+                "1jmfiyrrqmpvwdb273bkb8hjaf4rwx9njblx29pmr7giyahskwi5"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
