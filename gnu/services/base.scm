@@ -55,7 +55,6 @@
   #:export (fstab-service-type
             root-file-system-service
             file-system-service-type
-            user-unmount-service
             swap-service
             user-processes-service-type
             host-name-service
@@ -464,7 +463,36 @@ FILE-SYSTEM."
        (start #~(const #t))
        (stop #~(const #f))))
 
-    (cons sink (map file-system-shepherd-service file-systems))))
+    (define known-mount-points
+      (map file-system-mount-point file-systems))
+
+    (define user-unmount
+      (shepherd-service
+       (documentation "Unmount manually-mounted file systems.")
+       (provision '(user-file-systems))
+       (start #~(const #t))
+       (stop #~(lambda args
+                 (define (known? mount-point)
+                   (member mount-point
+                           (cons* "/proc" "/sys" '#$known-mount-points)))
+
+                 ;; Make sure we don't keep the user's mount points busy.
+                 (chdir "/")
+
+                 (for-each (lambda (mount-point)
+                             (format #t "unmounting '~a'...~%" mount-point)
+                             (catch 'system-error
+                               (lambda ()
+                                 (umount mount-point))
+                               (lambda args
+                                 (let ((errno (system-error-errno args)))
+                                   (format #t "failed to unmount '~a': ~a~%"
+                                           mount-point (strerror errno))))))
+                           (filter (negate known?) (mount-points)))
+                 #f))))
+
+    (cons* sink user-unmount
+           (map file-system-shepherd-service file-systems))))
 
 (define file-system-service-type
   (service-type (name 'file-systems)
@@ -483,38 +511,6 @@ FILE-SYSTEM."
                  "Provide Shepherd services to mount and unmount the given
 file systems, as well as corresponding @file{/etc/fstab} entries.")))
 
-(define user-unmount-service-type
-  (shepherd-service-type
-   'user-file-systems
-   (lambda (known-mount-points)
-     (shepherd-service
-      (documentation "Unmount manually-mounted file systems.")
-      (provision '(user-file-systems))
-      (start #~(const #t))
-      (stop #~(lambda args
-                (define (known? mount-point)
-                  (member mount-point
-                          (cons* "/proc" "/sys" '#$known-mount-points)))
-
-                ;; Make sure we don't keep the user's mount points busy.
-                (chdir "/")
-
-                (for-each (lambda (mount-point)
-                            (format #t "unmounting '~a'...~%" mount-point)
-                            (catch 'system-error
-                              (lambda ()
-                                (umount mount-point))
-                              (lambda args
-                                (let ((errno (system-error-errno args)))
-                                  (format #t "failed to unmount '~a': ~a~%"
-                                          mount-point (strerror errno))))))
-                          (filter (negate known?) (mount-points)))
-                #f))))))
-
-(define (user-unmount-service known-mount-points)
-  "Return a service whose sole purpose is to unmount file systems not listed
-in KNOWN-MOUNT-POINTS when it is stopped."
-  (service user-unmount-service-type known-mount-points))
 
 
 ;;;
