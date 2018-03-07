@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -150,6 +150,7 @@ database {
                               (gnu system file-systems)))
       (list (shepherd-service
              (provision '(dicod))
+             (requirement '(user-processes))
              (documentation "Run the dicod daemon.")
              (modules '((gnu build shepherd)
                         (gnu system file-systems)))
