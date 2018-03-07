@@ -1122,6 +1122,38 @@ extensive documentation, including API reference and a tutorial.")
        ("gtk+" ,gtk+-2)
        ("glibmm" ,glibmm)))))
 
+(define-public gtksourceviewmm
+  (package
+    (name "gtksourceviewmm")
+    (version "3.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32 "0fgvmhm4h4qmxig87qvangs6ijw53mi40siz7pixlxbrsgiil22i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; In 'Requires' of gtksourceviewmm-3.0.pc.
+     `(("glibmm" ,glibmm)
+       ("gtkmm" ,gtkmm)
+       ("gtksourceview" ,gtksourceview)))
+    (synopsis "C++ interface to the GTK+ 'GtkTextView' widget")
+    (description
+     "gtksourceviewmm is a portable C++ library that extends the standard GTK+
+framework for multiline text editing with support for configurable syntax
+highlighting, unlimited undo/redo, search and replace, a completion framework,
+printing and other features typical of a source code editor.")
+    (license license:lgpl2.1+)
+    (home-page "https://developer.gnome.org/gtksourceview/")))
+
+;;;
+;;; Python bindings.
+;;;
+
 (define-public python-pycairo
   (package
     (name "python-pycairo")
