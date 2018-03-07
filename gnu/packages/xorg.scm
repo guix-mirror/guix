@@ -2276,7 +2276,7 @@ available.")
 (define-public xdriinfo
   (package
     (name "xdriinfo")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
@@ -2286,7 +2286,7 @@ available.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0681d0y8liqakkpz7mmsf689jcxrvs5291r20qi78mc9xxk3gfjc"))))
+            "0lcx8h3zd11m4w8wf7dyp89826d437iz78cyrix436bqx31x5k6r"))))
     (build-system gnu-build-system)
     (inputs
       `(("mesa" ,mesa)
