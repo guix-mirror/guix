@@ -3160,7 +3160,7 @@ multivariate plot methods.")
          "1kncmiaraq1mrykb9fj3fsxswabk3l71fnp1vks0x9aay5xfk8mj"))))
     (properties `((upstream-name . "FNN")))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/FNN")
+    (home-page "https://cran.r-project.org/web/packages/FNN")
     (synopsis "Fast nearest neighbor search algorithms and applications")
     (description
      "This package provides cover-tree and kd-tree fast k-nearest neighbor

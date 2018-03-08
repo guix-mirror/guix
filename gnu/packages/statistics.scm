@@ -4906,27 +4906,6 @@ functions apply.  The implementation can easily be added to functions where
 showing the progress is useful e.g. bootstrap.")
     (license license:gpl2)))
 
-(define-public r-fnn
-  (package
-    (name "r-fnn")
-    (version "1.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "FNN" version))
-       (sha256
-        (base32
-         "1kncmiaraq1mrykb9fj3fsxswabk3l71fnp1vks0x9aay5xfk8mj"))))
-    (properties `((upstream-name . "FNN")))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/FNN")
-    (synopsis "Fast nearest neighbor search algorithms and applications")
-    (description
-     "This package provides cover-tree and kd-tree fast k-nearest neighbor
-search algorithms and related applications including KNN classification,
-regression and information measures.")
-    (license license:gpl2+)))
-
 (define-public r-minqa
   (package
     (name "r-minqa")
