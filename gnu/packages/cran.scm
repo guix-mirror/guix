@@ -3005,3 +3005,29 @@ including correlations and factor analysis; functions for simulating and
 testing particular item and test structures are included.  Several functions
 serve as a useful front end for structural equation modeling.")
     (license license:gpl2+)))
+
+(define-public r-gsubfn
+  (package
+    (name "r-gsubfn")
+    (version "0.6-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gsubfn" version))
+       (sha256
+        (base32
+         "196x4c3ihf4q3i0v7b1xa6jm8jjld2rsx00qz03n90wfnjdx5idv"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-proto" ,r-proto)))
+    (home-page "http://gsubfn.googlecode.com")
+    (synopsis "Utilities for strings and function arguments.")
+    (description
+     "This package provides @code{gsubfn} which is like @code{gsub} but can
+take a replacement function or certain other objects instead of the
+replacement string.  Matches and back references are input to the replacement
+function and replaced by the function output.  @code{gsubfn} can be used to
+split strings based on content rather than delimiters and for quasi-perl-style
+string interpolation.  The package also has facilities for translating
+formulas to functions and allowing such formulas in function calls instead of
+functions.")
+    (license license:gpl2+)))
