@@ -3031,3 +3031,34 @@ string interpolation.  The package also has facilities for translating
 formulas to functions and allowing such formulas in function calls instead of
 functions.")
     (license license:gpl2+)))
+
+(define-public r-sqldf
+  (package
+    (name "r-sqldf")
+    (version "0.4-11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sqldf" version))
+       (sha256
+        (base32
+         "0q12vsb53p2wchgp8wfz5bk08wfnm0jxjrakclj4jyy6x3a7ksff"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-chron" ,r-chron)
+       ("r-dbi" ,r-dbi)
+       ("r-gsubfn" ,r-gsubfn)
+       ("r-proto" ,r-proto)
+       ("r-rsqlite" ,r-rsqlite)))
+    (home-page "https://github.com/ggrothendieck/sqldf")
+    (synopsis "Manipulate R data frames using SQL")
+    (description
+     "The @code{sqldf} function is typically passed a single argument which is
+an SQL select statement where the table names are ordinary R data frame names.
+@code{sqldf} transparently sets up a database, imports the data frames into
+that database, performs the SQL statement and returns the result using a
+heuristic to determine which class to assign to each column of the returned
+data frame.  The @code{sqldf} or @code{read.csv.sql} functions can also be
+used to read filtered files into R even if the original files are larger than
+R itself can handle.")
+    (license license:gpl2)))
