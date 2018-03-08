@@ -174,7 +174,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.7.5")
+   (version "1.7.6")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -182,7 +182,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0qwmybi6x27zz1bj6ccay653dh35jqq0asgvp166kjk53wdlwmw4"))))
+               "16rf7qwgy1gza74v2ws79zdwwb1lpvgz2abwwm8ws9j82cwysyys"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -196,7 +196,8 @@ affine transformation (scale, rotation, shear, etc.).")
    (native-inputs
     `(("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
-      ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
+      ("python" ,python-wrapper)
+      ("which" ,which)))
    (arguments
     `(#:configure-flags `("--with-graphite2"
                           "--with-gobject"
