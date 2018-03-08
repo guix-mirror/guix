@@ -3146,3 +3146,26 @@ data including missing values.  In addition, the quality of imputation can be
 visually explored using various univariate, bivariate, multiple and
 multivariate plot methods.")
     (license license:gpl2+)))
+
+(define-public r-fnn
+  (package
+    (name "r-fnn")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "FNN" version))
+       (sha256
+        (base32
+         "1kncmiaraq1mrykb9fj3fsxswabk3l71fnp1vks0x9aay5xfk8mj"))))
+    (properties `((upstream-name . "FNN")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/FNN")
+    (synopsis "Fast nearest neighbor search algorithms and applications")
+    (description
+     "This package provides cover-tree and kd-tree fast k-nearest neighbor
+search algorithms.  Related applications including KNN classification,
+regression and information measures are implemented.")
+    ;; The DESCRIPTION file erroneously states that GPL version 2.1 or
+    ;; later can be used.
+    (license license:gpl2+)))
