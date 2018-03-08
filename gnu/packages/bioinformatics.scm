@@ -10853,6 +10853,34 @@ are optimized per data type and for subsetted calculations such that both
 memory usage and processing time is minimized.")
     (license license:expat)))
 
+(define-public r-phangorn
+  (package
+    (name "r-phangorn")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "phangorn" version))
+       (sha256
+        (base32
+         "0xc8k552nxczy19jr0xjjagrzc8x6lafasgk2c099ls8bc1yml1i"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-fastmatch" ,r-fastmatch)
+       ("r-igraph" ,r-igraph)
+       ("r-magrittr" ,r-magrittr)
+       ("r-matrix" ,r-matrix)
+       ("r-quadprog" ,r-quadprog)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/KlausVigo/phangorn")
+    (synopsis "Phylogenetic analysis in R")
+    (description
+     "Phangorn is a package for phylogenetic analysis in R.  It supports
+estimation of phylogenetic trees and networks using Maximum Likelihood,
+Maximum Parsimony, distance methods and Hadamard conjugation.")
+    (license license:gpl2+)))
+
 (define-public r-dropbead
   (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
         (revision "2"))
