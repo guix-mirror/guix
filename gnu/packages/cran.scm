@@ -2951,3 +2951,26 @@ created.  Experimental designs may be blocked or blocked designs created from
 a candidate list, using several criteria.  The blocking can be done when whole
 and within plot factors interact.")
     (license license:gpl2+)))
+
+(define-public r-signal
+  (package
+    (name "r-signal")
+    (version "0.7-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "signal" version))
+       (sha256
+        (base32
+         "1vsxramz5qd9q9s3vlqzmfdpmwl2rhlb2n904zw6f0fg0xxjfq3b"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-mass" ,r-mass)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/signal/")
+    (synopsis "Signal processing")
+    (description
+     "This package provides a set of signal processing functions originally
+written for Matlab and GNU Octave.  It includes filter generation utilities,
+filtering functions, resampling routines, and visualization of filter models.
+It also includes interpolation functions.")
+    (license license:gpl2)))
