@@ -200,7 +200,7 @@ applications, there is xclip integration." )
 (define-public yapet
   (package
     (name "yapet")
-    (version "1.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.guengel.ch/myapps/yapet/downloads/yapet-"
@@ -208,7 +208,7 @@ applications, there is xclip integration." )
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0ydbnqw6icdh07pnv2w6dhvq501bdfvrklv4xmyr8znca9d753if"))))
+                "1lq46mpxdsbl6qw4cj58hp9q7jckmyvbsi08p5zr77rjgqadxyyy"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
