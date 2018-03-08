@@ -2090,7 +2090,7 @@ emulate a TI-30 or an HP-10C.")
 (define-public xcb-proto
   (package
     (name "xcb-proto")
-    (version "1.12")
+    (version "1.13")
     (source
       (origin
         (method url-fetch)
@@ -2100,10 +2100,7 @@ emulate a TI-30 or an HP-10C.")
                ".tar.bz2"))
         (sha256
           (base32
-           "01j91946q8f34l1mbvmmgvyc393sm28ym4lxlacpiav4qsjan8jr"))
-        (patches
-         (search-patches "xcb-proto-python3-whitespace.patch"
-                         "xcb-proto-python3-print.patch"))))
+           "1qdxw9syhbvswiqj5dvj278lrmfhs81apzmvx6205s4vcqg7563v"))))
     (build-system gnu-build-system)
     (native-inputs
       `(("pkg-config" ,pkg-config) ("python" ,python-minimal-wrapper)))
