@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
+;;; Copyright © 2018 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,15 +93,15 @@
     (inputs
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-async" ,ghc-async)
+       ("ghc-aeson" ,ghc-aeson-1.1.2.0)
        ("ghc-annotated-wl-pprint" ,ghc-annotated-wl-pprint)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-async" ,ghc-async)
        ("ghc-base64-bytestring" ,ghc-base64-bytestring)
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-cheapskate" ,ghc-cheapskate)
+       ("ghc-cheapskate" ,ghc-cheapskate-0.1.0.5)
        ("ghc-code-page" ,ghc-code-page)
        ("ghc-fingertree" ,ghc-fingertree)
        ("ghc-fsnotify" ,ghc-fsnotify)
@@ -108,23 +109,18 @@
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-network" ,ghc-network)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-parsers" ,ghc-parsers)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
        ("ghc-safe" ,ghc-safe)
        ("ghc-split" ,ghc-split)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)
-       ("ghc-tasty-rerun" ,ghc-tasty-rerun)
        ("ghc-terminal-size" ,ghc-terminal-size)
        ("ghc-text" ,ghc-text)
-       ("ghc-trifecta" ,ghc-trifecta)
+       ("ghc-trifecta" ,ghc-trifecta-1.6.2.1)
        ("ghc-uniplate" ,ghc-uniplate)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)
        ("ghc-vector" ,ghc-vector)
-       ("ghc-zip-archive" ,ghc-zip-archive)
-       ("ghc-zlib" ,ghc-zlib)))
+       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)
+       ("ghc-zip-archive" ,ghc-zip-archive)))
     (arguments
      `(#:tests? #f ; FIXME: Test suite doesn't run in a sandbox.
        #:configure-flags
