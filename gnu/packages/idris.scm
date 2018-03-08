@@ -44,6 +44,19 @@
         (base32
          "1zy5z8pzvh53qkjm0nm3f4rwqfqg3867ck8ncd6mrxpcyvxqqj1p"))))))
 
+(define ghc-trifecta-1.6.2.1
+  (package (inherit ghc-trifecta)
+    (version "1.6.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/trifecta/"
+             "trifecta-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rgv62dlmm4vkdymx5rw5jg3w8ifpzg1745rvs1m4kzdx16p5cxs"))))))
+
 (define-public idris
   (package
     (name "idris")
