@@ -3108,3 +3108,41 @@ curve is done by a non-linear piecewise function.  In addition to the areas
 under the curves, the curves themselves can also be computed and plotted by a
 specific S3-method.")
     (license license:gpl3)))
+
+(define-public r-vim
+  (package
+    (name "r-vim")
+    (version "4.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "VIM" version))
+       (sha256
+        (base32
+         "1vjcs5wvjv94ln01d94h9rs4j50d3ky4n26mm3prgh13raylrmnd"))))
+    (properties `((upstream-name . "VIM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-car" ,r-car)
+       ("r-colorspace" ,r-colorspace)
+       ("r-data-table" ,r-data-table)
+       ("r-e1071" ,r-e1071)
+       ("r-laeken" ,r-laeken)
+       ("r-mass" ,r-mass)
+       ("r-nnet" ,r-nnet)
+       ("r-rcpp" ,r-rcpp)
+       ("r-robustbase" ,r-robustbase)
+       ("r-sp" ,r-sp)
+       ("r-vcd" ,r-vcd)))
+    (home-page "https://github.com/alexkowa/VIM")
+    (synopsis "Visualization and imputation of missing values")
+    (description
+     "This package provides tools for the visualization of missing and/or
+imputed values are introduced, which can be used for exploring the data and
+the structure of the missing and/or imputed values.  Depending on this
+structure of the missing values, the corresponding methods may help to
+identify the mechanism generating the missing values and allows to explore the
+data including missing values.  In addition, the quality of imputation can be
+visually explored using various univariate, bivariate, multiple and
+multivariate plot methods.")
+    (license license:gpl2+)))
