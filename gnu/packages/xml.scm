@@ -105,14 +105,14 @@ hierarchical form with variable field lengths.")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.9.7")
+    (version "2.9.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "034hylzspvkm0p4bczqbf8q05a7r2disr8dz725x4bin61ymwg7n"))))
+               "0ci7is75bwqqw2p32vxvrk6ds51ik7qgx73m920rakv5jlayax0b"))))
     (build-system gnu-build-system)
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
