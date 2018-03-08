@@ -57,6 +57,25 @@
         (base32
          "1rgv62dlmm4vkdymx5rw5jg3w8ifpzg1745rvs1m4kzdx16p5cxs"))))))
 
+;; ghc-cheapskate appeared too new. This follows LTS Haskell.
+(define ghc-cheapskate-0.1.0.5
+  (package
+    (inherit ghc-cheapskate)
+    (version "0.1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/cheapskate/cheapskate-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0cpsmfx5z2xykg71sv8j7pl8ga6pzyjnjdb9bxn00vcpqkzvfqvs"))))
+    (arguments
+     ;; LTS Haskell says data-default >=0.5 && <0.8
+     `(#:configure-flags (list "--allow-newer=data-default")))))
+
 (define-public idris
   (package
     (name "idris")
