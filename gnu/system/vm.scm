@@ -30,6 +30,8 @@
   #:use-module (guix records)
   #:use-module (guix modules)
   #:use-module (guix utils)
+  #:use-module (guix hash)
+  #:use-module (guix base32)
 
   #:use-module ((gnu build vm)
                 #:select (qemu-command))
@@ -544,13 +546,13 @@ of the GNU system as described by OS."
 
 (define (file-system->mount-tag fs)
   "Return a 9p mount tag for host file system FS."
-  ;; QEMU mount tags cannot contain slashes and cannot start with '_'.
-  ;; Compute an identifier that corresponds to the rules.
+  ;; QEMU mount tags must be ASCII, at most 31-byte long, cannot contain
+  ;; slashes, and cannot start with '_'.  Compute an identifier that
+  ;; corresponds to the rules.
   (string-append "TAG"
-                 (string-map (match-lambda
-                              (#\/ #\_)
-                              (chr chr))
-                             fs)))
+                 (string-drop (bytevector->base32-string
+                               (sha1 (string->utf8 fs)))
+                              4)))
 
 (define (mapping->file-system mapping)
   "Return a 9p file system that realizes MAPPING."

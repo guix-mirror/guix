@@ -139,10 +139,10 @@ highlighting your own code that seemed comprehensible when you wrote it.")
     (home-page "https://www.gnu.org/software/global/")
     (synopsis "Cross-environment source code tag system")
     (description
-     "GLOBAL is a source code tagging system that functions in the same way
-across a wide array of environments, such as different text editors, shells
-and web browsers.  The resulting tags are useful for quickly moving around in
-a large, deeply nested project.")
+     "GNU GLOBAL is a source code tagging system that functions in the same
+way across a wide array of environments, such as different text editors,
+shells and web browsers.  The resulting tags are useful for quickly moving
+around in a large, deeply nested project.")
     (license license:gpl3+)))
 
 (define-public sloccount

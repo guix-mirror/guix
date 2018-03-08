@@ -6371,7 +6371,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 
        ;; Required by tests.
        ("cunit" ,cunit)
-       ("tzdata" ,tzdata)))
+       ("tzdata" ,tzdata-for-tests)))
     (inputs
      ;; Required to build the tools (i.e. without ‘--enable-lib-only’).
      `(("c-ares" ,c-ares)

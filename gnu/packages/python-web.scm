@@ -22,6 +22,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2017 Mark Meyer <mark@ofosos.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,11 +46,13 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
@@ -237,6 +240,40 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
 
 (define-public python2-html5-parser
   (package-with-python2 python-html5-parser))
+
+(define-public python-pycurl
+  (package
+    (name "python-pycurl")
+    (version "7.43.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.bintray.com/pycurl/pycurl/pycurl-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1ali1gjs9iliwjra7w0y5hwg79a2fd0f4ydvv6k27sgxpbr1n8s3"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The tests attempt to access external web servers, so we cannot run
+     ;; them.  Furthermore, they are skipped altogether when using Python 2.
+     '(#:tests? #f))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-bottle" ,python-bottle)))
+    (inputs
+     `(("curl" ,curl)
+       ("gnutls" ,gnutls)))
+    (home-page "http://pycurl.io/")
+    (synopsis "Lightweight Python wrapper around libcurl")
+    (description "Pycurl is a lightweight wrapper around libcurl.  It provides
+high-speed transfers via libcurl and frequently outperforms alternatives.")
+
+    ;; Per 'README.rst', this is dual-licensed: users can redistribute pycurl
+    ;; under the terms of LGPLv2.1+ or Expat.
+    (license (list license:lgpl2.1+ license:expat))))
+
+(define-public python2-pycurl
+  (package-with-python2 python-pycurl))
 
 (define-public python-webencodings
   (package

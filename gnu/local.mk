@@ -281,6 +281,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/marst.scm			\
   %D%/packages/mate.scm             \
   %D%/packages/maths.scm			\
+  %D%/packages/maven.scm			\
   %D%/packages/mc.scm				\
   %D%/packages/mcrypt.scm			\
   %D%/packages/medical.scm			\

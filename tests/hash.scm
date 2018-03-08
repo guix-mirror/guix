@@ -40,6 +40,14 @@
 
 (test-begin "hash")
 
+(test-equal "sha1, empty"
+  (base16-string->bytevector "da39a3ee5e6b4b0d3255bfef95601890afd80709")
+  (sha1 #vu8()))
+
+(test-equal "sha1, hello"
+  (base16-string->bytevector "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed")
+  (sha1 (string->utf8 "hello world")))
+
 (test-equal "sha256, empty"
   %empty-sha256
   (sha256 #vu8()))

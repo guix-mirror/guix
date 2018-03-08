@@ -99,7 +99,7 @@
                (zero?
                 (system* "./configure"
                          (string-append "--prefix=" out)))))))))
-    (home-page "http://zlib.net/")
+    (home-page "https://zlib.net/")
     (synopsis "Compression library")
     (description
      "zlib is designed to be a free, general-purpose, legally unencumbered --
@@ -844,14 +844,14 @@ extract such file systems.")
 (define-public pigz
   (package
     (name "pigz")
-    (version "2.3.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://zlib.net/pigz/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "172hdf26k4zmm7z8md7nl0dph2a7mhf3x7slb9bhfyff6as6g2sf"))))
+                "0wsgw5vwl23jrnpsvd8v3xcp5k4waw5mk0164fynjhkv58i1dy54"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -869,7 +869,7 @@ extract such file systems.")
        #:make-flags (list "CC=gcc")
        #:test-target "tests"))
     (inputs `(("zlib" ,zlib)))
-    (home-page "http://zlib.net/pigz/")
+    (home-page "https://zlib.net/pigz/")
     (synopsis "Parallel implementation of gzip")
     (description
      "This package provides a parallel implementation of gzip that exploits

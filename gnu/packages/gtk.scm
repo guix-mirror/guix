@@ -1042,7 +1042,7 @@ library.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("glibmm" ,glibmm) ("atk" ,atk)))
-    (home-page "http://www.gtkmm.org")
+    (home-page "https://www.gtkmm.org")
     (synopsis "C++ interface to the ATK accessibility library")
     (description
      "ATKmm provides a C++ programming interface to the ATK accessibility
@@ -1052,7 +1052,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.22.0")
+    (version "3.22.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1060,11 +1060,11 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1x8l0ny6r3ym53z82q9d5fan4m9vi93xy3b3hj1hrclgc95lvnh5"))))
+               "1400535lhyya462pfx8bp11k3mg3jsbdghlpygskd5ai665dkbwi"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")        ;for 'glib-compile-resources'
-                     ("xorg-server" ,xorg-server)))
+                     ("xorg-server" ,xorg-server-1.19.3)))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
@@ -1072,7 +1072,11 @@ toolkit.")
        ("gtk+" ,gtk+)
        ("glibmm" ,glibmm)))
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(;; XXX: Tests require C++14 or later.  Remove this when the default
+       ;; compiler is >= GCC6.
+       #:configure-flags '("CXXFLAGS=-std=gnu++14")
+       #:disallowed-references (,xorg-server-1.19.3)
+       #:phases (modify-phases %standard-phases
                   (add-before 'check 'run-xvfb
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((xorg-server (assoc-ref inputs "xorg-server")))
@@ -1083,7 +1087,7 @@ toolkit.")
                         ;; Don't fail because of the missing /etc/machine-id.
                         (setenv "DBUS_FATAL_WARNINGS" "0")
                         #t))))))
-    (home-page "http://gtkmm.org/")
+    (home-page "https://gtkmm.org/")
     (synopsis
      "C++ interface to the GTK+ graphical user interface library")
     (description
@@ -1116,6 +1120,38 @@ extensive documentation, including API reference and a tutorial.")
        ("atkmm" ,atkmm)
        ("gtk+" ,gtk+-2)
        ("glibmm" ,glibmm)))))
+
+(define-public gtksourceviewmm
+  (package
+    (name "gtksourceviewmm")
+    (version "3.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32 "0fgvmhm4h4qmxig87qvangs6ijw53mi40siz7pixlxbrsgiil22i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; In 'Requires' of gtksourceviewmm-3.0.pc.
+     `(("glibmm" ,glibmm)
+       ("gtkmm" ,gtkmm)
+       ("gtksourceview" ,gtksourceview)))
+    (synopsis "C++ interface to the GTK+ 'GtkTextView' widget")
+    (description
+     "gtksourceviewmm is a portable C++ library that extends the standard GTK+
+framework for multiline text editing with support for configurable syntax
+highlighting, unlimited undo/redo, search and replace, a completion framework,
+printing and other features typical of a source code editor.")
+    (license license:lgpl2.1+)
+    (home-page "https://developer.gnome.org/gtksourceview/")))
+
+;;;
+;;; Python bindings.
+;;;
 
 (define-public python-pycairo
   (package

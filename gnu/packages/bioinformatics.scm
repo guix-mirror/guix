@@ -10880,8 +10880,8 @@ memory usage and processing time is minimized.")
     (license license:expat)))
 
 (define-public r-dropbead
-  (let ((commit "cf0be5ae5302684bd03e78ab65b142900bbbb840")
-        (revision "1"))
+  (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
+        (revision "2"))
     (package
       (name "r-dropbead")
       (version (string-append "0-" revision "." (string-take commit 7)))
@@ -10894,7 +10894,7 @@ memory usage and processing time is minimized.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1b2lphsc236s1rdzlijxg8yl1jnqpwcvj4x938r89rqpj93jb780"))))
+           "0sbzma49aiiyw8b0jpr7fnhzys9nsqmp4hy4hdz1gzyg1lhnca26"))))
       (build-system r-build-system)
       (propagated-inputs
        `(("r-ggplot2" ,r-ggplot2)
@@ -12646,3 +12646,70 @@ contains
 analyze RNA expression genome-wide in thousands of individual cells at
 once.  This package provides tools to perform Drop-seq analyses.")
     (license license:expat)))
+
+(define-public pigx-rnaseq
+  (package
+    (name "pigx-rnaseq")
+    (version "0.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/BIMSBbioinfo/pigx_rnaseq/"
+                                  "releases/download/v" version
+                                  "/pigx_rnaseq-" version ".tar.gz"))
+              (sha256
+               (base32
+                "168hx2ig3rarphx3l21ay9yyg8ipaakzixnrhpbdi0sknhyvrrk8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-tests? #f             ; not supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           ;; Make sure the executable finds all R modules.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/pigx-rnaseq")
+                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
+                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
+             #t)))))
+    (inputs
+     `(("snakemake" ,snakemake)
+       ("fastqc" ,fastqc)
+       ("multiqc" ,multiqc)
+       ("star" ,star)
+       ("trim-galore" ,trim-galore)
+       ("htseq" ,htseq)
+       ("samtools" ,samtools)
+       ("bedtools" ,bedtools)
+       ("r-minimal" ,r-minimal)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-gprofiler" ,r-gprofiler)
+       ("r-deseq2" ,r-deseq2)
+       ("r-dt" ,r-dt)
+       ("r-knitr" ,r-knitr)
+       ("r-pheatmap" ,r-pheatmap)
+       ("r-corrplot" ,r-corrplot)
+       ("r-reshape2" ,r-reshape2)
+       ("r-plotly" ,r-plotly)
+       ("r-scales" ,r-scales)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-crosstalk" ,r-crosstalk)
+       ("r-tximport" ,r-tximport)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-rjson" ,r-rjson)
+       ("salmon" ,salmon)
+       ("ghc-pandoc" ,ghc-pandoc)
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
+       ("python-wrapper" ,python-wrapper)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (synopsis "Analysis pipeline for RNA sequencing experiments")
+    (description "PiGX RNAseq is an analysis pipeline for preprocessing and
+reporting for RNA sequencing experiments.  It is easy to use and produces high
+quality reports.  The inputs are reads files from the sequencing experiment,
+and a configuration file which describes the experiment.  In addition to
+quality control of the experiment, the pipeline produces a differential
+expression report comparing samples in an easily configurable manner.")
+    (license license:gpl3+)))

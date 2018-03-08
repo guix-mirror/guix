@@ -239,14 +239,14 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
 (define-public mg
   (package
     (name "mg")
-    (version "20170401")
+    (version "20171014")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://homepage.boetes.org/software/mg/mg-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1arasswgdadbb265rahq3867r9s54jva6k4m3p5n0f8mgjqhhdha"))
+                "0hakfikzsml7z0hja8m8mcahrmfy2piy81bq9nccsjplyfc9clai"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -283,7 +283,7 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
                              (doc (string-append out "/share/doc/mg")))
                         (install-file "tutorial" doc)
                         #t))))))
-    (home-page "http://homepage.boetes.org/software/mg/")
+    (home-page "https://homepage.boetes.org/software/mg/")
     (synopsis "Microscopic GNU Emacs clone")
     (description
      "Mg (mg) is a GNU Emacs style editor, with which it is \"broadly\"

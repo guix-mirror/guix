@@ -1558,7 +1558,7 @@ input from UTF-8 into the locale's encoding.")
 (define-public mkfontscale
   (package
     (name "mkfontscale")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -1568,7 +1568,7 @@ input from UTF-8 into the locale's encoding.")
                ".tar.bz2"))
         (sha256
           (base32
-            "081z8lwh9c1gyrx3ad12whnpv3jpfbqsc366mswpfm48mwl54vcc"))))
+            "0siag28jpm8hj62bgjvw81sjfgrc7vcy2h7127bl4iazxrlxz60y"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
@@ -2276,7 +2276,7 @@ available.")
 (define-public xdriinfo
   (package
     (name "xdriinfo")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
@@ -2286,7 +2286,7 @@ available.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0681d0y8liqakkpz7mmsf689jcxrvs5291r20qi78mc9xxk3gfjc"))))
+            "0lcx8h3zd11m4w8wf7dyp89826d437iz78cyrix436bqx31x5k6r"))))
     (build-system gnu-build-system)
     (inputs
       `(("mesa" ,mesa)
@@ -5421,17 +5421,17 @@ Intrinsics (Xt) Library.")
 (define-public twm
   (package
     (name "twm")
-    (version "1.0.9")
+    (version "1.0.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://xorg/individual/app/" name "-"
              version
-             ".tar.gz"))
+             ".tar.bz2"))
        (sha256
         (base32
-         "1s1r00x8add3f27xjqxg6q7mwplwrb72gakbh4y6j052as25wchw"))))
+         "1ms5cj1w3g26zg6bxdv1j9hl0pxr4300qnv003cz1q3cl7ffljb4"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxt" ,libxt)

@@ -453,7 +453,6 @@ a container or that of a \"bare metal\" system."
   (let* ((mappings  (device-mapping-services os))
          (root-fs   (root-file-system-service))
          (other-fs  (non-boot-file-system-service os))
-         (unmount   (user-unmount-service known-fs))
          (swaps     (swap-services os))
          (procs     (service user-processes-service-type))
          (host-name (host-name-service (operating-system-host-name os)))
@@ -478,7 +477,7 @@ a container or that of a \"bare metal\" system."
            (service fstab-service-type '())
            (session-environment-service
             (operating-system-environment-variables os))
-           host-name procs root-fs unmount
+           host-name procs root-fs
            (service setuid-program-service-type
                     (operating-system-setuid-programs os))
            (service profile-service-type

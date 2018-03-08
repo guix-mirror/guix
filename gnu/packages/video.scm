@@ -1344,16 +1344,18 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
                   (guix build utils)
                   (srfi srfi-26))
        #:module-build-flags '("--gtk")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'wrap-program
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((bin-dir (string-append (assoc-ref outputs "out")
-                                                    "/bin/"))
-                            (perl-path (getenv "PERL5LIB")))
-                        (for-each (cut wrap-program <>
-                                       `("PERL5LIB" ":" prefix (,perl-path)))
-                                  (find-files bin-dir))
-                        #t))))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin-dir (string-append out "/bin/"))
+                    (site-dir (string-append out "/lib/perl5/site_perl/"))
+                    (lib-path (getenv "PERL5LIB")))
+               (for-each (cut wrap-program <>
+                              `("PERL5LIB" ":" prefix (,lib-path ,site-dir)))
+                         (find-files bin-dir))
+               #t))))))
     (synopsis
      "Lightweight application for searching and streaming videos from YouTube")
     (description

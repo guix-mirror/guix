@@ -2738,3 +2738,189 @@ ordered factor data types.")
      "This package provides tools for the computation of matrix and scalar
 exponentiation.")
     (license license:gpl2)))
+
+(define-public r-heatmaply
+  (package
+    (name "r-heatmaply")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "heatmaply" version))
+       (sha256
+        (base32
+         "03p2caclhfgqgpx3wwck5h06jy3mxgs05gjmwkb7hmwghkjh41jc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-colorspace" ,r-colorspace)
+       ("r-dendextend" ,r-dendextend)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gplots" ,r-gplots)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plotly" ,r-plotly)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape2" ,r-reshape2)
+       ("r-scales" ,r-scales)
+       ("r-seriation" ,r-seriation)
+       ("r-viridis" ,r-viridis)
+       ("r-webshot" ,r-webshot)))
+    (home-page "https://cran.r-project.org/package=heatmaply")
+    (synopsis "Interactive cluster heat maps using plotly")
+    (description
+     "This package enables you to create interactive cluster heatmaps that can
+be saved as a stand-alone HTML file, embedded in R Markdown documents or in a
+Shiny app, and made available in the RStudio viewer pane.  Hover the mouse
+pointer over a cell to show details or drag a rectangle to zoom.  A heatmap is
+a popular graphical method for visualizing high-dimensional data, in which a
+table of numbers is encoded as a grid of colored cells.  The rows and columns
+of the matrix are ordered to highlight patterns and are often accompanied by
+dendrograms.")
+    ;; Either version of the license.
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-cgdsr
+  (package
+    (name "r-cgdsr")
+    (version "1.2.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cgdsr" version))
+       (sha256
+        (base32
+         "1xyhw7mhmjichr1l6f9y1qvfj9wm87kfbm87ji7lcwf36gxh5g23"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)))
+    (home-page "https://github.com/cBioPortal/cgdsr")
+    (synopsis "R-based API for accessing the MSKCC Cancer Genomics Data Server")
+    (description
+     "This package provides a basic set of R functions for querying the Cancer
+Genomics Data Server (CGDS), hosted by the Computational Biology Center at
+Memorial-Sloan-Kettering Cancer Center (MSKCC).")
+    (license license:lgpl3)))
+
+(define-public r-import
+  (package
+    (name "r-import")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "import" version))
+       (sha256
+        (base32
+         "0blf9539rbfwcmw8zsb4k58slb4pdnc075v34vmyjw752fznhcji"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/smbache/import")
+    (synopsis "Import mechanism for R")
+    (description
+     "This is an alternative mechanism for importing objects from packages.
+The syntax allows for importing multiple objects from a package with a single
+command in an expressive way.  The import package bridges some of the gap
+between using @code{library} (or @code{require}) and direct (single-object)
+imports.  Furthermore the imported objects are not placed in the current
+environment.  It is also possible to import objects from stand-alone @code{.R}
+files.")
+    (license license:expat)))
+
+(define-public r-shinyace
+  (package
+    (name "r-shinyace")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyAce" version))
+       (sha256
+        (base32
+         "0ycka8rsw0178q9klfid97vdn5cbyx3r778nis5s3dqipdyazdm9"))))
+    (properties `((upstream-name . "shinyAce")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-shiny" ,r-shiny)))
+    (home-page "http://cran.r-project.org/web/packages/shinyAce")
+    (synopsis "Ace editor bindings for Shiny")
+    (description
+     "This package provides Ace editor bindings to enable a rich text editing
+environment within Shiny.")
+    (license license:expat)))
+
+(define-public r-radiant-data
+  (package
+    (name "r-radiant-data")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "radiant.data" version))
+       (sha256
+        (base32
+         "1ylina1jlrmvjkj8pwg0ip5jv1038vnzyckmf542xl7g11x8rvw1"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete files that are under CC-NC-SA.
+           (delete-file-recursively "inst/app/tools/help")
+           #t))))
+    (properties `((upstream-name . "radiant.data")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-broom" ,r-broom)
+       ("r-car" ,r-car)
+       ("r-curl" ,r-curl)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dt" ,r-dt)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-import" ,r-import)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-markdown" ,r-markdown)
+       ("r-pryr" ,r-pryr)
+       ("r-psych" ,r-psych)
+       ("r-readr" ,r-readr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-scales" ,r-scales)
+       ("r-shiny" ,r-shiny)
+       ("r-shinyace" ,r-shinyace)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/radiant-rstats/radiant.data")
+    (synopsis "Data menu for Radiant: business analytics using R and Shiny")
+    (description
+     "The Radiant Data menu includes interfaces for loading, saving, viewing,
+visualizing, summarizing, transforming, and combining data.  It also contains
+functionality to generate reproducible reports of the analyses conducted in
+the application.")
+    (license license:agpl3)))
+
+(define-public r-algdesign
+  (package
+    (name "r-algdesign")
+    (version "1.1-7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AlgDesign" version))
+       (sha256
+        (base32
+         "0bl7mx4dnmkgs2x1fj7cqnrp7jx18mqwxyga0rzlniq12h8mc3fz"))))
+    (properties `((upstream-name . "AlgDesign")))
+    (build-system r-build-system)
+    (home-page "https://github.com/jvbraun/AlgDesign")
+    (synopsis "Algorithmic experimental design")
+    (description
+     "This package provides tools to calculate exact and approximate theory
+experimental designs for D, A, and I criteria.  Very large designs may be
+created.  Experimental designs may be blocked or blocked designs created from
+a candidate list, using several criteria.  The blocking can be done when whole
+and within plot factors interact.")
+    (license license:gpl2+)))

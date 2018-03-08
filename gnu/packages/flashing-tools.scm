@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
@@ -402,7 +402,10 @@ dump Intel Firmware Descriptor data of an image file.")
 Management Engine (ME).  You need to @code{sudo rmmod mei_me} and
 @code{sudo rmmod mei} before using this tool.  Also pass
 @code{iomem=relaxed} to the Linux kernel command line.")
-    (license license:gpl2)))
+    (license license:gpl2)
+
+    ;; This is obviously an Intel thing, plus it requires <cpuid.h>.
+    (supported-systems '("x86_64-linux" "i686-linux"))))
 
 (define-public me-cleaner
   (package
@@ -420,7 +423,7 @@ Management Engine (ME).  You need to @code{sudo rmmod mei_me} and
     (arguments
      `(#:phases
        (modify-phases %standard-phases
- (add-after 'unpack 'create-setup.py
+         (add-after 'unpack 'create-setup.py
            (lambda _
              (call-with-output-file "setup.py"
                (lambda (port)
@@ -433,4 +436,7 @@ setup(name='me_cleaner', version='~a', scripts=['me_cleaner.py'])
     (synopsis "Intel ME cleaner")
     (description "This package provides tools for disabling Intel
 ME as far as possible (it only edits ME firmware image files).")
-    (license license:gpl3+)))
+    (license license:gpl3+)
+
+    ;; This is an Intel thing.
+    (supported-systems '("x86_64-linux" "i686-linux"))))

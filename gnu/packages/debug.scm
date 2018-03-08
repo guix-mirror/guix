@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,10 +86,11 @@ program to exhibit a bug.")
     ;; home-page pointing to a bsd-2 license.
     (license bsd-3)))
 
+;; Newer versions depend on LLVM and Clang >= 4, which have yet to be packaged.
 (define-public c-reduce
   (package
     (name "c-reduce")
-    (version "2.5.0")
+    (version "2.6.0")
     (source
      (origin
       (method url-fetch)
@@ -97,12 +99,12 @@ program to exhibit a bug.")
                            "creduce-" version ".tar.gz")))
       (sha256
        (base32
-        "1r23lhzq3dz8vi2dalxk5las8bf0av2w94hxxbs61pr73m77ik9d"))))
+        "0pf5q0n8vkdcr1wrkxn2jzxv0xkrir13bwmqfw3jpbm3dh2c3b6d"))))
     (build-system gnu-build-system)
     (inputs
      `(("astyle"          ,astyle)
-       ("llvm"            ,llvm)
-       ("clang"           ,clang)
+       ("llvm"            ,llvm-3.9.1)
+       ("clang"           ,clang-3.9.1)
        ("flex"            ,flex)
        ("indent"          ,indent)
        ("perl"            ,perl)
@@ -131,7 +133,7 @@ program to exhibit a bug.")
                            "file-which"      "getopt-tabular"
                            "regex-common"    "sys-cpu")))))
              #t)))))
-    (home-page "http://embed.cs.utah.edu/creduce")
+    (home-page "https://embed.cs.utah.edu/creduce")
     (synopsis "Reducer for interesting code")
     (description
      "C-Reduce is a tool that takes a large C or C++ program that has a
