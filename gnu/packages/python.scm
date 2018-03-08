@@ -5066,6 +5066,17 @@ more advanced mathematics.")
        (sha256
         (base32 "190n29sppw7g8ihilc5451y7jlfcaw56crqiqbf1jff43dlmfnxc"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Run the core tests after installation.  By default it would run
+         ;; *all* tests, which take a very long time to complete and are known
+         ;; to be flaky.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python3" "-c" "import sympy; sympy.test(\"/core\")")
+             #t)))))
     (propagated-inputs
      `(("python-mpmath" ,python-mpmath)))
     (home-page "http://www.sympy.org/")
@@ -5077,7 +5088,19 @@ as possible in order to be comprehensible and easily extensible.")
     (license license:bsd-3)))
 
 (define-public python2-sympy
-  (package-with-python2 python-sympy))
+  (package
+    (inherit (package-with-python2 python-sympy))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Run the core tests after installation.  By default it would run
+         ;; *all* tests, which take a very long time to complete and are known
+         ;; to be flaky.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python" "-c" "import sympy; sympy.test(\"/core\")")
+             #t)))))))
 
 (define-public python-q
   (package
