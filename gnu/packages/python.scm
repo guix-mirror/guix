@@ -5875,6 +5875,7 @@ reading and writing MessagePack data.")
 (define-public python-msgpack-transitional
   (package
     (inherit python-msgpack)
+    (name "python-msgpack-transitional")
     (arguments
      (substitute-keyword-arguments (package-arguments python-msgpack)
        ((#:phases phases)
