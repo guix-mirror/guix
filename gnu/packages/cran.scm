@@ -3169,3 +3169,26 @@ regression and information measures are implemented.")
     ;; The DESCRIPTION file erroneously states that GPL version 2.1 or
     ;; later can be used.
     (license license:gpl2+)))
+
+(define-public r-smoother
+  (package
+    (name "r-smoother")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "smoother" version))
+       (sha256
+        (base32
+         "0nqr1bvlr5bnasqg74zmknjjl4x28kla9h5cxpga3kq5z215pdci"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ttr" ,r-ttr)))
+    (home-page "http://cran.r-project.org/web/packages/smoother")
+    (synopsis "Functions relating to the smoothing of numerical data")
+    (description
+     "This package provides a collection of methods for smoothing numerical
+data, commencing with a port of the Matlab gaussian window smoothing function.
+In addition, several functions typically used in smoothing of financial data
+are included.")
+    (license license:gpl2)))
