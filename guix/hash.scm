@@ -23,7 +23,9 @@
   #:use-module (system foreign)
   #:use-module ((guix build utils) #:select (dump-port))
   #:use-module (srfi srfi-11)
-  #:export (sha256
+  #:use-module (srfi srfi-26)
+  #:export (sha1
+            sha256
             open-sha256-port
             port-sha256
             file-sha256
@@ -44,16 +46,25 @@
   ;; Value as of Libgcrypt 1.5.2.
   (identifier-syntax 8))
 
-(define sha256
+(define-syntax GCRY_MD_SHA1
+  (identifier-syntax 2))
+
+(define bytevector-hash
   (let ((hash (pointer->procedure void
                                   (libgcrypt-func "gcry_md_hash_buffer")
                                   `(,int * * ,size_t))))
-    (lambda (bv)
-      "Return the SHA256 of BV as a bytevector."
-      (let ((digest (make-bytevector (/ 256 8))))
-        (hash GCRY_MD_SHA256 (bytevector->pointer digest)
+    (lambda (bv type size)
+      "Return the hash TYPE, of SIZE bytes, of BV as a bytevector."
+      (let ((digest (make-bytevector size)))
+        (hash type (bytevector->pointer digest)
               (bytevector->pointer bv) (bytevector-length bv))
         digest))))
+
+(define sha1
+  (cut bytevector-hash <> GCRY_MD_SHA1 20))
+
+(define sha256
+  (cut bytevector-hash <> GCRY_MD_SHA256 (/ 256 8)))
 
 (define open-sha256-md
   (let ((open (pointer->procedure int
