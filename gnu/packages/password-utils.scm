@@ -92,7 +92,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.3.0")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
@@ -101,7 +101,7 @@ human.")
                            version "-src.tar.xz"))
        (sha256
         (base32
-         "1v6v59fnbbsssbwy4is6hh2l4qqwy3ddb6dp2jk8clx0xbd5hn7c"))))
+         "1gdrbpzwbs56anc3k5vklvcackcn214pc8gm5xh5zcymsi8q4zff"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_NETWORKING=YES"
