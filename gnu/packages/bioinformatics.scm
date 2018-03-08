@@ -10880,8 +10880,8 @@ memory usage and processing time is minimized.")
     (license license:expat)))
 
 (define-public r-dropbead
-  (let ((commit "cf0be5ae5302684bd03e78ab65b142900bbbb840")
-        (revision "1"))
+  (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
+        (revision "2"))
     (package
       (name "r-dropbead")
       (version (string-append "0-" revision "." (string-take commit 7)))
@@ -10894,7 +10894,7 @@ memory usage and processing time is minimized.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1b2lphsc236s1rdzlijxg8yl1jnqpwcvj4x938r89rqpj93jb780"))))
+           "0sbzma49aiiyw8b0jpr7fnhzys9nsqmp4hy4hdz1gzyg1lhnca26"))))
       (build-system r-build-system)
       (propagated-inputs
        `(("r-ggplot2" ,r-ggplot2)
