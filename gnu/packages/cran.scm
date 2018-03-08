@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,32 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
+
+(define-public r-ape
+  (package
+    (name "r-ape")
+    (version "5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ape" version))
+       (sha256
+        (base32
+         "0q59pmxawz498cb9mv5m49lhiwxib8ak94yyydz7qg8b6lpd4bn3"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-nlme" ,r-nlme)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "http://ape-package.ird.fr/")
+    (synopsis "Analyses of phylogenetics and evolution")
+    (description
+     "This package provides functions for reading, writing, plotting, and
+manipulating phylogenetic trees, analyses of comparative data in a
+phylogenetic framework, ancestral character analyses, analyses of
+diversification and macroevolution, computing distances from DNA sequences,
+and several other tools.")
+    (license license:gpl2+)))
 
 (define-public r-colorspace
   (package
