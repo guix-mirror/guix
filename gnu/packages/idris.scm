@@ -30,6 +30,20 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
+(define ghc-aeson-1.1.2.0
+  (package (inherit ghc-aeson)
+    (version "1.1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/aeson/aeson-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1zy5z8pzvh53qkjm0nm3f4rwqfqg3867ck8ncd6mrxpcyvxqqj1p"))))))
+
 (define-public idris
   (package
     (name "idris")
