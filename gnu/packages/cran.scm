@@ -3062,3 +3062,25 @@ data frame.  The @code{sqldf} or @code{read.csv.sql} functions can also be
 used to read filtered files into R even if the original files are larger than
 R itself can handle.")
     (license license:gpl2)))
+
+(define-public r-abind
+  (package
+    (name "r-abind")
+    (version "1.4-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abind" version))
+       (sha256
+        (base32
+         "0b1zd8jbnl6l292cr9rb50m09fy3ylxvzkpgi5lfb1nbzddcwfis"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/abind/")
+    (synopsis "Combine multidimensional arrays")
+    (description
+     "This package provides tools to combine multidimensional arrays into a
+single array.  This is a generalization of @code{cbind} and @code{rbind}.  It
+works with vectors, matrices, and higher-dimensional arrays.  It also provides
+the functions @code{adrop}, @code{asub}, and @code{afill} for manipulating,
+extracting and replacing data in arrays.")
+    (license license:lgpl2.0+)))
