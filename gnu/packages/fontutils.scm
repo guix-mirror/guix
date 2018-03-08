@@ -378,16 +378,15 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.10")
+   (version "1.3.11")
    (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/silnrsi/graphite/releases/"
                            "download/" version "/" name "-" version ".tgz"))
-       (patches (search-patches "graphite2-ffloat-store.patch"))
        (sha256
         (base32
-         "1bm1rl2ww0m8rvmknh8fpajyz9xqv43qs9qrzf7xd5gaz6rf7zch"))))
+         "0z5dcgh8r3678awq6fb8igik7xmar5m6z9xxwpkkhradhk8jxfds"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("python" ,python-2) ; because of "import imap" in tests
