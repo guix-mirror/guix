@@ -5042,7 +5042,7 @@ protocol.")
 (define-public libxcb
   (package
     (name "libxcb")
-    (version "1.12")
+    (version "1.13")
     (source
       (origin
         (method url-fetch)
@@ -5050,9 +5050,7 @@ protocol.")
                             name "-" version ".tar.bz2"))
         (sha256
           (base32
-           "0nvv0la91cf8p5qqlb3r5xnmg1jn2wphn4fb5jfbr6byqsvv3psa"))
-        (patches
-         (search-patches "libxcb-python-3.5-compat.patch"))))
+           "1ahxhmdqp4bhb90zmc275rmf5wixqra4bnw9pqnzyl1w3598g30q"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpthread-stubs" ,libpthread-stubs)

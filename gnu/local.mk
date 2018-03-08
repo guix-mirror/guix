@@ -864,7 +864,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libvorbis-CVE-2017-14632.patch		\
   %D%/packages/patches/libvorbis-CVE-2017-14633.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
-  %D%/packages/patches/libxcb-python-3.5-compat.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
   %D%/packages/patches/lierolibre-check-unaligned-access.patch	\
