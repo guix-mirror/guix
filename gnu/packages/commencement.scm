@@ -177,28 +177,12 @@
                     ,cf)))))
      (inputs %boot0-inputs))))
 
-;; gcc-4.9 was fixed late in the core-update cycle and so this GCC is only
-;; needed to prevent a full world rebuild, and can be replaced with gcc-4.9.
-(define gcc-for-libstdc++
-  (package (inherit gcc-4.9)
-    (version "4.9.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gcc/gcc-"
-                                  version "/gcc-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
-              (patches (search-patches "gcc-arm-bug-71399.patch"
-                                       "gcc-libvtv-runpath.patch"
-                                       "gcc-fix-texi2pod.patch"))))))
-
 (define libstdc++-boot0
   ;; GCC's libcc1 is always built as a shared library (the top-level
   ;; 'Makefile.def' forcefully adds --enable-shared) and thus needs to refer
   ;; to libstdc++.so.  We cannot build libstdc++-5.3 because it relies on
   ;; C++14 features missing in some of our bootstrap compilers.
-  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc-for-libstdc++))))
+  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc-4.9))))
     (package
       (inherit lib)
       (name "libstdc++-boot0")
