@@ -3084,3 +3084,27 @@ works with vectors, matrices, and higher-dimensional arrays.  It also provides
 the functions @code{adrop}, @code{asub}, and @code{afill} for manipulating,
 extracting and replacing data in arrays.")
     (license license:lgpl2.0+)))
+
+(define-public r-prroc
+  (package
+    (name "r-prroc")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "PRROC" version))
+       (sha256
+        (base32
+         "03hvh92lq4i4w4mla9bvwrwb4626f4hvlxgdn57hamp70960vjyc"))))
+    (properties `((upstream-name . "PRROC")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/PRROC/")
+    (synopsis "Precision-Recall and ROC curves for weighted and unweighted data")
+    (description
+     "This package computes the areas under the @dfn{precision-recall} (PR)
+and ROC curve for weighted (e.g. soft-labeled) and unweighted data.  In
+contrast to other implementations, the interpolation between points of the PR
+curve is done by a non-linear piecewise function.  In addition to the areas
+under the curves, the curves themselves can also be computed and plotted by a
+specific S3-method.")
+    (license license:gpl3)))
