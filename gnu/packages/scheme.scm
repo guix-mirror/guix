@@ -951,3 +951,70 @@ implementation includes Hobbit, a Scheme-to-C compiler, which can
 generate C files whose binaries can be dynamically or statically
 linked with a SCM executable.")
     (license lgpl3+)))
+
+(define-public tinyscheme
+  (package
+    (name "tinyscheme")
+    (version "1.41")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/" name "/"
+                                  name "-" version "/" name "-" version ".zip"))
+              (sha256
+               (base32
+                "0yqma4jrjgj95f3hf30h542x97n8ah234n19yklbqq0phfsa08wf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "unzip" source)
+             (chdir (string-append ,name "-" ,version))
+             #t))
+         (add-after 'unpack 'set-scm-directory
+           ;; Hard-code ‘our’ init.scm instead of looking in the current
+           ;; working directory, so invoking ‘scheme’ just works.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (scm (string-append out "/share/" ,name)))
+               (substitute* "scheme.c"
+                 (("init.scm" all)
+                  (string-append scm "/" all)))
+               #t)))
+         (delete 'configure)            ; no configure script
+         (replace 'install
+           ;; There's no ‘install’ target.  Install files manually.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (bin     (string-append out "/bin"))
+                    (doc     (string-append out "/share/doc/"
+                                            ,name "-" ,version))
+                    (include (string-append out "/include"))
+                    (lib     (string-append out "/lib"))
+                    (scm     (string-append out "/share/" ,name)))
+               (install-file "scheme" bin)
+               (install-file "Manual.txt" doc)
+               (install-file "scheme.h" include)
+               (install-file "libtinyscheme.so" lib)
+               (install-file "init.scm" scm)
+               #t))))
+       #:tests? #f))                    ; no tests
+    (home-page "http://tinyscheme.sourceforge.net/")
+    (synopsis "Light-weight interpreter for the Scheme programming language")
+    (description
+     "TinyScheme is a light-weight Scheme interpreter that implements as large a
+subset of R5RS as was possible without getting very large and complicated.
+
+It's meant to be used as an embedded scripting interpreter for other programs.
+As such, it does not offer an Integrated Development Environment (@dfn{IDE}) or
+extensive toolkits, although it does sport a small (and optional) top-level
+loop.
+
+As an embedded interpreter, it allows multiple interpreter states to coexist in
+the same program, without any interference between them.  Foreign functions in C
+can be added and values can be defined in the Scheme environment.  Being quite a
+small program, it is easy to comprehend, get to grips with, and use.")
+    (license bsd-3)))                   ; there are no licence headers
