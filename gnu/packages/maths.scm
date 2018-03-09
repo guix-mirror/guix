@@ -724,7 +724,11 @@ incompatible with HDF5.")
              ;; unnecessary store references to those compilers:
              (substitute* "src/libhdf5.settings"
               (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
-               (string-append prefix (string-take hash 10) "...")))
+               (string-append prefix (string-take hash 10) "..."))
+              ;; Don't record the build-time kernel version to make the
+              ;; settings file reproducible.
+              (("Uname information:.*")
+               "Uname information: Linux\n"))
              #t))
          (add-after 'install 'patch-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
