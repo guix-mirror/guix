@@ -81,6 +81,11 @@ makes a few sacrifices to acquire fast full and incremental build times.")
                (base32
                 "06r8limj38mv884s5riiz6lpzw37cvhbf9jd0smzcbi7fwmv3yah"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  ;; Meson calls the various executables in out/bin through the
+                  ;; Python interpreter, so we cannot use the shell wrapper.
+                  (delete 'wrap))))
     (inputs `(("ninja", ninja)))
     (propagated-inputs `(("python" ,python)))
     (home-page "https://mesonbuild.com/")
