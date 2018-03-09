@@ -1758,7 +1758,7 @@ file system is as easy as logging into the server with an SSH client.")
 (define-public archivemount
   (package
     (name "archivemount")
-    (version "0.8.7")
+    (version "0.8.9")
     (source
      (origin
        (method url-fetch)
@@ -1766,7 +1766,7 @@ file system is as easy as logging into the server with an SSH client.")
                            "archivemount-" version ".tar.gz"))
        (sha256
         (base32
-         "1diiw6pnlnrnikn6l5ld92dx59lhrxjlqms8885vwbynsjl5q127"))))
+         "0v4si1ri6lhnq9q87gkx7fsh6lv6xz4bynknwndqncpvfp5cy1jg"))))
     (build-system gnu-build-system)
     (inputs `(("fuse", fuse)
               ("libarchive", libarchive)))
