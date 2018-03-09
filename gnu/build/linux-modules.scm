@@ -43,6 +43,7 @@
             modules-loaded
             module-loaded?
             load-linux-module*
+            load-linux-modules-from-directory
 
             current-module-debugging-port
 
@@ -313,6 +314,17 @@ appears in BLACK-LIST are not loaded."
              (when fd (close-fdes fd))
              (or (and recursive? (= EEXIST (system-error-errno args)))
                  (apply throw args)))))))
+
+(define (load-linux-modules-from-directory modules directory)
+  "Load MODULES and their dependencies from DIRECTORY, a directory containing
+the '.ko' files.  The '.ko' suffix is automatically added to MODULES if
+needed."
+  (define (lookup-module name)
+    (string-append directory "/" (ensure-dot-ko name)))
+
+  (for-each (cut load-linux-module* <>
+                 #:lookup-module lookup-module)
+            (map lookup-module modules)))
 
 
 ;;;
