@@ -172,21 +172,15 @@ be output in text, PostScript, PDF or HTML.")
              ;; queries the mtime of a given file and records it in an object.
              ;; This is acceptable at runtime to detect stale source files,
              ;; but it destroys reproducibility at build time.
-             ;;
-             ;; Instead of disabling this feature, which may have unexpected
-             ;; consequences, we reset the mtime of generated files before
-             ;; passing them to the "srcfile" procedure.
-             (substitute* "src/library/Makefile.in"
-               (("@\\(cd base && \\$\\(MAKE\\) mkdesc\\)" line)
-                (string-append line "\n	find $(top_builddir)/library/tools | xargs touch -d '1970-01-01'; \n"))
-               (("@\\$\\(MAKE\\) Rdobjects" line)
-                (string-append "@find $(srcdir)/tools | xargs touch -d '1970-01-01'; \n	"
-                               line)))
-             (substitute* "src/library/tools/Makefile.in"
-               (("@\\$\\(INSTALL_DATA\\) all.R \\$\\(top_builddir\\)/library/\\$\\(pkg\\)/R/\\$\\(pkg\\)" line)
-                (string-append
-                 line
-                 "\n	find $(srcdir)/$(pkg) $(top_builddir)/library/$(pkg) | xargs touch -d \"1970-01-01\"; \n")))
+
+             ;; Similarly, the "srcfilecopy" procedure records the current
+             ;; time.  We change both of them to respect SOURCE_DATE_EPOCH.
+             (substitute* "src/library/base/R/srcfile.R"
+               (("timestamp <- (timestamp.*|file.mtime.*)" _ time)
+                (string-append "timestamp <- \
+as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
+  as.numeric(Sys.getenv(\"SOURCE_DATE_EPOCH\"))\
+} else { " time "}, origin=\"1970-01-01\")\n")))
 
              ;; This library is installed using "install_package_description",
              ;; so we need to pass the "builtStamp" argument.
