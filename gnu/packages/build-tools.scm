@@ -103,15 +103,8 @@ resembles Python.")
   (package
     (inherit meson)
     (name "meson-for-build")
-    (version "0.42.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mesonbuild/meson/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1494hdnd40g2v6pky34j0f2iwc6kwn51vck37qwz7nl2xr17b18q"))
+              (inherit (package-source meson))
               (patches (search-patches "meson-for-build-rpath.patch"))))
 
     ;; People should probably install "meson", not "meson-for-build".
