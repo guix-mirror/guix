@@ -2761,7 +2761,7 @@ It counts more than 100 plugins.")
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,(autoconf-wrapper))
+     `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)))
     (inputs

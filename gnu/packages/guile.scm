@@ -769,7 +769,7 @@ format is also supported.")
                       (symlink "README.org" "README")
                       (zero? (system* "autoreconf" "-fi")))))))
     (native-inputs
-     `(("autoconf" ,(autoconf-wrapper))
+     `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
        ("texinfo" ,texinfo)
        ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
@@ -1856,7 +1856,7 @@ dictionary and suggesting spelling corrections.")
                (string-append "--libdir=" (assoc-ref %outputs "out")
                               "/lib/bash"))))
       (native-inputs `(("pkg-config" ,pkg-config)
-                       ("autoconf" ,(autoconf-wrapper))
+                       ("autoconf" ,autoconf-wrapper)
                        ("automake" ,automake)
                        ("libtool" ,libtool)
                        ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.

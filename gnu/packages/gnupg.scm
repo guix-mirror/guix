@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -618,7 +618,7 @@ PGP keysigning parties.")
                      "1n5bpcfpl9vg1xp6r1jhbyahrgdyxp05b5pria1rh4m0qnv8sifr"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("autoconf" ,(autoconf-wrapper))
+    `(("autoconf" ,autoconf-wrapper)
       ("automake" ,automake)))
    (inputs `(("perl" ,perl)
              ("perl-text-template" ,perl-text-template)

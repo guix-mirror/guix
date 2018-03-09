@@ -124,8 +124,8 @@ know anything about Autoconf or M4.")
                                (string-append "--build=" build)))))))))))
 
 
-(define* (autoconf-wrapper #:optional (autoconf autoconf))
-  "Return an wrapper around AUTOCONF that generates `configure' scripts that
+(define (make-autoconf-wrapper autoconf)
+  "Return a wrapper around AUTOCONF that generates `configure' scripts that
 use our own Bash instead of /bin/sh in shebangs.  For that reason, it should
 only be used internally---users should not end up distributing `configure'
 files with a system-specific shebang."
@@ -191,7 +191,13 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                        (patch-shebang "configure"))
                      (exit (status:exit-val result))))
                 port)))
-           (chmod (string-append bin "/autoconf") #o555)))))))
+           (chmod (string-append bin "/autoconf") #o555)))))
+
+    ;; Do not show it in the UI since it's meant for internal use.
+    (properties '((hidden? . #t)))))
+
+(define-public autoconf-wrapper
+  (make-autoconf-wrapper autoconf))
 
 (define-public autoconf-archive
   (package
@@ -253,7 +259,7 @@ output is indexed in many ways to simplify browsing.")
               (search-patches "automake-skip-amhello-tests.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,(autoconf-wrapper))
+     `(("autoconf" ,autoconf-wrapper)
        ("perl" ,perl)))
     (native-search-paths
      (list (search-path-specification
@@ -348,7 +354,7 @@ Makefile, simplifying the entire process for the developer.")
                      ("perl" ,perl)
                      ("help2man" ,help2man) ;because we modify ltmain.sh
                      ("automake" ,automake)      ;some tests rely on 'aclocal'
-                     ("autoconf" ,(autoconf-wrapper)))) ;others on 'autom4te'
+                     ("autoconf" ,autoconf-wrapper))) ;others on 'autom4te'
 
     (arguments
      `(;; Libltdl is provided as a separate package, so don't install it here.

@@ -931,7 +931,7 @@ useful features.")
              (sha256
                (base32 "1sxnaglp5hb0z78sgnfzva4x8m4flqhicvm1dz0krkxdmfsafrsf"))))
     (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,(autoconf-wrapper))
+    (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
                      ("libtool" ,libtool)
                      ("pkg-config" ,pkg-config)))
