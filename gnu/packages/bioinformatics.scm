@@ -10654,6 +10654,16 @@ block processing.")
                (invoke "tar" "xvf" (assoc-ref inputs "hdf5-source"))
                (rename-file (string-append "hdf5-" ,(package-version hdf5))
                             "hdf5")
+               ;; Remove timestamp and host system information to make
+               ;; the build reproducible.
+               (substitute* "hdf5/src/libhdf5.settings.in"
+                 (("Configured on: @CONFIG_DATE@")
+                  "Configured on: Guix")
+                 (("Uname information:.*")
+                  "Uname information: Linux\n")
+                 ;; Remove unnecessary store reference.
+                 (("C Compiler:.*")
+                  "C Compiler: GCC\n"))
                (rename-file "Makevars.in" "Makevars")
                (substitute* "Makevars"
                  (("HDF5_CXX_LIB=.*")
