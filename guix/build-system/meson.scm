@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,8 +81,15 @@
          (system system)
          (build-inputs `(("meson" ,meson)
                          ("ninja" ,ninja)
-                         ;; Add patchelf for (guix build rpath) to work.
-                         ("patchelf" ,(default-patchelf))
+                         ;; XXX PatchELF fails to build on armhf, so we skip
+                         ;; the 'fix-runpath' phase there for now.  It is used
+                         ;; to avoid superfluous entries in RUNPATH as described
+                         ;; in <https://bugs.gnu.org/28444#46>, so armhf may now
+                         ;; have different runtime dependencies from other arches.
+                         ,@(if (not (string-prefix? "arm" (or (%current-target-system)
+                                                              (%current-system))))
+                               `(("patchelf" ,(default-patchelf)))
+                               '())
                          ,@native-inputs))
          (host-inputs `(,@(if source
                               `(("source" ,source))
@@ -139,7 +147,11 @@ has a 'meson.build' file."
                     #:inputs %build-inputs
                     #:search-paths ',(map search-path-specification->sexp
                                           search-paths)
-                    #:phases build-phases
+                    #:phases
+                    (if (string-prefix? "arm" ,(or (%current-target-system)
+                                                   (%current-system)))
+                        (modify-phases build-phases (delete 'fix-runpath))
+                        build-phases)
                     #:configure-flags ,configure-flags
                     #:build-type ,build-type
                     #:tests? ,tests?
