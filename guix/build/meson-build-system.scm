@@ -46,6 +46,15 @@
                  ,(string-append "--buildtype=" build-type)
                  ,@configure-flags
                  ,source-dir)))
+
+    ;; Meson lacks good facilities for dealing with RUNPATH, so we
+    ;; add the output "lib" directory here to avoid doing that in
+    ;; many users.  Related issues:
+    ;; * <https://github.com/mesonbuild/meson/issues/314>
+    ;; * <https://github.com/mesonbuild/meson/issues/3038>
+    ;; * <https://github.com/NixOS/nixpkgs/issues/31222>
+    (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib"))
+
     (mkdir build-dir)
     (chdir build-dir)
     (zero? (apply system* "meson" args))))
