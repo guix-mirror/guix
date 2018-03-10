@@ -445,16 +445,15 @@ particularly useful for embedded systems, such as wireless routers.")
 (define-public liboop
   (package
     (name "liboop")
-    (version "1.0")
+    (version "1.0.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://download.ofb.net/liboop/liboop-"
-                          version ".tar.gz"))
+      (uri (string-append "http://ftp.lysator.liu.se/pub/liboop/"
+                          name "-" version ".tar.gz"))
       (sha256
        (base32
-        "0z6rlalhvfca64jpvksppc9bdhs7jwhiw4y35g5ibvh91xp3rn1l"))
-      (patches (search-patches "liboop-mips64-deplibs-fix.patch"))))
+        "1q0p1l72pq9k3bi7a366j2rishv7dzzkg3i6r2npsfg7cnnidbsn"))))
     (build-system gnu-build-system)
     (home-page "http://www.lysator.liu.se/liboop/")
     (synopsis "Event loop library")

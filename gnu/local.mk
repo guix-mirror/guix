@@ -849,7 +849,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
-  %D%/packages/patches/liboop-mips64-deplibs-fix.patch		\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
   %D%/packages/patches/liblxqt-include.patch			\
   %D%/packages/patches/libmad-armv7-thumb-pt1.patch		\
