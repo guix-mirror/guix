@@ -1012,8 +1012,8 @@ devices management such as graphic tablets.")
     (description
      "X Keyboard (XKB) Extension defines a protocol to provide a number
 of new capabilities and controls for text keyboards.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 ;; requires applewmproto, which compiles only on macos
 ;; (define-public libapplewm
@@ -5106,7 +5106,6 @@ over Xlib, including:
         ("dri3proto" ,dri3proto)
         ("fontsproto" ,fontsproto)
         ("inputproto" ,inputproto)
-        ("kbproto" ,kbproto)
         ("libpciaccess" ,libpciaccess)
         ("mesa" ,mesa)
         ("pixman" ,pixman)
@@ -5282,11 +5281,10 @@ draggable titlebars and borders.")
                                               (assoc-ref %outputs "doc")
                                               "/share/man"))))
     (propagated-inputs
-      `(("kbproto" ,kbproto)
+      `(("xorgproto" ,xorgproto)
         ("libxcb" ,libxcb)))
     (inputs
       `(("inputproto" ,inputproto)
-        ("xorgproto" ,xorgproto)
         ("xtrans" ,xtrans)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
