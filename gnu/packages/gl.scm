@@ -240,15 +240,15 @@ also known as DXTn or DXTC) for Mesa.")
                          "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("glproto" ,glproto)
-        ;; The following are in the Requires.private field of gl.pc.
+      `(;; The following are in the Requires.private field of gl.pc.
         ("libdrm" ,libdrm)
         ("libvdpau" ,libvdpau)
         ("libx11" ,libx11)
         ("libxdamage" ,libxdamage)
         ("libxfixes" ,libxfixes)
         ("libxshmfence" ,libxshmfence)
-        ("libxxf86vm" ,libxxf86vm)))
+        ("libxxf86vm" ,libxxf86vm)
+        ("xorgproto" ,xorgproto)))
     (inputs
       `(("expat" ,expat)
         ("dri2proto" ,dri2proto)

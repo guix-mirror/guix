@@ -935,8 +935,8 @@ the fonts protocol.")
     (description
      "OpenGL Extension defines a protocol for the client to send 3D
 rendering commands to the X server.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public iceauth
   (package
