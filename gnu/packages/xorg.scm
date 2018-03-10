@@ -2000,7 +2000,7 @@ information used in connecting to the X server.")
 (define-public xbacklight
   (package
     (name "xbacklight")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
@@ -2010,7 +2010,7 @@ information used in connecting to the X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0arnd1j8vzhzmw72mqhjjcb2qwcbs9qphsy3ps593ajyld8wzxhp"))))
+            "0pmzaz4kp38qv2lqiw5rnqhwzmwrq65m1x5j001mmv99wh9isnk1"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
