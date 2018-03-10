@@ -322,8 +322,8 @@ the damage protocol.")
      "DMX (Distributed Multihead X) Extension defines a protocol for clients
 to access a front-end proxy X server that controls multiple back-end X
 servers making up a large display.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public dri2proto
   (package
@@ -1037,8 +1037,7 @@ of new capabilities and controls for text keyboards.")
     (inputs
       `(("xorgproto" ,xorgproto)
         ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("dmxproto" ,dmxproto)))
+        ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -5113,7 +5112,6 @@ over Xlib, including:
       `(("damageproto" ,damageproto)
         ("udev" ,eudev)
         ("dbus" ,dbus)
-        ("dmxproto" ,dmxproto)
         ("libdmx" ,libdmx)
         ("libepoxy" ,libepoxy)
         ("libgcrypt" ,libgcrypt)
