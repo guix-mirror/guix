@@ -5766,7 +5766,7 @@ from an XML-based format.")
 (define-public python-ly
   (package
     (name "python-ly")
-    (version "0.9.4")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
@@ -5775,7 +5775,7 @@ from an XML-based format.")
                            "/python-ly-" version ".tar.gz"))
        (sha256
         (base32
-         "0g6n288l83sfwavxh1aryi0aqvsr3sp7v6f903mckwqa4scpky62"))))
+         "0x98dv7p8mg26p4816yy8hz4f34zf6hpnnfmr56msgh9jnsm2qfl"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Some tests need network access.
