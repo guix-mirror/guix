@@ -911,8 +911,8 @@ For example: '6x10', '9x15bold', etc.")
     (description
      "Fonts Extension contains header files and documentation for
 the fonts protocol.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public glproto
   (package
@@ -1116,8 +1116,7 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (inputs
       `(("xtrans" ,xtrans)
-        ("xorgproto" ,xorgproto)
-        ("fontsproto" ,fontsproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -3158,8 +3157,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
                 "14jc24znnahhmz4kqalafmllsg8awlz0y6gpgdpk5ih38ph851mi"))))
     (build-system gnu-build-system)
     (inputs
-      `(("fontsproto" ,fontsproto)
-        ("libxfont" ,libxfont2)
+      `(("libxfont" ,libxfont2)
         ("spice-protocol" ,spice-protocol)
         ("xf86dgaproto" ,xf86dgaproto)
         ("xorg-server" ,xorg-server)
@@ -4878,8 +4876,7 @@ an X Window System display.")
             "0hiji1bvpl78aj3a3141hkk353aich71wv8l5l2z51scfy878zqs"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("fontsproto" ,fontsproto)
-        ("freetype" ,freetype)
+      `(("freetype" ,freetype)
         ("libfontenc" ,libfontenc)
         ("xorgproto" ,xorgproto)))
     (inputs
@@ -5101,7 +5098,6 @@ over Xlib, including:
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
         ("dri3proto" ,dri3proto)
-        ("fontsproto" ,fontsproto)
         ("libpciaccess" ,libpciaccess)
         ("mesa" ,mesa)
         ("pixman" ,pixman)
