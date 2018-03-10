@@ -66,8 +66,7 @@
                         (copy-file (assoc-ref inputs rpd)
                                    (string-append dst rpd))))))))
     (inputs
-     `(("inputproto" ,inputproto)
-       ("fontconfig" ,fontconfig)
+     `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("libXft" ,libxft)
        ("libXi" ,libxi)

@@ -624,8 +624,7 @@ things less distracting.")
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)))
     (native-inputs
-     `(("inputproto" ,inputproto)
-       ("xorgproto" ,xorgproto)))
+     `(("xorgproto" ,xorgproto)))
     (synopsis "Tools to automate tasks in X such as detecting on screen images")
     (description
      "Xautomation can control X from the command line for scripts, and

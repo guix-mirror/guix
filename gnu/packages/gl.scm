@@ -105,7 +105,7 @@ as ASCII text.")
               ("libxi" ,libxi)
               ("libxrandr" ,libxrandr)
               ("libxxf86vm" ,libxxf86vm)
-              ("inputproto" ,inputproto)
+              ("xorgproto" ,xorgproto)
               ("xinput" ,xinput)))
     (propagated-inputs
      ;; Headers from Mesa and GLU are needed.

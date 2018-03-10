@@ -988,8 +988,8 @@ authentication records.")
     (description
      "Input Extension defines a protocol to provide additional input
 devices management such as graphic tablets.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public kbproto
   (package
@@ -2271,7 +2271,7 @@ X server: 'handhelds', 'redglass' and 'whiteglass'.")
             "0ldgrj4w2fa8jng4b3f3biaj0wyn8zvya88pnk70d7k12pcqw8rh"))))
     (build-system gnu-build-system)
     (inputs
-      `(("inputproto" ,inputproto)
+      `(("xorgproto" ,xorgproto)
         ("libx11" ,libx11)
         ("libxxf86vm" ,libxxf86vm)
         ("libxxf86dga" ,libxxf86dga)
@@ -3707,7 +3707,7 @@ alternative implementations like XRandR or TwinView.")
         ("libxext" ,libxext)
         ("libxi" ,libxi)
         ("libx11" ,libx11)
-        ("inputproto" ,inputproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -3812,9 +3812,8 @@ requested commands if they occur.")
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
-        ("xorgproto" ,xorgproto)
         ("libxaw" ,libxaw)
-        ("inputproto" ,inputproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4667,7 +4666,7 @@ cannot be adequately worked around on the client side of the wire.")
         ("libxi" ,libxi)))
     (inputs
       `(("libx11" ,libx11)
-        ("inputproto" ,inputproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4927,12 +4926,10 @@ new API's in libXft, or the legacy API's in libX11.")
             "0idg1wc01hndvaa820fvfs7phvd1ymf0lldmq6386i7rhkzvirn2"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("inputproto" ,inputproto)
+      `(("xorgproto" ,xorgproto)
         ("libx11" ,libx11)
         ("libxext" ,libxext)
         ("libxfixes" ,libxfixes)))
-    (inputs
-      `(("xorgproto" ,xorgproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -5105,7 +5102,6 @@ over Xlib, including:
       `(("dri2proto" ,dri2proto)
         ("dri3proto" ,dri3proto)
         ("fontsproto" ,fontsproto)
-        ("inputproto" ,inputproto)
         ("libpciaccess" ,libpciaccess)
         ("mesa" ,mesa)
         ("pixman" ,pixman)
@@ -5284,8 +5280,7 @@ draggable titlebars and borders.")
       `(("xorgproto" ,xorgproto)
         ("libxcb" ,libxcb)))
     (inputs
-      `(("inputproto" ,inputproto)
-        ("xtrans" ,xtrans)))
+      `(("xtrans" ,xtrans)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")

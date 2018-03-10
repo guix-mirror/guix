@@ -40,7 +40,6 @@
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+-2)
-       ("inputproto" ,inputproto)
        ("libx11" ,libx11)
        ("libxext" ,libxext)
        ("libxi" ,libxi)
