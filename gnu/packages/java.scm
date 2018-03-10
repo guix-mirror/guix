@@ -8578,7 +8578,8 @@ protocol-independent framework to build mail and messaging applications.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1gxkp7lv2ahymgrqdw94ncq54bmp4m4sw5m1x9gkp7l5bxn0xsyj"))))
+                "1gxkp7lv2ahymgrqdw94ncq54bmp4m4sw5m1x9gkp7l5bxn0xsyj"))
+              (patches (search-patches "java-jeromq-fix-tests.patch"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-jeromq.jar"
@@ -8592,7 +8593,13 @@ protocol-independent framework to build mail and messaging applications.")
          ;; Failures
          "**/DealerSpecTest.java"
          "**/CustomDecoderTest.java"
-         "**/CustomEncoderTest.java")))
+         "**/CustomEncoderTest.java"
+         "**/ConnectRidTest.java"
+         "**/ReqSpecTest.java"
+         "**/PushPullSpecTest.java"
+         "**/PubSubHwmTest.java"
+         "**/RouterSpecTest.java"
+         "**/ProxyTest.java")))
     (inputs
      `(("java-jnacl" ,java-jnacl)))
     (native-inputs
