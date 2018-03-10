@@ -39,7 +39,7 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
   #:autoload   (gnu build linux-modules)
-                 (device-module-aliases matching-modules)
+                 (device-module-aliases matching-modules known-module-aliases)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
