@@ -1936,9 +1936,9 @@ and JACK.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("dri2proto" ,dri2proto)
-       ("libx11" ,libx11 "out")
-       ("libxext" ,libxext)))
+     `(("libx11" ,libx11 "out")
+       ("libxext" ,libxext)
+       ("xorgproto" ,xorgproto)))
     (home-page "https://wiki.freedesktop.org/www/Software/VDPAU/")
     (synopsis "Video Decode and Presentation API")
     (description "VDPAU is the Video Decode and Presentation API for UNIX.  It

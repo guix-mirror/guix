@@ -346,7 +346,8 @@ servers making up a large display.")
      "Direct Rendering Infrastructure 2 Extension defines a protocol to
 securely allow user applications to access the video hardware without
 requiring data to be passed through the X server.")
-    (license license:x11)))
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public dri3proto
   (package
@@ -5094,8 +5095,7 @@ over Xlib, including:
             (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("dri2proto" ,dri2proto)
-        ("dri3proto" ,dri3proto)
+      `(("dri3proto" ,dri3proto)
         ("libpciaccess" ,libpciaccess)
         ("mesa" ,mesa)
         ("pixman" ,pixman)
