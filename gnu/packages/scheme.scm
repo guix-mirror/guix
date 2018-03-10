@@ -519,7 +519,7 @@ of libraries.")
 (define-public gambit-c
   (package
     (name "gambit-c")
-    (version "4.8.8")
+    (version "4.8.9")
     (source
      (origin
        (method url-fetch)
@@ -529,7 +529,7 @@ of libraries.")
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "1plw1id94mpg2c4y6q9z39ndcz1hbxfnp3i08szsg6794rasmgkk"))))
+        (base32 "16sg1s8myzxqpimj5ry6lfza0qfs157zj28bvmxwwgy89jd9m5v7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
