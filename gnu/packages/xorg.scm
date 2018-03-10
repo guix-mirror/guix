@@ -4268,7 +4268,7 @@ up your screen.")
 (define-public xsetroot
   (package
     (name "xsetroot")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
@@ -4278,7 +4278,7 @@ up your screen.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1nf3ii31m1knimbidaaym8p61fq3blv8rrdr2775yhcclym5s8ds"))))
+            "0z21mqvmdl6rl63q77479wgkfygnll57liza1i3va7sr4fx45i0h"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
