@@ -2177,7 +2177,7 @@ X11 Inter-Client Communication Conventions Manual (ICCCM).")
 (define-public xcursor-themes
   (package
     (name "xcursor-themes")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -2187,7 +2187,7 @@ X11 Inter-Client Communication Conventions Manual (ICCCM).")
                ".tar.bz2"))
         (sha256
           (base32
-            "11mv661nj1p22sqkv87ryj2lcx4m68a04b0rs6iqh3fzp42jrzg3"))))
+            "0whjiq6d5z4z75zh37pji6llfcyrg6q3mg9zx5zqyncnj39q30xf"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcursor" ,libxcursor)
