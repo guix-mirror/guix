@@ -265,7 +265,7 @@ requests that exceed 262140 bytes in length.")
             "1z0crmf669hirw4s7972mmp8xig80kfndja9h559haqbpvq5k4q4"))))
     (build-system gnu-build-system)
     (inputs
-      `(("fixesproto" ,fixesproto)))
+      `(("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4504,8 +4504,8 @@ formatted dump file, such as produced by xwd.")
      "Fixes Extension makes changes to many areas of the protocol to resolve
 issues raised by application interaction with core protocol mechanisms that
 cannot be adequately worked around on the client side of the wire.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public libxdamage
   (package
@@ -4854,10 +4854,9 @@ an X Window System display.")
             "1miana3y4hwdqdparsccmygqr3ic3hs5jrqfzp70hvi2zwxd676y"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("fixesproto" ,fixesproto)))
+      `(("xorgproto" ,xorgproto)))
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)))
+      `(("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
