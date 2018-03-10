@@ -1935,14 +1935,14 @@ something else) to Python data-types.")
 (define-public python-kitchen
   (package
     (name "python-kitchen")
-    (version "1.2.4")
+    (version "1.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "kitchen" version))
        (sha256
         (base32
-         "0ggv3p4x8jvmmzhp0xm00h6pvh1g0gmycw71rjwagnrj8n23vxrq"))))
+         "1zakh6l0yjvwic9p0nkvmbidpnkygkxbigh2skmb5gccyrhbp7xg"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-chardet" ,python-chardet)))
