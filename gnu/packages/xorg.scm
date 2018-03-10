@@ -1932,8 +1932,8 @@ generate new versions of their configure scripts with autoconf.")
     (description
      "Video Extension provides a protocol for a video output mechanism,
 mainly to rescale video playback in the video controller hardware.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public windowswmproto
   (package
@@ -4698,10 +4698,9 @@ protocol and arbitrary X extension protocol.")
             "125hn06bd3d8y97hm2pbf5j55gg4r2hpd3ifad651i4sr7m16v6j"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("videoproto" ,videoproto)))
+     `(("xorgproto" ,xorgproto)))
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libxext" ,libxext)
+      `(("libxext" ,libxext)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -5103,7 +5102,6 @@ over Xlib, including:
         ("renderproto" ,renderproto)
         ("resourceproto" ,resourceproto)
         ("scrnsaverproto" ,scrnsaverproto)
-        ("videoproto" ,videoproto)
         ("xineramaproto" ,xineramaproto)
         ("xf86driproto" ,xf86driproto)
         ("xorgproto" ,xorgproto)))
