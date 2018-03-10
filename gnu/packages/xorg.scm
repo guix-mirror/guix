@@ -1727,8 +1727,8 @@ of user actions in the X Window System.")
     (description
      "Rendering Extension defines a protcol for a digital image composition
 as the foundation of a new rendering model within the X Window System.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public resourceproto
   (package
@@ -4633,10 +4633,9 @@ cannot be adequately worked around on the client side of the wire.")
             "0j89cnb06g8x79wmmnwzykgkkfdhin9j7hjpvsxwlr3fz1wmjvf0"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("renderproto" ,renderproto)))
+      `(("xorgproto" ,xorgproto)))
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)))
+      `(("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -5098,7 +5097,6 @@ over Xlib, including:
       `(("libpciaccess" ,libpciaccess)
         ("mesa" ,mesa)
         ("pixman" ,pixman)
-        ("renderproto" ,renderproto)
         ("resourceproto" ,resourceproto)
         ("scrnsaverproto" ,scrnsaverproto)
         ("xineramaproto" ,xineramaproto)
