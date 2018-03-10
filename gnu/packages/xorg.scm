@@ -3591,8 +3591,8 @@ requiring data to be passed through the X server.")
     (description
      "XFree86 Video Mode Extension defines a protocol for dynamically
 configuring modelines and gamma.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public xgamma
   (package
@@ -5002,7 +5002,7 @@ new API's in libXft, or the legacy API's in libX11.")
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
-        ("xf86vidmodeproto" ,xf86vidmodeproto)))
+        ("xorgproto" ,xorgproto)))
     (inputs
       `(("libx11" ,libx11)))
     (native-inputs
@@ -5112,7 +5112,6 @@ over Xlib, including:
         ("libxshmfence" ,libxshmfence)
         ("libxt" ,libxt)
         ("libxv" ,libxv)
-        ("xf86vidmodeproto" ,xf86vidmodeproto)
         ("xkbcomp" ,xkbcomp)
         ("xkeyboard-config" ,xkeyboard-config)
         ("xtrans" ,xtrans)
