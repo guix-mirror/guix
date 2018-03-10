@@ -1248,8 +1248,7 @@ hit when running single-threaded.")
     (inputs
       `(("xorgproto" ,xorgproto)
         ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("windowswmproto" ,windowswmproto)))
+        ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -1958,8 +1957,8 @@ mainly to rescale video playback in the video controller hardware.")
 an X11 server and the Microsoft Windows native window manager.  WindowsWM
 is only intended to be used on Cygwin when running a rootless XWin
 server.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public x11perf
   (package
