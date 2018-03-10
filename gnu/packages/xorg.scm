@@ -4353,7 +4353,7 @@ extension.")
 (define-public xwd
   (package
     (name "xwd")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
@@ -4363,7 +4363,7 @@ extension.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0ybx48agdvjp9lgwvcw79r1x6jbqbyl3fliy3i5xwy4d4si9dcrv"))))
+            "1537i8q8pgf0sjklakzfvjwrq5b246qjywrx9ll8xfg0p6w1as6d"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
