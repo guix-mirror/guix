@@ -4211,7 +4211,7 @@ file.")
 (define-public xrefresh
   (package
     (name "xrefresh")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
@@ -4221,7 +4221,7 @@ file.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1mlinwgvql6s1rbf46yckbfr9j22d3c3z7jx3n6ix7ca18dnf4rj"))))
+            "0lv3rlshh7s0z3aqx5ahnnf8cl082m934bk7gv881mz8nydznz98"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)))
