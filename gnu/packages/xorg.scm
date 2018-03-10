@@ -246,8 +246,8 @@ the core protocol and (many) extensions for the X Window System.")
     (description
      "Big Requests Extension defines a protocol to enable the use of
 requests that exceed 262140 bytes in length.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public compositeproto
   (package
@@ -5122,8 +5122,7 @@ over Xlib, including:
         ("xf86driproto" ,xf86driproto)
         ("xorgproto" ,xorgproto)))
     (inputs
-      `(("bigreqsproto" ,bigreqsproto)
-        ("compositeproto" ,compositeproto)
+      `(("compositeproto" ,compositeproto)
         ("damageproto" ,damageproto)
         ("udev" ,eudev)
         ("dbus" ,dbus)
