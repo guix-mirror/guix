@@ -3678,8 +3678,8 @@ This extension provides a common network protocol for querying information
 which may be provided by different underlying screen combination
 technologies in the X server, such as the original Xinerama multiplexer, or
 alternative implementations like XRandR or TwinView.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public xinput
   (package
@@ -4574,7 +4574,7 @@ cannot be adequately worked around on the client side of the wire.")
             "1qlqfvzw45gdzk9xirgwlp2qgj0hbsyiqj8yh8zml2bk2ygnjibs"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("xineramaproto" ,xineramaproto)))
+      `(("xorgproto" ,xorgproto)))
     (inputs
       `(("libxext" ,libxext)
         ("libx11" ,libx11)))
@@ -5093,7 +5093,6 @@ over Xlib, including:
       `(("libpciaccess" ,libpciaccess)
         ("mesa" ,mesa)
         ("pixman" ,pixman)
-        ("xineramaproto" ,xineramaproto)
         ("xorgproto" ,xorgproto)))
     (inputs
       `(("udev" ,eudev)
