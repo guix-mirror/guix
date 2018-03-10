@@ -1453,8 +1453,7 @@ treat it as part of their software base when porting.")
     (inputs
       `(("xorgproto" ,xorgproto)
         ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("resourceproto" ,resourceproto)))
+        ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -1751,8 +1750,8 @@ as the foundation of a new rendering model within the X Window System.")
     (description
      "Resource Extension defines a protocol that allows a client to
 query the X server about its usage of various resources.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public scrnsaverproto
   (package
@@ -5097,7 +5096,6 @@ over Xlib, including:
       `(("libpciaccess" ,libpciaccess)
         ("mesa" ,mesa)
         ("pixman" ,pixman)
-        ("resourceproto" ,resourceproto)
         ("scrnsaverproto" ,scrnsaverproto)
         ("xineramaproto" ,xineramaproto)
         ("xf86driproto" ,xf86driproto)
