@@ -3908,7 +3908,7 @@ programs that have displayed undesired windows on a user's screen.")
 (define-public xlsclients
   (package
     (name "xlsclients")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -3918,7 +3918,7 @@ programs that have displayed undesired windows on a user's screen.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0g9x7rrggs741x9xwvv1k9qayma980d88nhdqw7j3pn3qvy6d5jx"))))
+            "1h8931sn34mcip6vpi4v7hdmr1r58gkbw4s2p97w98kykks2lgvp"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcb" ,libxcb)))
