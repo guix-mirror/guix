@@ -76,7 +76,6 @@
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("compositeproto" ,compositeproto)
        ("curl" ,curl)
        ("ghostscript" ,ghostscript)
        ("giflib" ,giflib)

@@ -273,8 +273,8 @@ requests that exceed 262140 bytes in length.")
     (description
      "Composite Extension contains header files and documentation for
 the damage protocol.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public damageproto
   (package
@@ -1281,8 +1281,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
      ;; xcomposite.pc refers to all these.
       `(("xorgproto" ,xorgproto)
         ("libxfixes" ,libxfixes)
-        ("libx11" ,libx11)
-        ("compositeproto" ,compositeproto)))
+        ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -5120,8 +5119,7 @@ over Xlib, including:
         ("xf86driproto" ,xf86driproto)
         ("xorgproto" ,xorgproto)))
     (inputs
-      `(("compositeproto" ,compositeproto)
-        ("damageproto" ,damageproto)
+      `(("damageproto" ,damageproto)
         ("udev" ,eudev)
         ("dbus" ,dbus)
         ("dmxproto" ,dmxproto)
