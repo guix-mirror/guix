@@ -1702,8 +1702,8 @@ window of a screen.")
     (description
      "Record Extension defines a protocol for the recording and playback
 of user actions in the X Window System.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public renderproto
   (package
@@ -4658,11 +4658,10 @@ cannot be adequately worked around on the client side of the wire.")
             "012jpyj7xfm653a9jcfqbzxyywdmwb2b5wr1dwylx14f3f54jma6"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("recordproto" ,recordproto)
-        ("libxi" ,libxi)))
+     `(("libxi" ,libxi)
+       ("xorgproto" ,xorgproto)))
     (inputs
-      `(("libx11" ,libx11)
-        ("xorgproto" ,xorgproto)))
+      `(("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -5117,7 +5116,6 @@ over Xlib, including:
         ("libxshmfence" ,libxshmfence)
         ("libxt" ,libxt)
         ("libxv" ,libxv)
-        ("recordproto" ,recordproto)
         ("xf86bigfontproto" ,xf86bigfontproto)
         ("xf86dgaproto" ,xf86dgaproto)
         ("xf86vidmodeproto" ,xf86vidmodeproto)
