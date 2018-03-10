@@ -12080,14 +12080,14 @@ ignoring formatting changes.")
 (define-public python-tqdm
   (package
     (name "python-tqdm")
-    (version "4.19.5")
+    (version "4.19.6")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "tqdm" version))
          (sha256
            (base32
-             "0xvkffm77nqckk29xjy5fkqvig5b97vk7nzafp3cn36w4zqyccnz"))))
+             "1pw0ngm0zn9papdmkwipi3yih5c3di6d0w849bdmrraq4d2d9h2y"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)
