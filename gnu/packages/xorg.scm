@@ -297,8 +297,8 @@ the damage protocol.")
     (description
      "Damage Extension contains header files and documentation for
 the damage protocol.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public dmxproto
   (package
@@ -4519,8 +4519,7 @@ cannot be adequately worked around on the client side of the wire.")
     (build-system gnu-build-system)
     (propagated-inputs
       ;; These are all in the Requires or Requires.private field of xdamage.pc
-      `(("damageproto" ,damageproto)
-        ("libxfixes" ,libxfixes)
+      `(("libxfixes" ,libxfixes)
         ("xorgproto" ,xorgproto)
         ("libx11" ,libx11)))
     (native-inputs
@@ -5109,8 +5108,7 @@ over Xlib, including:
         ("xf86driproto" ,xf86driproto)
         ("xorgproto" ,xorgproto)))
     (inputs
-      `(("damageproto" ,damageproto)
-        ("udev" ,eudev)
+      `(("udev" ,eudev)
         ("dbus" ,dbus)
         ("libdmx" ,libdmx)
         ("libepoxy" ,libepoxy)
