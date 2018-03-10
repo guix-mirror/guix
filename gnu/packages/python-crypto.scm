@@ -720,14 +720,14 @@ protocol (Javascript Object Signing and Encryption).")
 (define-public python-pycryptodome
   (package
     (name "python-pycryptodome")
-    (version "3.4.7")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycryptodome" version))
        (sha256
         (base32
-         "1xrsd6ql4w0ypkxnsg3fivs3r3z6dd93x44lhvam7jzh3gixzn0q"))))
+         "15mc1h5ij1b6hcqvb048kb4k0ip64n2ky0zz0rml2s78ylv7g5dp"))))
     (build-system python-build-system)
     (home-page "https://www.pycryptodome.org")
     (synopsis "Cryptographic library for Python")
