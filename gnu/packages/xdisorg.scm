@@ -625,7 +625,6 @@ things less distracting.")
        ("libxtst" ,libxtst)))
     (native-inputs
      `(("inputproto" ,inputproto)
-       ("xextproto" ,xextproto)
        ("xorgproto" ,xorgproto)))
     (synopsis "Tools to automate tasks in X such as detecting on screen images")
     (description

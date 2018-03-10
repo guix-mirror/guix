@@ -46,7 +46,6 @@
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)
        ("recordproto" ,recordproto)
-       ("xextproto" ,xextproto)
        ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))

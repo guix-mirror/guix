@@ -1035,7 +1035,7 @@ of new capabilities and controls for text keyboards.")
             "00djlxas38kbsrglcmwmxfbmxjdchlbj95pqwjvdg8jn5rns6zf9"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xextproto" ,xextproto)
+      `(("xorgproto" ,xorgproto)
         ("libxext" ,libxext)
         ("libx11" ,libx11)
         ("dmxproto" ,dmxproto)))
@@ -1246,7 +1246,7 @@ hit when running single-threaded.")
             "1p0flwb67xawyv6yhri9w17m1i4lji5qnd0gq8v1vsfb8zw7rw15"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xextproto" ,xextproto)
+      `(("xorgproto" ,xorgproto)
         ("libxext" ,libxext)
         ("libx11" ,libx11)
         ("windowswmproto" ,windowswmproto)))
@@ -2381,8 +2381,8 @@ usage.")
 Extended-Visual-Information, Generic Event Extension, LBX, MIT-SHM,
 MIT-SUNDRY-NONSTANDARD, Multi-Buffering, SECURITY, SHAPE, SYNC, TOG-CUP,
 XC-APPGROUP, XTEST.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public libevdev
   (package
@@ -4495,7 +4495,7 @@ formatted dump file, such as produced by xwd.")
             "1ki4wiq2iivx5g4w5ckzbjbap759kfqd72yg18m3zpbb4hqkybxs"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("xextproto" ,xextproto)))
+      `(("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4552,7 +4552,7 @@ cannot be adequately worked around on the client side of the wire.")
             "0dbfn5bznnrhqzvkrcmw4c44yvvpwdcsrvzxf4rk27r36b9x865m"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("xextproto" ,xextproto)))
+      `(("xorgproto" ,xorgproto)))
     (inputs
       `(("libxau" ,libxau)
         ("libx11" ,libx11)))
@@ -5117,7 +5117,6 @@ over Xlib, including:
         ("resourceproto" ,resourceproto)
         ("scrnsaverproto" ,scrnsaverproto)
         ("videoproto" ,videoproto)
-        ("xextproto" ,xextproto)
         ("xineramaproto" ,xineramaproto)
         ("xf86driproto" ,xf86driproto)
         ("xorgproto" ,xorgproto)))
@@ -5290,7 +5289,7 @@ draggable titlebars and borders.")
         ("libxcb" ,libxcb)))
     (inputs
       `(("inputproto" ,inputproto)
-        ("xextproto" ,xextproto)
+        ("xorgproto" ,xorgproto)
         ("xtrans" ,xtrans)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))

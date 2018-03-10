@@ -133,7 +133,7 @@ tools have full access to view and control running applications.")
     `(("ghostscript" ,ghostscript)
       ("libspectre" ,libspectre)
       ("poppler" ,poppler)
-      ("xextproto" ,xextproto)
+      ("xorgproto" ,xorgproto)
       ("zlib" ,zlib)))
    (native-inputs
      `(("pkg-config" ,pkg-config)

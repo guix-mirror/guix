@@ -110,7 +110,6 @@
        ("printproto" ,printproto)
        ("scrnsaverproto" ,scrnsaverproto)
        ("wayland-protocols" ,wayland-protocols)
-       ("xextproto" ,xextproto)
        ("xinput" ,xinput)
        ("xpr" ,xpr)
        ("xorgproto" ,xorgproto)))

@@ -77,7 +77,7 @@
        ("libXtst" ,libxtst)
        ("libX11" ,libx11)
        ("readline" ,readline)
-       ("xextproto" ,xextproto)))
+       ("xorgproto" ,xorgproto)))
     (native-inputs
      `(("perl",perl)
        ("pkg-config" ,pkg-config)
