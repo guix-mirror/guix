@@ -372,7 +372,8 @@ translate between direct rendered buffers and X pixmaps.  When combined with
 the Present extension, a complete direct rendering solution for OpenGL is
 provided.")
     (license (license:x11-style "file://dri3proto.h"
-                                "See 'dri3proto.h' in the distribution."))))
+                                "See 'dri3proto.h' in the distribution."))
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public %app-defaults-dir "/lib/X11/app-defaults")
 
@@ -5095,8 +5096,7 @@ over Xlib, including:
             (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("dri3proto" ,dri3proto)
-        ("libpciaccess" ,libpciaccess)
+      `(("libpciaccess" ,libpciaccess)
         ("mesa" ,mesa)
         ("pixman" ,pixman)
         ("presentproto" ,presentproto)

@@ -251,7 +251,6 @@ also known as DXTn or DXTC) for Mesa.")
         ("xorgproto" ,xorgproto)))
     (inputs
       `(("expat" ,expat)
-        ("dri3proto" ,dri3proto)
         ("libelf" ,libelf)    ;required for r600 when using llvm
         ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
