@@ -3521,8 +3521,8 @@ xf86-video-voodoo/patch/?id=9172ae566a0e85313fc80ab62b4455393eefe593")
     (description
      "XFree86 Bigfont Extension contains header files and documentation
 for the XF86BigFontProto protocol.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public xf86dgaproto
   (package
@@ -5112,7 +5112,6 @@ over Xlib, including:
         ("libxshmfence" ,libxshmfence)
         ("libxt" ,libxt)
         ("libxv" ,libxv)
-        ("xf86bigfontproto" ,xf86bigfontproto)
         ("xf86vidmodeproto" ,xf86vidmodeproto)
         ("xkbcomp" ,xkbcomp)
         ("xkeyboard-config" ,xkeyboard-config)
