@@ -100,7 +100,7 @@
     (inputs
      `(;; TODO: Add these optional dependencies.
        ;; ("libX11" ,libX11)
-       ;; ("xproto" ,xproto)
+       ;; ("xorgproto" ,xorgproto)
        ;; ("tk" ,tk)
        ("tcl" ,tcl)))
     (arguments

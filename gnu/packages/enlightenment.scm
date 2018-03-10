@@ -113,7 +113,7 @@
        ("xextproto" ,xextproto)
        ("xinput" ,xinput)
        ("xpr" ,xpr)
-       ("xproto" ,xproto)))
+       ("xorgproto" ,xorgproto)))
     (propagated-inputs
      ;; All these inputs are in package config files in section
      ;; Requires.private.

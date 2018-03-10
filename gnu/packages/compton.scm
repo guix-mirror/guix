@@ -67,7 +67,7 @@
          ("libdrm" ,libdrm)
          ("pkg-config" ,pkg-config)
          ("python" ,python)
-         ("xproto" ,xproto)))
+         ("xorgproto" ,xorgproto)))
       (arguments
        `(#:make-flags (list
                        "CC=gcc"

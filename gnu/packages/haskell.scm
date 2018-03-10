@@ -1824,7 +1824,7 @@ bindings are a direct translation of the C bindings.")
        ("ghc-utf8-string" ,ghc-utf8-string)
        ("libx11" ,libx11)
        ("libxft" ,libxft)
-       ("xproto" ,xproto)))
+       ("xorgproto" ,xorgproto)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (build-system haskell-build-system)

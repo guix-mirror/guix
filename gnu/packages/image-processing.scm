@@ -164,7 +164,7 @@ of external libraries that provide additional functionality.")
        #:tests? #f))                              ;XXX: no "test" target
     (inputs
      `(("libXt" ,libxt)
-       ("xproto" ,xproto)
+       ("xorgproto" ,xorgproto)
        ("libX11" ,libx11)
        ("libxml2" ,libxml2)
        ("mesa" ,mesa)

@@ -119,7 +119,7 @@
       `(("pkg-config" ,pkg-config)))
     (inputs
       `(("xorg-cf-files" ,xorg-cf-files)
-        ("xproto" ,xproto)))
+        ("xorgproto" ,xorgproto)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -169,7 +169,7 @@ autotools system.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("xproto" ,xproto)))
+     `(("xorgproto" ,xorgproto)))
     (home-page "https://www.x.org/")
     (synopsis "Symlink directory into tree")
     (description "Create a shadow directory of symbolic links to another
@@ -203,6 +203,27 @@ converts X font from Bitmap Distribution Format to Portable Compiled Format
 which can be read by any architecture.")
     (license license:x11)))
 
+(define-public xorgproto
+  (package
+    (name "xorgproto")
+    (version "2018.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/proto/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "180mqkp70i44rkmj430pmn9idssvffrgv4y5h19fm698a7h8bs7y"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     ;; To get util-macros in (almost?) all package inputs.
+     `(("util-macros" ,util-macros)))
+    (home-page "https://cgit.freedesktop.org/xorg/proto/xorgproto")
+    (synopsis "Xorg protocol headers")
+    (description
+     "This package provides the headers and specification documents defining
+the core protocol and (many) extensions for the X Window System.")
+    (license license:x11)))
 
 (define-public bigreqsproto
   (package
@@ -1041,7 +1062,7 @@ of new capabilities and controls for text keyboards.")
                 "032b0nlkdrpbimdld4gqvhqx53rzn8fawvf1ybhzn7lcswgjs6yj"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("xproto" ,xproto)))
+    (inputs `(("xorgproto" ,xorgproto)))
     (home-page "https://www.x.org/")
     (synopsis "Xorg shared memory fences library")
     (description
@@ -1069,7 +1090,7 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
-        ("xproto" ,xproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -1095,7 +1116,7 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (inputs
       `(("xtrans" ,xtrans)
-        ("xproto" ,xproto)
+        ("xorgproto" ,xorgproto)
         ("fontsproto" ,fontsproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -1258,7 +1279,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
     (build-system gnu-build-system)
     (propagated-inputs
      ;; xcomposite.pc refers to all these.
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libxfixes" ,libxfixes)
         ("libx11" ,libx11)
         ("compositeproto" ,compositeproto)))
@@ -1288,7 +1309,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
     (build-system gnu-build-system)
     (inputs
       `(("libbsd" ,libbsd)
-        ("xproto" ,xproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -1319,7 +1340,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
         ("fontconfig" ,fontconfig)))
     (inputs
       `(("libx11" ,libx11)
-        ("xproto" ,xproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -1373,7 +1394,7 @@ configuration files.")
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
-        ("xproto" ,xproto)
+        ("xorgproto" ,xorgproto)
         ("libxext" ,libxext)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -1406,7 +1427,7 @@ treat it as part of their software base when porting.")
     (inputs
       `(("gettext" ,gettext-minimal)
         ("libxt" ,libxt)
-        ("xproto" ,xproto)
+        ("xorgproto" ,xorgproto)
         ("libxext" ,libxext)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -1432,7 +1453,7 @@ treat it as part of their software base when porting.")
             "1m0jr0lbz9ixpp9ihk68349q0i7ry2379lnfzdy4mrl86ijc2xgz"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libxext" ,libxext)
         ("libx11" ,libx11)
         ("resourceproto" ,resourceproto)))
@@ -1548,7 +1569,7 @@ input from UTF-8 into the locale's encoding.")
             "09alw99r6y2bbd1dc786n3jfgv4j520apblyn7cw6jkjydshba7p"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xproto" ,xproto)))
+      `(("xorgproto" ,xorgproto)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg makedepend utility")
@@ -1574,7 +1595,7 @@ input from UTF-8 into the locale's encoding.")
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
-        ("xproto" ,xproto)
+        ("xorgproto" ,xorgproto)
         ("freetype" ,freetype)
         ("libfontenc" ,libfontenc)))
     (native-inputs
@@ -1773,7 +1794,7 @@ features and to query screensaver info on specific windows.")
             "1qd66mg2bnppqz4xgdjzif2488zl82vx2c26ld3nb8pnyginm9vq"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xproto" ,xproto)))
+      `(("xorgproto" ,xorgproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -2319,7 +2340,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
     (inputs
       `(("libxrender" ,libxrender)
         ("libxrandr" ,libxrandr)
-        ("xproto" ,xproto)
+        ("xorgproto" ,xorgproto)
         ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -3142,7 +3163,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
         ("spice-protocol" ,spice-protocol)
         ("xf86dgaproto" ,xf86dgaproto)
         ("xorg-server" ,xorg-server)
-        ("xproto" ,xproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (synopsis "Qxl video driver for X server")
@@ -3712,7 +3733,7 @@ alternative implementations like XRandR or TwinView.")
           "0syfc6zscvai824mzihlnrqxhkcr27dzkpy8zndavi83iischsdw"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libxkbfile" ,libxkbfile)
         ("libx11" ,libx11)))
     (native-inputs
@@ -3791,7 +3812,7 @@ requested commands if they occur.")
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
-        ("xproto" ,xproto)
+        ("xorgproto" ,xorgproto)
         ("libxaw" ,libxaw)
         ("inputproto" ,inputproto)))
     (native-inputs
@@ -3940,7 +3961,7 @@ running on X server.")
          "0s6kxgv78chkwsqmhw929f4pf91gq63f4yvixxnan1h00cx0pf49"))))
     (build-system gnu-build-system)
     (inputs
-     `(("xproto" ,xproto)
+     `(("xorgproto" ,xorgproto)
        ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -4036,7 +4057,7 @@ containing one glyph per cell.")
         (patches (search-patches "xmodmap-asprintf.patch"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -4099,7 +4120,7 @@ refers to the included common xorg.css stylesheet.")
             "07qy9lwjvxighcmg6qvjkgagad3wwvidrfx0jz85lgynz3qy0dmr"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libxmu" ,libxmu)
         ("libx11" ,libx11)))
     (native-inputs
@@ -4128,7 +4149,7 @@ it for output on various types of printers.")
             "06sjgahjiz85v0k0pmv5x05chc591xynl5ah1bqzz1bdr0lgnanj"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -4157,7 +4178,7 @@ an X server.")
     (inputs
       `(("libxrender" ,libxrender)
         ("libxrandr" ,libxrandr)
-        ("xproto" ,xproto)
+        ("xorgproto" ,xorgproto)
         ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -4244,7 +4265,7 @@ up your screen.")
             "0my987wjvra7l92ry6q44ky383yg3phzxhdbn3lqhapm1ll9bzg4"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libxmu" ,libxmu)
         ("libxext" ,libxext)
         ("libx11" ,libx11)))
@@ -4360,7 +4381,7 @@ extension.")
     (inputs
       `(("libxt" ,libxt)
         ("libxkbfile" ,libxkbfile)
-        ("xproto" ,xproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4392,7 +4413,7 @@ dump and twice whenthe dump is completed.")
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
-        ("xproto" ,xproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4419,7 +4440,7 @@ Various information is displayed depending on which options are selected.")
             "1a8hdgy40smvblnh3s9f0vkqckl68nmivx7d48zk34m8z18p16cr"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libx11" ,libx11)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
@@ -4446,7 +4467,7 @@ formatted dump file, such as produced by xwd.")
             "1c76zcjs39ljil6f6jpx1x17c8fnvwazz7zvl3vbjfcrlmm7rjmv"))))
     (build-system gnu-build-system)
     (inputs
-     `(("xproto" ,xproto)))
+     `(("xorgproto" ,xorgproto)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4504,7 +4525,7 @@ cannot be adequately worked around on the client side of the wire.")
       ;; These are all in the Requires or Requires.private field of xdamage.pc
       `(("damageproto" ,damageproto)
         ("libxfixes" ,libxfixes)
-        ("xproto" ,xproto)
+        ("xorgproto" ,xorgproto)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -4617,7 +4638,7 @@ cannot be adequately worked around on the client side of the wire.")
     (propagated-inputs
       `(("renderproto" ,renderproto)))
     (inputs
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -4682,7 +4703,7 @@ protocol and arbitrary X extension protocol.")
     (propagated-inputs
      `(("videoproto" ,videoproto)))
     (inputs
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libxext" ,libxext)
         ("libx11" ,libx11)))
     (native-inputs
@@ -4729,7 +4750,6 @@ server core font system.  The current implementation is a simple wrapper
 script around the mkfontscale program.")
     (license license:x11)))
 
-
 (define-public xproto
   (package
     (name "xproto")
@@ -4758,30 +4778,8 @@ the X Window System Core Protocol, Version 11.
 It also includes a number of headers that aren't purely protocol related,
 but are depended upon by many other X Window System packages to provide
 common definitions and porting layer.")
-    (license license:x11)))
-
-(define-public xorgproto
-  (package
-    (name "xorgproto")
-    (version "2018.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://xorg/individual/proto/"
-                                  name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "180mqkp70i44rkmj430pmn9idssvffrgv4y5h19fm698a7h8bs7y"))))
-    (build-system gnu-build-system)
-    (propagated-inputs
-     ;; To get util-macros in (almost?) all package inputs.
-     `(("util-macros" ,util-macros)))
-    (home-page "https://cgit.freedesktop.org/xorg/proto/xorgproto")
-    (synopsis "Xorg protocol headers")
-    (description
-     "This package provides the headers and specification documents defining
-the core protocol and (many) extensions for the X Window System.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 ;; packages of height 2 in the propagated-inputs tree
 
@@ -4801,7 +4799,7 @@ the core protocol and (many) extensions for the X Window System.")
             "00p2b6bsg6kcdbb39bv46339qcywxfl4hsrz8asm4hy6q7r34w4g"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("xproto" ,xproto)))
+      `(("xorgproto" ,xorgproto)))
     (inputs
       `(("libbsd" ,libbsd)
         ("xtrans" ,xtrans)))
@@ -4829,7 +4827,7 @@ the core protocol and (many) extensions for the X Window System.")
             "1wm4pv12f36cwzhldpp7vy3lhm3xdcnp4f184xkxsp7b18r7gm7x"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("xproto" ,xproto)))
+      `(("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4857,7 +4855,7 @@ an X Window System display.")
     (propagated-inputs
       `(("fixesproto" ,fixesproto)))
     (inputs
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -4885,7 +4883,7 @@ an X Window System display.")
       `(("fontsproto" ,fontsproto)
         ("freetype" ,freetype)
         ("libfontenc" ,libfontenc)
-        ("xproto" ,xproto)))
+        ("xorgproto" ,xorgproto)))
     (inputs
       `(("zlib" ,zlib)
         ("xtrans" ,xtrans)))
@@ -4935,7 +4933,7 @@ new API's in libXft, or the legacy API's in libX11.")
         ("libxext" ,libxext)
         ("libxfixes" ,libxfixes)))
     (inputs
-      `(("xproto" ,xproto)))
+      `(("xorgproto" ,xorgproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4964,7 +4962,7 @@ new API's in libXft, or the legacy API's in libX11.")
         ("libxext" ,libxext)
         ("libxrender" ,libxrender)
         ("randrproto" ,randrproto)
-        ("xproto" ,xproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4991,7 +4989,7 @@ new API's in libXft, or the legacy API's in libX11.")
     (propagated-inputs
       `(("libxv" ,libxv)))
     (inputs
-      `(("xproto" ,xproto)
+      `(("xorgproto" ,xorgproto)
         ("libxext" ,libxext)
         ("libx11" ,libx11)))
     (native-inputs
@@ -5123,7 +5121,7 @@ over Xlib, including:
         ("xextproto" ,xextproto)
         ("xineramaproto" ,xineramaproto)
         ("xf86driproto" ,xf86driproto)
-        ("xproto" ,xproto)))
+        ("xorgproto" ,xorgproto)))
     (inputs
       `(("bigreqsproto" ,bigreqsproto)
         ("compositeproto" ,compositeproto)
@@ -5324,7 +5322,7 @@ draggable titlebars and borders.")
       `(("libx11" ,libx11)
         ("libxrender" ,libxrender)
         ("libxfixes" ,libxfixes)
-        ("xproto" ,xproto)))
+        ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
 ;; TODO: add XCURSOR_PATH=.../share/icons to profile search paths, so
@@ -5398,7 +5396,7 @@ draggable titlebars and borders.")
         ("libxpm" ,libxpm)
         ("libxt" ,libxt)))
     (inputs
-      `(("xproto" ,xproto)))
+      `(("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -5427,7 +5425,7 @@ Intrinsics (Xt) Library.")
      `(("libxt" ,libxt)
        ("libxmu" ,libxmu)
        ("libxext" ,libxext)
-       ("xproto" ,xproto)))
+       ("xorgproto" ,xorgproto)))
     (native-inputs
      `(("bison" ,bison)
        ("pkg-config" ,pkg-config)))
@@ -5650,7 +5648,7 @@ The XCB util-wm module provides the following libraries:
                 "1vw2wlg74ig52naw0cha3pgzcwwk25l834j42cg8m5zmybp3a213"))))
     (build-system gnu-build-system)
     (inputs
-     `(("xproto" ,xproto)
+     `(("xorgproto" ,xorgproto)
        ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -5790,7 +5788,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
        ("libX11" ,libx11)
        ("libXext" ,libxext)
        ("libXt" ,libxt)
-       ("xproto" ,xproto)
+       ("xorgproto" ,xorgproto)
        ("libXaw" ,libxaw)))
     (home-page "https://invisible-island.net/xterm/")
     (synopsis "Terminal emulator for the X Window System")

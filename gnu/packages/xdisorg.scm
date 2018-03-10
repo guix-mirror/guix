@@ -626,7 +626,7 @@ things less distracting.")
     (native-inputs
      `(("inputproto" ,inputproto)
        ("xextproto" ,xextproto)
-       ("xproto" ,xproto)))
+       ("xorgproto" ,xorgproto)))
     (synopsis "Tools to automate tasks in X such as detecting on screen images")
     (description
      "Xautomation can control X from the command line for scripts, and

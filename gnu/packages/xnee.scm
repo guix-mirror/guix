@@ -47,7 +47,7 @@
        ("libxtst" ,libxtst)
        ("recordproto" ,recordproto)
        ("xextproto" ,xextproto)
-       ("xproto" ,xproto)))
+       ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.gnu.org/software/xnee/")
