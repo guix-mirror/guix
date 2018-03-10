@@ -1591,7 +1591,8 @@ IcedTea build harness.")
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
-                    (substitute* "acinclude.m4"
+                    (substitute* '("configure"
+                                   "acinclude.m4")
                       ;; Do not embed build time
                       (("(DIST_ID=\"Custom build).*$" _ prefix)
                        (string-append prefix "\"\n"))
@@ -1600,65 +1601,90 @@ IcedTea build harness.")
                        "DIST_NAME=\"guix\""))
                     #t))))
       (arguments
-       (substitute-keyword-arguments (package-arguments icedtea-7)
-         ((#:configure-flags flags)
-          `(let ((jdk (assoc-ref %build-inputs "jdk")))
-             `(;;"--disable-bootstrap"
-               "--enable-bootstrap"
-               "--enable-nss"
-               "--disable-downloading"
-               "--disable-system-pcsc"
-               "--disable-system-sctp"
-               "--disable-tests"      ;they are run in the check phase instead
-               "--with-openjdk-src-dir=./openjdk.src"
-               ,(string-append "--with-jdk-home=" jdk))))
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (delete 'fix-x11-extension-include-path)
-             (delete 'patch-paths)
-             (delete 'set-additional-paths)
-             (delete 'patch-patches)
-             (add-after 'unpack 'patch-jni-libs
-               ;; Hardcode dynamically loaded libraries.
-               (lambda _
-                 (let* ((library-path (search-path-as-string->list
-                                       (getenv "LIBRARY_PATH")))
-                        (find-library (lambda (name)
-                                        (search-path
-                                         library-path
-                                         (string-append "lib" name ".so")))))
-                   (for-each
-                    (lambda (file)
-                      (catch 'decoding-error
-                        (lambda ()
-                          (substitute* file
-                            (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
-                              _ name version)
-                             (format #f "\"~a\""  (find-library name)))
-                            (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                             (format #f "\"~a\"" (find-library name)))))
-                        (lambda _
-                          ;; Those are safe to skip.
-                          (format (current-error-port)
-                                  "warning: failed to substitute: ~a~%"
-                                  file))))
-                    (find-files "openjdk.src/jdk/src/solaris/native"
-                                "\\.c|\\.h"))
-                   #t)))
-             (replace 'install
-               (lambda* (#:key outputs #:allow-other-keys)
-                 (let ((doc (string-append (assoc-ref outputs "doc")
-                                           "/share/doc/icedtea"))
-                       (jre (assoc-ref outputs "out"))
-                       (jdk (assoc-ref outputs "jdk")))
-                   (copy-recursively "openjdk.build/docs" doc)
-                   (copy-recursively "openjdk.build/images/j2re-image" jre)
-                   (copy-recursively "openjdk.build/images/j2sdk-image" jdk)
-                   ;; Install the nss.cfg file to JRE to enable SSL/TLS
-                   ;; support via NSS.
-                   (copy-file (string-append jdk "/jre/lib/security/nss.cfg")
-                              (string-append jre "/lib/security/nss.cfg"))
-                   #t)))))))
+       `(#:imported-modules
+         ((guix build ant-build-system)
+          (guix build syscalls)
+          ,@%gnu-build-system-modules)
+         ,@(substitute-keyword-arguments (package-arguments icedtea-7)
+             ((#:modules modules)
+              `((guix build utils)
+                (guix build gnu-build-system)
+                ((guix build ant-build-system) #:prefix ant:)
+                (ice-9 match)
+                (ice-9 popen)
+                (srfi srfi-19)
+                (srfi srfi-26)))
+             ((#:configure-flags flags)
+              `(let ((jdk (assoc-ref %build-inputs "jdk")))
+                 `( ;;"--disable-bootstrap"
+                   "--enable-bootstrap"
+                   "--enable-nss"
+                   "--disable-downloading"
+                   "--disable-system-pcsc"
+                   "--disable-system-sctp"
+                   "--disable-tests"  ;they are run in the check phase instead
+                   "--with-openjdk-src-dir=./openjdk.src"
+                   ,(string-append "--with-jdk-home=" jdk))))
+             ((#:phases phases)
+              `(modify-phases ,phases
+                 (delete 'fix-x11-extension-include-path)
+                 (delete 'patch-paths)
+                 (delete 'set-additional-paths)
+                 (delete 'patch-patches)
+                 ;; Prevent the keytool from recording the current time when
+                 ;; adding certificates at build time.
+                 (add-after 'unpack 'patch-keystore
+                   (lambda _
+                     (substitute* "openjdk.src/jdk/src/share/classes/sun/security/provider/JavaKeyStore.java"
+                       (("date = new Date\\(\\);")
+                        "\
+date = (System.getenv(\"SOURCE_DATE_EPOCH\") != null) ?\
+new Date(Long.parseLong(System.getenv(\"SOURCE_DATE_EPOCH\"))) :\
+new Date();"))
+                     #t))
+                 (add-after 'unpack 'patch-jni-libs
+                   ;; Hardcode dynamically loaded libraries.
+                   (lambda _
+                     (let* ((library-path (search-path-as-string->list
+                                           (getenv "LIBRARY_PATH")))
+                            (find-library (lambda (name)
+                                            (search-path
+                                             library-path
+                                             (string-append "lib" name ".so")))))
+                       (for-each
+                        (lambda (file)
+                          (catch 'decoding-error
+                            (lambda ()
+                              (substitute* file
+                                (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
+                                  _ name version)
+                                 (format #f "\"~a\""  (find-library name)))
+                                (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
+                                 (format #f "\"~a\"" (find-library name)))))
+                            (lambda _
+                              ;; Those are safe to skip.
+                              (format (current-error-port)
+                                      "warning: failed to substitute: ~a~%"
+                                      file))))
+                        (find-files "openjdk.src/jdk/src/solaris/native"
+                                    "\\.c|\\.h"))
+                       #t)))
+                 (replace 'install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((doc (string-append (assoc-ref outputs "doc")
+                                               "/share/doc/icedtea"))
+                           (jre (assoc-ref outputs "out"))
+                           (jdk (assoc-ref outputs "jdk")))
+                       (copy-recursively "openjdk.build/docs" doc)
+                       (copy-recursively "openjdk.build/images/j2re-image" jre)
+                       (copy-recursively "openjdk.build/images/j2sdk-image" jdk)
+                       ;; Install the nss.cfg file to JRE to enable SSL/TLS
+                       ;; support via NSS.
+                       (copy-file (string-append jdk "/jre/lib/security/nss.cfg")
+                                  (string-append jre "/lib/security/nss.cfg"))
+                       #t)))
+                 (add-after 'install 'strip-jar-timestamps
+                   (assoc-ref ant:%standard-phases 'strip-jar-timestamps)))))))
       (native-inputs
        `(("jdk" ,icedtea-7 "jdk")
          ("openjdk-src"
