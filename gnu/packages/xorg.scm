@@ -2162,8 +2162,8 @@ generators in individual language bindings.")
     (description
      "XC-MISC Extension defines a protocol that provides Xlib two ways
 to query the server for available resource IDs.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public xcmsdb
   (package
@@ -5122,7 +5122,6 @@ over Xlib, including:
         ("libxt" ,libxt)
         ("libxv" ,libxv)
         ("recordproto" ,recordproto)
-        ("xcmiscproto" ,xcmiscproto)
         ("xf86bigfontproto" ,xf86bigfontproto)
         ("xf86dgaproto" ,xf86dgaproto)
         ("xf86vidmodeproto" ,xf86vidmodeproto)
