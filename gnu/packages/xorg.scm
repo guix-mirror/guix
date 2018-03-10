@@ -1679,7 +1679,8 @@ network-transparent printing system.")
      "Resize and Rotate Extension defines a protocol for clients to
 dynamically change X screens, so as to resize, rotate and reflect the root
 window of a screen.")
-    (license license:x11)))
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 
 (define-public recordproto
@@ -4961,7 +4962,6 @@ new API's in libXft, or the legacy API's in libX11.")
       `(("libx11" ,libx11)
         ("libxext" ,libxext)
         ("libxrender" ,libxrender)
-        ("randrproto" ,randrproto)
         ("xorgproto" ,xorgproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
@@ -5113,7 +5113,6 @@ over Xlib, including:
         ("mesa" ,mesa)
         ("pixman" ,pixman)
         ("presentproto" ,presentproto)
-        ("randrproto" ,randrproto)
         ("renderproto" ,renderproto)
         ("resourceproto" ,resourceproto)
         ("scrnsaverproto" ,scrnsaverproto)
