@@ -286,9 +286,10 @@ Libraries with some extra bells and whistles.")
                  (("/bin/mount") (string-append utils "/bin/mount"))
                  (("/bin/umount") (string-append utils "/bin/umount"))
                  (("/usr/bin/eject") (string-append utils "/bin/eject"))
-                 ; TODO: Replace suspend and hibernate also.
-                 (("/sbin/shutdown -h now") "/run/current-system/profile/sbin/halt")
-                 (("/sbin/shutdown -r now") "/run/current-system/profile/sbin/reboot"))
+                 (("/etc/acpi/sleep.sh force") "/run/current-system/profile/bin/loginctl suspend")
+                 (("/etc/acpi/hibernate.sh force") "/run/current-system/profile/bin/loginctl hibernate")
+                 (("/sbin/shutdown -h now") "/run/current-system/profile/bin/loginctl poweroff now")
+                 (("/sbin/shutdown -r now") "/run/current-system/profile/bin/loginctl reboot now"))
                #t))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
