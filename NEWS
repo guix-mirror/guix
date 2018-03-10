@@ -11,6 +11,13 @@ Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 Please send Guix bug reports to bug-guix@gnu.org.
 
 * Changes in 0.15.0 (since 0.14.0)
+
+** Distribution
+
+*** New services
+
+enlightenment
+
 ** Programming interfaces
 
 *** package-full-name (guix packages) now uses "@" as its delimiter.

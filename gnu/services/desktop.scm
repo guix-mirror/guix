@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (gnu services sound)
   #:use-module ((gnu system file-systems)
                 #:select (%elogind-file-systems))
+  #:use-module (gnu system)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu packages glib)
@@ -45,9 +47,11 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages mate)
+  #:use-module (gnu packages enlightenment)
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix store)
+  #:use-module (guix utils)
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
@@ -96,6 +100,10 @@
             xfce-desktop-service-type
 
             x11-socket-directory-service
+
+            enlightenment-desktop-configuration
+            enlightenment-desktop-configuration?
+            enlightenment-desktop-service-type
 
             %desktop-services))
 
@@ -900,6 +908,60 @@ with the administrator's password."
                         (let ((directory "/tmp/.X11-unix"))
                           (mkdir-p directory)
                           (chmod directory #o777))))))
+
+;;;
+;;; Enlightenment desktop service.
+;;;
+
+(define-record-type* <enlightenment-desktop-configuration>
+  enlightenment-desktop-configuration make-enlightenment-desktop-configuration
+  enlightenment-desktop-configuration?
+  ;; <package>
+  (enlightenment        enlightenment-package
+                        (default enlightenment)))
+
+(define (enlightenment-setuid-programs enlightenment-desktop-configuration)
+  (match-record enlightenment-desktop-configuration
+                <enlightenment-desktop-configuration>
+                (enlightenment)
+    (list (file-append enlightenment
+                       "/lib/enlightenment/utils/enlightenment_sys")
+          (file-append enlightenment
+                       "/lib/enlightenment/utils/enlightenment_backlight")
+          ;; TODO: Move this binary to a screen-locker service.
+          (file-append enlightenment
+                       "/lib/enlightenment/utils/enlightenment_ckpasswd")
+          (file-append enlightenment
+                       (string-append
+                         "/lib/enlightenment/modules/cpufreq/"
+                         (match (string-tokenize (%current-system)
+                                                 (char-set-complement (char-set #\-)))
+                                ((arch "linux") (string-append "linux-gnu-" arch))
+                                ((arch "gnu")   (string-append "gnu-" arch)))
+                         "-"
+                         (version-major+minor (package-version enlightenment))
+                         "/freqset")))))
+
+(define enlightenment-desktop-service-type
+  (service-type
+   (name 'enlightenment-desktop)
+   (extensions
+    (list (service-extension dbus-root-service-type
+                             (compose list
+                                      (package-direct-input-selector
+                                       "efl")
+                                      enlightenment-package))
+          (service-extension setuid-program-service-type
+                             enlightenment-setuid-programs)
+          (service-extension profile-service-type
+                             (compose list
+                                      enlightenment-package))))
+   (default-value (enlightenment-desktop-configuration))
+   (description
+    "Return a service that adds the @code{enlightenment} package to the system
+profile, and extends dbus with the ability for @code{efl} to generate
+thumbnails and makes setuid the programs which enlightenment needs to function
+as expected.")))
 
 
 ;;;

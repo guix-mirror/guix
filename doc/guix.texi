@@ -12678,11 +12678,11 @@ field of an @code{operating-system} declaration (@pxref{operating-system
 Reference, @code{services}}).
 
 Additionally, the @code{gnome-desktop-service},
-@code{xfce-desktop-service} and @code{mate-desktop-service}
-procedures can add GNOME, XFCE and/or MATE to a system.
-To ``add GNOME'' means that system-level services like the
-backlight adjustment helpers and the power management utilities are
-added to the system, extending @code{polkit} and @code{dbus}
+@code{xfce-desktop-service}, @code{mate-desktop-service} and
+@code{enlightenment-desktop-service-type} procedures can add GNOME, XFCE, MATE
+and/or Enlightenment to a system.  To ``add GNOME'' means that system-level
+services like the backlight adjustment helpers and the power management
+utilities are added to the system, extending @code{polkit} and @code{dbus}
 appropriately, allowing GNOME to operate with elevated privileges on a
 limited number of special-purpose system interfaces.  Additionally,
 adding a service made by @code{gnome-desktop-service} adds the GNOME
@@ -12695,7 +12695,10 @@ To ``add MATE'' means that @code{polkit} and @code{dbus} are extended
 appropriately, allowing MATE to operate with elevated privileges on a
 limited number of special-purpose system interfaces.  Additionally,
 adding a service made by @code{mate-desktop-service} adds the MATE
-metapackage to the system profile.
+metapackage to the system profile.  ``Adding ENLIGHTENMENT'' means that
+@code{dbus} is extended appropriately, and several of Enlightenment's binaries
+are set as setuid, allowing Enlightenment's screen locker and other
+functionality to work as expetected.
 
 The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
@@ -12724,6 +12727,18 @@ Return a service that adds the @code{mate} package to the system
 profile, and extends polkit with the actions from
 @code{mate-settings-daemon}.
 @end deffn
+
+@deffn {Scheme Procedure} enlightenment-desktop-service-type
+Return a service that adds the @code{enlightenment} package to the system
+profile, and extends dbus with actions from @code{efl}.
+@end deffn
+
+@deftp {Data Type} enlightenment-desktop-service-configuration
+@table @asis
+@item @code{enlightenment} (default @code{enlightenment})
+The enlightenment package to use.
+@end table
+@end deftp
 
 Because the GNOME, XFCE and MATE desktop services pull in so many packages,
 the default @code{%desktop-services} variable doesn't include any of
