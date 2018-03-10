@@ -1629,7 +1629,8 @@ window contents from a pixmap in a well defined fashion, synchronizing
 with the display refresh and potentially using a more efficient
 mechanism than copying the contents of the source pixmap.")
     (license (license:x11-style "file://presentproto.h"
-                                "See 'presentproto.h' in the distribution."))))
+                                "See 'presentproto.h' in the distribution."))
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public printproto
   (package
@@ -5097,7 +5098,6 @@ over Xlib, including:
       `(("libpciaccess" ,libpciaccess)
         ("mesa" ,mesa)
         ("pixman" ,pixman)
-        ("presentproto" ,presentproto)
         ("renderproto" ,renderproto)
         ("resourceproto" ,resourceproto)
         ("scrnsaverproto" ,scrnsaverproto)
