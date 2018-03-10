@@ -1481,7 +1481,7 @@ treat it as part of their software base when porting.")
       `(("libxext" ,libxext)
         ("libx11" ,libx11)))
     (propagated-inputs
-      `(("scrnsaverproto" ,scrnsaverproto)))
+      `(("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -1774,8 +1774,8 @@ query the X server about its usage of various resources.")
     (description
      "Screen Saver Extension defines a protocol to control screensaver
 features and to query screensaver info on specific windows.")
-    (license license:x11)))
-
+    (license license:x11)
+    (properties `((superseded . ,xorgproto)))))
 
 (define-public sessreg
   (package
@@ -5095,7 +5095,6 @@ over Xlib, including:
       `(("libpciaccess" ,libpciaccess)
         ("mesa" ,mesa)
         ("pixman" ,pixman)
-        ("scrnsaverproto" ,scrnsaverproto)
         ("xineramaproto" ,xineramaproto)
         ("xf86driproto" ,xf86driproto)
         ("xorgproto" ,xorgproto)))

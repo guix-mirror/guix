@@ -107,7 +107,6 @@
        ("openjpeg" ,openjpeg-1)
        ("poppler" ,poppler)
        ("printproto" ,printproto)
-       ("scrnsaverproto" ,scrnsaverproto)
        ("wayland-protocols" ,wayland-protocols)
        ("xinput" ,xinput)
        ("xpr" ,xpr)
