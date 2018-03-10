@@ -3853,7 +3853,7 @@ can be combined together using the 'rules' component of this database.")
 (define-public xkill
   (package
     (name "xkill")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -3863,7 +3863,7 @@ can be combined together using the 'rules' component of this database.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0bl1ky8ps9jg842j4mnmf4zbx8nkvk0h77w7bqjlpwij9wq2mvw8"))))
+            "0szzd9nzn0ybkhnfyizb876irwnjsnb78rcaxx6prb71jmmbpw65"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
