@@ -3935,7 +3935,7 @@ running on X server.")
 (define-public xlsfonts
   (package
     (name "xlsfonts")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
@@ -3945,7 +3945,7 @@ running on X server.")
              ".tar.bz2"))
        (sha256
         (base32
-         "1yi774g6r1kafsbnxbkrwyndd3i60362ck1fps9ywz076pn5naa0"))))
+         "0s6kxgv78chkwsqmhw929f4pf91gq63f4yvixxnan1h00cx0pf49"))))
     (build-system gnu-build-system)
     (inputs
      `(("xproto" ,xproto)
