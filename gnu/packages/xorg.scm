@@ -4414,7 +4414,7 @@ Various information is displayed depending on which options are selected.")
 (define-public xwud
   (package
     (name "xwud")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -4424,7 +4424,7 @@ Various information is displayed depending on which options are selected.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1ggql6maivah58kwsh3z9x1hvzxm1a8888xx4s78cl77ryfa1cyn"))))
+            "1a8hdgy40smvblnh3s9f0vkqckl68nmivx7d48zk34m8z18p16cr"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
