@@ -1181,7 +1181,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
   %D%/packages/patches/libyaml-CVE-2014-9130.patch 		\
-  %D%/packages/patches/zathura-plugindir-environment-variable.patch
+  %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
+  %D%/packages/patches/zsh-CVE-2018-7548.patch			\
+  %D%/packages/patches/zsh-CVE-2018-7549.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in
