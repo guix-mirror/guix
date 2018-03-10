@@ -4094,7 +4094,7 @@ refers to the included common xorg.css stylesheet.")
 (define-public xpr
   (package
     (name "xpr")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -4104,7 +4104,7 @@ refers to the included common xorg.css stylesheet.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1dbcv26w2yand2qy7b3h5rbvw1mdmdd57jw88v53sgdr3vrqvngy"))))
+            "07qy9lwjvxighcmg6qvjkgagad3wwvidrfx0jz85lgynz3qy0dmr"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
