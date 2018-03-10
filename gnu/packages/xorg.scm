@@ -4239,7 +4239,7 @@ up your screen.")
 (define-public xset
   (package
     (name "xset")
-    (version "1.2.3")
+    (version "1.2.4")
     (source
       (origin
         (method url-fetch)
@@ -4249,7 +4249,7 @@ up your screen.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0qw0iic27bz3yz2wynf1gxs70hhkcf9c4jrv7zhlg1mq57xz90j3"))))
+            "0my987wjvra7l92ry6q44ky383yg3phzxhdbn3lqhapm1ll9bzg4"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
