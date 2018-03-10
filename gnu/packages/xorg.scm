@@ -3962,7 +3962,7 @@ protocol.")
 (define-public xfontsel
   (package
     (name "xfontsel")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3970,7 +3970,7 @@ protocol.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1grir464hy52a71r3mpm9mzvkf7nwr3vk0b1vc27pd3gp588a38p"))))
+                "0700lf6hx7dg88wq1yll7zjvf9gbwh06xff20yffkxb289y0pai5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
