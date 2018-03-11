@@ -59,6 +59,7 @@ archive, or a font file."
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (replace 'unpack unpack)
+    (delete 'bootstrap)
     (delete 'configure)
     (delete 'check)
     (delete 'build)

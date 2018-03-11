@@ -278,9 +278,6 @@ random access nor for in-place modification.")
      `(#:parallel-build? #f             ;race conditions
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (invoke "autoreconf")))
          (add-before 'build 'qualify-inputs
            (lambda* (#:key inputs #:allow-other-keys)
              ;; This script is full of pitfalls.  Fix some that particularly

@@ -205,8 +205,7 @@ old-fashioned output methods with powerful ascii-art renderer.")
                  (modify-phases %standard-phases
                    ;; XXX We need to run ./bootstrap because of the build
                    ;; system fixes above.
-                   (add-after
-                    'unpack 'bootstrap
+                   (replace 'bootstrap
                     (lambda _ (zero? (system* "sh" "bootstrap")))))))
     (home-page "http://liba52.sourceforge.net/")
     (synopsis "ATSC A/52 stream decoder")
@@ -2195,7 +2194,7 @@ supported players in addition to this package.")
      `(#:tests? #f             ;tests require Ruby and claim to be unsupported
        #:phases
        (modify-phases %standard-phases
-         (add-before 'patch-source-shebangs 'bootstrap-gtk
+         (replace 'bootstrap
            ;; Run bootstrap ahead of time so that shebangs get patched.
            (lambda _
              (setenv "CONFIG_SHELL" (which "sh"))
@@ -2714,7 +2713,7 @@ It counts more than 100 plugins.")
        ("sqlite" ,sqlite)))
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
+                  (replace 'bootstrap
                     (lambda _
                       (patch-shebang "version.sh")
                       (invoke "autoreconf" "-vfi"))))

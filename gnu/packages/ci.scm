@@ -147,9 +147,6 @@
                  (string-append "--docdir=" %output
                                 "/doc/hydra-" ,version)))
          #:phases (modify-phases %standard-phases
-                    (add-after
-                     'unpack 'bootstrap
-                     (lambda _ (zero? (system* "autoreconf" "-vfi"))))
                     (add-before
                      'check 'check-setup
                      (lambda _ (setenv "LOGNAME" "test.log")))
@@ -221,8 +218,6 @@ their dependencies.")
                (substitute* "build-aux/git-version-gen"
                  (("#!/bin/sh") (string-append "#!" (which "sh"))))
                #t))
-           (add-after 'patch-/bin/sh 'bootstrap
-             (lambda _ (zero? (system* "sh" "bootstrap"))))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Wrap the 'cuirass' command to refer to the right modules.

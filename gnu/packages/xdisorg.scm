@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
@@ -136,12 +136,7 @@ program.")
            "0n7pczk9vv30zf8qfln8ba3hnif9yfdxg0m84djac469wc28hnya"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f     ; There is no test suite
-       #:phases
-       (modify-phases %standard-phases
-         ;; Since version 0.13, bootstrapped releases are no longer available.
-         (add-after 'unpack 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-v")))))))
+     '(#:tests? #f))                              ;there is no test suite
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))

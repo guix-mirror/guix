@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
@@ -1613,12 +1613,7 @@ trees (LSM), for sustained throughput under random insert workloads.")
        #:configure-flags
        (list (string-append "--with-libwiredtiger-prefix="
                             (assoc-ref %build-inputs "wiredtiger")))
-       #:make-flags '("GUILE_AUTO_COMPILE=0")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (invoke "sh" "bootstrap"))))))
+       #:make-flags '("GUILE_AUTO_COMPILE=0")))
     ;; TODO: Remove microkanren.scm when we have a separate package
     ;; for it.
     (native-inputs

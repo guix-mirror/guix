@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -1434,11 +1434,6 @@ output of the 'git' command.")
                (base32
                 "1ydis4y0amkgfr4y60sn076f1l41ya2kn89kfd9fqf44f9ccgb5r"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
-                    (lambda _
-                      (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)))
     (home-page "https://github.com/0-wiz-0/findnewest/releases")

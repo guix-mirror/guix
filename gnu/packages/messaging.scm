@@ -243,13 +243,13 @@ identi.ca and status.net).")
        #:phases
        (modify-phases %standard-phases
          ;; Release 2.12.4 wasn't properly bootstrapped.  Later ones might be!
-         (add-after 'unpack 'bootstrap
+         (add-before 'boostrap 'copy-intltool-makefile
            (lambda* (#:key inputs #:allow-other-keys)
              ;; This file is still required for autoreconf.
              (copy-file (string-append (assoc-ref inputs "intltool")
                                        "/share/intltool/Makefile.in.in")
                         "po/Makefile.in.in")
-             (zero? (system* "autoreconf" "-fiv")))))))
+             #t)))))
     (synopsis "Graphical IRC Client")
     (description
      "HexChat lets you connect to multiple IRC networks at once.  The main
@@ -1365,12 +1365,6 @@ is also scriptable and extensible via Guile.")
                (base32
                 "0iaj56fkd5bjvqpvq3324ni895rmbj1akbfqipjydnghfwaym4z6"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
-           (lambda _
-             (zero? (system* "./bootstrap.sh")))))))
     (inputs
      `(("expat" ,expat)
        ("openssl" ,openssl)))
@@ -1400,12 +1394,6 @@ manual SSL certificate verification.")
                (base32
                 "1hzwdax4nsz0fncf5bjfza0cn0lc6xsf38y569ql1gg5hvwr6169"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
-           (lambda _
-             (zero? (system* "./bootstrap.sh")))))))
     (inputs
      `(("expat" ,expat)
        ("openssl" ,openssl)))

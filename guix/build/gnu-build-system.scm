@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -158,6 +158,43 @@ working directory."
                (zero? (system* "unzip" source))
                (zero? (system* "tar" "xvf" source)))
            (chdir (first-subdirectory ".")))))
+
+(define %bootstrap-scripts
+  ;; Typical names of Autotools "bootstrap" scripts.
+  '("bootstrap" "bootstrap.sh" "autogen.sh"))
+
+(define* (bootstrap #:key (bootstrap-scripts %bootstrap-scripts)
+                    #:allow-other-keys)
+  "If the code uses Autotools and \"configure\" is missing, run
+\"autoreconf\".  Otherwise do nothing."
+  ;; Note: Run that right after 'unpack' so that the generated files are
+  ;; visible when the 'patch-source-shebangs' phase runs.
+  (if (not (file-exists? "configure"))
+
+      ;; First try one of the BOOTSTRAP-SCRIPTS.  If none exists, and it's
+      ;; clearly an Autoconf-based project, run 'autoreconf'.  Otherwise, do
+      ;; nothing (perhaps the user removed or overrode the 'configure' phase.)
+      (let ((script (find file-exists? bootstrap-scripts)))
+        ;; GNU packages often invoke the 'git-version-gen' script from
+        ;; 'configure.ac' so make sure it has a valid shebang.
+        (false-if-file-not-found
+         (patch-shebang "build-aux/git-version-gen"))
+
+        (if script
+            (let ((script (string-append "./" script)))
+              (format #t "running '~a'~%" script)
+              (if (executable-file? script)
+                  (begin
+                    (patch-shebang script)
+                    (invoke script))
+                  (invoke "sh" script)))
+            (if (or (file-exists? "configure.ac")
+                    (file-exists? "configure.in"))
+                (invoke "autoreconf" "-vif")
+                (format #t "no 'configure.ac' or anything like that, \
+doing nothing~%"))))
+      (format #t "GNU build system bootstrapping not needed~%"))
+  #t)
 
 ;; See <http://bugs.gnu.org/17840>.
 (define* (patch-usr-bin-file #:key native-inputs inputs
@@ -672,6 +709,7 @@ which cannot be found~%"
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
     (phases set-SOURCE-DATE-EPOCH set-paths install-locale unpack
+            bootstrap
             patch-usr-bin-file
             patch-source-shebangs configure patch-generated-file-shebangs
             build check install

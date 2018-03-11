@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -950,11 +950,6 @@ painted with a mouse.")
         (base32
          "0w0pamjc3vj0jr718hysrw8x076fq6n9rd6wcb36sn2jd0lqvi98"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _ (zero? (system* "sh" "bootstrap")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

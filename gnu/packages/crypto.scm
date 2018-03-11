@@ -645,12 +645,7 @@ data on your platform, so the seed itself will be as random as possible.
                ;; fat only checks for Intel optimisations
                '("--enable-fat")
                '())
-           "--disable-native") ; don't optimise at build time.
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'bootstrap
-             (lambda _
-               (invoke "sh" "autogen.sh"))))))
+           "--disable-native")))                 ;don't optimise at build time
       (home-page "https://blake2.net/")
       (synopsis "Library implementing the BLAKE2 family of hash functions")
       (description

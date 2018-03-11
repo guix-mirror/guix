@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,6 +76,7 @@
   ;; Everything is as with the GNU Build System except for the `configure',
   ;; `build', `check', and `install' phases.
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (replace 'install install)
     (replace 'check check)
     (replace 'build build)

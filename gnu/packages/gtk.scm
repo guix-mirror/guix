@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -844,11 +844,6 @@ exceptions, macros, and a dynamic programming environment.")
                      "/share/guile/site/@GUILE_EFFECTIVE_VERSION@")))
                 (file-name (string-append name "-" version ".tar.gz"))))
       (build-system gnu-build-system)
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (zero? (system* "autoreconf" "-vfi")))))))
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("autoconf" ,autoconf)
                        ("automake" ,automake)

@@ -1231,7 +1231,7 @@ files.  It is designed to be fast and to handle large input files.")
      `(#:phases
        (modify-phases %standard-phases
          ;; Bootstrapping is required in order to fix the test driver script.
-         (add-after 'unpack 'bootstrap
+         (replace 'bootstrap
            (lambda _
              (zero? (system* "bash" "bootstrap")))))))
     (native-inputs

@@ -494,11 +494,6 @@ smooth contours with constant curvature at the spline joins.")
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("libtool" ,libtool)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-vi")))))))
     (synopsis "Unicode names and annotation list")
     (description
      "LibUniNamesList holds www.unicode.org Nameslist.txt data which can be

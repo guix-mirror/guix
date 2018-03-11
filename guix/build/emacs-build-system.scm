@@ -262,6 +262,7 @@ second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
   (modify-phases gnu:%standard-phases
     (add-after 'set-paths 'set-emacs-load-path set-emacs-load-path)
     (replace 'unpack unpack)
+    (delete 'bootstrap)
     (delete 'configure)
     ;; Move the build phase after install: the .el files are byte compiled
     ;; directly in the store.

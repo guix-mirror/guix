@@ -308,6 +308,7 @@ extended with definitions for VARS."
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (delete 'configure)
     (replace 'unpack unpack)
     (add-before 'build 'extract-gemspec extract-gemspec)

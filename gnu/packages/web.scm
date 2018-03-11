@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
@@ -410,12 +410,7 @@ APIs.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests included
-       #:make-flags (list "CC=gcc")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
+       #:make-flags (list "CC=gcc")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -849,7 +844,7 @@ UTS#46.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
+                  (replace 'bootstrap
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; configure.in and Makefile.am aren't in the root of the
                       ;; source tree.
@@ -4028,11 +4023,7 @@ and vice-versa.")
                 "1bgg2kbj311pqdzw2v33za7k66g1rv44kkvvnz2gnpaasi9k0ii8"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; tests require bundling googletest sources
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-          (lambda _ (zero? (system* "sh" "autogen.sh")))))))
+     `(#:tests? #f))         ;tests require bundling googletest sources
     ;; The release tarball lacks the generated files.
     (native-inputs
      `(("autoconf" ,autoconf)

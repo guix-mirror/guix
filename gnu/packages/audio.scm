@@ -1090,7 +1090,7 @@ also play midifiles using a Soundfont.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
+         (replace 'bootstrap
            (lambda _
              (substitute* "bootstrap" (("\r\n") "\n"))
              (zero? (system* "sh" "bootstrap")))))))
@@ -2476,12 +2476,6 @@ Tracker 3 S3M and Impulse Tracker IT files.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("file" ,file)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "sh" "bootstrap")))))))
     (home-page "http://www.surina.net/soundtouch/")
     (synopsis
      "Audio processing library for changing tempo, pitch and playback rate")
@@ -2884,12 +2878,6 @@ point audio data.")
                "01xi3rvdmil9nawsha04iagjylqr1l9v9vlzk99scs8c207l58i4"))))
     (build-system gnu-build-system)
     ;; The source tarball is not bootstrapped.
-    (arguments
-     `(#:phases
-        (modify-phases %standard-phases
-          (add-after 'unpack 'bootstrap
-            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
-    ;; Bootstrapping tools
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -3102,12 +3090,6 @@ mixers.")
                (base32
                 "1qinf41wl2ihx54zmmhanycihwjkn7dn1cicq6pp4rqbiv79b95x"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -3327,7 +3309,7 @@ representations.")
          (list (string-append "cava_LDFLAGS = -L" lib " -Wl,-rpath " lib)))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
+         (replace 'bootstrap
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "HOME" (getcwd))
              (invoke "sh" "autogen.sh")))

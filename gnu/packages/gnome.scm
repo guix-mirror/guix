@@ -2111,7 +2111,7 @@ editors, IDEs, etc.")
     (arguments
       `(#:configure-flags '("CXXFLAGS=-Wformat=0")
         #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
+                   (replace 'bootstrap
                     (lambda _
                       (setenv "NOCONFIGURE" "true")
                       (zero? (system* "sh" "autogen.sh")))))))
@@ -6016,7 +6016,7 @@ documents and diagrams, playing media, scanning, and much more.")
       (arguments
        '(#:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'bootstrap
+           (replace 'bootstrap
              (lambda _
                ;; The build system cleverly detects that we're not building from
                ;; a release tarball and turns on -Werror for GCC.
@@ -6349,12 +6349,6 @@ functionality and behavior.")
                (base32
                 "0igxpngnkf1wpsg872a9jg3c9f5z8afm312yfbillz16mk8w39cw"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -6391,10 +6385,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
              (substitute* '("Makefile.am")
                (("\\$\\(DESTDIR\\)/usr/share")
                 "$(datadir)"))
-             #t))
-         (add-after 'patch-makefile.am 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -6443,12 +6434,6 @@ simple and consistent.")
                (base32
                 "1ya1cqvv8q847c0rpcg6apzky87q3h04y8jz5nmi52qk6kg8si0b"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))

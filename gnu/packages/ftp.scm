@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -156,11 +156,6 @@ FTP browser, as well as non-interactive commands such as 'ncftpput' and
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
        ("gettext" ,gettext-minimal)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "http://weex.sourceforge.net/")
     (synopsis "Non-interactive client for FTP synchronization")
     (description

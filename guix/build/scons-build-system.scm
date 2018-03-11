@@ -52,6 +52,7 @@
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (delete 'configure)
     (replace 'build build)
     (replace 'check check)

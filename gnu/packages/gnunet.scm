@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
-;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
@@ -321,11 +321,6 @@ kinds of basic applications for the foundation of a GNU internet.")
                  (base32
                   "0k6mn28isjlxrnvbnblab3nh2xqx1b7san8k98kc35ap9lq0iz8w"))))
       (build-system gnu-build-system)
-      (arguments
-       '(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (invoke "autoreconf" "-vfi"))))))
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("autoconf" ,(autoconf-wrapper))
                        ("automake" ,automake)))

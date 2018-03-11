@@ -1529,8 +1529,6 @@ interface and a programmable text output for scripting.")
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
            (lambda _ (chdir "libnet") #t))
-         (add-after 'chdir 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-vif"))))
          (add-before 'build 'build-doc
            (lambda* (#:key make-flags #:allow-other-keys)
              (zero? (apply system* "make" "-C" "doc" "doc"

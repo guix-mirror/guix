@@ -99,6 +99,7 @@
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (delete 'configure)
     (delete 'build)
     (delete 'check) ; tests must be run after installation

@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
@@ -2765,11 +2765,7 @@ framebuffer device.")
        `(#:configure-flags
          (list (string-append "--with-xorg-conf-dir="
                               (assoc-ref %outputs "out")
-                              "/share/X11/xorg.conf.d"))
-         #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (zero? (system* "autoreconf" "-vfi")))))))
+                              "/share/X11/xorg.conf.d"))))
       (home-page "https://www.x.org/wiki/")
       (synopsis "Adreno video driver for X server")
       (description
@@ -2924,11 +2920,7 @@ X server.")
                                     (string-prefix? "x86_64-" system)))
                %supported-systems))
       (arguments
-       '(#:configure-flags '("--with-default-accel=uxa")
-         #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (zero? (system* "autoreconf" "-vfi")))))))
+       '(#:configure-flags '("--with-default-accel=uxa")))
       (home-page "https://www.x.org/wiki/")
       (synopsis "Intel video driver for X server")
       (description

@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@crash.cx>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
@@ -355,12 +355,7 @@ prompt.")
          "119xvdm4r6irqk0mar80hx6s8ydw26y35h7712rd7nbg7pb7i053"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;No tests included.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
+     `(#:tests? #f))                              ;no tests included
     (inputs
      `(("xcb-util-image" ,xcb-util-image)
        ("xcb-util" ,xcb-util)

@@ -228,6 +228,7 @@ repack them.  This is necessary to ensure that archives are reproducible."
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (replace 'unpack unpack)
+    (delete 'bootstrap)
     (replace 'configure configure)
     (replace 'build build)
     (replace 'check check)

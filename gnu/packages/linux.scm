@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -1365,7 +1365,7 @@ Linux-based operating systems.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
+         (add-before 'bootstrap 'patch-stuff
            (lambda _
              ;; Fix "field ‘ip6’ has incomplete type" errors.
              (substitute* "libbridge/libbridge.h"
@@ -1378,7 +1378,7 @@ Linux-based operating systems.")
                (("\\$\\(MAKE\\) \\$\\(MFLAGS\\) -C \\$\\$x ;")
                 "$(MAKE) $(MFLAGS) -C $$x || exit 1;"))
 
-             (zero? (system* "autoreconf" "-vf")))))
+             #t)))
        #:tests? #f))                              ; no 'check' target
 
     (home-page
@@ -1996,14 +1996,13 @@ from the module-init-tools project.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
+         (add-before 'bootstrap 'patch-file-names
            (lambda* (#:key inputs #:allow-other-keys)
             (substitute* "man/make.sh"
               (("/usr/bin/xsltproc")
                 (string-append (assoc-ref inputs "xsltproc")
                                "/bin/xsltproc")))
-            ;; Manual pages are regenerated here.
-            (zero? (system* "./autogen.sh"))))
+            #t))
          (add-after 'install 'build-hwdb
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
@@ -3097,7 +3096,7 @@ write access to exFAT devices.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
+                  (replace 'bootstrap
                     (lambda _
                       ;; The tarball was not generated with 'make dist' so we
                       ;; need to bootstrap things ourselves.
@@ -3232,12 +3231,6 @@ from the btrfs-progs package.  It is meant to be used in initrds.")
                (base32
                 "1bir9ladb58ijlcvrjrq1fb1xv5ys50zdjaq0yzliib0apsyrnyl"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -3457,12 +3450,7 @@ The following service daemons are also provided:
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
-       #:configure-flags '("--without-nistbeacon")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+       #:configure-flags '("--without-nistbeacon")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

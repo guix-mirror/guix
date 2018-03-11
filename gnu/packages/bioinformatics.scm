@@ -4645,9 +4645,9 @@ distribution, coverage uniformity, strand specificity, etc.")
                        "Data2DB"
                        "PCL2Bin")))
            (modify-phases %standard-phases
-             (add-before 'configure 'bootstrap
+             (replace 'bootstrap
                (lambda _
-                 (zero? (system* "bash" "gen_auto"))))
+                 (invoke "bash" "gen_auto")))
              (add-after 'build 'build-additional-tools
                (lambda* (#:key make-flags #:allow-other-keys)
                  (every (lambda (dir)
@@ -10704,13 +10704,6 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
          (sha256
           (base32
            "0g38g8s3npr0gjm9fahlbhiskyfws9l5i0x1ml3rakzj7az5l9c9"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments htslib)
-         ((#:phases phases)
-          `(modify-phases  ,phases
-             (add-after 'unpack 'bootstrap
-               (lambda _
-                 (zero? (system* "autoreconf" "-vif"))))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)

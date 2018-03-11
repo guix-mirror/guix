@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
@@ -140,7 +140,7 @@ online pastebin services.")
    (build-system gnu-build-system)
    (arguments
     `(#:phases (modify-phases %standard-phases
-      (add-after 'unpack 'bootstrap
+      (replace 'bootstrap
         (lambda _
           ;; Make sure all the files are writable so that ./bootstrap
           ;; can proceed.

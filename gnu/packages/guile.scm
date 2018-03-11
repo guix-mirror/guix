@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
@@ -711,9 +711,6 @@ format is also supported.")
                  (("guile/site/2.0")
                   "guile/site/2.2"))
                #t))
-           (add-after 'use-guile-2.2 'bootstrap
-             (lambda _
-               (invoke "autoreconf" "-vfi")))
            (add-after 'install 'wrap-mcron
              (lambda* (#:key outputs #:allow-other-keys)
                ;; Wrap the 'mcron' command to refer to the right
@@ -1824,12 +1821,7 @@ dictionary and suggesting spelling corrections.")
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (zero? (system* "sh" "bootstrap")))))
-
-         #:configure-flags
+       '(#:configure-flags
          ;; Add -I to match 'bash.pc' of Bash 4.4.
          (list (string-append "CPPFLAGS=-I"
                               (assoc-ref %build-inputs "bash:include")
@@ -1959,10 +1951,6 @@ is not available for Guile 2.0.")
       (build-system gnu-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (zero? (system* "autoreconf" "-vfi"))))
-
                     ;; FIXME: On i686, bytestructures miscalculates the offset
                     ;; of the 'old-file' and 'new-file' fields within the
                     ;; '%diff-delta' structure.
@@ -2010,11 +1998,6 @@ manipulate repositories of the Git version control system.")
                  (base32
                   "1zjr6sg3n7xbdsliy45i39dqanxvcms58ayx36wxrz72zpq58vq3"))))
       (build-system gnu-build-system)
-      (arguments
-       '(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (zero? (system* "sh" "bootstrap")))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
@@ -2041,11 +2024,6 @@ HTML (via SXML) or any other format for rendering.")
                (base32
                 "1mzmapln79vv10qxaggz9qwcdbag3jnrj19xx8bgkmxss8h03sv3"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _ (zero? (system* "sh" "bootstrap.sh")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

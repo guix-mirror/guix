@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -59,9 +59,6 @@
      `(#:tests? #f                     ; no 'check' target
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (invoke "autoconf")))
          ;; Some XML-related binaries are required for asciidoc's proper usage.
          ;; Without these, asciidoc fails when parsing XML documents, either
          ;; reporting a missing "xmllint" binary or, when passed the

@@ -693,9 +693,6 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                "--disable-gjdoc")
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'bootstrap
-             (lambda _
-               (zero? (system* "autoreconf" "-vif"))))
            (add-after 'unpack 'remove-unsupported-annotations
              (lambda _
                (substitute* (find-files "java" "\\.java$")

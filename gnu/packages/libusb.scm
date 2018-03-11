@@ -330,12 +330,6 @@ devices.")
                (base32
                 "0qdgyj9rgb7n0nk3ghfswrhzzknxqn4ibn3wj8g4r828pw07451w"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
     (inputs
      `(("libusb" ,libusb)
        ("udev" ,eudev)))

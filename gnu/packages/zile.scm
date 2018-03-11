@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -114,7 +114,7 @@ default Emacs configuration, but it carries a much lighter feature set.")
        (substitute-keyword-arguments (package-arguments zile)
          ((#:phases phases)
           `(modify-phases ,phases
-             (add-after 'unpack 'bootstrap
+             (replace 'bootstrap
                (lambda _
                  ;; Make sure all the files are writable so that ./bootstrap
                  ;; can proceed.

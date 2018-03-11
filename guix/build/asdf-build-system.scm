@@ -220,6 +220,7 @@ valid."
 
 (define %standard-phases/source
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (delete 'configure)
     (delete 'check)
     (delete 'build)
@@ -227,6 +228,7 @@ valid."
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (delete 'configure)
     (delete 'install)
     (replace 'build build)

@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
@@ -4633,8 +4633,6 @@ elements to achieve a simple goal in the most complex way possible.")
                                (string-append "PIONEER_DATA_DIR="
                                               %output "/share/games/pioneer"))
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
-                    (lambda _ (zero? (system* "sh" "bootstrap"))))
                   (add-before 'bootstrap 'fix-lua-check
                     (lambda _
                       (substitute* "configure.ac"

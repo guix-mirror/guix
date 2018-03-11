@@ -299,10 +299,7 @@ down the road.")
                             (which "sh"))))))
              (add-before 'configure 'repack-make
                (lambda _
-                 (zero? (system* "tar" "cJf" "./make.tar.xz" ,make-dir))))
-             (add-after 'unpack 'bootstrap
-               (lambda _
-                 (zero? (system* "autoreconf" "-vfi"))))))))
+                 (zero? (system* "tar" "cJf" "./make.tar.xz" ,make-dir))))))))
       (home-page "https://github.com/losalamos/stress-make")
       (synopsis "Expose race conditions in Makefiles")
       (description
