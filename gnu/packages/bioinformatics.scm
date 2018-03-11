@@ -12791,3 +12791,67 @@ addition to quality control of the experiment, the pipeline enables to set up
 multiple peak calling analysis and allows the generation of a UCSC track hub
 in an easily configurable manner.")
     (license license:gpl3+)))
+
+(define-public pigx-bsseq
+  (package
+    (name "pigx-bsseq")
+    (version "0.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
+                                  "releases/download/v" version
+                                  "/pigx_bsseq-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1h8ma99vi7hs83nafvjpq8jmaq9977j3n11c4zd95hai0cf7zxmp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-timezone
+           ;; The readr package is picky about timezones.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZ" "UTC+1")
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t))
+         (add-after 'install 'wrap-executable
+           ;; Make sure the executable finds all R modules.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/pigx-bsseq")
+                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
+                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
+             #t)))))
+    (native-inputs
+     `(("tzdata" ,tzdata)))
+    (inputs
+     `(("r-minimal" ,r-minimal)
+       ("r-annotationhub" ,r-annotationhub)
+       ("r-dt" ,r-dt)
+       ("r-genomation" ,r-genomation)
+       ("r-methylkit" ,r-methylkit)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-bookdown" ,r-bookdown)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggbio" ,r-ggbio)
+       ("ghc-pandoc" ,ghc-pandoc)
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
+       ("python-wrapper" ,python-wrapper)
+       ("python-pyyaml" ,python-pyyaml)
+       ("snakemake" ,snakemake)
+       ("bismark" ,bismark)
+       ("fastqc" ,fastqc)
+       ("bowtie" ,bowtie)
+       ("trim-galore" ,trim-galore)
+       ("cutadapt" ,cutadapt)
+       ("samtools" ,samtools)))
+    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (synopsis "Bisulfite sequencing pipeline from fastq to methylation reports")
+    (description "PiGx BSseq is a data processing pipeline for raw fastq read
+data of bisulfite experiments; it produces reports on aggregate methylation
+and coverage and can be used to produce information on differential
+methylation and segmentation.")
+    (license license:gpl3+)))
