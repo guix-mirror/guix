@@ -1681,7 +1681,7 @@ short and handy (e.g. to use it as part of a URL).")
 (define-public perl-data-dump
   (package
     (name "perl-data-dump")
-    (version "1.22")
+    (version "1.23")
     (source
      (origin
        (method url-fetch)
@@ -1689,7 +1689,7 @@ short and handy (e.g. to use it as part of a URL).")
                            "Data-Dump-" version ".tar.gz"))
        (sha256
         (base32
-         "1ciqlwsy1q35s94dry9bjy1pwanbq6b7q4rhxm9z8prgkzbslg2k"))))
+         "0r9ba52b7p8nnn6nw0ygm06lygi8g68piri78jmlqyrqy5gb0lxg"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Data-Dump/")
     (synopsis "Pretty printing of data structures")
