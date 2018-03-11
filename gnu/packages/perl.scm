@@ -6880,7 +6880,7 @@ safely on things that may not be objects.")
 (define-public perl-scope-guard
   (package
     (name "perl-scope-guard")
-    (version "0.20")
+    (version "0.21")
     (source
      (origin
        (method url-fetch)
@@ -6888,7 +6888,7 @@ safely on things that may not be objects.")
                            "Scope-Guard-" version ".tar.gz"))
        (sha256
         (base32
-         "1lsagnz6pli035zvx5c1x4qm9fabi773vns86yd8lzfpldhfv3sv"))))
+         "0y6jfzvxiz8h5yfz701shair0ilypq2mvimd7wn8wi2nbkm1p6wc"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Scope-Guard/")
     (synopsis "Lexically-scoped resource management")
