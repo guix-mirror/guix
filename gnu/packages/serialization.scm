@@ -131,7 +131,8 @@ such as compact binary encodings, XML, or JSON.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autoconf
            (lambda _
-             (system* "autoreconf" "-vfi"))))))
+             (invoke "autoreconf" "-vfi")
+             #t)))))
     (home-page "https://www.msgpack.org")
     (synopsis "Binary serialization library")
     (description "Msgpack is a library for C/C++ that implements binary
