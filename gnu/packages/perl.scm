@@ -831,7 +831,7 @@ the Carp.pm module doesn't help.")
 (define-public perl-class-accessor
   (package
     (name "perl-class-accessor")
-    (version "0.34")
+    (version "0.51")
     (source
      (origin
        (method url-fetch)
@@ -839,7 +839,7 @@ the Carp.pm module doesn't help.")
                            "Class-Accessor-" version ".tar.gz"))
        (sha256
         (base32
-         "1z6fqg0yz8gay15r1iasslv8f1n1mzjkrhs47fvbj3rqz36y1cfd"))))
+         "07215zzr4ydf49832vn54i3gf2q5b97lydkv8j56wb2svvjs64mz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-sub-name" ,perl-sub-name)))
