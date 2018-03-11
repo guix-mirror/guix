@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -61,6 +61,7 @@
             delete-file-recursively
             file-name-predicate
             find-files
+            false-if-file-not-found
 
             search-path-as-list
             set-path-environment-variable
@@ -395,6 +396,15 @@ also be included.  If FAIL-ON-ERROR? is true, raise an exception upon error."
                             dir
                             stat)
           string<?)))
+
+(define-syntax-rule (false-if-file-not-found exp)
+  "Evaluate EXP but return #f if it raises to 'system-error with ENOENT."
+  (catch 'system-error
+    (lambda () exp)
+    (lambda args
+      (if (= ENOENT (system-error-errno args))
+          #f
+          (apply throw args)))))
 
 
 ;;;
