@@ -4249,15 +4249,15 @@ installed.")
 (define-public perl-json-maybexs
   (package
     (name "perl-json-maybexs")
-    (version "1.003003")
+    (version "1.003010")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "JSON-MaybeXS-" version ".tar.gz"))
        (sha256
         (base32
-         "0q21wzz87drrvblxcm2py8fcvkzwx1hxzfybynz8ln7wv66vbx3f"))))
+         "0hs504x5zsa2vl6r7b3rvbygsak1ly24m1lg636bqp3x7jirmb30"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-without-module" ,perl-test-without-module)))
