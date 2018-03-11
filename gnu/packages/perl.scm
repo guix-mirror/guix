@@ -4062,14 +4062,14 @@ filehandles; in particular, IO::Scalar, IO::ScalarArray, and IO::Lines.")
 (define-public perl-io-tty
   (package
     (name "perl-io-tty")
-    (version "1.11")
+    (version "1.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/IO-Tty-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0lgd9xcbi4gf4gw1ka6fj94my3w1f3k1zamb4pfln0qxz45zlxx4"))))
+                "0399anjy3bc0w8xzsc3qx5vcyqryc9gc52lc7wh7i49hsdq8gvx2"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/~toddr/IO-Tty//")
     (synopsis "Perl interface to pseudo ttys")
