@@ -4042,7 +4042,7 @@ that reads or writes data from in-core strings.")
 (define-public perl-io-stringy
   (package
     (name "perl-io-stringy")
-    (version "2.110")
+    (version "2.111")
     (source
      (origin
        (method url-fetch)
@@ -4050,7 +4050,7 @@ that reads or writes data from in-core strings.")
                            "IO-stringy-" version ".tar.gz"))
        (sha256
         (base32
-         "1vh4n0k22hx20rwvf6h7lp25wb7spg0089shrf92d2lkncwg8g3y"))))
+         "178rpx0ym5l2m9mdmpnr92ziscvchm541w94fd7ygi6311kgsrwc"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/IO-stringy/")
     (synopsis "IO:: interface for reading/writing an array of lines")
