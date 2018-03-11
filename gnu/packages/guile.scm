@@ -2008,40 +2008,30 @@ manipulate repositories of the Git version control system.")
   (package-for-guile-2.0 guile-git))
 
 (define-public guile-syntax-highlight
-  (let ((commit "a047675e66861b647426372aa2ba7820f749616d")
-        (revision "0"))
-    (package
-      (name "guile-syntax-highlight")
-      (version (string-append "0.0." revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "git://dthompson.us/guile-syntax-highlight.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1zjr6sg3n7xbdsliy45i39dqanxvcms58ayx36wxrz72zpq58vq3"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (zero? (system* "sh" "bootstrap")))))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("guile" ,guile-2.2)))
+  (package
+    (name "guile-syntax-highlight")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.dthompson.us/"
+                                  "guile-syntax-highlight/"
+                                  "guile-syntax-highlight-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1p771kq15x83483m23bhah1sz6vkalg3drm7x279f4j1cxligkzi"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)))
       (synopsis "General-purpose syntax highlighter for GNU Guile")
       (description "Guile-syntax-highlight is a general-purpose syntax
 highlighting library for GNU Guile.  It can parse code written in various
 programming languages into a simple s-expression that can be converted to
 HTML (via SXML) or any other format for rendering.")
-      (home-page "http://dthompson.us/software/guile-syntax-highlight")
-      (license license:lgpl3+))))
+    (home-page "http://dthompson.us/projects/guile-syntax-highlight.html")
+    (license license:lgpl3+)))
 
 (define-public guile-sjson
   (package
