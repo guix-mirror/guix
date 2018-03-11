@@ -3886,39 +3886,30 @@ The jMock library
   (package (inherit java-hamcrest-core)
     (name "java-hamcrest-all")
     (arguments
-     (substitute-keyword-arguments (package-arguments java-hamcrest-core)
-       ;; FIXME: a unit test fails because org.hamcrest.SelfDescribing is not
-       ;; found, although it is part of the hamcrest-core library that has
-       ;; just been built.
-       ;;
-       ;; Fixing this one test is insufficient, though, and upstream confirmed
-       ;; that the latest hamcrest release fails its unit tests when built
-       ;; with Java 7.  See https://github.com/hamcrest/JavaHamcrest/issues/30
-       ((#:tests? _) #f)
-       ((#:build-target _) "bigjar")
-       ((#:phases phases)
-        `(modify-phases ,phases
-           ;; Some build targets override the classpath, so we need to patch
-           ;; the build.xml to ensure that required dependencies are on the
-           ;; classpath.
-           (add-after 'unpack 'patch-classpath-for-integration
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "build.xml"
-                 ((" build/hamcrest-library-\\$\\{version\\}.jar" line)
-                  (string-join
-                   (cons line
-                         (append
-                          (find-files (assoc-ref inputs "java-hamcrest-core") "\\.jar$")
-                          (find-files (assoc-ref inputs "java-junit") "\\.jar$")
-                          (find-files (assoc-ref inputs "java-jmock") "\\.jar$")
-                          (find-files (assoc-ref inputs "java-easymock") "\\.jar$")))
-                   ";")))
-               #t))))))
+     `(#:jdk ,icedtea-8
+       ,@(substitute-keyword-arguments (package-arguments java-hamcrest-core)
+           ((#:build-target _) "bigjar")
+           ((#:phases phases)
+            `(modify-phases ,phases
+               ;; Some build targets override the classpath, so we need to patch
+               ;; the build.xml to ensure that required dependencies are on the
+               ;; classpath.
+               (add-after 'unpack 'patch-classpath-for-integration
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "build.xml"
+                     ((" build/hamcrest-library-\\$\\{version\\}.jar" line)
+                      (string-join
+                       (cons line
+                             (append
+                              (find-files (assoc-ref inputs "java-junit") "\\.jar$")
+                              (find-files (assoc-ref inputs "java-jmock") "\\.jar$")
+                              (find-files (assoc-ref inputs "java-easymock") "\\.jar$")))
+                       ";")))
+                   #t)))))))
     (inputs
      `(("java-junit" ,java-junit)
        ("java-jmock" ,java-jmock-1)
        ("java-easymock" ,java-easymock)
-       ("java-hamcrest-core" ,java-hamcrest-core)
        ,@(package-inputs java-hamcrest-core)))))
 
 (define-public java-jopt-simple
