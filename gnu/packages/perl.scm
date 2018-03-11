@@ -6757,7 +6757,7 @@ variables that should not be changed.")
 (define-public perl-ref-util-xs
   (package
     (name "perl-ref-util-xs")
-    (version "0.116")
+    (version "0.117")
     (source
      (origin
        (method url-fetch)
@@ -6765,7 +6765,7 @@ variables that should not be changed.")
                            "Ref-Util-XS-" version ".tar.gz"))
        (sha256
         (base32
-         "0l5dzbd71iclv8fdjk7685rq6pbfiiydh0n70br6g9l9iy2smr6f"))))
+         "0g33cndhj353h5xjihvgjc2h6vxwkyyzw63r4l06czvq4flcar7v"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Ref-Util-XS/")
     (synopsis "XS implementation for Ref::Util")
