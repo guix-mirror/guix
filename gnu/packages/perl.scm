@@ -2361,7 +2361,7 @@ takes a string and a pattern and returns the `DateTime` object associated.")
 (define-public perl-datetime-locale
   (package
     (name "perl-datetime-locale")
-    (version "1.16")
+    (version "1.17")
     (source
      (origin
        (method url-fetch)
@@ -2369,7 +2369,7 @@ takes a string and a pattern and returns the `DateTime` object associated.")
                            "DateTime-Locale-" version ".tar.gz"))
        (sha256
         (base32
-         "1zkc0wggbsczbj4qadahh197imr9fa6knxr10zl241lw2i14rbyz"))))
+         "1jawnci23kik5x4gln6ixvv9bxznd5f6ira024yjxsc97y5mk9hc"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-file-sharedir" ,perl-file-sharedir)
