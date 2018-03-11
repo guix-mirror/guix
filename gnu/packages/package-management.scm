@@ -257,6 +257,8 @@
          ;; Many tests rely on the 'guile-bootstrap' package, which is why we
          ;; have it here.
          ("boot-guile" ,(bootstrap-guile-origin (%current-system)))
+         ;; Some of the tests use "unshare" when it is available.
+         ("util-linux" ,util-linux)
          ,@(if (and (not (%current-target-system))
                     (string=? (%current-system) "x86_64-linux"))
                `(("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux")))

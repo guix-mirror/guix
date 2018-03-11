@@ -23,7 +23,7 @@ Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
-Copyright @copyright{} 2016, 2017 Chris Marusich@*
+Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nils Gillmann@*
@@ -2899,6 +2899,10 @@ added to it or removed from it after extraction of the pack.
 
 One use case for this is the Guix self-contained binary tarball
 (@pxref{Binary Installation}).
+
+@item --bootstrap
+Use the bootstrap binaries to build the pack.  This option is only
+useful to Guix developers.
 @end table
 
 In addition, @command{guix pack} supports all the common build options
