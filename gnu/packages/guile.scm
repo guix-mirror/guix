@@ -1259,14 +1259,14 @@ Guile's foreign function interface.")
 (define-public haunt
   (package
     (name "haunt")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/haunt/haunt-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1fpaf1vm6s7j13fs35barjh5yajcc2rc3pi8r7278wpgp4i2vs3w"))))
+                "0nm00krmqq4zmqi2irh35dbf2cn6al58s620hijmhfvhgvdqznlp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match) (ice-9 ftw)
@@ -1283,12 +1283,15 @@ Guile's foreign function interface.")
                                     out "/share/guile/site")))
                         (match (scandir site)
                           (("." ".." version)
-                           (let ((modules (string-append site "/" version)))
+                           (let ((modules (string-append site "/" version))
+                                 (compiled-modules (string-append
+                                                    out "/lib/guile/" version
+                                                    "/site-ccache")))
                              (wrap-program (string-append bin "/haunt")
                                `("GUILE_LOAD_PATH" ":" prefix
                                  (,modules))
                                `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                                 (,modules)))
+                                 (,compiled-modules)))
                              #t)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
