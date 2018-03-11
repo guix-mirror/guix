@@ -132,7 +132,7 @@ such as compact binary encodings, XML, or JSON.")
          (add-after 'unpack 'autoconf
            (lambda _
              (system* "autoreconf" "-vfi"))))))
-    (home-page "http://www.msgpack.org")
+    (home-page "https://www.msgpack.org")
     (synopsis "Binary serialization library")
     (description "Msgpack is a library for C/C++ that implements binary
 serialization.")
