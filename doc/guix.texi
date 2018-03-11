@@ -10396,6 +10396,8 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
 @cindex session limits
 @cindex ulimit
 @cindex priority
+@cindex realtime
+@cindex jackd
 @deffn {Scheme Procedure} pam-limits-service [#:limits @code{'()}]
 
 Return a service that installs a configuration file for the
