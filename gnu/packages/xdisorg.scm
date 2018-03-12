@@ -1160,7 +1160,7 @@ gtk-icon-theme-name = nothing-like-this-theme
 gtk-enable-primary-paste = true
 ")))
                #t))))))
-    (home-page "https://davedavenport.github.io/rofi/")
+    (home-page "https://github.com/DaveDavenport/rofi")
     (synopsis "Application launcher")
     (description "Rofi is a minimalist application launcher.  It memorizes which
 applications you regularly use and also allows you to search for an application
