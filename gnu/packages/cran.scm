@@ -37,6 +37,32 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
+(define-public r-readxl
+  (package
+    (name "r-readxl")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "readxl" version))
+       (sha256
+        (base32
+         "1bf7gxw9r11m4llyymplxiaa4gzgyj4bwmwad5in756pzq3jzmpv"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cellranger" ,r-cellranger)
+       ("r-rcpp" ,r-rcpp)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://readxl.tidyverse.org")
+    (synopsis "Read Excel files")
+    (description
+     "This package lets you import Excel files into R.  It supports
+@file{.xls} via the embedded @code{libxls} C library and @file{.xlsx} via
+the embedded @code{RapidXML} C++ library.")
+    ;; XXX: This package bundles a copy of 'libxsl' which is BSD-2 and
+    ;; 'rapidxml' which is Boost.
+    (license (list license:gpl3 license:bsd-2 license:boost1.0))))
+
 (define-public r-modelr
   (package
     (name "r-modelr")
