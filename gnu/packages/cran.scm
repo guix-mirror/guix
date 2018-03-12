@@ -37,6 +37,34 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
+(define-public r-reprex
+  (package
+    (name "r-reprex")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "reprex" version))
+       (sha256
+        (base32
+         "105d9vsmqfilgpw8psfb2wyiz1hvcycvh4cqhb3ab37lm3rcavvs"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-callr" ,r-callr)
+       ("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-whisker" ,r-whisker)))
+    (home-page "https://github.com/tidyverse/reprex")
+    (synopsis "Prepare reproducible R code examples for sharing")
+    (description
+     "This package provides a convenience wrapper that uses the
+@code{rmarkdown} package to render small snippets of code to target formats
+that include both code and output.  The goal is to encourage the sharing of
+small, reproducible, and runnable examples on code-oriented websites or email.
+@code{reprex} also extracts clean, runnable R code from various common formats,
+such as copy/paste from an R session.")
+    (license license:expat)))
+
 (define-public r-callr
   (package
     (name "r-callr")
