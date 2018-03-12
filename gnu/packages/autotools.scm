@@ -325,14 +325,14 @@ Makefile, simplifying the entire process for the developer.")
   ;; Make this the default on the next rebuild cycle.
   (package
     (inherit automake)
-    (version "1.16")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/automake/automake-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "12jvcmkcmd5p14b41w9f7ixd3sca97pymd6lqbkwnl8qn6bjv3zr"))
+                "08g979ficj18i1w6w5219bgmns7czr03iadf20mk3lrzl8wbn1ax"))
               (patches
                (search-patches "automake-skip-amhello-tests.patch"))))))
 
