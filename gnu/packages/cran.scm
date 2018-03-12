@@ -37,6 +37,29 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
+(define-public r-selectr
+  (package
+    (name "r-selectr")
+    (version "0.3-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "selectr" version))
+       (sha256
+        (base32
+         "0kdrj64rqg4z6hg92y9r2h602a2i73r5rnlpg23ys33d5d32n8jy"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-stringr" ,r-stringr)))
+    (home-page "https://sjp.co.nz/projects/selectr/")
+    (synopsis "Translate CSS selectors to XPath expressions")
+    (description
+     "@code{r-selectr} translates a CSS3 selector into an equivalent XPath
+expression.  This allows you to use CSS selectors when working with the XML
+package as it can only evaluate XPath expressions.  Also provided are
+convenience functions useful for using CSS selectors on XML nodes.  This
+package is a port of the Python package @code{cssselect}.")
+    (license license:bsd-3)))
+
 (define-public r-reprex
   (package
     (name "r-reprex")
