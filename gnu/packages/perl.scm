@@ -7521,15 +7521,15 @@ of a system.")
 (define-public perl-task-weaken
   (package
     (name "perl-task-weaken")
-    (version "1.04")
+    (version "1.05")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Task-Weaken-" version ".tar.gz"))
        (sha256
         (base32
-         "1i7kd9v8fjsqyhr4rx4a1jv7n5vfjjm1v4agb24pizh0b72p3qk7"))))
+         "0p5ryr3421p5rqj6dk5dcvxsml5gl9skbn7gv4szk50fimrvzww5"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
