@@ -334,13 +334,13 @@ integrated into the main branch.")
              (string-append "libdir=" %output "/lib/wine64"))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'hardcore-libvulkan-path
+         (add-before 'configure 'patch-source-wine-staging
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((libvulkan (string-append (assoc-ref %build-inputs
-                               "vulkan-icd-loader") "/lib/libvulkan.so")))
-               ;; Hard-code the path to libvulkan.so.
-               (substitute* "dlls/vulkan/vulkan_thunks.c" (("libvulkan.so")
-                            libvulkan))
+             (let* ((source (assoc-ref %build-inputs "source"))
+                    (script (string-append (assoc-ref %build-inputs
+                            "wine-staging-patchset-data")
+                            "/share/wine-staging/patches/patchinstall.sh")))
+               (invoke script (string-append "DESTDIR=" ".") "--all")
                #t)))
          (add-after 'install 'copy-wine32-binaries
            (lambda* (#:key outputs #:allow-other-keys)
