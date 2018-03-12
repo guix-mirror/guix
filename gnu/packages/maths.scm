@@ -12,7 +12,7 @@
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
@@ -418,18 +418,26 @@ computing convex hulls.")
 (define-public arpack-ng
   (package
     (name "arpack-ng")
-    (version "3.2.0")
+    (version "3.5.0")
+    (home-page "https://github.com/opencollab/arpack-ng")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/opencollab/arpack-ng/archive/"
-                           version ".tar.gz"))
+       (uri (string-append home-page "/archive/" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fwch6vipms1ispzg2djvbzv5wag36f1dmmr3xs3mbp6imfyhvff"))))
+         "0f8jx3fifmj9qdp289zr7r651y1q48k1jya859rqxq62mvis7xsh"))))
     (build-system gnu-build-system)
-    (home-page "https://github.com/opencollab/arpack-ng")
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'autoreconf
+                    (lambda _
+                      (invoke "autoreconf" "-vfi"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (inputs
      `(("lapack" ,lapack)
        ("fortran" ,gfortran)))
@@ -439,6 +447,21 @@ computing convex hulls.")
 large scale eigenvalue problems.")
     (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
+
+(define-public arpack-ng-3.3.0
+  (package
+    (inherit arpack-ng)
+    (version "3.3.0")
+    (name (package-name arpack-ng))
+    (home-page (package-home-page arpack-ng))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append home-page "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cz53wqzcf6czmcpfb3vb61xi0rn5bwhinczl65hpmbrglg82ndd"))))))
 
 (define-public arpack-ng-openmpi
   (package (inherit arpack-ng)
