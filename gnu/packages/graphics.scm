@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -251,7 +251,7 @@ exception-handling library.")
 (define-public ogre
   (package
     (name "ogre")
-    (version "1.10.7")
+    (version "1.10.11")
     (source
      (origin
        (method url-fetch)
@@ -259,7 +259,7 @@ exception-handling library.")
                            "/archive/v" version ".tar.gz"))
        (sha256
         (base32
-         "1p0c91cc7zg3c00wjaibnxb0a0xm14mkg0h65pzpw93m0d6nc8wd"))
+         "13bdh9v4026qf8w8rbfln2rmwf0rby1a8fz55zpdvpy105i6cbpz"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
