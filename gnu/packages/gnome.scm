@@ -5600,7 +5600,7 @@ like switching to windows and launching applications.")
 (define-public gtk-vnc
   (package
     (name "gtk-vnc")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
@@ -5609,7 +5609,7 @@ like switching to windows and launching applications.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0gj8dpy3sj4dp810gy67spzh5f0jd8aqg69clcwqjcskj1yawbiw"))))
+         "1cdaywj5lqnl5b22qzd7k7lmacsnmk8b8rc4drk6gvqmcrlsljzk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-gtk=3.0")))
@@ -5625,6 +5625,7 @@ like switching to windows and launching applications.")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)
        ("vala" ,vala)))
     (home-page "https://wiki.gnome.org/Projects/gtk-vnc")
     (synopsis "VNC viewer widget for GTK+")
