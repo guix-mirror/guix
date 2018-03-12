@@ -365,7 +365,7 @@ stemmer at http://snowball.sourceforge.net.")
 (define-public perl-string-toidentifier-en
   (package
     (name "perl-string-toidentifier-en")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method url-fetch)
@@ -373,7 +373,7 @@ stemmer at http://snowball.sourceforge.net.")
                            "String-ToIdentifier-EN-" version ".tar.gz"))
        (sha256
         (base32
-         "1bawghkgkkx7j3avnrj5sg3vix1z5564ks6wf9az3jc2knh8s5nh"))))
+         "12nw7h2yiybhdw0vnnpc7bif8ylhsn6kqf6s39dsrf9h54iq9yrs"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-lingua-en-inflect-phrase" ,perl-lingua-en-inflect-phrase)
