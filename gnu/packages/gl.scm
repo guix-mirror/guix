@@ -556,7 +556,7 @@ OpenGL graphics API.")
 (define-public libepoxy
   (package
     (name "libepoxy")
-    (version "1.4.1")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -564,7 +564,7 @@ OpenGL graphics API.")
                     version "/libepoxy-" version ".tar.xz"))
               (sha256
                (base32
-                "19hsyap2p0sflj75ycf4af9bsp453bamymbcgnmrphigabsspil8"))))
+                "1md58amxyp34yjnw4xa185hw5jm0hnb2xnhdc28zdsx6k19rk52c"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -575,10 +575,6 @@ OpenGL graphics API.")
                    (mesa (assoc-ref inputs "mesa")))
                (substitute* "src/gen_dispatch.py"
                  (("/usr/bin/env python") python))
-               ;; Add support for aarch64, see upstream:
-               ;; https://github.com/anholt/libepoxy/pull/114
-               (substitute* "test/dlwrap.c"
-                 (("GLIBC_2.4") "GLIBC_2.17\", \"GLIBC_2.4"))
                (substitute* (find-files "." "\\.[ch]$")
                  (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
                  (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
