@@ -37,6 +37,53 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
+(define-public r-tidyverse
+  (package
+    (name "r-tidyverse")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tidyverse" version))
+       (sha256
+        (base32
+         "0yy3fkjksgcn6wkbgsb0pbnmsyqs4m01mziqafhig578nixs4rxd"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-broom" ,r-broom)
+       ("r-cli" ,r-cli)
+       ("r-crayon" ,r-crayon)
+       ("r-dbplyr" ,r-dbplyr)
+       ("r-dplyr" ,r-dplyr)
+       ("r-forcats" ,r-forcats)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-haven" ,r-haven)
+       ("r-hms" ,r-hms)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-lubridate" ,r-lubridate)
+       ("r-magrittr" ,r-magrittr)
+       ("r-modelr" ,r-modelr)
+       ("r-purrr" ,r-purrr)
+       ("r-readr" ,r-readr)
+       ("r-readxl" ,r-readxl)
+       ("r-reprex" ,r-reprex)
+       ("r-rlang" ,r-rlang)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-rvest" ,r-rvest)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://tidyverse.tidyverse.org")
+    (synopsis "Install and load packages from the \"Tidyverse\"")
+    (description
+     "The @code{tidyverse} is a set of packages that work in harmony because
+they share common data representations and API design.  This package is
+designed to make it easy to install and load multiple tidyverse packages in a
+single step.")
+    (license license:gpl3)))
+
 (define-public r-rvest
   (package
     (name "r-rvest")
