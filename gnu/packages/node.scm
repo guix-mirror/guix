@@ -41,14 +41,14 @@
 (define-public node
   (package
     (name "node")
-    (version "9.4.0")
+    (version "9.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "0rx947ibcfpa0lf93nayfrmjls7r7svqsq87z0xmjzf8fb9361r4"))))
+                "1mjr1rm5w26c0yb4zq6z5yv3zbvqk18lwbswhwn1sha8hapinjp8"))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO: Purge the bundled copies from the source.
@@ -77,29 +77,13 @@
                (("'/usr/bin/env'")
                 (string-append "'" (which "env") "'")))
 
-
-             ;; test-make-doc needs doc-only target, which is inhibited below
-             (for-each delete-file
-                       '("test/doctool/test-make-doc.js"))
              ;; FIXME: These tests depend on being able to install eslint.
              ;; See https://github.com/nodejs/node/issues/17098.
              (for-each delete-file
-                       '("test/parallel/test-eslint-crypto-check.js"
-                         "test/parallel/test-eslint-alphabetize-errors.js"
+                       '("test/parallel/test-eslint-alphabetize-errors.js"
                          "test/parallel/test-eslint-buffer-constructor.js"
                          "test/parallel/test-eslint-documented-errors.js"
-                         "test/parallel/test-eslint-inspector-check.js"
-                         "test/parallel/test-eslint-lowercase-name-for-primitive.js"
-                         "test/parallel/test-eslint-no-unescaped-regexp-dot.js"
-                         "test/parallel/test-eslint-no-let-in-for-declaration.js"
-                         "test/parallel/test-eslint-number-isnan.js"
-                         "test/parallel/test-eslint-prefer-assert-iferror.js"
-                         "test/parallel/test-eslint-prefer-assert-methods.js"
-                         "test/parallel/test-eslint-prefer-common-expectserror.js"
-                         "test/parallel/test-eslint-prefer-common-mustnotcall.js"
-                         "test/parallel/test-eslint-prefer-util-format-errors.js"
-                         "test/parallel/test-eslint-require-buffer.js"
-                         "test/parallel/test-eslint-required-modules.js"))
+                         "test/parallel/test-eslint-inspector-check.js"))
 
              ;; FIXME: These tests fail in the build container, but they don't
              ;; seem to be indicative of real problems in practice.
@@ -135,14 +119,6 @@
                              (string-append (assoc-ref inputs "python")
                                             "/bin/python")
                              "configure" flags)))))
-         (add-before 'check 'skip-check-doc-only
-           (lambda _
-             (substitute* "Makefile"
-               ;; requires js-yaml, which is not part of the distribution,
-               ;; and falls back to using npm to download it
-               (("\\$\\(MAKE\\) doc-only" all)
-                (string-append "#" all)))
-             #t))
          (add-after 'patch-shebangs 'patch-npm-shebang
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((bindir (string-append (assoc-ref outputs "out")
