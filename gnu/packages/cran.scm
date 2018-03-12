@@ -37,6 +37,31 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
+(define-public r-rvest
+  (package
+    (name "r-rvest")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rvest" version))
+       (sha256
+        (base32
+         "04mv99z8dixywx96kfy4215g6ib23s7qvd77hcf9pxqxzcvqhvhd"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httr" ,r-httr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-selectr" ,r-selectr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://github.com/hadley/rvest")
+    (synopsis "Simple web scraping for R")
+    (description
+     "@code{r-rvest} helps you scrape information from web pages.  It is
+designed to work with @code{magrittr} to make it easy to express common web
+scraping tasks, inspired by libraries like @code{BeautifulSoup}.")
+    (license license:gpl3)))
+
 (define-public r-selectr
   (package
     (name "r-selectr")
