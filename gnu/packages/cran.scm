@@ -37,6 +37,33 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
+(define-public r-modelr
+  (package
+    (name "r-modelr")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "modelr" version))
+       (sha256
+        (base32
+         "1rqw0b583vp107zqp4h3wj51dvv4hb3wszfr1f5f48xassc53f95"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-broom" ,r-broom)
+       ("r-dplyr" ,r-dplyr)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/tidyverse/modelr")
+    (synopsis "Helper functions for modelling in pipelines")
+    (description
+     "Functions for modelling that help you seamlessly integrate modelling
+into a pipeline of data manipulation and visualisation.")
+    (license license:gpl3)))
+
 (define-public r-haven
   (package
     (name "r-haven")
