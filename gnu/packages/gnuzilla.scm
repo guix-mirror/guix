@@ -286,7 +286,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.35")
+    (version "3.36")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -297,7 +297,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "1ypn68z9ncbbshi3184ywrhx5i846lyd72gps1grzqzdkgh7s4pl"))
+                "1580qc0a4s8v3k3vg7zz4xly4alkjrw7qq9zy2nf6p4v56wcfg53"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))))
