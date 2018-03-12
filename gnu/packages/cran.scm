@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2018 Sahithi Yarlagadda <sahi@swecha.net>
 ;;; Copyright © 2018 Sandeep Subramanian <sandeepsubramanian94@gmail.com>
+;;; Copyright © 2018 Charlie Ritter <chewzeirta@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,31 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
+
+(define-public r-haven
+  (package
+    (name "r-haven")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "haven" version))
+       (sha256
+        (base32
+         "1fkcvsrnw8waqwggv0aydbvbi99x5kp9g78xfxj4w6s3xvdzcysz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-forcats" ,r-forcats)
+       ("r-hms" ,r-hms)
+       ("r-rcpp" ,r-rcpp)
+       ("r-readr" ,r-readr)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://haven.tidyverse.org")
+    (synopsis "Import and Export 'SPSS', 'Stata' and 'SAS' Files")
+    (description
+     "This package lets you mport foreign statistical formats into R via the
+embedded @url{https://github.com/WizardMac/ReadStat,ReadStat} C library.")
+    (license license:expat)))
 
 (define-public r-ape
   (package
