@@ -31,9 +31,11 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
@@ -48,16 +50,36 @@
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "1mjr1rm5w26c0yb4zq6z5yv3zbvqk18lwbswhwn1sha8hapinjp8"))))
+                "1mjr1rm5w26c0yb4zq6z5yv3zbvqk18lwbswhwn1sha8hapinjp8"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  ;; Remove bundled software.
+                  (for-each delete-file-recursively
+                            '("deps/cares"
+                              "deps/http_parser"
+                              "deps/icu-small"
+                              "deps/nghttp2"
+                              "deps/openssl"
+                              "deps/uv"
+                              "deps/zlib"))
+                  (substitute* "Makefile"
+                    ;; Remove references to bundled software
+                    (("deps/http_parser/http_parser.gyp") "")
+                    (("deps/uv/include/\\*.h") "")
+                    (("deps/uv/uv.gyp") "")
+                    (("deps/zlib/zlib.gyp") ""))))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO: Purge the bundled copies from the source.
-     '(#:configure-flags '("--shared-openssl"
-                           "--shared-zlib"
-                           "--shared-libuv"
-                           "--shared-cares"
+     '(#:configure-flags '("--shared-cares"
                            "--shared-http-parser"
-                           "--without-snapshot")
+                           "--shared-libuv"
+                           "--shared-nghttp2"
+                           "--shared-openssl"
+                           "--shared-zlib"
+                           "--without-snapshot"
+                           "--with-intl=system-icu")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-files
@@ -131,6 +153,7 @@
     (native-inputs
      `(("python" ,python-2)
        ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
        ("procps" ,procps)
        ("util-linux" ,util-linux)
        ("which" ,which)))
@@ -141,7 +164,9 @@
     (inputs
      `(("c-ares" ,c-ares)
        ("http-parser" ,http-parser)
+       ("icu4c" ,icu4c)
        ("libuv" ,libuv)
+       ("nghttp2" ,nghttp2 "lib")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (synopsis "Evented I/O for V8 JavaScript")
