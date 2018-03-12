@@ -98,7 +98,7 @@ converting a word to singular or plural.")
 (define-public perl-lingua-en-inflect-phrase
   (package
     (name "perl-lingua-en-inflect-phrase")
-    (version "0.18")
+    (version "0.20")
     (source
      (origin
        (method url-fetch)
@@ -106,7 +106,7 @@ converting a word to singular or plural.")
                            "Lingua-EN-Inflect-Phrase-" version ".tar.gz"))
        (sha256
         (base32
-         "19prg6pkgnznrc82ymdkdi3l9schg815axjig7adca5yqa7mn2i9"))))
+         "1a6y1l2pjim2242wcpgz066di4pbzfgsjjdl7vg5a5wzm48qj1am"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-nowarnings" ,perl-test-nowarnings)))
