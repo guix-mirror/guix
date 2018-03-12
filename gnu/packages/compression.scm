@@ -1017,7 +1017,8 @@ human-readable output.")
              "http://ck.kolivas.org/apps/lrzip/lrzip-" version ".tar.bz2"))
        (sha256
         (base32
-         "0mb449vmmwpkalq732jdyginvql57nxyd31sszb108yps1lf448d"))))
+         "0mb449vmmwpkalq732jdyginvql57nxyd31sszb108yps1lf448d"))
+       (patches (search-patches "lrzip-CVE-2017-8842.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; nasm is only required when building for 32-bit x86 platforms
