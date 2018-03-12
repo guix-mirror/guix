@@ -274,7 +274,7 @@ in C/C++.")
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSPR")
     (synopsis "Netscape API for system level and libc-like functions")
-    (description "Netscape Portable Runtime (NSPR) provides a
+    (description "Netscape Portable Runtime (@dfn{NSPR}) provides a
 platform-neutral API for system level and libc-like functions.  It is used
 in the Mozilla clients.")
     (license license:mpl2.0)))
