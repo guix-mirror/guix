@@ -51,7 +51,8 @@
             matching-modules
             missing-modules
 
-            write-module-alias-database))
+            write-module-alias-database
+            write-module-device-database))
 
 ;;; Commentary:
 ;;;
@@ -505,6 +506,55 @@ are required to access DEVICE."
                    (for-each (lambda (alias)
                                (format port "alias ~a ~a\n" alias module))
                              aliases)))
+                aliases))))
+
+(define (aliases->device-tuple aliases)
+  "Traverse ALIASES, a list of module aliases, and search for
+\"char-major-M-N\", \"block-major-M-N\", or \"devname:\" aliases.  When they
+are found, return a tuple (DEVNAME TYPE MAJOR MINOR), otherwise return #f."
+  (define (char/block-major? alias)
+    (or (string-prefix? "char-major-" alias)
+        (string-prefix? "block-major-" alias)))
+
+  (define (char/block-major->tuple alias)
+    (match (string-tokenize alias %not-dash)
+      ((type "major" (= string->number major) (= string->number minor))
+       (list (match type
+               ("char" "c")
+               ("block" "b"))
+             major minor))))
+
+  (let* ((devname     (any (lambda (alias)
+                             (and (string-prefix? "devname:" alias)
+                                  (string-drop alias 8)))
+                           aliases))
+         (major/minor (match (find char/block-major? aliases)
+                        (#f #f)
+                        (str (char/block-major->tuple str)))))
+    (and devname major/minor
+         (cons devname major/minor))))
+
+(define %not-dash
+  (char-set-complement (char-set #\-)))
+
+(define (write-module-device-database directory)
+  "Traverse the '.ko' files in DIRECTORY and create the corresponding
+'modules.devname' file.  This file contains information about modules that can
+be loaded on-demand, such as file system modules."
+  (define aliases
+    (filter-map (lambda (file)
+                  (match (aliases->device-tuple (module-aliases file))
+                    (#f #f)
+                    (tuple (cons (file-name->module-name file) tuple))))
+                (find-files directory "\\.ko$")))
+
+  (call-with-output-file (string-append directory "/modules.devname")
+    (lambda (port)
+      (display "# Device nodes to trigger on-demand module loading.\n" port)
+      (for-each (match-lambda
+                  ((module devname type major minor)
+                   (format port "~a ~a ~a~a:~a~%"
+                           module devname type major minor)))
                 aliases))))
 
 ;;; linux-modules.scm ends here
