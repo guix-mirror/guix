@@ -26,9 +26,12 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
@@ -211,6 +214,50 @@ integrate Windows applications into your desktop.")
                                   (package-arguments wine))))
     (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
+
+(define-public wine-staging-patchset-data
+  (package
+   (name "wine-staging-patchset-data")
+   (version "3.3")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/wine-staging/wine-staging/archive/v"
+                         version ".zip"))
+     (file-name (string-append name "-" version ".zip"))
+     (sha256
+      (base32
+       "16l28vrhqn27kipqwms622jz1prfky8qkjb8pj747k3qjnm2k1g9"))))
+   (build-system trivial-build-system)
+   (native-inputs
+    `(("bash" ,bash)
+      ("coreutils" ,coreutils)
+      ("unzip" ,unzip)))
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder
+      (begin
+        (use-modules (guix build utils))
+        (let* ((out (assoc-ref %outputs "out"))
+               (wine-staging (string-append out "/share/wine-staging"))
+               (source (assoc-ref %build-inputs "source"))
+               (sh (string-append (assoc-ref %build-inputs "bash") "/bin/bash"))
+               (env (string-append (assoc-ref %build-inputs "coreutils") "/bin/env"))
+               (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+          (copy-file source (string-append ,name "-" ,version ".zip"))
+          (invoke unzip (string-append ,name "-" ,version ".zip"))
+          (substitute* (string-append "wine-staging-" ,version
+                                      "/patches/patchinstall.sh") (("/bin/sh") sh))
+          (substitute* (string-append "wine-staging-" ,version
+                                      "/patches/gitapply.sh") (("/usr/bin/env") env))
+          (mkdir-p wine-staging)
+          (copy-recursively (string-append "wine-staging-" ,version)
+                            wine-staging)))))
+   (home-page "https://github.com/wine-staging")
+   (synopsis "Patchset for Wine")
+   (description
+    "wine-staging-patchset-data contains the patchset to build Wine-Staging.")
+   (license license:lgpl2.1+)))
 
 (define-public wine-staging
   (package
