@@ -37,6 +37,32 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
+(define-public r-callr
+  (package
+    (name "r-callr")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "callr" version))
+       (sha256
+        (base32
+         "0m51p39vfwldxv6h8x4y9w3laf8q9bldhfqhlcrlx3xhy3irb1bp"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-crayon" ,r-crayon)
+       ("r-debugme" ,r-debugme)
+       ("r-r6" ,r-r6)
+       ("r-testthat" ,r-testthat)))
+    (home-page "https://github.com/r-lib/callr#readme")
+    (synopsis "Call R from R")
+    (description
+     "It is sometimes useful to perform a computation in a separate R process,
+without affecting the current R process at all.  This packages does exactly
+that.")
+    (license license:expat)))
+
 (define-public r-readxl
   (package
     (name "r-readxl")
