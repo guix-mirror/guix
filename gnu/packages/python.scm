@@ -12263,6 +12263,7 @@ executed more than a given number of times during a given period.")
        (method url-fetch)
        (uri (string-append "https://github.com/kovidgoyal/dukpy/archive/v"
                            version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "0pj39rfwlzivqm5hkrsza7gssg6ggpxlq5ivc8f3h7x5pfgc6y6c"))))
