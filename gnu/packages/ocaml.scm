@@ -1164,6 +1164,7 @@ to use -- to sophisticated random generation of test cases.")
               (method url-fetch)
               (uri (string-append "https://github.com/rgrinberg/stringext"
                                   "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "19g6lfn03iki9f8h91hi0yiqn0b3wkxyq08b3y23wgv6jw6mssfh"))))
