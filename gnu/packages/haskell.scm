@@ -63,7 +63,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (ice-9 regex))
+  #:use-module (ice-9 regex)
+  #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
 (define-public cl-yale-haskell
   (let ((commit "85f94c72a16c5f70301dd8db04cde9de2d7dd270")
@@ -5598,6 +5599,12 @@ back-ends.")
     (description
      "This package provides a library to parse and render YAML documents.")
     (license license:bsd-3)))
+
+(define-public ghc-yaml-for-pandoc-1
+  (package (inherit ghc-yaml)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson-for-pandoc-1)
+       ,@(alist-delete "ghc-aeson" (package-inputs ghc-yaml))))))
 
 (define-public ghc-filemanip
   (package
