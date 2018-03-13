@@ -1682,6 +1682,7 @@ through Transport Layer Security (@dfn{TLS}) encrypted connections.")
         (method url-fetch)
         (uri (string-append "https://github.com/ocsigen/lwt/archive/" version
                             ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256 (base32
                   "1gbw0g8a5a4b16diqrmlhc8ilnikrm4w3jjm1zq310maqg8z0zxz"))))
     (build-system ocaml-build-system)
