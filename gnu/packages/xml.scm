@@ -1061,9 +1061,10 @@ C++ programming language.")
        (method url-fetch)
        (uri (string-append "https://github.com/leethomason/tinyxml2/archive/"
                            version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-       (base32
-        "083z4r4khcndxi9k840lcr48sqxvar4gpsnf749xfdn1bkr8xcql"))))
+        (base32
+         "083z4r4khcndxi9k840lcr48sqxvar4gpsnf749xfdn1bkr8xcql"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))    ; no tests
