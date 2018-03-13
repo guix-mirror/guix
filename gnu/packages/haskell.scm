@@ -5703,6 +5703,27 @@ TIFF and GIF formats.")
 described in @url{https://www.lua.org/}.")
     (license license:expat)))
 
+(define-public ghc-hslua-for-pandoc-1
+  (package (inherit ghc-hslua)
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "hslua/hslua-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gqp6qhp4v24kzv2j49kgk7bxqzw0w10x0zr0r2j9wkfavqb9wid"))))
+    (inputs
+     `(("lua" ,lua-5.1)
+       ("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hspec-contrib" ,ghc-hspec-contrib)
+       ("ghc-hunit" ,ghc-hunit)
+       ("hspec-discover" ,hspec-discover)))))
+
 (define-public ghc-hslua-module-text
   (package
     (name "ghc-hslua-module-text")
