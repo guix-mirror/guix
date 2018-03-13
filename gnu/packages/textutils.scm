@@ -644,7 +644,7 @@ source code.")
              (lambda _
                (with-directory-excursion "editdistance"
                  (delete-file "bycython.cpp")
-                 (zero? (system* "cython" "--cplus" "bycython.pyx"))))))))
+                 (invoke "cython" "--cplus" "bycython.pyx")))))))
       (native-inputs
        `(("python-cython" ,python-cython)))
       (home-page "https://www.github.com/aflc/editdistance")
