@@ -901,6 +901,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/luminance-hdr-qt-printer.patch		\
   %D%/packages/patches/lvm2-static-link.patch			\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
+  %D%/packages/patches/lyx-2.2.3-fix-test.patch			\
   %D%/packages/patches/mailutils-uninitialized-memory.patch	\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mars-install.patch			\
