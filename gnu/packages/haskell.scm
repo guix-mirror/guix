@@ -5957,6 +5957,57 @@ supported by that framework can be added.  An optional command-line program is
 provided.  Skylighting is intended to be the successor to highlighting-kate.")
     (license license:gpl2)))
 
+(define-public ghc-skylighting-for-pandoc-1
+  (package (inherit ghc-skylighting)
+    (version "0.1.1.5")
+    (source (origin
+              (method git-fetch)
+              ;; We take the sources from Github, because the tarball on
+              ;; hackage does not include the XML files.
+              (uri (git-reference
+                    (url "https://github.com/jgm/skylighting.git")
+                    (commit version)))
+              (file-name (string-append "ghc-skylighting-" version "-checkout"))
+              (sha256
+               (base32
+                "0z3yv8v2fqqgv6lsf0ff3ld0h2vkg97b2jiry9wn2f1rizwdqmzl"))))
+    (arguments
+     `(#:configure-flags '("-fbootstrap")
+       #:phases
+       (modify-phases %standard-phases
+         ;; After building the skylighting-extract tool we use it to generate
+         ;; syntax source files from the included XML files.  These are then
+         ;; added to the skylighting.cabal file.
+         (add-after 'build 'extract-xml
+           (lambda _
+             (make-file-writable "skylighting.cabal")
+             (apply invoke "./dist/build/skylighting-extract/skylighting-extract"
+                    (find-files "xml" "\\.xml$"))
+             #t))
+         ;; Reconfigure without bootstrap flag
+         (add-after 'extract-xml 'configure-again
+           (lambda* (#:key outputs inputs tests? #:allow-other-keys)
+             ((assoc-ref %standard-phases 'configure)
+              #:outputs outputs
+              #:inputs inputs
+              #:tests? tests?
+              #:configure-flags '("-f-bootstrap"))))
+         (add-after 'configure-again 'build-again
+           (assoc-ref %standard-phases 'build)))))
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson-for-pandoc-1)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-diff" ,ghc-diff)
+       ("ghc-hxt" ,ghc-hxt)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-pretty-show" ,ghc-pretty-show)
+       ("ghc-regex-pcre-builtin" ,ghc-regex-pcre-builtin)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-text" ,ghc-text)
+       ("ghc-utf8-string" ,ghc-utf8-string)))))
+
 (define-public ghc-doctemplates
   (package
     (name "ghc-doctemplates")
