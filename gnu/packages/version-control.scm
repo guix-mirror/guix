@@ -903,6 +903,7 @@ though this can be overridden.")
                       ;; are interested in just one for this package.
                       (url "https://github.com/dustin/bindir")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1dcq0y16yznbv4k9h8gg90kv1gkn8r8dbvl4m2rpfd7q5nqhn617"))))
