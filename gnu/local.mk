@@ -202,6 +202,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/graphics.scm			\
   %D%/packages/graphviz.scm			\
   %D%/packages/groff.scm			\
+  %D%/packages/groovy.scm			\
   %D%/packages/gsasl.scm			\
   %D%/packages/gstreamer.scm			\
   %D%/packages/gtk.scm				\
@@ -744,6 +745,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/graphite2-ffloat-store.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groff-source-date-epoch.patch		\
+  %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
