@@ -742,6 +742,7 @@ symbol fonts.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/fonts/source/public/amsfonts"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "07h20rvpbdb4k72hzmjkyb29426zr9wxsfp6yd4ajbbpd3vx8grb"))))
