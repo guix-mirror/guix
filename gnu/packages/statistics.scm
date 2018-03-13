@@ -5450,6 +5450,7 @@ manually \"recoding\").")
          (uri (hg-reference
                (url "https://bitbucket.org/tanaylab/tgstat")
                (changeset changeset)))
+         (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
            "0ilkkyximy77zbncm91kdfqbxf0qyndg16pd3q3p6a3xc9qcmxvn"))))
