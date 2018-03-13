@@ -667,6 +667,7 @@ fonts.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/fonts/source/public/latex-fonts"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0ypsm4xv9cw0jckk2qc7gi9hcmhf31mrg56pz3llyx3yd9vq2lps"))))
