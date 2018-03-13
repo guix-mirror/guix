@@ -12992,3 +12992,45 @@ filesystem events on Linux.")
 
 (define-public python2-pyinotify
   (package-with-python2 python-pyinotify))
+
+;; Ada parser uses this version.
+(define-public python2-quex-0.67.3
+  (package
+    (name "python2-quex")
+    (version "0.67.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/quex/HISTORY/0.67/quex-" version ".zip"))
+       (sha256
+        (base32
+         "14gv8ll3ipqv4kyc2xiy891nrmjl4ic823zfyx8hassagyclyppw"))
+       (file-name (string-append name "-" version ".zip"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share/quex (string-append out "/share/quex"))
+                    (bin (string-append out "/bin")))
+               (copy-recursively "." share/quex)
+               (mkdir-p bin)
+               (symlink (string-append share/quex "/quex-exe.py")
+                        (string-append bin "/quex"))
+               #t))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "QUEX_PATH")
+            (files '("share/quex")))))
+    (home-page "http://quex.sourceforge.net/")
+    (synopsis "Lexical analyzer generator in Python")
+    (description "@code{quex} is a lexical analyzer generator in Python.")
+    (license license:lgpl2.1+)))        ; Non-military
