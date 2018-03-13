@@ -8145,70 +8145,50 @@ by technical operatives or consultants working with enterprise platforms.")
 algorithms and xxHash hashing algorithm.")
     (license license:asl2.0)))
 
-(define-public java-bouncycastle-bcprov
+(define-public java-bouncycastle
   (package
-    (name "java-bouncycastle-bcprov")
-    (version "1.58")
+    (name "java-bouncycastle")
+    (version "1.59")
     (source (origin
               (method url-fetch)
-              (uri "https://bouncycastle.org/download/bcprov-jdk15on-158.tar.gz")
+              (uri (string-append "https://github.com/bcgit/bc-java/archive/r"
+                                  (substring version 0 1) "rv"
+                                  (substring version 2 4) ".tar.gz"))
               (sha256
                (base32
-                "1hgkg96llbvgs8i0krwz2n0j7wlg6jfnq8w8kg0cc899j0wfmf3n"))))
+                "1bwl499whlbq896w18idqw2dkp8v0wp0npv9g71i5fgf8xjh0k3q"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file
+                            (find-files "." "\\.jar$"))
+                  #t))))
     (build-system ant-build-system)
     (arguments
-     `(#:jar-name "bouncycastle-bcprov.jar"
-       #:tests? #f; no tests
-       #:source-dir "src"
+     `(#:jdk ,icedtea-8
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'unzip-src
+         (replace 'build
            (lambda _
-             (mkdir-p "src")
-             (with-directory-excursion "src"
-               (invoke "unzip" "../src.zip"))
-             #t)))))
-    (native-inputs
-     `(("unzip" ,unzip)
-       ("junit" ,java-junit)))
-    (home-page "https://www.bouncycastle.org")
-    (synopsis "Cryptographic library")
-    (description "Bouncy Castle Provider (bcprov) is a cryptographic library
-for the Java programming language.")
-    (license license:expat)))
-
-(define-public java-bouncycastle-bcpkix
-  (package
-    (name "java-bouncycastle-bcpkix")
-    (version "1.58")
-    (source (origin
-              (method url-fetch)
-              (uri "https://bouncycastle.org/download/bcpkix-jdk15on-158.tar.gz")
-              (sha256
-               (base32
-                "0is7qay02803s9f7lhnfcjlz61ni3hq5d7apg0iil7nbqkbfbcq2"))))
-    (build-system ant-build-system)
-    (arguments
-     `(#:jar-name "bouncycastle-bcpkix.jar"
-       #:tests? #f; no tests
-       #:source-dir "src"
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'unzip-src
+             (invoke "ant" "-f" "ant/jdk15+.xml" "build-provider")
+             (invoke "ant" "-f" "ant/jdk15+.xml" "build")
+             #t))
+         (replace 'check
            (lambda _
-             (mkdir-p "src")
-             (with-directory-excursion "src"
-               (invoke "unzip" "../src.zip"))
-             #t)))))
-    (native-inputs
-     `(("unzip" ,unzip)
-       ("junit" ,java-junit)))
+             (invoke "ant" "-f" "ant/jdk15+.xml" "test")))
+         (replace 'install
+           (install-jars "build/artifacts/jdk1.5/jars")))))
     (inputs
-     `(("bcprov" ,java-bouncycastle-bcprov)))
+     `(("java-javax-mail" ,java-javax-mail)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("junit" ,java-junit)
+       ("java-native-access" ,java-native-access)
+       ("java-native-access-platform" ,java-native-access-platform)))
     (home-page "https://www.bouncycastle.org")
     (synopsis "Cryptographic library")
-    (description "Bouncy Castle Java API for PKIX, CMS, EAC, TSP, PKCS, OCSP,
-CMP, and CRMF.")
+    (description "Bouncy Castle is a cryptographic library for the Java
+programming language.")
     (license license:expat)))
 
 (define-public java-lmax-disruptor
@@ -8631,8 +8611,7 @@ protocol-independent framework to build mail and messaging applications.")
        ("powermock-junit4-common" ,java-powermock-modules-junit4-common)
        ("powermock-junit4" ,java-powermock-modules-junit4)
        ("powermock-support" ,java-powermock-api-support)
-       ("bouncycastle" ,java-bouncycastle-bcprov)
-       ("bouncycastle-bcpkix" ,java-bouncycastle-bcpkix)))
+       ("java-bouncycastle" ,java-bouncycastle)))
     (home-page "https://kafka.apache.org")
     (synopsis "Distributed streaming platform")
     (description "Kafka is a distributed streaming platform, which means:
