@@ -391,6 +391,7 @@ to adapt the plain e-TeX source file to work with XeTeX and LuaTeX.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/generic/hyph-utf8"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0ghizcz7ps16dzfqf66wwg5i181assc6qsm0g7g5dbmp909931vi"))))
