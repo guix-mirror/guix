@@ -538,6 +538,7 @@ ECB and OFB).")
         (method url-fetch)
         (uri (string-append "https://github.com/wbond/asn1crypto/archive/"
                             version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1kn910896l3knmilla1c9ly20q181s43w1ah08lzkbm1h3j6pcz0"))))
