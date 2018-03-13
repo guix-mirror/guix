@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1123,15 +1123,15 @@ instances and printing them.")
 (define-public ocaml-qtest
   (package
     (name "ocaml-qtest")
-    (version "2.5")
+    (version "2.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/vincent-hugot/iTeML/"
-                                  "archive/v" version ".tar.gz"))
+              (uri (string-append "https://github.com/vincent-hugot/qtest/"
+                                  "archive/" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1hw3jqir7w79payy4knc38fa3nxcvl7ap6y6hnqavrhpi8zqb59j"))))
+                "1ff4if64mc9c7wmhjdgnlnh6k6a713piqzr4043zzj4s5pw7smxk"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("findlib" ,ocaml-findlib)))
@@ -1145,7 +1145,7 @@ instances and printing them.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "https://github.com/vincent-hugot/iTeML")
+    (home-page "https://github.com/vincent-hugot/qtest")
     (synopsis "Inline (Unit) Tests for OCaml")
     (description "Qtest extracts inline unit tests written using a special
 syntax in comments.  Those tests are then run using the oUnit framework and the
