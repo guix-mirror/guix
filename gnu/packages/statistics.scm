@@ -5485,6 +5485,7 @@ tools.")
          (uri (hg-reference
                (url "https://bitbucket.org/tanaylab/tgconfig")
                (changeset changeset)))
+         (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
            "0xy6c7s7mn1yx191154bwbv1bl424bnvc80syqpl1vdl28ba46rj"))))
