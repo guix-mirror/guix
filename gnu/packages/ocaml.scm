@@ -1648,6 +1648,7 @@ lets the client choose the concrete timeline.")
         (method url-fetch)
         (uri (string-append "https://github.com/savonet/ocaml-ssl/archive/"
                             version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256 (base32
                   "15p7652cvzdrlqxc1af11mg07wasxr1fsaj44gcmmh6bmav7wfzq"))))
     (build-system ocaml-build-system)
