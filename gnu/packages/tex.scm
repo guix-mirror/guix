@@ -887,6 +887,11 @@ book).")
                                        %texlive-tag "/Master/texmf-dist/"
                                        dir))
                    (revision %texlive-revision)))
+             (file-name (string-append "texlive-generic-"
+                                       (last (string-split
+                                               (string-drop-right dir 1) #\/))
+                                       "-" (number->string %texlive-revision)
+                                       "-checkout"))
              (sha256 (base32 hash))))))
     (package
       (name "texlive-latex-base")
@@ -894,6 +899,7 @@ book).")
       (source (origin
                 (method svn-fetch)
                 (uri (texlive-ref "latex" "base"))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "1h9pir2hz6i9avc4lrl733p3zf4rpkg8537x1zdbhs91hvhikw9k"))))
