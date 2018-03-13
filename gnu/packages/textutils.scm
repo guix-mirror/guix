@@ -632,6 +632,7 @@ source code.")
          (uri (git-reference
                (url "https://github.com/aflc/editdistance.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1l43svsv12crvzphrgi6x435z6xg8m086c64armp8wzb4l8ccm7g"))))
