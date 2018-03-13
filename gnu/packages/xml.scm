@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -1007,12 +1007,12 @@ UTF-8 and UTF-16 encoding.")
          (delete 'configure)
          (add-after 'build 'build-shared-library
            (lambda _
-             (zero? (system* "g++" "-Wall" "-O2" "-shared" "-fpic"
-                             "tinyxml.cpp" "tinyxmlerror.cpp"
-                             "tinyxmlparser.cpp" "tinystr.cpp"
-                             "-o" "libtinyxml.so"))))
+             (invoke "g++" "-Wall" "-O2" "-shared" "-fpic"
+                     "tinyxml.cpp" "tinyxmlerror.cpp"
+                     "tinyxmlparser.cpp" "tinystr.cpp"
+                     "-o" "libtinyxml.so")))
          (replace 'check
-           (lambda _ (zero? (system "./xmltest"))))
+           (lambda _ (invoke "./xmltest")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
