@@ -214,6 +214,7 @@ This package contains the binaries.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/dvips"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0fcy2hpapbj01ncpjj3v39yhr0jjxb6rm13qaxjjw66s3vydxls1"))))
@@ -244,6 +245,7 @@ This package contains the binaries.")
                                      %texlive-tag "/Master/texmf-dist/"
                                      "/fonts/map/dvips/tetex"))
                  (revision %texlive-revision)))
+           (file-name (string-append "dvips-font-maps-" version "-checkout"))
            (sha256
             (base32
              "100208pg7q6lj7swiq9p9287nn6b64bl62bnlaxpjni9y2kdrqy5"))))
@@ -255,6 +257,7 @@ This package contains the binaries.")
                                      %texlive-tag "/Master/texmf-dist/"
                                      "/fonts/enc/dvips/base"))
                  (revision %texlive-revision)))
+           (file-name (string-append "dvips-base-enc-" version "-checkout"))
            (sha256
             (base32
              "1xnf6ms0h87r55kxik4vicwr1907scj789lhqflqns8svvsli5iy"))))))
