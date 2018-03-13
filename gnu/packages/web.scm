@@ -846,6 +846,7 @@ UTS#46.")
                      ":pserver:anonymous@tidy.cvs.sourceforge.net:/cvsroot/tidy")
                     (module "tidy")
                     (revision "2009-12-23")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "14dsnmirjcrvwsffqp3as70qr6bbfaig2fv3zvs5g7005jrsbvpb"))
