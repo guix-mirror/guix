@@ -1309,6 +1309,7 @@ powerful.")
               (method url-fetch)
               (uri (string-append "https://github.com/janestreet/result"
                                   "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1pgpfsgvhxnh0i37fkvp9j8nadns9hz9iqgabj4dr519j2gr1xvw"))))
