@@ -13001,11 +13001,12 @@ filesystem events on Linux.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/quex/HISTORY/0.67/quex-" version ".zip"))
+       (uri (string-append "mirror://sourceforge/quex/HISTORY/"
+                           (version-major+minor version)
+                           "/quex-" version ".zip"))
        (sha256
         (base32
-         "14gv8ll3ipqv4kyc2xiy891nrmjl4ic823zfyx8hassagyclyppw"))
-       (file-name (string-append name "-" version ".zip"))))
+         "14gv8ll3ipqv4kyc2xiy891nrmjl4ic823zfyx8hassagyclyppw"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
