@@ -28,7 +28,7 @@
 
 (define java-groovy-bootstrap
   (package
-    (name "groovy-java-bootstrap")
+    (name "java-groovy-bootstrap")
     (version "2.4.15")
     (source (origin
               (method url-fetch)
@@ -95,3 +95,83 @@
     (description "This package contains the java bootstrap that is used to build
 groovy submodules.")
     (license license:asl2.0)))
+
+(define groovy-bootstrap
+  (package
+    (inherit java-groovy-bootstrap)
+    (name "groovy-bootstrap")
+    (arguments
+     `(#:jar-name "groovy.jar"
+       #:jdk ,icedtea-8
+       ;Requires groovy-xml and logback-classic which are circular dependencies
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-java8
+           ;; Fix "Reference to plus is ambiguous"
+           (lambda _
+             (substitute* "src/main/org/codehaus/groovy/runtime/DefaultGroovyMethods.java"
+               (("toList\\(left\\)")
+                "(List<T>)toList(left)"))
+             #t))
+         (add-before 'build 'generate-parser
+           (lambda _
+             (with-directory-excursion "src/main/org/codehaus/groovy/antlr/java"
+               (invoke "antlr" "java.g"))
+             (with-directory-excursion "src/main/org/codehaus/groovy/antlr"
+               (mkdir "parser")
+               (with-directory-excursion "parser"
+                 (invoke "antlr" "../groovy.g")))
+             #t))
+         (add-before 'build 'generate-exception-utils
+           (lambda _
+             (invoke "javac" "-cp" (getenv "CLASSPATH")
+                     "config/ant/src/org/codehaus/groovy/ExceptionUtilsGenerator.java")
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                 ":config/ant/src")
+                     "org.codehaus.groovy.ExceptionUtilsGenerator"
+                     "target/classes/org/codehaus/groovy/runtime/ExceptionUtils.class")
+             #t))
+         (add-before 'build 'generate-dgminfo
+           (lambda _
+             (mkdir-p "target/classes/org/codehaus/groovy/runtime")
+             (mkdir-p "target/classes/META-INF")
+             (invoke "javac" "-cp" (getenv "CLASSPATH")
+                     "src/main/org/codehaus/groovy/tools/DgmConverter.java")
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                 ":src/main")
+                     "org.codehaus.groovy.tools.DgmConverter")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (with-directory-excursion "src/main"
+               (for-each (lambda (file)
+                           (mkdir-p (string-append "../../target/classes/"
+                                                   (dirname file)))
+                           (copy-file file
+                                      (string-append "../../target/classes/"
+                                                     file)))
+                  (find-files "." ".*.(txt|properties|xml|html)")))
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                           "org.codehaus.groovy.tools.FileSystemCompiler"
+                           "-d" "target/classes"
+                           "-j"; joint compilation
+                           (find-files "src/main"
+                                       ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy.jar"
+                     "-C" "target/classes" ".")
+             #t)))))
+    (inputs
+     `(("java-apache-ivy" ,java-apache-ivy)
+       ,@(package-inputs java-groovy-bootstrap)))
+    (native-inputs
+     `(("java-groovy-bootstrap" ,java-groovy-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy compiler")
+    (description "This package contains the first version of the Groovy compiler.
+Although already usable, it doesn't contain the groovy library yet.  This package
+is used to build the groovy submodules written in groovy.")))
