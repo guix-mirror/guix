@@ -281,6 +281,7 @@ to PostScript.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/generic/unicode-data"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0ivrhp6jz31pl4z841g4ws41lmvdiwz4sslmhf02inlib79gz6r2"))))
