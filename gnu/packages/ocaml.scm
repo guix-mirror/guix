@@ -1244,6 +1244,7 @@ coverage information.")
               (method url-fetch)
               (uri (string-append "https://github.com/xguerin/bitstring"
                                   "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0vy8ibrxccii1jbsk5q6yh1kxjigqvi7lhhcmizvd5gfhf7mfyc8"))
