@@ -4980,6 +4980,22 @@ pandoc to represent structured documents.  It also provides functions for
 building up, manipulating and serialising @code{Pandoc} structures.")
     (license license:bsd-3)))
 
+(define-public ghc-pandoc-types-for-pandoc-1
+  (package (inherit ghc-pandoc-types)
+    (version "1.17.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "pandoc-types/pandoc-types-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1csipjdq00iiq77k2wlrg4i7afrzlh8nl585q785xzw7nn45b0n8"))))
+    (inputs
+     `(("ghc-syb" ,ghc-syb)
+       ("ghc-aeson" ,ghc-aeson-for-pandoc-1)
+       ("ghc-string-qq" ,ghc-string-qq)))))
+
 (define-public ghc-texmath
   (package
     (name "ghc-texmath")
