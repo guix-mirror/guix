@@ -11015,6 +11015,7 @@ exception message with a traceback that points to the culprit.")
        ;; The PyPI version wouldn't contain tests.
        (uri (string-append "https://github.com/mwclient/mwclient/archive/"
                            "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "1jj0yhilkjir00719fc7w133x7hdyhkxhk6xblla4asig45klsfv"))))
