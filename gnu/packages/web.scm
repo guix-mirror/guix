@@ -159,6 +159,7 @@ and its related documentation.")
               (uri (string-append
                     "https://github.com/GrahamDumpleton/mod_wsgi/archive/"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0n1yhmrfp8mjbsngmyjl937c6rc0069p6wdi1lknrbn1q42hzw6q"))))
