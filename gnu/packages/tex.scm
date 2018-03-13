@@ -603,6 +603,7 @@ display, and mathematical fonts in a range of styles, based on Monotype Modern
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/fonts/source/public/knuth-lib"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0in9aqyi8jkyf9d16z0li50z5fpwj1iwgwm83gmvwqcf7chfs04y"))))
