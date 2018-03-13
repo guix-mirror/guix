@@ -3192,3 +3192,25 @@ data, commencing with a port of the Matlab gaussian window smoothing function.
 In addition, several functions typically used in smoothing of financial data
 are included.")
     (license license:gpl2)))
+
+(define-public r-riverplot
+  (package
+    (name "r-riverplot")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "riverplot" version))
+       (sha256
+        (base32
+         "0q1icpny8nkxyjhawyjzwrw8qlz0ayn2xyrsqrm4vkxyv6c9xk8z"))))
+    (build-system r-build-system)
+    (home-page "https://logfc.wordpress.com")
+    (synopsis "Sankey or ribbon plots")
+    (description
+     "Sankey plots are a type of diagram that is convenient to illustrate how
+flow of information, resources etc. separates and joins, much like observing
+how rivers split and merge.  For example, they can be used to compare
+different clusterings.  This package provides an implementation of Sankey
+plots for R.")
+    (license license:gpl2+)))
