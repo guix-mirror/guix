@@ -556,6 +556,14 @@ the bootstrap environment."
         ;; because we don't want to depend on bootstrap tools.
         ("static-bash" ,@(assoc-ref %boot0-inputs "bash")))))))
 
+(define patched-glibc-final-with-bootstrap-bash
+  (package
+    (inherit glibc-final-with-bootstrap-bash)
+    (source (origin
+              (inherit (package-source glibc-final-with-bootstrap-bash))
+              (patches (cons (search-patch "glibc-allow-kernel-2.6.32.patch")
+                             (origin-patches (package-source glibc-final-with-bootstrap-bash))))))))
+
 (define (cross-gcc-wrapper gcc binutils glibc bash)
   "Return a wrapper for the pseudo-cross toolchain GCC/BINUTILS/GLIBC
 that makes it available under the native tool names."
@@ -630,6 +638,40 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
          (inputs `(("gcc" ,gcc)
                    ("libc" ,glibc-final-with-bootstrap-bash)
                    ("libc:static" ,glibc-final-with-bootstrap-bash "static")
+                   ,@(fold alist-delete %boot1-inputs
+                           '("gcc" "libc")))))
+    (let ((p (package-with-bootstrap-guile
+              (package-with-explicit-inputs bash inputs
+                                            (current-source-location)
+                                            #:guile %bootstrap-guile))))
+      (package (inherit p)
+               (replacement patched-static-bash-for-glibc)))))
+
+;; Same as static-bash-for-glibc, except that it uses a patched glibc for the
+;; "gcc" and "bash" packages.
+(define patched-static-bash-for-glibc
+  ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
+  (let* ((gcc  (cross-gcc-wrapper gcc-boot0 binutils-boot0
+                                  patched-glibc-final-with-bootstrap-bash
+                                  (car (assoc-ref %boot1-inputs "bash"))))
+         (bash (package
+                 (inherit static-bash)
+                 (arguments
+                  (substitute-keyword-arguments
+                      (package-arguments static-bash)
+                    ((#:guile _ #f)
+                     '%bootstrap-guile)
+                    ((#:configure-flags flags '())
+                     ;; Add a '-L' flag so that the pseudo-cross-ld of
+                     ;; BINUTILS-BOOT0 can find libc.a.
+                     `(append ,flags
+                              (list (string-append "LDFLAGS=-static -L"
+                                                   (assoc-ref %build-inputs
+                                                              "libc:static")
+                                                   "/lib"))))))))
+         (inputs `(("gcc" ,gcc)
+                   ("libc" ,patched-glibc-final-with-bootstrap-bash)
+                   ("libc:static" ,patched-glibc-final-with-bootstrap-bash "static")
                    ,@(fold alist-delete %boot1-inputs
                            '("gcc" "libc")))))
     (package-with-bootstrap-guile
