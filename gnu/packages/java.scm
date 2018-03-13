@@ -7982,6 +7982,7 @@ to use.")
                 (uri (git-reference
                       (url "https://github.com/neilalexander/jnacl.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1d6g6xhn83byv5943n7935wwjsk0ibk0qdvqgr699qqgqqmwisbb"))))
