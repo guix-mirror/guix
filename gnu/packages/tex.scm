@@ -500,7 +500,7 @@ build fonts using the Metafont system.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/fonts/map/fontname"))
                     (revision %texlive-revision)))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0cssbzcx15221dynp5sii72qh4l18mwkr14n8w1xb19j8pbaqasz"))))
