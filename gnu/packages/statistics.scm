@@ -2592,7 +2592,11 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-rprojroot" ,r-rprojroot)
        ("r-stringr" ,r-stringr)
        ("r-yaml" ,r-yaml)
-       ("ghc-pandoc" ,ghc-pandoc)))
+       ;; rmarkdown works with the 2.x release of Pandoc, but with degraded
+       ;; functionality.  For example, tabbed plots do not currently work with
+       ;; Pandoc 2.  The authors of rmarkdown recommend the use of Pandoc 1
+       ;; for the time being.
+       ("ghc-pandoc" ,ghc-pandoc-1)))
     (home-page "http://rmarkdown.rstudio.com")
     (synopsis "Convert R Markdown documents into a variety of formats")
     (description
