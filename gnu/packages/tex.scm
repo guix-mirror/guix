@@ -824,6 +824,7 @@ details can be found in the documentation.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "amsfonts"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0slzfv5h2m03b2xvm2sasznz4azh6rgi069z161dja3l8rln79hm"))))
