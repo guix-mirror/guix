@@ -993,6 +993,7 @@ UTF-8 and UTF-16 encoding.")
                                   version "/tinyxml_"
                                   (string-join (string-split version #\.) "_")
                                   ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "14smciid19lvkxqznfig77jxn5s4iq3jpb47vh5a6zcaqp7gvg8m"))
