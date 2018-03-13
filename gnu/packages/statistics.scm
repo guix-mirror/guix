@@ -39,6 +39,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
@@ -261,6 +262,9 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
        ("libxt" ,libxt)
        ("pcre" ,pcre)
        ("readline" ,readline)
+       ;; This avoids a reference to the ungraftable static bash.  R uses the
+       ;; detected shell for the "system" procedure.
+       ("bash" ,bash-minimal)
        ("which" ,which)
        ("zlib" ,zlib)))
     (native-search-paths
