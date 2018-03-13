@@ -441,6 +441,7 @@ background while you work.")
               (uri (string-append
                     "https://github.com/hydrogen-music/hydrogen/archive/"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1dy2jfkdw0nchars4xi4isrz66fqn53a9qk13bqza7lhmsg3s3qy"))))
