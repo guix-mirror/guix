@@ -59,3 +59,43 @@ specification in our Python DSL and Langkit will generate for you an
 Ada library with bindings for the C and Python programming languages.")
       (home-page "https://github.com/AdaCore/langkit/")
       (license license:gpl3+))))   ; and gcc runtime library exception
+
+(define-public python2-libadalang
+  (let ((commit "9b205e9bacdd50a68117727332e16fbef5f6ac49")
+        (revision "0"))
+    (package
+      (name "python2-libadalang")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/AdaCore/libadalang.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "06hsnzj2syqpq2yhg1bb0zil7ydbyqkdmkjbf8j9b5sdgkyh5xrp"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system python-build-system)
+      (native-inputs
+       `(("python2-langkit" ,python2-langkit)
+         ("python2-quex" ,python2-quex-0.67.3)))
+      (arguments
+       `(#:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'build
+             (lambda _
+               (invoke "python2" "ada/manage.py" "generate")
+               (invoke "python2" "ada/manage.py" "build")))
+           (replace 'check
+             (lambda _
+               (invoke "python2" "ada/manage.py" "test")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (invoke "python2" "ada/manage.py" "install" out)))))))
+      (synopsis "Semantic Analysis for Ada in Python")
+      (description "@code{libadalang} provides a high-performance semantic
+engine for the Ada programming language.")
+      (home-page "https://github.com/AdaCore/libadalang")
+      (license license:gpl3)))) ; and gcc runtime gcc lib exception
