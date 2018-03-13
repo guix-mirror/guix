@@ -946,12 +946,10 @@ book).")
 
                (mkdir "build")
                (mkdir "web2c")
-               (and (zero? (system* "luatex" "-ini" "-interaction=batchmode"
-                                    "-output-directory=build"
-                                    "unpack.ins"))
-                    (zero? (system* "tex" "-ini" "-interaction=batchmode"
-                                    "-output-directory=web2c"
-                                    "tex.ini"))
+               (and (invoke "luatex" "-ini" "-interaction=batchmode"
+                            "-output-directory=build" "unpack.ins")
+                    (invoke "tex" "-ini" "-interaction=batchmode"
+                            "-output-directory=web2c" "tex.ini")
                     ;; LaTeX, pdfetex/pdftex, and XeTeX require e-TeX, which
                     ;; is enabled only in extended mode (activated with a
                     ;; leading asterisk).  We should not use luatex here,
@@ -959,25 +957,25 @@ book).")
                     ;; incompatible with any other TeX engine.
                     (every
                      (lambda (format)
-                       (zero? (system* "latex" "-ini" "-interaction=batchmode"
-                                       "-output-directory=web2c"
-                                       "-translate-file=cp227.tcx"
-                                       (string-append "*" format ".ini"))))
+                       (invoke "latex" "-ini" "-interaction=batchmode"
+                               "-output-directory=web2c"
+                               "-translate-file=cp227.tcx"
+                               (string-append "*" format ".ini")))
                      '("latex"
                        "pdflatex"
                        "pdfetex"))
                     (every
                      (lambda (format)
-                       (zero? (system* format "-ini" "-interaction=batchmode"
-                                       "-output-directory=web2c"
-                                       (string-append "*" format ".ini"))))
+                       (invoke format "-ini" "-interaction=batchmode"
+                               "-output-directory=web2c"
+                               (string-append "*" format ".ini")))
                      '("xetex"
                        "xelatex"))
                     (every
                      (lambda (format)
-                       (zero? (system* "luatex" "-ini" "-interaction=batchmode"
-                                       "-output-directory=web2c"
-                                       (string-append format ".ini"))))
+                       (invoke "luatex" "-ini" "-interaction=batchmode"
+                               "-output-directory=web2c"
+                               (string-append format ".ini")))
                      '("dviluatex" "dvilualatex" "luatex" "lualatex")))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
