@@ -322,6 +322,7 @@ diagrams.")
                 (uri (git-reference
                       (url "http://git.drobilla.net/ganv.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1cr8w02lr6bk9mkxa12j3imq721b2an2yn4bj5wnwmpm91ddn2gi")))))))
