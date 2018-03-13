@@ -5029,6 +5029,27 @@ markup formats).  The TeX reader supports basic LaTeX and AMS extensions, and
 it can parse and apply LaTeX macros.")
     (license license:gpl2+)))
 
+(define-public ghc-texmath-for-pandoc-1
+  (package (inherit ghc-texmath)
+    (version "0.9.4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "texmath/texmath-" version ".tar.gz"))
+              (sha256
+               (base32
+                "129q33m56diiv35kdwfb07838wrg0mm88kxdqxfyl1zvf9nzkqkd"))))
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-pandoc-types" ,ghc-pandoc-types-for-pandoc-1)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-split" ,ghc-split)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-xml" ,ghc-xml)))))
+
 (define-public ghc-regex-pcre-builtin
   (package
     (name "ghc-regex-pcre-builtin")
