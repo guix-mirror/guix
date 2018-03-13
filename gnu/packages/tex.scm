@@ -854,6 +854,7 @@ individual symbols defined in @code{amssymb.sty}.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/plain"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0mjgl3gscn3ps29yjambz1j9fg81ynnncb96vpprwx4xsijhsns0"))))
