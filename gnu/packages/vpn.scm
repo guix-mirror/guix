@@ -128,6 +128,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                  (git-reference
                   (url "git://git.infradead.org/users/dwmw2/vpnc-scripts.git")
                   (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0pa36w4wlyyvfb66cayhans99wsr2j5si2fvfr7ldfm512ajwn8h"))))
