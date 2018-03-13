@@ -5981,6 +5981,29 @@ provided.  Skylighting is intended to be the successor to highlighting-kate.")
      "This package provides a simple text templating system used by pandoc.")
     (license license:bsd-3)))
 
+(define-public ghc-doctemplates-for-pandoc-1
+  (package (inherit ghc-doctemplates)
+    (version "0.1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "doctemplates/doctemplates-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0swal6rjya1293mwvl63jch5fx9ghpsil7qs4v7rpansa0izalmp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson-for-pandoc-1)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-text" ,ghc-text)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-scientific" ,ghc-scientific)))))
+
 (define-public ghc-pandoc
   (package
     (name "ghc-pandoc")
