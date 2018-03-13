@@ -356,6 +356,7 @@ bundle.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/generic/tex-ini-files"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1wh42n1lmzcvi3g6mm31nm3yd5ha5bl260xqc444jg1m9fdp3wz5"))))
