@@ -3451,6 +3451,7 @@ and 4 (random based) according to RFC 4122.")
               (method url-fetch)
               (uri (string-append "https://github.com/alavrik/piqi-ocaml/"
                                   "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0ngz6y8i98i5v2ma8nk6mc83pdsmf2z0ks7m3xi6clfg3zqbddrv"))))
