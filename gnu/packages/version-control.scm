@@ -785,6 +785,7 @@ will work.")
               (uri (git-reference
                     (url "https://github.com/nvie/gitflow/")
                     (commit "15aab26490facf285acef56cb5d61025eacb3a69")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "01fs97q76fdfnvmrh2cyjhywcs3pykf1dg58sy0frflnsdzs6prx"))))
