@@ -9134,6 +9134,39 @@ similar in functionality to BSD editline and GNU readline but with additional
 features that bring it on par with the Z shell line editor.")
     (license license:bsd-3)))
 
+(define-public java-jline-2
+  (package
+    (inherit java-jline)
+    (version "2.14.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jline/jline2/archive/jline-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1c6qa26mf0viw8hg4jnv72s7i1qb1gh1l8rrzcdvqhqhx82rkdlf"))))
+    (arguments
+     `(#:jdk ,icedtea-8
+       ,@(package-arguments java-jline)))
+    (inputs
+     `(("java-jansi" ,java-jansi)
+       ("java-jansi-native" ,java-jansi-native)))
+    (native-inputs
+     `(("java-powermock-modules-junit4" ,java-powermock-modules-junit4)
+       ("java-powermock-modules-junit4-common" ,java-powermock-modules-junit4-common)
+       ("java-powermock-api-easymock" ,java-powermock-api-easymock)
+       ("java-powermock-api-support" ,java-powermock-api-support)
+       ("java-powermock-core" ,java-powermock-core)
+       ("java-powermock-reflect" ,java-powermock-reflect)
+       ("java-easymock" ,java-easymock)
+       ("java-jboss-javassist" ,java-jboss-javassist)
+       ("java-objenesis" ,java-objenesis)
+       ("java-asm" ,java-asm)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-cglib" ,java-cglib)
+       ("java-junit" ,java-junit)
+       ("java-hawtjni" ,java-hawtjni)))))
+
 (define-public java-xmlunit
   (package
     (name "java-xmlunit")
