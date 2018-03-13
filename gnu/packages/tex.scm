@@ -448,6 +448,7 @@ converters, will completely supplant the older patterns.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/metafont"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1yl4n8cn5xqk2nc22zgzq6ymd7bhm6xx1mz3azip7i3ki4bhb5q5"))))
