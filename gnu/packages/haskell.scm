@@ -6138,6 +6138,67 @@ definition lists, tables, and other features.  A compatibility mode is
 provided for those who need a drop-in replacement for Markdown.pl.")
     (license license:gpl2+)))
 
+;; This is the last version of Pandoc 1.x, which is preferred for Rmarkdown.
+(define-public ghc-pandoc-1
+  (package (inherit ghc-pandoc)
+    (version "1.19.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/pandoc/pandoc-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0mim429mpakrcnm50csxyqk3ljcx2l26r5grk6w9isnggwgqrq5v"))))
+    (arguments
+     `(#:configure-flags (list "--allow-newer=skylighting")))
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson-for-pandoc-1)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-cmark" ,ghc-cmark)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-deepseq-generics" ,ghc-deepseq-generics)
+       ("ghc-diff" ,ghc-diff)
+       ("ghc-doctemplates" ,ghc-doctemplates-for-pandoc-1)
+       ("ghc-executable-path" ,ghc-executable-path)
+       ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-filemanip" ,ghc-filemanip)
+       ("ghc-haddock-library" ,ghc-haddock-library)
+       ("ghc-hslua" ,ghc-hslua-for-pandoc-1)
+       ("ghc-http" ,ghc-http)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-client-tls" ,ghc-http-client-tls)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-juicypixels" ,ghc-juicypixels)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-network" ,ghc-network)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-pandoc-types" ,ghc-pandoc-types-for-pandoc-1)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-random" ,ghc-random)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-sha" ,ghc-sha)
+       ("ghc-skylighting" ,ghc-skylighting-for-pandoc-1)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-tagsoup" ,ghc-tagsoup)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-texmath" ,ghc-texmath-for-pandoc-1)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-xml" ,ghc-xml)
+       ("ghc-yaml" ,ghc-yaml-for-pandoc-1)
+       ("ghc-zip-archive" ,ghc-zip-archive)
+       ("ghc-zlib" ,ghc-zlib)))
+    (native-inputs
+     `(("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))))
+
 (define-public ghc-hs-bibutils
   (package
     (name "ghc-hs-bibutils")
