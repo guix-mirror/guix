@@ -320,6 +320,7 @@ out to date by @code{unicode-letters.tex}. ")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/generic/dehyph-exptl"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1l9wgv99qq0ysvlxqpj4g8bl0dywbzra4g8m2kmpg2fb0i0hczap"))))
