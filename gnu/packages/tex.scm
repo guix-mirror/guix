@@ -534,6 +534,7 @@ documents.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/fonts/source/public/cm"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "045k5b9rdmbxpy1a3006l1x96z1rd18vg3cwrvnld9bqybw5qz44"))))
