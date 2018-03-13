@@ -1309,7 +1309,8 @@ SAX2 APIs.")
                                   version ".zip"))
               (sha256
                (base32
-                "0w19k1awslmihpwsxwjbg89hv0vjhk4k3i0vrfchy3mqknd988y5"))))
+                "0w19k1awslmihpwsxwjbg89hv0vjhk4k3i0vrfchy3mqknd988y5"))
+              (patches (search-patches "java-simple-xml-fix-tests.patch"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "build"
