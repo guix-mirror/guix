@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -261,7 +261,7 @@ This package contains the binaries.")
            (sha256
             (base32
              "1xnf6ms0h87r55kxik4vicwr1907scj789lhqflqns8svvsli5iy"))))))
-    (home-page "http://www.ctan.org/pkg/dvips")
+    (home-page "https://www.ctan.org/pkg/dvips")
     (synopsis "DVI to PostScript drivers")
     (description "This package provides files needed for converting DVI files
 to PostScript.")
@@ -295,7 +295,7 @@ to PostScript.")
              (mkdir-p target)
              (copy-recursively (assoc-ref %build-inputs "source") target)
              #t))))
-    (home-page "http://www.ctan.org/pkg/unicode-data")
+    (home-page "https://www.ctan.org/pkg/unicode-data")
     (synopsis "Unicode data and loaders for TeX")
     (description "This bundle provides generic access to Unicode Consortium
 data for TeX use.  It contains a set of text files provided by the Unicode
@@ -368,7 +368,7 @@ bundle.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://ctan.org/pkg/tex-ini-files")
+    (home-page "https://www.ctan.org/pkg/tex-ini-files")
     (synopsis "Files for creating TeX formats")
     (description "This bundle provides a collection of model \".ini\" files
 for creating TeX formats.  These files are commonly used to introduced
@@ -402,7 +402,7 @@ to adapt the plain e-TeX source file to work with XeTeX and LuaTeX.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://ctan.org/pkg/hyph-utf8")
+    (home-page "https://ctan.org/pkg/hyph-utf8")
     (synopsis "Hyphenation patterns expressed in UTF-8")
     (description "Modern native UTF-8 engines such as XeTeX and LuaTeX need
 hyphenation patterns in UTF-8 format, whereas older systems require
@@ -478,7 +478,7 @@ converters, will completely supplant the older patterns.")
                #t))))))
     (native-inputs
      `(("texlive-bin" ,texlive-bin)))
-    (home-page "http://www.ctan.org/pkg/metafont")
+    (home-page "https://www.ctan.org/pkg/metafont")
     (synopsis "Metafont base files")
     (description "This package provides the Metafont base files needed to
 build fonts using the Metafont system.")
@@ -578,7 +578,7 @@ documents.")
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
        ("texlive-metafont-base" ,texlive-metafont-base)))
-    (home-page "http://www.ctan.org/pkg/cm")
+    (home-page "https://www.ctan.org/pkg/cm")
     (synopsis "Computer Modern fonts for TeX")
     (description "This package provides the Computer Modern fonts by Donald
 Knuth.  The Computer Modern font family is a large collection of text,
@@ -715,7 +715,7 @@ fonts.")
      `(("texlive-bin" ,texlive-bin)
        ("texlive-metafont-base" ,texlive-metafont-base)
        ("texlive-fonts-cm" ,texlive-fonts-cm)))
-    (home-page "http://www.ctan.org/pkg/latex-fonts")
+    (home-page "https://www.ctan.org/pkg/latex-fonts")
     (synopsis "Collection of fonts used in LaTeX distributions")
     (description "This is a collection of fonts for use with standard LaTeX
 packages and classes. It includes invisible fonts (for use with the slides
@@ -793,7 +793,7 @@ symbol fonts.")
      `(("texlive-fonts-cm" ,texlive-fonts-cm)
        ("texlive-metafont-base" ,texlive-metafont-base)
        ("texlive-bin" ,texlive-bin)))
-    (home-page "http://www.ctan.org/pkg/amsfonts")
+    (home-page "https://www.ctan.org/pkg/amsfonts")
     (synopsis "TeX fonts from the American Mathematical Society")
     (description
      "This package provides an extended set of fonts for use in mathematics,
@@ -823,7 +823,7 @@ details can be found in the documentation.")
     (native-inputs
      `(("texlive-fonts-cm" ,texlive-fonts-cm)
        ("texlive-metafont-base" ,texlive-metafont-base)))
-    (home-page "http://www.ctan.org/pkg/amsfonts")
+    (home-page "https://www.ctan.org/pkg/amsfonts")
     (synopsis "TeX fonts from the American Mathematical Society")
     (description
      "This package provides basic LaTeX support for the symbol fonts provides
@@ -1006,7 +1006,7 @@ book).")
          ("texlive-fonts-cm" ,texlive-fonts-cm)
          ("texlive-fonts-latex" ,texlive-fonts-latex)
          ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)))
-      (home-page "http://www.ctan.org/pkg/latex-base")
+      (home-page "https://www.ctan.org/pkg/latex-base")
       (synopsis "Base sources of LaTeX")
       (description
        "This bundle comprises the source of LaTeX itself, together with several
@@ -1027,7 +1027,7 @@ contain.")
                 "0swkbxv8vg0yizadfnvrwjb4cj0pn34v9wm6v7wqq903fdav7k7q"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/filecontents"))
-    (home-page "http://www.ctan.org/pkg/filecontents")
+    (home-page "https://www.ctan.org/pkg/filecontents")
     (synopsis "Extended filecontents and filecontents* environments")
     (description
      "LaTeX2e's @code{filecontents} and @code{filecontents*} environments
@@ -1055,7 +1055,7 @@ overwrite existing files and letting you use @code{filecontents} /
        #:tex-format "xelatex"))
     (inputs
      `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
-    (home-page "http://www.ctan.org/pkg/ifxetex")
+    (home-page "https://www.ctan.org/pkg/ifxetex")
     (synopsis "Am I running under XeTeX?")
     (description
      "This is a simple package which provides an @code{\\ifxetex} conditional,
@@ -1088,7 +1088,7 @@ requires the e-TeX extensions to the TeX primitive set.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/epsf")
+    (home-page "https://www.ctan.org/pkg/epsf")
     (synopsis "Simple macros for EPS inclusion")
     (description
      "This package provides the original (and now obsolescent) graphics
@@ -1115,7 +1115,7 @@ users, via its Plain TeX version.)")
        ;; We exclude "fvrb-ex" to avoid a dependency on texlive-luaotfload and
        ;; thus texlive-luatex-lualibs.
        #:build-targets '("fancyvrb.ins")))
-    (home-page "http://www.ctan.org/pkg/fancyvrb")
+    (home-page "https://www.ctan.org/pkg/fancyvrb")
     (synopsis "Sophisticated verbatim text")
     (description
      "This package provides tools for the flexible handling of verbatim text
@@ -1179,7 +1179,7 @@ verbatim source).")
            (sha256
             (base32
              "0gi4qv6378nl84s8n1yx3hjqvv7r4lza7hpbymbl5rzwgw8qrnyb"))))))
-    (home-page "http://www.ctan.org/pkg/latex-graphics")
+    (home-page "https://www.ctan.org/pkg/latex-graphics")
     (synopsis "LaTeX standard graphics bundle")
     (description
      "This is a collection of LaTeX packages for producing color, including
@@ -1202,7 +1202,7 @@ keyval, and lscape.")
                 "01n613s7bcrd2n4jfawm0k4nn2ny3aaifp2jjfif3lz4sbv31494"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/xcolor"))
-    (home-page "http://www.ctan.org/pkg/xcolor")
+    (home-page "https://www.ctan.org/pkg/xcolor")
     (synopsis "Driver-independent color extensions for LaTeX and pdfLaTeX")
     (description
      "The package starts from the basic facilities of the colorcolor package,
@@ -1230,7 +1230,7 @@ tables.")
                 "1d3rmjgzh0025a1dza55zb6nzzlgd1y9snwx45wq1c1vf42m79h2"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/hyperref"))
-    (home-page "http://www.ctan.org/pkg/hyperref")
+    (home-page "https://www.ctan.org/pkg/hyperref")
     (synopsis "Extensive support for hypertext in LaTeX")
     (description
      "The @code{hyperref} package is used to handle cross-referencing commands
@@ -1265,7 +1265,7 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
              (substitute* "oberdiek.ins"
                (("ifpdf.ins") "ifpdf.dtx"))
              #t)))))
-    (home-page "http://www.ctan.org/pkg/oberdiek")
+    (home-page "https://www.ctan.org/pkg/oberdiek")
     (synopsis "Bundle of packages submitted by Heiko Oberdiek")
     (description
      "The bundle comprises various LaTeX packages, providing among others:
@@ -1287,7 +1287,7 @@ arrows; record information about document class(es) used; and many more.")
     (arguments
      '(#:tex-directory "latex/tools"
        #:build-targets '("tools.ins")))
-    (home-page "http://www.ctan.org/pkg/latex-tools")
+    (home-page "https://www.ctan.org/pkg/latex-tools")
     (synopsis "LaTeX standard tools bundle")
     (description
      "This package is a collection of (variously) simple tools provided as
@@ -1350,7 +1350,7 @@ of file names.")
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3kernel"))
-    (home-page "http://www.ctan.org/pkg/l3kernel")
+    (home-page "https://www.ctan.org/pkg/l3kernel")
     (synopsis "LaTeX3 programmers’ interface")
     (description
      "The l3kernel bundle provides an implementation of the LaTeX3
@@ -1389,7 +1389,7 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
              #t)))))
     (inputs
      `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
-    (home-page "http://www.ctan.org/pkg/l3packages")
+    (home-page "https://www.ctan.org/pkg/l3packages")
     (synopsis "High-level LaTeX3 concepts")
     (description
      "This bundle holds prototype implementations of concepts for a LaTeX
@@ -1423,7 +1423,7 @@ programming tools and kernel sup­port.  Packages provided in this release are:
        #:build-targets '("fontspec.dtx")))
     (inputs
      `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
-    (home-page "http://www.ctan.org/pkg/fontspec")
+    (home-page "https://www.ctan.org/pkg/fontspec")
     (synopsis "Advanced font selection in XeLaTeX and LuaLaTeX")
     (description
      "Fontspec is a package for XeLaTeX and LuaLaTeX.  It provides an
@@ -1481,7 +1481,7 @@ this bundle for use independent of ConTeXt.")
                 "178ywjpdlv78qmfzqdyn6gy14620zjsn2q9wap76fbr9s4hw6dba"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/amsmath"))
-    (home-page "http://www.ctan.org/pkg/amsmath")
+    (home-page "https://www.ctan.org/pkg/amsmath")
     (synopsis "AMS mathematical facilities for LaTeX")
     (description
      "This is the principal package in the AMS-LaTeX distribution.  It adapts
@@ -1510,7 +1510,7 @@ definitions.")
     (build-system texlive-build-system)
     (arguments
      `(#:tex-directory "latex/amscls"))
-    (home-page "http://www.ctan.org/pkg/amscls")
+    (home-page "https://www.ctan.org/pkg/amscls")
     (synopsis "AMS document classes for LaTeX")
     (description
      "This bundle contains three AMS classes: @code{amsartamsart} (for writing
@@ -1542,7 +1542,7 @@ distribution.")
              (substitute* "babel.ins"
                (("askonceonly") "askforoverwritefalse"))
              #t)))))
-    (home-page "http://www.ctan.org/pkg/babel")
+    (home-page "https://www.ctan.org/pkg/babel")
     (synopsis "Multilingual support for Plain TeX or LaTeX")
     (description
      "The package manages culturally-determined typographical (and other)
@@ -1567,7 +1567,7 @@ polyglossia package rather than Babel.")
                 "1s404wbx91z5w65hm024kyl4h56zsa096irx18vsx8jvlmwsr5wc"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "generic/babel-english"))
-    (home-page "http://www.ctan.org/pkg/babel-english")
+    (home-page "https://www.ctan.org/pkg/babel-english")
     (synopsis "Babel support for English")
     (description
      "This package provides the language definition file for support of
@@ -1589,7 +1589,7 @@ for Canadian and USA text.")
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/cyrillic"))
-    (home-page "http://www.ctan.org/pkg/latex-cyrillic")
+    (home-page "https://www.ctan.org/pkg/latex-cyrillic")
     (synopsis "Support for Cyrillic fonts in LaTeX")
     (description
      "This bundle of macros files provides macro support (including font
@@ -1610,7 +1610,7 @@ language that is written in a Cyrillic alphabet.")
                 "1920dcq8613yzprasbg80fh4fcjcidvvl54wkx438nimyxcri7qz"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/psnfss"))
-    (home-page "http://www.ctan.org/pkg/psnfss")
+    (home-page "https://www.ctan.org/pkg/psnfss")
     (synopsis "Font support for common PostScript fonts")
     (description
      "The PSNFSS collection includes a set of files that provide a complete
@@ -1730,7 +1730,7 @@ It includes little more than the required set of LaTeX packages.")))
                 "15i4k479dwrpr0kspmm70g1yn4p3dkh0whyzmr93hph9bggnh1i1"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/amsrefs"))
-    (home-page "http://www.ctan.org/pkg/amsrefs")
+    (home-page "https://www.ctan.org/pkg/amsrefs")
     (synopsis "LaTeX-based replacement for BibTeX")
     (description
      "Amsrefs is a LaTeX package for bibliographies that provides an archival
@@ -1759,7 +1759,7 @@ conjunction with BibTeX or as a replacement for BibTeX.")
            (lambda _
              (for-each delete-file (find-files "." "\\.drv$"))
              #t)))))
-    (home-page "http://www.ctan.org/pkg/bigfoot")
+    (home-page "https://www.ctan.org/pkg/bigfoot")
     (synopsis "Footnotes for critical editions")
     (description
      "This package aims to provide a one-stop solution to requirements for
@@ -1787,7 +1787,7 @@ documentation.  The bigfoot bundle also provides the @code{perpage} and
                 "1jrja9b1pzdh9zgv1jh807w4xijqja58n2mqny6dkwicv8qfgbfg"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/blindtext"))
-    (home-page "http://www.ctan.org/pkg/blindtext")
+    (home-page "https://www.ctan.org/pkg/blindtext")
     (synopsis "Producing 'blind' text for testing")
     (description
      "The package provides the commands @code{\\blindtext} and
@@ -1819,7 +1819,7 @@ ipsum\" text, see the @code{lipsum} package).")
            (lambda _
              (delete-file "dinbrief.drv")
              #t)))))
-    (home-page "http://www.ctan.org/pkg/dinbrief")
+    (home-page "https://www.ctan.org/pkg/dinbrief")
     (synopsis "German letter DIN style")
     (description
      "This package implements a document layout for writing letters according
@@ -1845,7 +1845,7 @@ package.")
                 "1zyl2pcz2x529gzj5m93a1s4ipymdabf7qdjl3l1673pizd4hfyv"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/draftwatermark"))
-    (home-page "http://www.ctan.org/pkg/draftwatermark")
+    (home-page "https://www.ctan.org/pkg/draftwatermark")
     (synopsis "Put a grey textual watermark on document pages")
     (description
      "This package provides a means to add a textual, light grey watermark on
@@ -1869,7 +1869,7 @@ on everypage.")
                 "06h28b26dyjkj9shksphgqfv4130jfkwhbw737hxn7d3yvdfffyd"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/environ"))
-    (home-page "http://www.ctan.org/pkg/environ")
+    (home-page "https://www.ctan.org/pkg/environ")
     (synopsis "New interface for environments in LaTeX")
     (description
      "This package provides the @code{\\collect@@body} command (as in
@@ -1891,7 +1891,7 @@ define a new author interface to creating new environments.")
                 "0pvmhsd4xmpil0m3c7qcgwilbk266mlkzv03g0jr8r3zd8jxlyzq"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/eqparbox"))
-    (home-page "http://www.ctan.org/pkg/eqparbox")
+    (home-page "https://www.ctan.org/pkg/eqparbox")
     (synopsis "Create equal-widthed parboxes")
     (description
      "LaTeX users sometimes need to ensure that two or more blocks of text
@@ -1927,7 +1927,7 @@ also provided.")
              (for-each delete-file
                        (find-files "." "\\.drv$"))
              #t)))))
-    (home-page "http://www.ctan.org/pkg/expdlist")
+    (home-page "https://www.ctan.org/pkg/expdlist")
     (synopsis "Expanded description environments")
     (description
      "The package provides additional features for the LaTeX
@@ -1962,7 +1962,7 @@ without affecting the structure of the list (this works for @code{itemize} and
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/filemod")
+    (home-page "https://www.ctan.org/pkg/filemod")
     (synopsis "Provide file modification times, and compare them")
     (description
      "This package provides macros to read and compare the modification dates
@@ -1988,7 +1988,7 @@ but non-expandable ones.")
                 "11gvvjvmdfs9b7mm19yf80zwkx49jqcbq6g8qb9y5ns1r1qvnixp"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/ifplatform"))
-    (home-page "http://www.ctan.org/pkg/ifplatform")
+    (home-page "https://www.ctan.org/pkg/ifplatform")
     (synopsis "Conditionals to test which platform is being used")
     (description
      "This package uses the (La)TeX extension @code{-shell-escape} to
@@ -2012,7 +2012,7 @@ classes of systems.")
                 "0aqliq0nwblxyrzhwhv77pnmk7qh2y3prgq7z7qhwcbgz5kisld7"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/natbib"))
-    (home-page "http://www.ctan.org/pkg/natbib")
+    (home-page "https://www.ctan.org/pkg/natbib")
     (synopsis "Flexible bibliography support")
     (description
      "This bundle provides a package that implements both author-year and
@@ -2036,7 +2036,7 @@ designed from the start to be compatible with @code{natbib}.")
                 "1dxbl5il7wbbsp0v45vk884xi1192wxw03849pb1g5q4x808n352"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/psfrag"))
-    (home-page "http://www.ctan.org/pkg/psfrag")
+    (home-page "https://www.ctan.org/pkg/psfrag")
     (synopsis "Replace strings in encapsulated PostScript figures")
     (description
      "This package allows LaTeX constructions (equations, picture
@@ -2074,7 +2074,7 @@ rotated.")
        ("texlive-latex-oberdiek" ,texlive-latex-oberdiek)
        ("texlive-latex-psfrag" ,texlive-latex-psfrag)
        ("texlive-latex-trimspaces" ,texlive-latex-trimspaces)))
-    (home-page "http://www.ctan.org/pkg/pstool")
+    (home-page "https://www.ctan.org/pkg/pstool")
     (synopsis "Process PostScript graphisc within pdfLaTeX documents")
     (description
      "This is a package for processing PostScript graphics with @code{psfrag}
@@ -2099,7 +2099,7 @@ re-processing.")
                 "0y4i651b75y6006n03x8n86bsqvjsailvvz9bhzy51dzsznqidq0"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/seminar"))
-    (home-page "http://www.ctan.org/pkg/seminar")
+    (home-page "https://www.ctan.org/pkg/seminar")
     (synopsis "Make overhead slides")
     ;; TODO: This package may need fancybox and xcomment at runtime.
     (description
@@ -2134,7 +2134,7 @@ recent classes such as powerdot or beamer, both of which are tuned to
              #t)))))
     (inputs
      `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
-    (home-page "http://www.ctan.org/pkg/trimspaces")
+    (home-page "https://www.ctan.org/pkg/trimspaces")
     (synopsis "Trim spaces around an argument or within a macro")
     (description
      "This very short package allows you to expandably remove spaces around a
@@ -2169,7 +2169,7 @@ space-stripped macros.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/capt-of")
+    (home-page "https://www.ctan.org/pkg/capt-of")
     (synopsis "Captions on more than floats")
     (description
      "This package defines a command @code{\\captionof} for putting a caption
@@ -2202,7 +2202,7 @@ to something that's not a float.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/etoolbox")
+    (home-page "https://www.ctan.org/pkg/etoolbox")
     (synopsis "e-TeX tools for LaTeX")
     (description
      "This package is a toolbox of programming facilities geared primarily
@@ -2240,7 +2240,7 @@ of the LaTeX kernel.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/fncychap")
+    (home-page "https://www.ctan.org/pkg/fncychap")
     (synopsis "Seven predefined chapter heading styles")
     (description
      "This package provides seven predefined chapter heading styles.  Each
@@ -2275,7 +2275,7 @@ headings.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/framed")
+    (home-page "https://www.ctan.org/pkg/framed")
     (synopsis "Framed or shaded regions that can break across pages")
     (description
      "The package creates three environments: @code{framed}, which puts an
@@ -2309,7 +2309,7 @@ course of the framed/shaded matter.  There is also a command
            (lambda _
              (delete-file "g-brief.drv")
              #t)))))
-    (home-page "http://www.ctan.org/pkg/g-brief")
+    (home-page "https://www.ctan.org/pkg/g-brief")
     (synopsis "Letter document class")
     (description
      "This package is designed for formatting formless letters in German; it
@@ -2331,7 +2331,7 @@ are LaTeX 2.09 @code{documentstyle} and LaTeX 2e class files for both an
                 "0d4l0msk8j5pi95xnmm9wygv1vbpkwkv5amx9l0km86cs79jpp1h"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/galois"))
-    (home-page "http://www.ctan.org/pkg/galois")
+    (home-page "https://www.ctan.org/pkg/galois")
     (synopsis "Typeset Galois connections")
     (description
      "The package deals with connections in two-dimensional style, optionally
@@ -2351,7 +2351,7 @@ in colour.")
                 "03g9by54yrypn599y98r1xh7qw0bbbmpzq0bfwpj6j5q5rkl1mfa"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/gcite"))
-    (home-page "http://www.ctan.org/pkg/gcite")
+    (home-page "https://www.ctan.org/pkg/gcite")
     (synopsis "Citations in a reader-friendly style")
     (description
      "The package allows citations in the German style, which is considered by
@@ -2375,7 +2375,7 @@ BibLaTeX, and is considered experimental.")
                 "1r2kfcwclg33yk5z8mvlagwxj7nr1mc3w4bdpmhrwv6dn8mrbvw8"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/geometry"))
-    (home-page "http://www.ctan.org/pkg/geometry")
+    (home-page "https://www.ctan.org/pkg/geometry")
     (synopsis "Flexible and complete interface to document dimensions")
     (description
      "This package provides an easy and flexible user interface to customize
@@ -2400,7 +2400,7 @@ ability to communicate the paper size it's set up to the output.")
                 "0caxs74hla28hc67csf5i5ahadx97w8vxh3mdmsprxbpd1mr7ssg"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/mdwtools"))
-    (home-page "http://www.ctan.org/pkg/mdwtools")
+    (home-page "https://www.ctan.org/pkg/mdwtools")
     (synopsis "Miscellaneous tools by Mark Wooding")
     (description
      "This collection of tools includes: @code{atsupport} for short commands
@@ -2424,7 +2424,7 @@ array environments; verbatim handling; and syntax diagrams.")
                 "09mvszd5qgqg4cfglpj5qxyzjz190ppb9p8gnsnjydwp1akvhayf"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/polyglossia"))
-    (home-page "http://www.ctan.org/pkg/polyglossia")
+    (home-page "https://www.ctan.org/pkg/polyglossia")
     (synopsis "Alternative to babel for XeLaTeX and LuaLaTeX")
     (description
      "This package provides a complete Babel replacement for users of LuaLaTeX
@@ -2444,7 +2444,7 @@ and XeLaTeX; it relies on the @code{fontspec} package, version 2.0 at least.")
                 "14b2bc7cqz4ckxxycim9sw6jkrr1pahivm1rdbpz5k6hl967w1s3"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/supertabular"))
-    (home-page "http://www.ctan.org/pkg/supertabular")
+    (home-page "https://www.ctan.org/pkg/supertabular")
     (synopsis "Multi-page tables package")
     (description
      "This package was a predecessor of @code{longtable}; the newer
@@ -2478,7 +2478,7 @@ situations where longtable has problems.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/texinfo")
+    (home-page "https://www.ctan.org/pkg/texinfo")
     (synopsis "TeX macros to handle Texinfo files")
     (description
      "Texinfo is the preferred format for documentation in the GNU project;
@@ -2501,7 +2501,7 @@ hypertext linkages in some cases).")
                 "0d1050i973wnxigy0xpky5l7vn4ff7ldhkjpdqsw5s653gagwixp"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/upquote"))
-    (home-page "http://www.ctan.org/pkg/upquote")
+    (home-page "https://www.ctan.org/pkg/upquote")
     (synopsis "Show \"realistic\" quotes in verbatim")
     (description
      "Typewriter-style fonts are best for program listings, but Computer
@@ -2541,7 +2541,7 @@ does not affect @code{\\tt}, @code{\\texttt}, etc.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/anysize")
+    (home-page "https://www.ctan.org/pkg/anysize")
     (synopsis "Simple package to set up document margins")
     (description
      "This is a simple package to set up document margins.  This package is
@@ -2561,7 +2561,7 @@ considered obsolete; alternatives are the @code{typearea} package from the
                 "0rxfpr8vq3brwx5rc7qn91ixlp9zva4zrms8a579fqa1g5yva7vg"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/appendix"))
-    (home-page "http://www.ctan.org/pkg/appendix")
+    (home-page "https://www.ctan.org/pkg/appendix")
     (synopsis "Extra control of appendices")
     (description
      "The appendix package provides various ways of formatting the titles of
@@ -2583,7 +2583,7 @@ command.")
                 "1ik4m8pzfsn1grlda6fniqqfwmgj7rfxwg63jdw0p0qv002vc7ik"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/changebar"))
-    (home-page "http://www.ctan.org/pkg/changebar")
+    (home-page "https://www.ctan.org/pkg/changebar")
     (synopsis "Generate changebars in LaTeX documents")
     (description
      "Identify areas of text to be marked with changebars with the
@@ -2639,7 +2639,7 @@ copy-and-paste functions work properly.")
                 "190pmq8la2rq07xry8bn8z8yywzxv6fqyqaj7yjfj5rgw6x0mas8"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/colortbl"))
-    (home-page "http://www.ctan.org/pkg/colortbl")
+    (home-page "https://www.ctan.org/pkg/colortbl")
     (synopsis "Add colour to LaTeX tables")
     (description
      "This package allows rows, columns, and even individual cells in LaTeX
@@ -2671,7 +2671,7 @@ tables to be coloured.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/fancybox")
+    (home-page "https://www.ctan.org/pkg/fancybox")
     (synopsis "Variants of \\fbox and other games with boxes")
     (description
      "This package provides variants of @code{\\fbox}: @code{\\shadowbox},
@@ -2705,7 +2705,7 @@ floats, center, flushleft, and flushright, lists, and pages.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/fancyhdr")
+    (home-page "https://www.ctan.org/pkg/fancyhdr")
     (synopsis "Extensive control of page headers and footers in LaTeX2e")
     (description
      "The package provides extensive facilities, both for constructing headers
@@ -2725,7 +2725,7 @@ would automatically change the heading style in use).")
                 "0nbl7wylkv22fcdv4p8byhhj575fli6jnqjpkhrkbv8dzwah84nq"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/float"))
-    (home-page "http://www.ctan.org/pkg/float")
+    (home-page "https://www.ctan.org/pkg/float")
     (synopsis "Improved interface for floating objects")
     (description
      "This package improves the interface for defining floating objects such
@@ -2748,7 +2748,7 @@ with @code{\\floatplacement{figure}{H}}.")
                 "03x61wwql8nh6zrqiiiq3rb0x7m3pn48c606zapy19y21fybwdxs"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/footmisc"))
-    (home-page "http://www.ctan.org/pkg/footmisc")
+    (home-page "https://www.ctan.org/pkg/footmisc")
     (synopsis "Range of footnote options")
     (description
      "This is a collection of ways to change the typesetting of footnotes.
@@ -2773,7 +2773,7 @@ footnotes with symbols rather than numbers.")
     (arguments
      '(#:tex-directory "latex/listings"
        #:build-targets '("listings.ins")))
-    (home-page "http://www.ctan.org/pkg/listings")
+    (home-page "https://www.ctan.org/pkg/listings")
     (synopsis "Typeset source code listings using LaTeX")
     (description
      "The package enables the user to typeset programs (programming code)
@@ -2807,7 +2807,7 @@ styles.  Support for @code{hyperref} is provided.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/jknappen")
+    (home-page "https://www.ctan.org/pkg/jknappen")
     (synopsis "Miscellaneous packages by Joerg Knappen")
     (description
      "This package provides miscellaneous macros by Joerg Knappen, including:
@@ -2882,7 +2882,7 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
      `(("texlive-bin" ,texlive-bin)
        ("texlive-metafont-base" ,texlive-metafont-base)
        ("texlive-fonts-cm" ,texlive-fonts-cm)))
-    (home-page "http://www.ctan.org/pkg/ec")
+    (home-page "https://www.ctan.org/pkg/ec")
     (synopsis "Computer modern fonts in T1 and TS1 encodings")
     (description
      "The EC fonts are European Computer Modern Fonts, supporting the complete
@@ -2963,7 +2963,7 @@ texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
      `(("texlive-bin" ,texlive-bin)
        ("texlive-metafont-base" ,texlive-metafont-base)
        ("texlive-fonts-cm" ,texlive-fonts-cm)))
-    (home-page "http://www.ctan.org/pkg/rsfs")
+    (home-page "https://www.ctan.org/pkg/rsfs")
     (synopsis "Ralph Smith's Formal Script font")
     (description
      "The fonts provide uppercase formal script letters for use as symbols in
@@ -2986,7 +2986,7 @@ one of the packages @code{calrsfs} and @code{mathrsfs}.")
                 "1xvmms28mvvfpks9x7lfya2xhh5k8jy3qnlih1mzcnf156xnb89z"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/eso-pic"))
-    (home-page "http://www.ctan.org/pkg/eso-pic")
+    (home-page "https://www.ctan.org/pkg/eso-pic")
     (synopsis "Add picture commands (or backgrounds) to every page")
     (description
      "The package adds one or more user commands to LaTeX's @code{shipout}
@@ -3019,7 +3019,7 @@ routine, which may be used to place the output at fixed positions.  The
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/eepic")
+    (home-page "https://www.ctan.org/pkg/eepic")
     (synopsis "Extensions to epic and the LaTeX drawing tools")
     (description
      "Extensions to @code{epic} and the LaTeX picture drawing environment,
@@ -3056,7 +3056,7 @@ splines, and filled circles and ellipses.  The package uses @code{tpic}
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/enumitem")
+    (home-page "https://www.ctan.org/pkg/enumitem")
     (synopsis "Customize basic list environments")
     (description
      "This package is intended to ease customizing the three basic list
@@ -3078,7 +3078,7 @@ in the form @code{key=value} are available, for example:
                 "0qlxy47f1f8plgch3jqfsnrdgpyz20sz46yp33i2jwvf9hvfczf0"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/multirow"))
-    (home-page "http://www.ctan.org/pkg/multirow")
+    (home-page "https://www.ctan.org/pkg/multirow")
     (synopsis "Create tabular cells spanning multiple rows")
     (description
      "The package provides tools for creating tabular cells spanning multiple
@@ -3111,7 +3111,7 @@ entry at the \"natural\" width of its text.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/overpic")
+    (home-page "https://www.ctan.org/pkg/overpic")
     (synopsis "Combine LaTeX commands over included graphics")
     (description
      "The @code{overpic} environment is a cross between the LaTeX
@@ -3147,7 +3147,7 @@ positions; a grid for orientation is available.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/parskip")
+    (home-page "https://www.ctan.org/pkg/parskip")
     (synopsis "Layout with zero \\parindent, non-zero \\parskip")
     (description
      "Simply changing @code{\\parskip} and @code{\\parindent} leaves a layout
@@ -3167,7 +3167,7 @@ designed class) helps alleviate this untidiness.")
                 "06p5smfq66559ppdnmkl3hp8534x84ywbscimsiir4gllpya3i9h"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/pdfpages"))
-    (home-page "http://www.ctan.org/pkg/pdfpages")
+    (home-page "https://www.ctan.org/pkg/pdfpages")
     (synopsis "Include PDF documents in LaTeX")
     (description
      "This package simplifies the inclusion of external multi-page PDF
@@ -3200,7 +3200,7 @@ use this package to insert PostScript files, in addition to PDF files.")
                (("fontdef\\}\\}" line)
                 (string-append line "\n\\endbatchfile")))
              #t)))))
-    (home-page "http://www.ctan.org/pkg/stmaryrd")
+    (home-page "https://www.ctan.org/pkg/stmaryrd")
     (synopsis "St Mary Road symbols for theoretical computer science")
     (description
      "The fonts were originally distributed as Metafont sources only, but
@@ -3222,7 +3222,7 @@ the whole font.")
                 "15spcl5wb7w269qd6y596vp4yi8sa5ppcx8w4z2i9kyp02r3a0yb"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/subfigure"))
-    (home-page "http://www.ctan.org/pkg/subfigure")
+    (home-page "https://www.ctan.org/pkg/subfigure")
     (synopsis "Figures divided into subfigures")
     (description
      "This (deprecated) package provides support for the manipulation and
@@ -3249,7 +3249,7 @@ the more recent @code{subcaption} package more satisfactory.")
                 "1adkdx2zkk42g82nqf57lv1nc1z7kwl13jmy8vpcsizsa0xdnx9n"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/tabulary"))
-    (home-page "http://www.ctan.org/pkg/tabulary")
+    (home-page "https://www.ctan.org/pkg/tabulary")
     (synopsis "Tabular with variable width columns balanced")
     (description
      "The package defines a @code{tabular*}-like environment, @code{tabulary},
@@ -3286,7 +3286,7 @@ according to the natural width of the widest cell in the column.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/threeparttable")
+    (home-page "https://www.ctan.org/pkg/threeparttable")
     (synopsis "Tables with captions and notes all the same width")
     (description
      "This package facilitates tables with titles (captions) and notes.  The
@@ -3409,7 +3409,7 @@ environment.")
            (sha256
             (base32
              "1bal5fhw0xlhl37ayv8vlnqnsn1y82kadzfjhbgr223blspp4zsj"))))))
-    (home-page "http://www.ctan.org/pkg/threeparttable")
+    (home-page "https://www.ctan.org/pkg/threeparttable")
     (synopsis "Times-like fonts in support of mathematics")
     (description
      "Txfonts supplies virtual text roman fonts using Adobe Times (or URW
@@ -3493,7 +3493,7 @@ of ink traps which typify the Kurier font.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/titlesec")
+    (home-page "https://www.ctan.org/pkg/titlesec")
     (synopsis "Select alternative section titles")
     (description
      "This package provides an interface to sectioning commands for selection
@@ -3516,7 +3516,7 @@ floats in a page.  You may assign headers/footers to individual floats, too.")
                 "1lvxrqfwcwa4p31zyfm80gr05v8c28xybv5ri79zi2ngz6834z12"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/type1cm"))
-    (home-page "http://www.ctan.org/pkg/type1cm")
+    (home-page "https://www.ctan.org/pkg/type1cm")
     (synopsis "Arbitrary size font selection in LaTeX")
     (description
      "LaTeX, by default, restricts the sizes at which you can use its default
@@ -3544,7 +3544,7 @@ now contains a package @code{fix-cm},f which performs the task of
                 "00gdiwh3sfhh1iimjhpja7lm7k4vzqzql2irgwnpz94qvh25zwi5"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/lh"))
-    (home-page "http://www.ctan.org/pkg/lh")
+    (home-page "https://www.ctan.org/pkg/lh")
     (synopsis "Cyrillic fonts that support LaTeX standard encodings")
     (description
      "The LH fonts address the problem of the wide variety of alphabets that
@@ -3583,7 +3583,7 @@ OT2 encoded fonts, CM bright shaped fonts and Concrete shaped fonts.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/metapost")
+    (home-page "https://www.ctan.org/pkg/metapost")
     (synopsis "Create scalable illustrations")
     (description
      "MetaPost uses a language based on that of Metafont to produce precise
@@ -3604,7 +3604,7 @@ than the bitmaps Metafont creates.")
               (file-name (string-append name "-" version "-checkout"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/acmart"))
-    (home-page "http://www.ctan.org/pkg/acmart")
+    (home-page "https://www.ctan.org/pkg/acmart")
     (synopsis "Class for typesetting publications of ACM")
     (description
      "This package provides a class for typesetting publications of the
@@ -3637,7 +3637,7 @@ Association for Computing Machinery (ACM).")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/varwidth")
+    (home-page "https://www.ctan.org/pkg/varwidth")
     (synopsis "Variable-width minipage")
     (description
      "The @code{varwidth} environment is superficially similar to
@@ -3657,7 +3657,7 @@ get a narrower “natural” width.")
                 "1sgwbfwjjf70g54hh93gsd9jp9nm67w6n74x9d72a56n07jbk5hv"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/wasysym"))
-    (home-page "http://www.ctan.org/pkg/wasysym")
+    (home-page "https://www.ctan.org/pkg/wasysym")
     (synopsis "LaTeX support file to use the WASY2 fonts")
     (description
      "The wasy2WASY2 (Waldi Symbol) font by Roland Waldi provides many glyphs
@@ -3692,7 +3692,7 @@ to use interface for these symbols.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/wrapfig")
+    (home-page "https://www.ctan.org/pkg/wrapfig")
     (synopsis "Produces figures which text can flow around")
     (description
      "This package allows figures or tables to have text wrapped around them.
@@ -3726,7 +3726,7 @@ It does not work in combination with list environments, but can be used in a
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/ucs")
+    (home-page "https://www.ctan.org/pkg/ucs")
     (synopsis "Extended UTF-8 input encoding support for LaTeX")
     (description
      "The bundle provides the @code{ucs} package, and @code{utf8x.def},
@@ -3760,7 +3760,7 @@ package of that name now exists.")
            (lambda _
              (delete-file "preview.drv")
              #t)))))
-    (home-page "http://www.ctan.org/pkg/preview")
+    (home-page "https://www.ctan.org/pkg/preview")
     (synopsis "Extract bits of a LaTeX source for output")
     (description
      "The main purpose of the preview package is the extraction of selected
@@ -3785,7 +3785,7 @@ files.")
                 "0jmasg40bk53zdd2jc8nc18jvdai3p2wmamy7hwli8gls4nf25qp"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/acronym"))
-    (home-page "http://www.ctan.org/pkg/acronym")
+    (home-page "https://www.ctan.org/pkg/acronym")
     (synopsis "Expand acronyms at least once")
     (description
      "This package ensures that all acronyms used in the text are spelled out
@@ -3820,7 +3820,7 @@ e-TeX.")
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
-    (home-page "http://www.ctan.org/pkg/pdftex")
+    (home-page "https://www.ctan.org/pkg/pdftex")
     (synopsis "TeX extension for direct creation of PDF")
     (description
      "This package provides an extension of TeX which can be configured to
