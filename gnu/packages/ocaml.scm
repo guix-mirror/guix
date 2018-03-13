@@ -1128,6 +1128,7 @@ instances and printing them.")
               (method url-fetch)
               (uri (string-append "https://github.com/vincent-hugot/iTeML/"
                                   "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1hw3jqir7w79payy4knc38fa3nxcvl7ap6y6hnqavrhpi8zqb59j"))))
