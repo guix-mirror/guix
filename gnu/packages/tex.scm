@@ -3635,6 +3635,7 @@ OT2 encoded fonts, CM bright shaped fonts and Concrete shaped fonts.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/metapost"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "03nvjddffiz796wll6axzmgfvynyciy2mqamv20qx252w71vwkwd"))))
