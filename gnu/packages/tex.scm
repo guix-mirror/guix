@@ -1374,6 +1374,7 @@ of file names.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "l3kernel"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0r0wfk594j8wkdqhh21haimwsfq8x5jch4ldm21hkzk5dnmvpbg6"))))
