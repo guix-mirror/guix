@@ -1446,6 +1446,7 @@ programming tools and kernel sup­port.  Packages provided in this release are:
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "fontspec"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1rx43y5xmjqvc27pjdnmqwp4pcw3czcfd6nfpmzc1gnqfl1hlc0q"))))
