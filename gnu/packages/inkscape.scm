@@ -46,25 +46,15 @@
 (define-public inkscape
   (package
     (name "inkscape")
-    (version "0.92.2")
+    (version "0.92.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://media.inkscape.org/dl/"
                                   "resources/file/"
                                   "inkscape-" version ".tar.bz2"))
-              (patches
-               (list
-                ;; Fix compatibility with poppler >= 0.58.
-                (origin
-                  (method url-fetch)
-                  (uri (string-append "https://gitlab.com/inkscape/inkscape/commit/"
-                                      "9418824967eb4c53371ef8588243fed4cab496e0.patch"))
-                  (sha256
-                   (base32
-                    "0wwyhkqb1qyazz5f6wqrc223l6k8qnmadiw28q8gihlgvh38rvll")))))
               (sha256
                (base32
-                "1lyghk6yarcv9nwkh6k366p6hb7rfilqcvbyji09hki59khd0a56"))))
+                "1chng2yw8dsjxc9gf92aqv7plj11cav8ax321wmakmv5bb09cch6"))))
     (build-system cmake-build-system)
     (inputs
      `(("aspell" ,aspell)
