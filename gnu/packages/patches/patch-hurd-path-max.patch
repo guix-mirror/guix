@@ -13,7 +13,7 @@ Subject: [PATCH] Do not rely on PATH_MAX when reading a symlink target.
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/src/util.c b/src/util.c
-index 82a7e37..c4c0f9d 100644
+index 1cc08ba..67dbd3a 100644
 --- a/src/util.c
 +++ b/src/util.c
 @@ -460,12 +460,12 @@ move_file (char const *from, bool *from_needs_removal,
@@ -31,18 +31,19 @@ index 82a7e37..c4c0f9d 100644
  	    size += i;
  	  if (i != 0 || close (fd) != 0)
  	    read_fatal ();
-@@ -610,9 +610,9 @@ copy_file (char const *from, char const *to, struct stat *tost,
+@@ -610,10 +610,10 @@ copy_file (char const *from, char const *to, struct stat *tost,
  
    if (S_ISLNK (mode))
      {
--      char *buffer = xmalloc (PATH_MAX);
+-      char *buffer = xmalloc (PATH_MAX + 1);
 +      char *buffer = xmalloc (tost->st_size + 1);
+       ssize_t r;
  
--      if (safe_readlink (from, buffer, PATH_MAX) < 0)
-+      if (safe_readlink (from, buffer, tost->st_size) < 0)
+-      if ((r = safe_readlink (from, buffer, PATH_MAX)) < 0)
++      if ((r = safe_readlink (from, buffer, tost->st_size)) < 0)
  	pfatal ("Can't read %s %s", "symbolic link", from);
+       buffer[r] = '\0';
        if (safe_symlink (buffer, to) != 0)
- 	pfatal ("Can't create %s %s", "symbolic link", to);
 -- 
-2.4.2
+2.16.2
 

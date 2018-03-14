@@ -217,14 +217,14 @@ standard utility.")
 (define-public patch
   (package
    (name "patch")
-    (version "2.7.5")
+    (version "2.7.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/patch/patch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "16d2r9kpivaak948mxzc0bai45mqfw73m113wrkmbffnalv1b5gx"))
+                "1zfqy4rdcy279vwn2z1kbv19dcfw25d2aqy9nzvdkq5bjzd0nqdc"))
               (patches (search-patches "patch-hurd-path-max.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("ed" ,ed)))
