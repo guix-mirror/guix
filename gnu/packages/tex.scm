@@ -1091,6 +1091,7 @@ requires the e-TeX extensions to the TeX primitive set.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/generic/epsf"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "14w3j81ympyvg8hkk9i1xgr8a0gfnfsb2ki8qqsk5pa051za1xcy"))))
