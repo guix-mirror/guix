@@ -2507,6 +2507,7 @@ situations where longtable has problems.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/texinfo"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "09zj2w3lx0y6i2syfjjgizahf86z301dw8p37ln6syfhqhzqdz46"))))
