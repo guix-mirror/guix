@@ -1037,6 +1037,7 @@ contain.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "filecontents"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0swkbxv8vg0yizadfnvrwjb4cj0pn34v9wm6v7wqq903fdav7k7q"))))
