@@ -357,12 +357,15 @@ and each module is a module name like \"snd_hda_intel\"."
          (()                                      ;empty line
           (loop aliases)))))))
 
-(define (current-alias-file)
-  "Return the absolute file name of the default 'modules.alias' file."
+(define (current-kernel-directory)
+  "Return the directory of the currently running Linux kernel."
   (string-append (or (getenv "LINUX_MODULE_DIRECTORY")
                      "/run/booted-system/kernel/lib/modules")
-                 "/" (utsname:release (uname))
-                 "/" "modules.alias"))
+                 "/" (utsname:release (uname))))
+
+(define (current-alias-file)
+  "Return the absolute file name of the default 'modules.alias' file."
+  (string-append (current-kernel-directory) "/modules.alias"))
 
 (define* (known-module-aliases #:optional (alias-file (current-alias-file)))
   "Return the list of alias/module pairs read from ALIAS-FILE.  Each alias is
