@@ -133,7 +133,10 @@ MODULES and taken from LINUX."
                       (copy-file module
                                  (string-append #$output "/"
                                                 (basename module))))
-                    (delete-duplicates modules)))))
+                    (delete-duplicates modules))
+
+          ;; Hyphen or underscore?  This database tells us.
+          (write-module-name-database #$output))))
 
   (computed-file "linux-modules" build-exp))
 

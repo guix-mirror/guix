@@ -31,8 +31,10 @@
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
+  #:autoload   (ice-9 pretty-print) (pretty-print)
   #:export (dot-ko
             ensure-dot-ko
+            module-formal-name
             module-aliases
             module-dependencies
             module-soft-dependencies
@@ -52,6 +54,7 @@
             matching-modules
             missing-modules
 
+            write-module-name-database
             write-module-alias-database
             write-module-device-database))
 
@@ -99,6 +102,14 @@ key/value pairs.."
 
 (define %not-comma
   (char-set-complement (char-set #\,)))
+
+(define (module-formal-name file)
+  "Return the module name of FILE as it appears in its info section.  Usually
+the module name is the same as the base name of FILE, modulo hyphens and minus
+the \".ko\" extension."
+  (match (assq 'name (modinfo-section-contents file))
+    (('name . name) name)
+    (#f #f)))
 
 (define (module-dependencies file)
   "Return the list of modules that FILE depends on.  The returned list
@@ -319,12 +330,13 @@ appears in BLACK-LIST are not loaded."
   "Load MODULES and their dependencies from DIRECTORY, a directory containing
 the '.ko' files.  The '.ko' suffix is automatically added to MODULES if
 needed."
-  (define (lookup-module name)
-    (string-append directory "/" (ensure-dot-ko name)))
+  (define module-name->file-name
+    (module-name-lookup directory))
 
-  (for-each (cut load-linux-module* <>
-                 #:lookup-module lookup-module)
-            (map lookup-module modules)))
+  (for-each (lambda (module)
+              (load-linux-module* (module-name->file-name module)
+                                  #:lookup-module module-name->file-name))
+            modules))
 
 
 ;;;
@@ -501,6 +513,56 @@ are required to access DEVICE."
              (provided (map file-name->module-name modules-provided)))
         (remove (cut member <> provided) modules))
       '()))
+
+
+;;;
+;;; Module databases.
+;;;
+
+(define (module-name->file-name/guess directory name)
+  "Guess the file name corresponding to NAME, a module name.  That doesn't
+always work because sometimes underscores in NAME map to hyphens (e.g.,
+\"input-leds.ko\"), sometimes not (e.g., \"mac_hid.ko\")."
+  (string-append directory "/" (ensure-dot-ko name)))
+
+(define (module-name-lookup directory)
+  "Return a one argument procedure that takes a module name (e.g.,
+\"input_leds\") and returns its absolute file name (e.g.,
+\"/.../input-leds.ko\")."
+  (catch 'system-error
+    (lambda ()
+      (define mapping
+        (call-with-input-file (string-append directory "/modules.name")
+          read))
+
+      (lambda (name)
+        (or (assoc-ref mapping name)
+            (module-name->file-name/guess directory name))))
+    (lambda args
+      (if (= ENOENT (system-error-errno args))
+          (cut module-name->file-name/guess directory <>)
+          (apply throw args)))))
+
+(define (write-module-name-database directory)
+  "Write a database that maps \"module names\" as they appear in the relevant
+ELF section of '.ko' files, to actual file names.  This format is
+Guix-specific.  It aims to deal with inconsistent naming, in particular
+hyphens vs. underscores."
+  (define mapping
+    (map (lambda (file)
+           (match (module-formal-name file)
+             (#f   (cons (basename file ".ko") file))
+             (name (cons name file))))
+         (find-files directory "\\.ko$")))
+
+  (call-with-output-file (string-append directory "/modules.name")
+    (lambda (port)
+      (display ";; Module name to file name mapping.
+;;
+;; This format is Guix-specific; it is not supported by upstream Linux tools.
+\n"
+               port)
+      (pretty-print mapping port))))
 
 (define (write-module-alias-database directory)
   "Traverse the '.ko' files in DIRECTORY and create the corresponding
