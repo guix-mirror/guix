@@ -1987,6 +1987,7 @@ without affecting the structure of the list (this works for @code{itemize} and
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/filemod"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0vpxilfw69xv78f03g0j0zw0bw4qcn36whqp8phcq48qk1ax2kr2"))))
