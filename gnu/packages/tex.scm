@@ -3222,6 +3222,7 @@ designed class) helps alleviate this untidiness.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "pdfpages"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "06p5smfq66559ppdnmkl3hp8534x84ywbscimsiir4gllpya3i9h"))))
