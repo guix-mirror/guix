@@ -3604,6 +3604,7 @@ now contains a package @code{fix-cm},f which performs the task of
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "lh"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "00gdiwh3sfhh1iimjhpja7lm7k4vzqzql2irgwnpz94qvh25zwi5"))))
