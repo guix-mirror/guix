@@ -2159,6 +2159,7 @@ recent classes such as powerdot or beamer, both of which are tuned to
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "trimspaces"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0da00lb32am4g63mn96625wg48p3pj3spx79lajrk17d549apwqa"))))
