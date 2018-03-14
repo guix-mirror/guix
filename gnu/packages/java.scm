@@ -9525,3 +9525,39 @@ Java method invocation.")
     (license (list
                license:asl2.0
                license:lgpl2.1+))))
+
+(define-public java-native-access-platform
+  (package
+    (inherit java-native-access)
+    (name "java-native-access-platform")
+    (arguments
+     `(#:test-target "test"
+       #:tests? #f; require jna-test.jar
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'chdir
+           (lambda _
+             (chdir "contrib/platform")
+             #t))
+         (add-after 'chdir 'fix-ant
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "nbproject/project.properties"
+               (("../../build/jna.jar")
+                (string-append (assoc-ref inputs "java-native-access")
+                               "/share/java/jna.jar"))
+               (("../../lib/hamcrest-core-.*.jar")
+                (string-append (assoc-ref inputs "java-hamcrest-core")
+                               "/share/java/hamcrest-core.jar"))
+               (("../../lib/junit.jar")
+                (string-append (assoc-ref inputs "java-junit")
+                               "/share/java/junit.jar")))
+             #t))
+         (replace 'install
+           (install-jars "dist")))))
+    (inputs
+     `(("java-native-access" ,java-native-access)))
+    (synopsis "Cross-platform mappings for jna")
+    (description "java-native-access-platfrom has cross-platform mappings
+and mappings for a number of commonly used platform functions, including a
+large number of Win32 mappings as well as a set of utility classes that
+simplify native access.")))
