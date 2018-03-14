@@ -3062,6 +3062,7 @@ routine, which may be used to place the output at fixed positions.  The
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/eepic"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1c68gvh021pvybg07apsd2xhq2ljbg80kq94wh71drdga3c2zqjw"))))
