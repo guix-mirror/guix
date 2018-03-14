@@ -39,9 +39,7 @@
              (base32 "0lam2zf3n7ak4pig8w46lhx9hzx50kj2v2yj1616mm26wy2rf4fi"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:parallel-tests? #f                ; test suite fails in parallel
-
-      #:phases (modify-phases %standard-phases
+    `(#:phases (modify-phases %standard-phases
                  (add-before 'configure 'set-shell-file-name
                    (lambda* (#:key inputs #:allow-other-keys)
                      ;; Refer to the right shell.
