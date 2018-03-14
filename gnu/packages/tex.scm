@@ -1398,6 +1398,7 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "l3packages"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "16jplkvzdysfssijq9l051nsks65c2nrarsl17k8gjhc28yznj8y"))))
