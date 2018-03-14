@@ -9374,3 +9374,52 @@ graphs, and pie charts.")
 implementation.  It also provides reusable components for client-side
 authentication, HTTP state management, and HTTP connection management.")
     (license license:asl2.0)))
+
+(define-public java-commons-vfs
+  (package
+    (name "java-commons-vfs")
+    (version "2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/vfs/source/"
+                                  "commons-vfs2-distribution-" version "-src.tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cnq1iaghbp4cslpnvwbp83i5v234x87irssqynhwpfgw7caf1s3"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file
+                            (find-files "." "\\.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "commons-vfs.jar"
+       #:source-dir "commons-vfs2/src/main/java"
+       #:test-dir "commons-vfs2/src/test"
+       ; FIXME: tests depend on many things: apache sshd, hadoop, ftpserver, ...
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-hadoop-and-webdav
+           ; Remove these files as they are not required and depend on difficult
+           ; packages.
+           (lambda _
+             (for-each delete-file-recursively
+               '("commons-vfs2/src/main/java/org/apache/commons/vfs2/provider/webdav"
+                 "commons-vfs2/src/main/java/org/apache/commons/vfs2/provider/hdfs")))))))
+    (inputs
+     `(("java-commons-collections4" ,java-commons-collections4)
+       ("java-commons-compress" ,java-commons-compress)
+       ("java-commons-httpclient" ,java-commons-httpclient)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ("java-commons-net" ,java-commons-net)
+       ("java-jsch" ,java-jsch)))
+    (home-page "http://commons.apache.org/proper/commons-vfs/")
+    (synopsis "Java filesystem library")
+    (description "Commons VFS provides a single API for accessing various
+different file systems.  It presents a uniform view of the files from various
+different sources, such as the files on local disk, on an HTTP server, or
+inside a Zip archive.")
+    (license license:asl2.0)))
