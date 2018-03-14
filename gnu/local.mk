@@ -50,6 +50,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/accessibility.scm		\
   %D%/packages/acct.scm				\
   %D%/packages/acl.scm				\
+  %D%/packages/ada.scm				\
   %D%/packages/admin.scm			\
   %D%/packages/adns.scm				\
   %D%/packages/agda.scm				\
