@@ -148,7 +148,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.54.3")
+   (version "2.56.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -156,9 +156,8 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1a60p9m493mvm42rskg8ifr0jmsbr8arzyqx73jshgfwhmkdqgwn"))
-            (patches (search-patches "glib-respect-datadir.patch"
-                                     "glib-tests-timer.patch"))))
+              "1iqgi90fmpl3l23jm2iv44qp7hqsxvnv7978s18933bvx4bnxvzc"))
+            (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
               "bin"           ; glib-mkenums, gtester, etc.; depends on Python
@@ -235,6 +234,7 @@ shared NFS home directories.")
                      ("gio/tests/contenttype.c"
                       (;; XXX: requires shared-mime-info.
                        "/contenttype/guess"
+                       "/contenttype/guess_svg_from_data"
                        "/contenttype/subtype"
                        "/contenttype/list"
                        "/contenttype/icon"

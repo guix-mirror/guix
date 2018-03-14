@@ -705,7 +705,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gimp-CVE-2017-17787.patch		\
   %D%/packages/patches/gimp-CVE-2017-17789.patch		\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
-  %D%/packages/patches/glib-respect-datadir.patch		\
   %D%/packages/patches/glib-tests-timer.patch			\
   %D%/packages/patches/glibc-CVE-2015-5180.patch		\
   %D%/packages/patches/glibc-CVE-2015-7547.patch		\
