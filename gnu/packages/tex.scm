@@ -2047,6 +2047,7 @@ classes of systems.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "natbib"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0aqliq0nwblxyrzhwhv77pnmk7qh2y3prgq7z7qhwcbgz5kisld7"))))
