@@ -1539,6 +1539,7 @@ definitions.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "amscls"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0jmcr37mcdi7drczppvr6lmz5d5yd9m67ii79gp2nglg1xpw934j"))))
