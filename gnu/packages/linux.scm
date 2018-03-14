@@ -383,8 +383,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.15.5")
-(define %linux-libre-hash "1vrqya5zkhzl37fpj5v0v1igm7jf2gi13apkpak90l51xiw592cs")
+(define %linux-libre-version "4.15.9")
+(define %linux-libre-hash "13lcard7i6w2c1cf9rfhvmq79xk4qp2p1c1920mfi69l20yvm572")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -392,8 +392,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.21")
-(define %linux-libre-4.14-hash "07d27mph514jxxkzil4b3c848ywfd4r4js0wl5wsfy7a3j757278")
+(define %linux-libre-4.14-version "4.14.26")
+(define %linux-libre-4.14-hash "1m2zr17wpasg5riysbaa4g5i492jzr93py2jm088ki818s4a9cm3")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -402,20 +402,20 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.83"
-                    "09mw2r2fbn0g6xfhyxk0n54c7sg0vk9nlp7k2ca3v0v24n7lrfza"
+  (make-linux-libre "4.9.87"
+                    "1p8phvmxp04npzqzqcfmv8k9l5l65s7vpjcakdm0fxfkzvnswsp6"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.117"
-                    "1mlq9npyriwj0wpj24zah55bkxil31l182ypbn6b3x4yvmr8lhz0"
+  (make-linux-libre "4.4.121"
+                    "1d7djrhiib0ds9ssjkali6b5w6rzap4zgj5hf9jq1jmqpp54jkm4"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.49"
-                    "0dklmqj6ayjlkz97b811zdvpgb3yppahinji9l9jmkz4ssi7a1gs"
+  (make-linux-libre "4.1.50"
+                    "1hl1pk724v2waa55bhxfmxyz9nl6pkcj4dc3l80jfvqdfgr55mm2"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -873,7 +873,7 @@ ext3 or ext4 partition.")
 (define-public zerofree
   (package
     (name "zerofree")
-    (version "1.1.0")
+    (version "1.1.1")
     (home-page "https://frippery.org/uml/")
     (source (origin
               (method url-fetch)
@@ -881,7 +881,7 @@ ext3 or ext4 partition.")
                                   ".tgz"))
               (sha256
                (base32
-                "059g29x5r1xj6wcj4xj85l8w6qrxyl86yqbybjqqz6nxz4falxzf"))))
+                "0rrqfa5z103ws89vi8kfvbks1cfs74ix6n1wb6vs582vnmhwhswm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1758,7 +1758,7 @@ file system is as easy as logging into the server with an SSH client.")
 (define-public archivemount
   (package
     (name "archivemount")
-    (version "0.8.7")
+    (version "0.8.9")
     (source
      (origin
        (method url-fetch)
@@ -1766,7 +1766,7 @@ file system is as easy as logging into the server with an SSH client.")
                            "archivemount-" version ".tar.gz"))
        (sha256
         (base32
-         "1diiw6pnlnrnikn6l5ld92dx59lhrxjlqms8885vwbynsjl5q127"))))
+         "0v4si1ri6lhnq9q87gkx7fsh6lv6xz4bynknwndqncpvfp5cy1jg"))))
     (build-system gnu-build-system)
     (inputs `(("fuse", fuse)
               ("libarchive", libarchive)))
@@ -2530,14 +2530,14 @@ thanks to the use of namespaces.")
 (define-public hdparm
   (package
     (name "hdparm")
-    (version "9.53")
+    (version "9.54")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" name "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1rb5086gp4l1h1fn2nk10ziqxjxigsd0c1zczahwc5k9vy8zawr6"))))
+                "0ghnhdj7wfw6acfyhdawpfa5n9kvkvzgi1fw6i7sghgbjx5nhyjd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
@@ -2864,15 +2864,15 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.7.1")
+    (version "0.7.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://git.opensvc.com/?p=multipath-tools/"
+              (uri (string-append "https://git.opensvc.com/?p=multipath-tools/"
                                   ".git;a=snapshot;h=" version ";sf=tgz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0w0rgi3lqksaki30yvd4l5rgjqb0d7js1sh7masl8aw6xbrsm26p"))
+                "02lk453wa2gfxkl8zmdws15nkcibln2yw76zm779pkngkhggl6w8"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3706,7 +3706,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.3.2")
+    (version "2.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -3714,7 +3714,7 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "18dwfxzsw3agiy2dxbflrkhmjgvlji0wwkk636nabh2ng41qrp1x"))))
+                "0mdiyfljrkfl50q1m3ws8yfcyfjwf1zgkvcva8ffcwncji18zhkz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))

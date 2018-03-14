@@ -137,7 +137,7 @@ rich set of boolean query operators.")
                                              "-Wl,-rpath=../src/.libs")))
                             (zero? (system* "make"))
                             (zero? (system* "./libtocctests")))))))))
-    (home-page "http://t-o-c-c.com/")
+    (home-page "https://t-o-c-c.com/")
     (synopsis "Tool for Obsessive Compulsive Classifiers")
     (description
      "libtocc is the engine of the Tocc project, a tag-based file management
@@ -161,7 +161,7 @@ files and directories.")
                   (add-after
                    'unpack 'chdir-source
                    (lambda _ (chdir "cli/src"))))))
-    (home-page "http://t-o-c-c.com/")
+    (home-page "https://t-o-c-c.com/")
     (synopsis "Command-line interface to libtocc")
     (description
      "Tocc is a tag-based file management system.  This package contains the

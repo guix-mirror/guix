@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Julian Graham <joolean@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -386,7 +386,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -394,7 +394,7 @@ support.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0l4wc10d10fi0a5spbi318kjfzlizmycpr4wwlq04sk3b5kra0w0"))))
+                "08bxl6vc7ynnji4r6ij9ayr2jixvfhv4daplw5p96s0gkhdqd90k"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -547,7 +547,15 @@ archive on a per-file basis.")
                                  "love-" version "-linux-src.tar.gz"))
              (sha256
               (base32
-               "11x346pw0gqad8nmkmywzx4xpcbfc3dslbrdw5x94n1i25mk0sxj"))))
+               "11x346pw0gqad8nmkmywzx4xpcbfc3dslbrdw5x94n1i25mk0sxj"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Build with luajit 2.1.0-beta3.  Fixed in love 0.11.
+                 ;; See <https://bitbucket.org/rude/love/issues/1277>.
+                 (substitute* "src/libraries/luasocket/libluasocket/lua.h"
+                   (("> 501") ">= 501"))
+                 #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1051,7 +1059,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.0")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1060,7 +1068,7 @@ games.")
               (file-name (string-append name "-" version))
               (sha256
                (base32
-                "1jhp269n1a7c663v2555444icbjwzscj4r8cq4rrrap7r7dr4hyc"))))
+                "0k8c12nzhl98i9il9s3awbwdamkrwxk0s47jr7n8a3z93rpszd2p"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
@@ -1103,16 +1111,16 @@ games.")
                  (if (file-exists? "godot.x11.tools.64")
                      (rename-file "godot.x11.tools.64" "godot")
                      (rename-file "godot.x11.tools.32" "godot"))
-                 (install-file "godot" bin)))))
+                 (install-file "godot" bin))
+               #t)))
          (add-after 'install 'install-godot-desktop
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (desktop (string-append out "/share/applications"))
                     (icon-dir (string-append out "/share/pixmaps")))
-               (mkdir-p desktop)
-               (mkdir-p icon-dir)
                (rename-file "icon.png" "godot.png")
                (install-file "godot.png" icon-dir)
+               (mkdir-p desktop)
                (with-output-to-file
                    (string-append desktop "/godot.desktop")
                  (lambda _

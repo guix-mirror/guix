@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
@@ -408,7 +408,7 @@ TCP, not the SSH protocol.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2017.75")
+    (version "2018.76")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -416,9 +416,9 @@ TCP, not the SSH protocol.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1309cm2aw62n9m3h38prvgsqr8bj85hfasgnvwkd42cp3k5ivg3c"))))
+                "0rgavbzw7jrs5wslxm0dnwx2m409yzxd9hazd92r7kx8xikr3yzj"))))
     (build-system gnu-build-system)
-    (arguments  `(#:tests? #f)) ; There is no "make check" or anything similar
+    (arguments `(#:tests? #f)) ; there is no "make check" or anything similar
     (inputs `(("zlib" ,zlib)))
     (synopsis "Small SSH server and client")
     (description "Dropbear is a relatively small SSH server and

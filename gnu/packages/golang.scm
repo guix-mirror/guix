@@ -187,7 +187,11 @@
     (inputs
      `(("tzdata" ,tzdata)
        ("pcre" ,pcre)
-       ("gcc:lib" ,gcc "lib")))
+       ;; Building Go 1.10 with the Go 1.4 bootstrap, Thread Sanitizer from GCC
+       ;; 5 finds a data race during the the test suite of Go 1.10. With GCC 6,
+       ;; the race doesn't seem to be present:
+       ;; https://github.com/golang/go/issues/24046
+       ("gcc:lib" ,gcc-6 "lib")))
     (native-inputs
      `(("pkg-config" ,%pkg-config)
        ("which" ,which)
@@ -372,6 +376,119 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        ,@(package-native-inputs go-1.4)))
     (supported-systems %supported-systems)))
 
+(define-public go-1.10
+  (package
+    (inherit go-1.9)
+    (name "go")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://storage.googleapis.com/golang/"
+                           name version ".src.tar.gz"))
+       (sha256
+        (base32
+         "093z1h0gmi458kv7smpx0ph6jm7ss9mzxa432kysbz85jhl4kppk"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-1.9)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'prebuild
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
+                      (ld (string-append (assoc-ref inputs "libc") "/lib"))
+                      (loader (car (find-files ld "^ld-linux.+")))
+                      (net-base (assoc-ref inputs "net-base"))
+                      (tzdata-path
+                       (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
+                      (output (assoc-ref outputs "out")))
+
+                 ;; Removing net/ tests, which fail when attempting to access
+                 ;; network resources not present in the build container.
+                 (for-each delete-file
+                           '("net/listen_test.go"
+                             "net/parse_test.go"
+                             "net/cgo_unix_test.go"))
+
+                 (substitute* "os/os_test.go"
+                   (("/usr/bin") (getcwd))
+                   (("/bin/pwd") (which "pwd"))
+                   (("/bin/sh") (which "sh")))
+
+                 ;; Add libgcc to runpath
+                 (substitute* "cmd/link/internal/ld/lib.go"
+                   (("!rpath.set") "true"))
+                 (substitute* "cmd/go/internal/work/gccgo.go"
+                   (("cgoldflags := \\[\\]string\\{\\}")
+                    (string-append "cgoldflags := []string{"
+                                   "\"-rpath=" gcclib "\""
+                                   "}"))
+                   (("\"-lgcc_s\", ")
+                    (string-append
+                     "\"-Wl,-rpath=" gcclib "\", \"-lgcc_s\", ")))
+                 (substitute* "cmd/go/internal/work/gc.go"
+                   (("ldflags = setextld\\(ldflags, compiler\\)")
+                    (string-append
+                     "ldflags = setextld(ldflags, compiler)\n"
+                     "ldflags = append(ldflags, \"-r\")\n"
+                     "ldflags = append(ldflags, \"" gcclib "\")\n")))
+
+                 ;; Disable failing tests: these tests attempt to access
+                 ;; commands or network resources which are neither available
+                 ;; nor necessary for the build to succeed.
+                 (for-each
+                  (match-lambda
+                    ((file regex)
+                     (substitute* file
+                       ((regex all before test_name)
+                        (string-append before "Disabled" test_name)))))
+                  '(("net/net_test.go" "(.+)(TestShutdownUnix.+)")
+                    ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
+                    ("os/os_test.go" "(.+)(TestHostname.+)")
+                    ("time/format_test.go" "(.+)(TestParseInSydney.+)")
+                    ("time/format_test.go" "(.+)(TestParseInLocation.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCatStdin.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCatGoodAndBadFile.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExitStatus.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestPipes.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestStdinClose.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestIgnorePipeErrorOnSuccess.+)")
+                    ("syscall/syscall_unix_test.go" "(.+)(TestPassFD\\(.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles/areturn.+)")
+                    ("cmd/go/go_test.go" "(.+)(TestCoverageWithCgo.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestOutputStderrCapture.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFilesRace.+)")
+                    ("net/lookup_test.go" "(.+)(TestLookupPort.+)")
+                    ("syscall/exec_linux_test.go"
+                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
+
+                 ;; fix shebang for testar script
+                 ;; note the target script is generated at build time.
+                 (substitute* "../misc/cgo/testcarchive/carchive_test.go"
+                   (("#!/usr/bin/env") (string-append "#!" (which "env"))))
+
+                 (substitute* "net/lookup_unix.go"
+                   (("/etc/protocols") (string-append net-base "/etc/protocols")))
+                 (substitute* "net/port_unix.go"
+                   (("/etc/services") (string-append net-base "/etc/services")))
+                 (substitute* "time/zoneinfo_unix.go"
+                   (("/usr/share/zoneinfo/") tzdata-path))
+                 (substitute* (find-files "cmd" "\\.go")
+                   (("/lib(64)?/ld-linux.*\\.so\\.[0-9]") loader))
+                 #t)))
+           (replace 'set-bootstrap-variables
+             (lambda* (#:key outputs inputs #:allow-other-keys)
+               ;; Tell the build system where to find the bootstrap Go.
+               (let ((go  (assoc-ref inputs "go")))
+                 (setenv "GOROOT_BOOTSTRAP" go)
+                 (setenv "GOGC" "400")
+                 ;; Go 1.10 tries to write to $HOME in a test
+                 (setenv "HOME" "/tmp")
+                 #t)))))))))
+
 (define-public go go-1.9)
 
 (define-public go-github-com-alsm-ioprogress
@@ -385,6 +502,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                 (uri (git-reference
                        (url "https://github.com/alsm/ioprogress.git")
                        (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "10ym5qlq77nynmkxbk767f2hfwyxg2k7hrzph05hvgzv833dhivh"))))
@@ -410,6 +528,7 @@ writers can be supplied for alternate environments.")
                 (uri (git-reference
                        (url "https://github.com/aki237/nscjar.git")
                        (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "03y7zzq12qvhsq86lb06sgns8xrkblbn7i7wd886wk3zr5574b96"))))
@@ -434,6 +553,7 @@ jar struct to manage the cookies added to the cookie jar.")
                 (uri (git-reference
                        (url "https://github.com/davidjpeacock/cli.git")
                        (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "01s53ny3p0fdx64rnwcnmjj4xpc5adihnh6islsfq5z1ph2phhnj"))))

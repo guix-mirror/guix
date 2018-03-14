@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -494,19 +494,19 @@ must be a manifest-pattern."
 Remove MANIFEST entries that have the same name and output as ENTRIES."
   (define (same-entry? entry name output)
     (match entry
-      (($ <manifest-entry> entry-name _ entry-output _ ...)
+      (($ <manifest-entry> entry-name _ entry-output _)
        (and (equal? name entry-name)
             (equal? output entry-output)))))
 
   (make-manifest
-   (append entries
-           (fold (lambda (entry result)
-                   (match entry
-                     (($ <manifest-entry> name _ out _ ...)
-                      (filter (negate (cut same-entry? <> name out))
-                              result))))
-                 (manifest-entries manifest)
-                 entries))))
+   (fold (lambda (entry result)                   ;XXX: quadratic
+           (match entry
+             (($ <manifest-entry> name _ out _)
+              (cons entry
+                    (remove (cut same-entry? <> name out)
+                            result)))))
+         (manifest-entries manifest)
+         entries)))
 
 (define (manifest-lookup manifest pattern)
   "Return the first item of MANIFEST that matches PATTERN, or #f if there is

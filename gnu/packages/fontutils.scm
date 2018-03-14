@@ -290,7 +290,7 @@ high quality, anti-aliased and subpixel rendered text on a display.")
    ; The exact license is more X11-style than BSD-style.
    (license (license:non-copyleft "file://COPYING"
                        "See COPYING in the distribution."))
-   (home-page "http://www.freedesktop.org/wiki/Software/fontconfig")))
+   (home-page "https://www.freedesktop.org/wiki/Software/fontconfig")))
 
 (define-public t1lib
   (package

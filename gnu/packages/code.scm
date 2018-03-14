@@ -37,6 +37,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
@@ -139,10 +140,10 @@ highlighting your own code that seemed comprehensible when you wrote it.")
     (home-page "https://www.gnu.org/software/global/")
     (synopsis "Cross-environment source code tag system")
     (description
-     "GLOBAL is a source code tagging system that functions in the same way
-across a wide array of environments, such as different text editors, shells
-and web browsers.  The resulting tags are useful for quickly moving around in
-a large, deeply nested project.")
+     "GNU GLOBAL is a source code tagging system that functions in the same
+way across a wide array of environments, such as different text editors,
+shells and web browsers.  The resulting tags are useful for quickly moving
+around in a large, deeply nested project.")
     (license license:gpl3+)))
 
 (define-public sloccount
@@ -204,23 +205,24 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.74")
+    (version "1.76")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/AlDanial/cloc/releases/download/" version
+             "https://github.com/AlDanial/cloc/releases/download/v" version
              "/cloc-" version ".tar.gz"))
        (sha256
         (base32
-         "0rq5xfiln1wlv3yr9mg18ax4gskbss786iqaf0v45iv6awyl5b2m"))))
+         "05srlvzwisr7y7ymvzb5yfdsrspja27ysqdmkwhiiivy84mq2gnl"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)
        ("perl" ,perl)
        ("perl-algorithm-diff" ,perl-algorithm-diff)
-       ("perl-regexp-common" ,perl-regexp-common)
-       ("perl-digest-md5" ,perl-digest-md5)))
+       ("perl-digest-md5" ,perl-digest-md5)
+       ("perl-parallel-forkmanager" ,perl-parallel-forkmanager)
+       ("perl-regexp-common" ,perl-regexp-common)))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure)
@@ -228,13 +230,13 @@ COCOMO model or user-provided parameters.")
                   (replace 'install
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out")))
-                        (zero?
-                         (system* "make" "-C" "Unix"
-                                  (string-append "prefix=" out)
-                                  (string-append "INSTALL="
-                                                 (assoc-ref inputs "coreutils")
-                                                 "/bin/install")
-                                  "install")))))
+                        (invoke "make" "-C" "Unix"
+                                (string-append "prefix=" out)
+                                (string-append "INSTALL="
+                                               (assoc-ref inputs "coreutils")
+                                               "/bin/install")
+                                "install")
+                        #t)))
                   (add-after 'install 'wrap-program
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
@@ -496,3 +498,32 @@ importantly we give you proper follow-symbol and find-references support.")
     (description "This package provides a wrapper around @command{make} to
 produce colored output.")
     (license license:gpl2+)))
+
+(define-public makefile2graph
+  (package
+    (name "makefile2graph")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/lindenb/" name
+                                  "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h1vchkpmm9h6s87p5nf0ksjxcmsxpx8k62a508w428n570wcr4l"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:test-target "test"
+       #:make-flags (list "CC=gcc" (string-append "prefix=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("graphviz" ,graphviz)))
+    (home-page "https://github.com/lindenb/makefile2graph")
+    (synopsis "Creates a graph of dependencies from GNU Make")
+    (description
+     "@code{make2graph} creates a graph of dependencies from GNU Make.  The
+output is a graphviz-dot file, a Gexf-XML file or a list of the deepest
+independent targets.")
+    (license license:expat)))

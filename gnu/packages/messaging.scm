@@ -449,14 +449,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.6.5")
+    (version "1.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1jia6kq6bp8yxfj02d5vj9vqb4pylqcldspyjj6iz82kkka2a0ig"))))
+                "09cmsnxvi7jg9a0dicf60fxnxdff4aprw7h8vjqlj5ywf6y43f3z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

@@ -229,7 +229,7 @@ sound server.")
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://freedesktop.org/software/pulseaudio/pavucontrol/")
+    (home-page "https://www.freedesktop.org/software/pulseaudio/pavucontrol/")
     (synopsis "PulseAudio volume control")
     (description
      "PulseAudio Volume Control (pavucontrol) provides a GTK+
@@ -280,6 +280,7 @@ sinks.")
               (method url-fetch)
               (uri (string-append "https://github.com/GeorgeFilipkin/"
                                   "pulsemixer/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1lpad90ifr2xfldyf39sbwx1v85rif2gm9w774gwwpjv53zfgk1g"))))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,14 +37,14 @@
 (define-public mingw-w64
   (package
     (name "mingw-w64")
-    (version "5.0-rc2")
+    (version "5.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://sourceforge.net/projects/mingw-w64/files/mingw-w64/"
                     "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
               (sha256
-               (base32 "0imdary8j07if8ih73pfgxiclpf2ax8h3mz8mxln07i8sbbd30c9"))
+               (base32 "1d4wrjfdlq5xqpv9zg6ssw4lm8jnv6522xf7d6zbjygmkswisq1a"))
               (patches (search-patches "mingw-w64-5.0rc2-gcc-4.9.3.patch"))))
     (native-inputs `(("xgcc-core" ,(cross-gcc %mingw-triplet))
                      ("xbinutils" ,(cross-binutils %mingw-triplet))))
@@ -76,9 +77,16 @@
        #:make-flags (list "DEFS=-DHAVE_CONFIG_H -D__MINGW_HAS_DXSDK=1")
        #:tests? #f ; compiles and includes glibc headers
        #:strip-binaries? #f))
-    (home-page "http://mingw.org")
+    (home-page "https://mingw-w64.org")
     (synopsis "Minimalist GNU for Windows")
-    (description "MinGW provides a complete programming tool set which is
-suitable for the development of native MS-Windows applications, and which does
-not depend on any 3rd-party C-Runtime dlls.")
+    (description
+     "Minimalist GNU for Windows (@dfn{MinGW}) is a complete software
+development environment for creating native Microsoft Windows applications.
+
+It includes a set of Windows-specific header files and static import libraries
+which enable the use of the Windows API.  It does not rely on any third-party C
+runtime dynamic-link libraries (@dfn{DLL}s).
+
+Mingw-w64 is an advancement of the original mingw.org project and provides
+several new APIs such as DirectX and DDK, and 64-bit support.")
     (license license:fdl1.3+)))

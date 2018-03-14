@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -102,10 +103,10 @@ older or slower computers and embedded systems.")
                      `((setenv "CHOST" ,(%current-target-system)))
                      '())
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         "--enable-graphics"))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       "--enable-graphics")
+               #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("zlib" ,zlib)
               ("openssl" ,openssl)
@@ -175,7 +176,8 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
                      #t))
          (replace 'install
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "install-full" make-flags)))))))
+             (apply invoke "make" "install-full" make-flags)
+             #t)))))
     (synopsis "Text Web Browser")
     (description
      "Lynx is a fully-featured World Wide Web (WWW) client for users running
@@ -223,7 +225,7 @@ access.")
              (let* ((out (assoc-ref outputs "out"))
                     (app (string-append out "/share/applications"))
                     (hicolor (string-append out "/share/icons/hicolor")))
-               (system* "a2x" "-f" "manpage" "doc/qutebrowser.1.asciidoc")
+               (invoke "a2x" "-f" "manpage" "doc/qutebrowser.1.asciidoc")
                (install-file "doc/qutebrowser.1"
                              (string-append out "/share/man/man1"))
 

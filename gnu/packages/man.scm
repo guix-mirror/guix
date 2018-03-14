@@ -58,14 +58,14 @@ a flexible and convenient way.")
 (define-public man-db
   (package
     (name "man-db")
-    (version "2.7.6.1")
+    (version "2.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/man-db/man-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0gqgs4zc3r87apns0k5qp689p2ylxx2596s2mkmkxjjay99brv88"))))
+                "0p0cvv5ykvyzq33qyfik11p2s0d2j75ans1avj9xv3c8vy3zzga5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -131,6 +131,9 @@ a flexible and convenient way.")
        ("groff-minimal" ,groff-minimal)
        ("less" ,less)
        ("libpipeline" ,libpipeline)
+       ;; FIXME: 4.8 and later can use libseccomp, but it causes test
+       ;; failures in the build chroot.
+       ;;("libseccomp" ,libseccomp)
        ("util-linux" ,util-linux)))
     (native-search-paths
      (list (search-path-specification

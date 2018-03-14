@@ -529,7 +529,7 @@ contents of a file is equal to a particular string.")
 (define-public perl-test-harness
   (package
     (name "perl-test-harness")
-    (version "3.39")
+    (version "3.41")
     (source
      (origin
        (method url-fetch)
@@ -537,7 +537,7 @@ contents of a file is equal to a particular string.")
                            "Test-Harness-" version ".tar.gz"))
        (sha256
         (base32
-         "0chiqnzmna2mglm37nzxvn9qhq2j31iwz3i9isqjs7bf3k449gb9"))))
+         "0cgdgzywvscbvb9i0dmd2ls5jwqlnf2z6hx4f4lljpvdjd59v3m8"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases

@@ -82,7 +82,7 @@
         ;; the tests to pass.
         #:tests? #f
         #:make-flags
-        (list "CXXFLAGS=-std=c++11")))
+        (list "CXXFLAGS=-std=c++11" "gtk_update_icon_cache=true")))
     (inputs
       `(("boost" ,boost)
         ("enchant" ,enchant)

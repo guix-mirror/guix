@@ -70,7 +70,8 @@
           (lambda _
             (substitute* "doc/doxygen.in"
               (("@CMAKE_CURRENT_SOURCE_DIR@") "."))
-            (zero? (system* "doxygen" "doc/doxygen.in"))))
+            (invoke "doxygen" "doc/doxygen.in")
+            #t))
          ;; There is no "install" target, so we have to provide our own
          ;; "install" phase.
          (replace 'install
@@ -131,8 +132,9 @@ such as compact binary encodings, XML, or JSON.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autoconf
            (lambda _
-             (system* "autoreconf" "-vfi"))))))
-    (home-page "http://www.msgpack.org")
+             (invoke "autoreconf" "-vfi")
+             #t)))))
+    (home-page "https://www.msgpack.org")
     (synopsis "Binary serialization library")
     (description "Msgpack is a library for C/C++ that implements binary
 serialization.")

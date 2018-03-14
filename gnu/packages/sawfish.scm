@@ -51,7 +51,7 @@
      `(("makeinfo"   ,texinfo)
        ("pkg-config" ,pkg-config)
 
-       ("autoconf" ,(autoconf-wrapper))
+       ("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
        ("libtool"  ,libtool)))
     (inputs

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
@@ -140,7 +140,7 @@ limited support for fork events.")
 
        ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
        #:tests? #f))
-    (native-inputs `(("autoconf" ,(autoconf-wrapper))
+    (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
                      ("libtool" ,libtool)
 

@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,11 +71,8 @@
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (fw-dir (string-append out "/lib/firmware")))
-               (mkdir-p fw-dir)
                (for-each (lambda (file)
-                           (copy-file file
-                                      (string-append fw-dir "/"
-                                                     (basename file))))
+                           (install-file file fw-dir))
                          (find-files "." "\\.fw$"))
               #t))))
        #:tests? #f))
@@ -94,11 +92,11 @@ Linux-libre.")
     (license (license:non-copyleft "http://directory.fsf.org/wiki/License:ClearBSD"))))
 
 (define-public b43-tools
-  (let ((commit "8dce53297966b31b6c70a7a03c2433978dd9f288")
-        (rev "1"))
+  (let ((commit "27892ef741e7f1d08cb939744f8b8f5dac7b04ae")
+        (revision "1"))
     (package
       (name "b43-tools")
-      (version (string-append "20140625-" rev "." (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -108,7 +106,7 @@ Linux-libre.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "08k7sdr9jagm43r2zv4h03j86klhkblpk73p12444a3vzg1gy1lv"))))
+           "1wgmj4d65izbhprwb5bcwimc2ryv19b9066lqzy4sa5m6wncm9cn"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("flex" ,flex)
@@ -117,11 +115,11 @@ Linux-libre.")
        `(#:modules ((srfi srfi-1)
                     (guix build gnu-build-system)
                     (guix build utils))
-         #:tests? #f                    ;no tests
+         #:tests? #f                    ; no tests
          #:phases
          (let ((subdirs '("assembler" "disassembler")))
            (modify-phases %standard-phases
-             (delete 'configure)
+             (delete 'configure)        ; no configure script
              (add-before 'build 'patch-/bin/true
                (lambda _
                  (substitute* (find-files "." "Makefile")
@@ -129,21 +127,22 @@ Linux-libre.")
                  #t))
              (replace 'build
                (lambda _
-                 (every (lambda (dir)
-                          (zero? (system* "make" "-C" dir "CC=gcc")))
-                        subdirs)))
+                 (for-each (lambda (dir)
+                             (invoke "make" "-C" dir "CC=gcc"))
+                           subdirs)
+                 #t))
              (replace 'install
                (lambda* (#:key outputs #:allow-other-keys)
                  (let ((out (assoc-ref outputs "out")))
                    (mkdir-p (string-append out "/bin"))
-                   (every (lambda (dir)
-                            (zero?
-                             (system* "make" "-C" dir
-                                      (string-append "PREFIX=" out)
-                                      "install")))
-                          subdirs))))))))
+                   (for-each (lambda (dir)
+                               (invoke "make" "-C" dir
+                                       (string-append "PREFIX=" out)
+                                       "install"))
+                             subdirs)
+                   #t)))))))
       (home-page
-       "http://bues.ch/cms/hacking/misc.html#linux_b43_driver_firmware_tools")
+       "https://bues.ch/cms/hacking/misc.html#linux_b43_driver_firmware_tools")
       (synopsis "Collection of tools for the b43 wireless driver")
       (description
        "The b43 firmware tools is a collection of firmware extractor,
@@ -259,6 +258,8 @@ coreboot.")
                (setenv "WORKSPACE" cwd)
                (setenv "EDK_TOOLS_PATH" tools)
                (setenv "PATH" (string-append (getenv "PATH") ":" bin))
+               ; FIXME: The below script errors out. When using 'invoke' instead
+               ; of 'system*' this causes the build to fail.
                (system* "bash" "edksetup.sh" "BaseTools")
                (substitute* "Conf/target.txt"
                  (("^TARGET[ ]*=.*$") "TARGET = RELEASE\n")
@@ -268,14 +269,16 @@ coreboot.")
                           (number->string (parallel-job-count)))))
                ;; Build build support.
                (setenv "BUILD_CC" "gcc")
-               (zero? (system* "make" "-C" (string-append tools "/Source/C"))))))
+               (invoke "make" "-C" (string-append tools "/Source/C"))
+               #t)))
          (add-after 'build 'build-ia32
            (lambda _
              (substitute* "Conf/target.txt"
                (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = IA32\n")
                (("^ACTIVE_PLATFORM[ ]*=.*$")
                 "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgIa32.dsc\n"))
-             (zero? (system* "build"))))
+             (invoke "build")
+             #t))
          ,@(if (string=? "x86_64-linux" (%current-system))
              '((add-after 'build 'build-x64
                 (lambda _
@@ -283,7 +286,8 @@ coreboot.")
                     (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = X64\n")
                     (("^ACTIVE_PLATFORM[ ]*=.*$")
                      "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgX64.dsc\n"))
-                  (zero? (system* "build")))))
+                  (invoke "build")
+                  #t)))
              '())
          (delete 'build)
          (replace 'install
@@ -299,7 +303,7 @@ coreboot.")
                    '()))
              #t)))))
     (supported-systems '("x86_64-linux" "i686-linux"))
-    (home-page "http://www.tianocore.org")
+    (home-page "https://www.tianocore.org")
     (synopsis "UEFI firmware for QEMU")
     (description "OVMF is an EDK II based project to enable UEFI support for
 Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")

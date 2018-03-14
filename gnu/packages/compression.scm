@@ -99,7 +99,7 @@
                (zero?
                 (system* "./configure"
                          (string-append "--prefix=" out)))))))))
-    (home-page "http://zlib.net/")
+    (home-page "https://zlib.net/")
     (synopsis "Compression library")
     (description
      "zlib is designed to be a free, general-purpose, legally unencumbered --
@@ -598,6 +598,7 @@ with the sfArk algorithm.")
               (uri (git-reference
                     (url "https://github.com/raboof/sfarkxtc.git")
                     (commit commit)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0f5x6i46qfl6ry21s7g2p4sd4b2r1g4fb03yqi2vv4kq3saryhvj"))))
@@ -841,14 +842,14 @@ extract such file systems.")
 (define-public pigz
   (package
     (name "pigz")
-    (version "2.3.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://zlib.net/pigz/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "172hdf26k4zmm7z8md7nl0dph2a7mhf3x7slb9bhfyff6as6g2sf"))))
+                "0wsgw5vwl23jrnpsvd8v3xcp5k4waw5mk0164fynjhkv58i1dy54"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -866,7 +867,7 @@ extract such file systems.")
        #:make-flags (list "CC=gcc")
        #:test-target "tests"))
     (inputs `(("zlib" ,zlib)))
-    (home-page "http://zlib.net/pigz/")
+    (home-page "https://zlib.net/pigz/")
     (synopsis "Parallel implementation of gzip")
     (description
      "This package provides a parallel implementation of gzip that exploits
@@ -1014,7 +1015,8 @@ human-readable output.")
              "http://ck.kolivas.org/apps/lrzip/lrzip-" version ".tar.bz2"))
        (sha256
         (base32
-         "0mb449vmmwpkalq732jdyginvql57nxyd31sszb108yps1lf448d"))))
+         "0mb449vmmwpkalq732jdyginvql57nxyd31sszb108yps1lf448d"))
+       (patches (search-patches "lrzip-CVE-2017-8842.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; nasm is only required when building for 32-bit x86 platforms
@@ -1068,21 +1070,23 @@ algorithm within the Numpy framework.")
 (define-public snappy
   (package
     (name "snappy")
-    (version "1.1.3")
+    (version "1.1.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/google/snappy/releases/download/"
-                    version "/" name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/google/snappy/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append "snappy-" version ".tar.gz"))
               (sha256
                (base32
-                "1wzf8yif5ym2gj52db6v5m1pxnmn258i38x7llk9x346y2nq47ig"))))
-    (build-system gnu-build-system)
+                "1m7rcdqzkys5lspj8jcsaah8w33zh28s771bw0ga2lgzfgl05yix"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (home-page "https://github.com/google/snappy")
     (synopsis "Fast compressor/decompressor")
-    (description "Snappy is a compression/decompression library. It does not
+    (description "Snappy is a compression/decompression library.  It does not
 aim for maximum compression, or compatibility with any other compression library;
-instead, it aims for very high speeds and reasonable compression. For instance,
+instead, it aims for very high speeds and reasonable compression.  For instance,
 compared to the fastest mode of zlib, Snappy is an order of magnitude faster
 for most inputs, but the resulting compressed files are anywhere from 20% to
 100% bigger.")
@@ -1128,7 +1132,7 @@ install: libbitshuffle.so
 (define-public java-snappy
   (package
     (name "java-snappy")
-    (version "1.1.4")
+    (version "1.1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/xerial/snappy-java/archive/"
@@ -1136,7 +1140,7 @@ install: libbitshuffle.so
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1w58diryma7qz7aa24yv8shf3flxcbbw8jgcn2lih14wgmww58ww"))))
+                "0q4kxz2n97czf6g5gzq0d8yz22cgiaj7wp51rzsswh3bi99bpgg5"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "snappy.jar"
@@ -1176,7 +1180,9 @@ install: libbitshuffle.so
                (("NAME\\): \\$\\(SNAPPY_OBJ\\)")
                 "NAME): $(SNAPPY_OBJ)\n\t@mkdir -p $(@D)"))
              ;; Finally we can run the Makefile to build the dynamic library.
-             (zero? (system* "make" "native"))))
+             ;; Use the -nocmake target to avoid a dependency on cmake,
+             ;; which in turn requires the "git_unpacked" directory.
+             (invoke "make" "native-nocmake")))
          ;; Once we have built the shared library, we need to place it in the
          ;; "build" directory so it can be added to the jar file.
          (add-after 'build-jni 'copy-jni
@@ -1185,13 +1191,14 @@ install: libbitshuffle.so
                                "build/classes/org/xerial/snappy/native")))
          (add-before 'check 'fix-failing
            (lambda _
-             ;; This package assumes maven build, which puts results in "target".
-             ;; We put them in "build" instead, so fix that.
-             (substitute* "src/test/java/org/xerial/snappy/SnappyLoaderTest.java"
-               (("target/classes") "build/classes"))
-             ;; FIXME: probably an error
-             (substitute* "src/test/java/org/xerial/snappy/SnappyOutputStreamTest.java"
-               (("91080") "91013")))))))
+             (with-directory-excursion "src/test/java/org/xerial/snappy"
+               ;; This package assumes maven build, which puts results in "target".
+               ;; We put them in "build" instead, so fix that.
+               (substitute* "SnappyLoaderTest.java"
+                 (("target/classes") "build/classes"))
+               ;; This requires Hadoop, which is not in Guix yet.
+               (delete-file "SnappyHadoopCompatibleOutputStreamTest.java"))
+             #t)))))
     (inputs
      `(("osgi-framework" ,java-osgi-framework)))
     (propagated-inputs
@@ -1202,6 +1209,8 @@ install: libbitshuffle.so
        ("hamcrest" ,java-hamcrest-core)
        ("xerial-core" ,java-xerial-core)
        ("classworlds" ,java-plexus-classworlds)
+       ("commons-lang" ,java-commons-lang)
+       ("commons-io" ,java-commons-io)
        ("perl" ,perl)))
     (home-page "https://github.com/xerial/snappy-java")
     (synopsis "Compression/decompression algorithm in Java")
@@ -1531,6 +1540,7 @@ or junctions, and always follows hard links.")
      (origin (method url-fetch)
              (uri (string-append "http://github.com/twogood/unshield/archive/"
                                  version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
                "0x7ps644yp5dka2zhb8w0ifqmw3d255jafpzfwv8xbcpgq6fmm2x"))))

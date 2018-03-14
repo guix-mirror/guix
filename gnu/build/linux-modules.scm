@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -19,6 +19,7 @@
 
 (define-module (gnu build linux-modules)
   #:use-module (guix elf)
+  #:use-module (guix glob)
   #:use-module (guix build syscalls)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
@@ -26,15 +27,21 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 rdelim)
   #:export (dot-ko
             ensure-dot-ko
+            module-aliases
             module-dependencies
             recursive-module-dependencies
             modules-loaded
             module-loaded?
             load-linux-module*
 
-            current-module-debugging-port))
+            current-module-debugging-port
+
+            device-module-aliases
+            known-module-aliases
+            matching-modules))
 
 ;;; Commentary:
 ;;;
@@ -88,6 +95,15 @@ contains module names, not actual file names."
     (match (assq 'depends info)
       (('depends . what)
        (string-tokenize what %not-comma)))))
+
+(define (module-aliases file)
+  "Return the list of aliases of module FILE."
+  (let ((info (modinfo-section-contents file)))
+    (filter-map (match-lambda
+                 (('alias . value)
+                  value)
+                 (_ #f))
+                (modinfo-section-contents file))))
 
 (define dot-ko
   (cut string-append <> ".ko"))
@@ -180,10 +196,6 @@ success, false otherwise.  When RECURSIVE? is true, load its dependencies
 first (à la 'modprobe'.)  The actual files containing modules depended on are
 obtained by calling LOOKUP-MODULE with the module name.  Modules whose name
 appears in BLACK-LIST are not loaded."
-  (define (slurp module)
-    ;; TODO: Use 'finit_module' to reduce memory usage.
-    (call-with-input-file file get-bytevector-all))
-
   (define (black-listed? module)
     (let ((result (member module black-list)))
       (when result
@@ -200,17 +212,172 @@ appears in BLACK-LIST are not loaded."
   (and (not (black-listed? (file-name->module-name file)))
        (or (not recursive?)
            (load-dependencies file))
-       (begin
+       (let ((fd #f))
          (format (current-module-debugging-port)
                  "loading Linux module from '~a'...~%" file)
 
          (catch 'system-error
            (lambda ()
-             (load-linux-module (slurp file)))
+             (set! fd (open-fdes file O_RDONLY))
+             (load-linux-module/fd fd)
+             (close-fdes fd)
+             #t)
            (lambda args
              ;; If this module was already loaded and we're in modprobe style, ignore
              ;; the error.
+             (when fd (close-fdes fd))
              (or (and recursive? (= EEXIST (system-error-errno args)))
                  (apply throw args)))))))
+
+
+;;;
+;;; Device modules.
+;;;
+
+;; Copied from (guix utils).  FIXME: Factorize.
+(define (readlink* file)
+  "Call 'readlink' until the result is not a symlink."
+  (define %max-symlink-depth 50)
+
+  (let loop ((file  file)
+             (depth 0))
+    (define (absolute target)
+      (if (absolute-file-name? target)
+          target
+          (string-append (dirname file) "/" target)))
+
+    (if (>= depth %max-symlink-depth)
+        file
+        (call-with-values
+            (lambda ()
+              (catch 'system-error
+                (lambda ()
+                  (values #t (readlink file)))
+                (lambda args
+                  (let ((errno (system-error-errno args)))
+                    (if (or (= errno EINVAL))
+                        (values #f file)
+                        (apply throw args))))))
+          (lambda (success? target)
+            (if success?
+                (loop (absolute target) (+ depth 1))
+                file))))))
+
+;; See 'major' and 'minor' in <sys/sysmacros.h>.
+
+(define (stat->device-major st)
+  (ash (logand #xfff00 (stat:rdev st)) -8))
+
+(define (stat->device-minor st)
+  (logand #xff (stat:rdev st)))
+
+(define %not-slash
+  (char-set-complement (char-set #\/)))
+
+(define (read-uevent port)
+  "Read a /sys 'uevent' file from PORT and return an alist where each car is a
+key such as 'MAJOR or 'DEVTYPE and each cdr is the corresponding value."
+  (let loop ((result '()))
+    (match (read-line port)
+      ((? eof-object?)
+       (reverse result))
+      (line
+       (loop (cons (key=value->pair line) result))))))
+
+(define (device-module-aliases device)
+  "Return the list of module aliases required by DEVICE, a /dev file name, as
+in this example:
+
+  (device-module-aliases \"/dev/sda\")
+  => (\"scsi:t-0x00\" \"pci:v00008086d00009D03sv0000103Csd000080FAbc01sc06i01\")
+
+The modules corresponding to these aliases can then be found using
+'matching-modules'."
+  ;; The approach is adapted from
+  ;; <https://unix.stackexchange.com/questions/97676/how-to-find-the-driver-module-associated-with-a-device-on-linux>.
+  (let* ((st        (stat device))
+         (type      (stat:type st))
+         (major     (stat->device-major st))
+         (minor     (stat->device-minor st))
+         (sys-name  (string-append "/sys/dev/"
+                                   (case type
+                                     ((block-special) "block")
+                                     ((char-special)  "char")
+                                     (else (symbol->string type)))
+                                   "/" (number->string major) ":"
+                                   (number->string minor)))
+         (directory (canonicalize-path (readlink* sys-name))))
+    (let loop ((components (string-tokenize directory %not-slash))
+               (aliases    '()))
+      (match components
+        (("sys" "devices" _)
+         (reverse aliases))
+        ((head ... _)
+         (let ((uevent (string-append (string-join components "/" 'prefix)
+                                      "/uevent")))
+           (if (file-exists? uevent)
+               (let ((props (call-with-input-file uevent read-uevent)))
+                 (match (assq-ref props 'MODALIAS)
+                   (#f    (loop head aliases))
+                   (alias (loop head (cons alias aliases)))))
+               (loop head aliases))))))))
+
+(define (read-module-aliases port)
+  "Read from PORT data in the Linux 'modules.alias' file format.  Return a
+list of alias/module pairs where each alias is a glob pattern as like the
+result of:
+
+  (compile-glob-pattern \"scsi:t-0x01*\")
+
+and each module is a module name like \"snd_hda_intel\"."
+  (define (comment? str)
+    (string-prefix? "#" str))
+
+  (define (tokenize str)
+    ;; Lines have the form "alias ALIAS MODULE", where ALIAS can contain
+    ;; whitespace.  This is why we don't use 'string-tokenize'.
+    (let* ((str   (string-trim-both str))
+           (left  (string-index str #\space))
+           (right (string-rindex str #\space)))
+      (list (string-take str left)
+            (string-trim-both (substring str left right))
+            (string-trim-both (string-drop str right)))))
+
+  (let loop ((aliases '()))
+    (match (read-line port)
+      ((? eof-object?)
+       (reverse aliases))
+      ((? comment?)
+       (loop aliases))
+      (line
+       (match (tokenize line)
+         (("alias" alias module)
+          (loop (alist-cons (compile-glob-pattern alias) module
+                            aliases)))
+         (()                                      ;empty line
+          (loop aliases)))))))
+
+(define (current-alias-file)
+  "Return the absolute file name of the default 'modules.alias' file."
+  (string-append (or (getenv "LINUX_MODULE_DIRECTORY")
+                     "/run/booted-system/kernel/lib/modules")
+                 "/" (utsname:release (uname))
+                 "/" "modules.alias"))
+
+(define* (known-module-aliases #:optional (alias-file (current-alias-file)))
+  "Return the list of alias/module pairs read from ALIAS-FILE.  Each alias is
+actually a pattern."
+  (call-with-input-file alias-file read-module-aliases))
+
+(define* (matching-modules alias
+                           #:optional (known-aliases (known-module-aliases)))
+  "Return the list of modules that match ALIAS according to KNOWN-ALIASES.
+ALIAS is a string like \"scsi:t-0x00\" as returned by
+'device-module-aliases'."
+  (filter-map (match-lambda
+                ((pattern . module)
+                 (and (glob-match? pattern alias)
+                      module)))
+              known-aliases))
 
 ;;; linux-modules.scm ends here

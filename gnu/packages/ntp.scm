@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -107,6 +107,17 @@ computers over a network.")
                (base32
                 "0fn12i4kzsi0zkr4qp3dp9bycmirnfapajqvdfx02zhr4hanj0kv"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--with-privsep-user=ntpd"
+                           "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'modify-install-locations
+           (lambda _
+             ;; Don't try to create /var/run or /var/db
+             (substitute* "src/Makefile.in"
+               (("DESTDIR\\)\\$\\(localstatedir") "TMPDIR"))
+             #t)))))
     (inputs
      `(("libressl" ,libressl))) ; enable TLS time constraints. See ntpd.conf(5).
     (home-page "http://www.openntpd.org/")

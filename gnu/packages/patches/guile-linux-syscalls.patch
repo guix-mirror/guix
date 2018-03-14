@@ -3,17 +3,21 @@ This patch adds bindings to Linux syscalls for which glibc has symbols.
 Using the FFI would have been nice, but that's not an option when using
 a statically-linked Guile in an initrd that doesn't have libc.so around.
 
---- guile-2.0.11/libguile/posix.c.orig	2014-02-28 15:01:27.000000000 -0500
-+++ guile-2.0.11/libguile/posix.c	2015-06-21 14:28:23.624251038 -0400
-@@ -2245,6 +2245,295 @@
+diff --git a/libguile/posix.c b/libguile/posix.c
+index b0fcad5fd..1343186e3 100644
+--- a/libguile/posix.c
++++ b/libguile/posix.c
+@@ -2341,6 +2341,335 @@ scm_init_popen (void)
  }
- #endif
+ #endif /* HAVE_START_CHILD */
  
 +
 +/* Linux! */
 +#ifdef __linux__
 +
 +#include <sys/mount.h>
++#include <sys/syscall.h>
++
 +#include "libguile/foreign.h"
 +#include "libguile/bytevectors.h"
 +
@@ -91,6 +95,16 @@ a statically-linked Guile in an initrd that doesn't have libc.so around.
 +   ARGS, a space-separated list of options.  */
 +extern long init_module (void *module, unsigned long len, const char *args);
 +
++/* Load a kernel module from FD.  FLAGS must be a bitwise or of
++   MODULE_INIT_* constants.  The GNU libc doesn't provide a wrapper for
++   this one so we use 'syscall'.  */
++static int
++finit_module (int fd, const char *args, int flags)
++{
++  return syscall (SYS_finit_module, fd, args, flags);
++}
++
++
 +SCM_DEFINE (scm_load_linux_module, "load-linux-module", 1, 1, 0,
 +	    (SCM data, SCM options),
 +	    "Load the Linux kernel module whose contents are in bytevector "
@@ -120,6 +134,34 @@ a statically-linked Guile in an initrd that doesn't have libc.so around.
 +  return SCM_UNSPECIFIED;
 +}
 +#undef FUNC_NAME
++
++SCM_DEFINE (scm_load_linux_module_fd, "load-linux-module/fd", 1, 2, 0,
++	    (SCM fd, SCM options, SCM flags),
++	    "Load the Linux kernel module from the file at FD, "
++	    "with the arguments from the OPTIONS string, and "
++            "optionally the given FLAGS.")
++#define FUNC_NAME s_scm_load_linux_module_fd
++{
++  long err;
++  int c_fd, c_flags;
++  char *c_options;
++
++  c_fd = scm_to_int (fd);
++  c_options =
++    scm_to_locale_string (SCM_UNBNDP (options) ? scm_nullstr : options);
++  c_flags = SCM_UNBNDP (flags) ? 0 : scm_to_int (flags);
++
++  err = finit_module (c_fd, c_options, c_flags);
++
++  free (c_options);
++
++  if (err != 0)
++    SCM_SYSERROR;
++
++  return SCM_UNSPECIFIED;
++}
++#undef FUNC_NAME
++
 +
 +/* Rebooting, halting, and all that.  */
 +

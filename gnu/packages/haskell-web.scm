@@ -777,6 +777,18 @@ for Haskell, optimized for ease of use and high performance.  (A note on
 naming: in Greek mythology, Aeson was the father of Jason.)")
     (license license:bsd-3)))
 
+(define-public ghc-aeson-for-pandoc-1
+  (package (inherit ghc-aeson)
+    (version "1.1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/aeson/aeson-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1zy5z8pzvh53qkjm0nm3f4rwqfqg3867ck8ncd6mrxpcyvxqqj1p"))))))
+
 (define-public ghc-aeson-pretty
   (package
     (name "ghc-aeson-pretty")
@@ -865,4 +877,27 @@ of a JSON value into a @code{Data.Aeson.Value}.")
      "HTTP multipart library")
     (description
      "HTTP multipart split out of the cgi package, for Haskell.")
+    (license license:bsd-3)))
+
+(define-public ghc-uri-encode
+  (package
+    (name "ghc-uri-encode")
+    (version "1.5.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/uri-encode/uri-encode-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "11miwb5vvnn17m92ykz1pzg9x6s8fbpz3mmsyqs2s4b3mn55haz8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-network-uri" ,ghc-network-uri)))
+    (home-page "https://hackage.haskell.org/package/uri-encode")
+    (synopsis "Unicode aware uri-encoding")
+    (description "Unicode aware uri-encoding for Haskell.")
     (license license:bsd-3)))

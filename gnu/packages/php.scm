@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,10 +50,19 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:))
 
+(define gd-for-php
+  (package
+    (inherit gd)
+    (source (origin
+             (inherit (package-source gd))
+             (patches (search-patches "gd-fix-tests-on-i686.patch"
+                                      "gd-freetype-test-failure.patch"
+                                      "gd-CVE-2018-5711.patch"))))))
+
 (define-public php
   (package
     (name "php")
-    (version "7.2.1")
+    (version "7.2.3")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -60,7 +70,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08l8zmp8wbavq6wlgx19irz59csb44jhbsr172bfsq36v8pzhv3c"))
+                "07v5bq5b97zdqwmig6sxqsdb50vdf04w6jzmjq5kqh9gaqdlzadk"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -277,11 +287,7 @@
                          "ext/mbstring/tests/mb_ereg_variation3.phpt"
                          "ext/mbstring/tests/mb_ereg_replace_variation1.phpt"
                          "ext/mbstring/tests/bug72994.phpt"
-                         "ext/ldap/tests/ldap_set_option_error.phpt"
-                         
-                         ;; XXX: This is CVE-2018-5711. There is no fix yet in libgd.
-                         ;; See https://github.com/libgd/libgd/issues/420
-                         "ext/gd/tests/bug75571.phpt"))
+                         "ext/ldap/tests/ldap_set_option_error.phpt"))
 
              ;; Skip tests requiring network access.
              (setenv "SKIP_ONLINE_TESTS" "1")
@@ -298,7 +304,7 @@
        ("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
        ("freetype" ,freetype)
-       ("gd" ,gd)
+       ("gd" ,gd-for-php)
        ("gdbm" ,gdbm)
        ("glibc" ,glibc)
        ("gmp" ,gmp)

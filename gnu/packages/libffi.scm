@@ -79,13 +79,13 @@ conversions for values passed between the two languages.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.11.2")
+    (version "1.11.4")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "19h0wwz9cww74gw8cyq0izj8zkhjyzjw2d3ks1c3f1y4q28xv1xb"))))
+       (base32 "07fiy4wqg8g08x38r04ydjr8n6g0g74gb8si8b6jhymijalq746z"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
@@ -121,7 +121,8 @@ conversions for values passed between the two languages.")
                                "linker_so='gcc -shared')")))
              (substitute* "testing/cffi0/test_ownlib.py"
                (("'cc testownlib") "'gcc testownlib"))
-             (zero? (system* "py.test" "-v" "c/" "testing/"))))
+             (invoke "py.test" "-v" "c/" "testing/")
+             #t))
          (add-before 'check 'disable-failing-test
            ;; This is assumed to be a libffi issue:
            ;; https://bitbucket.org/cffi/cffi/issues/312/tests-failed-with-armv8
@@ -130,15 +131,14 @@ conversions for values passed between the two languages.")
                (("ret.left") "ownlib.left"))
              #t))
          (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                    (doc (string-append data "/doc/" ,name "-" ,version))
+           (lambda* (#:key outputs (make-flags '())  #:allow-other-keys)
+             (let* ((doc (string-append (assoc-ref outputs "doc")
+                                        "/share/doc/" ,name "-" ,version))
                     (html (string-append doc "/html")))
                (with-directory-excursion "doc"
-                 (system* "make" "html")
+                 (apply invoke "make" "html" make-flags)
                  (mkdir-p html)
                  (copy-recursively "build/html" html))
-               (copy-file "LICENSE" (string-append doc "/LICENSE"))
                #t))))))
     (home-page "https://cffi.readthedocs.org")
     (synopsis "Foreign function interface for Python")
@@ -152,13 +152,13 @@ conversions for values passed between the two languages.")
 (define-public ruby-ffi
   (package
     (name "ruby-ffi")
-    (version "1.9.18")
+    (version "1.9.22")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "ffi" version))
               (sha256
                (base32
-                "034f52xf7zcqgbvwbl20jwdyjwznvqnwpbaps9nk18v9lgb1dpx0"))))
+                "17lvnpmllg4mlzf25lxbmfzk4l6rsddlxwwdkbs4d9v5gv154529"))))
     (build-system ruby-build-system)
     ;; FIXME: Before running tests the build system attempts to build libffi
     ;; from sources.

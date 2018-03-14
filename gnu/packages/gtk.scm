@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
@@ -323,6 +325,7 @@ diagrams.")
                 (uri (git-reference
                       (url "http://git.drobilla.net/ganv.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1cr8w02lr6bk9mkxa12j3imq721b2an2yn4bj5wnwmpm91ddn2gi")))))))
@@ -1039,7 +1042,7 @@ library.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("glibmm" ,glibmm) ("atk" ,atk)))
-    (home-page "http://www.gtkmm.org")
+    (home-page "https://www.gtkmm.org")
     (synopsis "C++ interface to the ATK accessibility library")
     (description
      "ATKmm provides a C++ programming interface to the ATK accessibility
@@ -1049,7 +1052,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.22.0")
+    (version "3.22.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1057,11 +1060,11 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1x8l0ny6r3ym53z82q9d5fan4m9vi93xy3b3hj1hrclgc95lvnh5"))))
+               "1400535lhyya462pfx8bp11k3mg3jsbdghlpygskd5ai665dkbwi"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")        ;for 'glib-compile-resources'
-                     ("xorg-server" ,xorg-server)))
+                     ("xorg-server" ,xorg-server-1.19.3)))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
@@ -1069,7 +1072,11 @@ toolkit.")
        ("gtk+" ,gtk+)
        ("glibmm" ,glibmm)))
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(;; XXX: Tests require C++14 or later.  Remove this when the default
+       ;; compiler is >= GCC6.
+       #:configure-flags '("CXXFLAGS=-std=gnu++14")
+       #:disallowed-references (,xorg-server-1.19.3)
+       #:phases (modify-phases %standard-phases
                   (add-before 'check 'run-xvfb
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((xorg-server (assoc-ref inputs "xorg-server")))
@@ -1080,7 +1087,7 @@ toolkit.")
                         ;; Don't fail because of the missing /etc/machine-id.
                         (setenv "DBUS_FATAL_WARNINGS" "0")
                         #t))))))
-    (home-page "http://gtkmm.org/")
+    (home-page "https://gtkmm.org/")
     (synopsis
      "C++ interface to the GTK+ graphical user interface library")
     (description
@@ -1113,6 +1120,38 @@ extensive documentation, including API reference and a tutorial.")
        ("atkmm" ,atkmm)
        ("gtk+" ,gtk+-2)
        ("glibmm" ,glibmm)))))
+
+(define-public gtksourceviewmm
+  (package
+    (name "gtksourceviewmm")
+    (version "3.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32 "0fgvmhm4h4qmxig87qvangs6ijw53mi40siz7pixlxbrsgiil22i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; In 'Requires' of gtksourceviewmm-3.0.pc.
+     `(("glibmm" ,glibmm)
+       ("gtkmm" ,gtkmm)
+       ("gtksourceview" ,gtksourceview)))
+    (synopsis "C++ interface to the GTK+ 'GtkTextView' widget")
+    (description
+     "gtksourceviewmm is a portable C++ library that extends the standard GTK+
+framework for multiline text editing with support for configurable syntax
+highlighting, unlimited undo/redo, search and replace, a completion framework,
+printing and other features typical of a source code editor.")
+    (license license:lgpl2.1+)
+    (home-page "https://developer.gnome.org/gtksourceview/")))
+
+;;;
+;;; Python bindings.
+;;;
 
 (define-public python-pycairo
   (package
@@ -1234,6 +1273,95 @@ extensive documentation, including API reference and a tutorial.")
      "PyGTK allows you to write full featured GTK programs in Python.  It is
 targeted at GTK 2.x, and can be used in conjunction with gnome-python to
 write GNOME applications.")
+    (license license:lgpl2.1+)))
+
+(define-public perl-cairo
+  (package
+    (name "perl-cairo")
+    (version "1.106")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/X/XA/XAOC/Cairo-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1i25kks408c54k2zxskvg54l5k3qadzm8n72ffga9jy7ic0h6j76"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (inputs
+     `(("cairo" ,cairo)))
+    (home-page "http://search.cpan.org/dist/Cairo/")
+    (synopsis "Perl interface to the cairo 2d vector graphics library")
+    (description "Cairo provides Perl bindings for the vector graphics library
+cairo.  It supports multiple output targets, including PNG, PDF and SVG.  Cairo
+produces identical output on all those targets.")
+    (license license:lgpl2.1+)))
+
+(define-public perl-gtk2
+  (package
+    (name "perl-gtk2")
+    (version "1.24992")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/Gtk2-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1044rj3wbfmgaif2jb0k28m2aczli6ai2n5yvn6pr7zjyw16kvd2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (inputs
+     `(("gtk+" ,gtk+-2)))
+    (propagated-inputs
+     `(("perl-pango" ,perl-pango)))
+    (home-page "http://search.cpan.org/dist/Gtk2/")
+    (synopsis "Perl interface to the 2.x series of the Gimp Toolkit library")
+    (description "Perl bindings to the 2.x series of the Gtk+ widget set.
+This module allows you to write graphical user interfaces in a Perlish and
+object-oriented way, freeing you from the casting and memory management in C,
+yet remaining very close in spirit to original API.")
+    (license license:lgpl2.1+)))
+
+(define-public perl-pango
+  (package
+    (name "perl-pango")
+    (version "1.227")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/Pango-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0wdcidnfnb6nm79fzfs39ivawj3x8m98a147fmcxgv1zvwia9c1l"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-depends" ,perl-extutils-depends)
+       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+    (inputs
+     `(("pango" ,pango)))
+    (propagated-inputs
+     `(("perl-cairo" ,perl-cairo)
+       ("perl-glib" ,perl-glib)))
+    (home-page "http://search.cpan.org/dist/Pango/")
+    (synopsis "Layout and render international text")
+    (description "Pango is a library for laying out and rendering text, with an
+emphasis on internationalization.  Pango can be used anywhere that text layout
+is needed, but using Pango in conjunction with Cairo and/or Gtk2 provides a
+complete solution with high quality text handling and graphics rendering.
+
+Dynamically loaded modules handle text layout for particular combinations of
+script and font backend.  Pango provides a wide selection of modules, including
+modules for Hebrew, Arabic, Hangul, Thai, and a number of Indic scripts.
+Virtually all of the world's major scripts are supported.
+
+In addition to the low level layout rendering routines, Pango includes
+@code{Pango::Layout}, a high level driver for laying out entire blocks of text,
+and routines to assist in editing internationalized text.")
     (license license:lgpl2.1+)))
 
 (define-public girara

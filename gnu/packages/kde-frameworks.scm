@@ -4,6 +4,7 @@
 ;;; Copyright © 2016,2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -140,7 +141,7 @@ common build settings used in software produced by the KDE community.")
 (define-public phonon
   (package
     (name "phonon")
-    (version "4.9.1")
+    (version "4.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -149,7 +150,7 @@ common build settings used in software produced by the KDE community.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "177647r2jqfm32hqcz2nqfqv6v48hn5ab2vc31svba2wz23fkgk7"))))
+                "0gyhlnwamzfw31kw4qh0v6rj0m47k9wfygd6h07klg9ggp60xhg2"))))
     (build-system cmake-build-system)
     (native-inputs
      ;; TODO: Think about adding pulseaudio. Is it required for sound?

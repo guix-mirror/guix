@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -128,6 +128,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                  (git-reference
                   (url "git://git.infradead.org/users/dwmw2/vpnc-scripts.git")
                   (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0pa36w4wlyyvfb66cayhans99wsr2j5si2fvfr7ldfm512ajwn8h"))))
@@ -241,7 +242,7 @@ and probably others.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.4.4")
+    (version "2.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -249,7 +250,7 @@ and probably others.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "102an395nv8l7qfx3syydzhmd9xfbycd6gvwy0h2kjz8w67ipkcn"))))
+                "17njq59hsraqyxrbhkrxr7dvx0p066s3pn8w1mi0yd9jldis7h23"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))
@@ -262,24 +263,25 @@ and probably others.")
        ("linux-pam" ,linux-pam)))
     (home-page "https://openvpn.net/")
     (synopsis "Virtual private network daemon")
-    (description "OpenVPN implements virtual private network (VPN) techniques
+    (description
+     "OpenVPN implements virtual private network (@dfn{VPN}) techniques
 for creating secure point-to-point or site-to-site connections in routed or
 bridged configurations and remote access facilities.  It uses a custom
 security protocol that utilizes SSL/TLS for key exchange.  It is capable of
-traversing network address translators (NATs) and firewalls.")
+traversing network address translators (@dfn{NAT}s) and firewalls.")
     (license license:gpl2)))
 
 (define-public tinc
   (package
     (name "tinc")
-    (version "1.0.28")
+    (version "1.0.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://tinc-vpn.org/packages/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0i5kx3hza359nclyhb60kxlzqyx0phmg175350hww28g6scjcl0b"))))
+                "1x0hpfz13vn4pl6dcpnls6xq3rfcbdsg90awcfn53ijb8k35svvz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

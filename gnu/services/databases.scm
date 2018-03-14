@@ -29,9 +29,25 @@
   #:use-module (guix modules)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:export (postgresql-configuration
+  #:export (<postgresql-config-file>
+            postgresql-config-file
+            postgresql-config-file?
+            postgresql-config-file-log-destination
+            postgresql-config-file-hba-file
+            postgresql-config-file-ident-file
+            postgresql-config-file-extra-config
+
+            <postgresql-configuration>
+            postgresql-configuration
             postgresql-configuration?
+            postgresql-configuration-postgresql
+            postgresql-configuration-port
+            postgresql-configuration-locale
+            postgresql-configuration-file
+            postgresql-configuration-data-directory
+
             postgresql-service
             postgresql-service-type
 
@@ -68,18 +84,6 @@
 ;;;
 ;;; Code:
 
-(define-record-type* <postgresql-configuration>
-  postgresql-configuration make-postgresql-configuration
-  postgresql-configuration?
-  (postgresql     postgresql-configuration-postgresql ;<package>
-                  (default postgresql))
-  (port           postgresql-configuration-port
-                  (default 5432))
-  (locale         postgresql-configuration-locale
-                  (default "en_US.utf8"))
-  (config-file    postgresql-configuration-file)
-  (data-directory postgresql-configuration-data-directory))
-
 (define %default-postgres-hba
   (plain-file "pg_hba.conf"
               "
@@ -89,13 +93,64 @@ host	all	all	::1/128 	trust"))
 
 (define %default-postgres-ident
   (plain-file "pg_ident.conf"
-             "# MAPNAME       SYSTEM-USERNAME         PG-USERNAME"))
+              "# MAPNAME       SYSTEM-USERNAME         PG-USERNAME"))
 
-(define %default-postgres-config
-  (mixed-text-file "postgresql.conf"
-                   "log_destination = 'syslog'\n"
-                   "hba_file = '" %default-postgres-hba "'\n"
-                   "ident_file = '" %default-postgres-ident "'\n"))
+(define-record-type* <postgresql-config-file>
+  postgresql-config-file make-postgresql-config-file
+  postgresql-config-file?
+  (log-destination postgresql-config-file-log-destination
+                   (default "syslog"))
+  (hba-file        postgresql-config-file-hba-file
+                   (default %default-postgres-hba))
+  (ident-file      postgresql-config-file-ident-file
+                   (default %default-postgres-ident))
+  (extra-config    postgresql-config-file-extra-config
+                   (default '())))
+
+(define-gexp-compiler (postgresql-config-file-compiler
+                       (file <postgresql-config-file>) system target)
+  (match file
+    (($ <postgresql-config-file> log-destination hba-file
+                                 ident-file extra-config)
+     (define (quote' string)
+       (if string
+           (list "'" string "'")
+           '()))
+
+     (define contents
+       (append-map
+        (match-lambda
+          ((key) '())
+          ((key . #f) '())
+          ((key values ...) `(,key " = " ,@values "\n")))
+
+        `(("log_destination" ,@(quote' log-destination))
+          ("hba_file" ,@(quote' hba-file))
+          ("ident_file" ,@(quote' ident-file))
+          ,@extra-config)))
+
+     (gexp->derivation
+      "postgresql.conf"
+      #~(call-with-output-file (ungexp output "out")
+          (lambda (port)
+            (display
+             (string-append #$@contents)
+             port)))
+      #:local-build? #t))))
+
+(define-record-type* <postgresql-configuration>
+  postgresql-configuration make-postgresql-configuration
+  postgresql-configuration?
+  (postgresql     postgresql-configuration-postgresql ;<package>
+                  (default postgresql))
+  (port           postgresql-configuration-port
+                  (default 5432))
+  (locale         postgresql-configuration-locale
+                  (default "en_US.utf8"))
+  (config-file    postgresql-configuration-file
+                  (default (postgresql-config-file)))
+  (data-directory postgresql-configuration-data-directory
+                  (default "/var/lib/postgresql/data")))
 
 (define %postgresql-accounts
   (list (user-group (name "postgres") (system? #t))
@@ -184,12 +239,13 @@ host	all	all	::1/128 	trust"))
                        (service-extension activation-service-type
                                           postgresql-activation)
                        (service-extension account-service-type
-                                          (const %postgresql-accounts))))))
+                                          (const %postgresql-accounts))))
+                (default-value (postgresql-configuration))))
 
 (define* (postgresql-service #:key (postgresql postgresql)
                              (port 5432)
                              (locale "en_US.utf8")
-                             (config-file %default-postgres-config)
+                             (config-file (postgresql-config-file))
                              (data-directory "/var/lib/postgresql/data"))
   "Return a service that runs @var{postgresql}, the PostgreSQL database server.
 
@@ -466,7 +522,8 @@ FLUSH PRIVILEGES;
           (service-extension activation-service-type
                              %mysql-activation)
           (service-extension shepherd-root-service-type
-                             mysql-shepherd-service)))))
+                             mysql-shepherd-service)))
+   (default-value (mysql-configuration))))
 
 (define* (mysql-service #:key (config (mysql-configuration)))
   "Return a service that runs @command{mysqld}, the MySQL or MariaDB
@@ -548,4 +605,5 @@ The optional @var{config} argument specifies the configuration for
                        (service-extension activation-service-type
                                           redis-activation)
                        (service-extension account-service-type
-                                          (const %redis-accounts))))))
+                                          (const %redis-accounts))))
+                (default-value (redis-configuration))))

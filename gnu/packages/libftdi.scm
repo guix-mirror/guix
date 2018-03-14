@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
 (define-public libftdi
   (package
     (name "libftdi")
-    (version "1.1")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -35,11 +36,11 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "088yh8pxd6q53ssqndydcw1dkq51cjqyahc03lm6iip22cdazcf0"))))
+                "0x0vncf6i92slgrn0h7ghkskqbglbs534220qa84d0qg114zndpc"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("libusb" ,libusb))) ; required by libftdi1.pc
-    (home-page "http://www.intra2net.com/en/developer/libftdi/")
+    (home-page "https://www.intra2net.com/en/developer/libftdi/")
     (synopsis "FTDI USB driver with bitbang mode")
     (description
      "libFTDI is a library to talk to FTDI chips: FT232BM,

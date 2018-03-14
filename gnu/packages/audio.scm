@@ -1030,7 +1030,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "1.1.9")
+    (version "1.1.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1039,14 +1039,15 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0krvmb1idnf95l2ydzfcb08ayyx3n4m71hf9fgwv3srzaikvpf3q"))))
+                "04jlgq1d1hd8r9cnmkl3lgf1fgm7kgy4hh9nfddap41fm1wp121p"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f  ; no check phase
+     '(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-libdir
            (lambda _
+             ;; Install libraries to /lib, not /lib64.
              (substitute* "CMakeLists.txt"
                (("LIB_SUFFIX \\$\\{_init_lib_suffix\\}")
                 "LIB_SUFFIX \"\""))
@@ -1154,6 +1155,7 @@ PS, and DAB+.")
                                            (string-map (lambda (c)
                                                          (if (char=? c #\.) #\- c))
                                                        version)))))
+              (file-name (string-append "faust-" version "-checkout"))
               (sha256
                (base32
                 "06km0ygwxxwgw1lqldccqidxhmjfz8ck0wnbd95qk5sg8sbpc068"))))
@@ -1627,14 +1629,14 @@ essential distortions.")
 (define-public liblo
   (package
     (name "liblo")
-    (version "0.28")
+    (version "0.29")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/liblo/liblo/" version
                                  "/liblo-" version ".tar.gz"))
              (sha256
               (base32
-               "02drgnpirvl2ihvzgsmn02agr5sj3vipzzw9vma56qlkgfvak56s"))))
+               "0sn0ckc1d0845mhsaa62wf7f9v0c0ykiq796a30ja5096kib9qdc"))))
     (build-system gnu-build-system)
     (arguments
      `(;; liblo test FAILED
@@ -1644,7 +1646,7 @@ essential distortions.")
     (synopsis "Implementation of the Open Sound Control protocol")
     (description
      "liblo is a lightweight library that provides an easy to use
-implementation of the Open Sound Control (OSC) protocol.")
+implementation of the Open Sound Control (@dfn{OSC}) protocol.")
     (license license:lgpl2.1+)))
 
 (define-public python-pyaudio
@@ -1782,6 +1784,7 @@ software.")
                 (uri (git-reference
                       (url "http://lv2plug.in/git/lv2.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1gp2rd99dfmpibvpixrqn115mrhybzf3if3h8bssf6siyi13f29r")))))))
@@ -1795,6 +1798,7 @@ software.")
               (uri (git-reference
                     (url "http://git.elephly.net/software/lv2-mdametapiano.git")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "07lywf6lpfpndg3i9w752mmlg2hgn1bwp23h8b0mdj6awh67abqd"))))
@@ -2023,6 +2027,7 @@ into various outputs and to start, stop and configure jackd")
               (uri (git-reference
                     (url "https://github.com/orouits/qjackrcd.git")
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1l5iq2mkqd4gn9yr8xbh9qlpp1clcflazychl4vhdbz0bzq4c6al"))))
@@ -2102,6 +2107,7 @@ aimed at audio/musical applications.")
                (string-append "https://bitbucket.org/breakfastquay/rubberband/get/v"
                               version
                               ".tar.bz2"))
+              (file-name (string-append name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "05amrbrxx0da3w7m237q51799r8xgs4ffqabi2qv06hq8dpcj386"))))
@@ -2377,7 +2383,8 @@ stretching and pitch scaling of audio.  This package contains the library.")
               (method url-fetch)
               (uri (string-append "http://www.wavpack.com/"
                                   name "-" version ".tar.bz2"))
-              (patches (search-patches "wavpack-CVE-2018-7253.patch"
+              (patches (search-patches "wavpack-CVE-2018-6767.patch"
+                                       "wavpack-CVE-2018-7253.patch"
                                        "wavpack-CVE-2018-7254.patch"))
               (sha256
                (base32
@@ -2530,7 +2537,7 @@ can play and record audio files.")
 (define-public soxr
   (package
     (name "soxr")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
@@ -2538,7 +2545,7 @@ can play and record audio files.")
         (string-append "mirror://sourceforge/soxr/soxr-" version
                        "-Source.tar.xz"))
        (sha256
-        (base32 "0xf2w3piwz9gfr1xqyrj4k685q5dy53kq3igv663i4f4y4sg9rjl"))))
+        (base32 "12aql6svkplxq5fjycar18863hcq84c5kx8g6f4rj0lcvigw24di"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ;no 'check' target
     (home-page "https://sourceforge.net/p/soxr/wiki/Home/")

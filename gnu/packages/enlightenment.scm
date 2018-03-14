@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -60,7 +60,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.20.6")
+    (version "1.20.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -68,7 +68,9 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1h9jkb1pkp2g6ld7ra9mxgblx3x5id4162ja697klx9mfjkpxijn"))))
+                "1zkn5ix81xck3n84dxvkjh4alwc6zj8x989d0zqi5c6ppijvgadh"))))
+    (outputs '("out"       ; 49 MB
+               "include")) ; 17 MB
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -284,9 +286,10 @@ Libraries with some extra bells and whistles.")
                  (("/bin/mount") (string-append utils "/bin/mount"))
                  (("/bin/umount") (string-append utils "/bin/umount"))
                  (("/usr/bin/eject") (string-append utils "/bin/eject"))
-                 ; TODO: Replace suspend and hibernate also.
-                 (("/sbin/shutdown -h now") "/run/current-system/profile/sbin/halt")
-                 (("/sbin/shutdown -r now") "/run/current-system/profile/sbin/reboot"))
+                 (("/etc/acpi/sleep.sh force") "/run/current-system/profile/bin/loginctl suspend")
+                 (("/etc/acpi/hibernate.sh force") "/run/current-system/profile/bin/loginctl hibernate")
+                 (("/sbin/shutdown -h now") "/run/current-system/profile/bin/loginctl poweroff now")
+                 (("/sbin/shutdown -r now") "/run/current-system/profile/bin/loginctl reboot now"))
                #t))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)

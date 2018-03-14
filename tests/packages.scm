@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -556,6 +556,24 @@
     (and (build-derivations %store (list d))
          (let ((p (pk 'drv d (derivation->output-path d))))
            (eq? 'hello (call-with-input-file p read))))))
+
+(test-assert "trivial with #:allowed-references"
+  (let* ((p (package
+              (inherit (dummy-package "trivial"))
+              (build-system trivial-build-system)
+              (arguments
+               `(#:guile ,%bootstrap-guile
+                 #:allowed-references (,%bootstrap-guile)
+                 #:builder
+                 (begin
+                   (mkdir %output)
+                   ;; The reference to itself isn't allowed so building it
+                   ;; should fail.
+                   (symlink %output (string-append %output "/self")))))))
+         (d (package-derivation %store p)))
+    (guard (c ((nix-protocol-error? c) #t))
+      (build-derivations %store (list d))
+      #f)))
 
 (test-assert "search paths"
   (let* ((p (make-prompt-tag "return-search-paths"))

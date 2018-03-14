@@ -510,14 +510,14 @@ faster ones are not available.")
 (define-public python-pyaes
   (package
     (name "python-pyaes")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyaes" version))
        (sha256
         (base32
-         "0bp9bjqy1n6ij1zb86wz9lqa1dhla8qr1d7w2kxyn7jbj56sbmcw"))))
+         "13vdaff15k0jyfcss4b4xvfgm8xyv0nrbyw5n1qc7lrqbi0b3h82"))))
     (build-system python-build-system)
     (home-page "https://github.com/ricmoo/pyaes")
     (synopsis "Implementation of AES in Python")
@@ -538,6 +538,7 @@ ECB and OFB).")
         (method url-fetch)
         (uri (string-append "https://github.com/wbond/asn1crypto/archive/"
                             version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1kn910896l3knmilla1c9ly20q181s43w1ah08lzkbm1h3j6pcz0"))))
@@ -720,14 +721,14 @@ protocol (Javascript Object Signing and Encryption).")
 (define-public python-pycryptodome
   (package
     (name "python-pycryptodome")
-    (version "3.4.7")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycryptodome" version))
        (sha256
         (base32
-         "1xrsd6ql4w0ypkxnsg3fivs3r3z6dd93x44lhvam7jzh3gixzn0q"))))
+         "15mc1h5ij1b6hcqvb048kb4k0ip64n2ky0zz0rml2s78ylv7g5dp"))))
     (build-system python-build-system)
     (home-page "https://www.pycryptodome.org")
     (synopsis "Cryptographic library for Python")

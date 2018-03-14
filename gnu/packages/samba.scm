@@ -148,14 +148,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.7.5")
+    (version "4.7.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "13gyr0sk9vx6mccr2h35ca3g92kp50cqxrlzfgrddfmskzx08v9i"))))
+               "0vkxqp3wh7bpn1fd45lznmrpn2ma1fq75yq28vi08rggr07y7v8y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -338,14 +338,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1lnbcazm1kqqcc7syy0xbq9srhbylkqhpsmsbsm4c3xfangjr7xi"))))
+                "1avn4fl393kc80krbc47phbp0argdkys62ycs8vm934a6nvz0gnf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

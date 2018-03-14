@@ -114,6 +114,7 @@ single file can be mounted.")
        (uri (git-reference
              (url "https://github.com/ReproducibleBuilds/disorderfs.git")
              (commit "0.5.2")))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1j028dq3d4m64mn9xmfamcnnc7i2drmra4pdmxdmqdsi8p7yj4sv"))))

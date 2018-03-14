@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,8 +90,8 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 It can compile code written in C, C++, Fortran, Java, Rust, and other
 languages.  Meson provides features comparable to those of the
 Autoconf/Automake/make combo.  Build specifications, also known as @dfn{Meson
-files}, are written in a custom domain-specific language (DSL) that resembles
-Python.")
+files}, are written in a custom domain-specific language (@dfn{DSL}) that
+resembles Python.")
     (license license:asl2.0)))
 
 (define-public meson-for-build

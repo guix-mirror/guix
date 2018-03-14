@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -267,6 +267,42 @@ filtering (subscriptions), seamless access to multiple transport protocols and
 more.")
     (license license:lgpl3+)))
 
+(define-public czmq
+  (package
+    (name "czmq")
+    (version "4.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/zeromq/" name
+                    "/releases/download/v" version
+                    "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "04gwf61rijwm6b2wblwv8gky1gdrbfmg1d19hf72kdc691ds7vrv"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; TODO Tests fail for some reason:
+       ;;  * zauth: OK
+       ;;  * zbeacon: OK (skipping test, no UDP broadcasting)
+       ;; E: (czmq_selftest) 18-02-24 16:25:52 No broadcast interface found, (ZSYS_INTERFACE=lo)
+       ;; make[2]: *** [Makefile:2245: check-local] Segmentation fault
+       ;; make[2]: Leaving directory '/tmp/guix-build-czmq-4.1.0.drv-0/czmq-4.1.0'
+       ;; make[1]: *** [Makefile:2032: check-am] Error 2
+       ;; make[1]: Leaving directory '/tmp/guix-build-czmq-4.1.0.drv-0/czmq-4.1.0'
+       ;; make: *** [Makefile:1588: check-recursive] Error 1
+       ;; phase `check' failed after 19.4 seconds
+       #:tests? #f
+       #:configure-flags '("--enable-drafts")))
+    (inputs
+     `(("zeromq" ,zeromq)))
+    (home-page "http://zeromq.org")
+    (synopsis "High-level C bindings for ØMQ")
+    (description
+     "czmq provides bindings for the ØMQ core API that hides the differences
+between different versions of ØMQ.")
+    (license license:mpl2.0)))
+
 (define-public librdkafka
   (package
     (name "librdkafka")
@@ -498,7 +534,7 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.4.4")
+    (version "2.4.5")
     (source
      (origin
        (method url-fetch)
@@ -506,7 +542,7 @@ of the same name.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0n3g28hrhifnchlz4av0blq4ykm4zaxwwxbzdm9wsba27677b6h4"))))
+         "1mvgy67rvnwj2kbc43s4il81jvz5ai0bx2j3j2js7x50zclyrcmk"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)
@@ -1031,7 +1067,7 @@ library remains flexible, portable, and easily embeddable.")
 (define-public sslh
   (package
     (name "sslh")
-    (version "1.19b")
+    (version "1.19c")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/yrutschle/sslh/archive/v"
@@ -1039,7 +1075,7 @@ library remains flexible, portable, and easily embeddable.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0p0zfy5ifzj7508zqidgkf8g43frm7l5xcs5s6v7132lypcsbd4k"))))
+                "0pd8hifa9h0rm7vms3k6ic1k29xigrlv2idc5wgcafmb1v1243di"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Test dependencies.
@@ -1403,14 +1439,14 @@ does not use SSH and requires a pre-shared symmetric key.")
 (define-public quagga
   (package
     (name "quagga")
-    (version "1.2.3")
+    (version "1.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/quagga/quagga-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cddxip9gd579parx64n6d7iq937ikrb8qxgvjxjm406l43hjb7f"))
+                "1lsksqxij5f1llqn86pkygrf5672kvrqn1kvxghi169hqf1c0r73"))
               (patches
                (search-patches "quagga-reproducible-build.patch"))))
     (build-system gnu-build-system)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,15 +37,16 @@
   (base16-string->bytevector
    "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"))
 
-(define (supports-unbuffered-cbip?)
-  "Return #t if unbuffered custom binary input ports (CBIPs) are supported.
-In Guile <= 2.0.9, CBIPs were always fully buffered, so the
-'open-sha256-input-port' does not work there."
-  (false-if-exception
-   (setvbuf (make-custom-binary-input-port "foo" pk #f #f #f) _IONBF)))
-
 
 (test-begin "hash")
+
+(test-equal "sha1, empty"
+  (base16-string->bytevector "da39a3ee5e6b4b0d3255bfef95601890afd80709")
+  (sha1 #vu8()))
+
+(test-equal "sha1, hello"
+  (base16-string->bytevector "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed")
+  (sha1 (string->utf8 "hello world")))
 
 (test-equal "sha256, empty"
   %empty-sha256
@@ -76,8 +77,6 @@ In Guile <= 2.0.9, CBIPs were always fully buffered, so the
          (contents (call-with-input-file file get-bytevector-all)))
     (equal? (sha256 contents)
             (call-with-input-file file port-sha256))))
-
-(test-skip (if (supports-unbuffered-cbip?) 0 4))
 
 (test-equal "open-sha256-input-port, empty"
   `("" ,%empty-sha256)

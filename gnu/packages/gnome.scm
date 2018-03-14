@@ -12,7 +12,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016, 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -947,7 +947,7 @@ guidelines.")
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://freedesktop.org/wiki/Software/shared-mime-info")
+    (home-page "https://www.freedesktop.org/wiki/Software/shared-mime-info")
     (synopsis "Database of common MIME types")
     (description
      "The shared-mime-info package contains the core database of common types
@@ -972,7 +972,7 @@ database is translated at Transifex.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
-    (home-page "http://icon-theme.freedesktop.org/releases/")
+    (home-page "https://icon-theme.freedesktop.org/releases/")
     (synopsis
      "Freedesktop icon theme")
     (description
@@ -1595,7 +1595,7 @@ creating interactive structured graphics.")
     (native-inputs
      `(("gtkmm-2" ,gtkmm-2)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://gtkmm.org")
+    (home-page "https://gtkmm.org")
     (synopsis "C++ bindings to the GNOME Canvas library")
     (description "C++ bindings to the GNOME Canvas library.")
     (license license:lgpl2.0+)))
@@ -2322,7 +2322,7 @@ and objects.")
        ("libxkbfile"       ,libxkbfile)
        ("xkbcomp"          ,xkbcomp)
        ("xkeyboard-config" ,xkeyboard-config)))
-    (home-page "http://www.freedesktop.org/wiki/Software/LibXklavier/")
+    (home-page "https://www.freedesktop.org/wiki/Software/LibXklavier/")
     (synopsis "High-level API for X Keyboard Extension")
     (description
      "LibXklavier is a library providing high-level API for X Keyboard
@@ -2448,7 +2448,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.60.3")
+    (version "2.62.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2456,7 +2456,7 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08lawrdkkzycvpb1h0wfiqfz6dgx77jp0wxp546lxgisy9icf38v"))))
+                "1b5aff1igbsx1h4v3wmkffvzgiy8rscibqka7fmjf2lxs7l7lz5b"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -2689,7 +2689,7 @@ floating in an ocean using only your brain and a little bit of luck.")
 (define-public gnome-sudoku
   (package
     (name "gnome-sudoku")
-    (version "3.26.0")
+    (version "3.28.0")
     (source
      (origin
        (method url-fetch)
@@ -2698,7 +2698,7 @@ floating in an ocean using only your brain and a little bit of luck.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "186k2axryn3ic8blc9ddnvyrqqf88khg2hlisfa1n4wp784wfx47"))))
+         "07b4lzniaf3gjsss6zl1lslv18smwc4nrijykvn2z90f423q2xav"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2828,7 +2828,7 @@ keyboard shortcuts.")
        ("sqlite" ,sqlite)
        ("polkit" ,polkit)
        ("sane-backends" ,sane-backends)))
-    (home-page "http://www.freedesktop.org/software/colord/")
+    (home-page "https://www.freedesktop.org/software/colord/")
     (synopsis "Color management service")
     (description "Colord is a system service that makes it easy to manage,
 install and generate color profiles to accurately color manage input and
@@ -2964,7 +2964,7 @@ faster results and to avoid unnecessary server load.")
      `(("dbus-glib" ,dbus-glib)
        ("libgudev" ,libgudev)
        ("libusb" ,libusb)))
-    (home-page "http://upower.freedesktop.org/")
+    (home-page "https://upower.freedesktop.org/")
     (synopsis "System daemon for managing power devices")
     (description
      "UPower is an abstraction for enumerating power devices,
@@ -4645,7 +4645,7 @@ javascript engine and the GObject introspection framework.")
 (define-public gedit
   (package
     (name "gedit")
-    (version "3.22.1")
+    (version "3.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4653,7 +4653,7 @@ javascript engine and the GObject introspection framework.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0as9r5zvnyrxh699q6jnd0p9ddqy5qamfbxggpdjzagzixhw6yxa"))))
+                "0pyam0zi44xq776x20ycqnvmf86l98jns8ldv4m81gnp9wnhmycv"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -5600,7 +5600,7 @@ like switching to windows and launching applications.")
 (define-public gtk-vnc
   (package
     (name "gtk-vnc")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
@@ -5609,7 +5609,7 @@ like switching to windows and launching applications.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0gj8dpy3sj4dp810gy67spzh5f0jd8aqg69clcwqjcskj1yawbiw"))))
+         "1cdaywj5lqnl5b22qzd7k7lmacsnmk8b8rc4drk6gvqmcrlsljzk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-gtk=3.0")))
@@ -5625,6 +5625,7 @@ like switching to windows and launching applications.")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)
        ("vala" ,vala)))
     (home-page "https://wiki.gnome.org/Projects/gtk-vnc")
     (synopsis "VNC viewer widget for GTK+")
@@ -5727,7 +5728,7 @@ shared object databases, search tools and indexing.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.24.2.1")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5735,16 +5736,17 @@ shared object databases, search tools and indexing.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1cv138z04qx0fh1a2z2hvxy4p1x15vdv5gmkx5f3hb6c3w2rsz9m"))))
-    (build-system glib-or-gtk-build-system)
+                "1d0l4vgcjqj4671hb6s2a56baqlasbxn3wl6vfrpdsk5qq299jbr"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:configure-flags
-       '("--disable-selinux") ; XXX: not packaged
+     '(#:glib-or-gtk? #t
        ;; XXX: FAIL: check-nautilus
        ;;   Settings schema 'org.gnome.nautilus.preferences' is not installed
        #:tests? #f))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("glib:bin" ,glib "bin")         ; for glib-mkenums, etc.
+       ("gtk+:bin" ,gtk+ "bin")         ; for gtk-update-icon-cache
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -5754,7 +5756,8 @@ shared object databases, search tools and indexing.")
        ("exempi" ,exempi)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-autoar" ,gnome-autoar)
-       ("nettle" ,nettle)    ; XXX required by libarchive.pc via gnome-autoar
+       ("libselinux" ,libselinux)
+       ("nettle" ,nettle) ; XXX required by libarchive.pc via gnome-autoar
        ("tracker" ,tracker)
        ;; XXX: gtk+ is required by libnautilus-extension.pc
        ;;

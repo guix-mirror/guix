@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -212,15 +212,7 @@ provide."
            (begin
              (warning (G_ "while fetching ~a: server is somewhat slow~%")
                       (uri->string uri))
-             (warning (G_ "try `--no-substitutes' if the problem persists~%"))
-
-             ;; Before Guile v2.0.9-39-gfe51c7b, EINTR was reported to the user,
-             ;; and thus PORT had to be closed and re-opened.  This is not the
-             ;; case afterward.
-             (unless (or (guile-version>? "2.0.9")
-                         (version>? (version) "2.0.9.39"))
-               (when port
-                 (close-connection port))))
+             (warning (G_ "try `--no-substitutes' if the problem persists~%")))
            (begin
              (when (or (not port) (port-closed? port))
                (set! port (guix:open-connection-for-uri
@@ -571,10 +563,8 @@ initial connection on which HTTP requests are sent."
       ;; XXX: Do our own caching to work around inefficiencies when
       ;; communicating over TLS: <http://bugs.gnu.org/22966>.
       (let-values (((buffer get) (open-bytevector-output-port)))
-        ;; On Guile > 2.0.9, inherit the HTTP proxying property from P.
-        (when (module-variable (resolve-interface '(web http))
-                               'http-proxy-port?)
-          (set-http-proxy-port?! buffer (http-proxy-port? p)))
+        ;; Inherit the HTTP proxying property from P.
+        (set-http-proxy-port?! buffer (http-proxy-port? p))
 
         (for-each (cut write-request <> buffer)
                   (at-most 1000 requests))

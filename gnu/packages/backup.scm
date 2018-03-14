@@ -544,7 +544,10 @@ detection, and lossless compression.")
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("python-llfuse" ,python-llfuse)
-       ("python-msgpack" ,python-msgpack)
+       ;; The Python msgpack library changed its name so Borg requires this
+       ;; transitional package for now:
+       ;; <https://bugs.gnu.org/30662>
+       ("python-msgpack" ,python-msgpack-transitional)
        ("zstd" ,zstd)))
     (synopsis "Deduplicated, encrypted, authenticated and compressed backups")
     (description "Borg is a deduplicating backup program.  Optionally, it

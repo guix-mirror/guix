@@ -409,7 +409,7 @@ manager for the current system.")
      `(("shared-mime-info" ,shared-mime-info) ;for tests
        ("hicolor-icon-theme" ,hicolor-icon-theme) ;for tests
        ("python-nose" ,python-nose)))
-    (home-page "http://freedesktop.org/wiki/Software/pyxdg")
+    (home-page "https://www.freedesktop.org/wiki/Software/pyxdg")
     (synopsis "Implementations of freedesktop.org standards in Python")
     (description
      "PyXDG is a collection of implementations of freedesktop.org standards in
@@ -740,7 +740,7 @@ message bus.")
     (inputs
      `(("shadow" ,shadow)
        ("polkit" ,polkit)))
-    (home-page "http://www.freedesktop.org/wiki/Software/AccountsService/")
+    (home-page "https://www.freedesktop.org/wiki/Software/AccountsService/")
     (synopsis "D-Bus interface for user account query and manipulation")
     (description
      "The AccountService project provides a set of D-Bus interfaces for querying
@@ -840,7 +840,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
        ("libqmi" ,libqmi)
        ("polkit" ,polkit)))
     (synopsis "Mobile broadband modems manager")
-    (home-page "http://www.freedesktop.org/wiki/Software/ModemManager/")
+    (home-page "https://www.freedesktop.org/wiki/Software/ModemManager/")
     (description
      "ModemManager is a DBus-activated daemon which controls mobile
 broadband (2G/3G/4G) devices and connections.  Whether built-in devices, USB
@@ -882,7 +882,7 @@ modems and setup connections with them.")
        ("sqlite" ,sqlite)
        ("telepathy-glib" ,telepathy-glib)))
     (synopsis "Telepathy logger library")
-    (home-page "http://telepathy.freedesktop.org/")
+    (home-page "https://telepathy.freedesktop.org/")
     (description
      "Telepathy logger is a headless observer client that logs information
 received by the Telepathy framework.  It features pluggable backends to log
@@ -909,7 +909,7 @@ different sorts of messages in different formats.")
        ("python-dbus" ,python2-dbus)))
     (propagated-inputs
      `(("telepathy-glib" ,telepathy-glib)))
-    (home-page "http://telepathy.freedesktop.org/")
+    (home-page "https://telepathy.freedesktop.org/")
     (synopsis "Telepathy IRC connection manager")
     (description
      "Idle is an IRC connection manager for the Telepathy framework.  This
@@ -971,7 +971,7 @@ share connections to real-time communication services without conflicting.")
      `(("colord" ,colord)
        ("gtk+" ,gtk+)))
     (synopsis "GTK integration for libcolord")
-    (home-page "http://www.freedesktop.org/software/colord/")
+    (home-page "https://www.freedesktop.org/software/colord/")
     (description
      "This is a GTK+ convenience library for interacting with colord.  It is
 useful for both applications which need colour management and applications that
@@ -1068,7 +1068,7 @@ to applications simultaneously competing for fingerprint readers.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://www.freedesktop.org/wiki/Software/desktop-file-utils/")
+    (home-page "https://www.freedesktop.org/wiki/Software/desktop-file-utils/")
     (synopsis "Utilities for working with desktop entries")
     (description
      "This package contains a few command line utilities for working with

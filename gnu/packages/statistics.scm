@@ -32,11 +32,14 @@
   #:use-module (guix hg-download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
@@ -170,21 +173,15 @@ be output in text, PostScript, PDF or HTML.")
              ;; queries the mtime of a given file and records it in an object.
              ;; This is acceptable at runtime to detect stale source files,
              ;; but it destroys reproducibility at build time.
-             ;;
-             ;; Instead of disabling this feature, which may have unexpected
-             ;; consequences, we reset the mtime of generated files before
-             ;; passing them to the "srcfile" procedure.
-             (substitute* "src/library/Makefile.in"
-               (("@\\(cd base && \\$\\(MAKE\\) mkdesc\\)" line)
-                (string-append line "\n	find $(top_builddir)/library/tools | xargs touch -d '1970-01-01'; \n"))
-               (("@\\$\\(MAKE\\) Rdobjects" line)
-                (string-append "@find $(srcdir)/tools | xargs touch -d '1970-01-01'; \n	"
-                               line)))
-             (substitute* "src/library/tools/Makefile.in"
-               (("@\\$\\(INSTALL_DATA\\) all.R \\$\\(top_builddir\\)/library/\\$\\(pkg\\)/R/\\$\\(pkg\\)" line)
-                (string-append
-                 line
-                 "\n	find $(srcdir)/$(pkg) $(top_builddir)/library/$(pkg) | xargs touch -d \"1970-01-01\"; \n")))
+
+             ;; Similarly, the "srcfilecopy" procedure records the current
+             ;; time.  We change both of them to respect SOURCE_DATE_EPOCH.
+             (substitute* "src/library/base/R/srcfile.R"
+               (("timestamp <- (timestamp.*|file.mtime.*)" _ time)
+                (string-append "timestamp <- \
+as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
+  as.numeric(Sys.getenv(\"SOURCE_DATE_EPOCH\"))\
+} else { " time "}, origin=\"1970-01-01\")\n")))
 
              ;; This library is installed using "install_package_description",
              ;; so we need to pass the "builtStamp" argument.
@@ -265,6 +262,9 @@ be output in text, PostScript, PDF or HTML.")
        ("libxt" ,libxt)
        ("pcre" ,pcre)
        ("readline" ,readline)
+       ;; This avoids a reference to the ungraftable static bash.  R uses the
+       ;; detected shell for the "system" procedure.
+       ("bash" ,bash-minimal)
        ("which" ,which)
        ("zlib" ,zlib)))
     (native-search-paths
@@ -318,14 +318,14 @@ D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
 (define-public r-mass
   (package
     (name "r-mass")
-    (version "7.3-48")
+    (version "7.3-49")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MASS" version))
        (sha256
         (base32
-         "02q95ba909p2gxnzfp295ipxjnv14f7bm55nicxwn2kj8hizpzqd"))))
+         "1yjbnj1p4z0vw84wga8q5fyqiw4n6r7pc6rdwam7vsbiamyzfcqs"))))
     (properties `((upstream-name . "MASS")))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
@@ -554,14 +554,14 @@ single hidden layer, and for multinomial log-linear models.")
 (define-public r-rpart
   (package
     (name "r-rpart")
-    (version "4.1-12")
+    (version "4.1-13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rpart" version))
        (sha256
         (base32
-         "177p03w4m0qshb3sqkdyixim3f44g2an31v3vlbjmpzjvd5ff6yq"))))
+         "0k29qx3k3pj5sgrpg0p47yd8i811rmdakaw57bigpq1449asc4cf"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/rpart")
     (synopsis "Recursive partitioning and regression trees")
@@ -939,14 +939,14 @@ solution for sending email, including attachments, from within R.")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "1.1.6")
+    (version "1.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "122im5m8x9bqpahc0hbxmvdq6hnsmgnxwwyjpvbihyv2jq5kd44m"))))
+         "0nck1s2iglmkrn15ay2chrrwsy5lngcylz2sc87fxy5skxaahxdl"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -1098,20 +1098,21 @@ agnes cluster diagrams.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "103wnc8sq0iwcnj4j14hd420d2dqdyf13s3f25icsznrlyzdkhf5"))))
+         "122k9spymawfnfyksxyapwq9cigydy5nrjwhrwrhy3qkax3aycf6"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("cairo" ,cairo)))
+     `(("cairo" ,cairo)
+       ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-withr" ,r-withr)))
     (home-page "https://cran.r-project.org/web/packages/gdtools")
@@ -1187,13 +1188,13 @@ evaluation (NSE) in R.")
 (define-public r-dbi
   (package
     (name "r-dbi")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DBI" version))
               (sha256
                (base32
-                "04fyrxdpqcygg5wviy637y6lgk64xqjjq31lvv4hwqj5kbaxamr5"))))
+                "16nf8flxr5vdz8yrpprfbzydy3ajixkp9hc8ibd9n7r9nc29waym"))))
     (build-system r-build-system)
     (home-page "https://github.com/rstats-db/DBI")
     (synopsis "R database interface")
@@ -1330,13 +1331,13 @@ syntax that can be converted to XHTML or other formats.")
 (define-public r-yaml
   (package
     (name "r-yaml")
-    (version "2.1.16")
+    (version "2.1.17")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "yaml" version))
               (sha256
                (base32
-                "1xlsmqal607w6c9rx86061y1fwpbyd5lqp9bad5n7cc9a0blpnkm"))))
+                "10y6wnv2v8k396far29haqv2s82p4zm04rrsxk183wg19gb51was"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/yaml/")
     (synopsis "Methods to convert R data to YAML and back")
@@ -2232,14 +2233,14 @@ collation, and NAMESPACE files.")
 (define-public r-openssl
   (package
     (name "r-openssl")
-    (version "1.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openssl" version))
        (sha256
         (base32
-         "1j8smqrb79lnaf2n9icksjiy641fcazsbkhmgg916s3nnyjngjz3"))))
+         "1qyql5gpwf88bkm1qarjhbqbq4hn6w0d8j4pxb5x7i96is30ap30"))))
     (build-system r-build-system)
     (inputs
      `(("libressl" ,libressl)))
@@ -2481,13 +2482,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.8.300.1.0")
+    (version "0.8.400.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "0p6cbnwxgzigf7n5qhqvxdr3nd3pq3c2qq6pskqz7avzf813fy83"))))
+                "11y2ksf46zw6fcz0kk70szyfn7qqxwwd33xylrxvnyb7ldmbc5yr"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     (native-inputs
@@ -2575,14 +2576,14 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.8")
+    (version "1.9")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "0q1y1qx87xp6vf9h7mfl77rqhmd01xl53l9ap9qj99bfvpabb572"))))
+            "0wq6kbhrkv3fhcy4hg5yyv9gdvf8gr4nsjwdifs4ih8lnn0dmdyb"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2595,7 +2596,11 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-rprojroot" ,r-rprojroot)
        ("r-stringr" ,r-stringr)
        ("r-yaml" ,r-yaml)
-       ("ghc-pandoc" ,ghc-pandoc)))
+       ;; rmarkdown works with the 2.x release of Pandoc, but with degraded
+       ;; functionality.  For example, tabbed plots do not currently work with
+       ;; Pandoc 2.  The authors of rmarkdown recommend the use of Pandoc 1
+       ;; for the time being.
+       ("ghc-pandoc" ,ghc-pandoc-1)))
     (home-page "http://rmarkdown.rstudio.com")
     (synopsis "Convert R Markdown documents into a variety of formats")
     (description
@@ -2811,6 +2816,19 @@ plotted and compared with the asymptotic curve.")
                 "0vql32np716dpd0kjn7s7wgawd02ysgp2a5il4kb19nlw661ii3x"))))
     (properties `((upstream-name . "lambda.r")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'check 'delete-test-log
+           ;; The test report contains time stamps and is not important for
+           ;; the installed package.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively
+              (string-append (assoc-ref outputs "out")
+                             "/site-library/lambda.r/unitTests"))
+             #t)))))
+    (native-inputs
+     `(("r-runit" ,r-runit)))
     (home-page "https://cran.r-project.org/web/packages/lambda.r")
     (synopsis "Functional programming extension for R")
     (description
@@ -3315,20 +3333,20 @@ memory-mapped files.")
 (define-public r-nmf
   (package
     (name "r-nmf")
-    (version "0.20.6")
+    (version "0.21.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "NMF" version))
        (sha256
         (base32
-         "0mmh9bz0zjwd8h9jplz4rq3g94npaqj8s4px51vcv47csssd9k6z"))))
+         "1qq25n3k5sgh3srlshb3ic6q92s12c1ilqf5cd5anvq6cqfchc1v"))))
     (properties `((upstream-name . "NMF")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
-       ("r-bigmemory" ,r-bigmemory)
-       ("r-synchronicity" ,r-synchronicity)
+       ("r-bigmemory" ,r-bigmemory) ; suggested
+       ("r-synchronicity" ,r-synchronicity) ; suggested
        ("r-colorspace" ,r-colorspace)
        ("r-digest" ,r-digest)
        ("r-doparallel" ,r-doparallel)
@@ -3577,14 +3595,14 @@ the 'lite' version of the more complete @code{viridis} package.")
 (define-public r-tidyselect
   (package
     (name "r-tidyselect")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyselect" version))
        (sha256
         (base32
-         "0b0w30yq30c7bwpaghp3hp0nncqwcmvrra9j58fhx9jihay3l68c"))))
+         "1592dbzawhd1hpsp9919l4sifyiaaj6xr7lnhsbwa6jwmmb0xcsw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-glue" ,r-glue)
@@ -4011,14 +4029,14 @@ existing packages provide.")
 (define-public r-sfsmisc
   (package
     (name "r-sfsmisc")
-    (version "1.1-1")
+    (version "1.1-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sfsmisc" version))
        (sha256
         (base32
-         "0jzmbywlyzfxs7hlmyd0iynghfc9qp5sa5lnhr73y8r360yv1ahf"))))
+         "0cgq2h11ngkzd6p34k6mqjnvlvc5vj4lnqrl64k05lb391j391w0"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/sfsmisc")
     (synopsis "Utilities from \"Seminar fuer Statistik\" ETH Zurich")
@@ -4039,6 +4057,14 @@ Zurich, including many that are related to graphics.")
         (base32
          "1xknwk9xlsj027pg0nwiizigcrsc84hdrig0jn0cgcyxj8dabdl6"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-deterministic
+           (lambda _
+             (substitute* "R/checkReverseDependencies.R"
+               (("tempdir\\(\\)") "\"/tmp\""))
+             #t)))))
     (home-page "https://cran.r-project.org/web/packages/gtools")
     (synopsis "Various R programming tools")
     (description
@@ -4882,27 +4908,6 @@ functions apply.  The implementation can easily be added to functions where
 showing the progress is useful e.g. bootstrap.")
     (license license:gpl2)))
 
-(define-public r-fnn
-  (package
-    (name "r-fnn")
-    (version "1.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "FNN" version))
-       (sha256
-        (base32
-         "1kncmiaraq1mrykb9fj3fsxswabk3l71fnp1vks0x9aay5xfk8mj"))))
-    (properties `((upstream-name . "FNN")))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/FNN")
-    (synopsis "Fast nearest neighbor search algorithms and applications")
-    (description
-     "This package provides cover-tree and kd-tree fast k-nearest neighbor
-search algorithms and related applications including KNN classification,
-regression and information measures.")
-    (license license:gpl2+)))
-
 (define-public r-minqa
   (package
     (name "r-minqa")
@@ -5356,14 +5361,14 @@ is supported.")
 (define-public r-lubridate
   (package
     (name "r-lubridate")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lubridate" version))
        (sha256
         (base32
-         "0k417a1xp5gxf77ycbnx5apzpc5d25sjm83ss7wmqpbnhnr5dcav"))))
+         "1pzkqfiahnsdm3zx46asgn8fw43vlxvbh7r4cn70c7ffmxabzzrc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
@@ -5445,6 +5450,7 @@ manually \"recoding\").")
          (uri (hg-reference
                (url "https://bitbucket.org/tanaylab/tgstat")
                (changeset changeset)))
+         (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
            "0ilkkyximy77zbncm91kdfqbxf0qyndg16pd3q3p6a3xc9qcmxvn"))))
@@ -5479,6 +5485,7 @@ tools.")
          (uri (hg-reference
                (url "https://bitbucket.org/tanaylab/tgconfig")
                (changeset changeset)))
+         (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
            "0xy6c7s7mn1yx191154bwbv1bl424bnvc80syqpl1vdl28ba46rj"))))
@@ -5539,3 +5546,72 @@ inferring an appropriate positioning method.")
       (description "Did you ever wish you could make scatter plots with cat
 shaped points?  Now you can!")
       (license license:asl2.0))))
+
+(define-public r-colorout
+  (package
+    (name "r-colorout")
+    (version "1.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jalvesaq/colorout/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07vqx5ihgnq4dzn5jnfjfhdm3957v4prvf8vhnb3cwvlly4l7p9v"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/jalvesaq/colorout")
+    (synopsis "Colorize output in the R REPL")
+    (description "@code{colorout} is an R package that colorizes R output when
+running in terminal emulator.
+
+R STDOUT is parsed and numbers, negative numbers, dates in the standard
+format, strings, and R constants are identified and wrapped by special ANSI
+scape codes that are interpreted by terminal emulators as commands to colorize
+the output.  R STDERR is also parsed to identify the expressions warning and
+error and their translations to many languages.  If these expressions are
+found, the output is colorized accordingly; otherwise, it is colorized as
+STDERROR (blue, by default).
+
+You can customize the colors according to your taste, guided by the color
+table made by the command @code{show256Colors()}.  You can also set the colors
+to any arbitrary string.  In this case, it is up to you to set valid values.")
+    (license license:gpl3+)))
+
+(define-public java-jdistlib
+  (package
+    (name "java-jdistlib")
+    (version "0.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/jdistlib/jdistlib-"
+                                  version "-src.jar"))
+              (sha256
+               (base32
+                "1pkj8aahw9ydr1isbaqrkd05nvq98ik5jwwhf3yf3rky3z869v11"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jdistlib.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f ; no dedicated test directory
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-broken-encoding
+           (lambda _
+             (with-fluids ((%default-port-encoding "ISO-8859-1"))
+               (substitute* "src/jdistlib/Beta.java"
+                 (("Scheff.+-Tukey") "Scheffe-Tukey")))
+             #t)))))
+    (propagated-inputs
+     `(("java-jtransforms" ,java-jtransforms)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://jdistlib.sourceforge.net/")
+    (synopsis "Java library of statistical distributions")
+    (description "JDistlib is the Java Statistical Distribution Library, a
+Java package that provides routines for various statistical distributions.")
+    ;; The files that were translated from R code are under GPLv2+; some files
+    ;; are under the GPLv3, which is a mistake.  The author confirmed in an
+    ;; email that this whole project should be under GPLv2+.
+    (license license:gpl2+)))

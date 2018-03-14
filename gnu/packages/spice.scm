@@ -69,6 +69,7 @@
                 (uri (git-reference
                         (url "https://anongit.freedesktop.org/git/spice/usbredir.git")
                         (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "052fywgi72j68dr5ybldncg4vk8iqfrh58la7iazyxxpph9aag1g"))))

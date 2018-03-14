@@ -36,13 +36,13 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "1.11.10")
+    (version "1.11.11")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "1ndc7axr7cz8jwhr4mz16fvwd0jcd6i81q2wi9nl172s71kkaf12"))))
+                "1p0fk0dszci9gx76hyhay3n8n0k8r4sznbdcrpd9g2xl15rps1vl"))))
     (build-system python-build-system)
     (arguments
      '(#:modules ((srfi srfi-1)
@@ -182,13 +182,13 @@ useful tools for testing Django applications and projects.")
 (define-public python-django-filter
   (package
     (name "python-django-filter")
-    (version "0.14.0")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-filter" version))
               (sha256
                (base32
-                "0f78hmk8c903zwfzlsiw7ivgag81ymmb5hi73rzxbhnlg2v0l3fx"))))
+                "0slpfqfhnjrzlrb6vmswyhrzn01p84s16j2x1xib35gg4fxg23pc"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -198,6 +198,8 @@ useful tools for testing Django applications and projects.")
              (zero? (system* "python" "runtests.py")))))))
     (native-inputs
      `(("python-django" ,python-django)
+       ("python-djangorestframework" ,python-djangorestframework)
+       ("python-django-crispy-forms", python-django-crispy-forms)
        ("python-mock" ,python-mock)))
     (home-page "https://django-filter.readthedocs.io/en/latest/")
     (synopsis "Reusable Django application to filter querysets dynamically")
@@ -265,15 +267,18 @@ account authentication.")
 (define-public python-django-gravatar2
   (package
     (name "python-django-gravatar2")
-    (version "1.4.0")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-gravatar2" version))
        (sha256
         (base32
-         "1v4qyj6kms321yw0z2g1kch6b2dskmv6fjd6sfxzwr4xshq9mccl"))))
+         "1qsv40xywbqsf4mkrmsswrpzqd7nfljxpfiim9an2z3dykn5rka6"))))
     (build-system python-build-system)
+    (arguments
+     '(;; TODO: The django project for the tests is missing from the release.
+       #:tests? #f))
     (inputs
      `(("python-django" ,python-django)))
     (home-page "https://github.com/twaddington/django-gravatar")
@@ -755,3 +760,52 @@ Django projects, which allows association of a number of tags with any
 
 (define-public python2-django-tagging
   (package-with-python2 python-django-tagging))
+
+(define-public python-djangorestframework
+  (package
+    (name "python-djangorestframework")
+    (version "3.7.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "djangorestframework" version))
+       (sha256
+        (base32
+         "11qv117gqwswxjljs7wafxg1hyzzlx3qrviwlk9hw41bsbl997lz"))))
+    (build-system python-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (home-page "https://www.django-rest-framework.org")
+    (synopsis "Toolkit for building Web APIs with Django")
+    (description
+     "The Django REST framework is for building Web APIs with Django.  It
+provides features like a web browseable API and authentication policies.")
+    (license license:bsd-2)))
+
+(define-public python-django-crispy-forms
+  (package
+    (name "python-django-crispy-forms")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-crispy-forms" version))
+       (sha256
+        (base32
+         "16s05jx86jmimlvnwpq73kl0mqw1v9lryc8zi61a9qwl25krm6mj"))))
+    (build-system python-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (home-page
+     "http://github.com/maraujop/django-crispy-forms")
+    (synopsis "Tool to control Django forms without custom templates")
+    (description
+     "@code{django-crispy-forms} lets you easily build, customize and reuse
+forms using your favorite CSS framework, without writing template code.")
+    (license license:expat)))

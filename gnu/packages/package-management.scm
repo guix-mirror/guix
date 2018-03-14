@@ -239,7 +239,7 @@
                        ;; XXX: Keep the development inputs here even though
                        ;; they're unnecessary, just so that 'guix environment
                        ;; guix' always contains them.
-                       ("autoconf" ,(autoconf-wrapper))
+                       ("autoconf" ,autoconf-wrapper)
                        ("automake" ,automake)
                        ("gettext" ,gettext-minimal)
                        ("texinfo" ,texinfo)
@@ -791,14 +791,23 @@ on top of GNU Guix.")
 (define-public gcab
   (package
     (name "gcab")
-    (version "1.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ji8j8pnxqaycbp9ydi2zq7gcr02c2vw4qnc198i6jwy9zkh2x19"))))
+                "0l19sr6pg0cfcddmi5n79d08mjjbhn427ip5jlsy9zddq9r24aqr"))
+              ;; gcab 1.1 has a hard dependency on git — even when building
+              ;; from a tarball.  Remove it early so ‘guix environment gcab’
+              ;; can actually build what ‘guix build --source gcab’ returns.
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "meson.build"
+                    (("git_version = .*$") "git_version = []\n"))
+                  #t))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-mkenums

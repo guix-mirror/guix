@@ -362,4 +362,4 @@ Ghostscript.  It currently includes the 35 standard PostScript fonts.")
 It provides a convenient easy to use API for handling and rendering
 Postscript documents.")
    (license license:gpl2+)
-   (home-page "http://www.freedesktop.org/wiki/Software/libspectre")))
+   (home-page "https://www.freedesktop.org/wiki/Software/libspectre")))

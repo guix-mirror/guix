@@ -60,6 +60,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system scons)
   #:use-module (gnu packages)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cran)
@@ -83,8 +84,10 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages java)
   #:use-module (gnu packages javascript)
+  #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages lisp)
@@ -156,6 +159,7 @@ and its related documentation.")
               (uri (string-append
                     "https://github.com/GrahamDumpleton/mod_wsgi/archive/"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0n1yhmrfp8mjbsngmyjl937c6rc0069p6wdi1lknrbn1q42hzw6q"))))
@@ -791,7 +795,7 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.19.1")
+    (version "0.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
@@ -799,7 +803,7 @@ for efficient socket-like bidirectional reliable communication channels.")
                                   "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "0ydwi9m39qv6k7zagqx2kzxzf59ipxj9r0c71xmwngdx3fslclbk"))))
+                "17r18y25ka2ck2ykfidbg4a7jpyzmkqwrzplgqjp7mwd2l9rc6cm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -837,6 +841,7 @@ UTS#46.")
                      ":pserver:anonymous@tidy.cvs.sourceforge.net:/cvsroot/tidy")
                     (module "tidy")
                     (revision "2009-12-23")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "14dsnmirjcrvwsffqp3as70qr6bbfaig2fv3zvs5g7005jrsbvpb"))
@@ -2843,7 +2848,7 @@ environment from an HTTP::Request.")
 (define-public perl-http-server-simple
   (package
     (name "perl-http-server-simple")
-    (version "0.51")
+    (version "0.52")
     (source
      (origin
        (method url-fetch)
@@ -2851,7 +2856,7 @@ environment from an HTTP::Request.")
                            "HTTP-Server-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "1yvd2g57z2kq00q5i3zzfi15k98qgbif3vghjsda6v612agmrp5r"))))
+         "0k6bg7k6mjixfzxdkkdrhqvaqmdhjszx0zsk8g0bimiby6j9z4yq"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cgi" ,perl-cgi)))
@@ -2925,7 +2930,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
 (define-public perl-io-socket-ip
   (package
     (name "perl-io-socket-ip")
-    (version "0.38")
+    (version "0.39")
     (source
      (origin
        (method url-fetch)
@@ -2933,7 +2938,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
                            "IO-Socket-IP-" version ".tar.gz"))
        (sha256
         (base32
-         "0scsnahxwnymg80a3k0p0cnr574nk7x9inn9wjniz0iycicclyhb"))))
+         "15kv5g1yb4a345sk3r5wfr99f868lhfqkddzsgpqddvccfkhv58i"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/IO-Socket-IP")
@@ -3203,7 +3208,7 @@ or to multiple server ports.")
 (define-public perl-net-smtp-ssl
   (package
     (name "perl-net-smtp-ssl")
-    (version "1.03")
+    (version "1.04")
     (source
      (origin
        (method url-fetch)
@@ -3211,7 +3216,7 @@ or to multiple server ports.")
                            "Net-SMTP-SSL-" version ".tar.gz"))
        (sha256
         (base32
-         "05y94mb1vdw32mvwb0cp2h4ggh32f8j8nwwfjb8kjwxvfkfhyp9h"))))
+         "001a6dcfahf7kkyirqkc8jd4fh4fkal7n7vm9c4dblqrvmdc8abv"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)))
@@ -3649,7 +3654,7 @@ library.")
 (define-public perl-www-mechanize
   (package
     (name "perl-www-mechanize")
-    (version "1.86")
+    (version "1.87")
     (source
      (origin
        (method url-fetch)
@@ -3657,7 +3662,7 @@ library.")
                            "WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "0sfl6b7mx8nannnh3ys5jk44d1s1b2d1mffrnrphkzzykaw6hm0f"))))
+         "1kxrydhl7nxlyjv0xvyiyj4igdv4fwnggv0ihlp79bysbjjl54w1"))))
     (build-system perl-build-system)
     (native-inputs                      ;only for tests
      `(("perl-cgi" ,perl-cgi)
@@ -3772,13 +3777,13 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.3.5")
+    (version "1.3.6.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "1sg4f223zfyd265b28rlhsn3b6mqflcpnmya98cjmjncmy9vjdj3"))))
+                "0h3hkw575b211bxma23inbq1565wkhiapgasd539h219apqs534f"))))
     (build-system r-build-system)
     (native-inputs `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/rstudio/httpuv")
@@ -6260,7 +6265,7 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
 (define-public geomyidae
   (package
     (name "geomyidae")
-    (version "0.29")
+    (version "0.31")
     (source
      (origin
        (method url-fetch)
@@ -6268,7 +6273,7 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
                            "geomyidae-" version ".tar.bz2"))
        (sha256
         (base32
-         "0qxgxp6psfrgfqhndyq2z54nb1qrmvvljddnxdwp207jbz366bja"))))
+         "1ih7220c6mgq4r7blm4kx3pxbl53sph58lqgwci6cmi3c0sq5c3x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
@@ -6334,3 +6339,84 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
     ;; expat for the code, CC-BY 4.0 for the artwork
     (license (list l:expat
                    l:cc-by4.0))))
+
+(define-public nghttp2
+  (package
+    (name "nghttp2")
+    (version "1.31.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/nghttp2/nghttp2/"
+                           "releases/download/v" version "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1ivs74v9sa2sds3dq0s7vn9bkmhr2hgwyg1an1rah3agqwnkqmrn"))))
+    (build-system gnu-build-system)
+    (outputs (list "out"
+                   "lib"))              ; only libnghttp2
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; Required by tests.
+       ("cunit" ,cunit)
+       ("tzdata" ,tzdata-for-tests)))
+    (inputs
+     ;; Required to build the tools (i.e. without ‘--enable-lib-only’).
+     `(("c-ares" ,c-ares)
+       ("jansson" ,jansson)             ; for HPACK tools
+       ("jemalloc" ,jemalloc)           ; fight nghttpd{,x} heap fragmentation
+       ("libev" ,libev)
+       ("libxml2" ,libxml2)             ; for ‘nghttp -a’
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "lib") "/lib")
+             "--enable-app"             ; build all the tools
+             "--enable-hpack-tools"     ; ...all the tools
+             "--disable-examples"
+             "--disable-static")        ; don't bother building .a files
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'break-circular-reference
+           ;; libnghttp2.pc by default retains a reference to the ‘out’ output,
+           ;; which is not allowed.  Break this cycle.  While we could install
+           ;; only the library to ‘out’ and move everything else to a separate
+           ;; output, this would inconvenience the majority of (human) users.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "lib/libnghttp2.pc.in"
+               (("@prefix@")
+                (assoc-ref outputs "lib")))
+             #t))
+         (add-before 'check 'set-timezone-directory
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
+                                            "/share/zoneinfo"))
+             #t)))))
+    (home-page "https://nghttp2.org/")
+    (synopsis "HTTP/2 protocol client, proxy, server, and library")
+    (description
+     "nghttp2 implements the Hypertext Transfer Protocol, version
+2 (@dfn{HTTP/2}).
+
+A reusable C library provides the HTTP/2 framing layer, with several tools built
+on top of it:
+
+@itemize
+@item @command{nghttp}, a command-line HTTP/2 client.  It exposes many advanced
+and low-level aspects of the protocol and is useful for debugging.
+@item @command{nghttpd}, a fast, multi-threaded HTTP/2 static web server that
+serves files from a local directory.
+@item @command{nghttpx}, a fast, multi-threaded HTTP/2 reverse proxy that can be
+deployed in front of existing web servers that don't support HTTP/2.
+Both @command{nghttpd} and @command{nghttpx} can fall back to HTTP/1.1 for
+backwards compatibilty with clients that don't speak HTTP/2.
+@item @command{h2load} for benchmarking (only!) your own HTTP/2 servers.
+@item HTTP/2 uses a header compression method called @dfn{HPACK}.
+nghttp2 provides a HPACK encoder and decoder as part of its public API.
+@item @command{deflatehd} converts JSON data or HTTP/1-style header fields to
+compressed JSON header blocks.
+@item @command{inflatehd} converts such compressed headers back to JSON pairs.
+@end itemize\n")
+    (license l:expat)))

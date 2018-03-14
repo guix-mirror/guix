@@ -108,6 +108,7 @@ manipulate maps.")
                 (uri (git-reference
                       (url "https://github.com/freefoote/gpscorrelate")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "006a6l8p38a4h7y2959sqrmjjn29d8pd50zj9nypcp5ph18nybjb"))))

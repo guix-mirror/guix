@@ -28,7 +28,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.44")
+    (version "0.14.45")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -36,7 +36,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0fxq52w1b05928xp0a333rg23fabj0nykgg7v4gz01f3vrxyydi1"))
+                "0nv5g9ymykl4316l2g3mnac77y2rx9ps4j2kg3pymxlq6qms2dij"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet
@@ -110,8 +110,6 @@
     (inputs
      `(("go-github-com-audriusbutkevicius-cli"
         ,go-github-com-audriusbutkevicius-cli)
-       ("go-github-com-xtaci-kcp-go"
-        ,go-github-com-xtaci-kcp-go)
        ("go-github-com-audriusbutkevicius-go-nat-pmp"
         ,go-github-com-audriusbutkevicius-go-nat-pmp)
        ("go-github-com-audriusbutkevicius-pfilter"
@@ -119,8 +117,6 @@
        ("go-github-com-bkaradzic-go-lz4" ,go-github-com-bkaradzic-go-lz4)
        ("go-github-com-calmh-du" ,go-github-com-calmh-du)
        ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
-       ("go-github-com-ccding-go-stun"
-        ,go-github-com-ccding-go-stun)
        ("go-github-com-prometheus-union" ,(go-github-com-prometheus-union))
        ("go-github-com-chmduquesne-rollinghash-adler32"
         ,go-github-com-chmduquesne-rollinghash-adler32)
@@ -137,12 +133,12 @@
        ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
        ("go-github-com-oschwald-geoip2-golang"
         ,go-github-com-oschwald-geoip2-golang)
+       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
        ("go-github-com-rcrowley-go-metrics" ,go-github-com-rcrowley-go-metrics)
        ("go-github-com-sasha-s-go-deadlock" ,go-github-com-sasha-s-go-deadlock)
        ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
        ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
        ("go-github-com-vitrun-qart" ,(go-github-com-vitrun-qart-union))
-       ("go-github-com-xtaci-smux" ,go-github-com-xtaci-smux)
        ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
        ("go-golang-org-x-net-union" ,(go-golang-org-x-net-union))
        ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
@@ -1526,31 +1522,6 @@ virtual connections from a single physical connection.")
       (home-page "https://github.com/AudriusButkevicius/pfilter")
       (license expat))))
 
-(define-public go-github-com-ccding-go-stun
-  (let ((commit "d9bbe8f8fa7bf7ed03e6cfc6a2796bb36139e1f4")
-        (revision "1"))
-    (package
-      (name "go-github-com-ccding-go-stun")
-      (version (git-version "0.0.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/ccding/go-stun.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "04a4q69cmw6snlx54wikyj1y6gk94qzm9xv9als17inmj8z60xv7"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/ccding/go-stun"))
-      (synopsis "STUN client implementation")
-      (description "Go-stun is a go implementation of the STUN client (RFC 3489
-and RFC 5389).")
-      (home-page "https://github.com/ccding/go-stun")
-      (license asl2.0))))
-
 (define-public go-github-com-chmduquesne-rollinghash-adler32
   (let ((commit "3dc7875a1f890f9bcf0619adb5571fc6f7d516bb")
         (revision "1"))
@@ -1575,97 +1546,6 @@ and RFC 5389).")
       (description "This package provides a Go implementation of the Adler-32
 rolling hash.")
       (home-page "https://github.com/chmduquesne/rollinghash")
-      (license expat))))
-
-(define-public go-github-com-xtaci-kcp-go
-  (let ((commit "86eebd5cadb519b7c9306082c7eb3bcee2c49a7b")
-        (revision "0"))
-    (package
-      (name "go-github-com-xtaci-kcp-go")
-      (version (git-version "0.0.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/xtaci/kcp-go")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "1mdfsya4y04nycfgsk9ghm67zpim5pw78si3f1566xgrv4ghl0ni"))))
-      (build-system go-build-system)
-      (propagated-inputs
-       `(("go-golang-org-x-net-ipv4" ,go-golang-org-x-net-ipv4)
-         ("go-github-com-klauspost-reedsolomon"
-          ,go-github-com-klauspost-reedsolomon)
-         ("go-github-com-tjfoc-gmsm-sm4" ,go-github-com-tjfoc-gmsm-sm4)
-         ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
-         ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
-         ("go-github-com-templexxx-xor" ,go-github-com-templexxx-xor)))
-      (arguments
-       '(#:import-path "github.com/xtaci/kcp-go"
-         ;; XXX update comment
-         ;; 'TestListenerClose' is known to fail. It seems that the test suite
-         ;; is not being used upstream:
-         ;; https://github.com/AudriusButkevicius/kcp-go/pull/1
-         #:tests? #f))
-      (synopsis "Reliable UDP connections in Go")
-      (description "This package provides @code{kcp-go}, a reliable UDP library
-written in Go.  It offers fast, ordered and error-checked delivery of streams
-over UDP packets.")
-      (home-page "https://github.com/xtaci/kcp-go")
-      (license expat))))
-
-(define-public go-github-com-templexxx-xor
-  (package
-    (name "go-github-com-templexxx-xor")
-    (version "0.1.2")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/templexxx/xor.git")
-               (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "0v1maiii0sggmxk9bgpy6pypb40j3hy2328pc4kd5bldkpdb67d5"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/templexxx/xor"))
-    (propagated-inputs
-     `(("go-github-com-templexxx-cpufeat" ,go-github-com-templexxx-cpufeat)))
-    (synopsis "XOR in Go")
-    (description "This packages provides a Go implementation of XOR.")
-    (home-page "https://github.com/templexxx/xor")
-    (license expat)))
-
-(define-public go-github-com-xtaci-smux
-  (let ((commit "c3e18246ff2252a6e9d6b529fcbf22ae5c74c007")
-        (revision "0"))
-    (package
-      (name "go-github-com-xtaci-smux")
-      (version (git-version "1.0.6" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/xtaci/smux.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "1dfmxd9g31idldhq6n7r998gi4jw51ji3xvkjrzypsw2ypbjx1dz"))))
-      (build-system go-build-system)
-      (propagated-inputs
-       `(("go-github-com-pkg-errors" ,go-github-com-pkg-errors)))
-      (arguments
-       '(#:import-path "github.com/xtaci/smux"))
-      (synopsis "Network multiplexing in Go")
-      (description "Smux ( Simple MUltipleXing) is a multiplexing library for
-Golang.  It relies on an underlying connection to provide reliability and
-ordering, such as TCP or KCP, and provides stream-oriented multiplexing.")
-      (home-page "https://github.com/xtaci/smux")
       (license expat))))
 
 (define-public go-github-com-pkg-errors
@@ -1792,56 +1672,6 @@ using sh's word-splitting rules.")
       (home-page "https://github.com/kballard/go-shellquote")
       (license expat))))
 
-(define-public go-github-com-templexxx-cpufeat
-  (let ((commit "3794dfbfb04749f896b521032f69383f24c3687e")
-        (revision "0"))
-    (package
-      (name "go-github-com-templexxx-cpufeat")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/templexxx/cpufeat.git")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0b9f5p6nsiv907rz5d66qzgxnsz4k68r2f45vxi2hwdbnkjfxz8j"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/templexxx/cpufeat"))
-      (synopsis "CPU feature identification for Go")
-      (description "This package provides @code{cpu}, which implements
-processor feature detection used by the Go standard libary.")
-      (home-page "https://github.com/templexxx/cpufeat")
-      (license bsd-3))))
-
-(define-public go-github-com-tjfoc-gmsm-sm4
-  (let ((commit "98aa888b79d8de04afe0fccf45ed10594efc858b")
-        (revision "1"))
-    (package
-      (name "go-github-com-tjfoc-gmsm-sm4")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/tjfoc/gmsm")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1ii4imnz3ims2s23pdv0l4ijzxjsvl82h4yzgfqm5y809ph6pjq9"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/tjfoc/gmsm/sm4"
-         #:unpack-path "github.com/tjfoc/gmsm"))
-      (synopsis "SM4 block cipher")
-      (description "This package provides a Go implementation of SM4, a block
-cipher used in the Chinese National Standard for Wireless LAN WAPI (Wired
-Authentication and Privacy Infrastructure).")
-      (home-page "https://github.com/tjfoc/gmsm")
-      (license asl2.0))))
-
 (define-public go-github-com-zillode-notify
   (let ((commit "a8abcfb1ce88ee8d79a300ed65d94b8fb616ddb3")
         (revision "2"))
@@ -1867,56 +1697,6 @@ Authentication and Privacy Infrastructure).")
 notification library in Go.")
       (home-page "https://github.com/zillode/notify")
       (license expat))))
-
-(define-public go-github-com-klauspost-cpuid
-  (let ((commit "eae9b3e628d72774e13bdf024e78c0802f85a5b9")
-        (revision "0"))
-  (package
-    (name "go-github-com-klauspost-cpuid")
-    (version (git-version "1.1" revision commit))
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/klauspost/cpuid.git")
-                     (commit commit)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0dgxlsxdfhfapmz1qlvc919m3kcbmfqcfpxk78zl9am5zc3zr689"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/klauspost/cpuid"))
-    (synopsis "CPU feature identification library")
-    (description "This package provides @code{cpuid}, a Go library that provides information about the CPU running the current program")
-    (home-page "https://github.com/klauspost/cpuid")
-    (license expat))))
-
-(define-public go-github-com-klauspost-reedsolomon
-  (let ((commit "0b30fa71cc8e4e9010c9aba6d0320e2e5b163b29")
-        (revision "0"))
-  (package
-    (name "go-github-com-klauspost-reedsolomon")
-    (version (git-version "1.6" revision commit))
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/klauspost/reedsolomon.git")
-                     (commit commit)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "04jvf65ybsa7w4d7s2n0s174p0q2fl0dqd5hhn2krw66z9i3rc6d"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/klauspost/reedsolomon"))
-    (propagated-inputs
-     `(("go-github-com-klauspost-cpuid"
-        ,go-github-com-klauspost-cpuid)))
-    (synopsis "Reed-Solomon Erasure Coding in Go")
-    (description "This package provides and implemenation of Reed-Solomon
-Erasure Coding in Go.")
-    (home-page "https://github.com/klauspost/reedsolomon")
-    (license expat))))
 
 (define-public go-github-com-beorn7-perks-quantile
   (let ((commit "4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9")

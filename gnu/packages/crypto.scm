@@ -258,7 +258,7 @@ the wrong hands.")
 (define-public keyutils
   (package
     (name "keyutils")
-    (version "1.5.9")
+    (version "1.5.10")
     (source
      (origin
        (method url-fetch)
@@ -267,7 +267,7 @@ the wrong hands.")
                        version ".tar.bz2"))
        (sha256
         (base32
-         "1bl3w03ygxhc0hz69klfdlwqn33jvzxl1zfl2jmnb2v85iawb8jd"))
+         "1dmgjcf7mnwc6h72xkvpaqpzxw8vmlnsmzz0s27pg0giwzm3sp0i"))
        (modules '((guix build utils)))
        ;; Create relative symbolic links instead of absolute ones to /lib/*
        (snippet '(substitute* "Makefile" (("\\$\\(LNS\\) \\$\\(LIBDIR\\)/")
@@ -384,9 +384,9 @@ no man page, refer to the home page for usage details.")
          (delete 'configure)   ;no configuration to be done
          (add-after 'install 'i18n
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system*
-                           "make" "-C" "extras/translations"
-                           "install" make-flags))))
+             (apply invoke "make" "-C" "extras/translations"
+                    "install" make-flags)
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -411,8 +411,9 @@ no man page, refer to the home page for usage details.")
              ;; querying `tomb -h`.
              (let ((tomb (string-append (assoc-ref outputs "out")
                                         "/bin/tomb")))
-               (zero? (system* tomb "dig" "-s" "10" "secrets.tomb"))))))))
-    (home-page "http://www.dyne.org/software/tomb")
+               (invoke tomb "dig" "-s" "10" "secrets.tomb")
+               #t))))))
+    (home-page "https://www.dyne.org/software/tomb")
     (synopsis "File encryption for secret data")
     (description
      "Tomb is an application to manage the creation and access of encrypted

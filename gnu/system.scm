@@ -74,6 +74,7 @@
             operating-system-kernel
             operating-system-kernel-file
             operating-system-kernel-arguments
+            operating-system-initrd-modules
             operating-system-initrd
             operating-system-users
             operating-system-groups
@@ -154,6 +155,10 @@ booted from ROOT-DEVICE"
 
   (initrd operating-system-initrd                 ; (list fs) -> M derivation
           (default base-initrd))
+  (initrd-modules operating-system-initrd-modules ; list of strings
+                  (thunked)                       ; it's system-dependent
+                  (default %base-initrd-modules))
+
   (firmware operating-system-firmware             ; list of packages
             (default %base-firmware))
 
@@ -448,7 +453,6 @@ a container or that of a \"bare metal\" system."
   (let* ((mappings  (device-mapping-services os))
          (root-fs   (root-file-system-service))
          (other-fs  (non-boot-file-system-service os))
-         (unmount   (user-unmount-service known-fs))
          (swaps     (swap-services os))
          (procs     (service user-processes-service-type))
          (host-name (host-name-service (operating-system-host-name os)))
@@ -473,7 +477,7 @@ a container or that of a \"bare metal\" system."
            (service fstab-service-type '())
            (session-environment-service
             (operating-system-environment-variables os))
-           host-name procs root-fs unmount
+           host-name procs root-fs
            (service setuid-program-service-type
                     (operating-system-setuid-programs os))
            (service profile-service-type
@@ -846,6 +850,8 @@ hardware-related operations as necessary when booting a Linux container."
 
   (mlet %store-monad ((initrd (make-initrd boot-file-systems
                                            #:linux (operating-system-kernel os)
+                                           #:linux-modules
+                                           (operating-system-initrd-modules os)
                                            #:mapped-devices mapped-devices)))
     (return (file-append initrd "/initrd"))))
 

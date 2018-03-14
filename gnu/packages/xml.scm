@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -425,7 +425,7 @@ XML parser and the high performance DOM implementation.")
 (define-public perl-xml-libxslt
   (package
     (name "perl-xml-libxslt")
-    (version "1.95")
+    (version "1.96")
     (source
      (origin
        (method url-fetch)
@@ -433,7 +433,7 @@ XML parser and the high performance DOM implementation.")
                            "XML-LibXSLT-" version ".tar.gz"))
        (sha256
         (base32
-         "0dggycql18kfxzkb1kw3yc7gslxlrrgyyn2r2ygsylycb89j3jpi"))))
+         "0wyl8klgr65j8y8fzgwz9jlvfjwvxazna8j3dg9gksd2v973fpia"))))
     (build-system perl-build-system)
     (inputs
      `(("libxslt" ,libxslt)))
@@ -469,14 +469,14 @@ checks.")
 (define-public perl-xml-rss
   (package
     (name "perl-xml-rss")
-    (version "1.59")
+    (version "1.60")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
                                   "XML-RSS-" version ".tar.gz"))
               (sha256
                (base32
-                "0v6vfizn2psy6av057kp7fv3z3y73s6b3w56jm3zr6hlq48llsx2"))))
+                "0xw6aaqka3vqwbv152sbh6fbi8j306q1gvg7v83br8miif3mjcsb"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -538,7 +538,7 @@ building Perl SAX2 XML parsers, filters, and drivers.")
 (define-public perl-xml-sax-base
   (package
     (name "perl-xml-sax-base")
-    (version "1.08")
+    (version "1.09")
     (source
      (origin
        (method url-fetch)
@@ -546,7 +546,7 @@ building Perl SAX2 XML parsers, filters, and drivers.")
                            "XML-SAX-Base-" version ".tar.gz"))
        (sha256
         (base32
-         "17i161rq1ngjlk0c8vdkrkkc56y1pf51k1g54y28py0micqp0qk6"))))
+         "1l1ai9g1z11ja7mvnfl5mj346r13jyckbg9qlw6c2izglidkbjv6"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/XML-SAX-Base")
     (synopsis "Base class for SAX Drivers and Filters")
@@ -684,14 +684,14 @@ a schema.")
 (define-public perl-xml-compile-cache
   (package
     (name "perl-xml-compile-cache")
-    (version "1.05")
+    (version "1.06")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-Cache-" version ".tar.gz"))
               (sha256
                (base32
-                "0xbwlszhi9hg8sxm5ylglm2qvnb689i595p913awrj2g4mp9yfsw"))))
+                "181qf1s7ymgi7saph3cf9p6dbxkxyh1ja23na4dchhi8v5mi66sr"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
@@ -993,6 +993,7 @@ UTF-8 and UTF-16 encoding.")
                                   version "/tinyxml_"
                                   (string-join (string-split version #\.) "_")
                                   ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "14smciid19lvkxqznfig77jxn5s4iq3jpb47vh5a6zcaqp7gvg8m"))
@@ -1006,12 +1007,12 @@ UTF-8 and UTF-16 encoding.")
          (delete 'configure)
          (add-after 'build 'build-shared-library
            (lambda _
-             (zero? (system* "g++" "-Wall" "-O2" "-shared" "-fpic"
-                             "tinyxml.cpp" "tinyxmlerror.cpp"
-                             "tinyxmlparser.cpp" "tinystr.cpp"
-                             "-o" "libtinyxml.so"))))
+             (invoke "g++" "-Wall" "-O2" "-shared" "-fpic"
+                     "tinyxml.cpp" "tinyxmlerror.cpp"
+                     "tinyxmlparser.cpp" "tinystr.cpp"
+                     "-o" "libtinyxml.so")))
          (replace 'check
-           (lambda _ (zero? (system "./xmltest"))))
+           (lambda _ (invoke "./xmltest")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1060,9 +1061,10 @@ C++ programming language.")
        (method url-fetch)
        (uri (string-append "https://github.com/leethomason/tinyxml2/archive/"
                            version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-       (base32
-        "083z4r4khcndxi9k840lcr48sqxvar4gpsnf749xfdn1bkr8xcql"))))
+        (base32
+         "083z4r4khcndxi9k840lcr48sqxvar4gpsnf749xfdn1bkr8xcql"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))    ; no tests
@@ -1109,7 +1111,7 @@ XSLT and EXSLT.")
 (define-public html-xml-utils
  (package
    (name "html-xml-utils")
-   (version "7.5")
+   (version "7.6")
    (source
     (origin
       (method url-fetch)
@@ -1118,7 +1120,7 @@ XSLT and EXSLT.")
             version ".tar.gz"))
       (sha256
        (base32
-        "0cbmqa9c4bc4ikk7vmgd65ixh2pl9mr336c4his3m8l7rgsjnh8n"))))
+        "0l97ps089byy62838wf2jwvvc465iw29z9r5kwmwcq7f3bn11y3m"))))
    (build-system gnu-build-system)
    (home-page "https://www.w3.org/Tools/HTML-XML-utils/")
    (synopsis "Command line utilities to manipulate HTML and XML files")
@@ -1249,14 +1251,14 @@ libxls cannot write Excel files.")
 (define-public freexl
   (package
     (name "freexl")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.gaia-gis.it/gaia-sins/"
                                   name  "-" version ".tar.gz"))
               (sha256
                (base32
-                "09bwzqjc41cc8qw8qkw9wq58rg9nax8r3fg19iny5vmw1c0z23sh"))))
+                "03bmwq6hngmzwpqpb7c2amqlspz4q69iv96nlf0f5c0qs98b3j9x"))))
     (build-system gnu-build-system)
     (home-page "https://www.gaia-gis.it/fossil/freexl/index")
     (synopsis "Read Excel files")

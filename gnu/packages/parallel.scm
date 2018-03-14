@@ -94,7 +94,7 @@ and they are executed on lists of files, hosts, users or other items.")
 (define-public slurm
   (package
    (name "slurm")
-   (version "17.11.2")
+   (version "17.11.3")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -102,7 +102,7 @@ and they are executed on lists of files, hosts, users or other items.")
                   version ".tar.bz2"))
             (sha256
              (base32
-              "18yakb8kmhb16n0cv3zhjv8ahvsk9p0max8mmr2flb2c65fawks6"))
+              "1x3i6z03d9m46fvj1cslrapm1drvgyqch9pn4xf23kvbz4gkhaps"))
             (modules '((guix build utils)))
             (snippet
              '(begin

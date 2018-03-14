@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2015, 2017 Alex Kost <alezost@gmail.com>
 # Copyright © 2016, 2018 Mathieu Lirzin <mthl@gnu.org>
@@ -83,6 +83,7 @@ MODULES =					\
   guix/gnu-maintenance.scm			\
   guix/upstream.scm				\
   guix/licenses.scm				\
+  guix/glob.scm					\
   guix/git.scm					\
   guix/graph.scm				\
   guix/cache.scm				\
@@ -314,6 +315,7 @@ SCM_TESTS =					\
   tests/substitute.scm				\
   tests/builders.scm				\
   tests/derivations.scm				\
+  tests/glob.scm				\
   tests/grafts.scm				\
   tests/ui.scm					\
   tests/records.scm				\

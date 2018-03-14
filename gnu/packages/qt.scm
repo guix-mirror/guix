@@ -1735,7 +1735,7 @@ contain over 620 classes.")
                  (string-append out "/lib/qt$${QT_MAJOR_VERSION}")))
                (invoke "qmake")))))))
     (native-inputs `(("qtbase" ,qtbase)))
-    (home-page "http://www.riverbankcomputing.co.uk/software/qscintilla/intro")
+    (home-page "https://www.riverbankcomputing.co.uk/software/qscintilla/intro")
     (synopsis "Qt port of the Scintilla C++ editor control")
     (description "QScintilla is a port to Qt of Neil Hodgson's Scintilla C++
 editor control.  QScintilla includes features especially useful when editing

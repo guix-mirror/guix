@@ -1,0 +1,35 @@
+Based on the upstream fix for the java8 compilation issue.
+Simplified patch.
+Upstream version of patch does not work with this source tree.
+
+The issue is that in java8 it is an error to pass null to
+removeAll. Results in null pointer exception. java7
+behaviour was to return the list unmodified.
+
+From db2a350c6d90efaa8dde949fa76005c2c5af45c4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?G=C3=A1bor=20Boskovits?= <boskovits@gmail.com>
+Date: Fri, 5 Jan 2018 17:05:31 +0100
+Subject: [PATCH] Fix java8 compilation.
+
+---
+ src/org/antlr/tool/CompositeGrammar.java | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/org/antlr/tool/CompositeGrammar.java b/src/org/antlr/tool/CompositeGrammar.java
+index f1408e7..7e02431 100644
+--- a/src/org/antlr/tool/CompositeGrammar.java
++++ b/src/org/antlr/tool/CompositeGrammar.java
+@@ -218,7 +218,9 @@ public class CompositeGrammar {
+ 	public List<Grammar> getIndirectDelegates(Grammar g) {
+ 		List<Grammar> direct = getDirectDelegates(g);
+ 		List<Grammar> delegates = getDelegates(g);
+-		delegates.removeAll(direct);
++		if (direct != null) {
++			delegates.removeAll(direct);
++		}
+ 		return delegates;
+ 	}
+ 
+-- 
+2.15.1
+

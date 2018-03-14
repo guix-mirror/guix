@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +31,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
   #:use-module (gnu packages libevent)
@@ -149,3 +150,59 @@ and workspaces that can be used in the compiler environment of your choice.")
                    license:bsd-2             ; cmlibarchive
                    license:expat             ; cmjsoncpp is dual MIT/public domain
                    license:public-domain)))) ; cmlibarchive/archive_getdate.c
+
+;; Recent Ceph requires Boost 1.66, which in turn requires CMake 3.11 for
+;; its updated "FindBoost.cmake" facility.
+(define-public cmake-3.11
+  (package
+    (inherit cmake)
+    (version "3.11.0-rc2")
+    (source (origin
+              (inherit (package-source cmake))
+              (uri (string-append "https://www.cmake.org/files/v"
+                                  (version-major+minor version)
+                                  "/cmake-" version ".tar.gz"))
+              (sha256
+               (base32
+                "14p6ais19nfcwl914n4n5rbzaqwafv3qkg6nd8jw54ykn6lz6mf3"))
+              (snippet
+               '(begin
+                  ;; Drop bundled software.
+                  (with-directory-excursion "Utilities"
+                    (for-each delete-file-recursively
+                              '("cmbzip2"
+                                "cmcurl"
+                                "cmexpat"
+                                "cmliblzma"
+                                "cmzlib"))
+                    #t)))))
+    (build-system gnu-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments cmake)
+       ((#:make-flags flags ''()) `(cons (string-append
+                                          "ARGS=-j "
+                                          (number->string (parallel-job-count))
+                                          " --output-on-failure")
+                                         ,flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'patch-bin-sh
+             (lambda _
+               (substitute*
+                   '("Modules/CompilerId/Xcode-3.pbxproj.in"
+                     "Modules/CPack.RuntimeScript.in"
+                     "Source/cmakexbuild.cxx"
+                     "Source/cmGlobalXCodeGenerator.cxx"
+                     "Source/cmLocalUnixMakefileGenerator3.cxx"
+                     "Source/cmExecProgramCommand.cxx"
+                     "Utilities/Release/release_cmake.cmake"
+                     "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
+                     "Tests/CMakeLists.txt"
+                     "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
+                 (("/bin/sh") (which "sh")))
+               #t))
+           ;; This is now passed through #:make-flags.
+           (delete 'set-test-environment)))))
+    (inputs
+     `(("rhash" ,rhash)
+       ,@(package-inputs cmake)))))

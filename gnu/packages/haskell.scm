@@ -63,7 +63,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (ice-9 regex))
+  #:use-module (ice-9 regex)
+  #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
 (define-public cl-yale-haskell
   (let ((commit "85f94c72a16c5f70301dd8db04cde9de2d7dd270")
@@ -1072,7 +1073,7 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
     (synopsis "Specify refactorings to perform with apply-refact")
     (description
      "This library provides a datatype which can be interpreted by
-@code{apply-refact}.  It exists as a seperate library so that applications can
+@code{apply-refact}.  It exists as a separate library so that applications can
 specify refactorings without depending on GHC.")
     (license license:bsd-3)))
 
@@ -4980,6 +4981,22 @@ pandoc to represent structured documents.  It also provides functions for
 building up, manipulating and serialising @code{Pandoc} structures.")
     (license license:bsd-3)))
 
+(define-public ghc-pandoc-types-for-pandoc-1
+  (package (inherit ghc-pandoc-types)
+    (version "1.17.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "pandoc-types/pandoc-types-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1csipjdq00iiq77k2wlrg4i7afrzlh8nl585q785xzw7nn45b0n8"))))
+    (inputs
+     `(("ghc-syb" ,ghc-syb)
+       ("ghc-aeson" ,ghc-aeson-for-pandoc-1)
+       ("ghc-string-qq" ,ghc-string-qq)))))
+
 (define-public ghc-texmath
   (package
     (name "ghc-texmath")
@@ -5012,6 +5029,27 @@ native format (allowing conversion, via pandoc, to a variety of different
 markup formats).  The TeX reader supports basic LaTeX and AMS extensions, and
 it can parse and apply LaTeX macros.")
     (license license:gpl2+)))
+
+(define-public ghc-texmath-for-pandoc-1
+  (package (inherit ghc-texmath)
+    (version "0.9.4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "texmath/texmath-" version ".tar.gz"))
+              (sha256
+               (base32
+                "129q33m56diiv35kdwfb07838wrg0mm88kxdqxfyl1zvf9nzkqkd"))))
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-pandoc-types" ,ghc-pandoc-types-for-pandoc-1)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-split" ,ghc-split)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-xml" ,ghc-xml)))))
 
 (define-public ghc-regex-pcre-builtin
   (package
@@ -5562,6 +5600,12 @@ back-ends.")
      "This package provides a library to parse and render YAML documents.")
     (license license:bsd-3)))
 
+(define-public ghc-yaml-for-pandoc-1
+  (package (inherit ghc-yaml)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson-for-pandoc-1)
+       ,@(alist-delete "ghc-aeson" (package-inputs ghc-yaml))))))
+
 (define-public ghc-filemanip
   (package
     (name "ghc-filemanip")
@@ -5666,6 +5710,27 @@ TIFF and GIF formats.")
 described in @url{https://www.lua.org/}.")
     (license license:expat)))
 
+(define-public ghc-hslua-for-pandoc-1
+  (package (inherit ghc-hslua)
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "hslua/hslua-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gqp6qhp4v24kzv2j49kgk7bxqzw0w10x0zr0r2j9wkfavqb9wid"))))
+    (inputs
+     `(("lua" ,lua-5.1)
+       ("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hspec-contrib" ,ghc-hspec-contrib)
+       ("ghc-hunit" ,ghc-hunit)
+       ("hspec-discover" ,hspec-discover)))))
+
 (define-public ghc-hslua-module-text
   (package
     (name "ghc-hslua-module-text")
@@ -5755,6 +5820,8 @@ representations of current time.")
        (sha256
         (base32 "0jkca97zyv23yyilp3jydcrzxqhyk27swhzh82llvban5zp8b21y"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-random" ,ghc-random)
        ("ghc-test-framework" ,ghc-test-framework)
@@ -5890,6 +5957,57 @@ supported by that framework can be added.  An optional command-line program is
 provided.  Skylighting is intended to be the successor to highlighting-kate.")
     (license license:gpl2)))
 
+(define-public ghc-skylighting-for-pandoc-1
+  (package (inherit ghc-skylighting)
+    (version "0.1.1.5")
+    (source (origin
+              (method git-fetch)
+              ;; We take the sources from Github, because the tarball on
+              ;; hackage does not include the XML files.
+              (uri (git-reference
+                    (url "https://github.com/jgm/skylighting.git")
+                    (commit version)))
+              (file-name (string-append "ghc-skylighting-" version "-checkout"))
+              (sha256
+               (base32
+                "0z3yv8v2fqqgv6lsf0ff3ld0h2vkg97b2jiry9wn2f1rizwdqmzl"))))
+    (arguments
+     `(#:configure-flags '("-fbootstrap")
+       #:phases
+       (modify-phases %standard-phases
+         ;; After building the skylighting-extract tool we use it to generate
+         ;; syntax source files from the included XML files.  These are then
+         ;; added to the skylighting.cabal file.
+         (add-after 'build 'extract-xml
+           (lambda _
+             (make-file-writable "skylighting.cabal")
+             (apply invoke "./dist/build/skylighting-extract/skylighting-extract"
+                    (find-files "xml" "\\.xml$"))
+             #t))
+         ;; Reconfigure without bootstrap flag
+         (add-after 'extract-xml 'configure-again
+           (lambda* (#:key outputs inputs tests? #:allow-other-keys)
+             ((assoc-ref %standard-phases 'configure)
+              #:outputs outputs
+              #:inputs inputs
+              #:tests? tests?
+              #:configure-flags '("-f-bootstrap"))))
+         (add-after 'configure-again 'build-again
+           (assoc-ref %standard-phases 'build)))))
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson-for-pandoc-1)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-diff" ,ghc-diff)
+       ("ghc-hxt" ,ghc-hxt)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-pretty-show" ,ghc-pretty-show)
+       ("ghc-regex-pcre-builtin" ,ghc-regex-pcre-builtin)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-text" ,ghc-text)
+       ("ghc-utf8-string" ,ghc-utf8-string)))))
+
 (define-public ghc-doctemplates
   (package
     (name "ghc-doctemplates")
@@ -5920,6 +6038,29 @@ provided.  Skylighting is intended to be the successor to highlighting-kate.")
     (description
      "This package provides a simple text templating system used by pandoc.")
     (license license:bsd-3)))
+
+(define-public ghc-doctemplates-for-pandoc-1
+  (package (inherit ghc-doctemplates)
+    (version "0.1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "doctemplates/doctemplates-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0swal6rjya1293mwvl63jch5fx9ghpsil7qs4v7rpansa0izalmp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson-for-pandoc-1)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-text" ,ghc-text)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-scientific" ,ghc-scientific)))))
 
 (define-public ghc-pandoc
   (package
@@ -5996,6 +6137,67 @@ Pandoc extends standard Markdown syntax with footnotes, embedded LaTeX,
 definition lists, tables, and other features.  A compatibility mode is
 provided for those who need a drop-in replacement for Markdown.pl.")
     (license license:gpl2+)))
+
+;; This is the last version of Pandoc 1.x, which is preferred for Rmarkdown.
+(define-public ghc-pandoc-1
+  (package (inherit ghc-pandoc)
+    (version "1.19.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/pandoc/pandoc-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0mim429mpakrcnm50csxyqk3ljcx2l26r5grk6w9isnggwgqrq5v"))))
+    (arguments
+     `(#:configure-flags (list "--allow-newer=skylighting")))
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson-for-pandoc-1)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-cmark" ,ghc-cmark)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-deepseq-generics" ,ghc-deepseq-generics)
+       ("ghc-diff" ,ghc-diff)
+       ("ghc-doctemplates" ,ghc-doctemplates-for-pandoc-1)
+       ("ghc-executable-path" ,ghc-executable-path)
+       ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-filemanip" ,ghc-filemanip)
+       ("ghc-haddock-library" ,ghc-haddock-library)
+       ("ghc-hslua" ,ghc-hslua-for-pandoc-1)
+       ("ghc-http" ,ghc-http)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-client-tls" ,ghc-http-client-tls)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-juicypixels" ,ghc-juicypixels)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-network" ,ghc-network)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-pandoc-types" ,ghc-pandoc-types-for-pandoc-1)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-random" ,ghc-random)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-sha" ,ghc-sha)
+       ("ghc-skylighting" ,ghc-skylighting-for-pandoc-1)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-tagsoup" ,ghc-tagsoup)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-texmath" ,ghc-texmath-for-pandoc-1)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-xml" ,ghc-xml)
+       ("ghc-yaml" ,ghc-yaml-for-pandoc-1)
+       ("ghc-zip-archive" ,ghc-zip-archive)
+       ("ghc-zlib" ,ghc-zlib)))
+    (native-inputs
+     `(("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))))
 
 (define-public ghc-hs-bibutils
   (package
@@ -7358,6 +7560,8 @@ Haskell, using gnuplot for rendering.")
        (sha256
         (base32 "1b6w9xznk42732vpd8ili60k12yq190xnajgga0iwbdpyg424lgg"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=vector")))
     (inputs
      `(("ghc-hashable" ,ghc-hashable)
        ("ghc-primitive" ,ghc-primitive)
@@ -8177,12 +8381,12 @@ Background: There exists a feature space for queues that extends between:
 @itemize
 @item Simple, single-ended, non-concurrent, bounded queues
 
-@item Double-ended, threadsafe, growable queues with important points
-inbetween (such as the queues used for work-stealing).
+@item Double-ended, thread-safe, growable queues with important points
+in between (such as the queues used for work stealing).
 @end itemize
 
 This package includes an interface for Deques that allows the programmer
-to use a single API for all of the above, while using the type-system to
+to use a single API for all of the above, while using the type system to
 select an efficient implementation given the requirements (using type families).
 
 This package also includes a simple reference implementation based on
@@ -8528,6 +8732,8 @@ functions.")
         (base32
          "09xhk42yhxvqmka0iqrv3338asncz8cap3j0ic0ps896f2581b6z"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs `(("ghc-cryptohash-sha1" ,ghc-cryptohash-sha1)
               ("ghc-cryptohash-md5" ,ghc-cryptohash-md5)
               ("ghc-entropy" ,ghc-entropy)

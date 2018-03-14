@@ -36,6 +36,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ragel)
   #:use-module (gnu packages tls)
@@ -278,6 +279,62 @@ transliteration to ASCII, flexible defaults, bulk lookup, lambdas as
 translation data, custom key/scope separator, custom exception handlers, and
 an extensible architecture with a swappable backend.")
     (home-page "https://github.com/svenfuchs/i18n")
+    (license license:expat)))
+
+(define-public ruby-iruby
+  (package
+    (name "ruby-iruby")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "iruby" version))
+       (sha256
+        (base32
+         "1wdf2c0x8y6cya0n3y0p3p7b1sxkb2fdavdn2k58rf4rs37s7rzn"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; TODO: Tests currently fail.
+     ;;
+     ;; Finished in 1.764405s, 1.1335 runs/s, 5.1009 assertions/s.
+     ;;
+     ;;   1) Failure:
+     ;; IntegrationTest#test_interaction [/tmp/guix-build-ruby-iruby-0.3.drv-0/gem/test/integration_test.rb:25]:
+     ;; In [ expected
+     ;;
+     ;; 2 runs, 9 assertions, 1 failures, 0 errors, 0 skips
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-ipython
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/iruby/command.rb"
+               (("version = `")
+                (string-append
+                 "version = `"
+                 (assoc-ref inputs "python-ipython")
+                 "/bin/"))
+               (("Kernel\\.exec\\('")
+                (string-append
+                 "Kernel.exec('"
+                 (assoc-ref inputs "python-ipython")
+                 "/bin/")))
+             #t)))))
+    (inputs
+     `(("python-ipython" ,python-ipython)))
+    (propagated-inputs
+     `(("ruby-bond" ,ruby-bond)
+       ("ruby-data_uri" ,ruby-data_uri)
+       ("ruby-mimemagic" ,ruby-mimemagic)
+       ("ruby-multi-json" ,ruby-multi-json)
+       ("ruby-cztop" ,ruby-cztop)
+       ;; Optional inputs
+       ("ruby-pry" ,ruby-pry)))
+    (synopsis "Ruby kernel for Jupyter/IPython")
+    (description
+     "This package provides a Ruby kernel for Jupyter/IPython frontends (e.g.
+notebook).")
+    (home-page "https://github.com/SciRuby/iruby")
     (license license:expat)))
 
 ;; RSpec is the dominant testing library for Ruby projects.  Even RSpec's
@@ -634,6 +691,84 @@ read by a continuous integration system that understands Ant's JUnit report
 format.")
     (home-page "https://github.com/nicksieger/ci_reporter")
     (license license:expat)))
+
+(define-public ruby-czmq-ffi-gen
+  (package
+    (name "ruby-czmq-ffi-gen")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "czmq-ffi-gen" version))
+       (sha256
+        (base32
+         "1yf719dmf4mwks1hqdsy6i5kzfvlsha69sfnhb2fr2cgk2snbys3"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f ;; Tests are not included in the release on rubygems.org
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-lib_dirs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/czmq-ffi-gen/czmq/ffi.rb"
+               (("lib\\_dirs = \\[.*\\]")
+                (string-append "lib_dirs = ['"
+                               (assoc-ref inputs "czmq") "/lib"
+                               "']")))
+             (substitute* "lib/czmq-ffi-gen/libzmq.rb"
+               (("lib\\_dirs = \\[.*\\]")
+                (string-append "lib_dirs = ['"
+                               (assoc-ref inputs "zeromq") "/lib"
+                               "']"))))))))
+    (inputs
+     `(("zeromq" ,zeromq)
+       ("czmq" ,czmq)))
+    (propagated-inputs `(("ruby-ffi" ,ruby-ffi)))
+    (synopsis "Low-level Ruby bindings for CZMQ (generated using zproject)")
+    (description
+     "These Ruby bindings are not intended to be directly used, but rather
+used by higher level bindings like those provided by CZTop.")
+    (home-page
+     "https://github.com/paddor/czmq-ffi-gen")
+    (license license:isc)))
+
+(define-public ruby-cztop
+  (package
+    (name "ruby-cztop")
+    (version "0.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "cztop" version))
+       (sha256
+        (base32
+         "0yqbpaiw5d7f271d73lyrsh8xpx6n4zi6xqwfgi00dacxrq3s3fa"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-lib_paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/cztop/poller/zmq.rb"
+               (("lib\\_paths = \\[.*\\]")
+                (string-append "lib_paths = ['"
+                               (assoc-ref inputs "zeromq") "/lib"
+                               "']"))))))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (inputs
+     `(("zeromq" ,zeromq)))
+    (propagated-inputs
+     `(("ruby-czmq-ffi-gen" ,ruby-czmq-ffi-gen)))
+    (synopsis "CZMQ Ruby bindings")
+    (description
+     "CZMQ Ruby bindings, based on the generated low-level FFI bindings of
+CZMQ.  The focus of of CZTop is on being easy to use and providing first class
+support for security mechanisms.")
+    (home-page "https://github.com/paddor/cztop")
+    (license license:isc)))
 
 (define-public ruby-saikuro-treemap
   (package
@@ -1094,6 +1229,30 @@ features.")
     (home-page "https://github.com/chneukirchen/bacon")
     (license license:expat)))
 
+(define-public ruby-bacon-bits
+  (package
+    (name "ruby-bacon-bits")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bacon-bits" version))
+       (sha256
+        (base32
+         "1ghpj8ja94lhi8rgi872hqk4fd2amz2k7g9znd64z5dj7v6l0dmx"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests
+     '(#:tests? #f))
+    (propagated-inputs `(("ruby-bacon" ,ruby-bacon)))
+    (synopsis "Extensions to Bacon, for disabling tests, before and after
+blocks and more")
+    (description
+     "This extends the bacon testing framework with useful extensions to
+disable tests, have before and after blocks that run once and more.")
+    (home-page "https://github.com/cldwalker/bacon-bits")
+    (license license:expat)))
+
 (define-public ruby-connection-pool
   (package
     (name "ruby-connection-pool")
@@ -1337,6 +1496,34 @@ as a base class when writing classes that depend upon
     (home-page "https://github.com/masover/blankslate")
     (license license:expat)))
 
+(define-public ruby-bond
+  (package
+    (name "ruby-bond")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bond" version))
+       (sha256
+        (base32
+         "1r19ifc4skyl2gxnifrxa5jvbbay9fb2in79ppgv02b6n4bhsw90"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-bacon" ,ruby-bacon)
+       ("ruby-bacon-bits" ,ruby-bacon-bits)
+       ("ruby-mocha-on-bacon" ,ruby-mocha-on-bacon)))
+    (synopsis "Bond can provide custom autocompletion for arguments, methods
+and more")
+    (description
+     "Bond can autocomplete argument(s) to methods, uniquely completing per
+module, per method and per argument.  Bond provides a configuration system and
+a DSL for creating custom completions and completion rules.  Bond can also
+load completions that ship with gems.  Bond is able to offer more than irb's
+completion since it uses the full line of input when completing as opposed to
+irb's last-word approach.")
+    (home-page "http://tagaholic.me/bond/")
+    (license license:expat)))
+
 (define-public ruby-instantiator
   (package
     (name "ruby-instantiator")
@@ -1500,6 +1687,30 @@ conversion to (X)HTML.")
      "Mocha is a mocking and stubbing library with JMock/SchMock syntax, which
 allows mocking and stubbing of methods on real (non-mock) classes.")
     (home-page "http://gofreerange.com/mocha/docs")
+    (license license:expat)))
+
+(define-public ruby-mocha-on-bacon
+  (package
+    (name "ruby-mocha-on-bacon")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mocha-on-bacon" version))
+       (sha256
+        (base32
+         "1h49b33rq889hn8x3wp9byczl91va16jh1w4d2wyy4yj23icdrcp"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; rubygems.org release missing tests
+     '(#:tests? #f))
+    (propagated-inputs `(("ruby-mocha" ,ruby-mocha)))
+    (synopsis "Mocha adapter for Bacon")
+    (description
+     "This package provides a Mocha adapter for Bacon, allowing you to use the
+Mocha stubbing and mocking library with Bacon, a small RSpec clone.")
+    (home-page
+     "https://github.com/alloy/mocha-on-bacon")
     (license license:expat)))
 
 (define-public ruby-net-ssh
@@ -1808,6 +2019,26 @@ for specs that share expensive database setup code.")
     (description "Daemons provides a way to wrap existing Ruby scripts to be
 run as a daemon and to be controlled by simple start/stop/restart commands.")
     (home-page "https://github.com/thuehlinger/daemons")
+    (license license:expat)))
+
+(define-public ruby-data_uri
+  (package
+    (name "ruby-data_uri")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "data_uri" version))
+       (sha256
+        (base32
+         "0fzkxgdxrlbfl4537y3n9mjxbm28kir639gcw3x47ffchwsgdcky"))))
+    (build-system ruby-build-system)
+    (synopsis "URI class for parsing data URIs")
+    (description
+     "Data @acronym{URI, universal resource idenfitier}s allow resources to be
+embedded inside a URI.  The URI::Data class provides support for parsing these
+URIs using the normal URI.parse method.")
+    (home-page "https://github.com/dball/data_uri")
     (license license:expat)))
 
 (define-public ruby-git
@@ -3326,6 +3557,33 @@ colorful and informative.  TURN displays each test on a separate line with
 failures being displayed immediately instead of at the end of the tests.  Note
 that TURN is no longer being maintained.")
     (home-page "http://rubygems.org/gems/turn")
+    (license license:expat)))
+
+(define-public ruby-mimemagic
+  (package
+    (name "ruby-mimemagic")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mimemagic" version))
+       (sha256
+        (base32
+         "00ibc1mhvdfyfyl103xwb45621nwyqxf124cni5hyfhag0fn1c3q"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; This phase breaks the tests, as it patches some of the test data.
+         (delete 'patch-source-shebangs))))
+    (native-inputs
+     `(("ruby-bacon" ,ruby-bacon)))
+    (synopsis "Ruby library for MIME detection by extension or content")
+    (description
+     "@acronym{MIME, Multipurpose Internet Mail Extensions} detection by
+extension or content, using the freedesktop.org.xml shared-mime-info
+database.")
+    (home-page "https://github.com/minad/mimemagic")
     (license license:expat)))
 
 (define-public ruby-mime-types-data

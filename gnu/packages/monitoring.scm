@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +41,7 @@
 (define-public nagios
   (package
     (name "nagios")
-    (version "4.2.4")
+    (version "4.3.4")
     ;; XXX: Nagios 4.2.x and later bundle a copy of AngularJS.
     (source (origin
               (method url-fetch)
@@ -49,7 +50,7 @@
                     version "/nagios-" version ".tar.gz"))
               (sha256
                (base32
-                "0w0blbwiw0ps04b7gkyyk89qkgwsxh6gydhmggbm1kl3ar3mq1dh"))
+                "1wa4m952sb23dqi5w759adimsp21bkhp598rpq9dnhz3v497h2y9"))
               (modules '((guix build utils)))
               (snippet
                ;; Ensure reproducibility.

@@ -26,9 +26,13 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
@@ -47,11 +51,13 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages scanner)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vulkan)
@@ -212,34 +218,83 @@ integrate Windows applications into your desktop.")
     (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
 
+(define-public wine-staging-patchset-data
+  (package
+   (name "wine-staging-patchset-data")
+   (version "3.3")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/wine-staging/wine-staging/archive/v"
+                         version ".zip"))
+     (file-name (string-append name "-" version ".zip"))
+     (sha256
+      (base32
+       "16l28vrhqn27kipqwms622jz1prfky8qkjb8pj747k3qjnm2k1g9"))))
+   (build-system trivial-build-system)
+   (native-inputs
+    `(("bash" ,bash)
+      ("coreutils" ,coreutils)
+      ("unzip" ,unzip)))
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder
+      (begin
+        (use-modules (guix build utils))
+        (let* ((out (assoc-ref %outputs "out"))
+               (wine-staging (string-append out "/share/wine-staging"))
+               (source (assoc-ref %build-inputs "source"))
+               (sh (string-append (assoc-ref %build-inputs "bash") "/bin/bash"))
+               (env (string-append (assoc-ref %build-inputs "coreutils") "/bin/env"))
+               (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+          (copy-file source (string-append ,name "-" ,version ".zip"))
+          (invoke unzip (string-append ,name "-" ,version ".zip"))
+          (substitute* (string-append "wine-staging-" ,version
+                                      "/patches/patchinstall.sh") (("/bin/sh") sh))
+          (substitute* (string-append "wine-staging-" ,version
+                                      "/patches/gitapply.sh") (("/usr/bin/env") env))
+          (mkdir-p wine-staging)
+          (copy-recursively (string-append "wine-staging-" ,version)
+                            wine-staging)))))
+   (home-page "https://github.com/wine-staging")
+   (synopsis "Patchset for Wine")
+   (description
+    "wine-staging-patchset-data contains the patchset to build Wine-Staging.")
+   (license license:lgpl2.1+)))
+
 (define-public wine-staging
   (package
     (inherit wine)
     (name "wine-staging")
-    (version "2.21")
+    (version (package-version wine-staging-patchset-data))
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/wine-compholio/wine-patched/archive/"
-                    "staging-" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+                    "https://dl.winehq.org/wine/source/3.x/wine-" version
+                    ".tar.xz"))
+              (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1pjaxj7h3q6y356np908fvsx0bf7yx5crqvgl4hza6gfssdmsr5r"))))
-    (inputs `(("gtk+", gtk+)
+                "0cx31jsll7mxd9r7v0vpahajqwb6da6cpwybv06l5ydkgfrbv505"))))
+    (inputs `(("autoconf" ,autoconf) ; for autoreconf
+              ("gtk+", gtk+)
               ("libva", libva)
+              ("python" ,python)
+              ("sdl2" ,sdl2)
+              ("util-linux" ,util-linux) ; for hexdump
               ("vulkan-icd-loader" ,vulkan-icd-loader)
+              ("wine-staging-patchset-data" ,wine-staging-patchset-data)
               ,@(package-inputs wine)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'hardcode-libvulkan-path
+         (add-before 'configure 'patch-source-wine-staging
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((libvulkan (string-append (assoc-ref %build-inputs
-                               "vulkan-icd-loader") "/lib/libvulkan.so")))
-               ;; Hard-code the path to libvulkan.so.
-               (substitute* "dlls/vulkan/vulkan_thunks.c" (("libvulkan.so")
-                            libvulkan))
+             (let* ((source (assoc-ref %build-inputs "source"))
+                    (script (string-append (assoc-ref %build-inputs
+                            "wine-staging-patchset-data")
+                            "/share/wine-staging/patches/patchinstall.sh")))
+               (invoke script (string-append "DESTDIR=" ".") "--all")
                #t)))
          (add-after 'configure 'patch-dlopen-paths
            ;; Hardcode dlopened sonames to absolute paths.
@@ -261,7 +316,7 @@ the development branch yet.  The idea of Wine-Staging is to provide
 experimental features faster to end users and to give developers the
 possibility to discuss and improve their patches before they are
 integrated into the main branch.")
-    (home-page "https://wine-staging.com")
+    (home-page "https://github.com/wine-staging")
     ;; In addition to the regular Wine license (lgpl2.1+), Wine-Staging
     ;; provides Liberation and WenQuanYi Micro Hei fonts.  Those use
     ;; different licenses.  In particular, the latter is licensed under
@@ -281,13 +336,13 @@ integrated into the main branch.")
              (string-append "libdir=" %output "/lib/wine64"))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'hardcore-libvulkan-path
+         (add-before 'configure 'patch-source-wine-staging
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((libvulkan (string-append (assoc-ref %build-inputs
-                               "vulkan-icd-loader") "/lib/libvulkan.so")))
-               ;; Hard-code the path to libvulkan.so.
-               (substitute* "dlls/vulkan/vulkan_thunks.c" (("libvulkan.so")
-                            libvulkan))
+             (let* ((source (assoc-ref %build-inputs "source"))
+                    (script (string-append (assoc-ref %build-inputs
+                            "wine-staging-patchset-data")
+                            "/share/wine-staging/patches/patchinstall.sh")))
+               (invoke script (string-append "DESTDIR=" ".") "--all")
                #t)))
          (add-after 'install 'copy-wine32-binaries
            (lambda* (#:key outputs #:allow-other-keys)

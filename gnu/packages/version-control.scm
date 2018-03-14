@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 André <eu@euandre.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
@@ -52,6 +52,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cook)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages docbook)
@@ -472,7 +473,7 @@ to lock down your entire repository.")
 (define-public git-remote-gcrypt
   (package
    (name "git-remote-gcrypt")
-   (version "1.0.1")
+   (version "1.0.3")
    (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -481,7 +482,7 @@ to lock down your entire repository.")
              (file-name (string-append name "-" version "-checkout"))
              (sha256
               (base32
-               "0znrx77vpm4a8l7yiybsxk5vrawijqqfxmp1p2yhaaw8cbgrj7az"))))
+               "1vay3204729c7wajgn3nxf0s0hzwpdrw14pl6kd8w2ss25gvw2k1"))))
    (build-system trivial-build-system)
    (arguments
     `(#:modules ((guix build utils))
@@ -633,6 +634,107 @@ default) of the repository.")
   (package-with-python2
    (strip-python2-variant python-ghp-import)))
 
+(define-public python-gitdb
+  (package
+    (name "python-gitdb")
+    (version "2.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "gitdb2" version))
+              (sha256
+               (base32
+                "02azg62mr99b7cllyjrly77np3vw32y8nrxpa2xjapiyaga2j3mn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'create-test-repository
+                    (lambda _
+                      (mkdir "/tmp/testrepo")
+                      ;; Some tests require a git repository, so create one.
+                      (with-directory-excursion "/tmp/testrepo"
+                        (do ((filecount 1 (1+ filecount)))
+                            ((> filecount 1000))
+                          (call-with-output-file (string-append
+                                                  "file" (number->string filecount))
+                            (lambda (port)
+                              (format port "~a" filecount))))
+                        (and
+                         (invoke "git" "init")
+                         (invoke "git" "config" "user.name" "Total Git")
+                         (invoke "git" "config" "user.email" "git@localhost")
+                         (invoke "git" "add" "-A")
+                         (invoke "git" "commit" "-q" "-m" "dummy commit")))
+
+                      ;; The repository checkout must be a "bare" clone.
+                      (invoke "git" "clone" "--bare" "/tmp/testrepo"
+                              "/tmp/testrepo.git")))
+                  (replace 'check
+                    (lambda _
+                      (setenv "GITDB_TEST_GIT_REPO_BASE" "/tmp/testrepo.git")
+                      ;; Skip tests that must be run from the gitdb repository.
+                      (setenv "TRAVIS" "1")
+                      (invoke "nosetests" "-v"))))))
+    (propagated-inputs
+     `(("python-smmap2" ,python-smmap2)))
+    (native-inputs
+     `(("git" ,git)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/gitpython-developers/gitdb")
+    (synopsis "Python implementation of the Git object database")
+    (description
+     "GitDB allows you to access @dfn{bare} Git repositories for reading and
+writing.  It aims at allowing full access to loose objects as well as packs
+with performance and scalability in mind.  It operates exclusively on streams,
+allowing to handle large objects with a small memory footprint.")
+    (license license:bsd-3)))
+
+(define-public python2-gitdb
+  (package-with-python2 python-gitdb))
+
+(define-public python-gitpython
+  (package
+    (name "python-gitpython")
+    (version "2.1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "GitPython" version))
+              (sha256
+               (base32
+                "1sbn018mn3y2r58ix5z12na1s02ccprhckb88yq3bdddvqjvqqdd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;XXX: Tests can only be run within the GitPython repository.
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'embed-git-reference
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "git/cmd.py"
+                        (("git_exec_name = \"git\"")
+                         (string-append "git_exec_name = \""
+                                        (assoc-ref inputs "git")
+                                        "/bin/git\"")))
+                      #t)))))
+    (inputs
+     `(("git" ,git)))
+    (propagated-inputs
+     `(("python-gitdb" ,python-gitdb)))
+    (native-inputs
+     `(("python-ddt" ,python-ddt)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/gitpython-developers/GitPython")
+    (synopsis "Python library for interacting with Git repositories")
+    (description
+     "GitPython is a python library used to interact with Git repositories,
+high-level like git-porcelain, or low-level like git-plumbing.
+
+It provides abstractions of Git objects for easy access of repository data,
+and additionally allows you to access the Git repository more directly using
+either a pure Python implementation, or the faster, but more resource intensive
+@command{git} command implementation.")
+    (license license:bsd-3)))
+
+(define-public python2-gitpython
+  (package-with-python2 python-gitpython))
+
 (define-public shflags
   (package
     (name "shflags")
@@ -683,6 +785,7 @@ will work.")
               (uri (git-reference
                     (url "https://github.com/nvie/gitflow/")
                     (commit "15aab26490facf285acef56cb5d61025eacb3a69")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "01fs97q76fdfnvmrh2cyjhywcs3pykf1dg58sy0frflnsdzs6prx"))))
@@ -800,6 +903,7 @@ though this can be overridden.")
                       ;; are interested in just one for this package.
                       (url "https://github.com/dustin/bindir")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1dcq0y16yznbv4k9h8gg90kv1gkn8r8dbvl4m2rpfd7q5nqhn617"))))
@@ -826,7 +930,7 @@ also walk each side of a merge and test those changes individually.")
 (define-public gitolite
   (package
     (name "gitolite")
-    (version "3.6.6")
+    (version "3.6.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -835,7 +939,7 @@ also walk each side of a merge and test those changes individually.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07q33f86694s0x3k9lcmy1vzfw9appdrlmmb9j3bz4qkrxqdnwb9"))))
+                "1idxipg0df80bhjcxgwxs3lllqnkvhwpinmfv1xvg1l98fxiapgp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -856,7 +960,8 @@ also walk each side of a merge and test those changes individually.")
                         ;; This works because gitolite-shell is in the PATH.
                         (substitute* "src/triggers/post-compile/ssh-authkeys"
                           (("\\$glshell \\$user")
-                           "gitolite-shell $user")))))
+                           "gitolite-shell $user"))
+                        #t)))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((output (assoc-ref outputs "out"))
@@ -864,7 +969,7 @@ also walk each side of a merge and test those changes individually.")
                              (bindir (string-append output "/bin")))
                         (mkdir-p sharedir)
                         (mkdir-p bindir)
-                        (system* "./install" "-to" sharedir)
+                        (invoke "./install" "-to" sharedir)
                         ;; Create symlinks for executable scripts in /bin.
                         (for-each (lambda (script)
                                     (symlink (string-append sharedir "/" script)
@@ -1389,7 +1494,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.3.0")
+    (version "2.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1397,7 +1502,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                     version "/tig-" version ".tar.gz"))
               (sha256
                (base32
-                "1vf02snz8qiiqiyqss1z63rzzmwbrc9agcgh21jdq13rja306vv8"))))
+                "1skbhhj1narsnsff1azdylcy6xghxb18mzqysmipcyyvlv2i17fk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -1410,7 +1515,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
        (modify-phases %standard-phases
          (add-after 'install 'install-doc
            (lambda _
-             (zero? (system* "make" "install-doc")))))
+             (invoke "make" "install-doc"))))
        #:tests? #f)) ; tests require access to /dev/tty
     ;; #:test-target "test"))
     (home-page "https://jonas.github.io/tig/")
@@ -1536,14 +1641,15 @@ repository\" with git-annex.")
        #:phases (modify-phases %standard-phases
                   (replace 'configure
                     (lambda* (#:key outputs (configure-flags '())
-                                    #:allow-other-keys)
+                              #:allow-other-keys)
                       ;; The 'configure' script is not an autoconf script and
                       ;; chokes on unrecognized options.
-                      (zero? (apply system*
-                                    "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out"))
-                                    configure-flags))))
+                      (apply invoke
+                             "./configure"
+                             (string-append "--prefix="
+                                            (assoc-ref outputs "out"))
+                             configure-flags)
+                      #t))
                   (add-before 'check 'test-setup
                     (lambda _
                       (setenv "USER" "guix")
@@ -1763,7 +1869,7 @@ network protocols, and core version control algorithms.")
 (define-public gource
   (package
     (name "gource")
-    (version "0.47")
+    (version "0.48")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1771,7 +1877,7 @@ network protocols, and core version control algorithms.")
                     "/gource-" version "/gource-" version ".tar.gz"))
               (sha256
                (base32
-                "1llqwdnfa1pff8bxk27qsqff1fcg0a9kfdib0rn7p28vl21n1cgj"))))
+                "04qxcm05qiyr9rg2kv6abfy7kkzqr8ziw4iyp1d14lniv93m61dp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

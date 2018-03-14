@@ -200,6 +200,7 @@ contains the graphical user interface for synfig.")
                 (uri (git-reference
                       (url "https://github.com/LostMoho/Papagayo.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1p9gffjhbph34jhrvgpg93yha75bf88vkvlnk06x1r9601ph5321"))

@@ -8,11 +8,11 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
@@ -259,14 +259,14 @@ routines that have been extracted from the V8 JavaScript engine.")
 (define-public dionysus
   (package
     (name "dionysus")
-    (version "1.3.0")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/dionysus/dionysus-" version
-                                  ".tar.gz"))
+                                  ".tar.xz"))
               (sha256
                (base32
-                "1aqnvw6z33bzqgd1ga571pnx6vq2zrkckm1cz91grv45h4jr9vgs"))))
+                "194pzs1mlsj4ww6v37qq3961h5hckm5h805cv0r14xj3g9wfx2sk"))))
     (build-system gnu-build-system)
     (inputs `(("tcl" ,tcl)))                      ;for 'tclsh'
     (synopsis "Local search for universal constants and scientific values")
@@ -418,18 +418,26 @@ computing convex hulls.")
 (define-public arpack-ng
   (package
     (name "arpack-ng")
-    (version "3.2.0")
+    (version "3.5.0")
+    (home-page "https://github.com/opencollab/arpack-ng")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/opencollab/arpack-ng/archive/"
-                           version ".tar.gz"))
+       (uri (string-append home-page "/archive/" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fwch6vipms1ispzg2djvbzv5wag36f1dmmr3xs3mbp6imfyhvff"))))
+         "0f8jx3fifmj9qdp289zr7r651y1q48k1jya859rqxq62mvis7xsh"))))
     (build-system gnu-build-system)
-    (home-page "https://github.com/opencollab/arpack-ng")
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'autoreconf
+                    (lambda _
+                      (invoke "autoreconf" "-vfi"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (inputs
      `(("lapack" ,lapack)
        ("fortran" ,gfortran)))
@@ -439,6 +447,21 @@ computing convex hulls.")
 large scale eigenvalue problems.")
     (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
+
+(define-public arpack-ng-3.3.0
+  (package
+    (inherit arpack-ng)
+    (version "3.3.0")
+    (name (package-name arpack-ng))
+    (home-page (package-home-page arpack-ng))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append home-page "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cz53wqzcf6czmcpfb3vb61xi0rn5bwhinczl65hpmbrglg82ndd"))))))
 
 (define-public arpack-ng-openmpi
   (package (inherit arpack-ng)
@@ -724,7 +747,11 @@ incompatible with HDF5.")
              ;; unnecessary store references to those compilers:
              (substitute* "src/libhdf5.settings"
               (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
-               (string-append prefix (string-take hash 10) "...")))
+               (string-append prefix (string-take hash 10) "..."))
+              ;; Don't record the build-time kernel version to make the
+              ;; settings file reproducible.
+              (("Uname information:.*")
+               "Uname information: Linux\n"))
              #t))
          (add-after 'install 'patch-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -2489,7 +2516,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "17.10.1")
+    (version "18.02.0")
     (source
      (origin
        (method url-fetch)
@@ -2498,12 +2525,12 @@ point numbers.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0qlzc31cqkwpfgrb9cif9bcnkj3rq487plg4rns7jxv6pq4609v1"))))
-    (build-system gnu-build-system)
+         "03kr2rgfp4hcf3is8m8d8f9hj660c3xgrc50vrrfpixx4syh6wvj"))
+       (patches
+        (search-patches "wxmaxima-do-not-use-old-gnuplot-parameters.patch"))))
+    (build-system cmake-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)))
+     `(("gettext" ,gettext-minimal)))
     (inputs
      `(("wxwidgets" ,wxwidgets)
        ("maxima" ,maxima)
@@ -2512,11 +2539,9 @@ point numbers.")
        ("gtk+" ,gtk+)
        ("shared-mime-info" ,shared-mime-info)))
     (arguments
-     `(#:phases
+     `(#:tests? #f ; no check target
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             (zero? (system* "sh" "bootstrap"))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")

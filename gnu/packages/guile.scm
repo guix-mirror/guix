@@ -282,6 +282,21 @@ without requiring the source code to be rewritten.")
                                                ;  when heavily loaded)
     (replacement #f)))
 
+(define-public guile-2.2.2
+  ;; Keep it so that, when 'guix' runs on 2.2.2, 'guix pull' compiles objects
+  ;; with 2.2.2, thereby avoiding the ABI incompatibility issues described in
+  ;; <https://bugs.gnu.org/29570>.
+  (package
+    (inherit guile-2.2)
+    (version "2.2.2")
+    (source (origin
+              (inherit (package-source guile-2.2))
+              (uri (string-append "mirror://gnu/guile/guile-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "1azm25zcmxif0skxfrp11d2wc89nrzpjaann9yxdw6pvjxhs948w"))))))
+
 (define-public guile-next
   (deprecated-package "guile-next" guile-2.2))
 
@@ -752,7 +767,7 @@ format is also supported.")
                       (symlink "README.org" "README")
                       (zero? (system* "autoreconf" "-fi")))))))
     (native-inputs
-     `(("autoconf" ,(autoconf-wrapper))
+     `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
        ("texinfo" ,texinfo)
        ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
@@ -1242,14 +1257,14 @@ Guile's foreign function interface.")
 (define-public haunt
   (package
     (name "haunt")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/haunt/haunt-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1fpaf1vm6s7j13fs35barjh5yajcc2rc3pi8r7278wpgp4i2vs3w"))))
+                "0nm00krmqq4zmqi2irh35dbf2cn6al58s620hijmhfvhgvdqznlp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match) (ice-9 ftw)
@@ -1266,12 +1281,15 @@ Guile's foreign function interface.")
                                     out "/share/guile/site")))
                         (match (scandir site)
                           (("." ".." version)
-                           (let ((modules (string-append site "/" version)))
+                           (let ((modules (string-append site "/" version))
+                                 (compiled-modules (string-append
+                                                    out "/lib/guile/" version
+                                                    "/site-ccache")))
                              (wrap-program (string-append bin "/haunt")
                                `("GUILE_LOAD_PATH" ":" prefix
                                  (,modules))
                                `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                                 (,modules)))
+                                 (,compiled-modules)))
                              #t)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1834,7 +1852,7 @@ dictionary and suggesting spelling corrections.")
                (string-append "--libdir=" (assoc-ref %outputs "out")
                               "/lib/bash"))))
       (native-inputs `(("pkg-config" ,pkg-config)
-                       ("autoconf" ,(autoconf-wrapper))
+                       ("autoconf" ,autoconf-wrapper)
                        ("automake" ,automake)
                        ("libtool" ,libtool)
                        ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
@@ -1982,35 +2000,30 @@ manipulate repositories of the Git version control system.")
   (package-for-guile-2.0 guile-git))
 
 (define-public guile-syntax-highlight
-  (let ((commit "a047675e66861b647426372aa2ba7820f749616d")
-        (revision "0"))
-    (package
-      (name "guile-syntax-highlight")
-      (version (string-append "0.0." revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "git://dthompson.us/guile-syntax-highlight.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1zjr6sg3n7xbdsliy45i39dqanxvcms58ayx36wxrz72zpq58vq3"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("guile" ,guile-2.2)))
-      (synopsis "General-purpose syntax highlighter for GNU Guile")
-      (description "Guile-syntax-highlight is a general-purpose syntax
+  (package
+    (name "guile-syntax-highlight")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.dthompson.us/"
+                                  "guile-syntax-highlight/"
+                                  "guile-syntax-highlight-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1p771kq15x83483m23bhah1sz6vkalg3drm7x279f4j1cxligkzi"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (synopsis "General-purpose syntax highlighter for GNU Guile")
+    (description "Guile-syntax-highlight is a general-purpose syntax
 highlighting library for GNU Guile.  It can parse code written in various
 programming languages into a simple s-expression that can be converted to
 HTML (via SXML) or any other format for rendering.")
-      (home-page "http://dthompson.us/software/guile-syntax-highlight")
-      (license license:lgpl3+))))
+    (home-page "http://dthompson.us/projects/guile-syntax-highlight.html")
+    (license license:lgpl3+)))
 
 (define-public guile-sjson
   (package

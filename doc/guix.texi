@@ -24,7 +24,7 @@ Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017 Chris Marusich@*
-Copyright @copyright{} 2016, 2017 Efraim Flashner@*
+Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 ng0@*
 Copyright @copyright{} 2016, 2017 Jan Nieuwenhuizen@*
@@ -45,7 +45,9 @@ Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
 Copyright @copyright{} 2017, 2018 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
-Copyright @copyright{} 2018 Rutger Helling
+Copyright @copyright{} 2018 Rutger Helling@*
+Copyright @copyright{} 2018 Oleg Pykhalov@*
+Copyright @copyright{} 2018 Mike Gerwitz
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -441,7 +443,8 @@ and rerun the @code{gpg --verify} command.
 @c end authentication part
 
 @item
-As @code{root}, run:
+Now, you need to become the @code{root} user.  Depending on your distribution,
+you may have to run @code{su -} or @code{sudo -i}.  As @code{root}, run:
 
 @example
 # cd /tmp
@@ -601,7 +604,7 @@ in the Guix source tree for additional details.
 GNU Guix depends on the following packages:
 
 @itemize
-@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.9 or
+@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.13 or
 later, including 2.2.x;
 @item @url{http://gnupg.org/, GNU libgcrypt};
 @item
@@ -1570,8 +1573,10 @@ full name of a font using XLFD (X Logical Font Description), like this:
 To be able to use such full names for the TrueType fonts installed in
 your Guix profile, you need to extend the font path of the X server:
 
+@c Note: 'xset' does not accept symlinks so the trick below arranges to
+@c get at the real directory.  See <https://bugs.gnu.org/30655>.
 @example
-xset +fp ~/.guix-profile/share/fonts/truetype
+xset +fp $(dirname $(readlink -f ~/.guix-profile/share/fonts/truetype/fonts.dir))
 @end example
 
 @cindex @code{xlsfonts}
@@ -7284,16 +7289,58 @@ Attempt to build for @var{system}---e.g., @code{i686-linux}.
 @cindex container
 Run @var{command} within an isolated container.  The current working
 directory outside the container is mapped inside the container.
-Additionally, a dummy home directory is created that matches the current
-user's home directory, and @file{/etc/passwd} is configured accordingly.
-The spawned process runs as the current user outside the container, but
-has root privileges in the context of the container.
+Additionally, unless overridden with @code{--user}, a dummy home
+directory is created that matches the current user's home directory, and
+@file{/etc/passwd} is configured accordingly.  The spawned process runs
+as the current user outside the container, but has root privileges in
+the context of the container.
 
 @item --network
 @itemx -N
 For containers, share the network namespace with the host system.
 Containers created without this flag only have access to the loopback
 device.
+
+@item --link-profile
+@itemx -P
+For containers, link the environment profile to
+@file{~/.guix-profile} within the container.  This is equivalent to
+running the command @command{ln -s $GUIX_ENVIRONMENT ~/.guix-profile}
+within the container.  Linking will fail and abort the environment if
+the directory already exists, which will certainly be the case if
+@command{guix environment} was invoked in the user's home directory.
+
+Certain packages are configured to look in
+@code{~/.guix-profile} for configuration files and data;@footnote{For
+example, the @code{fontconfig} package inspects
+@file{~/.guix-profile/share/fonts} for additional fonts.}
+@code{--link-profile} allows these programs to behave as expected within
+the environment.
+
+@item --user=@var{user}
+@itemx -u @var{user}
+For containers, use the username @var{user} in place of the current
+user.  The generated @file{/etc/passwd} entry within the container will
+contain the name @var{user}; the home directory will be
+@file{/home/USER}; and no user GECOS data will be copied.  @var{user}
+need not exist on the system.
+
+Additionally, any shared or exposed path (see @code{--share} and
+@code{--expose} respectively) whose target is within the current user's
+home directory will be remapped relative to @file{/home/USER}; this
+includes the automatic mapping of the current working directory.
+
+@example
+# will expose paths as /home/foo/wd, /home/foo/test, and /home/foo/target
+cd $HOME/wd
+guix environment --container --user=foo \
+     --expose=$HOME/test \
+     --expose=/tmp/target=$HOME/target
+@end example
+
+While this will limit the leaking of user identity through home paths
+and each of the user fields, this is only one useful component of a
+broader privacy/anonymity solution---not one in and of itself.
 
 @item --expose=@var{source}[=@var{target}]
 For containers, expose the file system @var{source} from the host system
@@ -8845,11 +8892,16 @@ the command-line of the kernel---e.g., @code{("console=ttyS0")}.
 @item @code{bootloader}
 The system bootloader configuration object.  @xref{Bootloader Configuration}.
 
-@item @code{initrd} (default: @code{base-initrd})
+@item @code{initrd-modules} (default: @code{%base-initrd-modules})
 @cindex initrd
 @cindex initial RAM disk
-A two-argument monadic procedure that returns an initial RAM disk for
-the Linux kernel.  @xref{Initial RAM Disk}.
+The list of Linux kernel modules that need to be available in the
+initial RAM disk.  @xref{Initial RAM Disk}.
+
+@item @code{initrd} (default: @code{base-initrd})
+A monadic procedure that returns an initial RAM disk for the Linux
+kernel.  This field is provided to support low-level customization and
+should rarely be needed for casual use.  @xref{Initial RAM Disk}.
 
 @item @code{firmware} (default: @var{%base-firmware})
 @cindex firmware
@@ -10717,6 +10769,59 @@ make an initial adjustment of more than 1,000 seconds.
 @defvr {Scheme Variable} %ntp-servers
 List of host names used as the default NTP servers.
 @end defvr
+
+@cindex OpenNTPD
+@deffn {Scheme Procedure} openntpd-service-type
+Run the @command{ntpd}, the Network Time Protocol (NTP) daemon, as implemented
+by @uref{http://www.openntpd.org, OpenNTPD}.  The daemon will keep the system
+clock synchronized with that of the given servers.
+
+@example
+(service
+ openntpd-service-type
+ (openntpd-configuration
+  (listen-on '("127.0.0.1" "::1"))
+  (sensor '("udcf0 correction 70000"))
+  (constraint-from '("www.gnu.org"))
+  (constraints-from '("https://www.google.com/"))
+  (allow-large-adjustment? #t)))
+
+@end example
+@end deffn
+
+@deftp {Data Type} openntpd-configuration
+@table @asis
+@item @code{openntpd} (default: @code{(file-append openntpd "/sbin/ntpd")})
+The openntpd executable to use.
+@item @code{listen-on} (default: @code{'("127.0.0.1" "::1")})
+A list of local IP addresses or hostnames the ntpd daemon should listen on.
+@item @code{query-from} (default: @code{'()})
+A list of local IP address the ntpd daemon should use for outgoing queries.
+@item @code{sensor} (default: @code{'()})
+Specify a list of timedelta sensor devices ntpd should use.  @code{ntpd}
+will listen to each sensor that acutally exists and ignore non-existant ones.
+See @uref{https://man.openbsd.org/ntpd.conf, upstream documentation} for more
+information.
+@item @code{server} (default: @var{%ntp-servers})
+Specify a list of IP addresses or hostnames of NTP servers to synchronize to.
+@item @code{servers} (default: @code{'()})
+Specify a list of IP addresses or hostnames of NTP pools to synchronize to.
+@item @code{constraint-from} (default: @code{'()})
+@code{ntpd} can be configured to query the ‘Date’ from trusted HTTPS servers via TLS.
+This time information is not used for precision but acts as an authenticated
+constraint, thereby reducing the impact of unauthenticated NTP
+man-in-the-middle attacks.
+Specify a list of URLs, IP addresses or hostnames of HTTPS servers to provide
+a constraint.
+@item @code{constraints-from} (default: @code{'()})
+As with constraint from, specify a list of URLs, IP addresses or hostnames of
+HTTPS servers to provide a constraint.  Should the hostname resolve to multiple
+IP addresses, @code{ntpd} will calculate a median constraint from all of them.
+@item @code{allow-large-adjustment?} (default: @code{#f})
+Determines if @code{ntpd} is allowed to make an initial adjustment of more
+than 180 seconds.
+@end table
+@end deftp
 
 @cindex inetd
 @deffn {Scheme variable} inetd-service-type
@@ -14209,6 +14314,9 @@ There is also a way to specify the configuration as a string, if you
 have an old @code{prosody.cfg.lua} file that you want to port over from
 some other system; see the end for more details.
 
+The @code{file-object} type designates either a file-like object
+(@pxref{G-Expressions, file-like objects}) or a file name.
+
 @c The following documentation was initially generated by
 @c (generate-documentation) in (gnu services messaging).  Manually maintained
 @c documentation is better, so we shouldn't hesitate to edit below as
@@ -14229,7 +14337,7 @@ Location of the Prosody data storage directory.  See
 Defaults to @samp{"/var/lib/prosody"}.
 @end deftypevr
 
-@deftypevr {@code{prosody-configuration} parameter} file-name-list plugin-paths
+@deftypevr {@code{prosody-configuration} parameter} file-object-list plugin-paths
 Additional plugin directories.  They are searched in all the specified
 paths in order.  See @url{https://prosody.im/doc/plugins_directory}.
 Defaults to @samp{()}.
@@ -14270,7 +14378,7 @@ should you want to disable them then add them to this list.
 Defaults to @samp{()}.
 @end deftypevr
 
-@deftypevr {@code{prosody-configuration} parameter} file-name groups-file
+@deftypevr {@code{prosody-configuration} parameter} file-object groups-file
 Path to a text file where the shared groups are defined.  If this path is
 empty then @samp{mod_groups} does nothing.  See
 @url{https://prosody.im/doc/modules/mod_groups}.
@@ -14303,13 +14411,13 @@ Path to your private key file.
 Path to your certificate file.
 @end deftypevr
 
-@deftypevr {@code{ssl-configuration} parameter} file-name capath
+@deftypevr {@code{ssl-configuration} parameter} file-object capath
 Path to directory containing root certificates that you wish Prosody to
 trust when verifying the certificates of remote servers.
 Defaults to @samp{"/etc/ssl/certs"}.
 @end deftypevr
 
-@deftypevr {@code{ssl-configuration} parameter} maybe-file-name cafile
+@deftypevr {@code{ssl-configuration} parameter} maybe-file-object cafile
 Path to a file containing root certificates that you wish Prosody to trust.
 Similar to @code{capath} but with all certificates concatenated together.
 @end deftypevr
@@ -14568,6 +14676,8 @@ string, you could instantiate a prosody service like this:
          (opaque-prosody-configuration
           (prosody.cfg.lua "")))
 @end example
+
+@c end of Prosody auto-generated documentation
 
 @subsubheading BitlBee Service
 
@@ -18542,54 +18652,929 @@ By default, Cgit can be accessed on port 80 (@code{http://localhost:80}).
 (service cgit-service-type)
 @end example
 
-@deftp {Data Type} cgit-configuration
-Data type representing the configuration of Cgit.
-This type has the following parameters:
+@c %start of fragment
 
-@table @asis
-@item @code{config-file} (default: @code{(cgit-configuration-file)})
-The configuration file to use for Cgit.  This can be set to a
-@dfn{cgit-configuration-file} record value, or any gexp
-(@pxref{G-Expressions}).
+Available @code{cgit-configuration} fields are:
 
-For example, to instead use a local file, the @code{local-file} function
-can be used:
+@deftypevr {@code{cgit-configuration} parameter} package package
+The CGIT package.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} nginx-server-configuration-list nginx
+NGINX configuration.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string about-filter
+Specifies a command which will be invoked to format the content of about
+pages (both top-level and for each repository).
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string agefile
+Specifies a path, relative to each repository path, which can be used to
+specify the date and time of the youngest commit in the repository.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string auth-filter
+Specifies a command that will be invoked for authenticating repository
+access.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string branch-sort
+Flag which, when set to @samp{age}, enables date ordering in the branch
+ref list, and when set @samp{name} enables ordering by branch name.
+
+Defaults to @samp{"name"}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string cache-root
+Path used to store the cgit cache entries.
+
+Defaults to @samp{"/var/cache/cgit"}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer cache-static-ttl
+Number which specifies the time-to-live, in minutes, for the cached
+version of repository pages accessed with a fixed SHA1.
+
+Defaults to @samp{-1}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer cache-dynamic-ttl
+Number which specifies the time-to-live, in minutes, for the cached
+version of repository pages accessed without a fixed SHA1.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer cache-repo-ttl
+Number which specifies the time-to-live, in minutes, for the cached
+version of the repository summary page.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer cache-root-ttl
+Number which specifies the time-to-live, in minutes, for the cached
+version of the repository index page.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer cache-scanrc-ttl
+Number which specifies the time-to-live, in minutes, for the result of
+scanning a path for Git repositories.
+
+Defaults to @samp{15}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer cache-about-ttl
+Number which specifies the time-to-live, in minutes, for the cached
+version of the repository about page.
+
+Defaults to @samp{15}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer cache-snapshot-ttl
+Number which specifies the time-to-live, in minutes, for the cached
+version of snapshots.
+
+Defaults to @samp{5}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer cache-size
+The maximum number of entries in the cgit cache.  When set to @samp{0},
+caching is disabled.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean case-sensitive-sort?
+Sort items in the repo list case sensitively.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} list clone-prefix
+List of common prefixes which, when combined with a repository URL,
+generates valid clone URLs for the repository.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} list clone-url
+List of @code{clone-url} templates.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string commit-filter
+Command which will be invoked to format commit messages.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string commit-sort
+Flag which, when set to @samp{date}, enables strict date ordering in the
+commit log, and when set to @samp{topo} enables strict topological
+ordering.
+
+Defaults to @samp{"git log"}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string css
+URL which specifies the css document to include in all cgit pages.
+
+Defaults to @samp{"/share/cgit/cgit.css"}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string email-filter
+Specifies a command which will be invoked to format names and email
+address of committers, authors, and taggers, as represented in various
+places throughout the cgit interface.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean embedded?
+Flag which, when set to @samp{#t}, will make cgit generate a HTML
+fragment suitable for embedding in other HTML pages.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-commit-graph?
+Flag which, when set to @samp{#t}, will make cgit print an ASCII-art
+commit history graph to the left of the commit messages in the
+repository log page.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-filter-overrides?
+Flag which, when set to @samp{#t}, allows all filter settings to be
+overridden in repository-specific cgitrc files.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-follow-links?
+Flag which, when set to @samp{#t}, allows users to follow a file in the
+log view.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-http-clone?
+If set to @samp{#t}, cgit will act as an dumb HTTP endpoint for Git
+clones.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-index-links?
+Flag which, when set to @samp{#t}, will make cgit generate extra links
+"summary", "commit", "tree" for each repo in the repository index.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-index-owner?
+Flag which, when set to @samp{#t}, will make cgit display the owner of
+each repo in the repository index.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-log-filecount?
+Flag which, when set to @samp{#t}, will make cgit print the number of
+modified files for each commit on the repository log page.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-log-linecount?
+Flag which, when set to @samp{#t}, will make cgit print the number of
+added and removed lines for each commit on the repository log page.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-remote-branches?
+Flag which, when set to @code{#t}, will make cgit display remote
+branches in the summary and refs views.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-subject-links?
+Flag which, when set to @code{1}, will make cgit use the subject of the
+parent commit as link text when generating links to parent commits in
+commit view.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-html-serving?
+Flag which, when set to @samp{#t}, will make cgit use the subject of the
+parent commit as link text when generating links to parent commits in
+commit view.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-tree-linenumbers?
+Flag which, when set to @samp{#t}, will make cgit generate linenumber
+links for plaintext blobs printed in the tree view.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean enable-git-config?
+Flag which, when set to @samp{#f}, will allow cgit to use Git config to
+set any repo specific settings.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string favicon
+URL used as link to a shortcut icon for cgit.
+
+Defaults to @samp{"/favicon.ico"}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string footer
+The content of the file specified with this option will be included
+verbatim at the bottom of all pages (i.e.  it replaces the standard
+"generated by..." message).
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string head-include
+The content of the file specified with this option will be included
+verbatim in the HTML HEAD section on all pages.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string header
+The content of the file specified with this option will be included
+verbatim at the top of all pages.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string include
+Name of a configfile to include before the rest of the current config-
+file is parsed.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string index-header
+The content of the file specified with this option will be included
+verbatim above the repository index.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string index-info
+The content of the file specified with this option will be included
+verbatim below the heading on the repository index page.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean local-time?
+Flag which, if set to @samp{#t}, makes cgit print commit and tag times
+in the servers timezone.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string logo
+URL which specifies the source of an image which will be used as a logo
+on all cgit pages.
+
+Defaults to @samp{"/share/cgit/cgit.png"}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string logo-link
+URL loaded when clicking on the cgit logo image.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string owner-filter
+Command which will be invoked to format the Owner column of the main
+page.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer max-atom-items
+Number of items to display in atom feeds view.
+
+Defaults to @samp{10}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer max-commit-count
+Number of entries to list per page in "log" view.
+
+Defaults to @samp{50}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer max-message-length
+Number of commit message characters to display in "log" view.
+
+Defaults to @samp{80}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer max-repo-count
+Specifies the number of entries to list per page on the repository index
+page.
+
+Defaults to @samp{50}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer max-repodesc-length
+Specifies the maximum number of repo description characters to display
+on the repository index page.
+
+Defaults to @samp{80}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer max-blob-size
+Specifies the maximum size of a blob to display HTML for in KBytes.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string max-stats
+Maximum statistics period.  Valid values are @samp{week},@samp{month},
+@samp{quarter} and @samp{year}.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} mimetype-alist mimetype
+Mimetype for the specified filename extension.
+
+Defaults to @samp{((gif "image/gif") (html "text/html") (jpg
+"image/jpeg") (jpeg "image/jpeg") (pdf "application/pdf") (png
+"image/png") (svg "image/svg+xml"))}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string mimetype-file
+Specifies the file to use for automatic mimetype lookup.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string module-link
+Text which will be used as the formatstring for a hyperlink when a
+submodule is printed in a directory listing.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean nocache?
+If set to the value @samp{#t} caching will be disabled.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean noplainemail?
+If set to @samp{#t} showing full author email addresses will be
+disabled.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean noheader?
+Flag which, when set to @samp{#t}, will make cgit omit the standard
+header on all pages.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string readme
+Text which will be used as default value for @code{cgit-repo-readme}.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean remove-suffix?
+If set to @code{#t} and @code{repository-directory} is enabled, if any
+repositories are found with a suffix of @code{.git}, this suffix will be
+removed for the URL and name.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer renamelimit
+Maximum number of files to consider when detecting renames.
+
+Defaults to @samp{-1}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string repository-sort
+The way in which repositories in each section are sorted.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} robots-list robots
+Text used as content for the @code{robots} meta-tag.
+
+Defaults to @samp{("noindex" "nofollow")}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string root-desc
+Text printed below the heading on the repository index page.
+
+Defaults to @samp{"a fast webinterface for the git dscm"}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string root-readme
+The content of the file specified with this option will be included
+verbatim below thef "about" link on the repository index page.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string root-title
+Text printed as heading on the repository index page.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean scan-hidden-path
+If set to @samp{#t} and repository-directory is enabled,
+repository-directory will recurse into directories whose name starts
+with a period.  Otherwise, repository-directory will stay away from such
+directories, considered as "hidden".  Note that this does not apply to
+the ".git" directory in non-bare repos.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} list snapshots
+Text which specifies the default set of snapshot formats that cgit
+generates links for.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} repository-directory repository-directory
+Name of the directory to scan for repositories (represents
+@code{scan-path}).
+
+Defaults to @samp{"/srv/git"}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string section
+The name of the current repository section - all repositories defined
+after this option will inherit the current section name.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string section-sort
+Flag which, when set to @samp{1}, will sort the sections on the
+repository listing by name.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer section-from-path
+A number which, if defined prior to repository-directory, specifies how
+many path elements from each repo path to use as a default section name.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} boolean side-by-side-diffs?
+If set to @samp{#t} shows side-by-side diffs instead of unidiffs per
+default.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string source-filter
+Specifies a command which will be invoked to format plaintext blobs in
+the tree view.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer summary-branches
+Specifies the number of branches to display in the repository "summary"
+view.
+
+Defaults to @samp{10}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer summary-log
+Specifies the number of log entries to display in the repository
+"summary" view.
+
+Defaults to @samp{10}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} integer summary-tags
+Specifies the number of tags to display in the repository "summary"
+view.
+
+Defaults to @samp{10}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string strict-export
+Filename which, if specified, needs to be present within the repository
+for cgit to allow access to that repository.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} string virtual-root
+URL which, if specified, will be used as root for all cgit links.
+
+Defaults to @samp{"/"}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} repository-cgit-configuration-list repositories
+A list of @dfn{cgit-repo} records to use with config.
+
+Defaults to @samp{()}.
+
+Available @code{repository-cgit-configuration} fields are:
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-list snapshots
+A mask of snapshot formats for this repo that cgit generates links for,
+restricted by the global @code{snapshots} setting.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string source-filter
+Override the default @code{source-filter}.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string url
+The relative URL used to access the repository.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string about-filter
+Override the default @code{about-filter}.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string branch-sort
+Flag which, when set to @samp{age}, enables date ordering in the branch
+ref list, and when set to @samp{name} enables ordering by branch name.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-list clone-url
+A list of URLs which can be used to clone repo.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string commit-filter
+Override the default @code{commit-filter}.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string commit-sort
+Flag which, when set to @samp{date}, enables strict date ordering in the
+commit log, and when set to @samp{topo} enables strict topological
+ordering.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string defbranch
+The name of the default branch for this repository.  If no such branch
+exists in the repository, the first branch name (when sorted) is used as
+default instead.  By default branch pointed to by HEAD, or "master" if
+there is no suitable HEAD.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string desc
+The value to show as repository description.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string homepage
+The value to show as repository homepage.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string email-filter
+Override the default @code{email-filter}.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-commit-graph?
+A flag which can be used to disable the global setting
+@code{enable-commit-graph?}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-log-filecount?
+A flag which can be used to disable the global setting
+@code{enable-log-filecount?}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-log-linecount?
+A flag which can be used to disable the global setting
+@code{enable-log-linecount?}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-remote-branches?
+Flag which, when set to @code{#t}, will make cgit display remote
+branches in the summary and refs views.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-subject-links?
+A flag which can be used to override the global setting
+@code{enable-subject-links?}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-html-serving?
+A flag which can be used to override the global setting
+@code{enable-html-serving?}.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean hide?
+Flag which, when set to @code{#t}, hides the repository from the
+repository index.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean ignore?
+Flag which, when set to @samp{#t}, ignores the repository.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string logo
+URL which specifies the source of an image which will be used as a logo
+on this repo’s pages.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string logo-link
+URL loaded when clicking on the cgit logo image.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string owner-filter
+Override the default @code{owner-filter}.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string module-link
+Text which will be used as the formatstring for a hyperlink when a
+submodule is printed in a directory listing.  The arguments for the
+formatstring are the path and SHA1 of the submodule commit.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} module-link-path module-link-path
+Text which will be used as the formatstring for a hyperlink when a
+submodule with the specified subdirectory path is printed in a directory
+listing.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string max-stats
+Override the default maximum statistics period.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string name
+The value to show as repository name.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string owner
+A value used to identify the owner of the repository.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string path
+An absolute path to the repository directory.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string readme
+A path (relative to repo) which specifies a file to include verbatim as
+the "About" page for this repo.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-string section
+The name of the current repository section - all repositories defined
+after this option will inherit the current section name.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-list extra-options
+Extra options will be appended to cgitrc file.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} list extra-options
+Extra options will be appended to cgitrc file.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@c %end of fragment
+
+However, it could be that you just want to get a @code{cgitrc} up and
+running.  In that case, you can pass an @code{opaque-cgit-configuration}
+as a record to @code{cgit-service-type}.  As its name indicates, an
+opaque configuration does not have easy reflective capabilities.
+
+Available @code{opaque-cgit-configuration} fields are:
+
+@deftypevr {@code{opaque-cgit-configuration} parameter} package cgit
+The cgit package.
+@end deftypevr
+
+@deftypevr {@code{opaque-cgit-configuration} parameter} string string
+The contents of the @code{cgitrc}, as a string.
+@end deftypevr
+
+For example, if your @code{cgitrc} is just the empty string, you
+could instantiate a cgit service like this:
 
 @example
 (service cgit-service-type
-         (cgit-configuration
-           (config-file (local-file "./my-cgitrc.conf"))))
+         (opaque-cgit-configuration
+          (cgitrc "")))
 @end example
-
-@item @code{package} (default: @code{cgit})
-The Cgit package to use.
-
-@end table
-@end deftp
-
-@deftp {Data Type} cgit-configuration-file
-Data type representing the configuration options for Cgit.
-This type has the following parameters:
-
-@table @asis
-@item @code{css} (default: @code{"/share/cgit/cgit.css"})
-URL which specifies the css document to include in all Cgit pages.
-
-@item @code{logo} (default: @code{"/share/cgit/cgit.png"})
-URL which specifies the source of an image which will be used as a logo
-on all Cgit pages.
-
-@item @code{virtual-root} (default: @code{"/"})
-URL which, if specified, will be used as root for all Cgit links.
-
-@item @code{repository-directory} (default: @code{"/srv/git"})
-Name of the directory to scan for repositories.
-
-@item @code{robots} (default: @code{(list "noindex" "nofollow")})
-Text used as content for the ``robots'' meta-tag.
-
-@end table
-@end deftp
 
 @node Setuid Programs
 @subsection Setuid Programs
@@ -18849,7 +19834,27 @@ root file system as well as an initialization script.  The latter is
 responsible for mounting the real root file system, and for loading any
 kernel modules that may be needed to achieve that.
 
-The @code{initrd} field of an @code{operating-system} declaration allows
+The @code{initrd-modules} field of an @code{operating-system}
+declaration allows you to specify Linux-libre kernel modules that must
+be available in the initrd.  In particular, this is where you would list
+modules needed to actually drive the hard disk where your root partition
+is---although the default value of @code{initrd-modules} should cover
+most use cases.  For example, assuming you need the @code{megaraid_sas}
+module in addition to the default modules to be able to access your root
+file system, you would write:
+
+@example
+(operating-system
+  ;; @dots{}
+  (initrd-modules (cons "megaraid_sas" %base-initrd-modules)))
+@end example
+
+@defvr {Scheme Variable} %base-initrd-modules
+This is the list of kernel modules included in the initrd by default.
+@end defvr
+
+Furthermore, if you need lower-level customization, the @code{initrd}
+field of an @code{operating-system} declaration allows
 you to specify which initrd you would like to use.  The @code{(gnu
 system linux-initrd)} module provides three ways to build an initrd: the
 high-level @code{base-initrd} procedure and the low-level
@@ -18862,11 +19867,10 @@ system declaration like this:
 
 @example
 (initrd (lambda (file-systems . rest)
-          ;; Create a standard initrd that has modules "foo.ko"
-          ;; and "bar.ko", as well as their dependencies, in
-          ;; addition to the modules available by default.
+          ;; Create a standard initrd but set up networking
+          ;; with the parameters QEMU expects by default.
           (apply base-initrd file-systems
-                 #:extra-modules '("foo" "bar")
+                 #:qemu-networking? #t
                  rest)))
 @end example
 
@@ -18950,18 +19954,18 @@ to it are lost.
 
 @deffn {Monadic Procedure} base-initrd @var{file-systems} @
        [#:mapped-devices '()] [#:qemu-networking? #f] [#:volatile-root? #f]@
-       [#:virtio? #t] [#:extra-modules '()]
-Return a monadic derivation that builds a generic initrd.  @var{file-systems} is
-a list of file systems to be mounted by the initrd like for @code{raw-initrd}.
-@var{mapped-devices}, @var{qemu-networking?} and @var{volatile-root?}
-also behaves as in @code{raw-initrd}.
+       [#:linux-modules '()]
+Return a monadic derivation that builds a generic initrd, with kernel
+modules taken from @var{linux}.  @var{file-systems} is a list of file-systems to be
+mounted by the initrd, possibly in addition to the root file system specified
+on the kernel command line via @code{--root}.  @var{mapped-devices} is a list of device
+mappings to realize before @var{file-systems} are mounted.
 
-When @var{virtio?} is true, load additional modules so that the
-initrd can be used as a QEMU guest with para-virtualized I/O drivers.
+@var{qemu-networking?} and @var{volatile-root?} behaves as in @code{raw-initrd}.
 
 The initrd is automatically populated with all the kernel modules necessary
-for @var{file-systems} and for the given options.  However, additional kernel
-modules can be listed in @var{extra-modules}.  They will be added to the initrd, and
+for @var{file-systems} and for the given options.  Additional kernel
+modules can be listed in @var{linux-modules}.  They will be added to the initrd, and
 loaded at boot time in the order in which they appear.
 @end deffn
 
