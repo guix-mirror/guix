@@ -2135,6 +2135,7 @@ re-processing.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/seminar"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0y4i651b75y6006n03x8n86bsqvjsailvvz9bhzy51dzsznqidq0"))))
