@@ -1338,6 +1338,7 @@ xr, and xspace.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/url"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "184s2543cwia5l7iibhlkl1ffbncfhjpv5p56zq0c15by5sghlac"))))
