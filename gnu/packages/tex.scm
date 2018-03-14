@@ -1510,6 +1510,7 @@ this bundle for use independent of ConTeXt.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "amsmath"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "178ywjpdlv78qmfzqdyn6gy14620zjsn2q9wap76fbr9s4hw6dba"))))
