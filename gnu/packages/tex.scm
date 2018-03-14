@@ -2705,6 +2705,7 @@ tables to be coloured.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/fancybox"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0smmnaad2q8qwicay1frri990lv65l0k8cwzsvdsyp3jk8kp042w"))))
