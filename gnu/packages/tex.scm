@@ -1124,6 +1124,7 @@ users, via its Plain TeX version.)")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "fancyvrb"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "03l7140y031rr14h02i4z9zqsfvrbn7wzwxbjsrjcgrk6sdr71wv"))))
