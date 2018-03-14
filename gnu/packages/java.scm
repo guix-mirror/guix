@@ -9329,3 +9329,48 @@ Java programmers to create two-dimensional charts and plots.  The library
 features an assortment of graph styles, including advanced scatter plots, bar
 graphs, and pie charts.")
     (license license:lgpl2.1+)))
+
+(define-public java-commons-httpclient
+  (package
+    (name "java-commons-httpclient")
+    (version "3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.apache.org/dist/httpcomponents/"
+                                  "commons-httpclient/source/commons-httpclient-"
+                                  version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1wlpn3cfy3d4inxy6g7wxcsa8p7sshn6aldk9y4ia3lb879rd97r"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "compile"
+       #:test-target "test"
+       #:tests? #f; requires junit-textui (junit 3)
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-accent
+           (lambda _
+             (for-each (lambda (file)
+                         (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                          (substitute* file
+                            (("\\* @author Ortwin .*") "* @author Ortwin Glueck\n"))))
+               '("src/java/org/apache/commons/httpclient/HttpContentTooLargeException.java"
+                 "src/examples/TrivialApp.java" "src/examples/ClientApp.java"
+                 "src/test/org/apache/commons/httpclient/TestHttps.java"
+                 "src/test/org/apache/commons/httpclient/TestURIUtil2.java"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "ant" "dist"
+                     (string-append "-Ddist.home=" (assoc-ref outputs "out")
+                                    "/share/java"))
+             #t)))))
+    (propagated-inputs
+     `(("java-commons-logging" ,java-commons-logging-minimal)
+       ("java-commons-codec" ,java-commons-codec)))
+    (home-page "https://hc.apache.org")
+    (synopsis "HTTP/1.1 compliant HTTP agent implementation")
+    (description "This package contains an HTTP/1.1 compliant HTTP agent
+implementation.  It also provides reusable components for client-side
+authentication, HTTP state management, and HTTP connection management.")
+    (license license:asl2.0)))
