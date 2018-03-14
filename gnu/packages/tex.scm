@@ -2818,6 +2818,7 @@ footnotes with symbols rather than numbers.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "listings"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1nsn9wp3wl12b36c0sqrim33lf33cr5wky0h4ncnw8lvqgm7h8wf"))))
