@@ -3335,6 +3335,7 @@ according to the natural width of the widest cell in the column.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/threeparttable"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "10vy9k150w2lviw8h22s2mcykff38xci653m5823s2vv44pwbmzq"))))
