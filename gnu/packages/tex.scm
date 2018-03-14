@@ -2624,6 +2624,7 @@ command.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "changebar"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1ik4m8pzfsn1grlda6fniqqfwmgj7rfxwg63jdw0p0qv002vc7ik"))))
