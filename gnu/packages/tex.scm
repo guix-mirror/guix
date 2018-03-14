@@ -2995,13 +2995,13 @@ texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
              (mkdir "build")
              (every (lambda (font)
                       (format #t "building font ~a\n" font)
-                      (zero? (system* "mf" "-progname=mf"
-                                      "-output-directory=build"
-                                      (string-append "\\"
-                                                     "mode:=ljfour; "
-                                                     "mag:=1; "
-                                                     "batchmode; "
-                                                     "input " (basename font ".mf")))))
+                      (invoke "mf" "-progname=mf"
+                              "-output-directory=build"
+                              (string-append "\\"
+                                             "mode:=ljfour; "
+                                             "mag:=1; "
+                                             "batchmode; "
+                                             "input " (basename font ".mf"))))
                     (find-files "." "[0-9]+\\.mf$"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
