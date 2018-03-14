@@ -1563,6 +1563,7 @@ distribution.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "babel"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1n3i5adsyy7jw0imnzrm2i8wkf73i3mjk9h3ic8cb9cd19i4r9r3"))))
