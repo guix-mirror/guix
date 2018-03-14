@@ -1223,6 +1223,7 @@ keyval, and lscape.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "xcolor"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "01n613s7bcrd2n4jfawm0k4nn2ny3aaifp2jjfif3lz4sbv31494"))))
