@@ -2770,6 +2770,7 @@ would automatically change the heading style in use).")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "float"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0nbl7wylkv22fcdv4p8byhhj575fli6jnqjpkhrkbv8dzwah84nq"))))
