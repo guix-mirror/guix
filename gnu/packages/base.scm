@@ -841,38 +841,13 @@ GLIBC/HURD for a Hurd host"
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
 
-(define glibc-2.26-patched-boot
+(define glibc-2.26-patched
   (package
     (inherit glibc)
     (source (origin
               (inherit (package-source glibc))
               (patches (cons (search-patch "glibc-allow-kernel-2.6.32.patch")
                              (origin-patches (package-source glibc))))))))
-
-(define patched-static-bash
-  (package
-    (inherit static-bash)
-    (arguments
-     (substitute-keyword-arguments (package-arguments static-bash)
-       ((#:configure-flags flags '())
-        ;; Add a '-L' flag so that the pseudo-cross-ld of
-        ;; BINUTILS-BOOT0 can find libc.a.
-        `(append ,flags
-                 (list (string-append "LDFLAGS=-static -L"
-                                      (assoc-ref %build-inputs
-                                                 "libc-patched:static")
-                                      "/lib"))))))
-    (native-inputs
-     `(("libc-patched" ,glibc-2.26-patched-boot)
-       ("libc-patched:static" ,glibc-2.26-patched-boot "static")))))
-
-(define glibc-2.26-patched
-  (package
-    (inherit glibc-2.26-patched-boot)
-    (inputs `(("static-bash" ,patched-static-bash)
-              ,@(alist-delete
-                 "static-bash"
-                 (package-inputs glibc-2.26-patched-boot))))))
 
 (define-public glibc-2.25
   (package
