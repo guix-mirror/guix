@@ -3719,6 +3719,7 @@ get a narrower “natural” width.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "wasysym"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1sgwbfwjjf70g54hh93gsd9jp9nm67w6n74x9d72a56n07jbk5hv"))))
