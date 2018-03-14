@@ -2433,7 +2433,7 @@ on systems running the Linux kernel.")
 (define-public masscan
   (package
     (name "masscan")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/robertdavidgraham/masscan"
@@ -2441,16 +2441,18 @@ on systems running the Linux kernel.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1y9af345g00z83rliv6bmlqg37xwc7xpnx5xqdgmjikzcxgk9pji"))))
+                "0wxddsgyx27z45906icdhdbfsvfj8ij805208qpqjx46i0lnjs50"))))
     (build-system gnu-build-system)
     (inputs
      `(("libpcap" ,libpcap)))
     (arguments
      '(#:test-target "regress"
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; There is no ./configure script
+         (delete 'configure)            ; no ./configure script
          (add-after 'unpack 'patch-path
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2463,8 +2465,8 @@ on systems running the Linux kernel.")
 open ports, and also complete the TCP connection and interact with the remote
 application, collecting the information received.")
     (home-page "https://github.com/robertdavidgraham/masscan")
-        ;; 'src/siphash24.c' is the SipHash reference implementation, which
-        ;; bears a CC0 Public Domain Dedication.
+    ;; 'src/siphash24.c' is the SipHash reference implementation, which
+    ;; bears a CC0 Public Domain Dedication.
     (license license:agpl3+)))
 
 (define-public hungrycat
