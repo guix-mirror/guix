@@ -1477,6 +1477,7 @@ the l3kernel and xparse bundles from the LaTeX 3 development team.")
               (uri (string-append "https://github.com/lualatex/lualibs/"
                                   "releases/download/v"
                                   version "/lualibs.zip"))
+              (file-name (string-append name "-" version ".zip"))
               (sha256
                (base32
                 "1xx9blvrmx9hyhrl345lpai9m6xxnw997261a1ahn1bm5r2j5fqy"))))
