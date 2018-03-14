@@ -3874,6 +3874,7 @@ e-TeX.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/generic/pdftex"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0k68zmqzs4qvrqxdwsrawbjb14hxqjfamq649azvai0jjxdpkljd"))))
