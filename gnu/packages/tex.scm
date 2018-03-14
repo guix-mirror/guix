@@ -1308,6 +1308,7 @@ arrows; record information about document class(es) used; and many more.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "tools"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "052a0pch2k5zls5jlay9xxcf93rw3i60a2x28y3ip3rhbsv3xgiz"))))
