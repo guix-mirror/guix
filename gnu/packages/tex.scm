@@ -3543,6 +3543,7 @@ of ink traps which typify the Kurier font.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/titlesec"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "04nmkhqx6jxcxx9a30zbcd5smxi5fd0cbp132bki7fnvhspnhg21"))))
