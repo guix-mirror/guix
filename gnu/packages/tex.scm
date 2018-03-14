@@ -3246,6 +3246,7 @@ use this package to insert PostScript files, in addition to PDF files.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "fonts" "stmaryrd"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "08pn4ca3vl6qm9l3wm5h5iyjsrg411kkm1yana329xwg2j14s9n6"))))
