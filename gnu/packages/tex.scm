@@ -1062,6 +1062,7 @@ overwrite existing files and letting you use @code{filecontents} /
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "generic" "ifxetex"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0w2xj7n0szavj329kds09q626szkc378p3w0sk022q0ln4ksz86d"))))
