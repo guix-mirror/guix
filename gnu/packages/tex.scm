@@ -3131,6 +3131,7 @@ in the form @code{key=value} are available, for example:
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "multirow"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0qlxy47f1f8plgch3jqfsnrdgpyz20sz46yp33i2jwvf9hvfczf0"))))
