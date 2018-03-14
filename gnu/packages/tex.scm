@@ -2885,6 +2885,7 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/fonts/source/jknappen/ec/"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "12av65fbz9xiashm09c9m1fj1mijxls5xspd7652ry1n5s0nixy4"))))
