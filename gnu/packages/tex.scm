@@ -1620,6 +1620,7 @@ for Canadian and USA text.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "cyrillic"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1mdhl35hwas68ki56qqngzar37dwv4mm64l2canihr255bz34lbv"))))
