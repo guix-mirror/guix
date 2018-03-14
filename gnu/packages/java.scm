@@ -9423,3 +9423,37 @@ different file systems.  It presents a uniform view of the files from various
 different sources, such as the files on local disk, on an HTTP server, or
 inside a Zip archive.")
     (license license:asl2.0)))
+
+(define-public java-jakarta-oro
+  (package
+    (name "java-jakarta-oro")
+    (version "2.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.apache.org/dist/jakarta/oro/"
+                                  "jakarta-oro-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0rpmnsskiwmsy8r0sckz5n5dbvh3vkxx8hpm177c754r8xy3qksc"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  (delete-file (string-append "jakarta-oro-" ,version ".jar"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "package"
+       #:tests? #f; tests are run as part of the build process
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-jars ,(string-append "jakarta-oro-" version))))))
+    (home-page "https://jakarta.apache.org/oro/")
+    (synopsis "Text-processing for Java")
+    (description "The Jakarta-ORO Java classes are a set of text-processing
+Java classes that provide Perl5 compatible regular expressions, AWK-like
+regular expressions, glob expressions, and utility classes for performing
+substitutions, splits, filtering filenames, etc.  This library is the successor
+of the OROMatcher, AwkTools, PerlTools, and TextTools libraries originally
+from ORO, Inc.")
+    (license license:asl1.1)))
