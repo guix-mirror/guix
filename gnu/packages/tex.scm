@@ -3156,6 +3156,7 @@ entry at the \"natural\" width of its text.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/overpic"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0m29q9qdb00558b7g2i7iw6w62n5s46yx81j8m99qkv77magk4fm"))))
