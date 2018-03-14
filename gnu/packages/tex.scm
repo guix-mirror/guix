@@ -2794,6 +2794,7 @@ with @code{\\floatplacement{figure}{H}}.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "footmisc"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "03x61wwql8nh6zrqiiiq3rb0x7m3pn48c606zapy19y21fybwdxs"))))
