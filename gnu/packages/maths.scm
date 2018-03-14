@@ -1308,7 +1308,7 @@ can solve two kinds of problems:
 (define-public octave
   (package
     (name "octave")
-    (version "4.2.1")
+    (version "4.2.2")
     (source
      (origin
       (method url-fetch)
@@ -1316,7 +1316,7 @@ can solve two kinds of problems:
                           version ".tar.lz"))
       (sha256
        (base32
-        "09zhhch79jw3ynw39vizx0i2cbd2bjz3sp38pjdzraqrbivpwp92"))))
+        "0pkkz1vazsh7ipffb09q0nc2jgx6q27pkkngygjij6jrpcly5zsp"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
