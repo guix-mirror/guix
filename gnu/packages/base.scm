@@ -544,7 +544,6 @@ store.")
    ;; Note: Always use a dot after the minor version since various places rely
    ;; on "version-major+minor" to determine where locales are found.
    (version "2.26.105-g0890d5379c")
-   (replacement glibc-2.26-patched)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://alpha.gnu.org/gnu/guix/mirror/"
@@ -563,7 +562,8 @@ store.")
             (modules '((guix build utils)))
             (patches (search-patches "glibc-ldd-x86_64.patch"
                                      "glibc-versioned-locpath.patch"
-                                     "glibc-o-largefile.patch"))))
+                                     "glibc-o-largefile.patch"
+                                     "glibc-allow-kernel-2.6.32.patch"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -846,14 +846,6 @@ GLIBC/HURD for a Hurd host"
 
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
-
-(define glibc-2.26-patched
-  (package
-    (inherit glibc)
-    (source (origin
-              (inherit (package-source glibc))
-              (patches (cons (search-patch "glibc-allow-kernel-2.6.32.patch")
-                             (origin-patches (package-source glibc))))))))
 
 (define-public glibc-2.25
   (package
