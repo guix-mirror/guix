@@ -149,7 +149,8 @@ and BOOTP/TFTP for network booting of diskless machines.")
          ;;          (system "bin/tests/system/ifconfig.sh up")))
          (replace 'check
            (lambda _
-             (zero? (system* "make" "force-test")))))))
+             (invoke "make" "force-test")
+             #t)))))
     (synopsis "An implementation of the Domain Name System")
     (description "BIND is an implementation of the @dfn{Domain Name System}
 (DNS) protocols for the Internet.  It is a reference implementation of those
