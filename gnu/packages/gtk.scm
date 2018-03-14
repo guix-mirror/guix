@@ -226,7 +226,11 @@ affine transformation (scale, rotation, shear, etc.).")
               "0illn78nfwpa8y5knh9ir74wa1skc2hi8f3ny19zgpyf7n5dh94r"))))
    (build-system gnu-build-system)
    (propagated-inputs
+    ;; These are all in Requires or Requires.private of the '.pc' files.
     `(("cairo" ,cairo)
+      ("fontconfig" ,fontconfig)
+      ("freetype" ,freetype)
+      ("glib" ,glib)
       ("harfbuzz" ,harfbuzz)))
    (inputs
     `(("fribidi" ,fribidi)
