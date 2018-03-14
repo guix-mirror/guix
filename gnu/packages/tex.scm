@@ -3037,6 +3037,7 @@ one of the packages @code{calrsfs} and @code{mathrsfs}.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "eso-pic"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1xvmms28mvvfpks9x7lfya2xhh5k8jy3qnlih1mzcnf156xnb89z"))))
