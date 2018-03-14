@@ -2601,6 +2601,7 @@ considered obsolete; alternatives are the @code{typearea} package from the
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "appendix"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0rxfpr8vq3brwx5rc7qn91ixlp9zva4zrms8a579fqa1g5yva7vg"))))
