@@ -3279,6 +3279,7 @@ the whole font.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "subfigure"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "15spcl5wb7w269qd6y596vp4yi8sa5ppcx8w4z2i9kyp02r3a0yb"))))
