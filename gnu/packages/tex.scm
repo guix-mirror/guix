@@ -2967,6 +2967,7 @@ texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/fonts/source/public/rsfs/"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0r12pn02r4a955prcvq0048nifh86ihlcgvw3pppqqvfngv34l5h"))))
