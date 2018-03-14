@@ -2038,7 +2038,7 @@ making @dfn{screencasts}.")
 (define-public simplescreenrecorder
   (package
     (name "simplescreenrecorder")
-    (version "0.3.9")
+    (version "0.3.10")
     (source
      (origin
        (method url-fetch)
@@ -2047,7 +2047,7 @@ making @dfn{screencasts}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1gnf9wbiq2fcbqcn1a5nfmp8r0nxrrlgh2wly2mfkkwymynhx0pk"))))
+         "02rl9yyx3hlz9fqvgzv7ipmvx2qahj7ws5wx2m7zs3lssq3qag3g"))))
     (build-system cmake-build-system)
     ;; Although libx11, libxfixes, libxext are listed as build dependencies in
     ;; README.md, the program builds and functions properly without them.
