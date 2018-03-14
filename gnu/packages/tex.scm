@@ -1152,6 +1152,7 @@ verbatim source).")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "graphics"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "07azyn0b1s49vbdlr6dmygrminxp72ndl24j1091hiiccvrjq3xc"))))
@@ -1184,6 +1185,9 @@ verbatim source).")
            (uri (git-reference
                  (url "https://github.com/latex3/graphics-cfg.git")
                  (commit "19d1238af17df376cd46333b229579b0f7f3a41f")))
+           (file-name (string-append "graphics-cfg-"
+                                     (number->string %texlive-revision)
+                                     "-checkout"))
            (sha256
             (base32
              "12kbgbm52gmmgn8zajb74s8n5rvnxcfdvs3iyj8vcw5vrsw5i6mh"))))
@@ -1195,6 +1199,9 @@ verbatim source).")
                                      %texlive-tag "/Master/texmf-dist/"
                                      "/tex/latex/graphics-def"))
                  (revision %texlive-revision)))
+           (file-name (string-append "graphics-def-"
+                                     (number->string %texlive-revision)
+                                     "-checkout"))
            (sha256
             (base32
              "0gi4qv6378nl84s8n1yx3hjqvv7r4lza7hpbymbl5rzwgw8qrnyb"))))))
