@@ -2740,6 +2740,7 @@ floats, center, flushleft, and flushright, lists, and pages.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/fancyhdr"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "04h430agf8aj7ziwyb46xpk95c605rjk1wzhr63m6ylipihidlgw"))))
