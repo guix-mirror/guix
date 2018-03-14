@@ -1277,6 +1277,7 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "oberdiek"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0aswvsxgsn709xmvpcg50d2xl7vcy1ckdxb9c1cligqqfjjvviqf"))))
