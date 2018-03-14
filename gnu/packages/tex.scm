@@ -2681,6 +2681,7 @@ copy-and-paste functions work properly.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "colortbl"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "190pmq8la2rq07xry8bn8z8yywzxv6fqyqaj7yjfj5rgw6x0mas8"))))
