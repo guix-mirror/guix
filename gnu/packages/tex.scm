@@ -1643,6 +1643,7 @@ language that is written in a Cyrillic alphabet.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "psnfss"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1920dcq8613yzprasbg80fh4fcjcidvvl54wkx438nimyxcri7qz"))))
