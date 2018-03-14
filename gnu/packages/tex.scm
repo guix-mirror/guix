@@ -2846,6 +2846,7 @@ styles.  Support for @code{hyperref} is provided.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/jknapltx"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0m034x72f2g07icr50gacyxfb9g1lz2rmqh4kqr1qjb421x2kds9"))))
