@@ -282,9 +282,11 @@ top of CLISP.")
                   (mkdir-p libtinfo-dir)
                   (symlink
                    (string-append ncurses-lib "/libncursesw.so."
-                                  ;; Extract "6.0" from "6.0-20170930".
+                                  ;; Extract "6.0" from "6.0-20170930" if a
+                                  ;; dash-separated version tag exists.
                                   ,(let* ((v (package-version ncurses))
-                                          (d (string-index v #\-)))
+                                          (d (or (string-index v #\-)
+                                                 (string-length v))))
                                      (version-major+minor (string-take v d))))
                    (string-append libtinfo-dir "/libtinfo.so.5"))
 
