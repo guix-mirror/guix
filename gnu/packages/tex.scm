@@ -2571,6 +2571,7 @@ does not affect @code{\\tt}, @code{\\texttt}, etc.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/anysize"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "19khwqjlvznc955sijhww3c4zbb0053rvzwv9nz738qknq7y18vb"))))
