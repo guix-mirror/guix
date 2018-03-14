@@ -6274,7 +6274,7 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
 (define-public geomyidae
   (package
     (name "geomyidae")
-    (version "0.29")
+    (version "0.31")
     (source
      (origin
        (method url-fetch)
@@ -6282,7 +6282,7 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
                            "geomyidae-" version ".tar.bz2"))
        (sha256
         (base32
-         "0qxgxp6psfrgfqhndyq2z54nb1qrmvvljddnxdwp207jbz366bja"))))
+         "1ih7220c6mgq4r7blm4kx3pxbl53sph58lqgwci6cmi3c0sq5c3x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
