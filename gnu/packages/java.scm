@@ -9457,3 +9457,71 @@ substitutions, splits, filtering filenames, etc.  This library is the successor
 of the OROMatcher, AwkTools, PerlTools, and TextTools libraries originally
 from ORO, Inc.")
     (license license:asl1.1)))
+
+(define-public java-native-access
+  (package
+    (name "java-native-access")
+    (version "4.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/java-native-access/jna/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0zrpzkib6b905i018a9pqlzkqinphywr6y4jwv6mwp63jjqvqkd9"))
+              (modules '((guix build utils)))
+              (snippet
+                `(begin
+                   (for-each delete-file (find-files "." ".*.jar"))
+                   (delete-file-recursively "native/libffi")
+                   (delete-file-recursively "dist")
+                   #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f; FIXME: tests require reflections.jar
+       #:test-target "test"
+       #:make-flags (list "-Ddynlink.native=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-build.xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               ;; Since we removed the bundled ant.jar, give the correct path
+               (("lib/ant.jar") (string-append (assoc-ref inputs "ant") "/lib/ant.jar"))
+               ;; We removed generated native libraries. We can only rebuild one
+               ;; so don't fail if we can't find a native library for another architecture.
+               (("zipfileset") "zipfileset erroronmissingarchive=\"false\""))
+             ;; Copy test dependencies
+             (copy-file (string-append (assoc-ref inputs "java-junit")
+                                       "/share/java/junit.jar")
+                        "lib/junit.jar")
+             (copy-file (string-append (assoc-ref inputs "java-hamcrest-core")
+                                       "/share/java/hamcrest-core.jar")
+                        "lib/hamcrest-core.jar")
+             ;; FIXME: once reflections.jar is built, copy it to lib/test.
+             #t))
+         (add-before 'build 'build-native
+           (lambda _
+             (invoke "ant" "-Ddynlink.native=true" "native")
+             #t))
+         (replace 'install
+           (install-jars "build")))))
+    (inputs
+     `(("libffi" ,libffi)
+       ("libx11" ,libx11)
+       ("libxt" ,libxt)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://github.com/java-native-access/jna")
+    (synopsis "Access to native shared libraries from Java")
+    (description "JNA provides Java programs easy access to native shared
+libraries without writing anything but Java code - no JNI or native code is
+required.  JNA allows you to call directly into native functions using natural
+Java method invocation.")
+    ;; Java Native Access project (JNA) is dual-licensed under 2
+    ;; alternative Free licenses: LGPL 2.1 or later and Apache License 2.0.
+    (license (list
+               license:asl2.0
+               license:lgpl2.1+))))
