@@ -13,6 +13,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1073,7 +1074,25 @@ games.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k8c12nzhl98i9il9s3awbwdamkrwxk0s47jr7n8a3z93rpszd2p"))))
+                "0k8c12nzhl98i9il9s3awbwdamkrwxk0s47jr7n8a3z93rpszd2p"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Drop libraries that we take from Guix.  Note that some
+                  ;; of these may be modified; see "thirdparty/README.md".
+                  (with-directory-excursion "thirdparty"
+                    (for-each delete-file-recursively
+                              '("freetype"
+                                "libogg"
+                                "libpng"
+                                "libtheora"
+                                "libvorbis"
+                                "libvpx"
+                                "libwebp"
+                                "openssl"
+                                "opus"
+                                "zlib"))
+                    #t)))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
@@ -1091,6 +1110,7 @@ games.")
                            "builtin_libpng=no"
                            "builtin_libtheora=no"
                            "builtin_libvorbis=no"
+                           "builtin_libvpx=no"
                            "builtin_libwebp=no"
                            "builtin_openssl=no"
                            "builtin_opus=no"
@@ -1146,6 +1166,7 @@ games.")
               ("glu" ,glu)
               ("libtheora" ,libtheora)
               ("libvorbis" ,libvorbis)
+              ("libvpx" ,libvpx)
               ("libwebp" ,libwebp)
               ("libx11" ,libx11)
               ("libxcursor" ,libxcursor)
