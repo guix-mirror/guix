@@ -1070,7 +1070,7 @@ games.")
               (uri
                (string-append "https://github.com/godotengine/godot/archive/"
                               version "-stable.tar.gz"))
-              (file-name (string-append name "-" version))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0k8c12nzhl98i9il9s3awbwdamkrwxk0s47jr7n8a3z93rpszd2p"))))
