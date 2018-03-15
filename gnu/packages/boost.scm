@@ -113,20 +113,6 @@ across a broad spectrum of applications.")
     (license (license:x11-style "http://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
 
-(define-public boost-1.66
-  (package
-    (inherit boost)
-    (version "1.66.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/boost/boost/" version "/boost_"
-                    (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
-                    ".tar.bz2"))
-              (sha256
-               (base32
-                "1aaw48cmimsskzgiclwn0iifp62a5iw9cbqrhfari876af1828ap"))))))
-
 (define-public mdds
   (package
     (name "mdds")
