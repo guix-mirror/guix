@@ -126,6 +126,7 @@ the #:references-graphs parameter of 'derivation'."
              (number->string disk-image-size)))
 
   (mkdir "xchg")
+  (mkdir "tmp")
 
   (match references-graphs
     ((graph-files ...)
@@ -146,6 +147,12 @@ the #:references-graphs parameter of 'derivation'."
          "-virtfs"
          (string-append "local,id=xchg_dev,path=xchg"
                         ",security_model=none,mount_tag=xchg")
+         "-virtfs"
+         ;; Some programs require more space in /tmp than is normally
+         ;; available in the guest.  Accommodate such programs by sharing a
+         ;; temporary directory.
+         (string-append "local,id=tmp_dev,path=tmp"
+                        ",security_model=none,mount_tag=tmp")
          "-kernel" linux
          "-initrd" initrd
          (append

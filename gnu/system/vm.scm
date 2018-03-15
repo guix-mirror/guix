@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,8 +88,8 @@
 ;;; Code:
 
 (define %linux-vm-file-systems
-  ;; File systems mounted for 'derivation-in-linux-vm'.  The store and /xchg
-  ;; directory are shared with the host over 9p.
+  ;; File systems mounted for 'derivation-in-linux-vm'.  These are shared with
+  ;; the host over 9p.
   (list (file-system
           (mount-point (%store-prefix))
           (device "store")
@@ -99,6 +100,13 @@
         (file-system
           (mount-point "/xchg")
           (device "xchg")
+          (type "9p")
+          (needed-for-boot? #t)
+          (options "trans=virtio")
+          (check? #f))
+        (file-system
+          (mount-point "/tmp")
+          (device "tmp")
           (type "9p")
           (needed-for-boot? #t)
           (options "trans=virtio")
