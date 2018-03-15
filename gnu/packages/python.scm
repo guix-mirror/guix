@@ -357,7 +357,11 @@ data types.")
                   (for-each delete-file
                             '("Lib/ctypes/test/test_structures.py" ; fails on aarch64
                               "Lib/ctypes/test/test_win32.py" ; fails on aarch64
-                              "Lib/test/test_fcntl.py")) ; fails on aarch64
+                              "Lib/test/test_fcntl.py" ; fails on aarch64
+                              ;; This test fails on kernels older than 4.5.
+                              ;; It is skipped on these kernels in later
+                              ;; versions of Python.
+                              "Lib/test/test_socket.py"))
                   #t))))
     (arguments (substitute-keyword-arguments (package-arguments python-2)
                  ((#:tests? _) #t)))
