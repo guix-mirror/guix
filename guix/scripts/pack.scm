@@ -238,6 +238,7 @@ the image."
   (define build
     (with-imported-modules `(,@(source-module-closure '((guix docker))
                                                       #:select? not-config?)
+                             (guix build store-copy)
                              ((guix config) => ,config))
       #~(begin
           ;; Guile-JSON is required by (guix docker).
@@ -245,13 +246,15 @@ the image."
            (string-append #+json "/share/guile/site/"
                           (effective-version)))
 
-          (use-modules (guix docker) (srfi srfi-19))
+          (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
 
           (setenv "PATH" (string-append #$tar "/bin"))
 
-          (build-docker-image #$output #$profile
+          (build-docker-image #$output
+                              (call-with-input-file "profile"
+                                read-reference-graph)
+                              #$profile
                               #:system (or #$target (utsname:machine (uname)))
-                              #:closure "profile"
                               #:symlinks '#$symlinks
                               #:compressor '#$(compressor-command compressor)
                               #:creation-time (make-time time-utc 0 1)))))
