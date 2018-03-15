@@ -214,7 +214,9 @@ You have been warned.  Thanks for being so brave.\x1b[0m
     (define bare-bones-os
       (load "examples/bare-bones.tmpl"))
 
-    (list (mingetty-service (mingetty-configuration
+    (list (service virtual-terminal-service-type)
+
+          (mingetty-service (mingetty-configuration
                              (tty "tty1")
                              (auto-login "root")))
 
