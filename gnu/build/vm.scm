@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -307,11 +308,14 @@ it, run its initializer, and unmount it."
 (define* (root-partition-initializer #:key (closures '())
                                      copy-closures?
                                      (register-closures? #t)
-                                     system-directory)
+                                     system-directory
+                                     (deduplicate? #t))
   "Return a procedure to initialize a root partition.
 
-If REGISTER-CLOSURES? is true, register all of CLOSURES is the partition's
-store.  If COPY-CLOSURES? is true, copy all of CLOSURES to the partition.
+If REGISTER-CLOSURES? is true, register all of CLOSURES in the partition's
+store.  If DEDUPLICATE? is true, then also deduplicate files common to
+CLOSURES and the rest of the store when registering the closures.  If
+COPY-CLOSURES? is true, copy all of CLOSURES to the partition.
 SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
   (lambda (target)
     (define target-store
@@ -336,7 +340,8 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
       (display "registering closures...\n")
       (for-each (lambda (closure)
                   (register-closure target
-                                    (string-append "/xchg/" closure)))
+                                    (string-append "/xchg/" closure)
+                                    #:deduplicate? deduplicate?))
                 closures)
       (unless copy-closures?
         (umount target-store)))
