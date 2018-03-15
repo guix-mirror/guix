@@ -874,10 +874,18 @@ instant messenger with audio and video chat capabilities.")
                (("__DATE__") "\"\"")
                (("__TIME__") "\"\"")
                (("TIMESTAMP") "\"\""))
-             #t)))))
+             #t))
+         ;; Ensure that icons are found at runtime.
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/qtox")
+                 `("QT_PLUGIN_PATH" prefix
+                   ,(list (string-append (assoc-ref inputs "qtsvg")
+                                         "/lib/qt5/plugins/"))))))))))
     (inputs
      `(("ffmpeg" ,ffmpeg)
-       ("filteraudio", filteraudio)
+       ("filteraudio" ,filteraudio)
        ("glib" ,glib)
        ("gtk+" ,gtk+-2)
        ("libsodium" ,libsodium)
