@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -104,9 +104,11 @@ source code editors and IDEs.")
     (build-system gnu-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases
-                   (add-before 'configure 'autoconf
-                     (lambda _
-                       (zero? (system* "autoreconf" "-vfi")))))))
+                   ;; XXX: The "bootstrap" phase detects the "bootstrap"
+                   ;; script, but fails to execute it, so we bootstrap
+                   ;; manually.
+                   (replace 'bootstrap
+                     (lambda _ (invoke "autoreconf" "-vfi"))))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
