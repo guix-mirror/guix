@@ -11158,6 +11158,23 @@ server.  Alternately, one can specify the @command{sftp-server} command:
            `(("sftp" ,(file-append openssh "/libexec/sftp-server"))))))
 @end example
 
+@item @code{accepted-environment} (default: @code{'()})
+List of strings describing which environment variables may be exported.
+
+Each string gets on its own line.  See the @code{AcceptEnv} option in
+@code{man sshd_config}.
+
+This example allows ssh-clients to export the @code{COLORTERM} variable.
+It is set by terminal emulators, which support colors.  You can use it in
+your shell's ressource file to enable colors for the prompt and commands
+if this variable is set.
+
+@example
+(service openssh-service-type
+         (openssh-configuration
+           (accepted-environment '("COLORTERM"))))
+@end example
+
 @item @code{authorized-keys} (default: @code{'()})
 @cindex authorized keys, SSH
 @cindex SSH authorized keys
