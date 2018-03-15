@@ -20458,6 +20458,16 @@ of the image size as a function of the size of the system declared in
 Make @var{file} a symlink to the result, and register it as a garbage
 collector root.
 
+@item --skip-checks
+Skip pre-installation safety checks.
+
+By default, @command{guix system init} and @command{guix system
+reconfigure} perform safety checks: they make sure the file systems that
+appear in the @code{operating-system} declaration actually exist
+(@pxref{File Systems}), and that any Linux kernel modules that may be
+needed at boot time are listed in @code{initrd-modules} (@pxref{Initial
+RAM Disk}).  Passing this option skips these tests altogether.
+
 @item --on-error=@var{strategy}
 Apply @var{strategy} when an error occurs when reading @var{file}.
 @var{strategy} may be one of the following:
