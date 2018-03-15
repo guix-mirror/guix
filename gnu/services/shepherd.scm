@@ -104,14 +104,24 @@
   ;; <shepherd-service> objects.
   (service shepherd-root-service-type '()))
 
-(define-syntax-rule (shepherd-service-type service-name proc)
-  "Return a <service-type> denoting a simple shepherd service--i.e., the type
-for a service that extends SHEPHERD-ROOT-SERVICE-TYPE and nothing else."
-  (service-type
-   (name service-name)
-   (extensions
-    (list (service-extension shepherd-root-service-type
-                             (compose list proc))))))
+(define-syntax shepherd-service-type
+  (syntax-rules ()
+    "Return a <service-type> denoting a simple shepherd service--i.e., the type
+for a service that extends SHEPHERD-ROOT-SERVICE-TYPE and nothing else.  When
+DEFAULT is given, use it as the service's default value."
+    ((_ service-name proc default)
+     (service-type
+      (name service-name)
+      (extensions
+       (list (service-extension shepherd-root-service-type
+                                (compose list proc))))
+      (default-value default)))
+    ((_ service-name proc)
+     (service-type
+      (name service-name)
+      (extensions
+       (list (service-extension shepherd-root-service-type
+                                (compose list proc))))))))
 
 (define %default-imported-modules
   ;; Default set of modules imported for a service's consumption.
