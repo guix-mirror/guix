@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -121,10 +121,8 @@ the #:references-graphs parameter of 'derivation'."
     (format #t "creating ~a image of ~,2f MiB...~%"
             disk-image-format (/ disk-image-size (expt 2 20)))
     (force-output)
-    (unless (zero? (system* "qemu-img" "create" "-f" disk-image-format
-                            output
-                            (number->string disk-image-size)))
-      (error "qemu-img failed")))
+    (invoke "qemu-img" "create" "-f" disk-image-format output
+             (number->string disk-image-size)))
 
   (mkdir "xchg")
 
@@ -136,31 +134,29 @@ the #:references-graphs parameter of 'derivation'."
           graph-files))
     (_ #f))
 
-  (unless (zero?
-           (apply system* qemu "-nographic" "-no-reboot"
-                  "-m" (number->string memory-size)
-                  "-object" "rng-random,filename=/dev/urandom,id=guixsd-vm-rng"
-                  "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
-                  "-virtfs"
-                  (string-append "local,id=store_dev,path="
-                                 (%store-directory)
-                                 ",security_model=none,mount_tag=store")
-                  "-virtfs"
-                  (string-append "local,id=xchg_dev,path=xchg"
-                                 ",security_model=none,mount_tag=xchg")
-                  "-kernel" linux
-                  "-initrd" initrd
-                  "-append" (string-append "console=ttyS0 --load="
-                                           builder)
-                  (append
-                   (if make-disk-image?
-                       `("-device" "virtio-blk,drive=myhd"
-                         "-drive" ,(string-append "if=none,file=" output
-                                                  ",format=" disk-image-format
-                                                  ",id=myhd"))
-                       '())
-                   arch-specific-flags)))
-    (error "qemu failed" qemu))
+  (apply invoke qemu "-nographic" "-no-reboot"
+         "-m" (number->string memory-size)
+         "-object" "rng-random,filename=/dev/urandom,id=guixsd-vm-rng"
+         "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
+         "-virtfs"
+         (string-append "local,id=store_dev,path="
+                        (%store-directory)
+                        ",security_model=none,mount_tag=store")
+         "-virtfs"
+         (string-append "local,id=xchg_dev,path=xchg"
+                        ",security_model=none,mount_tag=xchg")
+         "-kernel" linux
+         "-initrd" initrd
+         "-append" (string-append "console=ttyS0 --load="
+                                  builder)
+         (append
+          (if make-disk-image?
+              `("-device" "virtio-blk,drive=myhd"
+                "-drive" ,(string-append "if=none,file=" output
+                                         ",format=" disk-image-format
+                                         ",id=myhd"))
+              '())
+          arch-specific-flags))
 
   ;; When MAKE-DISK-IMAGE? is true, the image is in OUTPUT already.
   (unless make-disk-image?
@@ -240,10 +236,9 @@ actual /dev name based on DEVICE."
                                      partition-size)
                             partitions)
                        ", "))
-  (unless (zero? (apply system* "parted" "--script"
-                        device "mklabel" label-type
-                        (options partitions offset)))
-    (error "failed to create partition table"))
+  (apply invoke "parted" "--script"
+         device "mklabel" label-type
+         (options partitions offset))
 
   ;; Set the 'device' field of each partition.
   (reverse
@@ -265,15 +260,14 @@ actual /dev name based on DEVICE."
   "Create an ext-family file system of TYPE on PARTITION.  If LABEL is true,
 use that as the volume name.  If UUID is true, use it as the partition UUID."
   (format #t "creating ~a partition...\n" type)
-  (unless (zero? (apply system* (string-append "mkfs." type)
-                        "-F" partition
-                        `(,@(if label
-                                `("-L" ,label)
-                                '())
-                          ,@(if uuid
-                                `("-U" ,(uuid->string uuid))
-                                '()))))
-    (error "failed to create partition")))
+  (apply invoke (string-append "mkfs." type)
+         "-F" partition
+         `(,@(if label
+                 `("-L" ,label)
+                 '())
+           ,@(if uuid
+                 `("-U" ,(uuid->string uuid))
+                 '()))))
 
 (define* (create-fat-file-system partition
                                  #:key label uuid)
@@ -282,11 +276,8 @@ will be determined based on file system size.  If LABEL is true, use that as the
 volume name."
   ;; FIXME: UUID is ignored!
   (format #t "creating FAT partition...\n")
-  (unless (zero? (apply system* "mkfs.fat" partition
-                        (if label
-                            `("-n" ,label)
-                            '())))
-    (error "failed to create FAT partition")))
+  (apply invoke "mkfs.fat" partition
+         (if label `("-n" ,label) '())))
 
 (define* (format-partition partition type
                            #:key label uuid)
@@ -388,12 +379,11 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
     (setenv "TMPDIR" esp)
 
     (mkdir-p efi-directory)
-    (unless (zero? (system* grub-mkstandalone "-O" (car efi-targets)
-                            "-o" (string-append efi-directory "/"
-                                                (cdr efi-targets))
-                            ;; Graft the configuration file onto the image.
-                            (string-append "boot/grub/grub.cfg=" config-file)))
-      (error "failed to create GRUB EFI image"))))
+    (invoke grub-mkstandalone "-O" (car efi-targets)
+            "-o" (string-append efi-directory "/"
+                                (cdr efi-targets))
+            ;; Graft the configuration file onto the image.
+            (string-append "boot/grub/grub.cfg=" config-file))))
 
 (define* (make-iso9660-image grub config-file os-drv target
                              #:key (volume-id "GuixSD_image") (volume-uuid #f)
@@ -416,8 +406,8 @@ GRUB configuration and OS-DRV as the stuff in it."
                    #:deduplicate? #f))
                 closures))
 
-    (unless (zero? (apply system*
-                          `(,grub-mkrescue "-o" ,target
+    (apply invoke
+           `(,grub-mkrescue "-o" ,target
                             ,(string-append "boot/grub/grub.cfg=" config-file)
                             ,(string-append "gnu/store=" os-drv "/..")
                             "etc=/tmp/root/etc"
@@ -435,8 +425,7 @@ GRUB configuration and OS-DRV as the stuff in it."
                                                       (not (char=? #\- value)))
                                                     (iso9660-uuid->string
                                                      volume-uuid)))
-                                  `()))))
-      (error "failed to create ISO9660 image"))))
+                                  `())))))
 
 (define* (initialize-hard-disk device
                                #:key
