@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -339,6 +340,9 @@ Makefile, simplifying the entire process for the developer.")
     (propagated-inputs `(("m4" ,m4)))
     (native-inputs `(("m4" ,m4)
                      ("perl" ,perl)
+                     ;; XXX: this shouldn't be necessary, but without it test
+                     ;; 102 fails because it cannot find ltdl/libltdl.la.
+                     ("libltdl" ,libltdl)
                      ("help2man" ,help2man) ;because we modify ltmain.sh
                      ("automake" ,automake)      ;some tests rely on 'aclocal'
                      ("autoconf" ,autoconf-wrapper))) ;others on 'autom4te'
