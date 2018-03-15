@@ -1074,7 +1074,7 @@ bootstrapping purposes.")
     (license license:gpl2+)))
 
 (define-public icedtea-7
-  (let* ((version "2.6.12")
+  (let* ((version "2.6.13")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -1092,7 +1092,7 @@ bootstrapping purposes.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "0s0zh0mj1sab99kb516lsgq3859vsc951phc565gwix4l5g9zppk"))
+                  "1w331rdqx1dcx2xb0fmjmrkdc71xqn20fxsgw8by4xhiblh88khh"))
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.in"
@@ -1502,25 +1502,25 @@ bootstrapping purposes.")
       (native-inputs
        `(("openjdk-src"
           ,(drop "openjdk"
-                 "15qf3nfidgnigh2zny6djfp8bhfwjnwk9i06mxs2jbq6na953ql2"))
+                 "0l34ikyf62hbzlf9032alzkkqvf7bpmckz4gvirvph755w7gka8l"))
          ("corba-drop"
           ,(drop "corba"
-                 "1phvn8fyl5mw2n2sn97f17nm442k75xsz2023bfw4h66ywzkqhqy"))
+                 "050gv2jbg1pi6qkn8w18bwpbklfa5b0kymjvan9pncddbj8m84fz"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "0j4ms6lmnfa2cwfh9yfqdfg1bnn3fc40ay4x6k8zqa8yvspik5w5"))
+                 "1k6yldwnxfzdg5926r1nlfv8d1r1j7rlp2nkz6gqh05vgyamnfhl"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "09sddj73k7n29s39hvdk14r130mvlknbxkpd2w58f34sq5sgpdrg"))
+                 "110j7jlz47x2gg6f7653x12mssan5kvj9l9h1m1c8c92drfxbqyk"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "0q896zz8wyswmksy225q1k27nz3v3l27052dcvvpv20ryykz8yp7"))
+                 "0d1mca38ksxvdskp9im3pp7fdijhj1n3lwq9w13r9s4v3qyskgdd"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "0niicyfccim4a9is4akh87jd7wbl8jrazdaab957mcv9l1x3bnqc"))
+                 "0nq5236fzxn3p6x8cgncl56mzcmsj07q9gymysnws4c8byc6n0qj"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "1jw42qhbm3wfavk39304m53lmqipcllrvjqiab2f42mjs10i8gfx"))
+                 "17bdv39n4lh8l5737c96f3xgamx4y305m067p01cywgp7zaddqws"))
          ("ant" ,ant-bootstrap)
          ("attr" ,attr)
          ("coreutils" ,coreutils)
