@@ -338,7 +338,7 @@ data types.")
 
 (define-public python-3.6
   (package (inherit python-2)
-    (version "3.6.3")
+    (version "3.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -351,17 +351,13 @@ data types.")
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "1nl1raaagr4car787a2hmjv2dw6gqny53xfd6wisbgx4r5kxk9yd"))
+                "1fna7g8jxzl4kd2pqmmqhva5724c5m920x3fsrpsgskaylmr76qm"))
               (snippet
                '(begin
                   (for-each delete-file
                             '("Lib/ctypes/test/test_structures.py" ; fails on aarch64
                               "Lib/ctypes/test/test_win32.py" ; fails on aarch64
-                              "Lib/test/test_fcntl.py" ; fails on aarch64
-                              ;; This test fails on kernels older than 4.5.
-                              ;; It is skipped on these kernels in later
-                              ;; versions of Python.
-                              "Lib/test/test_socket.py"))
+                              "Lib/test/test_fcntl.py")) ; fails on aarch64
                   #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
