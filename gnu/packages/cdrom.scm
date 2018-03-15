@@ -737,11 +737,11 @@ DVD-RW, DVD-R, DVD-R/DL, BD-R, and BD-RE.")
     (home-page "https://dev.lovelyhq.com/libburnia/libisofs")
     (synopsis "Library to create ISO 9660 images")
     (description
-     "Libisofs creates ISO 9660 (also known as ECMA-119) filesystem images
+     "Libisofs creates ISO 9660 (also known as ECMA-119) file system images
 which can either be written to POSIX file objects or handed over to
 libburn for being written directly to optical media.
 It can read metadata of ISO 9660 filesystems, manipulate them, and use them
-to produce new complete filesystem images or add-on images to be appended
-to the read filesystem image.
+to produce new complete file system images or add-on images to be appended
+to the read file system image.
 Supported extensions to ISO 9660 are Rock Ridge, Joliet, AAIP, zisofs.")
     (license gpl2+)))
