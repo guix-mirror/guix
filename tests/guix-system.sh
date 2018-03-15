@@ -1,6 +1,7 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+# Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -267,3 +268,19 @@ guix system build "$tmpdir/config.scm" -n
 # Searching.
 guix system search tor | grep "^name: tor"
 guix system search anonym network | grep "^name: tor"
+
+# Below, use -n (--dry-run) for the tests because if we actually tried to
+# build these images, the commands would take hours to run in the worst case.
+
+# Verify that the examples can be built.
+for example in gnu/system/examples/*; do
+    guix system -n disk-image $example
+done
+
+# Verify that the disk image types can be built.
+guix system -n vm gnu/system/examples/vm-image.tmpl
+guix system -n vm-image gnu/system/examples/vm-image.tmpl
+# This invocation was taken care of in the loop above:
+# guix system -n disk-image gnu/system/examples/bare-bones.tmpl
+guix system -n disk-image --file-system-type=iso9660 gnu/system/examples/bare-bones.tmpl
+guix system -n docker-image gnu/system/examples/docker-image.tmpl
