@@ -2199,7 +2199,7 @@ buffers.")
 (define-public intel-gpu-tools
   (package
     (name "intel-gpu-tools")
-    (version "1.21")
+    (version "1.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
@@ -2207,7 +2207,7 @@ buffers.")
                                   "intel-gpu-tools-" version ".tar.gz"))
               (sha256
                (base32
-                "1xfy4cgimyyn5qixlrfkadgnl9qwbk30vw8k80g8vjnrcc4hx986"))))
+                "1jx5w5fr6jp67rcrlp5v79cn8kp9n0wgd5pbfgzamlah5cx6j3yd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; many of the tests try to load kernel modules
@@ -2219,7 +2219,8 @@ buffers.")
              (setenv "NOCONFIGURE" "1")
              (invoke "sh" "autogen.sh"))))))
     (inputs
-     `(("util-macros" ,util-macros)
+     `(("eudev" ,eudev)
+       ("util-macros" ,util-macros)
        ("libdrm" ,libdrm)
        ("libpciaccess" ,libpciaccess)
        ("kmod" ,kmod)
