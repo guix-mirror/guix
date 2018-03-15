@@ -522,7 +522,8 @@ the bootstrap environment."
                     #t)))))))
      (propagated-inputs `(("kernel-headers" ,(kernel-headers-boot0))))
      (native-inputs
-      `(("texinfo" ,texinfo-boot0)
+      `(("bison" ,bison-boot0)
+        ("texinfo" ,texinfo-boot0)
         ("perl" ,perl-boot0)))
      (inputs
       `(;; The boot inputs.  That includes the bootstrap libc.  We don't want
