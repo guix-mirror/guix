@@ -360,6 +360,7 @@ hostname.")
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
                     "download/" version "/shadow-" version ".tar.xz"))
+              (patches (search-patches "shadow-CVE-2018-7169.patch"))
               (sha256
                (base32
                 "0hdpai78n63l3v3fgr3kkiqzhd0awrpfnnzz4mf7lmxdh61qb37w"))))
