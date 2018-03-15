@@ -377,24 +377,9 @@
 (unless (network-reachable?) (test-skip 1))
 (test-equal "package-source-derivation, snippet"
   "OK"
-  (let* ((file   (search-bootstrap-binary (match (%current-system)
-                                            ("armhf-linux"
-                                             "guile-2.0.11.tar.xz")
-                                            ("aarch64-linux"
-                                             "guile-2.0.14.tar.xz")
-                                            (_
-                                             "guile-2.0.9.tar.xz"))
-                                          (%current-system)))
-         (sha256 (call-with-input-file file port-sha256))
-         (fetch  (lambda* (url hash-algo hash
-                           #:optional name #:key system)
-                   (pk 'fetch url hash-algo hash name system)
-                   (interned-file url)))
-         (source (bootstrap-origin
+  (let* ((source (bootstrap-origin
                   (origin
-                    (method fetch)
-                    (uri file)
-                    (sha256 sha256)
+                    (inherit (bootstrap-guile-origin (%current-system)))
                     (patch-inputs
                      `(("tar" ,%bootstrap-coreutils&co)
                        ("xz" ,%bootstrap-coreutils&co)
