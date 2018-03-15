@@ -547,6 +547,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
+    (replacement util-linux/fixed)
     (version "2.31")
     (source (origin
               (method url-fetch)
@@ -633,6 +634,15 @@ block devices, UUIDs, TTYs, and many other tools.")
     ;; explicitly defined license.
     (license (list license:gpl3+ license:gpl2+ license:gpl2 license:lgpl2.0+
                    license:bsd-4 license:public-domain))))
+
+(define util-linux/fixed
+  (package
+    (inherit util-linux)
+    (source
+      (origin
+        (inherit (package-source util-linux))
+        (patches (append (origin-patches (package-source util-linux))
+                         (search-patches "util-linux-CVE-2018-7738.patch")))))))
 
 (define-public ddate
   (package
