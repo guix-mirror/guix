@@ -271,7 +271,7 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
      (list (search-path-specification
             (variable "R_LIBS_SITE")
             (files (list "site-library/")))))
-    (home-page "http://www.r-project.org/")
+    (home-page "https://www.r-project.org/")
     (synopsis "Environment for statistical computing and graphics")
     (description
      "R is a language and environment for statistical computing and graphics.
@@ -5018,7 +5018,7 @@ using modular prediction and response module classes.")
      `(("r-matrix" ,r-matrix)
        ("r-matrixmodels" ,r-matrixmodels)
        ("r-sparsem" ,r-sparsem)))
-    (home-page "http://www.r-project.org")
+    (home-page "https://www.r-project.org")
     (synopsis "Quantile regression")
     (description
      "This package provides an estimation and inference methods for models

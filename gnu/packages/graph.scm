@@ -142,7 +142,7 @@ more.")
      `(("r-igraph" ,r-igraph)
        ("r-matrix" ,r-matrix)
        ("r-scatterplot3d" ,r-scatterplot3d)))
-    (home-page "http://www.r-project.org")
+    (home-page "https://www.r-project.org")
     (synopsis "Diffusion map")
     (description "This package implements the diffusion map method of data
 parametrization, including creation and visualization of diffusion maps,

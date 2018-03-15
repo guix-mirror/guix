@@ -3773,7 +3773,7 @@ programming language.")
                                         texlive-latex-seminar
                                         texlive-latex-hyperref
                                         texlive-tex-texinfo)))))
-    (home-page "http://ess.r-project.org/")
+    (home-page "https://ess.r-project.org/")
     (synopsis "Emacs mode for statistical analysis programs")
     (description "Emacs Speaks Statistics (ESS) is an add-on package for GNU
 Emacs.  It is designed to support editing of scripts and interaction with
