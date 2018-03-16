@@ -1173,7 +1173,7 @@ install: libbitshuffle.so
          (add-before 'build 'build-jni
            (lambda _
              ;; Rebuild one of the binaries we removed earlier
-             (system* "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
+             (invoke "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
                       "-d" "lib")
              ;; Link to the dynamic bitshuffle and snappy, not the static ones
              (substitute* "Makefile.common"
@@ -1260,7 +1260,7 @@ compresser/decompresser.")
          (add-before 'build 'build-jni
            (lambda _
              ;; Rebuild one of the binaries we removed earlier
-             (system* "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
+             (invoke "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
                       "-d" "lib")
              ;; Link to the dynamic snappy, not the static ones
              (substitute* "Makefile.common"
@@ -1277,7 +1277,7 @@ compresser/decompresser.")
                (("NAME\\): \\$\\(SNAPPY_OBJ\\)")
                 "NAME): $(SNAPPY_OBJ)\n\t@mkdir -p $(@D)"))
              ;; Finally we can run the Makefile to build the dynamic library.
-             (zero? (system* "make" "native"))))
+             (invoke "make" "native")))
          ;; Once we have built the shared library, we need to place it in the
          ;; "build" directory so it can be added to the jar file.
          (add-after 'build-jni 'copy-jni
