@@ -3591,7 +3591,7 @@ this is particularly useful when using scalable versions of the CM
 fonts (Bakoma, or the versions from BSR/Y&Y, or True Type versions from Kinch,
 PCTeX, etc.).  In fact, since modern distributions will automatically generate
 any bitmap font you might need, @code{type1cm} has wider application than just
-those using scaleable versions of the fonts.  Note that the LaTeX distribution
+those using scalable versions of the fonts.  Note that the LaTeX distribution
 now contains a package @code{fix-cm},f which performs the task of
 @code{type1cm}, as well as doing the same job for T1- and TS1-encoded
 @code{ec} fonts.")
