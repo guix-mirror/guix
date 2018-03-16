@@ -1116,8 +1116,8 @@ command.")
        (modify-phases %standard-phases
          (replace 'unpack
            (lambda* (#:key source inputs #:allow-other-keys)
-             (and (zero? (system* "tar" "xvf" source))
-                  (zero? (system* "tar" "xvf" (assoc-ref inputs "tzcode"))))))
+             (invoke "tar" "xvf" source)
+             (invoke "tar" "xvf" (assoc-ref inputs "tzcode"))))
          (add-after 'install 'post-install
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Move data in the right place.
@@ -1129,7 +1129,8 @@ command.")
                (copy-recursively (string-append out "/share/zoneinfo-leaps")
                                  (string-append out "/share/zoneinfo/right"))
                (delete-file-recursively
-                (string-append out "/share/zoneinfo-leaps")))))
+                (string-append out "/share/zoneinfo-leaps"))
+               #t)))
          (delete 'configure))))
     (inputs `(("tzcode" ,(origin
                           (method url-fetch)
