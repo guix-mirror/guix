@@ -249,23 +249,23 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key target #:allow-other-keys)
-             (if ,(%current-target-system)
-                 ;; Cross-compilation: use the cross tools.
-                 (substitute* (find-files "." "Makefile")
-                   (("CC=.*$")
-                    (string-append "CC = " target "-gcc\n"))
-                   (("AR=.*$")
-                    (string-append "AR = " target "-ar\n"))
-                   (("RANLIB=.*$")
-                    (string-append "RANLIB = " target "-ranlib\n"))
-                   (("^all:(.*)test" _ prerequisites)
-                    ;; Remove 'all' -> 'test' dependency.
-                    (string-append "all:" prerequisites "\n")))
-                 #t)))
+             (when ,(%current-target-system)
+               ;; Cross-compilation: use the cross tools.
+               (substitute* (find-files "." "Makefile")
+                 (("CC=.*$")
+                  (string-append "CC = " target "-gcc\n"))
+                 (("AR=.*$")
+                  (string-append "AR = " target "-ar\n"))
+                 (("RANLIB=.*$")
+                  (string-append "RANLIB = " target "-ranlib\n"))
+                 (("^all:(.*)test" _ prerequisites)
+                  ;; Remove 'all' -> 'test' dependency.
+                  (string-append "all:" prerequisites "\n"))))
+             #t))
          (add-before 'build 'build-shared-lib
            (lambda* (#:key inputs #:allow-other-keys)
              (patch-makefile-SHELL "Makefile-libbz2_so")
-             (zero? (system* "make" "-f" "Makefile-libbz2_so"))))
+             (invoke "make" "-f" "Makefile-libbz2_so")))
          (add-after 'install 'install-shared-lib
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
