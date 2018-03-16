@@ -335,3 +335,44 @@ other groovy submodules.")))
     (description "This package contains a template framework which is
 well-suited to applications where the text to be generated follows the form of
 a static template.")))
+
+(define groovy-groovydoc
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-groovydoc")
+    (arguments
+     `(#:jar-name "groovy-groovydoc.jar"
+       #:jdk ,icedtea-8
+       #:test-dir "subprojects/groovy-groovydoc/src/test"
+       #:tests? #f; Requires groovy-ant which is a circular dependency
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "subprojects/groovy-groovydoc/src/main/resources"
+                               "build/classes")
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes"
+                    "-j"; joint compilation
+                    (find-files "subprojects/groovy-groovydoc/src/main"
+                                ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-groovydoc.jar"
+                     "-C" "build/classes" ".")
+             #t)))))
+    (inputs
+     `(("groovy-templates" ,groovy-templates)
+       ,@(package-inputs groovy-bootstrap)))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy documentation generation")
+    (description "This package contains the groovy documentation generator,
+similar to javadoc.")))
