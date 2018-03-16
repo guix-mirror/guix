@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -805,14 +805,13 @@ with the Linux kernel.")
                ;; Force mach/hurd/libpthread subdirs to build first in order to avoid
                ;; linking errors.
                ;; See <https://lists.gnu.org/archive/html/bug-hurd/2016-11/msg00045.html>
-               (let ((-j (list "-j" (number->string (parallel-job-count)))))
-                 (let-syntax ((make (syntax-rules ()
-                                      ((_ target)
-                                       (zero? (apply system* "make" target -j))))))
-                   (and (make "mach/subdir_lib")
-                        (make "hurd/subdir_lib")
-                        (make "libpthread/subdir_lib")
-                        (zero? (apply system* "make" -j)))))))))
+               (let ((flags (list "-j" (number->string (parallel-job-count)))))
+                 (define (make target)
+                   (apply invoke "make" target flags))
+                 (make "mach/subdir_lib")
+                 (make "hurd/subdir_lib")
+                 (make "libpthread/subdir_lib")
+                 (apply invoke "make" flags))))))
         ((#:configure-flags original-configure-flags)
         `(append (list "--host=i586-pc-gnu"
 
