@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +50,7 @@
                    "INSTALLDIRS=site" "NO_PERLLOCAL=1" ,@make-maker-flags))
                 (else (error "no Build.PL or Makefile.PL found")))))
     (format #t "running `perl' with arguments ~s~%" args)
-    (zero? (apply system* "perl" args))))
+    (apply invoke "perl" args)))
 
 (define-syntax-rule (define-w/gnu-fallback* (name args ...) body ...)
   (define* (name args ... #:rest rest)
@@ -58,19 +59,18 @@
         (apply (assoc-ref gnu:%standard-phases 'name) rest))))
 
 (define-w/gnu-fallback* (build)
-  (zero? (system* "./Build")))
+  (invoke "./Build"))
 
 (define-w/gnu-fallback* (check #:key target
                                (tests? (not target)) (test-flags '())
                                #:allow-other-keys)
   (if tests?
-      (zero? (apply system* "./Build" "test" test-flags))
-      (begin
-        (format #t "test suite not run~%")
-        #t)))
+      (apply invoke "./Build" "test" test-flags)
+      (format #t "test suite not run~%"))
+  #t)
 
 (define-w/gnu-fallback* (install)
-  (zero? (system* "./Build" "install")))
+  (invoke "./Build" "install"))
 
 (define %standard-phases
   ;; Everything is as with the GNU Build System except for the `configure',
