@@ -5614,7 +5614,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
 (define-public python-ptyprocess
   (package
     (name "python-ptyprocess")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
@@ -5623,7 +5623,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
              version ".tar.gz"))
        (sha256
         (base32
-         "19l1xrjn4l9gjz01s3vg92gn2dd9d8mw1v86ppkzlnr9m5iwwc05"))))
+         "0ra31k10v3629xq0kdn8lwmfbi97anmk48r03yvh7mks0kq96hg6"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
