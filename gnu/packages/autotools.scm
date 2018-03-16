@@ -3,7 +3,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2015, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -193,7 +193,8 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                        (patch-shebang "configure"))
                      (exit (status:exit-val result))))
                 port)))
-           (chmod (string-append bin "/autoconf") #o555)))))
+           (chmod (string-append bin "/autoconf") #o555)
+           #t))))
 
     ;; Do not show it in the UI since it's meant for internal use.
     (properties '((hidden? . #t)))))
