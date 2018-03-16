@@ -3432,11 +3432,11 @@ The package provides additional NTFS tools.")
        (modify-phases %standard-phases
          (replace 'build
            (lambda _
-             (zero? (system* "ninja"
-                             "-j" (number->string (parallel-job-count))))))
+             (invoke "ninja"
+                     "-j" (number->string (parallel-job-count)))))
          (replace 'install
            (lambda _
-             (zero? (system* "ninja" "install")))))))
+             (invoke "ninja" "install"))))))
     (native-inputs
      `(("ninja" ,ninja)
        ("pkg-config" ,pkg-config)
