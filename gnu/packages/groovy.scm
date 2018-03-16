@@ -1060,3 +1060,97 @@ tests in Groovy.")))
     (synopsis "Groovy macro processor")
     (description "This package contains a high-level library to create macro
 and modify groovy's @dfn{Abstract Syntax Tree} (AST).")))
+
+(define-public groovy
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy")
+    (arguments
+     `(#:tests? #f; No tests
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-bin (string-append out "/bin"))
+                    (out-lib (string-append out "/lib")))
+               (with-directory-excursion "src/bin"
+                 (substitute* "startGroovy"
+                   (("\"\\\\\"") "\"")
+                   (("\\\\\"\"") "\"")
+                   (("\\\\\\$") "$")
+                   (("@GROOVYJAR@") "groovy.jar")
+                   (("MAX_FD=\"maximum\"")
+                    (string-append
+                      "MAX_FD=\"maximum\"\nJAVAHOME="
+                      (assoc-ref inputs "jdk"))))
+                 ;; Groovy uses class loading. It's not enough to put the class
+                 ;; in the loader's classpath, as it causes breakages:
+                 ;; the compiler would give this error:
+                 ;; "Prohibited package name: java.lang"
+                 ;; So we symlink dependencies in this package's output. The
+                 ;; starter class (in groovy-bootstrap) is where the class loader
+                 ;; will look for dependencies, so we put it there too.
+                 (mkdir-p out-lib)
+                 (for-each
+                   (lambda (input)
+                     (for-each
+                       (lambda (jar)
+                         (symlink jar (string-append out-lib "/" (basename jar))))
+                       (find-files (assoc-ref inputs input) ".*.jar")))
+                   '("groovy-bootstrap" "groovy-ant" "groovy-bsf"
+                     "groovy-console" "groovy-docgenerator"
+                     "groovy-groovydoc" "groovy-groovysh"
+                     "groovy-jmx" "groovy-json" "groovy-jsr223"
+                     "groovy-nio" "groovy-servlet" "groovy-sql"
+                     "groovy-swing" "groovy-templates" "groovy-testng"
+                     "java-commons-cli" "java-asm"
+                     "java-classpathx-servletapi" "java-xstream"
+                     "java-jansi" "java-jline-2"))
+                 ;; antlr.jar is present twice in antlr2.  Symlink doesn't like
+                 ;; it, so we symlink it here.
+                 (symlink (string-append (assoc-ref inputs "antlr2") "/lib/antlr.jar")
+                          (string-append out-lib "/antlr.jar"))
+                 (for-each
+                   (lambda (tool)
+                     (install-file tool out-bin)
+                     (chmod (string-append out-bin "/" tool) #o755))
+                   '("grape" "groovy" "groovyc" "groovyConsole" "groovydoc"
+                     "groovysh" "java2groovy" "startGroovy")))
+               (install-file "src/conf/groovy-starter.conf"
+                             (string-append out "/conf"))
+               #t))))))
+    (inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-ant" ,groovy-ant)
+       ("groovy-bsf" ,groovy-bsf)
+       ("groovy-console" ,groovy-console)
+       ("groovy-docgenerator" ,groovy-docgenerator)
+       ("groovy-groovydoc" ,groovy-groovydoc)
+       ("groovy-groovysh" ,groovy-groovysh)
+       ("groovy-jmx" ,groovy-jmx)
+       ("groovy-json" ,groovy-json)
+       ("groovy-jsr223" ,groovy-jsr223)
+       ("groovy-nio" ,groovy-nio)
+       ("groovy-servlet" ,groovy-servlet)
+       ("groovy-sql" ,groovy-sql)
+       ("groovy-swing" ,groovy-swing)
+       ("groovy-templates" ,groovy-templates)
+       ("groovy-testng" ,groovy-testng)
+       ("java-commons-cli" ,java-commons-cli)
+       ("java-asm" ,java-asm)
+       ("java-classpathx-servletapi" ,java-classpathx-servletapi)
+       ("java-xstream" ,java-xstream)
+       ("java-jansi" ,java-jansi)
+       ("java-jline-2" ,java-jline-2)
+       ("antlr2" ,antlr2)))
+    (synopsis "Programming language for the JVM")
+    (description "Apache Groovy is a powerful, optionally typed and dynamic
+language, with static-typing and static compilation capabilities, for the Java
+platform.  It integrates smoothly with any Java program, and immediately
+delivers to your application powerful features, including scripting
+capabilities, Domain-Specific Language authoring, runtime and compile-time
+meta-programming and functional programming.")))
