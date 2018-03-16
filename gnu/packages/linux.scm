@@ -1329,7 +1329,8 @@ configuration (iptunnel, ipmaddr).")
                               (substitute* "Make.Rules"
                                 (("LDFLAGS := #-g")
                                  (string-append "LDFLAGS := -Wl,-rpath="
-                                                %output "/lib"))))))
+                                                %output "/lib")))
+                              #t)))
                  #:tests? #f                      ; no 'check' target
                  #:make-flags (list "lib=lib"
                                     (string-append "prefix="
