@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -77,10 +77,11 @@
              ;; this user does not exist within Guix's build environment.
              (for-each (lambda (file)
                          (delete-file (string-append "test/" file)))
-                       '("setfacl-X.test" "cp.test" "misc.test"))))
+                       '("setfacl-X.test" "cp.test" "misc.test"))
+             #t))
          (replace 'install
            (lambda _
-             (zero? (system* "make" "install" "install-lib" "install-dev")))))))
+             (invoke "make" "install" "install-lib" "install-dev"))))))
     (inputs `(("attr" ,attr)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
