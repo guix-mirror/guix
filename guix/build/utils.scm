@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-60)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
@@ -86,7 +88,14 @@
             fold-port-matches
             remove-store-references
             wrap-program
+
             invoke
+            invoke-error?
+            invoke-error-program
+            invoke-error-arguments
+            invoke-error-exit-status
+            invoke-error-term-signal
+            invoke-error-stop-signal
 
             locale-category->string))
 
@@ -591,13 +600,25 @@ Where every <*-phase-name> is an expression evaluating to a symbol, and
     ((_ phases (add-after old-phase-name new-phase-name new-phase))
      (alist-cons-after old-phase-name new-phase-name new-phase phases))))
 
+(define-condition-type &invoke-error &error
+  invoke-error?
+  (program      invoke-error-program)
+  (arguments    invoke-error-arguments)
+  (exit-status  invoke-error-exit-status)
+  (term-signal  invoke-error-term-signal)
+  (stop-signal  invoke-error-stop-signal))
+
 (define (invoke program . args)
-  "Invoke PROGRAM with the given ARGS.  Raise an error if the exit
-code is non-zero; otherwise return #t."
-  (let ((status (apply system* program args)))
-    (unless (zero? status)
-      (error (format #f "program ~s exited with non-zero code" program)
-             status))
+  "Invoke PROGRAM with the given ARGS.  Raise an exception
+if the exit code is non-zero; otherwise return #t."
+  (let ((code (apply system* program args)))
+    (unless (zero? code)
+      (raise (condition (&invoke-error
+                         (program program)
+                         (arguments args)
+                         (exit-status (status:exit-val code))
+                         (term-signal (status:term-sig code))
+                         (stop-signal (status:stop-sig code))))))
     #t))
 
 

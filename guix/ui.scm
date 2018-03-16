@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2013, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
@@ -41,6 +41,12 @@
   #:use-module ((guix licenses) #:select (license? license-name))
   #:use-module ((guix build syscalls)
                 #:select (free-disk-space terminal-columns))
+  #:use-module ((guix build utils)
+                #:select (invoke-error? invoke-error-program
+                                        invoke-error-arguments
+                                        invoke-error-exit-status
+                                        invoke-error-term-signal
+                                        invoke-error-stop-signal))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -636,6 +642,16 @@ or remove one of them from the profile.")
 directories:~{ ~a~}~%")
                     (file-search-error-file-name c)
                     (file-search-error-search-path c)))
+            ((invoke-error? c)
+             (leave (G_ "program exited\
+~@[ with non-zero exit status ~a~]\
+~@[ terminated by signal ~a~]\
+~@[ stopped by signal ~a~]: ~s~%")
+                    (invoke-error-exit-status c)
+                    (invoke-error-term-signal c)
+                    (invoke-error-stop-signal c)
+                    (cons (invoke-error-program c)
+                          (invoke-error-arguments c))))
             ((and (error-location? c) (message-condition? c))
              (format (current-error-port)
                      (G_ "~a: error: ~a~%")
