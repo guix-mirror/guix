@@ -12677,6 +12677,13 @@ once.  This package provides tools to perform Drop-seq analyses.")
      `(#:parallel-tests? #f             ; not supported
        #:phases
        (modify-phases %standard-phases
+         ;; "test.sh" runs STAR, which requires excessive amounts of memory.
+         (add-after 'unpack 'disable-resource-intensive-test
+           (lambda _
+             (substitute* "Makefile.in"
+               (("(^  tests/test_trim_galore/test.sh).*" _ m) m)
+               (("^  test.sh") ""))
+             #t))
          (add-after 'install 'wrap-executable
            ;; Make sure the executable finds all R modules.
            (lambda* (#:key inputs outputs #:allow-other-keys)
