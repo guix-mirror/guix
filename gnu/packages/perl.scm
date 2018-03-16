@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@infotropique.org>
@@ -107,7 +107,7 @@
          (replace 'configure
            (lambda* (#:key configure-flags #:allow-other-keys)
              (format #t "Perl configure flags: ~s~%" configure-flags)
-             (zero? (apply system* "./Configure" configure-flags))))
+             (apply invoke "./Configure" configure-flags)))
          (add-before
           'strip 'make-shared-objects-writable
           (lambda* (#:key outputs #:allow-other-keys)
@@ -117,7 +117,8 @@
                    (lib (string-append out "/lib")))
               (for-each (lambda (dso)
                           (chmod dso #o755))
-                        (find-files lib "\\.so$")))))
+                        (find-files lib "\\.so$"))
+              #t)))
 
          (add-after 'install 'remove-extra-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
