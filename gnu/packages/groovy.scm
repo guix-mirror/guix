@@ -844,3 +844,38 @@ management and monitoring of JVM-based solutions.")))
     (synopsis "Groovy's own JSR223 implementation")
     (description "This package contains Groovy's own JSR223 implementation.  This
 module is used for interaction between Groovy and Java code.")))
+
+(define groovy-nio
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-nio")
+    (arguments
+     `(#:jar-name "groovy-nio.jar"
+       #:test-dir "src/test"
+       #:jdk ,icedtea-8
+       #:tests? #f; Requires spock-framework
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "subprojects/groovy-nio")
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes" "-j"; joint compilation
+                    (find-files "src/main" ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-nio.jar"
+                     "-C" "build/classes" ".")
+             #t)))))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy input-output library")
+    (description "This package implements an input/output library that extends
+the functionality of the common library of Java.")))
