@@ -67,7 +67,7 @@ NAMES (strings)."
         (string-append package-name-prefix (string-downcase name)))))
 
 (define* (elpa-url #:optional (repo 'gnu))
-  "Retrun the URL of REPO."
+  "Retrieve the URL of REPO."
   (let ((elpa-archives
          '((gnu . "https://elpa.gnu.org/packages")
            (melpa-stable . "https://stable.melpa.org/packages")
@@ -75,7 +75,7 @@ NAMES (strings)."
     (assq-ref elpa-archives repo)))
 
 (define* (elpa-fetch-archive #:optional (repo 'gnu))
-  "Retrive the archive with the list of packages available from REPO."
+  "Retrieve the archive with the list of packages available from REPO."
   (let ((url (and=> (elpa-url repo)
                     (cut string-append <> "/archive-contents"))))
     (if url
