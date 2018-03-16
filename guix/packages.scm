@@ -566,17 +566,17 @@ specifies modules in scope when evaluating SNIPPET."
 
               (for-each apply-patch '#+patches)
 
-              (unless #+@(if snippet
-                             #~((let ((module (make-fresh-user-module)))
-                                  (module-use-interfaces!
-                                   module
-                                   (map resolve-interface '#+modules))
-                                  ((@ (system base compile) compile)
-                                   '#+snippet
-                                   #:to 'value
-                                   #:opts %auto-compilation-options
-                                   #:env module)))
-                             #~())
+              (unless #+(if snippet
+                            #~(let ((module (make-fresh-user-module)))
+                                (module-use-interfaces!
+                                 module
+                                 (map resolve-interface '#+modules))
+                                ((@ (system base compile) compile)
+                                 '#+snippet
+                                 #:to 'value
+                                 #:opts %auto-compilation-options
+                                 #:env module))
+                            #~#t)
                 (format (current-error-port)
                         "snippet returned false, indicating failure~%"))
 
