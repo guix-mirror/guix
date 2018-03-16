@@ -963,8 +963,8 @@ the 'share/locale' sub-directory of this package.")
           `(modify-phases ,phases
              (replace 'build
                (lambda _
-                 (zero? (system* "make" "localedata/install-locales"
-                                 "-j" (number->string (parallel-job-count))))))
+                 (invoke "make" "localedata/install-locales"
+                         "-j" (number->string (parallel-job-count)))))
              (delete 'install)
              (delete 'move-static-libs)))
          ((#:configure-flags flags)
