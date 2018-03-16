@@ -25,20 +25,17 @@
 ;;;
 ;;; This is a minimal implementation of "glob patterns" (info "(libc)
 ;;; Globbbing").  It is currently limited to simple patterns and does not
-;;; support braces and square brackets, for instance.
+;;; support braces, for instance.
 ;;;
 ;;; Code:
 
-(define (wildcard-indices str)
-  "Return the list of indices in STR where wildcards can be found."
-  (let loop ((index 0)
-             (result '()))
-    (if (= index (string-length str))
-        (reverse result)
-        (loop (+ 1 index)
-              (case (string-ref str index)
-                ((#\? #\*) (cons index result))
-                (else      result))))))
+(define (parse-bracket chars)
+  "Parse CHARS, a list of characters that extracted from a '[...]' sequence."
+  (match chars
+    ((start #\- end)
+     `(range ,start ,end))
+    (lst
+     `(set ,@lst))))
 
 (define (compile-glob-pattern str)
   "Return an sexp that represents the compiled form of STR, a glob pattern
@@ -48,29 +45,43 @@ such as \"foo*\" or \"foo??bar\"."
       (((? string? str)) str)
       (x x)))
 
-  (let loop ((index   0)
-             (indices (wildcard-indices str))
+  (define (cons-string chars lst)
+    (match chars
+      (() lst)
+      (_ (cons (list->string (reverse chars)) lst))))
+
+  (let loop ((chars   (string->list str))
+             (pending '())
+             (brackets 0)
              (result '()))
-    (match indices
+    (match chars
       (()
-       (flatten (cond ((zero? index)
-                       (list str))
-                      ((= index (string-length str))
-                       (reverse result))
-                      (else
-                       (reverse (cons (string-drop str index)
-                                      result))))))
-      ((wildcard-index . rest)
-       (let ((wildcard (match (string-ref str wildcard-index)
+       (flatten (reverse (if (null? pending)
+                             result
+                             (cons-string pending result)))))
+      (((and chr (or #\? #\*)) . rest)
+       (let ((wildcard (match chr
                          (#\? '?)
                          (#\* '*))))
-         (match (substring str index wildcard-index)
-           (""  (loop (+ 1 wildcard-index)
-                      rest
-                      (cons wildcard result)))
-           (str (loop (+ 1 wildcard-index)
-                      rest
-                      (cons* wildcard str result)))))))))
+         (if (zero? brackets)
+             (loop rest '() 0
+                   (cons* wildcard (cons-string pending result)))
+             (loop rest (cons chr pending) brackets result))))
+      ((#\[ . rest)
+       (if (zero? brackets)
+           (loop rest '() (+ 1 brackets)
+                 (cons-string pending result))
+           (loop rest (cons #\[ pending) (+ 1 brackets) result)))
+      ((#\] . rest)
+       (cond ((zero? brackets)
+              (error "unexpected closing bracket" str))
+             ((= 1 brackets)
+              (loop rest '() 0
+                    (cons (parse-bracket (reverse pending)) result)))
+             (else
+              (loop rest (cons #\] pending) (- brackets 1) result))))
+      ((chr . rest)
+       (loop rest (cons chr pending) brackets result)))))
 
 (define (glob-match? pattern str)
   "Return true if STR matches PATTERN, a compiled glob pattern as returned by
@@ -78,11 +89,12 @@ such as \"foo*\" or \"foo??bar\"."
   (let loop ((pattern pattern)
              (str str))
    (match pattern
-     ((? string? literal) (string=? literal str))
-     (((? string? one))   (string=? one str))
-     (('*)  #t)
-     (('?) (= 1 (string-length str)))
-     (()    #t)
+     ((? string? literal)
+      (string=? literal str))
+     (()
+      (string-null? str))
+     (('*)
+      #t)
      (('* suffix . rest)
       (match (string-contains str suffix)
         (#f    #f)
@@ -92,6 +104,19 @@ such as \"foo*\" or \"foo??bar\"."
      (('? . rest)
       (and (>= (string-length str) 1)
            (loop rest (string-drop str 1))))
+     ((('range start end) . rest)
+      (and (>= (string-length str) 1)
+           (let ((chr (string-ref str 0)))
+             (and (char-set-contains? (ucs-range->char-set
+                                       (char->integer start)
+                                       (+ 1 (char->integer end)))
+                                      chr)
+                  (loop rest (string-drop str 1))))))
+     ((('set . chars) . rest)
+      (and (>= (string-length str) 1)
+           (let ((chr (string-ref str 0)))
+             (and (char-set-contains? (list->char-set chars) chr)
+                  (loop rest (string-drop str 1))))))
      ((prefix . rest)
       (and (string-prefix? prefix str)
            (loop rest (string-drop str (string-length prefix))))))))
