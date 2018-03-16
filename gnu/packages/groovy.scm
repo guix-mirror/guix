@@ -491,3 +491,54 @@ similar to javadoc.")))
     (synopsis "Groovy BSF engine")
     (description "This package defines the BSF engine for using Groovy inside
 any @dfn{Bean Scripting Framework} (BSF) application.")))
+
+(define groovy-swing
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-swing")
+    (arguments
+     `(#:jar-name "groovy-swing.jar"
+       #:jdk ,icedtea-8
+       ;; FIXME: tests are not run
+       #:test-dir "src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "subprojects/groovy-swing")
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes" "-j"; joint compilation
+                    (find-files "src/main" ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-swing.jar"
+                     "-C" "build/classes" ".")
+             #t))
+         (replace 'check
+           (lambda _
+             (mkdir-p "build/test-classes")
+             (substitute* "src/test/groovy/groovy/util/GroovySwingTestCase.groovy"
+               (("HeadlessTestSupport.headless") "isHeadless()"))
+             (substitute* "build.xml"
+               (("depends=\"compile-tests\"") "depends=\"\"")
+               (("}/java") "}/groovy"))
+             (apply invoke "java" "-cp"
+                    (string-append (getenv "CLASSPATH") ":build/classes")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/test-classes" "-j"
+                    (find-files "src/test" ".*\\.(groovy|java)$"))
+             (invoke "ant" "check")
+             #t)))))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy graphical library")
+    (description "This package contains the groovy bindings to Java Swing, a
+library used to build graphical interfaces.")))
