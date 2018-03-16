@@ -542,3 +542,64 @@ any @dfn{Bean Scripting Framework} (BSF) application.")))
     (synopsis "Groovy graphical library")
     (description "This package contains the groovy bindings to Java Swing, a
 library used to build graphical interfaces.")))
+
+(define groovy-console
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-console")
+    (arguments
+     `(#:jar-name "groovy-console.jar"
+       #:jdk ,icedtea-8
+       ;; FIXME: tests are not run
+       #:test-dir "src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "subprojects/groovy-console")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes" "-j"; joint compilation
+                    (find-files "src/main" ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-console.jar"
+                     "-C" "build/classes" ".")
+             #t))
+         (replace 'check
+           (lambda _
+             (mkdir-p "build/test-classes")
+             (substitute* "build.xml"
+               (("depends=\"compile-tests\"") "depends=\"\"")
+               (("}/java") "}/groovy"))
+             (substitute*
+               "../groovy-swing/src/test/groovy/groovy/util/GroovySwingTestCase.groovy"
+               (("HeadlessTestSupport.headless") "isHeadless()"))
+             (apply invoke "java" "-cp"
+                    (string-append (getenv "CLASSPATH") ":build/classes")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/test-classes" "-j"
+                    (append
+                      (find-files "../groovy-swing/src/test" ".*\\.(groovy|java)$")
+                      (find-files "src/test" ".*\\.(groovy|java)$")))
+             (invoke "ant" "check")
+             #t)))))
+    (inputs
+     `(("groovy-swing" ,groovy-swing)
+       ("groovy-templates" ,groovy-templates)
+       ,@(package-inputs groovy-bootstrap)))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy graphical interface")
+    (description "This package contains a graphical interface to run groovy.")))
