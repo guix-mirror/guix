@@ -3292,14 +3292,16 @@ disks and SD cards.  This package provides the userland utilities.")
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'enter-subdirectory
                     (lambda _
-                      (chdir "tools/laptop/freefall")))
+                      (chdir "tools/laptop/freefall")
+                      #t))
                   (delete 'configure)
                   (add-before 'build 'increase-timeout
                     (lambda _
                       ;; The default of 2 seconds is too low: it assumes an
                       ;; open lid and AC power without actually checking.
                       (substitute* "freefall.c"
-                        (("alarm\\(2\\)") "alarm(5)")))))
+                        (("alarm\\(2\\)") "alarm(5)"))
+                      #t)))
        #:make-flags (list (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
        #:tests? #f)) ;no tests
