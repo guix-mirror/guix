@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -211,7 +212,7 @@ and the ICD.")
         (revision "1"))
     (package
       (name "shaderc")
-      (version (string-append "0.0-" revision "." (string-take commit 9)))
+      (version (git-version "0.0.0-" revision commit))
       (source
        (origin
          (method git-fetch)
