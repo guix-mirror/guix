@@ -637,7 +637,8 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                   ;; Build only the tools.
                   (add-after 'unpack 'chdir
                              (lambda _
-                               (chdir "gettext-tools")))
+                               (chdir "gettext-tools")
+                               #t))
 
                   ;; Some test programs require pthreads, which we don't have.
                   (add-before 'configure 'no-test-programs
