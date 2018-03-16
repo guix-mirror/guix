@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -152,12 +153,13 @@ working directory."
         ;; Preserve timestamps (set to the Epoch) on the copied tree so that
         ;; things work deterministically.
         (copy-recursively source "."
-                          #:keep-mtime? #t)
-        #t)
-      (and (if (string-suffix? ".zip" source)
-               (zero? (system* "unzip" source))
-               (zero? (system* "tar" "xvf" source)))
-           (chdir (first-subdirectory ".")))))
+                          #:keep-mtime? #t))
+      (begin
+        (if (string-suffix? ".zip" source)
+            (invoke "unzip" source)
+            (invoke "tar" "xvf" source))
+        (chdir (first-subdirectory "."))))
+  #t)
 
 (define %bootstrap-scripts
   ;; Typical names of Autotools "bootstrap" scripts.
@@ -316,33 +318,32 @@ makefiles."
     ;; Call `configure' with a relative path.  Otherwise, GCC's build system
     ;; (for instance) records absolute source file names, which typically
     ;; contain the hash part of the `.drv' file, leading to a reference leak.
-    (zero? (apply system* bash
-                  (string-append srcdir "/configure")
-                  flags))))
+    (apply invoke bash
+           (string-append srcdir "/configure")
+           flags)))
 
 (define* (build #:key (make-flags '()) (parallel-build? #t)
                 #:allow-other-keys)
-  (zero? (apply system* "make"
-                `(,@(if parallel-build?
-                        `("-j" ,(number->string (parallel-job-count)))
-                        '())
-                  ,@make-flags))))
+  (apply invoke "make"
+         `(,@(if parallel-build?
+                 `("-j" ,(number->string (parallel-job-count)))
+                 '())
+           ,@make-flags)))
 
 (define* (check #:key target (make-flags '()) (tests? (not target))
                 (test-target "check") (parallel-tests? #t)
                 #:allow-other-keys)
   (if tests?
-      (zero? (apply system* "make" test-target
-                    `(,@(if parallel-tests?
-                            `("-j" ,(number->string (parallel-job-count)))
-                            '())
-                      ,@make-flags)))
-      (begin
-        (format #t "test suite not run~%")
-        #t)))
+      (apply invoke "make" test-target
+             `(,@(if parallel-tests?
+                     `("-j" ,(number->string (parallel-job-count)))
+                     '())
+               ,@make-flags))
+      (format #t "test suite not run~%"))
+  #t)
 
 (define* (install #:key (make-flags '()) #:allow-other-keys)
-  (zero? (apply system* "make" "install" make-flags)))
+  (apply invoke "make" "install" make-flags))
 
 (define* (patch-shebangs #:key inputs outputs (patch-shebangs? #t)
                          #:allow-other-keys)
@@ -408,10 +409,8 @@ makefiles."
     (let ((debug (debug-file file)))
       (mkdir-p (dirname debug))
       (copy-file file debug)
-      (and (zero? (system* strip-command "--only-keep-debug" debug))
-           (begin
-             (chmod debug #o400)
-             #t))))
+      (invoke strip-command "--only-keep-debug" debug)
+      (chmod debug #o400)))
 
   (define (add-debug-link file)
     ;; Add a debug link in FILE (info "(binutils) strip").
@@ -421,10 +420,10 @@ makefiles."
     ;; `bfd_fill_in_gnu_debuglink_section' function.)  No reference to
     ;; DEBUG-OUTPUT is kept because bfd keeps only the basename of the debug
     ;; file.
-    (zero? (system* objcopy-command "--enable-deterministic-archives"
-                    (string-append "--add-gnu-debuglink="
-                                   (debug-file file))
-                    file)))
+    (invoke objcopy-command "--enable-deterministic-archives"
+            (string-append "--add-gnu-debuglink="
+                           (debug-file file))
+            file))
 
   (define (strip-dir dir)
     (format #t "stripping binaries in ~s with ~s and flags ~s~%"
@@ -434,17 +433,18 @@ makefiles."
               debug-output objcopy-command))
 
     (for-each (lambda (file)
-                (and (or (elf-file? file) (ar-file? file))
-                     (or (not debug-output)
-                         (make-debug-file file))
+                (when (or (elf-file? file) (ar-file? file))
+                  (when debug-output
+                    (make-debug-file file))
 
-                     ;; Ensure the file is writable.
-                     (begin (make-file-writable file) #t)
+                  ;; Ensure the file is writable.
+                  (make-file-writable file)
 
-                     (zero? (apply system* strip-command
-                                   (append strip-flags (list file))))
-                     (or (not debug-output)
-                         (add-debug-link file))))
+                  (apply invoke strip-command
+                         (append strip-flags (list file)))
+
+                  (when debug-output
+                    (add-debug-link file))))
               (find-files dir
                           (lambda (file stat)
                             ;; Ignore symlinks such as:
@@ -452,15 +452,16 @@ makefiles."
                             (eq? 'regular (stat:type stat)))
                           #:stat lstat)))
 
-  (or (not strip-binaries?)
-      (every strip-dir
-             (append-map (match-lambda
-                          ((_ . dir)
-                           (filter-map (lambda (d)
-                                         (let ((sub (string-append dir "/" d)))
-                                           (and (directory-exists? sub) sub)))
-                                       strip-directories)))
-                         outputs))))
+  (when strip-binaries?
+    (for-each
+     strip-dir
+     (append-map (match-lambda
+                   ((_ . dir)
+                    (filter-map (lambda (d)
+                                  (let ((sub (string-append dir "/" d)))
+                                    (and (directory-exists? sub) sub)))
+                                strip-directories)))
+                 outputs))))
 
 (define* (validate-runpath #:key
                            (validate-runpath? #t)
@@ -586,47 +587,45 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
               (apply throw args))))))
 
   (define (maybe-compress-directory directory regexp)
-    (or (not (directory-exists? directory))
-        (match (find-files directory regexp)
-          (()                                     ;nothing to compress
-           #t)
-          ((files ...)                            ;one or more files
-           (format #t
-                   "compressing documentation in '~a' with ~s and flags ~s~%"
-                   directory documentation-compressor
-                   documentation-compressor-flags)
-           (call-with-values
-               (lambda ()
-                 (partition symbolic-link? files))
-             (lambda (symlinks regular-files)
-               ;; Compress the non-symlink files, and adjust symlinks to refer
-               ;; to the compressed files.  Leave files that have hard links
-               ;; unchanged ('gzip' would refuse to compress them anyway.)
-               ;; Also, do not retarget symbolic links pointing to other
-               ;; symbolic links, since these are not compressed.
-               (and (every retarget-symlink
-                           (filter (lambda (symlink)
-                                     (and (not (points-to-symlink? symlink))
-                                          (string-match regexp symlink)))
-                                   symlinks))
-                    (zero?
-                     (apply system* documentation-compressor
-                            (append documentation-compressor-flags
-                                    (remove has-links? regular-files)))))))))))
+    (when (directory-exists? directory)
+      (match (find-files directory regexp)
+        (()                                     ;nothing to compress
+         #t)
+        ((files ...)                            ;one or more files
+         (format #t
+                 "compressing documentation in '~a' with ~s and flags ~s~%"
+                 directory documentation-compressor
+                 documentation-compressor-flags)
+         (call-with-values
+             (lambda ()
+               (partition symbolic-link? files))
+           (lambda (symlinks regular-files)
+             ;; Compress the non-symlink files, and adjust symlinks to refer
+             ;; to the compressed files.  Leave files that have hard links
+             ;; unchanged ('gzip' would refuse to compress them anyway.)
+             ;; Also, do not retarget symbolic links pointing to other
+             ;; symbolic links, since these are not compressed.
+             (for-each retarget-symlink
+                       (filter (lambda (symlink)
+                                 (and (not (points-to-symlink? symlink))
+                                      (string-match regexp symlink)))
+                               symlinks))
+             (apply invoke documentation-compressor
+                    (append documentation-compressor-flags
+                            (remove has-links? regular-files)))))))))
 
   (define (maybe-compress output)
-    (and (maybe-compress-directory (string-append output "/share/man")
-                                   "\\.[0-9]+$")
-         (maybe-compress-directory (string-append output "/share/info")
-                                   "\\.info(-[0-9]+)?$")))
+    (maybe-compress-directory (string-append output "/share/man")
+                              "\\.[0-9]+$")
+    (maybe-compress-directory (string-append output "/share/info")
+                              "\\.info(-[0-9]+)?$"))
 
   (if compress-documentation?
       (match outputs
         (((names . directories) ...)
-         (every maybe-compress directories)))
-      (begin
-        (format #t "not compressing documentation~%")
-        #t)))
+         (for-each maybe-compress directories)))
+      (format #t "not compressing documentation~%"))
+  #t)
 
 (define* (delete-info-dir-file #:key outputs #:allow-other-keys)
   "Delete any 'share/info/dir' file from OUTPUTS."
