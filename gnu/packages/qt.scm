@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -186,7 +186,7 @@ system, and the core design of Django is reused in Grantlee.")
        ("libxslt" ,libxslt)
        ("libxtst" ,libxtst)
        ("mtdev" ,mtdev)
-       ("mysql" ,mysql)
+       ("mariadb" ,mariadb)
        ("nss" ,nss)
        ("openssl" ,openssl)
        ("postgresql" ,postgresql)
