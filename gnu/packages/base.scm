@@ -415,16 +415,15 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.28.1")
+   (version "2.30")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "1sj234nd05cdgga1r36zalvvdkvpfbr12g5mir2n8i1dwsdrj939"))
-            (patches (search-patches "binutils-ld-new-dtags.patch"
-                                     "binutils-loongson-workaround.patch"))))
+              "028cklfqaab24glva1ks2aqa1zxa6w6xmc8q34zs1sb7h22dxspg"))
+            (patches (search-patches "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
 
    ;; TODO: Add dependency on zlib + those for Gold.
@@ -432,6 +431,12 @@ change.  GNU make offers many powerful extensions over the standard utility.")
     `(#:configure-flags '(;; Add `-static-libgcc' to not retain a dependency
                           ;; on GCC when bootstrapping.
                           "LDFLAGS=-static-libgcc"
+
+                          ;; Turn on --enable-new-dtags by default to make the
+                          ;; linker set RUNPATH instead of RPATH on binaries.
+                          ;; This is important because RUNPATH can be overriden
+                          ;; using LD_LIBRARY_PATH at runtime.
+                          "--enable-new-dtags"
 
                           ;; Don't search under /usr/lib & co.
                           "--with-lib-path=/no-ld-lib-path"
