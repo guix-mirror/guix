@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,19 +34,20 @@
   "Fetch CHANGESET from URL into DIRECTORY.  CHANGESET must be a valid
 Mercurial changeset identifier.  Return #t on success, #f otherwise."
 
-  (and (zero? (system* hg-command
-                       "clone" url
-                       "--rev" changeset
-                       ;; Disable TLS certificate verification.  The hash of
-                       ;; the checkout is known in advance anyway.
-                       "--insecure"
-                       directory))
-       (with-directory-excursion directory
-         (begin
-           ;; The contents of '.hg' vary as a function of the current
-           ;; status of the Mercurial repo.  Since we want a fixed
-           ;; output, this directory needs to be taken out.
-           (delete-file-recursively ".hg")
-           #t))))
+  (invoke hg-command
+          "clone" url
+          "--rev" changeset
+          ;; Disable TLS certificate verification.  The hash of
+          ;; the checkout is known in advance anyway.
+          "--insecure"
+          directory)
+
+  ;; The contents of '.hg' vary as a function of the current
+  ;; status of the Mercurial repo.  Since we want a fixed
+  ;; output, this directory needs to be taken out.
+  (with-directory-excursion directory
+    (delete-file-recursively ".hg"))
+
+  #t)
 
 ;;; hg.scm ends here
