@@ -69,9 +69,9 @@ NAMES (strings)."
 (define* (elpa-url #:optional (repo 'gnu))
   "Retrun the URL of REPO."
   (let ((elpa-archives
-         '((gnu . "http://elpa.gnu.org/packages")
-           (melpa-stable . "http://stable.melpa.org/packages")
-           (melpa . "http://melpa.org/packages"))))
+         '((gnu . "https://elpa.gnu.org/packages")
+           (melpa-stable . "https://stable.melpa.org/packages")
+           (melpa . "https://melpa.org/packages"))))
     (assq-ref elpa-archives repo)))
 
 (define* (elpa-fetch-archive #:optional (repo 'gnu))
