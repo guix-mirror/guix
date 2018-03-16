@@ -519,9 +519,9 @@ specifies modules in scope when evaluating SNIPPET."
               ;; Use '--force' so that patches that do not apply perfectly are
               ;; rejected.  Use '--no-backup-if-mismatch' to prevent making
               ;; "*.orig" file if a patch is applied with offset.
-              (zero? (system* (string-append #+patch "/bin/patch")
-                              "--force" "--no-backup-if-mismatch"
-                              #+@flags "--input" patch)))
+              (invoke (string-append #+patch "/bin/patch")
+                      "--force" "--no-backup-if-mismatch"
+                      #+@flags "--input" patch))
 
             (define (first-file directory)
               ;; Return the name of the first file in DIRECTORY.
@@ -546,64 +546,67 @@ specifies modules in scope when evaluating SNIPPET."
                                           #+decomp "/bin"))
 
             ;; SOURCE may be either a directory or a tarball.
-            (and (if (file-is-directory? #+source)
-                     (let* ((store     (%store-directory))
-                            (len       (+ 1 (string-length store)))
-                            (base      (string-drop #+source len))
-                            (dash      (string-index base #\-))
-                            (directory (string-drop base (+ 1 dash))))
-                       (mkdir directory)
-                       (copy-recursively #+source directory)
-                       #t)
-                     #+(if (string=? decompression-type "unzip")
-                           #~(zero? (system* "unzip" #+source))
-                           #~(zero? (system* (string-append #+tar "/bin/tar")
-                                             "xvf" #+source))))
-                 (let ((directory (first-file ".")))
-                   (format (current-error-port)
-                           "source is under '~a'~%" directory)
-                   (chdir directory)
+            (if (file-is-directory? #+source)
+                (let* ((store     (%store-directory))
+                       (len       (+ 1 (string-length store)))
+                       (base      (string-drop #+source len))
+                       (dash      (string-index base #\-))
+                       (directory (string-drop base (+ 1 dash))))
+                  (mkdir directory)
+                  (copy-recursively #+source directory))
+                #+(if (string=? decompression-type "unzip")
+                      #~(invoke "unzip" #+source)
+                      #~(invoke (string-append #+tar "/bin/tar")
+                                "xvf" #+source)))
 
-                   (and (every apply-patch '#+patches)
-                        #+@(if snippet
-                               #~((let ((module (make-fresh-user-module)))
-                                    (module-use-interfaces!
-                                     module
-                                     (map resolve-interface '#+modules))
-                                    ((@ (system base compile) compile)
-                                     '#+snippet
-                                     #:to 'value
-                                     #:opts %auto-compilation-options
-                                     #:env module)))
-                               #~())
+            (let ((directory (first-file ".")))
+              (format (current-error-port)
+                      "source is under '~a'~%" directory)
+              (chdir directory)
 
-                        (begin (chdir "..") #t)
+              (for-each apply-patch '#+patches)
 
-                        (unless tar-supports-sort?
-                          (call-with-output-file ".file_list"
-                            (lambda (port)
-                              (for-each (lambda (name)
-                                          (format port "~a~%" name))
-                                        (find-files directory
-                                                    #:directories? #t
-                                                    #:fail-on-error? #t)))))
-                        (zero? (apply system*
-                                      (string-append #+tar "/bin/tar")
-                                      "cvf" #$output
-                                      ;; The bootstrap xz does not support
-                                      ;; threaded compression (introduced in
-                                      ;; 5.2.0), but it ignores the extra flag.
-                                      (string-append "--use-compress-program="
-                                                     #+xz "/bin/xz --threads=0")
-                                      ;; avoid non-determinism in the archive
-                                      "--mtime=@0"
-                                      "--owner=root:0"
-                                      "--group=root:0"
-                                      (if tar-supports-sort?
-                                          `("--sort=name"
-                                            ,directory)
-                                          '("--no-recursion"
-                                            "--files-from=.file_list"))))))))))
+              (unless #+@(if snippet
+                             #~((let ((module (make-fresh-user-module)))
+                                  (module-use-interfaces!
+                                   module
+                                   (map resolve-interface '#+modules))
+                                  ((@ (system base compile) compile)
+                                   '#+snippet
+                                   #:to 'value
+                                   #:opts %auto-compilation-options
+                                   #:env module)))
+                             #~())
+                (format (current-error-port)
+                        "snippet returned false, indicating failure~%"))
+
+              (chdir "..")
+
+              (unless tar-supports-sort?
+                (call-with-output-file ".file_list"
+                  (lambda (port)
+                    (for-each (lambda (name)
+                                (format port "~a~%" name))
+                              (find-files directory
+                                          #:directories? #t
+                                          #:fail-on-error? #t)))))
+              (apply invoke
+                     (string-append #+tar "/bin/tar")
+                     "cvf" #$output
+                     ;; The bootstrap xz does not support
+                     ;; threaded compression (introduced in
+                     ;; 5.2.0), but it ignores the extra flag.
+                     (string-append "--use-compress-program="
+                                    #+xz "/bin/xz --threads=0")
+                     ;; avoid non-determinism in the archive
+                     "--mtime=@0"
+                     "--owner=root:0"
+                     "--group=root:0"
+                     (if tar-supports-sort?
+                         `("--sort=name"
+                           ,directory)
+                         '("--no-recursion"
+                           "--files-from=.file_list")))))))
 
     (let ((name (tarxz-name original-file-name)))
       (gexp->derivation name build
