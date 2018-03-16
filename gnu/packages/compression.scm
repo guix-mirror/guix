@@ -1316,16 +1316,15 @@ compresser/decompresser.")
          (replace 'check
            (lambda _
              (define (test class)
-               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
-                                                           ":build/classes"
-                                                           ":build/test-classes")
-                               "-Dtest.resources.dir=src/test/resources"
-                               "org.testng.TestNG" "-testclass"
-                               class)))
-             (system* "ant" "compile-tests")
-             (and
-               (test "org.iq80.snappy.SnappyFramedStreamTest")
-               (test "org.iq80.snappy.SnappyStreamTest"))))
+               (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                   ":build/classes"
+                                                   ":build/test-classes")
+                       "-Dtest.resources.dir=src/test/resources"
+                       "org.testng.TestNG" "-testclass"
+                       class))
+             (invoke "ant" "compile-tests")
+             (test "org.iq80.snappy.SnappyFramedStreamTest")
+             (test "org.iq80.snappy.SnappyStreamTest")))
          (add-before 'build 'remove-hadoop-dependency
            (lambda _
              ;; We don't have hadoop
