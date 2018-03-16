@@ -73,8 +73,8 @@ only with Python 2 and NumPy < 1.9.")
     (build-system python-build-system)
     (inputs
      `(("python-matplotlib" ,(with-numpy-1.8 python2-matplotlib))
-       ("python-scientific", python2-scientific)
-       ("netcdf", netcdf)
+       ("python-scientific" ,python2-scientific)
+       ("netcdf" ,netcdf)
        ("gv" ,gv)))
     (propagated-inputs
      `(("python-mmtk" ,python2-mmtk)))

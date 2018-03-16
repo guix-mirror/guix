@@ -756,7 +756,7 @@ mixed vector/bitmap output.")
               ("libjpeg-turbo" ,libjpeg-turbo)
               ("mesa" ,mesa)
               ("openssl" ,openssl)))
-    (native-inputs `(("pkg-config", pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.virtualgl.org")
     (synopsis "Redirects 3D commands from an OpenGL application onto a 3D
 graphics card")

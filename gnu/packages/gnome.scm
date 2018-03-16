@@ -273,7 +273,7 @@ features to enable users to create their discs easily and quickly.")
        ("gettext" ,gettext-minimal)
        ("itstool" ,itstool)
        ("intltool" ,intltool)
-       ("cmake", cmake)))
+       ("cmake" ,cmake)))
     (home-page "https://launchpad.net/deja-dup")
     (synopsis "Simple backup tool, for regular encrypted backups")
     (description

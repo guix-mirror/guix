@@ -236,7 +236,7 @@ All of this is accomplished without a centralized metadata server.")
     (inputs
      `(("curl" ,curl)
        ("glib" ,glib)
-       ("fuse", fuse)))
+       ("fuse" ,fuse)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://curlftpfs.sourceforge.net/")

@@ -399,7 +399,7 @@ many input formats and provides a customisable Vi-style user interface.")
                             "Clarinet in Bb.denemo"))
              #t)))))
     (native-inputs
-     `(("glib:bin", glib "bin")   ; for gtester
+     `(("glib:bin" ,glib "bin")   ; for gtester
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -417,7 +417,7 @@ many input formats and provides a customisable Vi-style user interface.")
        ("libsndfile" ,libsndfile)
        ("libtool" ,libtool)
        ("libxml2" ,libxml2)
-       ("lilypond", lilypond)
+       ("lilypond" ,lilypond)
        ("portaudio" ,portaudio)
        ("portmidi" ,portmidi)
        ("rubberband" ,rubberband)))
@@ -2518,7 +2518,7 @@ websites such as Libre.fm.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-requests" ,python-requests)
-       ("eyed3", eyed3)
+       ("eyed3" ,eyed3)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("youtube-dl" ,youtube-dl)))
     (arguments

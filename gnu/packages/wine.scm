@@ -278,8 +278,8 @@ integrate Windows applications into your desktop.")
                (base32
                 "14wf7536rkmhav9ibbvhqqkfqmbk1dckhd2679i5scizr5x290x4"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
-              ("gtk+", gtk+)
-              ("libva", libva)
+              ("gtk+" ,gtk+)
+              ("libva" ,libva)
               ("python" ,python)
               ("sdl2" ,sdl2)
               ("util-linux" ,util-linux) ; for hexdump

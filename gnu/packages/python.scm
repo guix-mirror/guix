@@ -11975,7 +11975,7 @@ library.")
        "08if5yax1xn5yfp8p3765ccjmfcv9di7i4m5jckgnwvdsgznwkbj"))))
    (build-system python-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)
-                    ("python-cython", python-cython)))
+                    ("python-cython" ,python-cython)))
    (home-page "https://github.com/aresch/rencode")
    (synopsis "Serialization of heterogeneous data structures")
    (description
@@ -12158,7 +12158,7 @@ created by running @code{python setup.py develop}).")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-tqdm" ,python-tqdm)
-       ("python-pkginfo", python-pkginfo)
+       ("python-pkginfo" ,python-pkginfo)
        ("python-requests" ,python-requests)
        ("python-requests-toolbelt" ,python-requests-toolbelt)))
     (home-page "https://github.com/pypa/twine")
@@ -12568,7 +12568,7 @@ is the new Pyro version that is actively developed.")
      `(("netcdf" ,netcdf)))
     (propagated-inputs
      `(("python-numpy" ,python2-numpy-1.8)
-       ("python-pyro", python2-pyro)))
+       ("python-pyro" ,python2-pyro)))
     (arguments
      ;; ScientificPython is not compatible with Python 3
      `(#:python ,python-2
@@ -12915,7 +12915,7 @@ and other tools.")
              #t)))))
     (propagated-inputs
      `(("python-pygments" ,python-pygments)
-       ("python-requests", python-requests)
+       ("python-requests" ,python-requests)
        ("python-babel" ,python-babel) ; optional, for internationalization
        ("python-curtsies" ,python-curtsies) ; >= 0.1.18
        ("python-greenlet" ,python-greenlet)

@@ -1062,7 +1062,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("waf" ,python-waf)
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
-       ("libxkbcommon", libxkbcommon)
+       ("libxkbcommon" ,libxkbcommon)
        ("youtube-dl" ,youtube-dl)
        ("zlib" ,zlib)))
     (arguments
@@ -2461,7 +2461,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("zlib" ,zlib)
-       ("libmediainfo", libmediainfo)
+       ("libmediainfo" ,libmediainfo)
        ("libzen" ,libzen)))
     (build-system gnu-build-system)
     (arguments

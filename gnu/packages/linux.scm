@@ -1778,9 +1778,9 @@ file system is as easy as logging into the server with an SSH client.")
         (base32
          "0v4si1ri6lhnq9q87gkx7fsh6lv6xz4bynknwndqncpvfp5cy1jg"))))
     (build-system gnu-build-system)
-    (inputs `(("fuse", fuse)
-              ("libarchive", libarchive)))
-    (native-inputs `(("pkg-config", pkg-config)))
+    (inputs `(("fuse" ,fuse)
+              ("libarchive" ,libarchive)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.cybernoia.de/software/archivemount")
     (synopsis "Tool for mounting archive files with FUSE")
     (description "archivemount is a FUSE-based file system for Unix variants,
@@ -2034,7 +2034,7 @@ from the module-init-tools project.")
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
        ("libxml2" ,libxml2)             ;for $XML_CATALOG_FILES
-       ("xsltproc", libxslt)))
+       ("xsltproc" ,libxslt)))
     (inputs
      ;; When linked against libblkid, eudev can populate /dev/disk/by-label
      ;; and similar; it also installs the '60-persistent-storage.rules' file,
@@ -3707,7 +3707,7 @@ are exceeded.")
     (inputs
      `(("acl" ,acl)
        ("libuuid" ,util-linux)
-       ("lzo", lzo)
+       ("lzo" ,lzo)
        ("zlib" ,zlib)))
     (build-system gnu-build-system)
     (arguments
@@ -4137,13 +4137,13 @@ used by nftables.")
         (base32
          "1i1gfy8l7qyhc5vlrpp63s0n5kybmc9pi4dywiq8rmkhrrnddsla"))))
     (build-system gnu-build-system)
-    (inputs `(("bison", bison)
-              ("flex", flex)
-              ("gmp", gmp)
-              ("libmnl", libmnl)
-              ("libnftnl", libnftnl)
-              ("readline", readline)))
-    (native-inputs `(("pkg-config", pkg-config)))
+    (inputs `(("bison" ,bison)
+              ("flex" ,flex)
+              ("gmp" ,gmp)
+              ("libmnl" ,libmnl)
+              ("libnftnl" ,libnftnl)
+              ("readline" ,readline)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.nftables.org")
     (synopsis "Userspace utility for Linux packet filtering")
     (description "nftables is the project that aims to replace the existing

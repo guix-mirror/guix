@@ -435,13 +435,13 @@ visual effects work for film.")
     (native-inputs
      `(("unzip" ,unzip)))
     (inputs
-     `(("giflib", giflib)
-       ("jasper", jasper)
-       ("librsvg", librsvg)
-       ("pth", pth)
-       ("qtbase", qtbase)
-       ("ffmpeg", ffmpeg)
-       ("mesa", mesa)))
+     `(("giflib" ,giflib)
+       ("jasper" ,jasper)
+       ("librsvg" ,librsvg)
+       ("pth" ,pth)
+       ("qtbase" ,qtbase)
+       ("ffmpeg" ,ffmpeg)
+       ("mesa" ,mesa)))
     (synopsis "High performance real-time graphics toolkit")
     (description
      "The OpenSceneGraph is a high performance 3D graphics toolkit

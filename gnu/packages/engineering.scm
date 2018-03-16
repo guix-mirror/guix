@@ -862,7 +862,7 @@ the 'showing the effect of'-style of operation.")
     (inputs
      `(("boost" ,boost)))
     (native-inputs
-     `(("python-2", python-2)
+     `(("python-2" ,python-2)
        ("python2-cheetah" ,python2-cheetah)))
     (home-page "http://libvolk.org/")
     (synopsis "Vector-Optimized Library of Kernels")

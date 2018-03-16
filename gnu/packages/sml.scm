@@ -42,7 +42,7 @@
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)
-       ("lesstif",lesstif)
+       ("lesstif" ,lesstif)
        ("libffi" ,libffi)
        ("libx11" ,libx11)
        ("libxt" ,libxt)))

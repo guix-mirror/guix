@@ -5983,7 +5983,7 @@ basic eye-candy effects.")
               ("python2-rencode" ,python2-rencode)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("python2-cython", python2-cython)))
+                     ("python2-cython" ,python2-cython)))
     (arguments
      `(#:python ,python-2 ;; no full Python 3 support yet
        #:configure-flags '("--with-tests"

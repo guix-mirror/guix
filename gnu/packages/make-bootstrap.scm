@@ -108,7 +108,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
           ("gcc" ,(package (inherit gcc)
                     (outputs '("out")) ; all in one so libgcc_s is easily found
                     (inputs
-                     `(("libc",(glibc-for-bootstrap))
+                     `(("libc" ,(glibc-for-bootstrap))
                        ("libc:static" ,(glibc-for-bootstrap) "static")
                        ,@(package-inputs gcc)))))
           ,@(fold alist-delete (%final-inputs) '("libc" "gcc")))))

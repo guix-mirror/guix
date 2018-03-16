@@ -357,7 +357,7 @@ of a the system to know what users are logged in, and where.")
        ("glib:bin" ,glib "bin")))
     (inputs
      `(("glib" ,glib)
-       ("bash-completion", bash-completion)
+       ("bash-completion" ,bash-completion)
        ("polkit" ,polkit)))
     (propagated-inputs
      `(("sqlite" ,sqlite)))

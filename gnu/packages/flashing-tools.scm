@@ -104,7 +104,7 @@ programmer devices.")
         "1g4032c81wkk37wvbg1dxcqq6mnd76y9x7f2crmzqi6z4q9jcxmj"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libusb",libusb-0.1))) ; doesn't work with libusb-compat
+     `(("libusb" ,libusb-0.1))) ; doesn't work with libusb-compat
     (arguments
      '(#:phases
        (modify-phases %standard-phases

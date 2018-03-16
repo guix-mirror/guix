@@ -3755,7 +3755,7 @@ sensitive completion, colors, and more.")
          (delete 'configure))))
     (inputs
      `(("topkg" ,ocaml-topkg)
-       ("opam", opam)))
+       ("opam" ,opam)))
     (synopsis "Various signed and unsigned integer types for OCaml")
     (description "The ocaml-integers library provides a number of 8-, 16-, 32-
 and 64-bit signed and unsigned integer types, together with aliases such as
@@ -3789,7 +3789,7 @@ long and size_t whose sizes depend on the host platform.")
       ("integers" ,ocaml-integers)
       ("lwt" ,ocaml-lwt)
       ("topkg" ,ocaml-topkg)
-      ("opam", opam)))
+      ("opam" ,opam)))
    (synopsis "Library for binding to C libraries using pure OCaml")
    (description "Ctypes is a library for binding to C libraries using pure
 OCaml.  The primary aim is to make writing C extensions as straightforward as
@@ -3822,7 +3822,7 @@ without writing or generating any C!")
         (delete 'configure))))
    (inputs
     `(("topkg" ,ocaml-topkg)
-      ("opam", opam)))
+      ("opam" ,opam)))
    (native-inputs
     `(("astring" ,ocaml-astring)))
    (synopsis "OCamlbuild plugin for C stubs")

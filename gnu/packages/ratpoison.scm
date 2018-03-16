@@ -79,7 +79,7 @@
        ("readline" ,readline)
        ("xextproto" ,xextproto)))
     (native-inputs
-     `(("perl",perl)
+     `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("ratpoison.desktop" ,ratpoison.desktop)))
     (home-page "https://www.nongnu.org/ratpoison/")

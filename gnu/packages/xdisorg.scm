@@ -1332,9 +1332,9 @@ XCB util-xrm module provides the following libraries:
                         (install-file "README" doc)
                         ;; Avoid unspecified return value.
                         #t))))))
-    (inputs `(("libx11", libx11)
-              ("libxext", libxext)
-              ("libxxf86vm", libxxf86vm)))
+    (inputs `(("libx11" ,libx11)
+              ("libxext" ,libxext)
+              ("libxxf86vm" ,libxxf86vm)))
     (synopsis "Tiny monitor calibration loader for XFree86 (or X.org)")
     (description "xcalib is a tiny tool to load the content of vcgt-Tags in ICC
 profiles to the video card's gamma ramp.  It does work with most video card

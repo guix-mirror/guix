@@ -100,7 +100,7 @@
        ("qttools" ,qttools)))
     (inputs
      `(("qca" ,qca)
-       ("qtbase", qtbase)
+       ("qtbase" ,qtbase)
        ("qtscript" ,qtscript)
        ("snorenotify" ,snorenotify)
        ("zlib" ,zlib)))

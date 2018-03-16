@@ -747,7 +747,7 @@ Machine Protocol.")
              ("sdl2" ,sdl2)
              ("sdl2-ttf" ,sdl2-ttf)
              ("spice-protocol" ,spice-protocol)))
-   (native-inputs `(("pkg-config", pkg-config)))
+   (native-inputs `(("pkg-config" ,pkg-config)))
    (arguments
     `(#:tests? #f ;; No tests are available.
       #:phases (modify-phases %standard-phases

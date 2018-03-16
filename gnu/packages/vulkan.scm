@@ -103,7 +103,7 @@ and for the GLSL.std.450 extended instruction set.
                                                (assoc-ref %build-inputs
                                                           "spirv-headers")))))
      (inputs `(("spirv-headers" ,spirv-headers)))
-     (native-inputs `(("pkg-config", pkg-config)
+     (native-inputs `(("pkg-config" ,pkg-config)
                       ("python" ,python)))
      (home-page "https://github.com/KhronosGroup/SPIRV-Tools")
      (synopsis "API and commands for processing SPIR-V modules")
@@ -190,7 +190,7 @@ interpretation of the specifications for these languages.")
               ("mesa" ,mesa)
               ("spirv-tools" ,spirv-tools)
               ("wayland" ,wayland)))
-    (native-inputs `(("pkg-config", pkg-config)
+    (native-inputs `(("pkg-config" ,pkg-config)
                      ("python" ,python)))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers")
