@@ -12941,6 +12941,42 @@ and interactive quality reports.  The pipeline is designed to work with UMI
 based methods.")
     (license license:gpl3+)))
 
+(define-public pigx
+  (package
+    (name "pigx")
+    (version "0.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/BIMSBbioinfo/pigx/"
+                                  "releases/download/v" version
+                                  "/pigx-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nxb2hbp40yg3j7n56k4dhsd2fl1j8g0wpiiln56prqzljwnlgmf"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("python" ,python)
+       ("pigx-bsseq" ,pigx-bsseq)
+       ("pigx-chipseq" ,pigx-chipseq)
+       ("pigx-rnaseq" ,pigx-rnaseq)
+       ("pigx-scrnaseq" ,pigx-scrnaseq)))
+    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (synopsis "Analysis pipelines for genomics")
+    (description "PiGx is a collection of genomics pipelines.  It includes the
+following pipelines:
+
+@itemize
+@item PiGx BSseq for raw fastq read data of bisulfite experiments
+@item PiGx RNAseq for RNAseq samples
+@item PiGx scRNAseq for single cell dropseq analysis
+@item PiGx ChIPseq for reads from ChIPseq experiments
+@end itemize
+
+All pipelines are easily configured with a simple sample sheet and a
+descriptive settings file.  The result is a set of comprehensive, interactive
+HTML reports with interesting findings about your samples.")
+    (license license:gpl3+)))
+
 (define-public r-diversitree
   (package
     (name "r-diversitree")
