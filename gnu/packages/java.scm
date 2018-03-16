@@ -694,6 +694,10 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                "--disable-gjdoc")
          #:phases
          (modify-phases %standard-phases
+           ;; XXX The bootstrap phase executes autogen.sh, which fails after
+           ;; complaining about the lack of gettext.
+           (replace 'bootstrap
+             (lambda _ (invoke "autoreconf" "-vif")))
            (add-after 'unpack 'remove-unsupported-annotations
              (lambda _
                (substitute* (find-files "java" "\\.java$")
