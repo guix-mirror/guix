@@ -225,11 +225,18 @@ and the ICD.")
            "0b41inb1czxv3mciip0lfdxv19ccx2ys31fivfywjn2q8va1gd1f"))))
       (build-system meson-build-system)
       (arguments
-       `(#:tests? #f                    ; tests don't work yet.
+       `(#:build-type "Release"
+         #:configure-flags
+         (list "-GNinja"
+               "-DSHADERC_SKIP_TESTS=ON"
+               "-DCMAKE_INSTALL_LIBDIR=lib"
+               (string-append "-DCMAKE_INSTALL_PREFIX="
+                              (assoc-ref %outputs "out")))
+         #:tests? #f                    ; tests don't work yet.
          #:phases
          (modify-phases %standard-phases
            (replace 'configure
-             (lambda* (#:key outputs #:allow-other-keys)
+             (lambda* (#:key build-type configure-flags #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
                  ;; Remove various lines and touch build-version.inc or
                  ;; configuring won't work.
@@ -247,11 +254,8 @@ and the ICD.")
                  (substitute* "CMakeLists.txt" ((".*--check.*") ""))
                  (substitute* "glslc/src/main.cc" ((".*build-version.inc.*")
                                                    "\"1\""))
-                 (invoke "cmake" "-GNinja" "-DCMAKE_BUILD_TYPE=Release"
-                         "-DSHADERC_SKIP_TESTS=ON"
-                         "-DCMAKE_INSTALL_LIBDIR=lib"
-                         (string-append "-DCMAKE_INSTALL_PREFIX="
-                                        out)))))
+                 (invoke "cmake" (cons build-type configure-flags))
+                 #t)))
            (add-after 'unpack 'unpack-sources
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((spirv-tools-source (assoc-ref %build-inputs
