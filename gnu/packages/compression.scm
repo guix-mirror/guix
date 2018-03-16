@@ -1684,7 +1684,7 @@ speed.")
          (delete 'configure)            ; no configure script
          (add-before 'check 'compile-tests
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" "tests" make-flags))))
+             (apply invoke "make" "tests" make-flags)))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
