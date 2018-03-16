@@ -521,7 +521,8 @@ using compilers other than GCC."
        #:phases (alist-cons-before
                  'configure 'chdir
                  (lambda _
-                   (chdir "libstdc++-v3"))
+                   (chdir "libstdc++-v3")
+                   #t)
                  %standard-phases)
        #:configure-flags `("--disable-libstdcxx-pch"
                            ,(string-append "--with-gxx-include-dir="
