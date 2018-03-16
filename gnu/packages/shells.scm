@@ -264,7 +264,7 @@ written by Paul Haahr and Byron Rakitzis.")
               (substitute* "tests/syntax.at"
                 (("; other_script.csh") "; /bin/sh other_script.csh"))
               ;; Now, let's generate the test suite and patch it
-              (system* "make" "tests/testsuite")
+              (invoke "make" "tests/testsuite")
 
               ;; This file is ISO-8859-1 encoded.
               (with-fluids ((%default-port-encoding #f))
