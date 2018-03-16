@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -183,6 +183,9 @@ shared NFS home directories.")
       (modify-phases %standard-phases
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; For building deterministic pyc files
+            (setenv "DETERMINISTIC_BUILD" "1")
+
             ;; For tests/gdatetime.c.
             (setenv "TZDIR"
                     (string-append (assoc-ref inputs "tzdata")
