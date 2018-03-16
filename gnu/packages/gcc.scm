@@ -769,7 +769,8 @@ as the 'native-search-paths' field."
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'chdir
                               (lambda _
-                                (chdir "libstdc++-v3")))
+                                (chdir "libstdc++-v3")
+                                #t))
                   (add-before 'configure 'set-xsl-directory
                               (lambda* (#:key inputs #:allow-other-keys)
                                 (let ((docbook (assoc-ref inputs "docbook-xsl")))
@@ -778,22 +779,23 @@ as the 'native-search-paths' field."
                                     (("@XSL_STYLE_DIR@")
                                      (string-append
                                       docbook "/xml/xsl/"
-                                      (strip-store-file-name docbook)))))))
+                                      (strip-store-file-name docbook))))
+                                  #t)))
                   (replace 'build
                            (lambda _
                              ;; XXX: There's also a 'doc-info' target, but it
                              ;; relies on docbook2X, which itself relies on
                              ;; DocBook 4.1.2, which is not really usable
                              ;; (lacks a catalog.xml.)
-                             (zero? (system* "make"
-                                             "doc-html"
-                                             "doc-man"))))
+                             (invoke "make"
+                                     "doc-html"
+                                     "doc-man")))
                   (replace 'install
                            (lambda* (#:key outputs #:allow-other-keys)
                              (let ((out (assoc-ref outputs "out")))
-                               (zero? (system* "make"
-                                               "doc-install-html"
-                                               "doc-install-man"))))))))))
+                               (invoke "make"
+                                       "doc-install-html"
+                                       "doc-install-man")))))))))
 
 (define-public libstdc++-doc-4.9
   (make-libstdc++-doc gcc-4.9))
