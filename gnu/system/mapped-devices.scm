@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +32,7 @@
   #:use-module (gnu system uuid)
   #:autoload   (gnu build file-systems) (find-partition-by-luks-uuid)
   #:autoload   (gnu build linux-modules)
-                 (device-module-aliases matching-modules)
+                 (device-module-aliases matching-modules known-module-aliases)
   #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
   #:autoload   (gnu packages linux) (mdadm-static)
   #:use-module (srfi srfi-1)
