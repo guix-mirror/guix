@@ -1857,7 +1857,7 @@ version numbers.")
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
-    (version "2.5.1")
+    (version "2.6.0")
     (source (origin
              (method url-fetch)
              (uri
@@ -1866,7 +1866,7 @@ version numbers.")
                version ".tar.gz"))
              (sha256
               (base32
-               "0hddbqjm4jq63y8jf44nswina1crjs16l9snb6m3vvgyg31klrrn"))))
+               "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
