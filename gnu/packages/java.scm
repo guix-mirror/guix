@@ -4188,6 +4188,66 @@ in the @code{java.lang} package.  The following classes are included:
 @end itemize\n")
     (license license:asl2.0)))
 
+(define-public java-commons-bsf
+  (package
+    (name "java-commons-bsf")
+    (version "2.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/bsf/source/bsf-src-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1sbamr8jl32p1jgf59nw0b2w9qivyg145954hm6ly54cfgsqrdas"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file
+                            (find-files "." "\\.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "jar"
+       #:tests? #f; No test file
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build java-utils)
+                  (sxml simple))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'create-properties
+           (lambda _
+             ;; This file is missing from the distribution
+             (call-with-output-file "build-properties.xml"
+               (lambda (port)
+                 (sxml->xml
+                  `(project (@ (basedir ".") (name "build-properties") (default ""))
+                     (property (@ (name "project.name") (value "bsf")))
+                     (property (@ (name "source.level") (value "1.5")))
+                     (property (@ (name "build.lib") (value "build/jar")))
+                     (property (@ (name "src.dir") (value "src")))
+                     (property (@ (name "tests.dir") (value "src/org/apache/bsf/test")))
+                     (property (@ (name "build.tests") (value "build/test-classes")))
+                     (property (@ (name "build.dest") (value "build/classes"))))
+                  port)))))
+         (replace 'install (install-jars "build")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (inputs
+     `(("java-commons-logging-minimal" ,java-commons-logging-minimal)))
+    (home-page "https://commons.apache.org/proper/commons-bsf")
+    (synopsis "Bean Scripting Framework")
+    (description "The Bean Scripting Framework (BSF) is a set of Java classes
+which provides scripting language support within Java applications, and access
+to Java objects and methods from scripting languages.  BSF allows one to write
+JSPs in languages other than Java while providing access to the Java class
+library.  In addition, BSF permits any Java application to be implemented in
+part (or dynamically extended) by a language that is embedded within it.  This
+is achieved by providing an API that permits calling scripting language engines
+from within Java, as well as an object registry that exposes Java objects to
+these scripting language engines.")
+    (license license:asl2.0)))
+
 (define-public java-jsr305
   (package
     (name "java-jsr305")
