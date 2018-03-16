@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -202,16 +203,16 @@ add a dependency of that output on GLib and GTK+."
 (define* (compile-glib-schemas #:key outputs #:allow-other-keys)
   "Implement phase \"glib-or-gtk-compile-schemas\": compile \"glib\" schemas
 if needed."
-  (every (match-lambda
-          ((output . directory)
-           (let ((schemasdir (string-append directory
-                                            "/share/glib-2.0/schemas")))
-             (if (and (directory-exists? schemasdir)
-                      (not (file-exists?
-                            (string-append schemasdir "/gschemas.compiled"))))
-                 (zero? (system* "glib-compile-schemas" schemasdir))
-                 #t))))
-         outputs))
+  (for-each (match-lambda
+              ((output . directory)
+               (let ((schemasdir (string-append directory
+                                                "/share/glib-2.0/schemas")))
+                 (when (and (directory-exists? schemasdir)
+                            (not (file-exists?
+                                  (string-append schemasdir "/gschemas.compiled"))))
+                   (invoke "glib-compile-schemas" schemasdir)))))
+            outputs)
+  #t)
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
