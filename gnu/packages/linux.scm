@@ -4241,24 +4241,23 @@ userspace queueing component and the logging subsystem.")
                         (setenv "PATH"
                                 (string-append (getenv "PATH") ":/bin"))
 
-                        (zero? (system* "make" "check" "-C" "tests"
-                                        ;;"V=1"
-                                        "-j" (number->string n))))))
+                        (invoke "make" "check" "-C" "tests"
+                                ;;"V=1"
+                                "-j" (number->string n)))))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; The 'install' rule does nearly nothing.
-                      (let ((out (assoc-ref outputs "out")))
-                        (and (zero?
-                              ;; TODO: 'make install-care' (does not even
-                              ;; build currently.)
-                              (system* "make" "-C" "src" "install"
-                                       (string-append "PREFIX=" out)))
-                             (let ((man1 (string-append out
-                                                        "/share/man/man1")))
-                               (mkdir-p man1)
-                               (copy-file "doc/proot/man.1"
-                                          (string-append man1 "/proot.1"))
-                               #t))))))))
+                      (let* ((out (assoc-ref outputs "out"))
+                             (man1 (string-append out "/share/man/man1")))
+                        ;; TODO: 'make install-care' (does not even
+                        ;; build currently.)
+                        (invoke "make" "-C" "src" "install"
+                                (string-append "PREFIX=" out))
+
+                        (mkdir-p man1)
+                        (copy-file "doc/proot/man.1"
+                                   (string-append man1 "/proot.1"))
+                        #t))))))
     (native-inputs `(("which" ,which)
 
                      ;; For 'mcookie', used by some of the tests.
