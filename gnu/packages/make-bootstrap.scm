@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -494,12 +495,14 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                              (string-append includedir "/c++"))
 
            ;; For native builds, check whether the binaries actually work.
-           ,(if (%current-target-system)
-                '#t
-                '(every (lambda (prog)
-                          (zero? (system* (string-append gcc "/bin/" prog)
-                                          "--version")))
-                        '("gcc" "g++" "cpp")))))))
+           ,@(if (%current-target-system)
+                 '()
+                 '((for-each (lambda (prog)
+                               (invoke (string-append gcc "/bin/" prog)
+                                       "--version"))
+                             '("gcc" "g++" "cpp"))))
+
+           #t))))
     (inputs `(("gcc" ,%gcc-static)))))
 
 (define %guile-static
